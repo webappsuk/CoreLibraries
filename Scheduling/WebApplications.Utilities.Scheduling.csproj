@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A98D210C-0884-4985-BC71-705B44F61CA9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebApplications.Utilities.Scheduling</RootNamespace>
+    <AssemblyName>WebApplications.Utilities.Scheduling</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\WebApplications.Utilities.Scheduling\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\WebApplications.Utilities.Scheduling.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\WebApplications.Utilities.Scheduling.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Web Applications UK - Core.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AsyncCtpLibrary">
+      <HintPath>packages\AsyncCTP.1.1.0.0\lib\net40\AsyncCtpLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=5.1.3000.12, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>packages\JetBrains.Annotations.5.1.3000.12\lib\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebApplications.Utilities">
+      <HintPath>packages\WebApplications.Utilities.1.1.4458.16336\lib\net40\WebApplications.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="WebApplications.Utilities.Logging">
+      <HintPath>packages\WebApplications.Utilities.Logging.1.1.4458.16459\lib\net40\WebApplications.Utilities.Logging.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ISchedulableAction.cs" />
+    <Compile Include="ISchedulableActionAsync.cs" />
+    <Compile Include="ISchedulableActionCancellableAsync.cs" />
+    <Compile Include="ISchedulableFunction.cs" />
+    <Compile Include="ISchedulableFunctionAsync.cs" />
+    <Compile Include="ISchedulableFunctionCancellableAsync.cs" />
+    <Compile Include="IScheduledAction.cs" />
+    <Compile Include="IScheduledActionResult.cs" />
+    <Compile Include="IScheduledFunction.cs" />
+    <Compile Include="IScheduledFunctionResult.cs" />
+    <Compile Include="IScheduler.cs" />
+    <Compile Include="Schedulable\SchedulableActionInfo.cs" />
+    <Compile Include="Schedulable\SchedulableAction.cs" />
+    <Compile Include="Schedulable\SchedulableActionAsync.cs" />
+    <Compile Include="Schedulable\SchedulableActionCancellableAsync.cs" />
+    <Compile Include="Schedulable\SchedulableFunction.cs" />
+    <Compile Include="Schedulable\SchedulableFunctionAsync.cs" />
+    <Compile Include="Schedulable\SchedulableFunctionCancellableAsync.cs" />
+    <Compile Include="Scheduled\ScheduledActionResult.cs" />
+    <Compile Include="Schedulable\SchedulableActionAsyncBase.cs" />
+    <Compile Include="Schedulable\SchedulableActionBase.cs" />
+    <Compile Include="Schedulable\SchedulableActionCancellableAsyncBase.cs" />
+    <Compile Include="Schedulable\SchedulableFunctionAsyncBase.cs" />
+    <Compile Include="Schedulable\SchedulableFunctionBase.cs" />
+    <Compile Include="Schedulable\SchedulableFunctionCancellableAsyncBase.cs" />
+    <Compile Include="Scheduled\ScheduledAction.cs" />
+    <Compile Include="Scheduled\ScheduledFunction.cs" />
+    <Compile Include="ScheduleOptions.cs" />
+    <Compile Include="Scheduler.cs" />
+    <Compile Include="Schedules\AggregateSchedule.cs" />
+    <Compile Include="Schedules\FunctionalSchedule.cs" />
+    <Compile Include="Schedules\OneOffSchedule.cs" />
+    <Compile Include="Configuration\ScheduleCollection.cs" />
+    <Compile Include="Configuration\ScheduleElement.cs" />
+    <Compile Include="Schedules\Day.cs" />
+    <Compile Include="Schedules\Hour.cs" />
+    <Compile Include="ISchedule.cs" />
+    <Compile Include="Schedules\Minute.cs" />
+    <Compile Include="Schedules\Month.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Schedules\PeriodicSchedule.cs" />
+    <Compile Include="Scheduled\ScheduledFunctionResult.cs" />
+    <Compile Include="Schedule.cs" />
+    <Compile Include="Schedules\Second.cs" />
+    <Compile Include="Schedules\Week.cs" />
+    <Compile Include="Schedules\WeekDay.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Schedulable\Schedulable Actions.cd" />
+    <None Include="Schedulable\Schedulable Functions.cd" />
+    <None Include="Schedulable\Schedulable Interfaces.cd" />
+    <None Include="Scheduled\Scheduled Interfaces.cd" />
+    <None Include="packages.config" />
+    <None Include="Schedules\Schedules.cd" />
+    <None Include="Web Applications UK - Core.snk" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

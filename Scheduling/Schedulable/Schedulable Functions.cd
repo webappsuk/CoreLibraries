@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Three concrete classes are available for easily creating schedulable functions from a Func&lt;T&gt;.">
+    <Position X="1.646" Y="4.146" Height="0.792" Width="1.763" />
+  </Comment>
+  <Comment CommentText="Three abstract base classes are available for easily creating schedulable functions.">
+    <Position X="5.646" Y="0.51" Height="0.812" Width="1.627" />
+  </Comment>
+  <Class Name="WebApplications.Utilities.Scheduling.Schedulable.SchedulableFunction&lt;T&gt;" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Schedulable\SchedulableFunction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebApplications.Utilities.Scheduling.Schedulable.SchedulableFunctionCancellableAsync&lt;T&gt;" Collapsed="true">
+    <Position X="4.5" Y="4.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAACAAAQAQAAAABAAAAAAAAAEA=</HashCode>
+      <FileName>Schedulable\SchedulableFunctionCancellableAsync.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebApplications.Utilities.Scheduling.Schedulable.SchedulableFunctionAsync&lt;T&gt;" Collapsed="true">
+    <Position X="1.5" Y="3.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAACAAAQAQAAAABAAAAAAAAAEA=</HashCode>
+      <FileName>Schedulable\SchedulableFunctionAsync.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WebApplications.Utilities.Scheduling.Schedulable.SchedulableFunctionAsyncBase&lt;T&gt;" Collapsed="true">
+    <Position X="3.5" Y="1.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Schedulable\SchedulableFunctionAsyncBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="WebApplications.Utilities.Scheduling.Schedulable.SchedulableFunctionBase&lt;T&gt;" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAEAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Schedulable\SchedulableFunctionBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="WebApplications.Utilities.Scheduling.Schedulable.SchedulableFunctionCancellableAsyncBase&lt;T&gt;" Collapsed="true">
+    <Position X="4.5" Y="3.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Schedulable\SchedulableFunctionCancellableAsyncBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Calibri" Size="9.75" />
+</ClassDiagram>
