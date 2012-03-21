@@ -1,0 +1,348 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DatabaseSchema_GetHashCode_ObjCanNotBeNull" xml:space="preserve">
+    <value>Parameter 'obj' can not be null</value>
+  </data>
+  <data name="DatabaseSchema_GetOrAdd_ConnectionStringCanNotBeNull" xml:space="preserve">
+    <value>Parameter 'connectionString' can not be null</value>
+  </data>
+  <data name="DatabaseSchema_Load_ColumnTypeNotFound" xml:space="preserve">
+    <value>Could not find column '{0}'s type '{1}' when loading table/view definition for '{2}'.</value>
+  </data>
+  <data name="DatabaseSchema_Load_CouldNotFindObjectType" xml:space="preserve">
+    <value>Could not find SQL object type '{0}' when loading tables/views.</value>
+  </data>
+  <data name="DatabaseSchema_Load_CouldNotFindSchema" xml:space="preserve">
+    <value>Could not find schema '{0}' when loading types.</value>
+  </data>
+  <data name="DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews" xml:space="preserve">
+    <value>Could not find schema '{0}' when loading table/view definitions.</value>
+  </data>
+  <data name="DatabaseSchema_Load_CouldNotFindSchemaWhenLoadingPrograms" xml:space="preserve">
+    <value>Could not find schema '{0}' when loading program definitions.</value>
+  </data>
+  <data name="DatabaseSchema_Load_CouldNotFindTypeWhenLoadingPrograms" xml:space="preserve">
+    <value>Could not find SQL object type '{0}' when loading program definitions.</value>
+  </data>
+  <data name="DatabaseSchema_Load_CouldNotParseVersionInformation" xml:space="preserve">
+    <value>Could not parse version information of SQL server.</value>
+  </data>
+  <data name="DatabaseSchema_Load_CouldNotRetrieveSchemas" xml:space="preserve">
+    <value>Could not retrieve schemas from database.</value>
+  </data>
+  <data name="DatabaseSchema_Load_CouldNotRetrieveTypes" xml:space="preserve">
+    <value>Could not retrieve types from database.</value>
+  </data>
+  <data name="DatabaseSchema_Load_ErrorOccurred" xml:space="preserve">
+    <value>An error occurred whilst trying to retrieve information about a SQL programmability object.</value>
+  </data>
+  <data name="DatabaseSchema_Load_InconsistentType" xml:space="preserve">
+    <value>Inconsistent object type when loading '{0}' program definition.</value>
+  </data>
+  <data name="DatabaseSchema_Load_InconsistentTypeLoadingTablesAndViews" xml:space="preserve">
+    <value>Inconsistent object type when loading '{0}' table/view definition.</value>
+  </data>
+  <data name="DatabaseSchema_Load_ParameterTypeNotFound" xml:space="preserve">
+    <value>Could not find parameter '{0}'s type '{1}' when loading program definition for '{2}'.</value>
+  </data>
+  <data name="DatabaseSchema_Load_RanOutOfResultsRetrievingPrograms" xml:space="preserve">
+    <value>Ran out of results retrieving programs from database.</value>
+  </data>
+  <data name="DatabaseSchema_Load_RanOutOfResultsRetrievingTypes" xml:space="preserve">
+    <value>Ran out of results retrieving types from database.</value>
+  </data>
+  <data name="DatabaseSchema_Load_RanOutOfTablesAndViews" xml:space="preserve">
+    <value>Ran out of results retrieving tables and views from database.</value>
+  </data>
+  <data name="DatabaseSchema_Load_TableTypeNotFound" xml:space="preserve">
+    <value>Could not find table type '{0}'s which is associated with table definition for '{1}'.</value>
+  </data>
+  <data name="DatabaseSchema_Load_TypeNotTableType" xml:space="preserve">
+    <value>The type '{0}' is not a table type, but it's supposedly associated with the table definition for '{1}'.</value>
+  </data>
+  <data name="DatabaseSchema_Load_VersionNotSupported" xml:space="preserve">
+    <value>SQL database version '{0}' is not currently supported.</value>
+  </data>
+  <data name="DatabaseSchema_TypeGetType_FullNameCanNotBeNull" xml:space="preserve">
+    <value>Parameter 'fullName' can not be null</value>
+  </data>
+  <data name="LoadBalancedConnection_ToString" xml:space="preserve">
+    <value>Load balanced connection string with '{0}' connections.</value>
+  </data>
+  <data name="SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType" xml:space="preserve">
+    <value>Unsupported SqlDbType '{0}'.</value>
+  </data>
+  <data name="SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual" xml:space="preserve">
+    <value>The program has '{0}' parameter types, so can not have '{1}' parameter names!</value>
+  </data>
+  <data name="SqlProgramDefinition_ToString" xml:space="preserve">
+    <value>{0} Program Definition</value>
+  </data>
+  <data name="SqlProgramDefinition_ValidateParameters_MustSpecifyParameterName" xml:space="preserve">
+    <value>Must specify a parameter name when not validating parameter order of parameters on the program called '{0}'.</value>
+  </data>
+  <data name="SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual" xml:space="preserve">
+    <value>The program called '{0}' only has '{1}' parameters, so does not match the supplied '{2}' parameters.</value>
+  </data>
+  <data name="SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist" xml:space="preserve">
+    <value>The parameter named '{0}', does not exist on the program called '{1}'.</value>
+  </data>
+  <data name="SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType" xml:space="preserve">
+    <value>The parameter named '{0}', on the program called '{1}', is of type '{2}' and so does not accept the CLR type '{3}'.</value>
+  </data>
+  <data name="SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptSqlDbType" xml:space="preserve">
+    <value>The parameter named '{0}', on the program called '{1}', is of type '{2}' and so does not accept the SqlDbType '{3}'.</value>
+  </data>
+  <data name="SqlProgramExecutionException_ErrorOccurredDuringExecution" xml:space="preserve">
+    <value>An error occurred whilst executing the '{0}' SqlProgram.  {1}</value>
+  </data>
+  <data name="SqlTypeSize_ToString" xml:space="preserve">
+    <value>Maximum length: {0}; Precision: {1}; Scale: {2}.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_BinaryDataTruncated" xml:space="preserve">
+    <value>Truncating binary data of length '{0}' bytes when converting to SQL type '{1}' which only accepts '{2}' bytes.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CannotAcceptEnumerationType" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept an enumeration of '{1}'.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CannotAcceptType" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept type '{1}'.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CanNotCast" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept an enumeration of '{1}'.  Cannot cast '{2}' to '{3}' for the column with ordinal {4}.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CanNotConvertKeyType" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept an enumeration of '{1}'.  Cannot convert key type '{2}' to '{3}'.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_ColumnNumberAndTupleSizeMismatch" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept an enumeration of '{1}'.  The type only accepts {2} columns, but the tuple supplies '{3}.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CouldNotConvertBinaryData" xml:space="preserve">
+    <value>Could not convert binary data of length '{0}' bytes to SQL type '{1}' which only accepts '{2}' bytes.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CouldNotConvertDateTimeToSqlType" xml:space="preserve">
+    <value>Could not convert DateTime '{0}' to SQL type '{1}' which only accepts DateTimes in the '{2}' range.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CouldNotConvertString" xml:space="preserve">
+    <value>Could not convert string of length '{0}' characters to SQL type '{1}' which only accepts '{2}' characters.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CouldNotSerializeObject" xml:space="preserve">
+    <value>Could not serialize object of type '{0}' into SQL type '{1}' as it requires '{2}' bytes and the SQL type only accepts '{3}' bytes.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_DateTimeTruncated" xml:space="preserve">
+    <value>Truncating DateTime '{0}' when converting to SQL type '{1}' which only accepts DateTimes in the '{2}' range.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_FatalErrorOccurred" xml:space="preserve">
+    <value>Fatal error whilst trying to create type convertor for '{0}' type on SQL Type '{1}'. {2}</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_NotCreatedAsSqlTableType" xml:space="preserve">
+    <value>Structured type '{0}' was not created as a SqlTableType.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_NoTypeSpecified" xml:space="preserve">
+    <value>No type specified for converting to SQL Type '{0}'.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_StringContainsUnicodeCharacters" xml:space="preserve">
+    <value>Could not pass string into SQL type '{0}' as it contains Unicode characters and the SQL type only accepts ASCII characters.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_StringTruncated" xml:space="preserve">
+    <value>Truncating string of length '{0}' characters when converting to SQL type '{1}' which only accepts '{2}' characters.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_UdtTypeNotSupported" xml:space="preserve">
+    <value>UDT type '{0}' is not supported.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_UnicodeCharactersLost" xml:space="preserve">
+    <value>Losing Unicode characters when converting string into SQL type '{0}' as the SQL type only accepts ASCII characters.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_UnsupportedSqlDbType" xml:space="preserve">
+    <value>Unsupported SqlDbType '{0}'.</value>
+  </data>
+  <data name="SqlType_UnknownSqlSystemType" xml:space="preserve">
+    <value>Unknown SQL system type found '{0}', trying NVarChar.</value>
+  </data>
+  <data name="DatabaseElement_GetSqlProgram_DefaultLoadBalanceConnectionNotFound" xml:space="preserve">
+    <value>Could not find a default load balanced connection for the database with id '{0}'.</value>
+  </data>
+  <data name="DatabaseElement_GetSqlProgram_LoadBalanceConnectionNotFound" xml:space="preserve">
+    <value>Could not find a load balanced connection with id '{0}' for the database with id '{1}' for use with the '{2}' SqlProgram.</value>
+  </data>
+  <data name="DatabaseElement_GetSqlProgram_MappingNotSpecified" xml:space="preserve">
+    <value>Must specify a valid mapping for '{0}' parameter on '{1}' program.</value>
+  </data>
+  <data name="Connection_EmptyConnectionString" xml:space="preserve">
+    <value>The supplied connection string cannot be empty.</value>
+  </data>
+  <data name="DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound" xml:space="preserve">
+    <value>The database with id '{0}' could not be found in the configuration.</value>
+  </data>
+  <data name="LoadBalancedConnection_AllStringsZeroWeighted" xml:space="preserve">
+    <value>Must specify at least one connection string, with a weight greater than zero.</value>
+  </data>
+  <data name="LoadBalancedConnection_ConnectionStringCanNotBeNull" xml:space="preserve">
+    <value>Parameter 'connectionString' can not be null</value>
+  </data>
+  <data name="LoadBalancedConnection_ConnectionStringsCanNotBeNull" xml:space="preserve">
+    <value>Parameter 'connectionStrings' can not be null</value>
+  </data>
+  <data name="LoadBalancedConnection_ConnectionStringsNotSet" xml:space="preserve">
+    <value>Must specify a set of connection strings.</value>
+  </data>
+  <data name="LoadBalancedConnection_CreateConnection_NoValidConnectionString" xml:space="preserve">
+    <value>Failed to select a valid connection string from the load balanced collection.</value>
+  </data>
+  <data name="LoadBalancedConnection_NoConnectionStrings" xml:space="preserve">
+    <value>Must specify at least one connection string.</value>
+  </data>
+  <data name="LoadBalancedConnection_ReloadSchemas_SchemasNotIdentical" xml:space="preserve">
+    <value>Connection strings must point to databases with identical schemas.</value>
+  </data>
+  <data name="LoadBalancedConnection_SchemasNotIdentical" xml:space="preserve">
+    <value>Connection strings must point to databases with identical schemas.</value>
+  </data>
+  <data name="LoadBalancedConnection_WeightLessThanZero" xml:space="preserve">
+    <value>The connection string weight must not be less than zero.</value>
+  </data>
+  <data name="SqlProgramCommand_GetParameter_ProgramDoesNotHaveParameter" xml:space="preserve">
+    <value>The SQL Program '{0}' does not have a '{1}' parameter.</value>
+  </data>
+  <data name="SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter" xml:space="preserve">
+    <value>The SQL Program '{0}' does not have a '{1}' parameter.</value>
+  </data>
+  <data name="SqlProgram_ConnectionCanNotBeNull" xml:space="preserve">
+    <value>Parameter 'connection' can not be null</value>
+  </data>
+  <data name="SqlProgram_ConnectionStringCanNotBeNull" xml:space="preserve">
+    <value>Parameter 'connectionString' can not be null</value>
+  </data>
+  <data name="SqlProgram_NameCanNotBeNull" xml:space="preserve">
+    <value>Parameter 'name' can not be null</value>
+  </data>
+  <data name="SqlProgram_Validate_DefinitionsNotFound" xml:space="preserve">
+    <value>The program definitions for '{0}' could not be found.</value>
+  </data>
+  <data name="SqlProgram_Validate_InconsistentProgramDefinitions" xml:space="preserve">
+    <value>Inconsistent program definitions for '{0}' found in different connections.</value>
+  </data>
+  <data name="SqlProgram_NoConnectionSpecified" xml:space="preserve">
+    <value>Must specify a connection.</value>
+  </data>
+  <data name="SqlProgram_NoProgramNameSpecified" xml:space="preserve">
+    <value>Must specify a program name.</value>
+  </data>
+</root>

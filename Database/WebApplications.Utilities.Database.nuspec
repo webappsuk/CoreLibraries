@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
+    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>Provides a set of utilities for easy communication with a SQL Server Database.</summary>
+    <description>$description$</description>
+    <tags>Utility Utilities SqlProgram Database</tags>
+  </metadata>
+  <files>
+    <file src="app.config.transform" target="Content" />
+    <file src="web.config.transform" target="Content" />
+  </files>
+</package>
