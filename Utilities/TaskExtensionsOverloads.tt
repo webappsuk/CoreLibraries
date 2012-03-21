@@ -1,0 +1,141 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ import namespace="System.Text" #> 
+<#
+int maxParameters = 15;
+#>#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// Solution: WebApplications.Utilities 
+// Project: WebApplications.Utilities
+// File: TaskExtensionOverloads.cs
+// 
+// This software, its object code and source code and all modifications made to
+// the same (the “Software”) are, and shall at all times remain, the proprietary
+// information and intellectual property rights of Web Applications (UK) Limited. 
+// You are only entitled to use the Software as expressly permitted by Web
+// Applications (UK) Limited within the Software Customisation and
+// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
+// distribution, licensing, sale, transfer or other use of the Software other than
+// as expressly permitted in the Agreement is expressly forbidden.  Web
+// Applications (UK) Limited reserves its rights to take action against you and
+// your employer in accordance with its contractual and common law rights
+// (including injunctive relief) should you breach the terms of the Agreement or
+// otherwise infringe its copyright or other intellectual property rights in the
+// Software.
+// 
+// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+#endregion
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
+
+namespace WebApplications.Utilities
+{
+    ///<summary>
+    /// Extensions to the reflection namespace.
+    ///</summary>
+    public static partial class TaskExtensions
+    {
+<# 
+StringBuilder typeParams = new StringBuilder("<");
+StringBuilder typeComments = new StringBuilder();
+StringBuilder paramsComments = new StringBuilder();
+StringBuilder paramsWithType = new StringBuilder();
+StringBuilder paramsWithoutType = new StringBuilder("(");
+for (int i = 0; i < maxParameters; i++) { #>
+		
+		#region <#= i #> parameters.
+        /// <summary>
+        /// Converts APM to TPL, but supports cancellation.
+        /// </summary><#= typeComments #>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="beginMethod">The begin method.</param>
+        /// <param name="endMethod">The end method.</param><#= paramsComments #>
+        /// <param name="asyncState">State of the async.</param>
+        /// <param name="cancellationMethod">The cancellation method.</param>
+        /// <param name="creationOptions">The creation options.</param>
+        /// <param name="scheduler">The scheduler.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        [UsedImplicitly]
+        public static Task<TResult> FromAsync<#= typeParams #>TResult>(
+            [NotNull]this Func<#= typeParams #>AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,<#= paramsWithType #>
+            object asyncState = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            TaskCreationOptions creationOptions = TaskCreationOptions.None,
+            [CanBeNull]TaskScheduler scheduler = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // ReSharper disable AssignNullToNotNullAttribute
+            return beginMethod<#= paramsWithoutType #>null, asyncState)
+                .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
+                           cancellationToken);
+            // ReSharper restore AssignNullToNotNullAttribute
+        }
+		#endregion
+<# 
+	typeParams.Append(string.Format("TArg{0}, ", (i+1)));
+	typeComments.Append(string.Format("{0}        /// <typeparam name=\"TArg{1}\">The type of argument {1}.</typeparam>",
+		Environment.NewLine,
+		(i+1)));
+	paramsComments.Append(string.Format("{0}        /// <param name=\"arg{1}\">Argument {1} of the begin call.</param>",
+		Environment.NewLine,
+		(i+1)));
+	paramsWithType.Append(string.Format("{0}            TArg{1} arg{1},",
+		Environment.NewLine,
+		(i+1)));
+	paramsWithoutType.Append(string.Format("arg{0}, ", (i+1)));
+} #>
+/*
+
+        /// <summary>
+        /// Converts APM to TPL, but supports cancellation.
+        /// </summary>
+        /// <typeparam name="TArg1">The type of argument 1.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="beginMethod">The begin method.</param>
+        /// <param name="endMethod">The end method.</param>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="callback">The callback.</param>
+        /// <param name="asyncState">State of the async.</param>
+        /// <param name="cancellationMethod">The cancellation method.</param>
+        /// <param name="creationOptions">The creation options.</param>
+        /// <param name="scheduler">The scheduler.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        [UsedImplicitly]
+        public static Task<TResult> FromAsync<TArg1, TResult>([NotNull]this Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
+            TArg1 arg1,
+            AsyncCallback callback,
+            object asyncState,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
+            TaskCreationOptions creationOptions = TaskCreationOptions.None,
+            [CanBeNull]TaskScheduler scheduler = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // ReSharper disable AssignNullToNotNullAttribute
+            return beginMethod(arg1, callback, asyncState)
+                .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
+                           cancellationToken);
+            // ReSharper restore AssignNullToNotNullAttribute
+        }
+*/
+	}
+}
+ 
+<#+
+  // Insert any template procedures here
+#>

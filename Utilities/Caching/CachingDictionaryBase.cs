@@ -1,0 +1,478 @@
+﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// Solution: WebApplications.Utilities 
+// Project: WebApplications.Utilities
+// File: CachingDictionaryBase.cs
+// 
+// This software, its object code and source code and all modifications made to
+// the same (the “Software”) are, and shall at all times remain, the proprietary
+// information and intellectual property rights of Web Applications (UK) Limited. 
+// You are only entitled to use the Software as expressly permitted by Web
+// Applications (UK) Limited within the Software Customisation and
+// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
+// distribution, licensing, sale, transfer or other use of the Software other than
+// as expressly permitted in the Agreement is expressly forbidden.  Web
+// Applications (UK) Limited reserves its rights to take action against you and
+// your employer in accordance with its contractual and common law rights
+// (including injunctive relief) should you breach the terms of the Agreement or
+// otherwise infringe its copyright or other intellectual property rights in the
+// Software.
+// 
+// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+#endregion
+
+using System;
+using WebApplications.Utilities.Interfaces.Caching;
+
+namespace WebApplications.Utilities.Caching
+{
+    /// <summary>
+    ///   Implements core functionality for caching classes.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TValue">The type of the values.</typeparam>
+    public abstract class CachingDictionaryBase<TKey, TValue> : ICaching<TKey, TValue>
+    {
+        private TimeSpan _defaultAbsoluteExpiration = TimeSpan.MaxValue;
+
+        private TimeSpan _defaultSlidingExpiration = TimeSpan.Zero;
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="CachingDictionaryBase{TKey,TValue}"/> class.
+        /// </summary>
+        protected CachingDictionaryBase()
+        {
+            DefaultAbsoluteExpiration = TimeSpan.MaxValue;
+            DefaultSlidingExpiration = TimeSpan.MaxValue;
+        }
+
+        #region ICaching<TKey,TValue> Members
+        /// <summary>
+        ///   Gets or sets the default absolute expiration.
+        /// </summary>
+        public TimeSpan DefaultAbsoluteExpiration
+        {
+            get { return _defaultAbsoluteExpiration; }
+            set
+            {
+                if (_defaultAbsoluteExpiration == value)
+                    return;
+
+                if (value != TimeSpan.MaxValue)
+                    _defaultSlidingExpiration = TimeSpan.Zero;
+
+                _defaultAbsoluteExpiration = value;
+            }
+        }
+
+        /// <summary>
+        ///   Gets or sets the default sliding expiration.
+        /// </summary>
+        public TimeSpan DefaultSlidingExpiration
+        {
+            get { return _defaultSlidingExpiration; }
+            set
+            {
+                if (_defaultSlidingExpiration == value)
+                    return;
+
+                if (value != TimeSpan.MaxValue)
+                    _defaultAbsoluteExpiration = TimeSpan.MaxValue;
+
+                _defaultSlidingExpiration = value;
+            }
+        }
+
+        /// <summary>
+        ///   Checks whether an entry with the specified key currently exists within the cache.
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <returns>
+        ///   Returns <see langword="true"/> if the cache contains an entry with the same key value as <paramref name="key"/>;
+        ///   otherwise <see langword="false"/>.
+        /// </returns>
+        public abstract bool ContainsKey(TKey key);
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key and value
+        ///   (if an entry doesn't already exist otherwise the existing value is returned).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to cache the value of.</param>
+        /// <returns>
+        ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public virtual TValue GetOrAdd(TKey key, TValue value)
+        {
+            return GetOrAdd(key, value, AbsoluteExpiration(), DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key and value along with the absolute expiration
+        ///   (if an entry doesn't already exist otherwise the existing value is returned).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to cache the value of.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <returns>
+        /// Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public TValue GetOrAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration)
+        {
+            return GetOrAdd(key, value, absoluteExpiration, DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key and value along with the sliding expiration
+        ///   (if an entry doesn't already exist otherwise the existing value is returned).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to cache the value of.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public TValue GetOrAdd(TKey key, TValue value, TimeSpan slidingExpiration)
+        {
+            return GetOrAdd(key, value, AbsoluteExpiration(), slidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key and a factory to create the value
+        ///   (if an entry doesn't already exist otherwise the existing value is returned).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="addValueFactory">Used to create the value we want to cache.</param>
+        /// <returns>
+        ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public TValue GetOrAdd(TKey key, Func<TKey, TValue> addValueFactory)
+        {
+            return GetOrAdd(key, addValueFactory, AbsoluteExpiration(), DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key, the factory to create the value and the absolute expiration
+        ///   (if an entry doesn't already exist otherwise the existing value is returned).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="addValueFactory">Used to create the value we want to cache.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <returns>
+        ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public TValue GetOrAdd(TKey key, Func<TKey, TValue> addValueFactory, DateTimeOffset absoluteExpiration)
+        {
+            return GetOrAdd(key, addValueFactory, absoluteExpiration, DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key, the factory to create the value and the sliding expiration
+        ///   (if an entry doesn't already exist otherwise the existing value is returned).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="addValueFactory">Used to create the value we want to cache.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public TValue GetOrAdd(TKey key, Func<TKey, TValue> addValueFactory, TimeSpan slidingExpiration)
+        {
+            return GetOrAdd(key, addValueFactory, AbsoluteExpiration(), slidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key and value
+        ///   (if an entry doesn't already exist otherwise the existing value is updated).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to either insert or update the existing value with.</param>
+        /// <returns>
+        ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public TValue AddOrUpdate(TKey key, TValue value)
+        {
+            return AddOrUpdate(key, value, AbsoluteExpiration(), DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key, value and absolute expiration
+        ///   (if an entry doesn't already exist otherwise the existing value is updated).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to either insert or update the existing value with.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <returns>
+        ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public TValue AddOrUpdate(TKey key, TValue value, DateTimeOffset absoluteExpiration)
+        {
+            return AddOrUpdate(key, value, absoluteExpiration, DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key, value and sliding expiration
+        ///   (if an entry doesn't already exist otherwise the existing value is updated).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to either insert or update the existing value with.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public TValue AddOrUpdate(TKey key, TValue value, TimeSpan slidingExpiration)
+        {
+            return AddOrUpdate(key, value, AbsoluteExpiration(), slidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key and the add/update factories
+        ///   (if an entry doesn't already exist otherwise the existing value is updated).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="addValueFactory">Used to create the value that we want to cache.</param>
+        /// <param name="updateValueFactory">Used to update the value if it's already cached.</param>
+        /// <returns>
+        ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public TValue AddOrUpdate(
+            TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+        {
+            return AddOrUpdate(
+                key, addValueFactory, updateValueFactory, AbsoluteExpiration(), DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the key, the add/update factories and the absolute expiration values specified
+        ///   (if an entry doesn't already exist otherwise the existing value is updated).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="addValueFactory">Used to create the value that we want to cache.</param>
+        /// <param name="updateValueFactory">Used to update the value if it's already cached.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <returns>
+        ///   Either the inserted or updated value depending on whether or not there's already an existing entry with the same key.
+        /// </returns>
+        public TValue AddOrUpdate(
+            TKey key,
+            Func<TKey, TValue> addValueFactory,
+            Func<TKey, TValue, TValue> updateValueFactory,
+            DateTimeOffset absoluteExpiration)
+        {
+            return AddOrUpdate(
+                key, addValueFactory, updateValueFactory, absoluteExpiration, DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the key, the add/update factories and the sliding expiration values specified
+        ///   (if an entry doesn't already exist otherwise the existing value is updated).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="addValueFactory">Used to calculate the value we want to cache.</param>
+        /// <param name="updateValueFactory">Used to update the value if it's already cached.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        ///   Either the inserted or updated value depending on whether or not there's already an existing entry in the cache
+        ///   with the same key as <paramref name="key"/>.
+        /// </returns>
+        public TValue AddOrUpdate(
+            TKey key,
+            Func<TKey, TValue> addValueFactory,
+            Func<TKey, TValue, TValue> updateValueFactory,
+            TimeSpan slidingExpiration)
+        {
+            return AddOrUpdate(
+                key, addValueFactory, updateValueFactory, AbsoluteExpiration(), slidingExpiration);
+        }
+
+        /// <summary>
+        ///   Tries to retrieve the value using the specified key.
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The value retrieved.</param>
+        /// <returns>
+        ///   Returns <see langword="true"/> if the corresponding <paramref name="key"/> exists and the value was successfully retrieved;
+        ///   otherwise <see langword="false"/>.
+        /// </returns>
+        public abstract bool TryGetValue(TKey key, out TValue value);
+
+        /// <summary>
+        ///   Tries to remove an entry using the specified key.
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The value removed.</param>
+        /// <returns>
+        ///   Returns <see langword="true"/> if the corresponding <paramref name="key"/> exists and the value was successfully removed;
+        ///   otherwise <see langword="false"/>.
+        /// </returns>
+        public abstract bool TryRemove(TKey key, out TValue value);
+
+        /// <summary>
+        ///   Tries to insert an entry into the cache using the specified key and value.
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to cache.</param>
+        /// <returns>
+        ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
+        /// </returns>
+        public bool TryAdd(TKey key, TValue value)
+        {
+            return TryAdd(key, value, AbsoluteExpiration(), DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Tries to insert an entry into the cache using the specified key, value and absolute expiration.
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to cache.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <returns>
+        ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
+        /// </returns>
+        public bool TryAdd(TKey key, TValue value, DateTimeOffset absoluteExpiration)
+        {
+            return TryAdd(key, value, absoluteExpiration, DefaultSlidingExpiration);
+        }
+
+        /// <summary>
+        ///   Tries to insert an entry into the cache using the specified key, value and sliding expiration.
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to cache.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        /// Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
+        /// </returns>
+        public bool TryAdd(TKey key, TValue value, TimeSpan slidingExpiration)
+        {
+            return TryAdd(key, value, AbsoluteExpiration(), slidingExpiration);
+        }
+
+        /// <summary>
+        ///   Clears the cache.
+        /// </summary>
+        public abstract void Clear();
+        #endregion
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key, the value, the absolute expiration and the sliding expiration
+        ///   (if an entry doesn't already exist otherwise the existing value is returned).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public abstract TValue GetOrAdd(
+            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration);
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key, the factory to create the value, the absolute expiration
+        ///   and the sliding expiration (if an entry doesn't already exist otherwise the existing value is returned).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="addValueFactory">Used to create the value we want to cache.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public virtual TValue GetOrAdd(
+            TKey key,
+            Func<TKey, TValue> addValueFactory,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration)
+        {
+            TValue value;
+            return TryGetValue(key, out value)
+                       ? value
+                       : GetOrAdd(key, addValueFactory(key), absoluteExpiration, slidingExpiration);
+        }
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key, value, absolute expiration and sliding expiration
+        ///   (if an entry doesn't already exist otherwise the existing value is updated).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to either insert or update the existing value with.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public abstract TValue AddOrUpdate(
+            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration);
+
+        /// <summary>
+        ///   Inserts a new entry into the cache using the specified key and the add/update factories
+        ///   (if an entry doesn't already exist otherwise the existing value is updated).
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="addValueFactory">Used to create the value that we want to cache.</param>
+        /// <param name="updateValueFactory">Used to update the value if it's already cached.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
+        /// </returns>
+        public virtual TValue AddOrUpdate(
+            TKey key,
+            Func<TKey, TValue> addValueFactory,
+            Func<TKey, TValue, TValue> updateValueFactory,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration)
+        {
+            TValue value;
+            // Call factory outside of lock, and pass into standard AddOrUpdate
+            return AddOrUpdate(
+                key,
+                TryGetValue(key, out value) ? updateValueFactory(key, value) : addValueFactory(key),
+                absoluteExpiration,
+                slidingExpiration);
+        }
+
+        /// <summary>
+        ///   Tries to insert an entry into the cache using the specified key, value, absolute expiration and sliding expiration.
+        /// </summary>
+        /// <param name="key">The unique identifier for the cache entry.</param>
+        /// <param name="value">The object to cache.</param>
+        /// <param name="absoluteExpiration">Sets when the cache entry will be expired.</param>
+        /// <param name="slidingExpiration">
+        ///   The duration to wait before expiring the cache (if no requests are made for it during that period).
+        /// </param>
+        /// <returns>
+        ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
+        /// </returns>
+        public abstract bool TryAdd(
+            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration);
+
+        /// <summary>
+        ///   Calculate the default absolute expiration.
+        /// </summary>
+        private DateTimeOffset AbsoluteExpiration()
+        {
+            return DefaultAbsoluteExpiration < TimeSpan.MaxValue
+                       ? DateTimeOffset.Now.Add(DefaultAbsoluteExpiration)
+                       : DateTimeOffset.MaxValue;
+        }
+    }
+}

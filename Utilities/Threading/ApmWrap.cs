@@ -1,0 +1,317 @@
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
+using JetBrains.Annotations;
+
+namespace WebApplications.Utilities.Threading
+{
+    /// <summary>
+    ///   A light-weight struct with the ability to associate an arbitrary piece of data of type T with any
+    ///   <see cref="IAsyncResult"/> object. When the asynchronous operation completes this data can be retrieved
+    ///   to complete processing.
+    /// </summary>
+    /// <typeparam name="T">The type of the data to embed.</typeparam>
+    /// <remarks>
+    ///   <para>This is typically used when you are implementing code that wraps an asynchronous operation and you
+    ///   wish to add some context or state of your own to complete the wrapping.</para>
+    ///   <para>Based on Jeff Ritcher's wintellect threading libraries.</para>
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential), DebuggerStepThrough]
+    [UsedImplicitly]
+    public struct ApmWrap<T>
+    {
+        /// <summary>
+        ///   Returns a <see cref="bool"/> value indicating whether this instance and the specified
+        ///   <see cref="T:WebApplications.Utilities.Threading.ApmWrap`1">ApmWrap</see> object are equal.
+        /// </summary>
+        /// <param name="value">The ApmWrap object to compare to this instance.</param>
+        /// <returns>
+        ///   Returns <see langword="true"/> if <paramref name="value"/> is equal to this instance; otherwise returns <see langword="false"/>.
+        /// </returns>
+        [UsedImplicitly]
+        public bool Equals(ApmWrap<T> value)
+        {
+            return this.SyncContext.Equals(value.SyncContext);
+        }
+
+        /// <summary>
+        ///   Returns a <see cref="bool"/> value indicating whether this instance and the specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare to this instance.</param>
+        /// <returns>
+        ///   Returns <see langword="true"/> if the value of the <paramref name="obj"/> is equal to this instance; otherwise returns <see langword="false"/>.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            return ((obj is ApmWrap<T>) && this.Equals((ApmWrap<T>)obj));
+        }
+
+        /// <summary>
+        ///   Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer hash code for this instance.</returns>
+        /// <remarks>Suitable for use in hashing algorithms and also for data structures like a hash table.</remarks>
+        /// <seealso cref="System.Object.GetHashCode"/>
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        /// <summary>
+        ///   <para>Implements the operator ==.</para>
+        ///   <para>Returns a <see cref="bool"/> indicating whether two instances of
+        ///   <see cref="T:WebApplications.Utilities.Threading.ApmWrap`1">ApmWrap</see> are equal.</para>
+        /// </summary>
+        /// <param name="obj1">The first ApmWrap object to compare.</param>
+        /// <param name="obj2">The second ApmWrap object to compare.</param>
+        public static bool operator ==(ApmWrap<T> obj1, ApmWrap<T> obj2)
+        {
+            return obj1.Equals(obj2);
+        }
+
+        /// <summary>
+        ///   <para>Implements the operator !=.</para>
+        ///   <para>Returns a <see cref="bool"/> indicating whether two instances of
+        ///   <see cref="T:WebApplications.Utilities.Threading.ApmWrap`1">ApmWrap</see> are <b>not</b> equal.</para>
+        /// </summary>
+        /// <param name="obj1">The first ApmWrap object to compare.</param>
+        /// <param name="obj2">The second ApmWrap object to compare.</param>
+        public static bool operator !=(ApmWrap<T> obj1, ApmWrap<T> obj2)
+        {
+            return !obj1.Equals(obj2);
+        }
+
+        /// <summary>
+        ///   If the SyncContext is a non-null value when creating an ApmWrap object then the ApmWrap object will force the
+        ///   operation to complete using the specified <see cref="SynchronizationContext"/>.
+        /// </summary>
+        [UsedImplicitly]
+        private SynchronizationContext SyncContext { get; set; }
+
+        /// <summary>
+        ///   Creates an ApmWrap object around a callback method.
+        /// </summary>
+        /// <param name="data">The data to embed in the ApmWrap object.</param>
+        /// <param name="callback">The callback method that should be invoked when the operation completes.</param>
+        /// <returns>An ApmWrap object's completion method.</returns>
+        [UsedImplicitly]
+        [NotNull]
+        public AsyncCallback CreateCallback([NotNull] AsyncCallback callback, T data)
+        {
+            return WrapCallback(callback, data, SyncContext);
+        }
+
+        /// <summary>
+        ///   Creates an ApmWrap object around a callback method.
+        /// </summary>
+        /// <param name="data">The data to embed.</param>
+        /// <param name="callback">
+        ///   <para>The callback method.</para>
+        ///   <para>This is called once the asynchronous operation completes.</para>
+        /// </param>
+        /// <param name="syncContext">The <see cref="SynchronizationContext"/>.</param>
+        /// <returns>
+        ///   The internal callback stored within the created ApmWrap object.
+        ///   A <see langword="null"/> is returned if the <paramref name="callback"/> is null.
+        /// </returns>
+        [UsedImplicitly]
+        [NotNull]
+        public static AsyncCallback WrapCallback([NotNull] AsyncCallback callback, T data, SynchronizationContext syncContext = null)
+        {
+            if (callback == null)
+                return null;
+
+            ApmWrapper wrapper = new ApmWrapper
+            {
+                Data = data,
+                AsyncCallback = callback,
+                SyncContext = syncContext
+            };
+            return wrapper.AsyncCallbackInternal;
+        }
+
+        /// <summary>
+        ///   Creates an ApmWrap object around an asynchronous operation.
+        /// </summary>
+        /// <param name="data">The data to embed in the ApmWrap object.</param>
+        /// <param name="result">The original IAsyncResult object returned from the BeginXXX method.</param>
+        /// <returns>
+        ///   An ApmWrap object that contains the originally-returned <see cref="IAsyncResult"/> object.
+        /// </returns>
+        [UsedImplicitly]
+        [NotNull]
+        public static IAsyncResult Wrap([NotNull] IAsyncResult result, T data)
+        {
+            return new ApmWrapper { Data = data, AsyncResult = result };
+        }
+
+        /// <summary>
+        ///   Unwraps an ApmWrap object and also retrieves the embedded data.
+        /// </summary>
+        /// <param name="result">
+        ///   The <see langword="ref">reference</see> to the wrapped IAsyncResult object.
+        /// </param>
+        /// <returns>The embedded data.</returns>
+        [UsedImplicitly]
+        public static T Unwrap([NotNull] ref IAsyncResult result)
+        {
+            ApmWrapper apmWrap = (ApmWrapper)result;
+            result = apmWrap.AsyncResult;
+            return apmWrap.Data;
+        }
+
+        /// <summary>
+        ///   Represents the actual wrapper.
+        /// </summary>
+        [DebuggerStepThrough]
+        private sealed class ApmWrapper : IAsyncResult
+        {
+            /// <summary>
+            ///   Initializes a new instance of the <see cref="ApmWrapper"/> class.
+            /// </summary>
+            [UsedImplicitly]
+            internal ApmWrapper()
+            {
+            }
+
+            /// <summary>
+            ///   The internal callback.
+            /// </summary>
+            /// <param name="result">The status of the asynchronous operation.</param>
+            internal void AsyncCallbackInternal(IAsyncResult result)
+            {
+                this.AsyncResult = result;
+                if (this.SyncContext == null)
+                {
+                    this.AsyncCallback(this);
+                }
+                else
+                {
+                    this.SyncContext.Post(PostCallback, this);
+                }
+            }
+
+            /// <summary>
+            ///   Determines whether the specified <see cref="object"/> is equal to this instance.
+            /// </summary>
+            /// <param name="obj">The object to compare with the current instance.</param>
+            /// <returns>
+            ///   Returns <see langword="true"/> if the specified <see cref="object"/> is equal to this instance; otherwise returns <see langword="false"/>.
+            /// </returns>
+            public override bool Equals(object obj)
+            {
+                return this.AsyncResult.Equals(obj);
+            }
+
+            /// <summary>
+            ///   Returns a hash code for this instance.
+            /// </summary>
+            /// <returns>A 32-bit signed integer hash code for this instance.</returns>
+            /// <remarks>Suitable for use in hashing algorithms and also for data structures like a hash table.</remarks>
+            /// <seealso cref="System.Object.GetHashCode"/>
+            public override int GetHashCode()
+            {
+                return this.AsyncResult.GetHashCode();
+            }
+
+            /// <summary>
+            ///   Posts the callback.
+            /// </summary>
+            /// <param name="state">The object passed to the delegate.</param>
+            private static void PostCallback(object state)
+            {
+                ApmWrapper apmWrap = (ApmWrapper)state;
+                if (apmWrap != null)
+                    apmWrap.AsyncCallback(apmWrap);
+            }
+
+            /// <summary>
+            ///   Returns a <see cref="string"/> that represents this instance.
+            /// </summary>
+            /// <returns>A <see cref="string"/> representation of the instance.</returns>
+            public override string ToString()
+            {
+                return this.AsyncResult.ToString();
+            }
+
+            /// <summary>
+            ///   Gets or sets the <see cref="AsyncCallback">async callback</see>.
+            /// </summary>
+            /// <remarks>This is the method to call when the asynchronous operation has completed.</remarks>
+            [UsedImplicitly]
+            internal AsyncCallback AsyncCallback { get; set; }
+
+            /// <summary>
+            ///   Gets or sets the <see cref="IAsyncResult">status</see> of the asynchronous operation.
+            /// </summary>
+            internal IAsyncResult AsyncResult { get; set; }
+
+            /// <summary>
+            ///   Gets a user-defined object that qualifies or contains information about an asynchronous operation.
+            /// </summary>
+            /// <seealso cref="IAsyncResult.AsyncState"/>
+            public object AsyncState
+            {
+                get
+                {
+                    return this.AsyncResult.AsyncState;
+                }
+            }
+
+            /// <summary>
+            ///   Gets a <see cref="System.Threading.WaitHandle"/> which is used to wait for an asynchronous operation to complete.
+            /// </summary>
+            /// <returns>A wait handle that is used to wait for an asynchronous operation to complete.</returns>
+            public WaitHandle AsyncWaitHandle
+            {
+                get
+                {
+                    return this.AsyncResult.AsyncWaitHandle;
+                }
+            }
+
+            /// <summary>
+            ///   Gets a <see cref="bool"/> value indicating whether the asynchronous operation completed synchronously.
+            /// </summary>
+            /// <returns>
+            ///   Returns <see langword="true"/> if the asynchronous operation completed synchronously; otherwise returns <see langword="false"/>.
+            /// </returns>
+            public bool CompletedSynchronously
+            {
+                get
+                {
+                    return this.AsyncResult.CompletedSynchronously;
+                }
+            }
+
+            /// <summary>
+            ///   Gets or sets the data to embed.
+            /// </summary>
+            /// <value>The data embedded in the result object.</value>
+            internal T Data { get; set; }
+
+            /// <summary>
+            ///   Gets a <see cref="bool"/> value that indicates whether the asynchronous operation has completed.
+            /// </summary>
+            /// <value>Returns <see langword="true"/> if the operation is complete; otherwise returns <see langword="false"/>.</value>
+            public bool IsCompleted
+            {
+                get
+                {
+                    return this.AsyncResult.IsCompleted;
+                }
+            }
+
+            /// <summary>
+            ///   Gets or sets the <see cref="SynchronizationContext">synchronization context</see>.
+            /// </summary>
+            /// <value>The synchronization context.</value>
+            /// <remarks>
+            ///   The synchronization context allows you to queue a unit of work to a specific context.
+            /// </remarks>
+            [UsedImplicitly]
+            internal SynchronizationContext SyncContext { get; set; }
+        }
+    }
+}

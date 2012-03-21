@@ -1,0 +1,654 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AED" xml:space="preserve">
+    <value>784,3,United Arab Emirates dirham</value>
+  </data>
+  <data name="AFN" xml:space="preserve">
+    <value>971,2,Afghani</value>
+  </data>
+  <data name="ALL" xml:space="preserve">
+    <value>8,2,Lek</value>
+  </data>
+  <data name="AMD" xml:space="preserve">
+    <value>51,2,Armenian dram</value>
+  </data>
+  <data name="ANG" xml:space="preserve">
+    <value>532,2,Netherlands Antillean guilder</value>
+  </data>
+  <data name="AOA" xml:space="preserve">
+    <value>973,2,Kwanza</value>
+  </data>
+  <data name="ARS" xml:space="preserve">
+    <value>32,2,Argentine peso</value>
+  </data>
+  <data name="AUD" xml:space="preserve">
+    <value>36,2,Australian dollar</value>
+  </data>
+  <data name="AWG" xml:space="preserve">
+    <value>533,2,Aruban guilder</value>
+  </data>
+  <data name="AZN" xml:space="preserve">
+    <value>944,2,Azerbaijanian manat</value>
+  </data>
+  <data name="BAM" xml:space="preserve">
+    <value>977,2,Convertible marks</value>
+  </data>
+  <data name="BBD" xml:space="preserve">
+    <value>52,2,Barbados dollar</value>
+  </data>
+  <data name="BDT" xml:space="preserve">
+    <value>50,2,Bangladeshi taka</value>
+  </data>
+  <data name="BGN" xml:space="preserve">
+    <value>975,2,Bulgarian lev</value>
+  </data>
+  <data name="BHD" xml:space="preserve">
+    <value>48,3,Bahraini dinar</value>
+  </data>
+  <data name="BIF" xml:space="preserve">
+    <value>108,0,Burundian franc</value>
+  </data>
+  <data name="BMD" xml:space="preserve">
+    <value>60,2,Bermudian dollar (customarily known as Bermuda dollar)</value>
+  </data>
+  <data name="BND" xml:space="preserve">
+    <value>96,2,Brunei dollar</value>
+  </data>
+  <data name="BOB" xml:space="preserve">
+    <value>68,2,Boliviano</value>
+  </data>
+  <data name="BOV" xml:space="preserve">
+    <value>984,2,Bolivian Mvdol (funds code)</value>
+  </data>
+  <data name="BRL" xml:space="preserve">
+    <value>986,2,Brazilian real</value>
+  </data>
+  <data name="BSD" xml:space="preserve">
+    <value>44,2,Bahamian dollar</value>
+  </data>
+  <data name="BTN" xml:space="preserve">
+    <value>64,2,Ngultrum</value>
+  </data>
+  <data name="BWP" xml:space="preserve">
+    <value>72,2,Pula</value>
+  </data>
+  <data name="BYR" xml:space="preserve">
+    <value>974,0,Belarussian ruble</value>
+  </data>
+  <data name="BZD" xml:space="preserve">
+    <value>84,2,Belize dollar</value>
+  </data>
+  <data name="CAD" xml:space="preserve">
+    <value>124,2,Canadian dollar</value>
+  </data>
+  <data name="CDF" xml:space="preserve">
+    <value>976,2,Franc Congolais</value>
+  </data>
+  <data name="CHE" xml:space="preserve">
+    <value>947,2,WIR euro (complementary currency)</value>
+  </data>
+  <data name="CHF" xml:space="preserve">
+    <value>756,2,Swiss franc</value>
+  </data>
+  <data name="CHW" xml:space="preserve">
+    <value>948,2,WIR franc (complementary currency)</value>
+  </data>
+  <data name="CLF" xml:space="preserve">
+    <value>990,0,Unidad de Fomento (funds code)</value>
+  </data>
+  <data name="CLP" xml:space="preserve">
+    <value>152,2,Chilean peso</value>
+  </data>
+  <data name="CNY" xml:space="preserve">
+    <value>156,2,Renminbi</value>
+  </data>
+  <data name="COP" xml:space="preserve">
+    <value>170,2,Colombian peso</value>
+  </data>
+  <data name="COU" xml:space="preserve">
+    <value>970,2,Unidad de Valor Real</value>
+  </data>
+  <data name="CRC" xml:space="preserve">
+    <value>188,2,Costa Rican colon</value>
+  </data>
+  <data name="CUP" xml:space="preserve">
+    <value>192,2,Cuban peso</value>
+  </data>
+  <data name="CVE" xml:space="preserve">
+    <value>132,2,Cape Verde escudo</value>
+  </data>
+  <data name="CZK" xml:space="preserve">
+    <value>203,2,Czech koruna</value>
+  </data>
+  <data name="DJF" xml:space="preserve">
+    <value>262,0,Djibouti franc</value>
+  </data>
+  <data name="DKK" xml:space="preserve">
+    <value>208,2,Danish krone</value>
+  </data>
+  <data name="DOP" xml:space="preserve">
+    <value>214,2,Dominican peso</value>
+  </data>
+  <data name="DZD" xml:space="preserve">
+    <value>12,2,Algerian dinar</value>
+  </data>
+  <data name="EEK" xml:space="preserve">
+    <value>233,2,Kroon</value>
+  </data>
+  <data name="EGP" xml:space="preserve">
+    <value>818,2,Egyptian pound</value>
+  </data>
+  <data name="ERN" xml:space="preserve">
+    <value>232,2,Nakfa</value>
+  </data>
+  <data name="ETB" xml:space="preserve">
+    <value>230,2,Ethiopian birr</value>
+  </data>
+  <data name="EUR" xml:space="preserve">
+    <value>978,2,Euro</value>
+  </data>
+  <data name="FJD" xml:space="preserve">
+    <value>242,2,Fiji dollar</value>
+  </data>
+  <data name="FKP" xml:space="preserve">
+    <value>238,2,Falkland Islands pound</value>
+  </data>
+  <data name="GBP" xml:space="preserve">
+    <value>826,2,Pound sterling</value>
+  </data>
+  <data name="GEL" xml:space="preserve">
+    <value>981,2,Lari</value>
+  </data>
+  <data name="GHS" xml:space="preserve">
+    <value>936,2,Cedi</value>
+  </data>
+  <data name="GIP" xml:space="preserve">
+    <value>292,2,Gibraltar pound</value>
+  </data>
+  <data name="GMD" xml:space="preserve">
+    <value>270,2,Dalasi</value>
+  </data>
+  <data name="GNF" xml:space="preserve">
+    <value>324,0,Guinea franc</value>
+  </data>
+  <data name="GTQ" xml:space="preserve">
+    <value>320,2,Quetzal</value>
+  </data>
+  <data name="GYD" xml:space="preserve">
+    <value>328,2,Guyana dollar</value>
+  </data>
+  <data name="HKD" xml:space="preserve">
+    <value>344,2,Hong Kong dollar</value>
+  </data>
+  <data name="HNL" xml:space="preserve">
+    <value>340,2,Lempira</value>
+  </data>
+  <data name="HRK" xml:space="preserve">
+    <value>191,2,Croatian kuna</value>
+  </data>
+  <data name="HTG" xml:space="preserve">
+    <value>332,2,Haiti gourde</value>
+  </data>
+  <data name="HUF" xml:space="preserve">
+    <value>348,2,Forint</value>
+  </data>
+  <data name="IDR" xml:space="preserve">
+    <value>360,2,Rupiah</value>
+  </data>
+  <data name="ILS" xml:space="preserve">
+    <value>376,2,Israeli new sheqel</value>
+  </data>
+  <data name="INR" xml:space="preserve">
+    <value>356,2,Indian rupee</value>
+  </data>
+  <data name="IQD" xml:space="preserve">
+    <value>368,3,Iraqi dinar</value>
+  </data>
+  <data name="IRR" xml:space="preserve">
+    <value>364,2,Iranian rial</value>
+  </data>
+  <data name="ISK" xml:space="preserve">
+    <value>352,0,Iceland krona</value>
+  </data>
+  <data name="JMD" xml:space="preserve">
+    <value>388,2,Jamaican dollar</value>
+  </data>
+  <data name="JOD" xml:space="preserve">
+    <value>400,3,Jordanian dinar</value>
+  </data>
+  <data name="JPY" xml:space="preserve">
+    <value>392,0,Japanese yen</value>
+  </data>
+  <data name="KES" xml:space="preserve">
+    <value>404,2,Kenyan shilling</value>
+  </data>
+  <data name="KGS" xml:space="preserve">
+    <value>417,2,Som</value>
+  </data>
+  <data name="KHR" xml:space="preserve">
+    <value>116,2,Riel</value>
+  </data>
+  <data name="KMF" xml:space="preserve">
+    <value>174,0,Comoro franc</value>
+  </data>
+  <data name="KPW" xml:space="preserve">
+    <value>408,2,North Korean won</value>
+  </data>
+  <data name="KRW" xml:space="preserve">
+    <value>410,0,South Korean won</value>
+  </data>
+  <data name="KWD" xml:space="preserve">
+    <value>414,3,Kuwaiti dinar</value>
+  </data>
+  <data name="KYD" xml:space="preserve">
+    <value>136,2,Cayman Islands dollar</value>
+  </data>
+  <data name="KZT" xml:space="preserve">
+    <value>398,2,Tenge</value>
+  </data>
+  <data name="LAK" xml:space="preserve">
+    <value>418,2,Kip</value>
+  </data>
+  <data name="LBP" xml:space="preserve">
+    <value>422,2,Lebanese pound</value>
+  </data>
+  <data name="LKR" xml:space="preserve">
+    <value>144,2,Sri Lanka rupee</value>
+  </data>
+  <data name="LRD" xml:space="preserve">
+    <value>430,2,Liberian dollar</value>
+  </data>
+  <data name="LSL" xml:space="preserve">
+    <value>426,2,Loti</value>
+  </data>
+  <data name="LTL" xml:space="preserve">
+    <value>440,2,Lithuanian litas</value>
+  </data>
+  <data name="LVL" xml:space="preserve">
+    <value>428,2,Latvian lats</value>
+  </data>
+  <data name="LYD" xml:space="preserve">
+    <value>434,3,Libyan dinar</value>
+  </data>
+  <data name="MAD" xml:space="preserve">
+    <value>504,2,Moroccan dirham</value>
+  </data>
+  <data name="MDL" xml:space="preserve">
+    <value>498,2,Moldovan leu</value>
+  </data>
+  <data name="MGA" xml:space="preserve">
+    <value>969,0.7,Malagasy ariary</value>
+  </data>
+  <data name="MKD" xml:space="preserve">
+    <value>807,2,Denar</value>
+  </data>
+  <data name="MMK" xml:space="preserve">
+    <value>104,2,Kyat</value>
+  </data>
+  <data name="MNT" xml:space="preserve">
+    <value>496,2,Tugrik</value>
+  </data>
+  <data name="MOP" xml:space="preserve">
+    <value>446,2,Pataca</value>
+  </data>
+  <data name="MRO" xml:space="preserve">
+    <value>478,0.7,Ouguiya</value>
+  </data>
+  <data name="MUR" xml:space="preserve">
+    <value>480,2,Mauritius rupee</value>
+  </data>
+  <data name="MVR" xml:space="preserve">
+    <value>462,2,Rufiyaa</value>
+  </data>
+  <data name="MWK" xml:space="preserve">
+    <value>454,2,Kwacha</value>
+  </data>
+  <data name="MXN" xml:space="preserve">
+    <value>484,2,Mexican peso</value>
+  </data>
+  <data name="MXV" xml:space="preserve">
+    <value>979,2,Mexican Unidad de Inversion (UDI) (funds code)</value>
+  </data>
+  <data name="MYR" xml:space="preserve">
+    <value>458,2,Malaysian ringgit</value>
+  </data>
+  <data name="MZN" xml:space="preserve">
+    <value>943,2,Metical</value>
+  </data>
+  <data name="NAD" xml:space="preserve">
+    <value>516,2,Namibian dollar</value>
+  </data>
+  <data name="NGN" xml:space="preserve">
+    <value>566,2,Naira</value>
+  </data>
+  <data name="NIO" xml:space="preserve">
+    <value>558,2,Cordoba oro</value>
+  </data>
+  <data name="NOK" xml:space="preserve">
+    <value>578,2,Norwegian krone</value>
+  </data>
+  <data name="NPR" xml:space="preserve">
+    <value>524,2,Nepalese rupee</value>
+  </data>
+  <data name="NZD" xml:space="preserve">
+    <value>554,2,New Zealand dollar</value>
+  </data>
+  <data name="OMR" xml:space="preserve">
+    <value>512,3,Rial Omani</value>
+  </data>
+  <data name="PAB" xml:space="preserve">
+    <value>590,2,Balboa</value>
+  </data>
+  <data name="PEN" xml:space="preserve">
+    <value>604,2,Nuevo sol</value>
+  </data>
+  <data name="PGK" xml:space="preserve">
+    <value>598,2,Kina</value>
+  </data>
+  <data name="PHP" xml:space="preserve">
+    <value>608,2,Philippine peso</value>
+  </data>
+  <data name="PKR" xml:space="preserve">
+    <value>586,2,Pakistan rupee</value>
+  </data>
+  <data name="PLN" xml:space="preserve">
+    <value>985,2,Z?oty</value>
+  </data>
+  <data name="PYG" xml:space="preserve">
+    <value>600,0,Guarani</value>
+  </data>
+  <data name="QAR" xml:space="preserve">
+    <value>634,2,Qatari rial</value>
+  </data>
+  <data name="RON" xml:space="preserve">
+    <value>946,2,Romanian new leu</value>
+  </data>
+  <data name="RSD" xml:space="preserve">
+    <value>941,2,Serbian dinar</value>
+  </data>
+  <data name="RUB" xml:space="preserve">
+    <value>643,2,Russian rouble</value>
+  </data>
+  <data name="RWF" xml:space="preserve">
+    <value>646,0,Rwanda franc</value>
+  </data>
+  <data name="SAR" xml:space="preserve">
+    <value>682,2,Saudi riyal</value>
+  </data>
+  <data name="SBD" xml:space="preserve">
+    <value>90,2,Solomon Islands dollar</value>
+  </data>
+  <data name="SCR" xml:space="preserve">
+    <value>690,2,Seychelles rupee</value>
+  </data>
+  <data name="SDG" xml:space="preserve">
+    <value>938,2,Sudanese pound</value>
+  </data>
+  <data name="SEK" xml:space="preserve">
+    <value>752,2,Swedish krona</value>
+  </data>
+  <data name="SGD" xml:space="preserve">
+    <value>702,2,Singapore dollar</value>
+  </data>
+  <data name="SHP" xml:space="preserve">
+    <value>654,2,Saint Helena pound</value>
+  </data>
+  <data name="SKK" xml:space="preserve">
+    <value>703,2,Slovak koruna</value>
+  </data>
+  <data name="SLL" xml:space="preserve">
+    <value>694,2,Leone</value>
+  </data>
+  <data name="SOS" xml:space="preserve">
+    <value>706,2,Somali shilling</value>
+  </data>
+  <data name="SRD" xml:space="preserve">
+    <value>968,2,Surinam dollar</value>
+  </data>
+  <data name="STD" xml:space="preserve">
+    <value>678,2,Dobra</value>
+  </data>
+  <data name="SYP" xml:space="preserve">
+    <value>760,2,Syrian pound</value>
+  </data>
+  <data name="SZL" xml:space="preserve">
+    <value>748,2,Lilangeni</value>
+  </data>
+  <data name="THB" xml:space="preserve">
+    <value>764,2,Baht</value>
+  </data>
+  <data name="TJS" xml:space="preserve">
+    <value>972,2,Somoni</value>
+  </data>
+  <data name="TMM" xml:space="preserve">
+    <value>795,2,Manat</value>
+  </data>
+  <data name="TND" xml:space="preserve">
+    <value>788,3,Tunisian dinar</value>
+  </data>
+  <data name="TOP" xml:space="preserve">
+    <value>776,2,Pa'anga</value>
+  </data>
+  <data name="TRY" xml:space="preserve">
+    <value>949,2,New Turkish lira</value>
+  </data>
+  <data name="TTD" xml:space="preserve">
+    <value>780,2,Trinidad and Tobago dollar</value>
+  </data>
+  <data name="TWD" xml:space="preserve">
+    <value>901,2,New Taiwan dollar</value>
+  </data>
+  <data name="TZS" xml:space="preserve">
+    <value>834,2,Tanzanian shilling</value>
+  </data>
+  <data name="UAH" xml:space="preserve">
+    <value>980,2,Hryvnia</value>
+  </data>
+  <data name="UGX" xml:space="preserve">
+    <value>800,2,Uganda shilling</value>
+  </data>
+  <data name="USD" xml:space="preserve">
+    <value>840,2,US dollar</value>
+  </data>
+  <data name="USN" xml:space="preserve">
+    <value>997,2,United States dollar (next day) (funds code)</value>
+  </data>
+  <data name="USS" xml:space="preserve">
+    <value>998,2,"United States dollar (same day) (funds code)</value>
+  </data>
+  <data name="UYU" xml:space="preserve">
+    <value>858,2,Peso Uruguayo</value>
+  </data>
+  <data name="UZS" xml:space="preserve">
+    <value>860,2,Uzbekistan som</value>
+  </data>
+  <data name="VEF" xml:space="preserve">
+    <value>937,2,Venezuelan bolívar fuerte</value>
+  </data>
+  <data name="VND" xml:space="preserve">
+    <value>704,2,Vietnamese ??ng</value>
+  </data>
+  <data name="VUV" xml:space="preserve">
+    <value>548,0,Vatu</value>
+  </data>
+  <data name="WST" xml:space="preserve">
+    <value>882,2,Samoan tala</value>
+  </data>
+  <data name="XAF" xml:space="preserve">
+    <value>950,0,CFA franc BEAC</value>
+  </data>
+  <data name="XAG" xml:space="preserve">
+    <value>961,,Silver (one troy ounce)</value>
+  </data>
+  <data name="XAU" xml:space="preserve">
+    <value>959,,Gold (one troy ounce)</value>
+  </data>
+  <data name="XBA" xml:space="preserve">
+    <value>955,,European Composite Unit (EURCO)</value>
+  </data>
+  <data name="XBB" xml:space="preserve">
+    <value>956,,European Monetary Unit (E.M.U.-6)</value>
+  </data>
+  <data name="XBC" xml:space="preserve">
+    <value>957,,European Unit of Account 9 (E.U.A.-9)</value>
+  </data>
+  <data name="XBD" xml:space="preserve">
+    <value>958,,European Unit of Account 17 (E.U.A.-17) </value>
+  </data>
+  <data name="XCD" xml:space="preserve">
+    <value>951,2,East Caribbean dollar</value>
+  </data>
+  <data name="XDR" xml:space="preserve">
+    <value>960,,Special Drawing Rights</value>
+  </data>
+  <data name="XFU" xml:space="preserve">
+    <value>Nil,,UIC franc</value>
+  </data>
+  <data name="XOF" xml:space="preserve">
+    <value>952,0,CFA Franc BCEAO</value>
+  </data>
+  <data name="XPD" xml:space="preserve">
+    <value>964,,Palladium</value>
+  </data>
+  <data name="XPF" xml:space="preserve">
+    <value>953,0,CFP franc</value>
+  </data>
+  <data name="XPT" xml:space="preserve">
+    <value>962,,Platinum</value>
+  </data>
+  <data name="XTS" xml:space="preserve">
+    <value>963,,Code reserved for testing purposes</value>
+  </data>
+  <data name="XXX" xml:space="preserve">
+    <value>999,,No currency</value>
+  </data>
+  <data name="YER" xml:space="preserve">
+    <value>886,2,Yemeni rial</value>
+  </data>
+  <data name="ZAR" xml:space="preserve">
+    <value>710,2,South African rand</value>
+  </data>
+  <data name="ZMK" xml:space="preserve">
+    <value>894,2,Kwacha</value>
+  </data>
+  <data name="ZWD" xml:space="preserve">
+    <value>716,2,Zimbabwe dollar</value>
+  </data>
+</root>

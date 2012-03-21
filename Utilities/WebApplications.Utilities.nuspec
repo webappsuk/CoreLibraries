@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
+    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>The core library of .NET utilities that are commonly required in projects.</summary>
+    <description>$description$</description>
+    <tags>Utility Utilities</tags>
+  </metadata>
+  <files>
+    <file src="WebApplications.PowerShell.Utilities.ps1" target="tools\WebApplications.PowerShell.Utilities.ps1" />
+    <file src="WebApplications.Utilities.PowerShell\bin\Release\WebApplications.Utilities.PowerShell.dll" target="tools\WebApplications.Utilities.PowerShell.dll" />
+    <file src="bin\Release\JetBrains.Annotations.dll" target="tools\JetBrains.Annotations.dll" />
+    <file src="Publish.ps1" target="tools\Publish.ps1" />
+  </files>
+</package>

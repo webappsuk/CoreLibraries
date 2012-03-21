@@ -1,0 +1,402 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CachingQueue_ExpiryTooShort" xml:space="preserve">
+    <value>The cache expiry must be at least 1s.</value>
+  </data>
+  <data name="CachingQueue_MaxEntriesLessThanOne" xml:space="preserve">
+    <value>The maximum entries must be at least 1.</value>
+  </data>
+  <data name="ConfigurationElementCollection_SetElement_KeyMismatch" xml:space="preserve">
+    <value>Cannot set a configuration element collection using a key '{0}' that does not match the configuration element's key '{1}'.</value>
+  </data>
+  <data name="ConstructorConfigurationElement_GetConstructor_CannotFindConstructor" xml:space="preserve">
+    <value>The configuration system could not find a constructor with the relevant parameters when trying to create an object of type '{0}'.</value>
+  </data>
+  <data name="ConstructorConfigurationElement_GetConstructor_ConstructorIsAmbiguous" xml:space="preserve">
+    <value>The configuration system found a number of potential constructor matches when trying to create an object of type '{0}'.</value>
+  </data>
+  <data name="ConstructorConfigurationElement_GetConstructor_CreatedTypeNotAssignable" xml:space="preserve">
+    <value>The configuration system cannot assign the created type '{0}' to the required type '{1}'.</value>
+  </data>
+  <data name="ContextStack_Dispose_CannotCloseCleanerRegion" xml:space="preserve">
+    <value>Cannot close the ContextStack cleaner region on thread '{0}' as it was created on thread '{1}'.</value>
+  </data>
+  <data name="ContextStack_Dispose_CannotCloseRegion" xml:space="preserve">
+    <value>Cannot close the ContextStack region on thread '{0}' as it was created on thread '{1}'.</value>
+  </data>
+  <data name="CultureHelper_CultureInfoCannotBeNull" xml:space="preserve">
+    <value>Parameter 'cultureInfo' can not be null</value>
+  </data>
+  <data name="CultureHelper_CurrencyIsoCannotBeNull" xml:space="preserve">
+    <value>Parameter 'currencyISO' can not be null</value>
+  </data>
+  <data name="CultureHelper_IsoCodeCannotBeNull" xml:space="preserve">
+    <value>Parameter 'isoCode' can not be null</value>
+  </data>
+  <data name="CultureHelper_NameCannotBeNull" xml:space="preserve">
+    <value>Parameter 'name' can not be null</value>
+  </data>
+  <data name="CultureHelper_RegionInfoCannotBeNull" xml:space="preserve">
+    <value>Parameter 'regionInfo' can not be null</value>
+  </data>
+  <data name="CurrencyInfo_CultureInfoCannotBeNull" xml:space="preserve">
+    <value>Parameter 'cultureInfo' can not be null</value>
+  </data>
+  <data name="CurrencyInfo_CurrencyCodeCannotBeNull" xml:space="preserve">
+    <value>Parameter 'currencyCode' can not be null</value>
+  </data>
+  <data name="CurrencyInfo_RegionInfoCannotBeNull" xml:space="preserve">
+    <value>Parameter 'regionInfo' can not be null</value>
+  </data>
+  <data name="CurrencyInfo_ToString" xml:space="preserve">
+    <value>Currency: {0}, Code: {1}, ISO: {2}</value>
+  </data>
+  <data name="DebuggingExtensions_Stopwatch_ToString" xml:space="preserve">
+    <value>{0} completed in {1}ms.</value>
+  </data>
+  <data name="EnhancedMemoryCache_Clear_CannotSafelyFlush" xml:space="preserve">
+    <value>Cannot safely flush the default enhanced memory cache.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_Clear_CouldNotClearFlags" xml:space="preserve">
+    <value>The '{0}' value of the {1} enum does could not be cleared with the value '{2}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_Combine_CouldNotCombineFlags" xml:space="preserve">
+    <value>Could not combine flags of type '{0}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_DoesNotContainName" xml:space="preserve">
+    <value>The {0} enum does not contain the name '{1}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_DoesNotContainRawValue" xml:space="preserve">
+    <value>The {0} enum does not contain the raw value '{1}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_DoesNotContainValue" xml:space="preserve">
+    <value>The {0} enum does not contain the value '{1}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_Intersect_CouldNotIntersectFlags" xml:space="preserve">
+    <value>The '{0}' value of the {1} enum does could not be intersected with the value '{2}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_Invert_CouldNotInvertFlags" xml:space="preserve">
+    <value>The '{0}' value of the {1} enum does could not be inverted.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_Set_CouldNotSetFlags" xml:space="preserve">
+    <value>The '{0}' value of the {1} enum could not be set with the value '{2}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_SplitFlags_CouldNotSplitFlags" xml:space="preserve">
+    <value>Could not split flags '{0}' of type '{1}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_TypeIsFlagEnum" xml:space="preserve">
+    <value>Type {0} is a flag enum.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_TypeIsNotAnEnum" xml:space="preserve">
+    <value>Type {0} is not an enum.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_TypeIsNotFlagEnum" xml:space="preserve">
+    <value>Type {0} is not a flag enum.</value>
+  </data>
+  <data name="ExtendedTuple_CannotCastItemAtIndex" xml:space="preserve">
+    <value>Cannot cast item at index {0} of Tuple from type {1} to type {2}.</value>
+  </data>
+  <data name="ExtendedTuple_CouldNotFindProperty" xml:space="preserve">
+    <value>The tuple '{0}' does not have a '{1}' property.</value>
+  </data>
+  <data name="ExtendedTuple_MoreThanEightGenericArguments" xml:space="preserve">
+    <value>The tuple '{0}' has more than 8 generic arguments, which is unsupported.</value>
+  </data>
+  <data name="ExtendedTuple_TypeIsNotValidTuple" xml:space="preserve">
+    <value>The type '{0}' is not a valid tuple type.</value>
+  </data>
+  <data name="Extensions_EmbeddedXml_CouldntLoadEmbeddedResource" xml:space="preserve">
+    <value>Could not load embedded resource '{0}' from the '{1}' assembly.</value>
+  </data>
+  <data name="Extensions_EmbeddedXml_Exception" xml:space="preserve">
+    <value>Could not load embedded resource '{0}' from the '{1}' assembly. {2}</value>
+  </data>
+  <data name="Extensions_SafeFormat_FormatCannotBeNull" xml:space="preserve">
+    <value>Parameter 'format' can not be null</value>
+  </data>
+  <data name="Extensions_SafeFormat_ParametersCannotBeNull" xml:space="preserve">
+    <value>Parameter 'parameters' can not be null</value>
+  </data>
+  <data name="Extensions_TopologicalSortEdges_DependencyCyclesFound" xml:space="preserve">
+    <value>Dependency cycles found in enumeration, cannot sort topologically.</value>
+  </data>
+  <data name="PInfo_TypeProperty_CannotConvertValueStrToDestinationType" xml:space="preserve">
+    <value>The configuration system couldn't convert the value '{0}' for the parameter '{1}' to type '{2}'.</value>
+  </data>
+  <data name="PInfo_TypeProperty_CannotCreateDefaultTypeConverter" xml:space="preserve">
+    <value>Cannot create a default type converter for parameter '{0}' of type '{1}'.</value>
+  </data>
+  <data name="PInfo_TypeProperty_ConverterCannotConvertFromString" xml:space="preserve">
+    <value>Converter of type '{0}' cannot convert from string for parameter '{1}'.</value>
+  </data>
+  <data name="PInfo_TypeProperty_ConveterReturnedNullForNonNullableType" xml:space="preserve">
+    <value>Converter of type '{0}' returned null value for parameter '{1}' which is of non-nullable type '{2}'.</value>
+  </data>
+  <data name="PInfo_TypeProperty_TypeNotAssignableFromConvertedType" xml:space="preserve">
+    <value>Converter of type '{0}' returned value of type '{1}' for parameter '{2}' which is of type '{3}' and not assignable from type '{1}'.</value>
+  </data>
+  <data name="PInfo_ValueProperty_NoValueSet" xml:space="preserve">
+    <value>No value set for parameter '{0}'.</value>
+  </data>
+  <data name="Range_StartGreaterThanEnd" xml:space="preserve">
+    <value>The start '{0}' must not be greater than the end '{1}' for a range of '{2}'.</value>
+  </data>
+  <data name="Reflection_Convert_ConversionFailed" xml:space="preserve">
+    <value>Could not convert the expression of type '{0}' to an expression of type '{1}'.</value>
+  </data>
+  <data name="Reflection_GetAction_IncorrectParameterCount" xml:space="preserve">
+    <value>Can not create a lambda action from '{0}', incorrect parameter count.</value>
+  </data>
+  <data name="Reflection_GetAction_ParameterNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda action from '{0}', cannot assign type '{1}' to parameter of type '{2}'.</value>
+  </data>
+  <data name="Reflection_GetFunc_IncorrectParameterCount" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', incorrect parameter count.</value>
+  </data>
+  <data name="Reflection_GetFunc_MethodHasNoReturnType" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', as it is a method with no return type, use Action&lt;&gt;() instead.</value>
+  </data>
+  <data name="Reflection_GetFunc_MethodIsStaticConstructor" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', as it is a static constructor.</value>
+  </data>
+  <data name="Reflection_GetFunc_NoFuncTypesSpecified" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', no parameter/return types specified.</value>
+  </data>
+  <data name="Reflection_GetFunc_ParameterNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', cannot assign type '{1}' to parameter of type '{2}'.</value>
+  </data>
+  <data name="Reflection_GetFunc_ReturnTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', cannot assign return type {1} to {2}.</value>
+  </data>
+  <data name="Reflection_GetGetter_NoGetterForFieldOrProperty" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' getter on the type '{1}' as the name does not correspond to a field or property with a get accessor.</value>
+  </data>
+  <data name="Reflection_GetGetter_ParameterTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the parameter type '{3}' is not assignable from the '{2}' declaring type.</value>
+  </data>
+  <data name="Reflection_GetGetter_ReturnTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the {1} type '{3}' is not assignable to the '{4}' return type.</value>
+  </data>
+  <data name="Reflection_GetSetter_MemberTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} setter on the type '{2}' as the {1} type '{3}' is not assignable from the '{4}' value type.</value>
+  </data>
+  <data name="Reflection_GetSetter_NoSetterForFieldOrProperty" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' setter on the type '{1}' as the name does not correspond to a field or property with a set accessor.</value>
+  </data>
+  <data name="Reflection_GetSetter_ParameterTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} setter on the type '{2}' as the parameter type '{3}' is not assignable from the '{2}' declaring type.</value>
+  </data>
+  <data name="Reflection_GetSetter_ReturnTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} setter on the type '{2}' as the {1} type '{3}' is not assignable to the '{4}' return type.</value>
+  </data>
+  <data name="Reflector_GetGetter_DoesNotHaveGetter" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' getter on the type '{1}' as the name does not correspond to a field or property with a get accessor.</value>
+  </data>
+  <data name="Reflector_GetGetter_MemberDoesNotExist" xml:space="preserve">
+    <value>The member '{0}' does not exist on the type '{1}'.</value>
+  </data>
+  <data name="Reflector_GetGetter_ParameterTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the parameter type '{3}' is not assignable from the '{2}' declaring type.</value>
+  </data>
+  <data name="Reflector_GetGetter_ReturnTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the {1} type '{3}' is not assignable to the '{4}' return type.</value>
+  </data>
+  <data name="Serialize_AddOrUpdateSurrogate_MustBeConcrete" xml:space="preserve">
+    <value>The surrogateType must be a concrete type and not an interface.</value>
+  </data>
+  <data name="Serialize_AddOrUpdateSurrogate_MustImplementISerializationSurrogate" xml:space="preserve">
+    <value>The surrogateType must implement ISerializationSurrogate.</value>
+  </data>
+  <data name="TaskExtensions_AfterAll_AntecedentTaskCancelled" xml:space="preserve">
+    <value>An antecedent task was cancelled.</value>
+  </data>
+  <data name="TaskExtensions_AfterAll_AntecedentTaskInFaultedState" xml:space="preserve">
+    <value>Antecedent task was in faulted state, without an error.</value>
+  </data>
+  <data name="TaskExtensions_AfterAll_AntecedentTaskInvalidState" xml:space="preserve">
+    <value>The antecedent task was not in a valid state.</value>
+  </data>
+  <data name="TaskExtensions_After_AntecedentTaskCancelled" xml:space="preserve">
+    <value>Antecedent task was cancelled.</value>
+  </data>
+  <data name="TaskExtensions_After_AntecedentTaskInFaultedState" xml:space="preserve">
+    <value>Antecedent task was in faulted state, without an error.</value>
+  </data>
+  <data name="TaskExtensions_After_AntecedentTaskInvalidState" xml:space="preserve">
+    <value>The antecedent task was not in a valid state.</value>
+  </data>
+  <data name="TaskExtensions_SetFromTask_TaskStateFaulted" xml:space="preserve">
+    <value>The task was in a faulted state, but no exceptions were available.</value>
+  </data>
+  <data name="TaskExtensions_SetFromTask_TaskWasNotCompleted" xml:space="preserve">
+    <value>The task was not completed.</value>
+  </data>
+  <data name="TriState_ExplicitBoolConversion_CannotCastUnknownState" xml:space="preserve">
+    <value>Cannot cast an unknown TriState to a Boolean</value>
+  </data>
+  <data name="TriState_ExplicitByteConversion_ValueGreaterThanThree" xml:space="preserve">
+    <value>Cannot cast byte '{0}' to TriState, value must be less than 3.</value>
+  </data>
+  <data name="TriState_ToString_FormatException" xml:space="preserve">
+    <value>The {0} format string is not supported.</value>
+  </data>
+  <data name="WeakConcurrentDictionary_Add_KeyAlreadyExists" xml:space="preserve">
+    <value>Key already exists.</value>
+  </data>
+  <data name="WeakConcurrentDictionary_Add_KeyTypeIncorrect" xml:space="preserve">
+    <value>Type of key is incorrect.</value>
+  </data>
+  <data name="WeakConcurrentDictionary_Add_ValueTypeIncorrect" xml:space="preserve">
+    <value>Type of value is incorrect</value>
+  </data>
+  <data name="WeakConcurrentDictionary_CopyTo_InvalidArrayType" xml:space="preserve">
+    <value>Invalid array type.</value>
+  </data>
+  <data name="WeakConcurrentDictionary_KeyIsNull" xml:space="preserve">
+    <value>The key cannot be null.</value>
+  </data>
+  <data name="XmlFormatter_GetMemberInfo_TypeNotSerializable" xml:space="preserve">
+    <value>Type is not serializable : {0}.</value>
+  </data>
+  <data name="XmlFormatter_GetMemberValue_MemberCannotBeSerialized" xml:space="preserve">
+    <value>Member cannot be serialized. {0}</value>
+  </data>
+  <data name="XmlFormatter_InitializeObject_ElementNotFound" xml:space="preserve">
+    <value>Serialization stream contained element not found in type. {0}</value>
+  </data>
+  <data name="XmlFormatter_InitializeObject_MemberListIsNull" xml:space="preserve">
+    <value>List in object is null. {0}, member {1}</value>
+  </data>
+  <data name="XmlFormatter_InitializeObject_MoreThanOneMemberFound" xml:space="preserve">
+    <value>More than one member found for tag {0}</value>
+  </data>
+  <data name="XmlFormatter_Serialize_EmptyStream" xml:space="preserve">
+    <value>Empty serializationStream!</value>
+  </data>
+  <data name="LimitedConcurrentQueue_SyncRoot_ICollection_SyncRoot_Unsupported" xml:space="preserve">
+    <value>ICollection.SyncRoot unsupported.</value>
+  </data>
+  <data name="LimitedConcurrentQueue_LimitedConcurrentQueue_Minimum_Capacity" xml:space="preserve">
+    <value>Minimum capacity is 1.</value>
+  </data>
+  <data name="LimitedConcurrentQueue_LimitedConcurrentQueue_Maximum_Capacity" xml:space="preserve">
+    <value>Maximum capacity is {0}.</value>
+  </data>
+</root>

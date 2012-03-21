@@ -1,0 +1,142 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ import namespace="System.Text" #> 
+<#
+int maxParameters = 16;
+#>#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// Solution: WebApplications.Utilities 
+// Project: WebApplications.Utilities
+// File: ReflectionOverloads.cs
+// 
+// This software, its object code and source code and all modifications made to
+// the same (the “Software”) are, and shall at all times remain, the proprietary
+// information and intellectual property rights of Web Applications (UK) Limited. 
+// You are only entitled to use the Software as expressly permitted by Web
+// Applications (UK) Limited within the Software Customisation and
+// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
+// distribution, licensing, sale, transfer or other use of the Software other than
+// as expressly permitted in the Agreement is expressly forbidden.  Web
+// Applications (UK) Limited reserves its rights to take action against you and
+// your employer in accordance with its contractual and common law rights
+// (including injunctive relief) should you breach the terms of the Agreement or
+// otherwise infringe its copyright or other intellectual property rights in the
+// Software.
+// 
+// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+#endregion
+
+using System;
+using System.Reflection;
+using JetBrains.Annotations;
+
+namespace WebApplications.Utilities
+{
+    ///<summary>
+    /// Extensions to the reflection namespace.
+    ///</summary>
+    public static partial class Reflection
+    {<# 
+StringBuilder typeParams = new StringBuilder("<");
+StringBuilder typeOfs = new StringBuilder();
+StringBuilder typeComments = new StringBuilder();
+StringBuilder aTypeParamsBuilder = new StringBuilder();
+string aTypeParams = string.Empty;
+for (int i = 0; i < maxParameters; i++) {
+	
+	#>
+		
+		#region <#= i #> parameters.
+        /// <summary>
+        ///   Gets the lambda functional equivalent of a method base, for much better runtime performance than an invocation.
+        /// </summary><#=typeComments#>
+        /// <typeparam name = "TResult">The type of the result.</typeparam>
+        /// <param name = "methodBase">The method base.</param>
+        /// <param name = "checkParameterAssignability">if set to <see langword="true"/> check's function parameters can be assigned to method safely.</param>
+        /// <returns>
+        ///   A functional equivalent of a method base.
+        /// </returns>
+		[NotNull]
+		[UsedImplicitly]
+        public static Func<#= typeParams #>TResult> Func<#= typeParams #>TResult>(
+            this MethodBase methodBase,
+            bool checkParameterAssignability =
+#if DEBUG
+                true
+#else
+                false
+#endif
+            )
+        {
+            return (Func<#= typeParams #>TResult>) GetFunc(methodBase, checkParameterAssignability<#= typeOfs #>, typeof (TResult));
+        }
+		
+        /// <summary>
+        ///   Gets the lambda functional equivalent of a type, for much better runtime performance than an invocation.
+        /// </summary><#=typeComments#>
+        /// <typeparam name = "TResult">The type of the result.</typeparam>
+        /// <param name="type">The type.</param>
+        /// <param name="checkParameterAssignability">if set to <see langword="true"/> check's function parameters can be assigned to method safely.</param>
+        /// <returns>
+        ///   A functional equivalent of a type constructor.
+        /// </returns>
+		[NotNull]
+		[UsedImplicitly]
+        public static Func<#= typeParams #>TResult> ConstructorFunc<#= typeParams #>TResult>(
+            this Type type,
+            bool checkParameterAssignability =
+#if DEBUG
+                true
+#else
+                false
+#endif
+            )
+        {
+            return (Func<#= typeParams #>TResult>) GetConstructorFunc(type, checkParameterAssignability<#= typeOfs #>, typeof (TResult));
+        }
+		
+        /// <summary>
+        ///   Gets the lambda functional equivalent of a method info, for much better runtime performance than an invocation.
+        /// </summary><#=typeComments#>
+        /// <param name="methodInfo">The method info.</param>
+        /// <param name="checkParameterAssignability">if set to <see langword="true"/> check's function parameters can be assigned to method safely.</param>
+        /// <returns>
+        ///   A functional equivalent of a method info.
+        /// </returns>
+        [NotNull]
+        [UsedImplicitly]
+        public static Action<#= aTypeParams #> Action<#= aTypeParams #>(
+            this MethodInfo methodInfo,
+            bool checkParameterAssignability =
+#if DEBUG
+                true
+#else
+                false
+#endif
+            )
+        {
+            return (Action<#= aTypeParams #>) GetAction(methodInfo, checkParameterAssignability<#= typeOfs #>);
+        }
+		#endregion
+<# 
+	typeParams.Append(string.Format("T{0}, ", (i+1)));
+	typeOfs.Append(string.Format(", typeof(T{0})", (i+1)));
+	typeComments.Append(string.Format("{0}        /// <typeparam name=\"T{1}\">The type of parameter {1}.</typeparam>",
+		Environment.NewLine,
+		(i+1)));
+	aTypeParamsBuilder.Append(string.Format("{0}T{1}", i < 1 ? "<":", ", (i+1)));
+	aTypeParams = aTypeParamsBuilder.ToString() + ">";
+} #>
+	}
+}
+ 
+<#+
+  // Insert any template procedures here
+#>

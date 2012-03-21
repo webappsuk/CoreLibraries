@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AAC22B8B-D633-4EE5-B1EA-915F0C9BCB46}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebApplications.Utilities.Test</RootNamespace>
+    <AssemblyName>WebApplications.Utilities.Test</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\WebApplications.Utilities\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PostSharpSearchPath>..\WebApplications.Utilities.Weavers\bin\Debug</PostSharpSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PostSharpSearchPath>..\WebApplications.Utilities.Weavers\bin\Release</PostSharpSearchPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AsyncCtpLibrary">
+      <HintPath>..\packages\AsyncCTP.1.1.0.0\lib\net40\AsyncCtpLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=5.1.3000.12, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.5.1.3000.12\lib\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Nito.AsyncEx">
+      <HintPath>..\packages\Nito.AsyncEx.0.5.0\lib\net40-client\Nito.AsyncEx.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebApplications.Testing, Version=1.1.4428.21557, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Testing.1.1.4428.21557\lib\net40\WebApplications.Testing.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Caching\CyclicConcurrentQueueTests.cs" />
+    <Compile Include="Configuration\ConfigurationElementCollectionTests.cs" />
+    <Compile Include="Configuration\ConfigurationElementTests.cs" />
+    <Compile Include="Configuration\ConfigurationSectionAttributeTests.cs" />
+    <Compile Include="Configuration\ConfigurationSectionTests.cs" />
+    <Compile Include="Configuration\ConfigurationTestBase.cs" />
+    <Compile Include="Configuration\ConstructorConfigurationElementTests.cs" />
+    <Compile Include="Configuration\ParameterCollectionTests.cs" />
+    <Compile Include="Configuration\ParameterElementTests.cs" />
+    <Compile Include="DebuggingExtensionsTests.cs" />
+    <Compile Include="Extensions\EqualityFunctionsTests.cs" />
+    <Compile Include="Extensions\GetObjectsByIdTests.cs" />
+    <Compile Include="Extensions\MiscellaneousExtensionsTests.cs" />
+    <Compile Include="Extensions\ToJSONTests.cs" />
+    <Compile Include="Extensions\TopologicalSortTests.cs" />
+    <Compile Include="Extensions\TruncateTests.cs" />
+    <Compile Include="Location\LatLngTests.cs" />
+    <Compile Include="Ranges\DateRangeTests.cs" />
+    <Compile Include="Ranges\DateTimeTests.cs" />
+    <Compile Include="Ranges\DecimalRangeTests.cs" />
+    <Compile Include="Ranges\DoubleRangeTests.cs" />
+    <Compile Include="Ranges\IntRangeTests.cs" />
+    <Compile Include="Ranges\LongRangeTests.cs" />
+    <Compile Include="Ranges\RangeTests.cs" />
+    <Compile Include="Ranges\ShortRangeTests.cs" />
+    <Compile Include="Serialization\ExtendedSerializationBinderTests.cs" />
+    <Compile Include="Serialization\SerializeTests.cs" />
+    <Compile Include="Serialization\XElementSurrogateTests.cs" />
+    <Compile Include="Serialization\XmlElementSurrogateTests.cs" />
+    <Compile Include="Serialization\XmlFormatterTests.cs" />
+    <Compile Include="SingletonTests.cs" />
+    <Compile Include="TestCacheQueue.cs" />
+    <Compile Include="TestCombGuid.cs" />
+    <Compile Include="TestComparer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCacheDictionary.cs" />
+    <Compile Include="TestConfiguration.cs" />
+    <Compile Include="TestCulture.cs" />
+    <Compile Include="TestDeterministic.cs" />
+    <Compile Include="TestContextStack.cs" />
+    <Compile Include="TestExtendedEnum.cs" />
+    <Compile Include="TestHashing.cs" />
+    <Compile Include="TestCyclicConcurrentQueue.cs" />
+    <Compile Include="TestPowerShell.cs" />
+    <Compile Include="TestRange.cs" />
+    <Compile Include="ReflectionTests.cs" />
+    <Compile Include="TestSerialization.cs" />
+    <Compile Include="TestSQLExtensions.cs" />
+    <Compile Include="TestTaskExtensions.cs" />
+    <Compile Include="TestWeak.cs" />
+    <Compile Include="Enumerations\TriStateTests.cs" />
+    <Compile Include="TupleExtensionsTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WebApplications.Utilities.csproj">
+      <Project>{2931C698-6123-49BC-81FD-F72A4C1415EA}</Project>
+      <Name>WebApplications.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebApplications.Utilities.PowerShell\WebApplications.Utilities.PowerShell.csproj">
+      <Project>{FDF4F262-B182-49DB-9A39-6D487EA058FD}</Project>
+      <Name>WebApplications.Utilities.PowerShell</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Schema.xml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestDatabase.sdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
