@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <configSections>
+    <section name="logging" type="WebApplications.Utilities.Logging.Configuration.LoggingConfiguration, WebApplications.Utilities.Logging"/>
+  </configSections>
+  <logging logCacheExpiry="00:00:00">
+    <!--
+    The following arributes are allowed on the logging element (defaults shown):
+           enabled="true"
+           applicationName=""
+           applicationGuid=(random GUID)
+           validLevels="All"
+           minBatchSize="10"
+           maxBatchSize="1000"
+           batchWait="00:00:02"
+           logCacheExpiry="00:10:00"
+           logCacheMaximumEntries="10000"
+
+    The logging system can use an internal MemoryCache to hold recent logs for quicker retrieval, if log retrieval is not in use
+    setting either the logCacheExpiry to "00:00:00" or the logCacheMaximumEntire to "0" will disable the log cache.
+  
+    If log retrieval is common then it is recommended that the log cache is used.
+    
+    You can optionally initialise additional loggers by adding a loggers node.  The library includes the following loggers, but you can create new ones
+    by implementing the "WebApplications.Utiltities.Logging.Interfaces.ILogger" interface. -->
+
+    <loggers>
+      <!-- 
+      The name attribute is required and must be unique.
+      The type attribute is also required, and must descend from "WebApplications.Utiltities.Logging.Interfaces.ILogger"
+      All attributes and any parameters listed are available to the constructor of the type specified.
+      
+      By default, the system adds a Trace Logger, to remove it uncomment the following:
+      <remove name="Trace Logger" />
+      -->
+
+      <add name="File Logger" type="WebApplications.Utilities.Logging.Loggers.FileLogger, WebApplications.Utilities.Logging" enabled="true" validLevels="All">
+        <parameters>
+          <!-- only the directory is required -->
+          <add name="directory" value="C:\Logs" />
+          <!-- 
+          The file logger supports the following parameters:
+          <add name="maxLog" value="1000" />
+          <add name="maxDuration" value="1.0:0:0" />
+          <add name="format" value="{ApplicationName}-{DateTime:yyMMddHHmmssffff}" />
+          <add name="extension" value="log" />
+          
+          the following substitutions are allowed in the format
+            ApplicationName = The application name (see as an attribute on the logging element
+            ApplicationGuid = The application GUID (see as an attribute on the logging element
+            DateTime = The date and time the log file was created.
+            
+          Note that the actual format will look like {directory}\{format}{de-dupe}.{extension}
+          where de-dupe takes the form " (i)", where i is an integer.  De-dupe is added only when a file name conflict
+          is discovered.
+          -->
+        </parameters>
+      </add>
+
+      <add name="Event Logger" type="WebApplications.Utilities.Logging.Loggers.EventLogger, WebApplications.Utilities.Logging" validLevels="Critical" enabled="false">
+        <parameters>
+          <!--
+          You can also say which event log to use.
+          <add name="eventLog" value="Application"/>
+           -->
+        </parameters>
+      </add>
+
+      <add name="Sql Logger" type="WebApplications.Utilities.Logging.Loggers.SqlLogger, WebApplications.Utilities.Logging" enabled="false">
+        <parameters>
+          <!-- You must specify a valid connection to a logging database. -->
+          <add name="connectionString" value=""/>
+          <!-- By default SQL logs are expired after 3 days, you can change the duration using the expireAfter parameter. -->
+          <add name="expireAfter" value="1.00:00:00"/>
+          <!-- You can also specify the following:
+            sqlTimeout = The timespan (rounded up to the nearest second) to wait for SQL commands to complete - defaults to 120s, minimum 1s
+          -->
+        </parameters>
+      </add>
+    </loggers>
+  </logging>
+</configuration>

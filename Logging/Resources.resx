@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="LogContext_ToString" xml:space="preserve">
+    <value>({0} entr{1})</value>
+    <comment>{context.Count} entr{y | ies}</comment>
+  </data>
+  <data name="LoggingException_ContextCannotBeNull" xml:space="preserve">
+    <value>Parameter 'context' can not be null</value>
+  </data>
+  <data name="LoggingException_InnerExceptionCannotBeNull" xml:space="preserve">
+    <value>Parameter 'innerException' can not be null</value>
+  </data>
+  <data name="LoggingException_MessageCannotBeNull" xml:space="preserve">
+    <value>Parameter 'message' can not be null</value>
+  </data>
+  <data name="LoggingException_ParametersCannotBeNull" xml:space="preserve">
+    <value>Parameter 'parameters' can not be null</value>
+  </data>
+  <data name="LogStatic_AddOrUpdateLogger_RetrievalNotSupported" xml:space="preserve">
+    <value>Can not copy logs over from {0} logger as log retrieval is not supported!</value>
+  </data>
+  <data name="LogStatic_GetLog_OperationCouldNotBeFound" xml:space="preserve">
+    <value>Operation '{0}' could not be found.</value>
+  </data>
+  <data name="LogStatic_Get_LimitLessThanZero" xml:space="preserve">
+    <value>Cannot retrieve logs, limit is not greater than zero!</value>
+  </data>
+  <data name="LogStatic_Get_NoLogCacheAvailable" xml:space="preserve">
+    <value>No log cache available.</value>
+  </data>
+  <data name="LogStatic_Get_RetrievalNotSupported" xml:space="preserve">
+    <value>The {0} logger does not support log retrieval.</value>
+  </data>
+  <data name="LogStatic_Get_StartGreaterThanOrEqualToCurrent" xml:space="preserve">
+    <value>Cannot retrieve logs, start date is greater or equal than current date!</value>
+  </data>
+  <data name="LogStatic_Get_StartGreaterThanOrEqualToEnd" xml:space="preserve">
+    <value>Cannot retrieve logs, start date is greater or equal to end date!</value>
+  </data>
+  <data name="LogStatic_LoadConfiguration_ErrorCreatingLogger" xml:space="preserve">
+    <value>Error occurred whilst creating logger '{0}' as specified in configuration file. {1}</value>
+  </data>
+  <data name="LogStatic_LogBatch_FatalErrorOccured" xml:space="preserve">
+    <value>Fatal error occurred whilst running the '{0}' logger, disabling - {1}</value>
+  </data>
+  <data name="LogStatic_LoggerThread_FatalErrorWhilstLogging" xml:space="preserve">
+    <value>Fatal error whilst logging - aborting.</value>
+  </data>
+  <data name="LogStatic_LoggerThread_LoggingThreadWasAborted" xml:space="preserve">
+    <value>Logging thread was aborted.</value>
+  </data>
+  <data name="Log_Operation_OperationNotReLinked" xml:space="preserve">
+    <value>Operation was not re-linked correctly.</value>
+  </data>
+  <data name="Log_SqlException" xml:space="preserve">
+    <value>{1}{0}Procedure: {2}, Line: {3}.</value>
+  </data>
+  <data name="Log_ToString" xml:space="preserve">
+    <value>Log{0}==={0}{1}ID: {2}{0}{1}Thread: {3} - {4}{0}{1}Group: {5}{0}{1}Time: {6:o}{0}{1}Level: {7}{0}{1}Message: {8}{0}{1}Operation: {9}{0}{1}Context: {10}{0}{11}</value>
+  </data>
+  <data name="Log_ToString_LogException" xml:space="preserve">
+    <value>{1}Exception Type: {2}{0}{1}Stack Trace: {3}{0}</value>
+  </data>
+  <data name="Operation_DuplicateGuidProvided" xml:space="preserve">
+    <value>Duplication GUID provided for operation.</value>
+  </data>
+  <data name="Operation_Parent_CannotRecoverParent" xml:space="preserve">
+    <value>Cannot recover the operation's parent with GUID '{0}'.</value>
+  </data>
+  <data name="Operation_Stop_OperationAlreadyStopped" xml:space="preserve">
+    <value>The '{0}' operation has already been stopped.</value>
+  </data>
+  <data name="Operation_ToString" xml:space="preserve">
+    <value>{1}{0}		Method: {2} ({3}){0}		Thread: {4} - {5}{0}		Guid: {6}{0}		Parent GUID: {7}{0}		Arguments: {8}</value>
+  </data>
+  <data name="Operation_Wrap_UnhandledExceptionOccurred" xml:space="preserve">
+    <value>An unhandled exception occurred in the operation. {0}</value>
+  </data>
+  <data name="EventLogger_EventLogCannotBeNull" xml:space="preserve">
+    <value>Parameter 'eventLog' can not be null</value>
+  </data>
+  <data name="EventLogger_LogCannotBeNull" xml:space="preserve">
+    <value>Parameter 'log' can not be null</value>
+  </data>
+  <data name="EventLogger_NameCannotBeNull" xml:space="preserve">
+    <value>Parameter 'name' can not be null</value>
+  </data>
+  <data name="FileLogger_DirectoryAccessOrCreationError" xml:space="preserve">
+    <value>Could not create file logger as error occurred when trying to create/access directory '{0}'. {1}</value>
+  </data>
+  <data name="FileLogger_DirectoryNotSpecified" xml:space="preserve">
+    <value>Cannot create file logger as directory not specified.</value>
+  </data>
+  <data name="FileLogger_ExtensionLongerThanFiveCharacters" xml:space="preserve">
+    <value>Cannot create file logger as extension '{0}' has more than five characters.</value>
+  </data>
+  <data name="FileLogger_FileDurationLessThanTenSeconds" xml:space="preserve">
+    <value>Cannot create file logger as maximum log file duration '{0}' was less than 10s, which would cause too many log files to be created.</value>
+  </data>
+  <data name="FileLogger_FileNameFormatInvalid" xml:space="preserve">
+    <value>Cannot create file logger as file name format '{0}' contains invalid characters.</value>
+  </data>
+  <data name="FileLogger_FileNameFormatNotSpecified" xml:space="preserve">
+    <value>Cannot create file logger as file name format not specified.</value>
+  </data>
+  <data name="FileLogger_InvalidPathCreation" xml:space="preserve">
+    <value>Cannot create file logger as file name format '{0}' led to invalid path creation. {1}</value>
+  </data>
+  <data name="FileLogger_MaximumLogsLessThanTen" xml:space="preserve">
+    <value>Cannot create file logger as maximum logs per file '{0}' was less than 10, which would cause too many log files to be created.</value>
+  </data>
+  <data name="FileLogger_PathCreatedOutsideDirectory" xml:space="preserve">
+    <value>Cannot create file logger as file name format '{0}' led to invalid path creation. The file cannot be created outside the specified directory.</value>
+  </data>
+  <data name="LoggerBase_DoesNotSupportRetrieval" xml:space="preserve">
+    <value>The {0} logger does not support log retrieval.</value>
+  </data>
+  <data name="LoggerBase_GetEndDateLimit_NotImplemented" xml:space="preserve">
+    <value>The {0} logger has not yet implemented the Get(endDate, limit) method.</value>
+  </data>
+  <data name="LoggerBase_GetEndDateStartDate_NotImplemented" xml:space="preserve">
+    <value>The {0} logger has not yet implemented the Get(endDate, startDate) method.</value>
+  </data>
+  <data name="LoggerBase_GetForwardStartDateLimit_NotImplemented" xml:space="preserve">
+    <value>The {0} logger has not yet implemented the Get(startDate, limit) method.</value>
+  </data>
+  <data name="MemoryLogger_CacheExpiryLessThanTenSeconds" xml:space="preserve">
+    <value>Could not create memory logger as cache expiry '{0}' was less than 10s.</value>
+  </data>
+  <data name="MemoryLogger_MaximumLogsLessThanOne" xml:space="preserve">
+    <value>Could not create memory logger as maximum log entries '{0}' was less than 1.</value>
+  </data>
+  <data name="PerformanceCounterHelper_Initialize_CategoryDoesNotExist" xml:space="preserve">
+    <value>The performance counter category '{0}' does not exist, and must be created before it can be used.</value>
+  </data>
+  <data name="PerformanceCounterHelper_Initialize_ProcessDoesNotHaveAccess" xml:space="preserve">
+    <value>The current process identity does not have access to performance counters, disabling counters.</value>
+  </data>
+  <data name="PerformanceCounterHelper_Initialize_UnhandledExceptionOccurred" xml:space="preserve">
+    <value>An unhandled error occurred whilst initialising the counter category '{0}', disabling counters.</value>
+  </data>
+  <data name="PerformanceTimerHelper_Initialize_CategoryDoesNotExist" xml:space="preserve">
+    <value>The performance counter category '{0}' does not exist, and must be created before it can be used.</value>
+  </data>
+  <data name="PerformanceTimerHelper_Initialize_ProcessDoesNotHaveAccess" xml:space="preserve">
+    <value>The current process identity does not have access to performance counters, disabling counters.</value>
+  </data>
+  <data name="PerformanceTimerHelper_Initialize_UnhandledExceptionOccurred" xml:space="preserve">
+    <value>An unhandled error occurred whilst initialising the counter category '{0}', disabling counters.</value>
+  </data>
+  <data name="PerformanceTimer_Stop_ExceededCriticalLevel" xml:space="preserve">
+    <value>Performance Timer {0} exceeded critical level of {1} ms, operation took {2} ms.</value>
+  </data>
+  <data name="PerformanceTimer_Stop_ExceededWarningLevel" xml:space="preserve">
+    <value>Performance Timer {0} exceeded warning level of {1} ms, operation took {2} ms.</value>
+  </data>
+  <data name="SqlLogger_CouldNotRegisterService" xml:space="preserve">
+    <value>Could not register service '{0}'</value>
+  </data>
+  <data name="Sqllogger_LogExpiryLessThanOneSecond" xml:space="preserve">
+    <value>Cannot expire log entries in less than one second.</value>
+  </data>
+  <data name="SqlLogger_NoConnectionStringProvided" xml:space="preserve">
+    <value>Could not create SQL Logger as no connection string was supplied.</value>
+  </data>
+  <data name="Sqllogger_TimeoutLessThanOneSecond" xml:space="preserve">
+    <value>The specified SQL timeout ({0}) was less than 1s.</value>
+  </data>
+</root>
