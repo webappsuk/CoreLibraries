@@ -75,20 +75,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             get { return _options; }
         }
 
-        #region IEnumerable<DateTime> Members
-        /// <inheritdoc/>
-        public IEnumerator<DateTime> GetEnumerator()
-        {
-            yield return ScheduleDateTime;
-        }
-
-        /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-        #endregion
-
         /// <inheritdoc/>
         public override string ToString()
         {

@@ -85,22 +85,6 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             get { return _options; }
         }
 
-        #region IEnumerableCode
-        /// <inheritdoc/>
-        public IEnumerator<DateTime> GetEnumerator()
-        {
-            DateTime next = DateTime.MinValue;
-            while ((next = Next(next)) < DateTime.MaxValue)
-                yield return next;
-        }
-
-        /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-        #endregion
-
         /// <inheritdoc/>
         public override string ToString()
         {

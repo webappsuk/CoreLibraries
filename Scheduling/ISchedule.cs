@@ -31,7 +31,7 @@ namespace WebApplications.Utilities.Scheduling
     /// <summary>
     /// Schedule Interface
     /// </summary>
-    public interface ISchedule : IEnumerable<DateTime>
+    public interface ISchedule
     {
         /// <summary>
         /// Gets the optional name.
