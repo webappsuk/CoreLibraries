@@ -17,6 +17,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="maximumHistory">The optional maximum history for this action (use a negative value to indicate <see cref="DefaultMaximumHistory"/> should be used).</param>
         /// <returns></returns>
         /// <remarks></remarks>
+        [NotNull]
         IScheduledAction Add([NotNull]ISchedule schedule, [NotNull]ISchedulableAction action, int maximumHistory = -1);
 
         /// <summary>
@@ -28,6 +29,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <param name="maximumHistory">The optional maximum history for this action (use a negative value to indicate <see cref="DefaultMaximumHistory"/> should be used).</param>
         /// <returns></returns>
         /// <remarks>This is a utility overload that ensures consistency of return type with functions.</remarks>
+        [NotNull]
         IScheduledFunction<T> Add<T>([NotNull]ISchedule schedule, [NotNull]ISchedulableFunction<T> function, int maximumHistory = -1);
 
         /// <summary>
@@ -64,6 +66,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <para>In the default non-concurrent case, then executing the action immediately can effect the next time the action will run (depending on
         /// the <see cref="ISchedule">schedule</see>.</para>
         /// </remarks>
+        [NotNull]
         Task<bool> ExecuteAsync([NotNull]IScheduledAction scheduledAction);
 
         /// <summary>

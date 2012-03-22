@@ -34,6 +34,16 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         [NotNull]
         private readonly ConcurrentDictionary<Type, Func<IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int, ScheduledAction>> _scheduledFunctionConstructors = new ConcurrentDictionary<Type, Func<IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int, ScheduledAction>>();
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Scheduler"/> class.
+        /// </summary>
+        /// <param name="defaultMaximumHistory">The default maximum history.</param>
+        /// <remarks></remarks>
+        public Scheduler(int defaultMaximumHistory = 100)
+        {
+            DefaultMaximumHistory = defaultMaximumHistory;
+        }
 
         /// <inheritdoc/>
         public IScheduledAction Add(ISchedule schedule, ISchedulableAction action, int maximumHistory = -1)
@@ -48,27 +58,13 @@ namespace WebApplications.Utilities.Scheduling
             }
             else
             {
-                Type t = action.GetType();
-                while (t != null)
-                {
-                    if (t.IsGenericType &&
-                        t.GetGenericTypeDefinition() == typeof(ISchedulableFunction<>))
-                        break;
-                    t = t.BaseType;
-                }
-
-                // Sanity check - should never happen.
-                if (t == null)
-                    throw new InvalidOperationException("The action of type '{0}' does not implement the ISchedulableFunction<> interface.");
-
                 // Get the function return type.
-                Type functionType = t.GetGenericArguments()[0];
-                Debug.Assert(functionType != null);
+                Debug.Assert(info.FunctionReturnType != null);
 
                 // Need to create relevant generic function type.
                 Func<IScheduler, ISchedule, ISchedulableAction, SchedulableActionInfo, int, ScheduledAction> constructor =
                     _scheduledFunctionConstructors.GetOrAdd(
-                        functionType,
+                        info.FunctionReturnType,
                         ft =>
                             {
                                 Type sfType = typeof (ScheduledFunction<>).MakeGenericType(ft);
@@ -123,7 +119,17 @@ namespace WebApplications.Utilities.Scheduling
         /// <inheritdoc/>
         public bool Enabled { get; set; }
 
+        private int _defaultMaximumHistory;
         /// <inheritdoc/>
-        public int DefaultMaximumHistory { get; set; }
+        public int DefaultMaximumHistory
+        {
+            get { return _defaultMaximumHistory; }
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException("value", "The default maximum history for a scheduler cannot be negative.");
+                _defaultMaximumHistory = value;
+            }
+        }
     }
 }

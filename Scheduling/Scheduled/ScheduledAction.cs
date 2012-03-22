@@ -75,14 +75,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Internal list of results.
         /// </summary>
-        [NotNull]
-        private readonly CyclicConcurrentQueue<ScheduledActionResult> _history;
-
-        /// <summary>
-        /// Holds the function's return type if the actions is a function.
-        /// </summary>
         [CanBeNull]
-        private readonly Type _functionReturnType;
+        private readonly CyclicConcurrentQueue<ScheduledActionResult> _history;
 
         /// <summary>
         /// Holds constructor for creating a result for an action.
@@ -105,7 +99,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="maximumHistory">The maximum history.</param>
         /// <remarks></remarks>
         internal ScheduledAction([NotNull]IScheduler scheduler, [NotNull]ISchedule schedule, [NotNull]ISchedulableAction action, [NotNull]SchedulableActionInfo actionInfo, int maximumHistory = -1)
-            : this(scheduler, schedule, action, actionInfo, maximumHistory, null, _actionResultCreator)
+            : this(scheduler, schedule, action, actionInfo, maximumHistory, _actionResultCreator)
         {
         }
 
@@ -120,24 +114,23 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="functionReturnType">Type of the function return.</param>
         /// <param name="resultCreator">The result creator.</param>
         /// <remarks></remarks>
-        protected ScheduledAction([NotNull]IScheduler scheduler, [NotNull]ISchedule schedule, [NotNull]ISchedulableAction action, [NotNull]SchedulableActionInfo actionInfo, int maximumHistory, [CanBeNull] Type functionReturnType, [NotNull]Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult> resultCreator)
+        protected ScheduledAction([NotNull]IScheduler scheduler, [NotNull]ISchedule schedule, [NotNull]ISchedulableAction action, [NotNull]SchedulableActionInfo actionInfo, int maximumHistory, [NotNull]Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult> resultCreator)
         {
             _scheduler = scheduler;
             _lastExecutionFinished = DateTime.MinValue;
             _schedule = schedule;
             _action = action;
             _actionInfo = actionInfo;
-            _functionReturnType = functionReturnType;
             _resultCreator = resultCreator;
             _maximumHistory = maximumHistory;
-            _history = new CyclicConcurrentQueue<ScheduledActionResult>(maximumHistory);
+            _history = _maximumHistory > 0 ? new CyclicConcurrentQueue<ScheduledActionResult>(_maximumHistory) : null;
             RecalculateNextDue();
         }
 
         /// <inheritdoc/>
         public Type FunctionReturnType
         {
-            get { return _functionReturnType; }
+            get { return _actionInfo.FunctionReturnType; }
         }
 
         /// <inheritdoc/>
@@ -149,7 +142,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <inheritdoc/>
         public IEnumerable<IScheduledActionResult> History
         {
-            get { return _history; }
+            get { return _history ?? Enumerable.Empty<IScheduledActionResult>(); }
         }
 
         /// <summary>
@@ -264,7 +257,8 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                 (executing <= 1))
             {
                 // Execute and add result to history
-                _history.Enqueue(DoExecute(due, started));
+                if (_history != null)
+                    _history.Enqueue(DoExecute(due, started));
                 executed = true;
 
                 // Increment the execution count.
@@ -339,14 +333,14 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                                     break;
                                 case TaskStatus.Canceled:
                                     result = _resultCreator(due, started, DateTime.Now - started, null, true,
-                                                            _functionReturnType != null
-                                                                ? _functionReturnType.Default()
+                                                            FunctionReturnType != null
+                                                                ? FunctionReturnType.Default()
                                                                 : null);
                                     break;
                                 case TaskStatus.Faulted:
                                     result = _resultCreator(due, started, DateTime.Now - started, t.Exception, false,
-                                                            _functionReturnType != null
-                                                                ? _functionReturnType.Default()
+                                                            FunctionReturnType != null
+                                                                ? FunctionReturnType.Default()
                                                                 : null);
                                     break;
                                 default:
@@ -355,14 +349,15 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                                                                 String.Format(
                                                                     "Invalid task status '{0}' in scheduled action continuation.",
                                                                     t.Status)), false,
-                                                            _functionReturnType != null
-                                                                ? _functionReturnType.Default()
+                                                            FunctionReturnType != null
+                                                                ? FunctionReturnType.Default()
                                                                 : null);
                                     break;
                             }
 
                             // Enqueue history item.
-                            _history.Enqueue(result);
+                            if (_history != null)
+                                _history.Enqueue(result);
 
                             return true;
                         }, TaskContinuationOptions.ExecuteSynchronously);

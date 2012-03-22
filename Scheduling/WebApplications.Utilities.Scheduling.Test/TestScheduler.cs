@@ -33,7 +33,6 @@ namespace WebApplications.Utilities.Scheduling.Test
     [TestClass]
     public class TestScheduler
     {
-#if false
         [TestMethod]
         public void TestSeconds()
         {
@@ -158,6 +157,8 @@ namespace WebApplications.Utilities.Scheduling.Test
             schedulerTester.Run();
         }
 
+#if false
+
         [TestMethod]
         public void TestTwoSchedulers()
         {
@@ -181,15 +182,15 @@ namespace WebApplications.Utilities.Scheduling.Test
             schedulerTester.AddTest(schedule, expectedResults);
 
             schedule = new PeriodicSchedule(hour: Hour.Every, minute: Minute.Every, second: Second.Every);
-            ScheduledFunctionOld<int> scheduledFunction = SchedulerOLD.Add<int>(schedule,
+            IScheduledFunction<int> scheduledFunction = Scheduler.Add<int>(schedule,
                                                                           function =>
                                                                           function.History.Count() > 0
                                                                               ? function.History.Last().Result + 1
                                                                               : 1, enabled: false);
 
-            SchedulerOLD.Enable(scheduledFunction);
+            Scheduler.Enable(scheduledFunction);
             schedulerTester.Run();
-            SchedulerOLD.Disable(scheduledFunction);
+            Scheduler.Disable(scheduledFunction);
 
             Queue<ScheduledFunctionResult<int>> results =
                 new Queue<ScheduledFunctionResult<int>>(scheduledFunction.History);
@@ -258,9 +259,9 @@ namespace WebApplications.Utilities.Scheduling.Test
             schedulerTester.AddTest(schedule, expectedResults, delegate
                                                                    {
                                                                        DateTime resultTime = DateTime.Now;
-                                                                       SchedulerOLD.DisableAll();
+                                                                       Scheduler.DisableAll();
                                                                        Thread.Sleep(1500);
-                                                                       SchedulerOLD.EnableAll();
+                                                                       Scheduler.EnableAll();
                                                                        return resultTime;
                                                                    });
 
@@ -351,14 +352,14 @@ namespace WebApplications.Utilities.Scheduling.Test
                                       new TimeSpan(0, 0, 8),
                                       new TimeSpan(0, 0, 9)
                                   };
-            ScheduledFunctionOld<DateTime> scheduledFunction = schedulerTester.AddTest(schedule, expectedResults);
+            IScheduledFunction<DateTime> scheduledFunction = schedulerTester.AddTest(schedule, expectedResults);
 
             schedulerTester.Start();
 
             Thread.Sleep(200);
-            SchedulerOLD.Disable(scheduledFunction);
+            Scheduler.Disable(scheduledFunction);
             Thread.Sleep(6000);
-            SchedulerOLD.Enable(scheduledFunction);
+            Scheduler.Enable(scheduledFunction);
 
             while (!schedulerTester.Completed())
             {
@@ -396,12 +397,12 @@ namespace WebApplications.Utilities.Scheduling.Test
                                   {
                                       new TimeSpan(0, 0, 1)
                                   };
-            ScheduledFunctionOld<DateTime> scheduledFunction = schedulerTester.AddTest(schedule, expectedResults);
+            IScheduledFunction<DateTime> scheduledFunction = schedulerTester.AddTest(schedule, expectedResults);
 
             schedulerTester.Start();
 
             Thread.Sleep(1500);
-            SchedulerOLD.Remove(scheduledFunction);
+            Scheduler.Remove(scheduledFunction);
 
             while (!schedulerTester.Completed())
             {
@@ -431,7 +432,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                                                      new TimeSpan(0, 0, 9)
                                                  };
             schedulerTester.AddTest(
-                SchedulerOLD.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: false,
+                Scheduler.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: false,
                                         startAfter: startAfterTime), expectedResults);
 
             schedulerTester.Run();
@@ -459,7 +460,7 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             schedulerTester.SetStartTime();
 
-            schedulerTester.AddTest(SchedulerOLD.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: true),
+            schedulerTester.AddTest(Scheduler.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: true),
                                     expectedResults);
 
             while (!schedulerTester.Completed())
@@ -487,7 +488,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                                                      new TimeSpan(0, 0, 9)
                                                  };
             schedulerTester.AddTest(
-                SchedulerOLD.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: false,
+                Scheduler.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: false,
                                         executeImmediately: false), expectedResults);
 
             schedulerTester.Run();
@@ -511,7 +512,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                                                      new TimeSpan(0, 0, 9)
                                                  };
             schedulerTester.AddTest(
-                SchedulerOLD.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: false, executeImmediately: true),
+                Scheduler.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: false, executeImmediately: true),
                 expectedResults);
 
             schedulerTester.Run();
@@ -557,7 +558,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                                                      new TimeSpan(0, 0, 15)
                                                  };
             schedulerTester.AddTest(
-                SchedulerOLD.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: false, executeImmediately: true),
+                Scheduler.Add<DateTime>(schedule, SchedulerTester.TestFunction, enabled: false, executeImmediately: true),
                 expectedResults);
 
             schedulerTester.Run();

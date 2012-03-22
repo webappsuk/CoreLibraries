@@ -25,7 +25,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Utilities.Scheduling.Schedulable;
 using WebApplications.Utilities.Scheduling.Scheduled;
 using WebApplications.Utilities.Scheduling.Schedules;
 
@@ -33,12 +35,20 @@ namespace WebApplications.Utilities.Scheduling.Test
 {
     public class SchedulerTester
     {
-#if false
-        private readonly Dictionary<ScheduledFunctionOld<DateTime>, List<TimeSpan>> _tests =
-            new Dictionary<ScheduledFunctionOld<DateTime>, List<TimeSpan>>();
+        [NotNull]
+        private readonly Dictionary<IScheduledFunction<DateTime>, IEnumerable<TimeSpan>> _tests =
+            new Dictionary<IScheduledFunction<DateTime>, IEnumerable<TimeSpan>>();
+
+        [NotNull]
+        private readonly Scheduler _scheduler = new Scheduler();
 
         private DateTime _fullStartTime = DateTime.Now;
         private DateTime _startTime = DateTime.Now;
+
+        public SchedulerTester()
+        {
+            _scheduler.Enabled = false;
+        }
 
         public static void WaitForStartOfSecond(bool requireEven = false)
         {
@@ -49,14 +59,14 @@ namespace WebApplications.Utilities.Scheduling.Test
             }
         }
 
-        public ScheduledFunctionOld<DateTime> AddTest(PeriodicSchedule schedule, List<TimeSpan> expectedResults,
-                                                   Func<ScheduledFunctionOld<DateTime>, DateTime> function = null)
+        public IScheduledFunction<DateTime> AddTest([NotNull]ISchedule schedule, [NotNull]IEnumerable<TimeSpan> expectedResults,
+                                                   ISchedulableFunction<DateTime> function = null)
         {
-            return AddTest(SchedulerOLD.Add(schedule, function ?? TestFunction, enabled: false), expectedResults);
+            return AddTest(_scheduler.Add(schedule, function ?? TestFunction), expectedResults);
         }
 
-        public ScheduledFunctionOld<DateTime> AddTest(ScheduledFunctionOld<DateTime> scheduledFunction,
-                                                   List<TimeSpan> expectedResults)
+        public IScheduledFunction<DateTime> AddTest([NotNull]IScheduledFunction<DateTime> scheduledFunction,
+                                                   [NotNull]IEnumerable<TimeSpan> expectedResults)
         {
             _tests.Add(scheduledFunction, expectedResults);
             return scheduledFunction;
@@ -72,24 +82,17 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void Start()
         {
             SetStartTime();
-
-            foreach (KeyValuePair<ScheduledFunctionOld<DateTime>, List<TimeSpan>> test in _tests)
-            {
-                SchedulerOLD.Enable(test.Key);
-            }
+            _scheduler.Enabled = true;
         }
 
         public void Stop()
         {
-            foreach (KeyValuePair<ScheduledFunctionOld<DateTime>, List<TimeSpan>> test in _tests)
-            {
-                SchedulerOLD.Disable(test.Key);
-            }
+            _scheduler.Enabled = false;
         }
 
         public bool Completed()
         {
-            return _tests.All(test => test.Key.History.Count() >= test.Value.Count);
+            return _tests.All(test => test.Key.History.Count() >= test.Value.Count());
         }
 
         public void CheckResults()
@@ -97,14 +100,14 @@ namespace WebApplications.Utilities.Scheduling.Test
             int numberOfTestsPassed = 0;
             int testNumber = 1;
 
-            foreach (KeyValuePair<ScheduledFunctionOld<DateTime>, List<TimeSpan>> test in _tests)
+            foreach (KeyValuePair<IScheduledFunction<DateTime>, IEnumerable<TimeSpan>> test in _tests)
             {
                 Trace.WriteLine(string.Format("Test #{1} (Start time: {2:hh:mm:ss.ffff} ({3:hh:mm:ss.ffff})):{0}",
                                               Environment.NewLine, testNumber, _startTime, _fullStartTime));
 
                 bool testFailed = false;
-                Queue<ScheduledFunctionResult<DateTime>> results =
-                    new Queue<ScheduledFunctionResult<DateTime>>(test.Key.History);
+                Queue<IScheduledFunctionResult<DateTime>> results = new Queue<IScheduledFunctionResult<DateTime>>(test.Key.History);
+
                 foreach (TimeSpan expectedTimeSpan in test.Value)
                 {
                     if (results.Count < 1)
@@ -115,7 +118,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                         break;
                     }
 
-                    ScheduledFunctionResult<DateTime> result = results.Dequeue();
+                    IScheduledFunctionResult<DateTime> result = results.Dequeue();
                     bool resultFailed = false;
 
                     if (expectedTimeSpan == TimeSpan.MinValue)
@@ -148,7 +151,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                     Trace.WriteLine(string.Format("**Extra Results: ({1})**{0}", Environment.NewLine, results.Count));
                     testFailed = true;
 
-                    foreach (ScheduledFunctionResult<DateTime> extraResult in results)
+                    foreach (IScheduledFunctionResult<DateTime> extraResult in results)
                     {
                         OutputResult(extraResult);
                     }
@@ -181,19 +184,17 @@ namespace WebApplications.Utilities.Scheduling.Test
             Start();
             while (!Completed())
             {
-                Thread.Sleep(10);
+                Thread.Sleep(500);
             }
             Stop();
 
             CheckResults();
         }
 
-        public static DateTime TestFunction(ScheduledFunctionOld<DateTime> scheduledFunction)
-        {
-            return DateTime.Now;
-        }
+        [NotNull]
+        public static readonly ISchedulableFunction<DateTime> TestFunction = new SchedulableFunction<DateTime>(() => DateTime.Now);
 
-        public static void OutputResult(ScheduledFunctionResult<DateTime> result)
+        public static void OutputResult(IScheduledFunctionResult<DateTime> result)
         {
             Trace.WriteLine(
                 string.Format(
@@ -202,7 +203,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                     result.Started, result.Duration.TotalMilliseconds));
         }
 
-        public static void OutputResult(ScheduledFunctionResult<DateTime> result, DateTime startTime,
+        public static void OutputResult(IScheduledFunctionResult<DateTime> result, DateTime startTime,
                                         TimeSpan expectedTimeSpan, bool failed = false)
         {
             Trace.WriteLine(
@@ -213,6 +214,5 @@ namespace WebApplications.Utilities.Scheduling.Test
                     result.Started, result.Duration.TotalMilliseconds,
                     failed ? string.Format("{0}**Failed**", Environment.NewLine) : string.Empty));
         }
-#endif
     }
 }
