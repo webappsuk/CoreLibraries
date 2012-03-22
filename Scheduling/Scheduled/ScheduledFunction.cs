@@ -34,8 +34,9 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="actionInfo">The action info.</param>
         /// <remarks></remarks>
         internal ScheduledFunction([NotNull]IScheduler scheduler, [NotNull]ISchedule schedule, [NotNull]ISchedulableAction action, [NotNull]SchedulableActionInfo actionInfo, int maximumHistory = -1)
-            : base(scheduler, schedule, action, actionInfo, maximumHistory, typeof(T), _resultCreator)
+            : base(scheduler, schedule, action, actionInfo, maximumHistory, _resultCreator)
         {
+            Debug.Assert(FunctionReturnType == typeof(T));
         }
 
         /// <inheritdoc/>
