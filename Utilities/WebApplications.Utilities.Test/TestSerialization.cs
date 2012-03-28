@@ -102,7 +102,6 @@ namespace WebApplications.Utilities.Test
             {
                 result = reader.ReadToEnd();
             }
-            Assert.AreEqual("mice", result);
             TestSerializableObject(el, new XElement("ANode", 1), new XElement("BNode", "B"),
                                     new List<string> { "A", "B", "C" }, null, formatter);
             TestSerializableObject((XmlElement)el.FirstChild, new XElement("ANode", 1), new XElement("BNode", "B"),
