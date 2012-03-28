@@ -330,7 +330,7 @@ namespace WebApplications.Utilities.PowerShell
                                         .Where(
                                             f =>
                                             (f.Attributes & FileAttributes.Hidden) ==
-                                            0)
+                                            0 && !f.FullName.ToLower().Contains("case"))
                                         .Select(f => Get(f.FullName))
                                         .ToList();
 
@@ -353,7 +353,7 @@ namespace WebApplications.Utilities.PowerShell
                        : solutions.Union(
                            System.IO.Directory.EnumerateDirectories(rootPath, "*", SearchOption.TopDirectoryOnly)
                                .Select(dn => new DirectoryInfo(dn))
-                               .Where(d => (d.Attributes & FileAttributes.Hidden) == 0)
+                               .Where(d => (d.Attributes & FileAttributes.Hidden) == 0 && !d.FullName.ToLower().Contains("case"))
                                .SelectMany(d => GetAll(d.FullName, true, force, includeHidden))
                              );
         }
