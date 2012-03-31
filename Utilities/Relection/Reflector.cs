@@ -1,357 +1,662 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Relection
 {
     /// <summary>
-    ///   Holds reflection information for a class.
+    /// Holds extended information (including reflection info) for a type.
     /// </summary>
-    /// <typeparam name="T">The type.</typeparam>
-    public static class Reflector<T>
+    /// <remarks></remarks>
+    public class ExtendedType
     {
+        /// <summary>
+        /// Holds all known extended types.
+        /// </summary>
+        [NotNull]
+        private static readonly ConcurrentDictionary<Type, ExtendedType> _extendedTypes =
+            new ConcurrentDictionary<Type, ExtendedType>();
+
         /// <summary>
         ///   Binding flags for returning all fields/properties from a type.
         /// </summary>
-        [UsedImplicitly] public const BindingFlags AllMembersBindingFlags =
+        [UsedImplicitly]
+        public const BindingFlags AllMembersBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.DeclaredOnly;
 
         /// <summary>
-        ///   A cache for the getter methods, so that when requested they can be retrieved rather than recomputed.
+        /// The underlying type.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<string, object> _getterCache =
-            new ConcurrentDictionary<string, object>();
-
-        /// <summary>
-        ///   A cache for the setter methods, so that when requested they can be retrieved rather than recomputed.
-        /// </summary>
-        [NotNull]
-        private static readonly ConcurrentDictionary<string, object> _setterCache =
-            new ConcurrentDictionary<string, object>();
-
-        /// <summary>
-        ///   A cache for all methods, so that when requested they can be retrieved rather than recomputed.
-        /// </summary>
-        [NotNull]
-        private static readonly ConcurrentDictionary<string, object> _funcCache =
-            new ConcurrentDictionary<string, object>();
+        public readonly Type Type;
 
         /// <summary>
         ///   Holds all fields.
         /// </summary>
         [NotNull]
-        private static readonly Dictionary<string, FieldInfo> _fields = new Dictionary<string, FieldInfo>();
+        private readonly Dictionary<string, Field> _fields = new Dictionary<string, Field>();
 
         /// <summary>
         ///   Gets the fields.
         /// </summary>
-        public static IEnumerable<FieldInfo> Fields { get { return _fields.Values; } }
+        [NotNull]
+        public IEnumerable<Field> Fields
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _fields.Values;
+            }
+        }
 
         /// <summary>
         ///   Holds all properties.
         /// </summary>
         [NotNull]
-        private static readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
+        private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
 
         /// <summary>
         ///   Gets the properties.
         /// </summary>
-        public static IEnumerable<Property> Properties { get { return _properties.Values; } }
+        [NotNull]
+        public IEnumerable<Property> Properties
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _properties.Values;
+            }
+        }
 
         /// <summary>
         ///   Holds all events.
         /// </summary>
         [NotNull]
-        private static readonly Dictionary<string, Event> _events = new Dictionary<string, Event>();
+        private readonly Dictionary<string, Event> _events = new Dictionary<string, Event>();
 
         /// <summary>
         ///   Gets the events.
         /// </summary>
-        public static IEnumerable<Event> Events { get { return _events.Values; } }
+        [NotNull]
+        public IEnumerable<Event> Events
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _events.Values;
+            }
+        }
 
         /// <summary>
         ///   Holds all methods.
         /// </summary>
         [NotNull]
-        private static readonly Dictionary<string, Method> _methods = new Dictionary<string, Method>();
+        private readonly Dictionary<string, Methods> _methods = new Dictionary<string, Methods>();
 
         /// <summary>
         ///   Gets the methods.
         /// </summary>
-        public static IEnumerable<Method> Methods { get { return _methods.Values; } }
+        [NotNull]
+        public IEnumerable<Methods> Methods
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _methods.Values;
+            }
+        }
 
         /// <summary>
         /// Holds all constructors.
         /// </summary>
         [NotNull]
-        private static readonly Dictionary<string, Constructor> _constructors = new Dictionary<string, Constructor>();
+        private readonly Dictionary<string, Constructors> _constructors = new Dictionary<string, Constructors>();
 
         /// <summary>
         ///   Gets the constructors.
         /// </summary>
-        public static IEnumerable<Constructor> Constructors { get { return _constructors.Values; } }
+        [NotNull]
+        public IEnumerable<Constructors> Constructors
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _constructors.Values;
+            }
+        }
+
+
+        /// <summary>
+        /// Calculates custom attributes on demand.
+        /// </summary>
+        [NotNull]
+        private readonly Lazy<IEnumerable<Attribute>> _customAttributes;
 
         /// <summary>
         ///   All the customer attributes on the type.
         /// </summary>
         [NotNull]
-        public static readonly IEnumerable<Attribute> CustomerAttributes;
+        public IEnumerable<Attribute> CustomerAttributes { get { return _customAttributes.Value ?? Enumerable.Empty<Attribute>(); } }
+
+        /// <summary>
+        /// Calculates default member on demand.
+        /// </summary>
+        [NotNull]
+        private readonly Lazy<string> _defaultMember;
 
         /// <summary>
         ///   If this type has a default member (indexer), indicates its name.
         /// </summary>
         [CanBeNull]
-        public static readonly string DefaultMember;
+        public string DefaultMember { get { return _defaultMember.Value; } }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="object"/> class.
+        /// Creates a signature on demand.
         /// </summary>
-        static Reflector()
+        [NotNull]
+        private readonly Lazy<string> _signature;
+
+        /// <summary>
+        /// Gets the signature of the type.
+        /// </summary>
+        /// <remarks>This is modelled after the Type.SigToString internal method.</remarks>
+        [NotNull]
+        public string Signature { get { return _signature.Value ?? this.Type.FullName ?? this.Type.Name; } }
+
+        /// <summary>
+        /// Creates a simple full name on demand.
+        /// </summary>
+        [NotNull]
+        private readonly Lazy<string> _simpleFullName;
+
+        /// <summary>
+        /// Gets the simple full name for the type.
+        /// </summary>
+        /// <remarks></remarks>
+        public string SimpleFullName { get { return _simpleFullName.Value ?? this.Type.FullName ?? this.Type.Name; } }
+
+        /// <summary>
+        /// Indicates whether members have been loaded.
+        /// </summary>
+        private bool _loaded;
+
+        /// <summary>
+        /// Spinlock for locking during member load.
+        /// </summary>
+        private SpinLock _loadLock = new SpinLock();
+
+        // ReSharper restore StaticFieldInGenericType
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExtendedType"/> class.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <remarks></remarks>
+        public ExtendedType([NotNull]Type type)
         {
-            // Get customer attributes
-            CustomerAttributes = typeof (T).GetCustomAttributes(false).Cast<Attribute>();
+            this.Type = type;
 
-            // Look for default member.
-            DefaultMemberAttribute defaultMemberAttribute =
-                CustomerAttributes.OfType<DefaultMemberAttribute>().SingleOrDefault();
-            DefaultMember = defaultMemberAttribute != null
-                                ? defaultMemberAttribute.MemberName
-                                : null;
+            // Create lazy initialisers.
+            _customAttributes =
+                new Lazy<IEnumerable<Attribute>>(
+                    () => type.GetCustomAttributes(false).Cast<Attribute>().ToList(),
+                    LazyThreadSafetyMode.PublicationOnly);
 
-            // Get all members in one go - this is significantly faster than getting individual calls later.
-            foreach (MemberInfo memberInfo in typeof(T).GetMembers(AllMembersBindingFlags))
+            _defaultMember =
+                new Lazy<string>(
+                    () =>
+                    {
+                        // Look for default member.
+                        DefaultMemberAttribute defaultMemberAttribute =
+                            Enumerable.OfType<DefaultMemberAttribute>(this.CustomerAttributes).SingleOrDefault();
+                        return defaultMemberAttribute != null
+                                   ? defaultMemberAttribute.MemberName
+                                   : null;
+                    }, LazyThreadSafetyMode.PublicationOnly);
+
+            _signature
+                = new Lazy<string>(
+                    () =>
+                    {
+                        Type elementType = type;
+
+                        while (elementType.HasElementType)
+                            elementType = elementType.GetElementType();
+
+                        if (elementType.IsNested)
+                            return type.Name;
+
+                        string sigToString = type.ToString();
+
+                        if (elementType.IsPrimitive ||
+                            elementType == typeof(void) ||
+                            elementType == typeof(TypedReference))
+                            sigToString = sigToString.Substring(7);
+
+                        return sigToString;
+                    }, LazyThreadSafetyMode.PublicationOnly);
+
+            _simpleFullName
+                = new Lazy<string>(
+                    () => Reflection.SimpleTypeFullName(type.FullName ?? type.Name),
+                    LazyThreadSafetyMode.PublicationOnly);
+        }
+
+        /// <summary>
+        /// Gets the extended type information for the specified type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        [NotNull]
+        public static ExtendedType Get([NotNull]Type type)
+        {
+            return _extendedTypes.GetOrAdd(type, t => new ExtendedType(t));
+        }
+
+        /// <summary>
+        /// Loads all the members in one go.
+        /// </summary>
+        /// <remarks></remarks>
+        private void LoadMembers()
+        {
+            // Grab spin lock
+            bool taken = false;
+            _loadLock.Enter(ref taken);
+
+            if (!_loaded)
             {
-                // Store fields
-                FieldInfo f = memberInfo as FieldInfo;
-                if (f != null)
+                // Get all members in one go - this is significantly faster than getting individual calls later - at the cost of potentially
+                // loading members that are not requested.
+                foreach (MemberInfo memberInfo in this.Type.GetMembers(AllMembersBindingFlags))
                 {
-                    _fields.Add(f.Name, f);
-                    continue;
-                }
-
-                // Store properties/indexers
-                PropertyInfo p = memberInfo as PropertyInfo;
-                if (p != null)
-                {
-                    if (p.Name.Equals(DefaultMember))
+                    // Store fields
+                    FieldInfo f = memberInfo as FieldInfo;
+                    if (f != null)
                     {
-                        var indexTypes = p.GetIndexParameters();
-                        // TODO Add indexer support.
+                        _fields.Add(f.Name, new Field(this, f));
+                        continue;
                     }
-                    else
-                        _properties.Add(p.Name, new Property(p));
-                    continue;
-                }
 
-                // Store methods
-                MethodInfo m = memberInfo as MethodInfo;
-                if (m != null)
-                {
-                    Method method;
-                    if (!_methods.TryGetValue(m.Name, out method))
+                    // Store properties/indexers
+                    PropertyInfo p = memberInfo as PropertyInfo;
+                    if (p != null)
                     {
-                        method = new Method(m);
-                        _methods.Add(m.Name, method);
+                        if (p.Name.Equals(DefaultMember))
+                        {
+                            var indexTypes = p.GetIndexParameters();
+                            // TODO Add indexer support.
+                        }
+                        else
+                            _properties.Add(p.Name, new Property(this, p));
+                        continue;
                     }
-                    else
-                        method.Add(m);
-                    continue;
-                }
 
-                // Store constructors
-                ConstructorInfo c = memberInfo as ConstructorInfo;
-                if (c != null)
-                {
-                    Constructor constructor;
-                    if (!_constructors.TryGetValue(c.Name, out constructor))
+                    // Store methods
+                    MethodInfo m = memberInfo as MethodInfo;
+                    if (m != null)
                     {
-                        constructor = new Constructor(c);
-                        _constructors.Add(c.Name, constructor);
+                        Methods methods;
+                        if (!_methods.TryGetValue(m.Name, out methods))
+                        {
+                            methods = new Methods(this, m);
+                            _methods.Add(m.Name, methods);
+                        }
+                        else
+                            methods.Add(m);
+                        continue;
                     }
-                    else
-                        constructor.Add(c);
-                    continue;
+
+                    // Store constructors
+                    ConstructorInfo c = memberInfo as ConstructorInfo;
+                    if (c != null)
+                    {
+                        Constructors constructors;
+                        if (!_constructors.TryGetValue(c.Name, out constructors))
+                        {
+                            constructors = new Constructors(this, c);
+                            _constructors.Add(c.Name, constructors);
+                        }
+                        else
+                            constructors.Add(c);
+                        continue;
+                    }
+
+                    // Store events
+                    EventInfo e = memberInfo as EventInfo;
+                    if (e != null)
+                    {
+                        _events.Add(e.Name, new Event(this, e));
+                        continue;
+                    }
+
+                    // Store types
+                    Type t = memberInfo as Type;
+                    if (t == null) return;
                 }
 
-                // Store events
-                EventInfo e = memberInfo as EventInfo;
-                if (e != null)
-                {
-                    _events.Add(e.Name, new Event(e));
-                    continue;
-                }
-
-                // Store types
-                Type t = memberInfo as Type;
-                if (t == null) return;
+                _loaded = true;
             }
+
+            // Release spin lock.
+            if (taken)
+                _loadLock.Exit();
         }
 
         /// <summary>
-        ///   Retrieves the lambda function equivalent of the specified getter method.
+        /// Gets the field.
         /// </summary>
-        /// <typeparam name="TValue">The type of the value returned.</typeparam>
-        /// <param name="name">The name of the field or property whose getter we want to retrieve.</param>
-        /// <param name="checkAssignability">If set to <see langword="true"/> performs assignability checks.</param>
-        /// <returns>
-        ///   A function that takes an object of the type T and returns the value of the property or field.
-        /// </returns>
-        [NotNull]
-        public static Func<T, TValue> GetGetter<TValue>([NotNull]string name, bool checkAssignability = false)
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="FieldInfo"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public Field GetField([NotNull]string name)
         {
-            return (Func<T, TValue>)GetGetter(name, null, typeof(TValue), checkAssignability);
+            if (!_loaded) LoadMembers();
+            Field field;
+            return _fields.TryGetValue(name, out field) ? field : null;
         }
 
         /// <summary>
-        /// Retrieves the lambda function equivalent of the specified getter method.
+        /// Gets the property.
         /// </summary>
-        /// <param name="name">The name of the field or property whose getter we want.</param>
-        /// <param name="parameterType">
-        ///   <para>The type of the parameter.</para>
-        ///   <para>By default this is reflected type.</para>
-        /// </param>
-        /// <param name="returnType">
-        ///   <para>The return value's type.</para>
-        ///   <para>By default this is the member (the field or property) type.</para>
-        /// </param>
-        /// <param name="checkAssignability">
-        ///   If <see langword="true"/> this checks that the member type is assignable to the <paramref name="returnType"/>
-        ///   and that the parameter type is assignable from the reflected type.
-        /// </param>
-        /// <returns>
-        ///   A function that takes an object of the reflected type and returns the value of the property or field.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   <para>There is no getter for the field or property specified.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="parameterType"/> is not assignable from reflected type.</para>
-        ///   <para>-or-</para>
-        ///   <para>The <paramref name="returnType"/> is not assignable from the member type.</para>
-        /// </exception>
-        /// <seealso cref="System.Type.IsAssignableFrom"/>
-        [NotNull]
-        public static object GetGetter(
-            [NotNull] string name,
-            [CanBeNull] Type parameterType = null,
-            [CanBeNull] Type returnType = null,
-            bool checkAssignability = false)
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="Property"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public Property GetProperty([NotNull]string name)
         {
-            if (parameterType == null)
-                parameterType = typeof (T);
-            MemberInfo memberInfo = typeof (T).GetMember(name, AllMembersBindingFlags).SingleOrDefault();
-            if (memberInfo == null)
-                throw new InvalidOperationException(String.Format(Resources.Reflector_GetGetter_MemberDoesNotExist,
-                                                                  name, typeof (T).FullName));
+            if (!_loaded) LoadMembers();
+            Property property;
+            return _properties.TryGetValue(name, out property) ? property : null;
+        }
 
-            return
-                _getterCache.GetOrAdd(
-                    String.Format("{0}:{1}|{2}|{3}", typeof(T), name, parameterType, returnType),
-                    k =>
-                    {
-                        // Find the field or property
-                        bool isField;
-                        bool isStatic;
-                        Type memberType;
-                        FieldInfo fieldInfo = typeof(T).GetField(name, AllMembersBindingFlags);
-                        MethodInfo propertyAccesssor;
-                        if (fieldInfo != null)
-                        {
-                            memberType = fieldInfo.FieldType;
-                            propertyAccesssor = null;
-                            isStatic = fieldInfo.IsStatic;
-                            isField = true;
-                        }
-                        else
-                        {
-                            PropertyInfo propertyInfo = typeof(T).GetProperty(
-                                name, AllMembersBindingFlags);
-                            if ((propertyInfo == null) ||
-                                ((propertyAccesssor = propertyInfo.GetGetMethod(true)) == null))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "name",
-                                    String.Format(
-                                        Resources.Reflector_GetGetter_DoesNotHaveGetter,
-                                        name,
-                                        typeof(T)));
-                            }
-                            memberType = propertyInfo.PropertyType;
-                            isStatic = propertyAccesssor.IsStatic;
-                            isField = false;
-                        }
+        /// <summary>
+        /// Gets the methods.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="Methods"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public Methods GetMethods([NotNull]string name)
+        {
+            if (!_loaded) LoadMembers();
+            Methods methods;
+            return _methods.TryGetValue(name, out methods) ? methods : null;
+        }
+        
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public Method GetMethod([NotNull]string name, [NotNull]params Type[] types)
+        {
+            return GetMethod(name, 0, types);
+        }
 
-                        //  Check the parameter type can be assigned from the declaring type.
-                        if (parameterType != null)
-                        {
-                            if ((checkAssignability) && (parameterType != typeof(T)) &&
-                                (!parameterType.IsAssignableFrom(typeof(T))))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "parameterType",
-                                    String.Format(
-                                        Resources.Reflector_GetGetter_ParameterTypeNotAssignable,
-                                        name,
-                                        isField ? "field" : "property",
-                                        typeof(T),
-                                        parameterType));
-                            }
-                        }
-                        else
-                            parameterType = typeof(T);
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="genericArguments">The number of generic arguments.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public Method GetMethod([NotNull]string name, int genericArguments, [NotNull]params Type[] types)
+        {
+            if (!_loaded) LoadMembers();
+            Methods methods;
+            if (!_methods.TryGetValue(name, out methods))
+                return null;
+            Debug.Assert(methods != null);
+            return methods.GetOverload(genericArguments, types);
+        }
 
-                        // Check the return type can be assigned from the member type
-                        if (returnType != null)
-                        {
-                            if ((checkAssignability) && (returnType != memberType) &&
-                                (!returnType.IsAssignableFrom(memberType)))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "returnType",
-                                    String.Format(
-                                        Resources.Reflector_GetGetter_ReturnTypeNotAssignable,
-                                        name,
-                                        isField ? "field" : "property",
-                                        typeof(T),
-                                        memberType,
-                                        returnType));
-                            }
-                        }
-                        else
-                            returnType = memberType;
+        /// <summary>
+        /// Gets the constructors.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="Constructors"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public Constructors GetConstructors([NotNull]string name)
+        {
+            if (!_loaded) LoadMembers();
+            Constructors constructors;
+            return _constructors.TryGetValue(name, out constructors) ? constructors : null;
+        }
 
-                        Expression expression = null;
-                        // Create input parameter expression
-                        ParameterExpression parameterExpression = Expression.Parameter(
-                            parameterType, "target");
+        /// <summary>
+        /// Gets the constructor.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Constructor"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public Constructor GetConstructor([NotNull]string name, [NotNull]params Type[] types)
+        {
+            if (!_loaded) LoadMembers();
+            Constructors constructors;
+            if (!_constructors.TryGetValue(name, out constructors))
+                return null;
+            Debug.Assert(constructors != null);
+            Constructor constructor;
+            return constructors.GetOverload(types);
+        }
 
-                        // If we're not static we need a parameter expression
-                        if (!isStatic)
-                        {
-                            expression = parameterExpression;
 
-                            // Cast parameter if necessary
-                            if (parameterType != typeof(T))
-                                expression = Expression.Convert(expression, typeof(T));
-                        }
+        /// <summary>
+        /// Gets the event.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="Event"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public Event GetEvent([NotNull]string name)
+        {
+            if (!_loaded) LoadMembers();
+            Event @event;
+            return _events.TryGetValue(name, out @event) ? @event : null;
+        }
+    }
 
-                        // Get a member access expression
-                        expression = isField
-                                         ? Expression.Field(expression, fieldInfo)
-                                         : Expression.Property(expression, propertyAccesssor);
+    /// <summary>
+    /// Generic convenience type for accessing extended type information.
+    /// </summary>
+    /// <typeparam name="T">The type.</typeparam>
+    /// <remarks></remarks>
+    public static class ExtendedType<T>
+    {
+        /// <summary>
+        /// The underlying <see cref="ExtendedType"/> object.
+        /// </summary>
+        [NotNull]
+        public static readonly ExtendedType ExtendedTypeObject;
 
-                        // Cast return value if necessary
-                        if (returnType != memberType)
-                            expression = Expression.Convert(expression, returnType);
+        /// <summary>
+        /// Loads the underlying <see cref="ExtendedTypeObject"/>.
+        /// </summary>
+        static ExtendedType()
+        {
+            ExtendedTypeObject = ExtendedType.Get(typeof(T));
+        }
 
-                        // Create lambda and compile
-                        return Expression.Lambda(expression, parameterExpression).Compile();
-                    });
+        /// <summary>
+        /// Gets the underlying type.
+        /// </summary>
+        /// <remarks></remarks>
+        public static Type Type { get { return typeof(T); } }
+
+        /// <summary>
+        ///   Gets the fields.
+        /// </summary>
+        public static IEnumerable<Field> Fields
+        {
+            get { return ExtendedTypeObject.Fields; }
+        }
+
+        /// <summary>
+        ///   Gets the properties.
+        /// </summary>
+        [NotNull]
+        public static IEnumerable<Property> Properties
+        {
+            get { return ExtendedTypeObject.Properties; }
+        }
+
+        /// <summary>
+        ///   Gets the events.
+        /// </summary>
+        [NotNull]
+        public static IEnumerable<Event> Events
+        {
+            get { return ExtendedTypeObject.Events; }
+        }
+
+        /// <summary>
+        ///   Gets the methods.
+        /// </summary>
+        [NotNull]
+        public static IEnumerable<Methods> Methods
+        {
+            get { return ExtendedTypeObject.Methods; }
+        }
+
+        /// <summary>
+        ///   Gets the constructors.
+        /// </summary>
+        [NotNull]
+        public static IEnumerable<Constructors> Constructors
+        {
+            get { return ExtendedTypeObject.Constructors; }
+        }
+
+        /// <summary>
+        ///   All the customer attributes on the type.
+        /// </summary>
+        [NotNull]
+        public static IEnumerable<Attribute> CustomerAttributes
+        {
+            get { return ExtendedTypeObject.CustomerAttributes; }
+        }
+
+        /// <summary>
+        ///   If this type has a default member (indexer), indicates its name.
+        /// </summary>
+        [CanBeNull]
+        public static string DefaultMember { get { return ExtendedTypeObject.DefaultMember; } }
+
+        /// <summary>
+        /// Gets the signature of the type.
+        /// </summary>
+        /// <remarks>This is modelled after the Type.SigToString internal method.</remarks>
+        [NotNull]
+        public static string Signature { get { return ExtendedTypeObject.Signature; } }
+
+        /// <summary>
+        /// Gets the simple full name for the type.
+        /// </summary>
+        /// <remarks></remarks>
+        public static string SimpleFullName { get { return ExtendedTypeObject.SimpleFullName; } }
+
+        /// <summary>
+        /// Gets the field.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="Field"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public static Field GetField([NotNull]string name)
+        {
+            return ExtendedTypeObject.GetField(name);
+        }
+
+        /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="Property"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public static Property GetProperty([NotNull]string name)
+        {
+            return ExtendedTypeObject.GetProperty(name);
+        }
+
+        /// <summary>
+        /// Gets the methods.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="Methods"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public static Methods GetMethods([NotNull]string name)
+        {
+            return ExtendedTypeObject.GetMethods(name);
+        }
+
+
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public static Method GetMethod([NotNull]string name, [NotNull]params Type[] types)
+        {
+            return ExtendedTypeObject.GetMethod(name, types);
+        }
+
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="genericArguments">The number of generic arguments.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public static Method GetMethod([NotNull]string name, int genericArguments, [NotNull]params Type[] types)
+        {
+            return ExtendedTypeObject.GetMethod(name, genericArguments, types);
+        }
+
+        /// <summary>
+        /// Gets the constructors.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="Constructors"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public static Constructors GetConstructors([NotNull]string name)
+        {
+            return ExtendedTypeObject.GetConstructors(name);
+        }
+
+        /// <summary>
+        /// Gets the constructor.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Constructor"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public static Constructor GetConstructor([NotNull]string name, params Type[] types)
+        {
+            return ExtendedTypeObject.GetConstructor(name, types);
+        }
+
+        /// <summary>
+        /// Gets the event.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The <see cref="Event"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public static Event GetEvent([NotNull]string name)
+        {
+            return ExtendedTypeObject.GetEvent(name);
         }
     }
 }

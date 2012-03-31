@@ -10,6 +10,12 @@ namespace WebApplications.Utilities.Relection
     public class Property
     {
         /// <summary>
+        /// The extended type.
+        /// </summary>
+        [NotNull]
+        public readonly ExtendedType ExtendedType;
+
+        /// <summary>
         ///   The property info object, which provides access to property metadata. 
         /// </summary>
         [NotNull]
@@ -44,14 +50,17 @@ namespace WebApplications.Utilities.Relection
         {
             get { return _setMethod.Value; }
         }
+
         /// <summary>
         ///   Initializes a new instance of the <see cref="Property"/> class.
         /// </summary>
+        /// <param name="extendedType">The extended type.</param>
         /// <param name="info">
         ///   The <see cref="System.Reflection.PropertyInfo">property info</see>.
         /// </param>
-        internal Property([NotNull]PropertyInfo info)
+        internal Property([NotNull]ExtendedType extendedType, [NotNull] PropertyInfo info)
         {
+            ExtendedType = extendedType;
             Info = info;
             _getMethod = new Lazy<MethodInfo>(() => info.GetGetMethod(true));
             _setMethod = new Lazy<MethodInfo>(() => info.GetSetMethod(true));

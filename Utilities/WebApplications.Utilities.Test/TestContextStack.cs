@@ -33,6 +33,7 @@ using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Test
 {
+#if false
     [TestClass]
     public class TestContextStack
     {
@@ -265,4 +266,5 @@ namespace WebApplications.Utilities.Test
         }
         #endregion
     }
+#endif
 }

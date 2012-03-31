@@ -61,8 +61,8 @@ namespace WebApplications.Utilities.Test
             int tlCount = 0;
             int nsCount = 0;
             int rCount = 0;
+            int mCount = 0;
             Stopwatch s = new Stopwatch();
-            Type reflectorType = typeof(Reflector<>);
             s.Start();
             // Get every loaded assembly - this will include the framework, so lot's of types to test with!
             foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
@@ -70,17 +70,15 @@ namespace WebApplications.Utilities.Test
                 aCount++;
                 foreach (Type t in a.GetTypes().Where(t => !t.IsGenericTypeDefinition))
                 {
-                    Type specificReflectorType;
+                    Assert.IsNotNull(t);
 
                     // Make generic type
                     try
                     {
-                        specificReflectorType = reflectorType.MakeGenericType(t);
-                        tCount++;
-
-                        IEnumerable<FieldInfo> fields =
-                            specificReflectorType.GetProperty("Fields").GetGetMethod().Invoke(null, null) as
-                            IEnumerable<FieldInfo>;
+                        ExtendedType et = ExtendedType.Get(t);
+                        Assert.IsNotNull(et);
+                        Assert.IsNotNull(et.Methods);
+                        mCount += et.Methods.SelectMany(m => m.Overloads).Count();
                         rCount++;
                     }
                     catch (NotSupportedException)
@@ -101,7 +99,10 @@ namespace WebApplications.Utilities.Test
                 }
             }
             s.Stop();
-            Trace.WriteLine(s.ToString("Reflecting '{0}' of '{1}' types in '{2}' assemblies [{3} type load errors, {4} argument exceptions, {5} not supported]", rCount, tCount, aCount, tlCount, aeCount, nsCount));
+            Trace.WriteLine(
+                s.ToString(
+                    "Reflecting '{0}' of '{1}' types in '{2}' assemblies [{3} type load errors, {4} argument exceptions, {5} not supported] - {6} methods found.",
+                    rCount, tCount, aCount, tlCount, aeCount, nsCount, mCount));
         }
 
         [TestMethod]
@@ -110,7 +111,7 @@ namespace WebApplications.Utilities.Test
             const int loops = 100000;
             Type t = typeof(ReflectionTests);
             ILookup<string, MemberInfo> members = t
-                .GetMembers(Reflector<ReflectionTests>.AllMembersBindingFlags)
+                .GetMembers(ExtendedType.AllMembersBindingFlags)
                 .ToLookup(mi => mi.Name);
 
 
@@ -149,7 +150,8 @@ namespace WebApplications.Utilities.Test
             s.Stop();
             Trace.WriteLine(s.ToString("{0} calls to GetParameters", loops));
         }
-
+        
+#if false
         #region Nested type: ReflectionTestClass
         // <summary>Class used as test case for reflection tests</summary>
         public class ReflectionTestClass<T>
@@ -636,6 +638,7 @@ namespace WebApplications.Utilities.Test
                 return null;
             }
         }
-
+        
+#endif
     }
 }

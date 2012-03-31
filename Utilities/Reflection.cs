@@ -34,6 +34,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Relection;
 
 namespace WebApplications.Utilities
 {
@@ -1040,7 +1041,7 @@ namespace WebApplications.Utilities
                     method,
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy,
                     null,
-                    new[] { typeof(IFormatProvider) },
+                    new[] {typeof (IFormatProvider)},
                     null);
                 if (mi != null)
                 {
@@ -1057,7 +1058,7 @@ namespace WebApplications.Utilities
             // Look for TypeConverter on output type.
             bool useTo = false;
             TypeConverterAttribute typeConverterAttribute = outputType
-                .GetCustomAttributes(typeof(TypeConverterAttribute), false)
+                .GetCustomAttributes(typeof (TypeConverterAttribute), false)
                 .OfType<TypeConverterAttribute>()
                 .FirstOrDefault();
 
@@ -1067,7 +1068,7 @@ namespace WebApplications.Utilities
                 // Look for TypeConverter on expression type.
                 useTo = true;
                 typeConverterAttribute = expression.Type
-                    .GetCustomAttributes(typeof(TypeConverterAttribute), false)
+                    .GetCustomAttributes(typeof (TypeConverterAttribute), false)
                     .OfType<TypeConverterAttribute>()
                     .FirstOrDefault();
             }
@@ -1094,26 +1095,29 @@ namespace WebApplications.Utilities
                                                     BindingFlags.Instance | BindingFlags.Public |
                                                     BindingFlags.FlattenHierarchy,
                                                     null,
-                                                    new[] { typeof(object), typeof(Type) },
+                                                    new[] {typeof (object), typeof (Type)},
                                                     null)
                                                 : typeConverterType.GetMethod(
                                                     "ConvertFrom",
                                                     BindingFlags.Instance | BindingFlags.Public |
                                                     BindingFlags.FlattenHierarchy,
                                                     null,
-                                                    new[] { typeof(object) },
+                                                    new[] {typeof (object)},
                                                     null);
                             if (mi != null)
                             {
                                 // The convert methods accepts the value as an object parameters, so we may need a cast.
-                                if (expression.Type != typeof(object))
-                                    expression = Expression.Convert(expression, typeof(object));
+                                if (expression.Type != typeof (object))
+                                    expression = Expression.Convert(expression, typeof (object));
 
                                 // Create an expression which creates a new instance of the type converter and passes in
                                 // the existing expression as the first parameter to ConvertTo or ConvertFrom.
                                 outputExpression = useTo
-                                    ? Expression.Call(Expression.New(typeConverterType), mi, expression, Expression.Constant(outputType, typeof(Type)))
-                                    : Expression.Call(Expression.New(typeConverterType), mi, expression);
+                                                       ? Expression.Call(Expression.New(typeConverterType), mi,
+                                                                         expression,
+                                                                         Expression.Constant(outputType, typeof (Type)))
+                                                       : Expression.Call(Expression.New(typeConverterType), mi,
+                                                                         expression);
 
                                 return true;
                             }
@@ -1126,7 +1130,7 @@ namespace WebApplications.Utilities
             }
 
             // Finally, if we want to output to string, call ToString() method.
-            if (outputType == typeof(string))
+            if (outputType == typeof (string))
             {
                 outputExpression = Expression.Call(expression, _toStringMethodInfo);
                 return true;
@@ -1135,6 +1139,7 @@ namespace WebApplications.Utilities
             outputExpression = expression;
             return false;
         }
+
 
         /// <summary>
         ///   Returns the method info of an explicit/implicit cast on <paramref name="type"/>

@@ -126,9 +126,11 @@
     </Compile>
     <Compile Include="ExtendedTupleGeneric.cs" />
     <Compile Include="Relection\Constructor.cs" />
+    <Compile Include="Relection\Constructors.cs" />
     <Compile Include="Relection\Event.cs" />
+    <Compile Include="Relection\Field.cs" />
     <Compile Include="Relection\Method.cs" />
-    <Compile Include="Relection\Overloadable.cs" />
+    <Compile Include="Relection\Methods.cs" />
     <Compile Include="Relection\Property.cs" />
     <Compile Include="Relection\Reflector.cs" />
     <Compile Include="Resources.Designer.cs">
