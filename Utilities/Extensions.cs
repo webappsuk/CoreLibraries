@@ -1312,18 +1312,5 @@ namespace WebApplications.Utilities
             }
             return arrays;
         }
-
-        /// <summary>
-        /// Splits the specified array at the selected indices.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="indices">The indices.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
-        [NotNull]
-        public static IEnumerable<Array> Split([NotNull]this Array array, [NotNull] params int[] indices)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

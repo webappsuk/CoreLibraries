@@ -390,7 +390,7 @@ namespace WebApplications.Utilities.Relection
             Methods methods;
             return _methods.TryGetValue(name, out methods) ? methods : null;
         }
-        
+
         /// <summary>
         /// Gets the method.
         /// </summary>
@@ -464,6 +464,63 @@ namespace WebApplications.Utilities.Relection
             if (!_loaded) LoadMembers();
             Event @event;
             return _events.TryGetValue(name, out @event) ? @event : null;
+        }
+
+        /// <summary>
+        /// Closes the type if it is generic and has generic parameters.
+        /// </summary>
+        /// <param name="genericTypes">The generic types.</param>
+        /// <returns>The <see cref="ExtendedType"/> without open generic parameter if the supplied generic types are able to close the type; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public ExtendedType CloseType([NotNull]params Type[] genericTypes)
+        {
+            if (!Type.ContainsGenericParameters)
+                return genericTypes.Length < 1 ? this : null;
+
+            int args = Type.GetGenericArguments().Length;
+
+            if (genericTypes.Length != args)
+                return null;
+            
+            // Make a closed type using the first types in the array.
+            Type closedType = Type.MakeGenericType(genericTypes);
+
+            return Get(closedType);
+        }
+
+
+        /// <summary>
+        /// Closes the type if it is generic and has generic parameters.
+        /// </summary>
+        /// <param name="genericTypes">The generic types.</param>
+        /// <returns>The <see cref="ExtendedType"/> without open generic parameter if the supplied generic types are sufficient; otherwise <see langword="null"/>.</returns>
+        /// <remarks>
+        /// On returning, the <see paramref="genericTypes"/> parameter contains a pointer to an array containing any unused types.
+        /// </remarks>
+        public ExtendedType CloseType([NotNull]ref Type[] genericTypes)
+        {
+            if (!Type.ContainsGenericParameters)
+                return this;
+
+            int args = Type.GetGenericArguments().Length;
+
+            Debug.Assert(genericTypes != null);
+            if (genericTypes.Length < args)
+                return null;
+
+            // Split the generic types array.
+            Type[][] split = genericTypes.Split(args);
+            Debug.Assert(
+                split.Length > 0 &&
+                split.Length < 3);
+
+            // Change generic types to the second half of the split
+            genericTypes = split.Length > 1 ? split[1] : new Type[0];
+
+            // Make a closed type using the first types in the array.
+            Type closedType = Type.MakeGenericType(split[0]);
+
+            return Get(closedType);
         }
     }
 

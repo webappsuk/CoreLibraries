@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Relection
             types[a] = method.ReturnType;
 
             // Add method
-            _methods.Add(CreateKey(genericArguments, types), new Method(ExtendedType, method, paramters));
+            _methods.Add(CreateKey(genericArguments, types), new Method(ExtendedType, genericArguments, method, paramters));
         }
 
         /// <summary>

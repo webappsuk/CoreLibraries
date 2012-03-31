@@ -132,7 +132,7 @@
     <Compile Include="Relection\Method.cs" />
     <Compile Include="Relection\Methods.cs" />
     <Compile Include="Relection\Property.cs" />
-    <Compile Include="Relection\Reflector.cs" />
+    <Compile Include="Relection\ExtendedType.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

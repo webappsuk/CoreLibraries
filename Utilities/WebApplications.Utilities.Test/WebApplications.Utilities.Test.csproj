@@ -85,6 +85,7 @@
     <Compile Include="Configuration\ParameterCollectionTests.cs" />
     <Compile Include="Configuration\ParameterElementTests.cs" />
     <Compile Include="DebuggingExtensionsTests.cs" />
+    <Compile Include="Extensions\ArraySplitTests.cs" />
     <Compile Include="Extensions\EqualityFunctionsTests.cs" />
     <Compile Include="Extensions\GetObjectsByIdTests.cs" />
     <Compile Include="Extensions\MiscellaneousExtensionsTests.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="Ranges\LongRangeTests.cs" />
     <Compile Include="Ranges\RangeTests.cs" />
     <Compile Include="Ranges\ShortRangeTests.cs" />
-    <Compile Include="Reflection\ReflectorTests.cs" />
+    <Compile Include="Reflection\ExtendedTypeTests.cs" />
     <Compile Include="Serialization\ExtendedSerializationBinderTests.cs" />
     <Compile Include="Serialization\SerializeTests.cs" />
     <Compile Include="Serialization\XElementSurrogateTests.cs" />
