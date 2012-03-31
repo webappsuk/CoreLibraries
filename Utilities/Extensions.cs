@@ -1265,5 +1265,65 @@ namespace WebApplications.Utilities
             if (mod < 0) mod += (long)modulus;
             return (ulong)mod;
         }
+
+        /// <summary>
+        /// Splits the specified array at the selected indices.
+        /// </summary>
+        /// <typeparam name="T">The array object type.</typeparam>
+        /// <param name="array">The array.</param>
+        /// <param name="indices">The indices.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        [NotNull]
+        public static T[][] Split<T>([NotNull]this T[] array, [NotNull] params int[] indices)
+        {
+            int length = array.Length;
+            
+            // Sort indices, removing any out of bounds and adding an end value of length.
+            int[] orderedIndices = indices
+                .Where(i => i < length && i > -1)
+                .OrderBy(i => i)
+                .Concat(new[] {length})
+                .ToArray();
+
+            // If there is only one index we return the original
+            // aray in a single element enumeration.
+            if (orderedIndices.Length < 2)
+                return new[] {array};
+
+            T[][] arrays = new T[orderedIndices.Length][];
+            int start = 0;
+            int chunkIndex = 0;
+            foreach (int index in orderedIndices)
+            {
+                // If end and start are equal, add an empty array.
+                if (index == start)
+                {
+                    arrays[chunkIndex++] = new T[0];
+                    continue;
+                }
+
+                int chunkLength = index - start;
+                T[] chunk = new T[chunkLength];
+                Array.Copy(array, start, chunk, 0, chunkLength);
+                arrays[chunkIndex++] = chunk;
+
+                start = index;
+            }
+            return arrays;
+        }
+
+        /// <summary>
+        /// Splits the specified array at the selected indices.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="indices">The indices.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        [NotNull]
+        public static IEnumerable<Array> Split([NotNull]this Array array, [NotNull] params int[] indices)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
