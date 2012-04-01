@@ -1417,5 +1417,93 @@ namespace WebApplications.Utilities
             newType.Append(typeName.Substring(p));
             return newType.ToString();
         }
+
+        public static bool Matches(this Type type, TypeSearch search)
+        {
+            bool requiresCast;
+            GenericArgumentLocation closureLocation;
+            int closurePosition;
+            Type closureType;
+            return Matches(type, search, out requiresCast, out closureLocation, out closurePosition, out closureType);
+        }
+
+        public static bool Matches(this Type type, TypeSearch search, out bool requiresCast, out GenericArgumentLocation closureLocation, out int closurePosition, out Type closureType)
+        {
+            requiresCast = false;
+            closureLocation = GenericArgumentLocation.None;
+            closurePosition = -1;
+            closureType = null;
+
+            // Weed out nulls
+            if (type == null) return search == null;
+            if (search == null) return false;
+
+            if (type.IsByRef != search.IsByReference) return false;
+            if (type.IsPointer != search.IsPointer) return false;
+
+            // If types are equal we have a match
+            if (type == search.Type) return true;
+
+            // If we're allowing casting and search type can be cast to type, we have a match.
+            if ((search.Type != null) &&
+                (type.IsAssignableFrom(search.Type)))
+            {
+                requiresCast = true;
+                return true;
+            }
+
+            // If we have a reference or pointer type - retrieve the element type.
+            if (type.IsByRef || type.IsPointer)
+            {
+                if (!type.HasElementType) return false;
+                type = type.GetElementType();
+            }
+
+            // If our type is not a generic parameter then we're done.
+            if (!type.IsGenericParameter)
+                return false;
+
+            if (search.Type != null)
+            {
+                // If we were looking for an actual type, andf the type is a generic parameter
+                // then we need to perform a closure.
+                closureLocation = type.DeclaringMethod != null
+                                      ? GenericArgumentLocation.Method
+                                      : GenericArgumentLocation.Type;
+                closurePosition = type.GenericParameterPosition;
+                closureType = (search.IsByReference || search.IsPointer) && search.Type.HasElementType
+                                  ? search.Type.GetElementType()
+                                  : search.Type;
+
+                // Check closure type is valid for constraint
+
+                return true;
+            }
+
+            // If we're looking for a particular name, ensure it matches.
+            if ((search.GenericArgumentName != null) &&
+                (type.Name != search.GenericArgumentName))
+                return false;
+
+            if ((search.GenericArgumentPosition >= 0) &&
+                (type.GenericParameterPosition != search.GenericArgumentPosition))
+                return false;
+
+            switch (search.GenericArgumentLocation)
+            {
+                case GenericArgumentLocation.None:
+                    return false;
+                case GenericArgumentLocation.Method:
+                    if (type.DeclaringMethod == null)
+                        return false;
+                    break;
+                case GenericArgumentLocation.Type:
+                    if (type.DeclaringMethod != null)
+                        return false;
+                    break;
+            }
+
+            return true;
+        }
     }
 }

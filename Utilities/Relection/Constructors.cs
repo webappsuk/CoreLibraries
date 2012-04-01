@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Relection
@@ -9,6 +12,7 @@ namespace WebApplications.Utilities.Relection
     /// <summary>
     ///   Holds information about all constructors with a given name.
     /// </summary>
+    [DebuggerDisplay("{DebugString}")]
     public class Constructors
     {
         /// <summary>
@@ -22,34 +26,29 @@ namespace WebApplications.Utilities.Relection
         ///   hence type position is not always enough to disambiguate.
         /// </summary>
         [NotNull]
-        private readonly Dictionary<string, Constructor> _constructors = new Dictionary<string,Constructor>();
+        private readonly List<Constructor> _constructors = new List<Constructor>();
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="Overloadable&lt;T&gt;"/> class.
+        /// Initializes a new instance of the <see cref="Constructors"/> class.
         /// </summary>
-        /// <param name="extendedType">The extended type.</param>
-        /// <param name="constructor">The constructor to add.</param>
+        /// <param name="extendedType">Type of the extended.</param>
+        /// <param name="constructor">The constructor.</param>
+        /// <remarks></remarks>
         internal Constructors([NotNull]ExtendedType extendedType, [NotNull]ConstructorInfo constructor)
         {
             ExtendedType = extendedType;
-            Add(constructor);
+            _constructors.Add(new Constructor(ExtendedType, constructor));
         }
 
         /// <summary>
-        ///   Adds the specified constructor.
+        /// Adds the specified constructor.
         /// </summary>
         /// <param name="constructor">The constructor to add.</param>
+        /// <remarks></remarks>
         internal void Add([NotNull]ConstructorInfo constructor)
         {
-            // Build type array.
-            ParameterInfo[] paramters = constructor.GetParameters();
-            int pCount = paramters.Length;
-            Type[] types = new Type[pCount];
-            for (int a = 0; a < pCount; a++)
-                types[a] = paramters[a].ParameterType;
-
             // Add constructor
-            _constructors.Add(CreateKey(types), new Constructor(ExtendedType, constructor, paramters));
+            _constructors.Add(new Constructor(ExtendedType, constructor));
         }
 
         /// <summary>
@@ -57,38 +56,8 @@ namespace WebApplications.Utilities.Relection
         /// </summary>
         /// <remarks></remarks>
         [NotNull]
-        public IEnumerable<Constructor> Overloads { get { return _constructors.Values; } }
-
-        /// <summary>
-        ///   Creates a key for a signature.
-        /// </summary>
-        /// <param name="types">The parameter types.</param>
-        /// <remarks>
-        ///   We prepend the <paramref name="types"/> <see cref="System.Array.Length">count</see>
-        ///   to the key as this will cause string comparison failures more quickly.
-        /// </remarks>
-        [NotNull]
-        private string CreateKey([NotNull]params Type[] types)
-        {
-            int l = types.Length;
-            // Most common case, use empty string to indicate no parameters.
-            if (l < 1)
-                return String.Empty;
-
-            // For performance, this is a very common case, no need for stringbuilder.
-            if (l == 1)
-                return "1|" + types[0].FullName ?? types[0].Name;
-
-            StringBuilder sb = new StringBuilder();
-            sb.Append(types.Length);
-            foreach(Type t in types)
-            {
-                sb.Append('|');
-                sb.Append(t.FullName ?? t.Name);
-            }
-            return sb.ToString();
-        }
-
+        public IEnumerable<Constructor> Overloads { get { return _constructors; } }
+        
         /// <summary>
         /// Gets the <see cref="Constructor"/> matching the parameter types.
         /// </summary>
@@ -96,10 +65,36 @@ namespace WebApplications.Utilities.Relection
         /// <returns>The <see cref="Constructor"/>; otherwise <see langword="null"/> if not found.</returns>
         /// <remarks></remarks>
         [CanBeNull]
-        public Constructor GetOverload([NotNull]params Type[] types)
+        public Constructor GetOverload([NotNull]params TypeSearch[] types)
         {
-            Constructor constructor;
-            return _constructors.TryGetValue(CreateKey(types), out constructor) ? constructor : null;
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Gets the overload matching the constructor info.
+        /// </summary>
+        /// <param name="constructorInfo">The constructor info.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public Constructor GetOverload([NotNull]ConstructorInfo constructorInfo)
+        {
+            return _constructors.FirstOrDefault(c => c.Info == constructorInfo);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        /// <remarks></remarks>
+        [UsedImplicitly]
+        public string DebugString
+        {
+            get
+            {
+                return String.Format("'{0}' Constructors [{1} overloads].",
+                    ExtendedType.Signature,
+                    _constructors.Count);
+            }
         }
     }
 }

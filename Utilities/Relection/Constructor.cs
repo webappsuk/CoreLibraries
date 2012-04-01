@@ -1,5 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Relection
@@ -7,6 +12,7 @@ namespace WebApplications.Utilities.Relection
     /// <summary>
     ///   Wraps the constructor information with accessors for retrieving parameters.
     /// </summary>
+    [DebuggerDisplay("{Info} [Extended]")]
     public class Constructor
     {
         /// <summary>
@@ -20,12 +26,18 @@ namespace WebApplications.Utilities.Relection
         /// </summary>
         [NotNull]
         public readonly ConstructorInfo Info;
-
+        
+        /// <summary>
+        /// Create enumeration of parameters on demand.
+        /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<ParameterInfo[]> _parameters;
+        
         /// <summary>
         ///   The parameters.
         /// </summary>
         [NotNull]
-        public readonly IEnumerable<ParameterInfo> Parameters;
+        public IEnumerable<ParameterInfo> Parameters { get { return _parameters.Value; } }
 
         /// <summary>
         /// Initializes the <see cref="Constructor"/> class.
@@ -34,11 +46,35 @@ namespace WebApplications.Utilities.Relection
         /// <param name="info">The info.</param>
         /// <param name="parameters">The parameters.</param>
         /// <remarks></remarks>
-        internal Constructor([NotNull]ExtendedType extendedType, [NotNull]ConstructorInfo info, [NotNull]IEnumerable<ParameterInfo> parameters)
+        internal Constructor([NotNull]ExtendedType extendedType, [NotNull]ConstructorInfo info)
         {
             ExtendedType = extendedType;
             Info = info;
-            Parameters = parameters;
+            _parameters = new Lazy<ParameterInfo[]>(info.GetParameters, LazyThreadSafetyMode.PublicationOnly);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Constructor"/> to <see cref="System.Reflection.ConstructorInfo"/>.
+        /// </summary>
+        /// <param name="constructor">The constructor.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks></remarks>
+        public static implicit operator ConstructorInfo(Constructor constructor)
+        {
+            return constructor == null ? null : constructor.Info;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Reflection.ConstructorInfo"/> to <see cref="WebApplications.Utilities.Relection.Constructor"/>.
+        /// </summary>
+        /// <param name="constructorInfo">The constructor info.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks></remarks>
+        public static implicit operator Constructor(ConstructorInfo constructorInfo)
+        {
+            return constructorInfo == null
+                       ? null
+                       : ((ExtendedType)constructorInfo.DeclaringType).GetConstructor(constructorInfo);
         }
     }
 }

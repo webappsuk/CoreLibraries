@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using JetBrains.Annotations;
 
@@ -7,6 +8,7 @@ namespace WebApplications.Utilities.Relection
     /// <summary>
     ///   Wraps a <see cref="System.Reflection.PropertyInfo"/> with accessors.
     /// </summary>
+    [DebuggerDisplay("{Info} [Extended]")]
     public class Property
     {
         /// <summary>
@@ -25,6 +27,7 @@ namespace WebApplications.Utilities.Relection
         ///   Grabs the getter method lazily.
         /// </summary>
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Lazy<MethodInfo> _getMethod;
 
         /// <summary>
@@ -40,6 +43,7 @@ namespace WebApplications.Utilities.Relection
         ///   Grabs the setter method lazily.
         /// </summary>
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly Lazy<MethodInfo> _setMethod;
 
         /// <summary>
@@ -64,6 +68,30 @@ namespace WebApplications.Utilities.Relection
             Info = info;
             _getMethod = new Lazy<MethodInfo>(() => info.GetGetMethod(true));
             _setMethod = new Lazy<MethodInfo>(() => info.GetSetMethod(true));
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Property"/> to <see cref="System.Reflection.PropertyInfo"/>.
+        /// </summary>
+        /// <param name="property">The property.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks></remarks>
+        public static implicit operator PropertyInfo(Property property)
+        {
+            return property == null ? null : property.Info;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Reflection.PropertyInfo"/> to <see cref="WebApplications.Utilities.Relection.Property"/>.
+        /// </summary>
+        /// <param name="propertyInfo">The property info.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks></remarks>
+        public static implicit operator Property(PropertyInfo propertyInfo)
+        {
+            return propertyInfo == null
+                       ? null
+                       : ((ExtendedType) propertyInfo.DeclaringType).GetProperty(propertyInfo);
         }
     }
 }

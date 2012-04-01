@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -11,26 +12,42 @@ namespace WebApplications.Utilities.Relection
     /// <summary>
     ///   Wraps the method information with accessors for retrieving parameters.
     /// </summary>
+    [DebuggerDisplay("{Info} [Extended]")]
     public class Method
     {
         /// <summary>
         /// Caches closed methods.
         /// </summary>
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private Lazy<ConcurrentDictionary<string, Method>> _closedMethods =
             new Lazy<ConcurrentDictionary<string, Method>>(
                 () => new ConcurrentDictionary<string, Method>(), LazyThreadSafetyMode.PublicationOnly);
 
-            /// <summary>
+        /// <summary>
         /// The extended type.
         /// </summary>
         [NotNull]
         public readonly ExtendedType ExtendedType;
 
         /// <summary>
-        /// The number of generic arguments.
+        /// Creates array of generic arguments on demand.
         /// </summary>
-        public readonly int GenericArguments;
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<Type[]> _genericArguments;
+
+        /// <summary>
+        /// The generic arguments.
+        /// </summary>
+        [NotNull]
+        public IEnumerable<Type> GenericArguments { get { return _genericArguments.Value; } }
+
+        /// <summary>
+        /// Gets the parameters count.
+        /// </summary>
+        /// <remarks></remarks>
+        public int GenericArgumentsCount { get { return _genericArguments.Value.Length; } }
 
         /// <summary>
         ///   The method info.
@@ -39,81 +56,104 @@ namespace WebApplications.Utilities.Relection
         public readonly MethodInfo Info;
 
         /// <summary>
+        /// Create enumeration of parameters on demand.
+        /// </summary>
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<ParameterInfo[]> _parameters;
+
+        /// <summary>
         ///   The parameters.
         /// </summary>
         [NotNull]
-        public readonly IEnumerable<ParameterInfo> Parameters;
+        public IEnumerable<ParameterInfo> Parameters { get { return _parameters.Value; } }
+
+        /// <summary>
+        /// Gets the parameters count.
+        /// </summary>
+        /// <remarks></remarks>
+        public int ParametersCount { get { return _parameters.Value.Length; } }
 
         /// <summary>
         /// Gets the type of the return.
         /// </summary>
         /// <remarks></remarks>
         [NotNull]
-        public Type ReturnType { get { return Info.ReturnType; }}
+        public Type ReturnType { get { return Info.ReturnType; } }
 
         /// <summary>
         /// Initializes the <see cref="Method"/> class.
         /// </summary>
         /// <param name="extendedType">Type of the extended.</param>
-        /// <param name="genericArguments">The generic arguments.</param>
         /// <param name="info">The info.</param>
-        /// <param name="parameters">The parameters.</param>
         /// <remarks></remarks>
-        internal Method([NotNull]ExtendedType extendedType, int genericArguments, [NotNull]MethodInfo info, [NotNull]IEnumerable<ParameterInfo> parameters)
+        internal Method([NotNull]ExtendedType extendedType, [NotNull]MethodInfo info)
         {
             ExtendedType = extendedType;
-            GenericArguments = genericArguments;
             Info = info;
-            Parameters = parameters;
+            _genericArguments = new Lazy<Type[]>(info.GetGenericArguments, LazyThreadSafetyMode.PublicationOnly);
+            _parameters = new Lazy<ParameterInfo[]>(info.GetParameters, LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
         /// Gets the closed version of a generic method.
         /// </summary>
         /// <param name="genericTypes">The generic types.</param>
-        /// <returns>The closed <see cref="Method"/> if the generic types supplied allowed closure; otherwise <see langword="null"/>.</returns>
+        /// <returns>The closed <see cref="Method"/> if the generic types supplied are sufficient for closure; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        public Method CloseMethod(params Type[] genericTypes)
+        public Method CloseMethod([NotNull]params Type[] genericTypes)
         {
             // Start with the current extended type and method.
             ExtendedType et = ExtendedType;
             Method method = this;
 
-            // If our parent type is open then we have to start by closing the type.
-            if (et.Type.ContainsGenericParameters)
-            {
-                // Close type and removed used types.
-                et = et.CloseType(ref genericTypes);
-
-                // If we failed to close our type, we're done.
-                if (et == null)
-                    return null;
-
-                // Lookup method on extended type.
-                method = et.GetMethod(Info.Name,
-                                      GenericArguments,
-                                      Parameters.Select(p => p.ParameterType).Concat(new[] {Info.ReturnType}).ToArray());
-
-                // If we can't find the method we're done (shouldn't happen).
-                if (method == null)
-                    return null;
-            }
-
-            // If we don't have any generic parameters left, we're done so long as we have no types left over.
+            // If we're not a generic method we should have any types passed in.
             if (!method.Info.ContainsGenericParameters)
                 return genericTypes.Length < 1 ? method : null;
 
-            // Check we have exactly the right number of paramters left.
-            if (GenericArguments != genericTypes.Length)
+            // Check we have exactly the right number of paramters.
+            if (_genericArguments.Value.Length != genericTypes.Length)
                 return null;
 
             // Create closed method, cache it and return.
             string key = String.Join("|", genericTypes.Select(t => ExtendedType.Get(t).Signature));
-            return _closedMethods.Value.GetOrAdd(key,
-                                                 k =>
-                                                 new Method(et, GenericArguments,
-                                                            method.Info.MakeGenericMethod(genericTypes),
-                                                            method.Info.GetParameters()));
+            return _closedMethods.Value.GetOrAdd(
+                key,
+                k =>
+                    {
+                        try
+                        {
+                            return new Method(et, method.Info.MakeGenericMethod(genericTypes));
+                        }
+                        catch (ArgumentException)
+                        {
+                            return null;
+                        }
+                    });
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Method"/> to <see cref="System.Reflection.MethodInfo"/>.
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks></remarks>
+        public static implicit operator MethodInfo(Method method)
+        {
+            return method == null ? null : method.Info;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.Reflection.MethodInfo"/> to <see cref="WebApplications.Utilities.Relection.Method"/>.
+        /// </summary>
+        /// <param name="methodInfo">The method info.</param>
+        /// <returns>The result of the conversion.</returns>
+        /// <remarks></remarks>
+        public static implicit operator Method(MethodInfo methodInfo)
+        {
+            return methodInfo == null
+                       ? null
+                       : ((ExtendedType) methodInfo.DeclaringType).GetMethod(methodInfo);
         }
     }
 }

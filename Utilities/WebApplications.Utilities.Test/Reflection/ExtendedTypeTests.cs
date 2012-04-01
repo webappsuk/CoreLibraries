@@ -16,9 +16,13 @@ namespace WebApplications.Utilities.Test.Reflection
         /// <remarks></remarks>
         private class ComplexOverloads<T>
         {
-            public void A() {}
-            public void A(string a) { }
-            public void A(ref string a) { }
+            public T A()
+            {
+                return default(T);
+            }
+            public void A(int a) { }
+            public void A(ref int a) { }
+            public unsafe void A(int* a) {}
             public void A(string a, string b = null) { }
             public void A(string a, out string b)
             {
@@ -27,6 +31,7 @@ namespace WebApplications.Utilities.Test.Reflection
 
             public void A<TException>(string a) { }
             public void A<T1, T2>(string a) { }
+            public void A<T1>(T a, ref T1 b) {}
 
             public static explicit operator int(ComplexOverloads<T> a)
             {
@@ -35,6 +40,16 @@ namespace WebApplications.Utilities.Test.Reflection
             public static explicit operator Int16(ComplexOverloads<T> a)
             {
                 return 1;
+            }
+
+            public readonly T Value;
+
+            public string Value2;
+
+            public ComplexOverloads(T value, string value2)
+            {
+                Value = value;
+                Value2 = value2;
             }
         }
 
@@ -46,50 +61,86 @@ namespace WebApplications.Utilities.Test.Reflection
             Methods methods = et.GetMethods("A");
 
             Assert.IsNotNull(methods);
-            Assert.AreEqual(7, methods.Overloads.Count());
+            Assert.AreEqual(9, methods.Overloads.Count());
 
-            Method method1 = methods.GetOverload(typeof(void));
-            Assert.IsTrue(method1.Info.ContainsGenericParameters);
+            Method invalidMethod = methods.GetOverload();
+            Assert.IsNull(invalidMethod);
+
+            Method method1 = methods.GetOverload(TypeSearch.T1);
             Assert.IsNotNull(method1);
+            Assert.IsTrue(method1.Info.ContainsGenericParameters);
 
-            Method method2 = methods.GetOverload(typeof(string), typeof(void));
+            invalidMethod = methods.GetOverload(TypeSearch.Void);
+            Assert.IsNull(invalidMethod);
+
+            Method method2 = methods.GetOverload(typeof(int), TypeSearch.Void);
             Assert.IsNotNull(method2);
             Assert.AreNotEqual(method1, method2);
 
-            Method method3 = methods.GetOverload(typeof(string).MakeByRefType(), typeof(void));
+            Method method3 = methods.GetOverload(typeof(int).MakeByRefType(), TypeSearch.Void);
             Assert.IsNotNull(method3);
             Assert.AreNotEqual(method3, method1);
             Assert.AreNotEqual(method3, method2);
 
-            Method method4 = methods.GetOverload(typeof(string), typeof(string), typeof(void));
+            Method method3b = methods.GetOverload(typeof(int).MakePointerType(), TypeSearch.Void);
+            Assert.IsNotNull(method3b);
+            Assert.AreNotEqual(method3b, method1);
+            Assert.AreNotEqual(method3b, method2);
+
+            Method method4 = methods.GetOverload(typeof(string), typeof(string), TypeSearch.Void);
             Assert.IsNotNull(method4);
             Assert.AreNotEqual(method4, method1);
             Assert.AreNotEqual(method4, method2);
             Assert.AreNotEqual(method4, method3);
 
-            Method method5 = methods.GetOverload(typeof(string), typeof(string).MakeByRefType(), typeof(void));
+            Method method5 = methods.GetOverload(typeof(string), typeof(string).MakeByRefType(), TypeSearch.Void);
             Assert.IsNotNull(method5);
             Assert.AreNotEqual(method5, method1);
             Assert.AreNotEqual(method5, method2);
-            Assert.AreNotEqual(method5, method3);
+            Assert.AreNotEqual(method5, method3b);
             Assert.AreNotEqual(method5, method4);
 
-            Method method6 = methods.GetOverload(1, typeof(string), typeof(void));
+            Method method6 = methods.GetOverload(1, typeof(string), TypeSearch.Void);
             Assert.IsNotNull(method6);
             Assert.AreNotEqual(method6, method1);
             Assert.AreNotEqual(method6, method2);
-            Assert.AreNotEqual(method6, method3);
+            Assert.AreNotEqual(method6, method3b);
             Assert.AreNotEqual(method6, method4);
             Assert.AreNotEqual(method6, method5);
 
-            Method method7 = methods.GetOverload(2, typeof(string), typeof(void));
+            Method method7 = methods.GetOverload(2, typeof(string), TypeSearch.Void);
             Assert.IsNotNull(method7);
             Assert.AreNotEqual(method7, method1);
             Assert.AreNotEqual(method7, method2);
-            Assert.AreNotEqual(method7, method3);
+            Assert.AreNotEqual(method7, method3b);
             Assert.AreNotEqual(method7, method4);
             Assert.AreNotEqual(method7, method5);
             Assert.AreNotEqual(method7, method6);
+
+            Method method8 = methods.GetOverload(1, new TypeSearch(GenericArgumentLocation.Type, "T"),
+                                                 new TypeSearch(GenericArgumentLocation.Method, 0, true),
+                                                 TypeSearch.Void);
+            Assert.IsNotNull(method8);
+        }
+
+        [TestMethod]
+        public void ExtendedType_GetMethod_CreatesConcreteMethods()
+        {
+            // Get the open type.
+            ExtendedType openType = ExtendedType.Get(typeof(ComplexOverloads<>));
+            Assert.IsTrue(openType.Type.ContainsGenericParameters);
+
+            // Note this not only creates a concrete method by setting the method type param to Guid
+            // It also has to make the enclosing type concrete by changing it to ComplexOverloads<bool> as
+            // the first paramter uses the type's generic parameter.
+            //
+            // It actually matches: public void A<T1>(T a, ref T1 b) {}
+            Method concreteMethod = openType.GetMethod("A", 1, typeof(bool), typeof(Guid).MakeByRefType(), TypeSearch.Void);
+            Assert.IsNotNull(concreteMethod);
+            Assert.IsFalse(concreteMethod.Info.ContainsGenericParameters);
+            Assert.IsFalse(concreteMethod.ExtendedType.Type.ContainsGenericParameters);
+            // The GetMethod
+            Assert.AreNotSame(openType, concreteMethod.ExtendedType);
         }
 
         [TestMethod]
@@ -105,12 +156,12 @@ namespace WebApplications.Utilities.Test.Reflection
             Assert.AreSame(openType.Type, closedType.Type.GetGenericTypeDefinition());
 
             // This time we have a concrete type.
-            Method method = closedType.GetMethod("A", typeof(void));
+            Method method = closedType.GetMethod("A", typeof(int));
             Assert.IsNotNull(method);
             // This method has no generic arguments and the type is concrete.
             Assert.IsFalse(method.Info.ContainsGenericParameters);
 
-            Method method2 = closedType.GetMethod("A", 1, typeof(string), typeof(void));
+            Method method2 = closedType.GetMethod("A", 1, typeof(string), TypeSearch.Void);
             Assert.IsNotNull(method2);
             // This method has generic arguments and so it does contain generic parameters even though type is concrete.
             Assert.IsTrue(method2.Info.ContainsGenericParameters);
@@ -124,18 +175,14 @@ namespace WebApplications.Utilities.Test.Reflection
             Assert.IsFalse(method3.Info.ContainsGenericParameters);
 
             // Finally we get the open type's open method.
-            Method method4 = openType.GetMethod("A", 1, typeof(string), typeof(void));
+            Method method4 = openType.GetMethod("A", 1, typeof(string), TypeSearch.Void);
             Assert.IsNotNull(method4);
             Assert.IsTrue(method4.Info.ContainsGenericParameters);
+        }
 
-            // To close this method, we have to close the type and the method (i.e. two types)
-            Method method5 = method4.CloseMethod(typeof(string), typeof(int));
-            Assert.IsNotNull(method5);
-            // The extended type will have been closed, so shouldn't be equal
-            Assert.AreNotSame(method4.ExtendedType, method5.ExtendedType);
-            Assert.IsTrue(method4.ExtendedType.Type.ContainsGenericParameters);
-            Assert.IsFalse(method5.ExtendedType.Type.ContainsGenericParameters);
-            Assert.IsFalse(method5.Info.ContainsGenericParameters);
+        public void ExtendedType_CanRetrieveGenericConstructor()
+        {
+            
         }
     }
 }

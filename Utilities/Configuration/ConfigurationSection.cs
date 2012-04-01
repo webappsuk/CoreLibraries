@@ -22,6 +22,7 @@
 
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Web;
@@ -59,6 +60,7 @@ namespace WebApplications.Utilities.Configuration
         /// Calculates the section name.
         /// </summary>
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private static readonly Lazy<string> _sectionName =
             new Lazy<string>(
                 () =>

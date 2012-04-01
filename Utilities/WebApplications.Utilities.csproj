@@ -129,10 +129,12 @@
     <Compile Include="Relection\Constructors.cs" />
     <Compile Include="Relection\Event.cs" />
     <Compile Include="Relection\Field.cs" />
+    <Compile Include="Relection\GenericArgumentLocation.cs" />
     <Compile Include="Relection\Method.cs" />
     <Compile Include="Relection\Methods.cs" />
     <Compile Include="Relection\Property.cs" />
     <Compile Include="Relection\ExtendedType.cs" />
+    <Compile Include="Relection\TypeSearch.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
