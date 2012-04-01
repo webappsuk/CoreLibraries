@@ -14,9 +14,9 @@ namespace WebApplications.Utilities.Relection
         /// </summary>
         None = 0,
         /// <summary>
-        /// Generic argument is found on method.
+        /// Generic argument is found on the signature.
         /// </summary>
-        Method = 1,
+        Signature = 1,
         /// <summary>
         /// Generic argument is found on type.
         /// </summary>

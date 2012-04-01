@@ -144,7 +144,7 @@ namespace WebApplications.Utilities.Test.Reflection
             Assert.AreNotEqual(method7, method6);
 
             Method method8 = methods.GetOverload(1, new TypeSearch(GenericArgumentLocation.Type, "T"),
-                                                 new TypeSearch(GenericArgumentLocation.Method, 0, true),
+                                                 new TypeSearch(GenericArgumentLocation.Signature, 0, true),
                                                  TypeSearch.Void);
             Assert.IsNotNull(method8);
         }

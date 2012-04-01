@@ -13,7 +13,7 @@ namespace WebApplications.Utilities.Relection
     ///   Wraps the constructor information with accessors for retrieving parameters.
     /// </summary>
     [DebuggerDisplay("{Info} [Extended]")]
-    public class Constructor
+    public class Constructor : ISignature
     {
         /// <summary>
         /// The extended type.
@@ -31,6 +31,7 @@ namespace WebApplications.Utilities.Relection
         /// Create enumeration of parameters on demand.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [NotNull]
         private readonly Lazy<ParameterInfo[]> _parameters;
         
         /// <summary>
@@ -80,6 +81,27 @@ namespace WebApplications.Utilities.Relection
             return constructorInfo == null
                        ? null
                        : ((ExtendedType)constructorInfo.DeclaringType).GetConstructor(constructorInfo);
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<GenericArgument> TypeGenericArguments { get { return ExtendedType.GenericArguments; } }
+
+        /// <inheritdoc/>
+        public IEnumerable<GenericArgument> SignatureGenericArguments
+        {
+            get { return Enumerable.Empty<GenericArgument>(); }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<Type> ParameterTypes
+        {
+            get { return _parameters.Value.Select(p => p.ParameterType); }
+        }
+
+        /// <inheritdoc/>
+        public Type ReturnType
+        {
+            get { return ExtendedType.Type; }
         }
     }
 }

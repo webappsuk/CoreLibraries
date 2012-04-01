@@ -25,66 +25,66 @@ namespace WebApplications.Utilities.Relection
         /// </summary>
         public static readonly TypeSearch T1 = new TypeSearch(GenericArgumentLocation.Type, 0);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The second generic argument on the type.
         /// </summary>
         public static readonly TypeSearch T2 = new TypeSearch(GenericArgumentLocation.Type, 1);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The third generic argument on the type.
         /// </summary>
         public static readonly TypeSearch T3 = new TypeSearch(GenericArgumentLocation.Type, 2);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The fourth generic argument on the type.
         /// </summary>
         public static readonly TypeSearch T4 = new TypeSearch(GenericArgumentLocation.Type, 3);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The fifth generic argument on the type.
         /// </summary>
         public static readonly TypeSearch T5 = new TypeSearch(GenericArgumentLocation.Type, 4);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The sixth generic argument on the type.
         /// </summary>
         public static readonly TypeSearch T6 = new TypeSearch(GenericArgumentLocation.Type, 5);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The seventh generic argument on the type.
         /// </summary>
         public static readonly TypeSearch T7 = new TypeSearch(GenericArgumentLocation.Type, 6);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The eighth generic argument on the type.
         /// </summary>
         public static readonly TypeSearch T8 = new TypeSearch(GenericArgumentLocation.Type, 7);
 
         /// <summary>
-        /// The first generic argument on the type.
+        /// The first generic argument on the signature.
         /// </summary>
-        public static readonly TypeSearch M1 = new TypeSearch(GenericArgumentLocation.Method, 0);
+        public static readonly TypeSearch S1 = new TypeSearch(GenericArgumentLocation.Signature, 0);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The second generic argument on the signature.
         /// </summary>
-        public static readonly TypeSearch M2 = new TypeSearch(GenericArgumentLocation.Method, 1);
+        public static readonly TypeSearch S2 = new TypeSearch(GenericArgumentLocation.Signature, 1);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The third generic argument on the signature.
         /// </summary>
-        public static readonly TypeSearch M3 = new TypeSearch(GenericArgumentLocation.Method, 2);
+        public static readonly TypeSearch S3 = new TypeSearch(GenericArgumentLocation.Signature, 2);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The forth generic argument on the signature.
         /// </summary>
-        public static readonly TypeSearch M4 = new TypeSearch(GenericArgumentLocation.Method, 3);
+        public static readonly TypeSearch S4 = new TypeSearch(GenericArgumentLocation.Signature, 3);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The fifth generic argument on the signature.
         /// </summary>
-        public static readonly TypeSearch M5 = new TypeSearch(GenericArgumentLocation.Method, 4);
+        public static readonly TypeSearch S5 = new TypeSearch(GenericArgumentLocation.Signature, 4);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The sixth generic argument on the signature.
         /// </summary>
-        public static readonly TypeSearch M6 = new TypeSearch(GenericArgumentLocation.Method, 5);
+        public static readonly TypeSearch S6 = new TypeSearch(GenericArgumentLocation.Signature, 5);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The seventh generic argument on the signature.
         /// </summary>
-        public static readonly TypeSearch M7 = new TypeSearch(GenericArgumentLocation.Method, 6);
+        public static readonly TypeSearch S7 = new TypeSearch(GenericArgumentLocation.Signature, 6);
         /// <summary>
-        /// The first generic argument on the type.
+        /// The eighth generic argument on the signature.
         /// </summary>
-        public static readonly TypeSearch M8 = new TypeSearch(GenericArgumentLocation.Method, 7);
+        public static readonly TypeSearch S8 = new TypeSearch(GenericArgumentLocation.Signature, 7);
         #endregion
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace WebApplications.Utilities.Relection
             if (type.IsGenericParameter)
             {
                 GenericArgumentLocation = type.DeclaringMethod != null
-                                              ? GenericArgumentLocation.Method
+                                              ? GenericArgumentLocation.Signature
                                               : GenericArgumentLocation.Type;
                 GenericArgumentPosition = type.GenericParameterPosition;
                 GenericArgumentName = type.Name;
@@ -171,7 +171,7 @@ namespace WebApplications.Utilities.Relection
             // Validate location
             switch (GenericArgumentLocation)
             {
-                case GenericArgumentLocation.Method:
+                case GenericArgumentLocation.Signature:
                 case GenericArgumentLocation.Type:
                     break;
                 default:
@@ -193,7 +193,7 @@ namespace WebApplications.Utilities.Relection
             // Validate location
             switch (GenericArgumentLocation)
             {
-                case GenericArgumentLocation.Method:
+                case GenericArgumentLocation.Signature:
                 case GenericArgumentLocation.Type:
                 case GenericArgumentLocation.Any:
                     break;
@@ -203,7 +203,7 @@ namespace WebApplications.Utilities.Relection
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.TypeSearch"/> to <see cref="System.Type"/>.
+        /// Performs an implicit conversion from <see cref="TypeSearch"/> to <see cref="System.Type"/>.
         /// </summary>
         /// <param name="typeSearch">The type search.</param>
         /// <returns>The result of the conversion.</returns>
@@ -214,7 +214,7 @@ namespace WebApplications.Utilities.Relection
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.TypeSearch"/> to <see cref="System.Type"/>.
+        /// Performs an implicit conversion from <see cref="TypeSearch"/> to <see cref="System.Type"/>.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>The result of the conversion.</returns>

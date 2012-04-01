@@ -25,6 +25,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -1418,16 +1419,47 @@ namespace WebApplications.Utilities
             return newType.ToString();
         }
 
-        public static bool Matches(this Type type, TypeSearch search)
+        /// <summary>
+        /// Matcheses the specified type against the specified search..
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="typeSearch">The type search.</param>
+        /// <param name="allowCasts">if set to <see langword="true"/> allows casts.</param>
+        /// <param name="allowTypeClosures">if set to <see langword="true"/> allows type closures.</param>
+        /// <param name="allowSignatureClosures">if set to <see langword="true"/> allows signature closures.</param>
+        /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
+        /// <remarks></remarks>
+        public static bool Matches(this Type type, TypeSearch typeSearch, bool allowCasts = true, bool allowTypeClosures = true, bool allowSignatureClosures = true)
         {
             bool requiresCast;
             GenericArgumentLocation closureLocation;
             int closurePosition;
             Type closureType;
-            return Matches(type, search, out requiresCast, out closureLocation, out closurePosition, out closureType);
+            bool match = Matches(type, typeSearch, out requiresCast, out closureLocation, out closurePosition, out closureType);
+            if (!match) return false;
+            if (requiresCast) return allowCasts;
+            switch (closureLocation)
+            {
+                case GenericArgumentLocation.Signature:
+                    return allowSignatureClosures;
+                case GenericArgumentLocation.Type:
+                    return allowTypeClosures;
+            }
+            return true;
         }
 
-        public static bool Matches(this Type type, TypeSearch search, out bool requiresCast, out GenericArgumentLocation closureLocation, out int closurePosition, out Type closureType)
+        /// <summary>
+        /// Matcheses the specified type against the specified search..
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="typeSearch">The type search.</param>
+        /// <param name="requiresCast">if set to <see langword="true"/> the type requires a cast to match.</param>
+        /// <param name="closureLocation">The closure location if a closure is required to match (will always be None, Method or Type).</param>
+        /// <param name="closurePosition">The closure position if a closure is required to match.</param>
+        /// <param name="closureType">Type of the closure if a closure is required to match.</param>
+        /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
+        /// <remarks></remarks>
+        public static bool Matches(this Type type, TypeSearch typeSearch, out bool requiresCast, out GenericArgumentLocation closureLocation, out int closurePosition, out Type closureType)
         {
             requiresCast = false;
             closureLocation = GenericArgumentLocation.None;
@@ -1435,18 +1467,18 @@ namespace WebApplications.Utilities
             closureType = null;
 
             // Weed out nulls
-            if (type == null) return search == null;
-            if (search == null) return false;
+            if (type == null) return typeSearch == null;
+            if (typeSearch == null) return false;
 
-            if (type.IsByRef != search.IsByReference) return false;
-            if (type.IsPointer != search.IsPointer) return false;
+            if (type.IsByRef != typeSearch.IsByReference) return false;
+            if (type.IsPointer != typeSearch.IsPointer) return false;
 
             // If types are equal we have a match
-            if (type == search.Type) return true;
+            if (type == typeSearch.Type) return true;
 
             // If we're allowing casting and search type can be cast to type, we have a match.
-            if ((search.Type != null) &&
-                (type.IsAssignableFrom(search.Type)))
+            if ((typeSearch.Type != null) &&
+                (type.IsAssignableFrom(typeSearch.Type)))
             {
                 requiresCast = true;
                 return true;
@@ -1463,17 +1495,17 @@ namespace WebApplications.Utilities
             if (!type.IsGenericParameter)
                 return false;
 
-            if (search.Type != null)
+            if (typeSearch.Type != null)
             {
                 // If we were looking for an actual type, andf the type is a generic parameter
                 // then we need to perform a closure.
                 closureLocation = type.DeclaringMethod != null
-                                      ? GenericArgumentLocation.Method
+                                      ? GenericArgumentLocation.Signature
                                       : GenericArgumentLocation.Type;
                 closurePosition = type.GenericParameterPosition;
-                closureType = (search.IsByReference || search.IsPointer) && search.Type.HasElementType
-                                  ? search.Type.GetElementType()
-                                  : search.Type;
+                closureType = (typeSearch.IsByReference || typeSearch.IsPointer) && typeSearch.Type.HasElementType
+                                  ? typeSearch.Type.GetElementType()
+                                  : typeSearch.Type;
 
                 // Check closure type is valid for constraint
 
@@ -1481,19 +1513,19 @@ namespace WebApplications.Utilities
             }
 
             // If we're looking for a particular name, ensure it matches.
-            if ((search.GenericArgumentName != null) &&
-                (type.Name != search.GenericArgumentName))
+            if ((typeSearch.GenericArgumentName != null) &&
+                (type.Name != typeSearch.GenericArgumentName))
                 return false;
 
-            if ((search.GenericArgumentPosition >= 0) &&
-                (type.GenericParameterPosition != search.GenericArgumentPosition))
+            if ((typeSearch.GenericArgumentPosition >= 0) &&
+                (type.GenericParameterPosition != typeSearch.GenericArgumentPosition))
                 return false;
 
-            switch (search.GenericArgumentLocation)
+            switch (typeSearch.GenericArgumentLocation)
             {
                 case GenericArgumentLocation.None:
                     return false;
-                case GenericArgumentLocation.Method:
+                case GenericArgumentLocation.Signature:
                     if (type.DeclaringMethod == null)
                         return false;
                     break;
@@ -1505,5 +1537,244 @@ namespace WebApplications.Utilities
 
             return true;
         }
+
+        /// <summary>
+        /// Matcheses the specified signature.
+        /// </summary>
+        /// <param name="signature">The signature.</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
+        /// <remarks></remarks>
+        public static bool Matches(this ISignature signature, params TypeSearch[] types)
+        {
+            return Matches(signature, true, true, true, 0, types);
+        }
+
+        /// <summary>
+        /// Matcheses the specified signature.
+        /// </summary>
+        /// <param name="signature">The signature.</param>
+        /// <param name="genericArguments">The number of generic arguments on the signature.</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
+        /// <remarks></remarks>
+        public static bool Matches(this ISignature signature, int genericArguments, params TypeSearch[] types)
+        {
+            return Matches(signature, true, true, true, genericArguments, types);
+        }
+
+        /// <summary>
+        /// Matcheses the specified signature.
+        /// </summary>
+        /// <param name="signature">The signature.</param>
+        /// <param name="allowCasts">if set to <see langword="true"/> allows casts.</param>
+        /// <param name="allowTypeClosures">if set to <see langword="true"/> allows type closures.</param>
+        /// <param name="allowSignatureClosures">if set to <see langword="true"/> allows signature closures.</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
+        /// <remarks></remarks>
+        public static bool Matches(this ISignature signature, bool allowCasts, bool allowTypeClosures, bool allowSignatureClosures, params TypeSearch[] types)
+        {
+            return Matches(signature, allowCasts, allowTypeClosures, allowSignatureClosures, 0, types);
+        }
+        
+        /// <summary>
+        /// Matcheses the specified signature.
+        /// </summary>
+        /// <param name="signature">The signature.</param>
+        /// <param name="allowCasts">if set to <see langword="true"/> allows casts.</param>
+        /// <param name="allowTypeClosures">if set to <see langword="true"/> allows type closures.</param>
+        /// <param name="allowSignatureClosures">if set to <see langword="true"/> allows signature closures.</param>
+        /// <param name="genericArguments">The number of generic arguments on the signature.</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
+        /// <remarks></remarks>
+        public static bool Matches(this ISignature signature, bool allowCasts, bool allowTypeClosures, bool allowSignatureClosures, int genericArguments, params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            Type[] typeClosures;
+            Type[] methodClosures;
+            bool match = Matches(signature, out castsRequired, out typeClosures, out methodClosures, genericArguments, types);
+            if (!match) return false;
+            if (castsRequired.Length > 0) return allowCasts;
+            if (typeClosures.Length > 0) return allowTypeClosures;
+            if (methodClosures.Length > 0) return allowSignatureClosures;
+            return true;
+        }
+
+        /// <summary>
+        /// An empty type array.
+        /// </summary>
+        [NotNull]
+        public static readonly Type[] EmptyTypes = new Type[0];
+        /// <summary>
+        /// An empty type array.
+        /// </summary>
+        [NotNull]
+        public static readonly bool[] EmptyBools = new bool[0];
+
+        /// <summary>
+        /// An empty generic arguments array.
+        /// </summary>
+        [NotNull]
+        public static readonly GenericArgument[] EmptyGenericArguments = new GenericArgument[0];
+
+        /// <summary>
+        /// Matcheses the specified signature.
+        /// </summary>
+        /// <param name="signature">The signature.</param>
+        /// <param name="castsRequired">Indicates which parameters (or return type) will require casting.</param>
+        /// <param name="typeClosures">The type closures required to match (if any).</param>
+        /// <param name="signatureClosures">The signature closures required to match (if any).</param>
+        /// <param name="genericArguments">The number of generic arguments on the signature.</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
+        /// <remarks></remarks>
+        public static bool Matches(this ISignature signature, [NotNull]out bool[] castsRequired, [NotNull] out Type[] typeClosures, [NotNull] out Type[] signatureClosures, int genericArguments, params TypeSearch[] types)
+        {
+            castsRequired = EmptyBools;
+            signatureClosures = typeClosures = EmptyTypes;
+            if ((signature == null) ||
+                (types == null))
+                return false;
+
+            int searches = types.Length;
+
+            // We have to have at least one search for return type.
+            if (searches < 1)
+                return false;
+
+            // Get parameters as array.
+            IEnumerable<Type> p = signature.ParameterTypes;
+            Type[] parameters = p == null ? EmptyTypes : p.ToArray();
+            
+            // Check we have right number of parameters (+1 for return type)
+            if ((parameters.Length + 1) != searches) 
+                return false;
+
+            // Grab signature generic arguments safely.
+            IEnumerable<GenericArgument> sga = signature.SignatureGenericArguments;
+            GenericArgument[] signatureArguments = sga == null ? EmptyGenericArguments : sga.Where(g => g.Location == GenericArgumentLocation.Signature).ToArray();
+
+            // Check we have right number of generic arguments on the signature.
+            if (signatureArguments.Length != genericArguments) 
+                return false;
+
+            // Grab type generic arguments safely.
+            IEnumerable<GenericArgument> tga = signature.TypeGenericArguments;
+            GenericArgument[] typeArguments = tga == null ? EmptyGenericArguments : tga.Where(g => g.Location == GenericArgumentLocation.Type).ToArray();
+
+            // Get return type (null is equivalent to 'void').
+            Type returnType = signature.ReturnType ?? typeof(void);
+            
+            // Initialise output arrays
+            castsRequired = new bool[parameters.Length];
+            typeClosures = new Type[typeArguments.Length];
+            signatureClosures = new Type[signatureArguments.Length];
+
+            // Check return type
+            TypeSearch returnTypeSearch = types.Last();
+            Debug.Assert(returnTypeSearch != null);
+            bool requiresCast;
+            GenericArgumentLocation closureLocation;
+            int closurePosition;
+            Type closureType;
+
+            if (!returnType.Matches(returnTypeSearch, out requiresCast, out closureLocation, out closurePosition, out closureType) ||
+                !UpdateSearchContext(ref castsRequired[parameters.Length-1], typeClosures, signatureClosures, requiresCast, closureLocation, closurePosition, closureType))
+                return false;
+
+            // If we have more than one search we need to check parameters.
+            if (searches > 1)
+            {
+                // Check parameters
+                IEnumerator pe = parameters.GetEnumerator();
+                IEnumerator te = types.GetEnumerator();
+                int parameter = 0;
+                while (pe.MoveNext())
+                {
+                    te.MoveNext();
+                    Debug.Assert(pe.Current != null);
+                    Debug.Assert(te.Current != null);
+                    Type t = (Type)pe.Current;
+                    TypeSearch s = ((TypeSearch)te.Current);
+                    if (!t.Matches(s, out requiresCast, out closureLocation, out closurePosition, out closureType) ||
+                        !UpdateSearchContext(ref castsRequired[parameter++], typeClosures, signatureClosures, requiresCast, closureLocation,
+                                             closurePosition, closureType))
+                    {
+                        // Parameter failed to match.
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Updates the search context.
+        /// </summary>
+        /// <param name="castRequired">if set to <see langword="true"/> [cast required].</param>
+        /// <param name="typeClosures">The type closures.</param>
+        /// <param name="methodClosures">The method closures.</param>
+        /// <param name="requiresCast">if set to <see langword="true"/> [requires cast].</param>
+        /// <param name="closureLocation">The closure location.</param>
+        /// <param name="closurePosition">The closure position.</param>
+        /// <param name="closureType">Type of the closure.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        private static bool UpdateSearchContext(ref bool castRequired, [NotNull]Type[] typeClosures, [NotNull]Type[] methodClosures, bool requiresCast, GenericArgumentLocation closureLocation, int closurePosition, Type closureType)
+        {
+            Debug.Assert(closureLocation != GenericArgumentLocation.Any);
+
+            if (requiresCast)
+            {
+                Debug.Assert(closureLocation == GenericArgumentLocation.None);
+                Debug.Assert(closurePosition < 0);
+                castRequired = true;
+                return true;
+            }
+
+            // Check if we have a closure location
+            if (closureLocation == GenericArgumentLocation.None)
+            {
+                Debug.Assert(closurePosition < 0);
+                return true;
+            }
+
+            Debug.Assert(closureType != null);
+            if (closureLocation == GenericArgumentLocation.Signature)
+            {
+                // Requires method closure
+                Debug.Assert(closurePosition < methodClosures.Length);
+
+                // If we already have a closure, ensure it matches!
+                if (methodClosures[closurePosition] != null)
+                {
+                    if (methodClosures[closurePosition] != closureType) return false;
+                }
+                else
+                {
+                    methodClosures[closurePosition] = closureType;
+                }
+            }
+            else
+            {
+                Debug.Assert(closureLocation == GenericArgumentLocation.Type);
+                // Requires type closure
+                Debug.Assert(closurePosition < typeClosures.Length);
+
+                // If we already have a closure, ensure it matches!
+                if (typeClosures[closurePosition] != null)
+                {
+                    if (typeClosures[closurePosition] != closureType) return false;
+                }
+                else
+                {
+                    typeClosures[closurePosition] = closureType;
+                }
+            }
+            return true;
+        }
+
     }
 }

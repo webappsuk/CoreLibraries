@@ -26,7 +26,8 @@ namespace WebApplications.Utilities.Relection
         ///   It is possible to have overloads with ref/out parameters,
         ///   hence type position is not always enough to disambiguate.
         /// </summary>
-        [NotNull] private readonly List<Constructor> _constructors;
+        [NotNull]
+        private readonly List<Constructor> _constructors;
 
         /// <summary>
         /// The static constructor is a special case and does not appear directly in overloads.
@@ -80,11 +81,11 @@ namespace WebApplications.Utilities.Relection
         /// <remarks></remarks>
         [NotNull]
         public IEnumerable<Constructor> Overloads { get { return _constructors; } }
-        
+
         /// <summary>
         /// Gets the <see cref="Constructor"/> matching the parameter types.
         /// </summary>
-        /// <param name="types">The parameter types and return type.</param>
+        /// <param name="types">The parameter types.</param>
         /// <returns>The <see cref="Constructor"/>; otherwise <see langword="null"/> if not found.</returns>
         /// <remarks></remarks>
         [CanBeNull]
@@ -92,54 +93,28 @@ namespace WebApplications.Utilities.Relection
         {
             // Holds matches along with order.
             Constructor bestMatch = null;
-            List<int> bestMatchRequiredCasts = null;
+            int bestMatchRequiredCasts = int.MaxValue;
 
-            int typeArgCount = ExtendedType.Type.IsGenericTypeDefinition ? ExtendedType.GenericArgumentsCount : 0;
+            // Add return type of parent type.
+            TypeSearch[] t = new TypeSearch[types.Length + 1];
+            Array.Copy(types, t, types.Length);
+            t[types.Length] = ExtendedType.Type;
 
             Type[] bestMatchRequiredTypeClosures = null;
 
-            int tCount = types.Length;
             foreach (Constructor constructor in _constructors)
             {
-                Debug.Assert(constructor != null);
-                // Check we have exact parameter count.
-                if (constructor.ParametersCount != tCount) continue;
+                // Match constructor signature
+                bool[] castsRequired;
+                Type[] typeClosures;
+                Type[] methodClosures;
+                if (!constructor.Matches(out castsRequired, out typeClosures, out methodClosures, 0, t))
+                    continue;
 
-                // Create lists for casts and closures.
-                List<int> casts = new List<int>(tCount);
-                Type[] typeClosures = new Type[typeArgCount];
-
-                if (tCount > 1)
-                {
-                    // Check parameters
-                    IEnumerator<ParameterInfo> pe = constructor.Parameters.GetEnumerator();
-                    IEnumerator te = types.GetEnumerator();
-                    bool paramsMatch = true;
-                    while (pe.MoveNext())
-                    {
-                        te.MoveNext();
-                        Debug.Assert(pe.Current != null);
-                        Debug.Assert(te.Current != null);
-                        ParameterInfo t = pe.Current;
-                        TypeSearch s = ((TypeSearch)te.Current);
-
-                        bool requiresCast;
-                        GenericArgumentLocation closureLocation;
-                        int closurePosition;
-                        Type closureType;
-                        if (
-                            t.ParameterType.Matches(s, out requiresCast, out closureLocation, out closurePosition, out closureType) &&
-                            UpdateContext(casts, typeClosures, requiresCast, closureLocation, closurePosition, closureType))
-                            continue;
-
-                        paramsMatch = false;
-                        break;
-                    }
-                    if (!paramsMatch)
-                        continue;
-                }
+                Debug.Assert(methodClosures.Length == 0);
 
                 // Check to see if this beats the current best match
+                int? bmcc = null;
                 if (bestMatch != null)
                 {
                     int btcl = bestMatchRequiredTypeClosures.Length;
@@ -148,11 +123,16 @@ namespace WebApplications.Utilities.Relection
                     if (btcl < tcl) continue;
 
                     // If type level closures are equal, see which has more casts.
-                    if (btcl == tcl && bestMatchRequiredCasts.Count < casts.Count) continue;
+                    if (btcl == tcl)
+                    {
+                        bmcc = castsRequired.Count(c => c);
+                        if (bestMatchRequiredCasts <= bmcc)
+                            continue;
+                    }
                 }
 
                 bestMatch = constructor;
-                bestMatchRequiredCasts = casts;
+                bestMatchRequiredCasts = bmcc ?? castsRequired.Count(c => c);
                 bestMatchRequiredTypeClosures = typeClosures;
             }
 
@@ -160,14 +140,10 @@ namespace WebApplications.Utilities.Relection
             if (bestMatch == null) return null;
 
             // Check to see if we have to close the type
-            if (bestMatchRequiredTypeClosures.Length > 0)
+            if (bestMatchRequiredTypeClosures.Any(c => c != null))
             {
-                int nullCount = bestMatchRequiredTypeClosures.Count(t => t == null);
-                // If we have any nulls, we haven't fully closed type.
-                // Only return match if we haven't tried to close type.
-                if (nullCount > 0)
-                    return (nullCount == typeArgCount) ? bestMatch : null;
-
+                Debug.Assert(ExtendedType.GenericArguments.Count() == bestMatchRequiredTypeClosures.Length);
+                
                 // Close type.
                 ExtendedType et = this.ExtendedType;
                 et = et.CloseType(bestMatchRequiredTypeClosures);
@@ -182,56 +158,6 @@ namespace WebApplications.Utilities.Relection
 
             return bestMatch;
         }
-
-        /// <summary>
-        /// Updates the context.
-        /// </summary>
-        /// <param name="casts">The casts.</param>
-        /// <param name="typeClosures">The type closures.</param>
-        /// <param name="requiresCast">if set to <see langword="true"/> [requires cast].</param>
-        /// <param name="closureLocation">The closure location.</param>
-        /// <param name="closurePosition">The closure position.</param>
-        /// <param name="closureType">Type of the closure.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
-        private bool UpdateContext([NotNull]List<int> casts, [NotNull]Type[] typeClosures, bool requiresCast, GenericArgumentLocation closureLocation, int closurePosition, Type closureType)
-        {
-            Debug.Assert(closureLocation != GenericArgumentLocation.Any);
-            Debug.Assert(closureLocation != GenericArgumentLocation.Method);
-
-            if (requiresCast)
-            {
-                Debug.Assert(closureLocation == GenericArgumentLocation.None);
-                Debug.Assert(closurePosition < 0);
-                casts.Add(-1);
-                return true;
-            }
-
-            // Check if we have a closure location
-            if (closureLocation == GenericArgumentLocation.None)
-            {
-                Debug.Assert(closurePosition < 0);
-                return true;
-            }
-
-            Debug.Assert(closureType != null);
-            Debug.Assert(closureLocation == GenericArgumentLocation.Type);
-
-            // Requires type closure
-            Debug.Assert(closurePosition < ExtendedType.GenericArgumentsCount);
-
-            // If we already have a closure, ensure it matches!
-            if (typeClosures[closurePosition] != null)
-            {
-                if (typeClosures[closurePosition] != closureType) return false;
-            }
-            else
-            {
-                typeClosures[closurePosition] = closureType;
-            }
-            return true;
-        }
-
 
         /// <summary>
         /// Gets the overload matching the constructor info.

@@ -34,7 +34,7 @@ namespace WebApplications.Utilities.Relection
         public const BindingFlags AllMembersBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.DeclaredOnly;
-
+        
         /// <summary>
         /// The underlying type.
         /// </summary>
@@ -222,24 +222,15 @@ namespace WebApplications.Utilities.Relection
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         [NotNull]
-        private readonly Lazy<Type[]> _genericArguments;
+        private readonly Lazy<List<GenericArgument>> _genericArguments;
 
         /// <summary>
         /// The generic arguments.
         /// </summary>
         [NotNull]
-        public IEnumerable<Type> GenericArguments
+        public IEnumerable<GenericArgument> GenericArguments
         {
             get { return _genericArguments.Value; }
-        }
-
-        /// <summary>
-        /// Gets the parameters count.
-        /// </summary>
-        /// <remarks></remarks>
-        public int GenericArgumentsCount
-        {
-            get { return _genericArguments.Value.Length; }
         }
 
         /// <summary>
@@ -308,7 +299,11 @@ namespace WebApplications.Utilities.Relection
                     () => Reflection.SimpleTypeFullName(type.FullName ?? type.Name),
                     LazyThreadSafetyMode.PublicationOnly);
 
-            _genericArguments = new Lazy<Type[]>(type.GetGenericArguments, LazyThreadSafetyMode.PublicationOnly);
+            _genericArguments = new Lazy<List<GenericArgument>>(
+                () => Type.GetGenericArguments()
+                          .Select((g, i) => new GenericArgument(GenericArgumentLocation.Type, i, g))
+                          .ToList(),
+                LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
@@ -614,35 +609,53 @@ namespace WebApplications.Utilities.Relection
                 () => new ConcurrentDictionary<string, ExtendedType>(), LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
-        /// Closes the type if it is generic and has generic parameters.
+        /// Closes the type if it is generic and has generic parameters, or creates equivalent type.
         /// </summary>
-        /// <param name="genericTypes">The generic types.</param>
+        /// <param name="genericTypes">The generic types (null to use existing type from closed type).</param>
         /// <returns>The <see cref="ExtendedType"/> without open generic parameter if the supplied generic types are able to close the type; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
         public ExtendedType CloseType([NotNull] params Type[] genericTypes)
         {
-            if (!Type.IsGenericTypeDefinition ||
-                !Type.ContainsGenericParameters)
-                return genericTypes.Length < 1 ? this : null;
-
-            int args = Type.GetGenericArguments().Length;
-
-            if (genericTypes.Length != args)
+            int length = genericTypes.Length;
+            // Check length matches.
+            if (length != _genericArguments.Value.Count)
                 return null;
+
+            // Substitute missing types with concrete ones.
+            Type[] gta = new Type[length];
+            for (int i = 0; i < length; i++)
+            {
+                Type gt = genericTypes[i];
+
+                // Must supply concrete types.
+                if (gt == null)
+                {
+                    // See if we have a concrete type for this index.
+                    Type et = _genericArguments.Value[i].Type;
+                    if ((et == null) ||
+                        (et.IsGenericType))
+                        return null;
+                    gt = et;
+                }
+                else if (gt.IsGenericType)
+                    return null;
+
+                gta[i] = gt;
+            }
 
             // Make a closed type using the first types in the array.
             // TODO There is no way of avoiding a catch (unfortunately) without
             // implementing a contraint validation algorithm - as the .NET one is
             // not exposed - this could be done using Type.GenericParameterAttributes
             // followed by Type.GetGenericParameterConstraints.
-            string key = String.Join("|", genericTypes.Select(t => ExtendedType.Get(t).Signature));
+            string key = String.Join("|", gta.Select(t => t.FullName));
             return _closedTypes.Value.GetOrAdd(
                 key,
                 k =>
                 {
                     try
                     {
-                        return Get(Type.MakeGenericType(genericTypes));
+                        return Get(Type.MakeGenericType(gta));
                     }
                     catch (ArgumentException)
                     {

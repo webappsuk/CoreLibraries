@@ -13,7 +13,7 @@ namespace WebApplications.Utilities.Relection
     ///   Wraps the method information with accessors for retrieving parameters.
     /// </summary>
     [DebuggerDisplay("{Info} [Extended]")]
-    public class Method
+    public class Method : ISignature
     {
         /// <summary>
         /// Caches closed methods.
@@ -29,25 +29,6 @@ namespace WebApplications.Utilities.Relection
         /// </summary>
         [NotNull]
         public readonly ExtendedType ExtendedType;
-
-        /// <summary>
-        /// Creates array of generic arguments on demand.
-        /// </summary>
-        [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Lazy<Type[]> _genericArguments;
-
-        /// <summary>
-        /// The generic arguments.
-        /// </summary>
-        [NotNull]
-        public IEnumerable<Type> GenericArguments { get { return _genericArguments.Value; } }
-
-        /// <summary>
-        /// Gets the parameters count.
-        /// </summary>
-        /// <remarks></remarks>
-        public int GenericArgumentsCount { get { return _genericArguments.Value.Length; } }
 
         /// <summary>
         ///   The method info.
@@ -68,11 +49,33 @@ namespace WebApplications.Utilities.Relection
         [NotNull]
         public IEnumerable<ParameterInfo> Parameters { get { return _parameters.Value; } }
 
+        /// <inheritdoc/>
+        public IEnumerable<Type> ParameterTypes
+        {
+            get { return _parameters.Value.Select(p => p.ParameterType); }
+        }
+
         /// <summary>
         /// Gets the parameters count.
         /// </summary>
         /// <remarks></remarks>
         public int ParametersCount { get { return _parameters.Value.Length; } }
+        
+        /// <inheritdoc/>
+        public IEnumerable<GenericArgument> TypeGenericArguments { get { return ExtendedType.GenericArguments; } }
+
+        /// <summary>
+        /// Creates array of generic arguments on demand.
+        /// </summary>
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<List<GenericArgument>> _genericArguments;
+
+        /// <inheritdoc/>
+        public IEnumerable<GenericArgument> SignatureGenericArguments
+        {
+            get { return _genericArguments.Value; }
+        }
 
         /// <summary>
         /// Gets the type of the return.
@@ -91,7 +94,11 @@ namespace WebApplications.Utilities.Relection
         {
             ExtendedType = extendedType;
             Info = info;
-            _genericArguments = new Lazy<Type[]>(info.GetGenericArguments, LazyThreadSafetyMode.PublicationOnly);
+            _genericArguments = new Lazy<List<GenericArgument>>(
+                () => info.GetGenericArguments()
+                          .Select((g, i) => new GenericArgument(GenericArgumentLocation.Signature, i, g))
+                          .ToList(),
+                LazyThreadSafetyMode.PublicationOnly);
             _parameters = new Lazy<ParameterInfo[]>(info.GetParameters, LazyThreadSafetyMode.PublicationOnly);
         }
 
@@ -103,27 +110,43 @@ namespace WebApplications.Utilities.Relection
         /// <remarks></remarks>
         public Method CloseMethod([NotNull]params Type[] genericTypes)
         {
-            // Start with the current extended type and method.
-            ExtendedType et = ExtendedType;
-            Method method = this;
-
-            // If we're not a generic method we should have any types passed in.
-            if (!method.Info.ContainsGenericParameters)
-                return genericTypes.Length < 1 ? method : null;
+            int length = genericTypes.Length;
 
             // Check we have exactly the right number of paramters.
-            if (_genericArguments.Value.Length != genericTypes.Length)
+            if (_genericArguments.Value.Count != length)
                 return null;
 
+            // Substitute missing types with concrete ones.
+            Type[] gta = new Type[length];
+            for (int i = 0; i < length; i++)
+            {
+                Type gt = genericTypes[i];
+
+                // Must supply concrete types.
+                if (gt == null)
+                {
+                    // See if we have a concrete type for this index.
+                    Type et = _genericArguments.Value[i].Type;
+                    if ((et == null) ||
+                        (et.IsGenericType))
+                        return null;
+                    gt = et;
+                }
+                else if (gt.IsGenericType)
+                    return null;
+
+                gta[i] = gt;
+            }
+
             // Create closed method, cache it and return.
-            string key = String.Join("|", genericTypes.Select(t => ExtendedType.Get(t).Signature));
+            string key = String.Join("|", gta.Select(t => ExtendedType.Get(t).Signature));
             return _closedMethods.Value.GetOrAdd(
                 key,
                 k =>
                     {
                         try
                         {
-                            return new Method(et, method.Info.MakeGenericMethod(genericTypes));
+                            return new Method(ExtendedType, Info.MakeGenericMethod(gta));
                         }
                         catch (ArgumentException)
                         {

@@ -75,66 +75,22 @@ namespace WebApplications.Utilities.Relection
         {
             // Holds matches along with order.
             Method bestMatch = null;
-            List<int> bestMatchRequiredCasts = null;
-
-            int typeArgCount = ExtendedType.Type.IsGenericTypeDefinition ? ExtendedType.GenericArgumentsCount : 0;
-
+            int bestMatchRequiredCasts = int.MaxValue;
             Type[] bestMatchRequiredTypeClosures = null;
             Type[] bestMatchRequiredMethodClosures = null;
 
             int tCount = types.Length;
             foreach (Method method in _methods)
             {
-                Debug.Assert(method != null);
-                // Check we have enough parameters
-                if (method.ParametersCount + 1 != tCount) continue;
-
-                // Check we have enough generic arguments
-                if (method.GenericArgumentsCount != genericArguments) continue;
-
-                // Create lists for casts and closures.
-                List<int> casts = new List<int>(tCount);
-                Type[] typeClosures = new Type[typeArgCount];
-                Type[] methodClosures = new Type[method.GenericArgumentsCount];
-
-                // Check return type
-                TypeSearch returnSearch = types.Last();
-                Debug.Assert(returnSearch != null);
-                bool requiresCast;
-                GenericArgumentLocation closureLocation;
-                int closurePosition;
-                Type closureType;
-
-                if (!method.ReturnType.Matches(returnSearch, out requiresCast, out closureLocation, out closurePosition, out closureType) ||
-                    !UpdateContext(casts, typeClosures, methodClosures, requiresCast, closureLocation, closurePosition, closureType))
+                // Match method signature
+                bool[] castsRequired;
+                Type[] typeClosures;
+                Type[] methodClosures;
+                if (!method.Matches(out castsRequired, out typeClosures, out methodClosures, genericArguments, types))
                     continue;
 
-                if (tCount > 1)
-                {
-                    // Check parameters
-                    IEnumerator<ParameterInfo> pe = method.Parameters.GetEnumerator();
-                    IEnumerator te = types.GetEnumerator();
-                    bool paramsMatch = true;
-                    while (pe.MoveNext())
-                    {
-                        te.MoveNext();
-                        Debug.Assert(pe.Current != null);
-                        Debug.Assert(te.Current != null);
-                        ParameterInfo t = pe.Current;
-                        TypeSearch s = ((TypeSearch)te.Current);
-                        if (
-                            t.ParameterType.Matches(s, out requiresCast, out closureLocation, out closurePosition, out closureType) &&
-                            UpdateContext(casts, typeClosures, methodClosures, requiresCast, closureLocation, closurePosition, closureType))
-                            continue;
-
-                        paramsMatch = false;
-                        break;
-                    }
-                    if (!paramsMatch)
-                        continue;
-                }
-
                 // Check to see if this beats the current best match
+                int? bmcc = null;
                 if (bestMatch != null)
                 {
                     int btcl = bestMatchRequiredTypeClosures.Length;
@@ -152,11 +108,18 @@ namespace WebApplications.Utilities.Relection
                         if (bmcl < mcl) continue;
 
                         // If method level closures are equal, see which has more casts.
-                        if (bmcl == mcl && bestMatchRequiredCasts.Count < casts.Count) continue;
+                        if (bmcl == mcl)
+                        {
+                            bmcc = castsRequired.Count(c => c);
+                            if (bestMatchRequiredCasts <= bmcc)
+                                continue;
+                        }
                     }
                 }
+
+                // Set best match
                 bestMatch = method;
-                bestMatchRequiredCasts = casts;
+                bestMatchRequiredCasts = bmcc ?? castsRequired.Count(c => c);
                 bestMatchRequiredTypeClosures = typeClosures;
                 bestMatchRequiredMethodClosures = methodClosures;
             }
@@ -165,14 +128,10 @@ namespace WebApplications.Utilities.Relection
             if (bestMatch == null) return null;
 
             // Check to see if we have to close the type
-            if (bestMatchRequiredTypeClosures.Length > 0)
+            if (bestMatchRequiredTypeClosures.Any(c => c != null))
             {
-                int nullCount = bestMatchRequiredTypeClosures.Count(t => t == null);
-                // If we have any nulls, we haven't fully closed type.
-                // Only return match if we haven't tried to close type.
-                if (nullCount > 0)
-                    return (nullCount == typeArgCount) ? bestMatch : null;
-
+                Debug.Assert(ExtendedType.GenericArguments.Count() == bestMatchRequiredTypeClosures.Length);
+                
                 // Close type.
                 ExtendedType et = this.ExtendedType;
                 et = et.CloseType(bestMatchRequiredTypeClosures);
@@ -188,84 +147,11 @@ namespace WebApplications.Utilities.Relection
                 return bestMatch;
             }
 
-            if (bestMatchRequiredMethodClosures.Length > 0)
-            {
-                int nullCount = bestMatchRequiredMethodClosures.Count(t => t == null);
-                // If we have any nulls, we haven't fully closed method.
-                // Only return match if we haven't tried to close method.
-                if (nullCount > 0)
-                    return (nullCount == bestMatchRequiredMethodClosures.Length) ? bestMatch : null;
-
+            // Check to see if we have to close the method
+            if (bestMatchRequiredMethodClosures.Any(m => m != null))
                 bestMatch = bestMatch.CloseMethod(bestMatchRequiredMethodClosures);
-            }
 
             return bestMatch;
-        }
-
-        /// <summary>
-        /// Updates the search context.
-        /// </summary>
-        /// <param name="casts">The casts.</param>
-        /// <param name="typeClosures">The type closures.</param>
-        /// <param name="methodClosures">The method closures.</param>
-        /// <param name="requiresCast">if set to <see langword="true"/> [requires cast].</param>
-        /// <param name="closureLocation">The closure location.</param>
-        /// <param name="closurePosition">The closure position.</param>
-        /// <param name="closureType">Type of the closure.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
-        private bool UpdateContext([NotNull]List<int> casts, [NotNull]Type[] typeClosures, [NotNull]Type[] methodClosures, bool requiresCast, GenericArgumentLocation closureLocation, int closurePosition, Type closureType)
-        {
-            Debug.Assert(closureLocation != GenericArgumentLocation.Any);
-
-            if (requiresCast)
-            {
-                Debug.Assert(closureLocation == GenericArgumentLocation.None);
-                Debug.Assert(closurePosition < 0);
-                casts.Add(-1);
-                return true;
-            }
-
-            // Check if we have a closure location
-            if (closureLocation == GenericArgumentLocation.None)
-            {
-                Debug.Assert(closurePosition < 0);
-                return true;
-            }
-
-            Debug.Assert(closureType != null);
-            if (closureLocation == GenericArgumentLocation.Method)
-            {
-                // Requires method closure
-                Debug.Assert(closurePosition < methodClosures.Length);
-
-                // If we already have a closure, ensure it matches!
-                if (methodClosures[closurePosition] != null)
-                {
-                    if (methodClosures[closurePosition] != closureType) return false;
-                }
-                else
-                {
-                    methodClosures[closurePosition] = closureType;
-                }
-            }
-            else
-            {
-                Debug.Assert(closureLocation == GenericArgumentLocation.Type);
-                // Requires type closure
-                Debug.Assert(closurePosition < ExtendedType.GenericArgumentsCount);
-
-                // If we already have a closure, ensure it matches!
-                if (typeClosures[closurePosition] != null)
-                {
-                    if (typeClosures[closurePosition] != closureType) return false;
-                }
-                else
-                {
-                    typeClosures[closurePosition] = closureType;
-                }
-            }
-            return true;
         }
 
         /// <summary>
