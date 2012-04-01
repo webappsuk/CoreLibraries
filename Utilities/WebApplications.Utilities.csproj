@@ -130,6 +130,7 @@
     <Compile Include="Relection\Event.cs" />
     <Compile Include="Relection\Field.cs" />
     <Compile Include="Relection\GenericArgumentLocation.cs" />
+    <Compile Include="Relection\Indexer.cs" />
     <Compile Include="Relection\Method.cs" />
     <Compile Include="Relection\Methods.cs" />
     <Compile Include="Relection\Property.cs" />

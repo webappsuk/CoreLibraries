@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Relection
@@ -66,8 +67,8 @@ namespace WebApplications.Utilities.Relection
         {
             ExtendedType = extendedType;
             Info = info;
-            _getMethod = new Lazy<MethodInfo>(() => info.GetGetMethod(true));
-            _setMethod = new Lazy<MethodInfo>(() => info.GetSetMethod(true));
+            _getMethod = new Lazy<MethodInfo>(() => info.GetGetMethod(true), LazyThreadSafetyMode.PublicationOnly);
+            _setMethod = new Lazy<MethodInfo>(() => info.GetSetMethod(true), LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>

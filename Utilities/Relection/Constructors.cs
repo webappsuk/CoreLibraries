@@ -26,8 +26,7 @@ namespace WebApplications.Utilities.Relection
         ///   It is possible to have overloads with ref/out parameters,
         ///   hence type position is not always enough to disambiguate.
         /// </summary>
-        [NotNull]
-        private readonly List<Constructor> _constructors = new List<Constructor>();
+        [NotNull] private readonly List<Constructor> _constructors;
 
         /// <summary>
         /// The static constructor is a special case and does not appear directly in overloads.
@@ -38,10 +37,21 @@ namespace WebApplications.Utilities.Relection
         /// Initializes a new instance of the <see cref="Constructors"/> class.
         /// </summary>
         /// <param name="extendedType">Type of the extended.</param>
+        /// <remarks></remarks>
+        internal Constructors([NotNull]ExtendedType extendedType)
+        {
+            _constructors = new List<Constructor>(0);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Constructors"/> class.
+        /// </summary>
+        /// <param name="extendedType">Type of the extended.</param>
         /// <param name="constructor">The constructor.</param>
         /// <remarks></remarks>
         internal Constructors([NotNull]ExtendedType extendedType, [NotNull]ConstructorInfo constructor)
         {
+            _constructors = new List<Constructor>();
             ExtendedType = extendedType;
             Add(constructor);
         }

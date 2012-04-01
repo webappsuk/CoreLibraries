@@ -61,13 +61,30 @@ namespace WebApplications.Utilities.Relection
         }
 
         /// <summary>
-        ///   Holds all properties.
+        /// Holds all indexers.
+        /// </summary>
+        private IEnumerable<Indexer> _indexers;
+        /// <summary>
+        /// Gets the indexers.
+        /// </summary>
+        /// <remarks></remarks>
+        public IEnumerable<Indexer> Indexers
+        {
+             get
+             {
+                 if (_loaded) LoadMembers();
+                 return _indexers;
+             }
+        }
+
+        /// <summary>
+        /// Holds all properties.
         /// </summary>
         [NotNull]
         private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
 
         /// <summary>
-        ///   Gets the properties.
+        ///   Gets the properties (doesn't include <see cref="Indexers"/>).
         /// </summary>
         [NotNull]
         public IEnumerable<Property> Properties
@@ -123,9 +140,9 @@ namespace WebApplications.Utilities.Relection
         private Constructors _constructors;
 
         /// <summary>
-        ///   Gets the constructors (if any).
+        ///   Gets the constructors.
         /// </summary>
-        [CanBeNull]
+        [NotNull]
         public Constructors Constructors
         {
             get
@@ -134,7 +151,6 @@ namespace WebApplications.Utilities.Relection
                 return _constructors;
             }
         }
-
 
         /// <summary>
         /// Calculates custom attributes on demand.
@@ -319,6 +335,7 @@ namespace WebApplications.Utilities.Relection
 
             if (!_loaded)
             {
+                List<Indexer> indexers = null;
                 // Get all members in one go - this is significantly faster than getting individual calls later - at the cost of potentially
                 // loading members that are not requested.
                 foreach (MemberInfo memberInfo in this.Type.GetMembers(AllMembersBindingFlags))
@@ -335,13 +352,14 @@ namespace WebApplications.Utilities.Relection
                     PropertyInfo p = memberInfo as PropertyInfo;
                     if (p != null)
                     {
-                        if (p.Name.Equals(DefaultMember))
+                        // Seperate out indexers (which can not be disambiguated by name).
+                        if (p.Name == DefaultMember)
                         {
-                            var indexTypes = p.GetIndexParameters();
-                            // TODO Add indexer support.
+                            if (indexers == null) indexers = new List<Indexer>();
+                            indexers.Add(new Indexer(this, p));
+                            continue;
                         }
-                        else
-                            _properties.Add(p.Name, new Property(this, p));
+                        _properties.Add(p.Name, new Property(this, p));
                         continue;
                     }
 
@@ -383,6 +401,11 @@ namespace WebApplications.Utilities.Relection
                     Type t = memberInfo as Type;
                     if (t == null) return;
                 }
+
+                if (_constructors == null)
+                    _constructors = new Constructors(this);
+
+                _indexers = indexers ?? Enumerable.Empty<Indexer>();
 
                 _loaded = true;
             }
@@ -428,6 +451,21 @@ namespace WebApplications.Utilities.Relection
             if (!_loaded) LoadMembers();
             Property property;
             return _properties.TryGetValue(name, out property) ? property : null;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="Indexer"/> matching the <see cref="PropertyInfo"/> (if any).
+        /// </summary>
+        /// <param name="propertyInfo">The property info.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public Indexer GetIndexer([NotNull] PropertyInfo propertyInfo)
+        {
+            if ((propertyInfo.DeclaringType != Type) ||
+                (propertyInfo.Name != DefaultMember))
+                return null;
+            if (!_loaded) LoadMembers();
+            return _indexers.FirstOrDefault(i => i.Info == propertyInfo);
         }
 
         /// <summary>

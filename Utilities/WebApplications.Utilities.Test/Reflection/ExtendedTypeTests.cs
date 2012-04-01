@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
@@ -22,7 +23,7 @@ namespace WebApplications.Utilities.Test.Reflection
             }
             public void A(int a) { }
             public void A(ref int a) { }
-            public unsafe void A(int* a) {}
+            public unsafe void A(int* a) { }
             public static void A(string a, string b = null) { }
             public void A(string a, out string b)
             {
@@ -31,7 +32,7 @@ namespace WebApplications.Utilities.Test.Reflection
 
             public void A<TException>(string a) { }
             public void A<T1, T2>(string a) { }
-            public void A<T1>(T a, ref T1 b) {}
+            public void A<T1>(T a, ref T1 b) { }
 
             public static explicit operator int(ComplexOverloads<T> a)
             {
@@ -48,7 +49,7 @@ namespace WebApplications.Utilities.Test.Reflection
 
             static ComplexOverloads()
             {
-            } 
+            }
             public ComplexOverloads()
             {
             }
@@ -57,12 +58,30 @@ namespace WebApplications.Utilities.Test.Reflection
                 Value = value;
                 Value2 = value2;
             }
+
+            public T this[T index]
+            {
+                get { return default(T); }
+                set {}
+            }
+
+            public int this[int index]
+            {
+                get { return 0; }
+                set { }
+            }
+
+            public int this[T index1, int index2]
+            {
+                get { return 0; }
+                set { }
+            }
         }
 
         [TestMethod]
         public void ExtendedType_CanDisambiguateMembers()
         {
-            ExtendedType et = ExtendedType.Get(typeof (ComplexOverloads<>));
+            ExtendedType et = ExtendedType.Get(typeof(ComplexOverloads<>));
 
             Methods methods = et.GetMethods("A");
 
@@ -154,11 +173,11 @@ namespace WebApplications.Utilities.Test.Reflection
         public void ExtendedType_CanGetConcreteMethods()
         {
             // Get the open type.
-            ExtendedType openType = ExtendedType.Get(typeof (ComplexOverloads<>));
+            ExtendedType openType = ExtendedType.Get(typeof(ComplexOverloads<>));
             Assert.IsTrue(openType.Type.ContainsGenericParameters);
 
             // Close the type
-            ExtendedType closedType = openType.CloseType(typeof (int));
+            ExtendedType closedType = openType.CloseType(typeof(int));
             Assert.IsFalse(closedType.Type.ContainsGenericParameters);
             Assert.AreSame(openType.Type, closedType.Type.GetGenericTypeDefinition());
 
@@ -190,12 +209,12 @@ namespace WebApplications.Utilities.Test.Reflection
         [TestMethod]
         public void ExtendedType_CanDisambiguateConstructors()
         {
-            ExtendedType et = typeof (ComplexOverloads<>);
-            
+            ExtendedType et = typeof(ComplexOverloads<>);
+
             // There are two ways to retrieve all the constructors
             Constructors constructors = et.Constructors;
             Assert.IsNotNull(constructors);
-            
+
             // The second way is for consistency.
             Constructors constructors2 = et.GetConstructors();
             Assert.IsNotNull(constructors2);
@@ -226,6 +245,15 @@ namespace WebApplications.Utilities.Test.Reflection
 
             // Check that our declaring type has been changed to int automagically
             Assert.AreEqual(typeof(int), genericConstructor.ExtendedType.GenericArguments.First());
+        }
+
+        [TestMethod]
+        public void ExtendedType_CanDisambiguateIndexers()
+        {
+            // Retrieve indexers
+            List<Indexer> indexers = ((ExtendedType) typeof (ComplexOverloads<>)).Indexers.ToList();
+            Assert.IsNotNull(indexers);
+            Assert.AreEqual(3, indexers.Count);
         }
     }
 }

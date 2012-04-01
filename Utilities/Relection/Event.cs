@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Relection
@@ -64,8 +65,8 @@ namespace WebApplications.Utilities.Relection
         {
             ExtendedType = extendedType;
             Info = info;
-            _addMethod = new Lazy<MethodInfo>(() => info.GetAddMethod(true));
-            _removeMethod = new Lazy<MethodInfo>(() => info.GetRemoveMethod(true));
+            _addMethod = new Lazy<MethodInfo>(() => info.GetAddMethod(true), LazyThreadSafetyMode.PublicationOnly);
+            _removeMethod = new Lazy<MethodInfo>(() => info.GetRemoveMethod(true), LazyThreadSafetyMode.PublicationOnly);
 
             // Note events also support 'raise' and 'other' methods, neither of which are currently used in C#
             // Adding support is trivial (identical to above), but would create unnecessary overhead for all
