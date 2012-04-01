@@ -23,7 +23,7 @@ namespace WebApplications.Utilities.Test.Reflection
             public void A(int a) { }
             public void A(ref int a) { }
             public unsafe void A(int* a) {}
-            public void A(string a, string b = null) { }
+            public static void A(string a, string b = null) { }
             public void A(string a, out string b)
             {
                 b = null;
@@ -46,6 +46,12 @@ namespace WebApplications.Utilities.Test.Reflection
 
             public string Value2;
 
+            static ComplexOverloads()
+            {
+            } 
+            public ComplexOverloads()
+            {
+            }
             public ComplexOverloads(T value, string value2)
             {
                 Value = value;
@@ -89,6 +95,7 @@ namespace WebApplications.Utilities.Test.Reflection
 
             Method method4 = methods.GetOverload(typeof(string), typeof(string), TypeSearch.Void);
             Assert.IsNotNull(method4);
+            Assert.IsTrue(method4.Info.IsStatic);
             Assert.AreNotEqual(method4, method1);
             Assert.AreNotEqual(method4, method2);
             Assert.AreNotEqual(method4, method3);
@@ -180,9 +187,45 @@ namespace WebApplications.Utilities.Test.Reflection
             Assert.IsTrue(method4.Info.ContainsGenericParameters);
         }
 
-        public void ExtendedType_CanRetrieveGenericConstructor()
+        [TestMethod]
+        public void ExtendedType_CanDisambiguateConstructors()
         {
+            ExtendedType et = typeof (ComplexOverloads<>);
             
+            // There are two ways to retrieve all the constructors
+            Constructors constructors = et.Constructors;
+            Assert.IsNotNull(constructors);
+            
+            // The second way is for consistency.
+            Constructors constructors2 = et.GetConstructors();
+            Assert.IsNotNull(constructors2);
+            Assert.AreSame(constructors, constructors2);
+
+            // Grab the static constructor
+            Constructor staticConstructor = constructors.StaticConstructor;
+            Assert.IsNotNull(staticConstructor);
+            Assert.IsTrue(staticConstructor.Info.IsStatic);
+
+            // Retrieve parameterless constructor
+            Constructor constructor = et.GetConstructor();
+            Assert.IsNotNull(constructor);
+
+            // Retrieve the generic constructor
+            Constructor genericConstructor = et.GetConstructor(TypeSearch.T1, typeof(string));
+            Assert.IsNotNull(genericConstructor);
+            Assert.AreNotSame(constructor, genericConstructor);
+        }
+
+        [TestMethod]
+        public void ExtendedType_CanGetConcreteGenericConstructor()
+        {
+            // Retrieve the generic constructor for a generic type, but search for concrete types.
+            Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(typeof(int), typeof(string));
+            Assert.IsNotNull(genericConstructor);
+            Assert.IsFalse(genericConstructor.ExtendedType.Type.ContainsGenericParameters);
+
+            // Check that our declaring type has been changed to int automagically
+            Assert.AreEqual(typeof(int), genericConstructor.ExtendedType.GenericArguments.First());
         }
     }
 }

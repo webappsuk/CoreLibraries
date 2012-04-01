@@ -40,11 +40,16 @@ namespace WebApplications.Utilities.Relection
         public IEnumerable<ParameterInfo> Parameters { get { return _parameters.Value; } }
 
         /// <summary>
+        /// Gets the parameters count.
+        /// </summary>
+        /// <remarks></remarks>
+        public int ParametersCount { get { return _parameters.Value.Length; } }
+
+        /// <summary>
         /// Initializes the <see cref="Constructor"/> class.
         /// </summary>
-        /// <param name="extendedType">The extended type.</param>
+        /// <param name="extendedType">Type of the extended.</param>
         /// <param name="info">The info.</param>
-        /// <param name="parameters">The parameters.</param>
         /// <remarks></remarks>
         internal Constructor([NotNull]ExtendedType extendedType, [NotNull]ConstructorInfo info)
         {

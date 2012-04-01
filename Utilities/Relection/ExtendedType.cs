@@ -23,25 +23,29 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         /// Holds all known extended types.
         /// </summary>
-        [NotNull] private static readonly ConcurrentDictionary<Type, ExtendedType> _extendedTypes =
+        [NotNull]
+        private static readonly ConcurrentDictionary<Type, ExtendedType> _extendedTypes =
             new ConcurrentDictionary<Type, ExtendedType>();
 
         /// <summary>
         ///   Binding flags for returning all fields/properties from a type.
         /// </summary>
-        [UsedImplicitly] public const BindingFlags AllMembersBindingFlags =
+        [UsedImplicitly]
+        public const BindingFlags AllMembersBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.DeclaredOnly;
 
         /// <summary>
         /// The underlying type.
         /// </summary>
-        [NotNull] public readonly Type Type;
+        [NotNull]
+        public readonly Type Type;
 
         /// <summary>
         ///   Holds all fields.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, Field> _fields = new Dictionary<string, Field>();
+        [NotNull]
+        private readonly Dictionary<string, Field> _fields = new Dictionary<string, Field>();
 
         /// <summary>
         ///   Gets the fields.
@@ -59,7 +63,8 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         ///   Holds all properties.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
+        [NotNull]
+        private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
 
         /// <summary>
         ///   Gets the properties.
@@ -77,7 +82,8 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         ///   Holds all events.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, Event> _events = new Dictionary<string, Event>();
+        [NotNull]
+        private readonly Dictionary<string, Event> _events = new Dictionary<string, Event>();
 
         /// <summary>
         ///   Gets the events.
@@ -95,7 +101,8 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         ///   Holds all methods.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, Methods> _methods = new Dictionary<string, Methods>();
+        [NotNull]
+        private readonly Dictionary<string, Methods> _methods = new Dictionary<string, Methods>();
 
         /// <summary>
         ///   Gets the methods.
@@ -113,19 +120,18 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         /// Holds all constructors.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, Constructors> _constructors =
-            new Dictionary<string, Constructors>();
+        private Constructors _constructors;
 
         /// <summary>
-        ///   Gets the constructors.
+        ///   Gets the constructors (if any).
         /// </summary>
-        [NotNull]
-        public IEnumerable<Constructors> Constructors
+        [CanBeNull]
+        public Constructors Constructors
         {
             get
             {
                 if (!_loaded) LoadMembers();
-                return _constructors.Values;
+                return _constructors;
             }
         }
 
@@ -134,7 +140,8 @@ namespace WebApplications.Utilities.Relection
         /// Calculates custom attributes on demand.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [NotNull] private readonly Lazy<IEnumerable<Attribute>> _customAttributes;
+        [NotNull]
+        private readonly Lazy<IEnumerable<Attribute>> _customAttributes;
 
         /// <summary>
         ///   All the customer attributes on the type.
@@ -149,7 +156,8 @@ namespace WebApplications.Utilities.Relection
         /// Calculates default member on demand.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [NotNull] private readonly Lazy<string> _defaultMember;
+        [NotNull]
+        private readonly Lazy<string> _defaultMember;
 
         /// <summary>
         ///   If this type has a default member (indexer), indicates its name.
@@ -164,7 +172,8 @@ namespace WebApplications.Utilities.Relection
         /// Creates a signature on demand.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [NotNull] private readonly Lazy<string> _signature;
+        [NotNull]
+        private readonly Lazy<string> _signature;
 
         /// <summary>
         /// Gets the signature of the type.
@@ -196,7 +205,8 @@ namespace WebApplications.Utilities.Relection
         /// Creates array of generic arguments on demand.
         /// </summary>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [NotNull] private readonly Lazy<Type[]> _genericArguments;
+        [NotNull]
+        private readonly Lazy<Type[]> _genericArguments;
 
         /// <summary>
         /// The generic arguments.
@@ -246,36 +256,36 @@ namespace WebApplications.Utilities.Relection
             _defaultMember =
                 new Lazy<string>(
                     () =>
-                        {
-                            // Look for default member.
-                            DefaultMemberAttribute defaultMemberAttribute =
-                                Enumerable.OfType<DefaultMemberAttribute>(this.CustomerAttributes).SingleOrDefault();
-                            return defaultMemberAttribute != null
-                                       ? defaultMemberAttribute.MemberName
-                                       : null;
-                        }, LazyThreadSafetyMode.PublicationOnly);
+                    {
+                        // Look for default member.
+                        DefaultMemberAttribute defaultMemberAttribute =
+                            Enumerable.OfType<DefaultMemberAttribute>(this.CustomerAttributes).SingleOrDefault();
+                        return defaultMemberAttribute != null
+                                   ? defaultMemberAttribute.MemberName
+                                   : null;
+                    }, LazyThreadSafetyMode.PublicationOnly);
 
             _signature
                 = new Lazy<string>(
                     () =>
-                        {
-                            Type elementType = type;
+                    {
+                        Type elementType = type;
 
-                            while (elementType.HasElementType)
-                                elementType = elementType.GetElementType();
+                        while (elementType.HasElementType)
+                            elementType = elementType.GetElementType();
 
-                            if (elementType.IsNested)
-                                return type.Name;
+                        if (elementType.IsNested)
+                            return type.Name;
 
-                            string sigToString = type.ToString();
+                        string sigToString = type.ToString();
 
-                            if (elementType.IsPrimitive ||
-                                elementType == typeof (void) ||
-                                elementType == typeof (TypedReference))
-                                sigToString = sigToString.Substring(7);
+                        if (elementType.IsPrimitive ||
+                            elementType == typeof(void) ||
+                            elementType == typeof(TypedReference))
+                            sigToString = sigToString.Substring(7);
 
-                            return sigToString;
-                        }, LazyThreadSafetyMode.PublicationOnly);
+                        return sigToString;
+                    }, LazyThreadSafetyMode.PublicationOnly);
 
             _simpleFullName
                 = new Lazy<string>(
@@ -354,14 +364,10 @@ namespace WebApplications.Utilities.Relection
                     ConstructorInfo c = memberInfo as ConstructorInfo;
                     if (c != null)
                     {
-                        Constructors constructors;
-                        if (!_constructors.TryGetValue(c.Name, out constructors))
-                        {
-                            constructors = new Constructors(this, c);
-                            _constructors.Add(c.Name, constructors);
-                        }
+                        if (_constructors == null)
+                            _constructors = new Constructors(this, c);
                         else
-                            constructors.Add(c);
+                            _constructors.Add(c);
                         continue;
                     }
 
@@ -380,7 +386,6 @@ namespace WebApplications.Utilities.Relection
 
                 _loaded = true;
             }
-
             // Release spin lock.
             if (taken)
                 _loadLock.Exit();
@@ -502,32 +507,23 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         /// Gets the constructors.
         /// </summary>
-        /// <param name="name">The name.</param>
         /// <returns>The <see cref="Constructors"/> if found; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        public Constructors GetConstructors([NotNull] string name)
+        public Constructors GetConstructors()
         {
-            if (!_loaded) LoadMembers();
-            Constructors constructors;
-            return _constructors.TryGetValue(name, out constructors) ? constructors : null;
+            return Constructors;
         }
 
         /// <summary>
         /// Gets the constructor.
         /// </summary>
-        /// <param name="name">The name.</param>
         /// <param name="types">The parameter types and return type.</param>
         /// <returns>The <see cref="Constructor"/> if found; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        public Constructor GetConstructor([NotNull] string name, [NotNull] params TypeSearch[] types)
+        public Constructor GetConstructor([NotNull] params TypeSearch[] types)
         {
             if (!_loaded) LoadMembers();
-            Constructors constructors;
-            if (!_constructors.TryGetValue(name, out constructors))
-                return null;
-            Debug.Assert(constructors != null);
-            Constructor constructor;
-            return constructors.GetOverload(types);
+            return _constructors == null ? null : _constructors.GetOverload(types);
         }
 
         /// <summary>
@@ -541,11 +537,7 @@ namespace WebApplications.Utilities.Relection
             if (constructorInfo.DeclaringType != Type)
                 return null;
             if (!_loaded) LoadMembers();
-            Constructors constructors;
-            if (!_constructors.TryGetValue(constructorInfo.Name, out constructors))
-                return null;
-            Debug.Assert(constructors != null);
-            return constructors.GetOverload(constructorInfo);
+            return _constructors == null ? null : _constructors.GetOverload(constructorInfo);
         }
 
         /// <summary>
@@ -609,16 +601,16 @@ namespace WebApplications.Utilities.Relection
             return _closedTypes.Value.GetOrAdd(
                 key,
                 k =>
+                {
+                    try
                     {
-                        try
-                        {
-                            return Get(Type.MakeGenericType(genericTypes));
-                        }
-                        catch (ArgumentException)
-                        {
-                            return null;
-                        }
-                    });
+                        return Get(Type.MakeGenericType(genericTypes));
+                    }
+                    catch (ArgumentException)
+                    {
+                        return null;
+                    }
+                });
         }
 
         /// <summary>

@@ -202,6 +202,18 @@ namespace WebApplications.Utilities.Relection
             return bestMatch;
         }
 
+        /// <summary>
+        /// Updates the search context.
+        /// </summary>
+        /// <param name="casts">The casts.</param>
+        /// <param name="typeClosures">The type closures.</param>
+        /// <param name="methodClosures">The method closures.</param>
+        /// <param name="requiresCast">if set to <see langword="true"/> [requires cast].</param>
+        /// <param name="closureLocation">The closure location.</param>
+        /// <param name="closurePosition">The closure position.</param>
+        /// <param name="closureType">Type of the closure.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
         private bool UpdateContext([NotNull]List<int> casts, [NotNull]Type[] typeClosures, [NotNull]Type[] methodClosures, bool requiresCast, GenericArgumentLocation closureLocation, int closurePosition, Type closureType)
         {
             Debug.Assert(closureLocation != GenericArgumentLocation.Any);
