@@ -242,9 +242,9 @@ namespace WebApplications.Utilities.Test.Reflection
             Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(typeof(int), typeof(string));
             Assert.IsNotNull(genericConstructor);
             Assert.IsFalse(genericConstructor.ExtendedType.Type.ContainsGenericParameters);
-
+            
             // Check that our declaring type has been changed to int automagically
-            Assert.AreEqual(typeof(int), genericConstructor.ExtendedType.GenericArguments.First());
+            Assert.AreEqual(typeof(int), genericConstructor.ExtendedType.GenericArguments.First().Type);
         }
 
         [TestMethod]

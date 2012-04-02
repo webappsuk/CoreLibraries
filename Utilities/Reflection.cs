@@ -1668,7 +1668,7 @@ namespace WebApplications.Utilities
             Type returnType = signature.ReturnType ?? typeof(void);
             
             // Initialise output arrays
-            castsRequired = new bool[parameters.Length];
+            castsRequired = new bool[parameters.Length + 1];
             typeClosures = new Type[typeArguments.Length];
             signatureClosures = new Type[signatureArguments.Length];
 
@@ -1681,7 +1681,7 @@ namespace WebApplications.Utilities
             Type closureType;
 
             if (!returnType.Matches(returnTypeSearch, out requiresCast, out closureLocation, out closurePosition, out closureType) ||
-                !UpdateSearchContext(ref castsRequired[parameters.Length-1], typeClosures, signatureClosures, requiresCast, closureLocation, closurePosition, closureType))
+                !UpdateSearchContext(ref castsRequired[parameters.Length], typeClosures, signatureClosures, requiresCast, closureLocation, closurePosition, closureType))
                 return false;
 
             // If we have more than one search we need to check parameters.
