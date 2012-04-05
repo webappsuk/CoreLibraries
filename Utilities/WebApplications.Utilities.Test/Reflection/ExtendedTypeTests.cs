@@ -158,7 +158,7 @@ namespace WebApplications.Utilities.Test.Reflection
 
             // Note this not only creates a concrete method by setting the method type param to Guid
             // It also has to make the enclosing type concrete by changing it to ComplexOverloads<bool> as
-            // the first paramter uses the type's generic parameter.
+            // the first parameter uses the type's generic parameter.
             //
             // It actually matches: public void A<T1>(T a, ref T1 b) {}
             Method concreteMethod = openType.GetMethod("A", 1, typeof(bool), typeof(Guid).MakeByRefType(), TypeSearch.Void);
@@ -178,6 +178,7 @@ namespace WebApplications.Utilities.Test.Reflection
 
             // Close the type
             ExtendedType closedType = openType.CloseType(typeof(int));
+            Assert.IsNotNull(closedType);
             Assert.IsFalse(closedType.Type.ContainsGenericParameters);
             Assert.AreSame(openType.Type, closedType.Type.GetGenericTypeDefinition());
 
@@ -193,7 +194,7 @@ namespace WebApplications.Utilities.Test.Reflection
             Assert.IsTrue(method2.Info.ContainsGenericParameters);
 
             // We can use the CloseMethod overload to close the method.
-            Method method3 = method2.CloseMethod(typeof(int));
+            Method method3 = method2.Close(typeof(int));
             Assert.IsNotNull(method3);
             // We haven't closed the extended type.
             Assert.AreSame(method2.ExtendedType, method3.ExtendedType);
@@ -226,11 +227,11 @@ namespace WebApplications.Utilities.Test.Reflection
             Assert.IsTrue(staticConstructor.Info.IsStatic);
 
             // Retrieve parameterless constructor
-            Constructor constructor = et.GetConstructor();
+            Constructor constructor = et.GetConstructor(et.Type);
             Assert.IsNotNull(constructor);
 
             // Retrieve the generic constructor
-            Constructor genericConstructor = et.GetConstructor(TypeSearch.T1, typeof(string));
+            Constructor genericConstructor = et.GetConstructor(TypeSearch.T1, typeof(string), et.Type);
             Assert.IsNotNull(genericConstructor);
             Assert.AreNotSame(constructor, genericConstructor);
         }
@@ -239,7 +240,7 @@ namespace WebApplications.Utilities.Test.Reflection
         public void ExtendedType_CanGetConcreteGenericConstructor()
         {
             // Retrieve the generic constructor for a generic type, but search for concrete types.
-            Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(typeof(int), typeof(string));
+            Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(typeof(int), typeof(string), typeof(ComplexOverloads<int>));
             Assert.IsNotNull(genericConstructor);
             Assert.IsFalse(genericConstructor.ExtendedType.Type.ContainsGenericParameters);
             

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -67,7 +68,7 @@ namespace WebApplications.Utilities.Relection
             Constructor c = new Constructor(ExtendedType, constructor);
             if (constructor.IsStatic)
             {
-                Debug.Assert(StaticConstructor == null);
+                Contract.Assert(StaticConstructor == null);
                 StaticConstructor = c;
             }
 
@@ -85,78 +86,13 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         /// Gets the <see cref="Constructor"/> matching the parameter types.
         /// </summary>
-        /// <param name="types">The parameter types.</param>
+        /// <param name="types">The parameter types, and return type (i.e. the constructor's type).</param>
         /// <returns>The <see cref="Constructor"/>; otherwise <see langword="null"/> if not found.</returns>
         /// <remarks></remarks>
         [CanBeNull]
         public Constructor GetOverload([NotNull]params TypeSearch[] types)
         {
-            // Holds matches along with order.
-            Constructor bestMatch = null;
-            int bestMatchRequiredCasts = int.MaxValue;
-
-            // Add return type of parent type.
-            TypeSearch[] t = new TypeSearch[types.Length + 1];
-            Array.Copy(types, t, types.Length);
-            t[types.Length] = ExtendedType.Type;
-
-            Type[] bestMatchRequiredTypeClosures = null;
-
-            foreach (Constructor constructor in _constructors)
-            {
-                // Match constructor signature
-                bool[] castsRequired;
-                Type[] typeClosures;
-                Type[] methodClosures;
-                if (!constructor.Matches(out castsRequired, out typeClosures, out methodClosures, 0, t))
-                    continue;
-
-                Debug.Assert(methodClosures.Length == 0);
-
-                // Check to see if this beats the current best match
-                int? bmcc = null;
-                if (bestMatch != null)
-                {
-                    int btcl = bestMatchRequiredTypeClosures.Length;
-                    int tcl = typeClosures.Length;
-                    // If we have to close more type generic arguments then existing match is better.
-                    if (btcl < tcl) continue;
-
-                    // If type level closures are equal, see which has more casts.
-                    if (btcl == tcl)
-                    {
-                        bmcc = castsRequired.Count(c => c);
-                        if (bestMatchRequiredCasts <= bmcc)
-                            continue;
-                    }
-                }
-
-                bestMatch = constructor;
-                bestMatchRequiredCasts = bmcc ?? castsRequired.Count(c => c);
-                bestMatchRequiredTypeClosures = typeClosures;
-            }
-
-            // If we don't have a match return null.
-            if (bestMatch == null) return null;
-
-            // Check to see if we have to close the type
-            if (bestMatchRequiredTypeClosures.Any(c => c != null))
-            {
-                Debug.Assert(ExtendedType.GenericArguments.Count() == bestMatchRequiredTypeClosures.Length);
-                
-                // Close type.
-                ExtendedType et = this.ExtendedType;
-                et = et.CloseType(bestMatchRequiredTypeClosures);
-
-                // If we failed to close our type, we're done.
-                if (et == null)
-                    return null;
-
-                // Research for constructor on extended type.
-                bestMatch = et.GetConstructor(types);
-            }
-
-            return bestMatch;
+            return _constructors.BestMatch(types) as Constructor;
         }
 
         /// <summary>

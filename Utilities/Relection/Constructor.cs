@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -84,6 +85,12 @@ namespace WebApplications.Utilities.Relection
         }
 
         /// <inheritdoc/>
+        public Type DeclaringType
+        {
+            get { return ExtendedType.Type; }
+        }
+
+        /// <inheritdoc/>
         public IEnumerable<GenericArgument> TypeGenericArguments { get { return ExtendedType.GenericArguments; } }
 
         /// <inheritdoc/>
@@ -95,13 +102,83 @@ namespace WebApplications.Utilities.Relection
         /// <inheritdoc/>
         public IEnumerable<Type> ParameterTypes
         {
-            get { return _parameters.Value.Select(p => p.ParameterType); }
+            get
+            {
+                Contract.Assert(_parameters.Value != null); 
+                return _parameters.Value.Select(p => p.ParameterType);
+            }
         }
 
         /// <inheritdoc/>
-        public Type ReturnType
+        Type ISignature.ReturnType
         {
             get { return ExtendedType.Type; }
+        }
+
+
+        /// <summary>
+        /// Closes the constructor with the specified concrete generic types.
+        /// </summary>
+        /// <param name="typeClosures">The types required to close the current type.</param>
+        /// <returns>A closed signature, if possible; otherwise <see langword="null" />.</returns>
+        /// <remarks><para>If signature closure is unsupported this method should return <see langword="null" />.</para>
+        /// <para>The closure arrays are ordered and contain the same number of elements as their corresponding
+        /// generic arguments.  Where elements are <see langword="null"/> a closure is not required.</para></remarks>
+        [CanBeNull]
+        public Constructor Close([NotNull]Type[] typeClosures)
+        {
+            // Check input arrays are valid.
+            if (typeClosures.Length != ExtendedType.GenericArguments.Count())
+                return null;
+
+            // If we haven't got any type closures, we can return this constructor.
+            if (!typeClosures.Any(t => t != null))
+                return this;
+
+            // Close type
+            ExtendedType et = ExtendedType.CloseType(typeClosures);
+
+            // Check closure succeeded.
+            if (et == null)
+                return null;
+
+            // Create new search.
+            Contract.Assert(_parameters.Value != null);
+            int pCount = _parameters.Value.Length;
+            TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
+
+            Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
+            Type[] parameterTypes = _parameters.Value.Select(p => p.ParameterType).ToArray();
+
+            // Search for closed 
+            for (int i = 0; i < pCount; i++)
+            {
+                Contract.Assert(_parameters.Value[i] != null);
+                Type pType = _parameters.Value[i].ParameterType;
+                if (pType.IsGenericParameter)
+                {
+                    int position = pType.GenericParameterPosition;
+
+                    // Grab the relevant type.
+                    pType = pType.DeclaringMethod != null
+                                ? parameterTypes[position]
+                                : typeGenericArguments[position];
+                }
+                searchTypes[i] = pType;
+            }
+
+            // Add return type
+            searchTypes[pCount] = et.Type;
+
+            // Search for constructor on new type.
+            return et.GetConstructor(searchTypes);
+        }
+
+        /// <inheritdoc/>
+        ISignature ISignature.Close(Type[] typeClosures, Type[] signatureClosures)
+        {
+            // Constructors don't support signature closures.
+            return signatureClosures.Length != 0 ? null : Close(typeClosures);
         }
     }
 }

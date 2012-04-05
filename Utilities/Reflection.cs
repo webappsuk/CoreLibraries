@@ -26,6 +26,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -1042,7 +1043,7 @@ namespace WebApplications.Utilities
                     method,
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy,
                     null,
-                    new[] {typeof (IFormatProvider)},
+                    new[] { typeof(IFormatProvider) },
                     null);
                 if (mi != null)
                 {
@@ -1059,7 +1060,7 @@ namespace WebApplications.Utilities
             // Look for TypeConverter on output type.
             bool useTo = false;
             TypeConverterAttribute typeConverterAttribute = outputType
-                .GetCustomAttributes(typeof (TypeConverterAttribute), false)
+                .GetCustomAttributes(typeof(TypeConverterAttribute), false)
                 .OfType<TypeConverterAttribute>()
                 .FirstOrDefault();
 
@@ -1069,7 +1070,7 @@ namespace WebApplications.Utilities
                 // Look for TypeConverter on expression type.
                 useTo = true;
                 typeConverterAttribute = expression.Type
-                    .GetCustomAttributes(typeof (TypeConverterAttribute), false)
+                    .GetCustomAttributes(typeof(TypeConverterAttribute), false)
                     .OfType<TypeConverterAttribute>()
                     .FirstOrDefault();
             }
@@ -1096,27 +1097,27 @@ namespace WebApplications.Utilities
                                                     BindingFlags.Instance | BindingFlags.Public |
                                                     BindingFlags.FlattenHierarchy,
                                                     null,
-                                                    new[] {typeof (object), typeof (Type)},
+                                                    new[] { typeof(object), typeof(Type) },
                                                     null)
                                                 : typeConverterType.GetMethod(
                                                     "ConvertFrom",
                                                     BindingFlags.Instance | BindingFlags.Public |
                                                     BindingFlags.FlattenHierarchy,
                                                     null,
-                                                    new[] {typeof (object)},
+                                                    new[] { typeof(object) },
                                                     null);
                             if (mi != null)
                             {
                                 // The convert methods accepts the value as an object parameters, so we may need a cast.
-                                if (expression.Type != typeof (object))
-                                    expression = Expression.Convert(expression, typeof (object));
+                                if (expression.Type != typeof(object))
+                                    expression = Expression.Convert(expression, typeof(object));
 
                                 // Create an expression which creates a new instance of the type converter and passes in
                                 // the existing expression as the first parameter to ConvertTo or ConvertFrom.
                                 outputExpression = useTo
                                                        ? Expression.Call(Expression.New(typeConverterType), mi,
                                                                          expression,
-                                                                         Expression.Constant(outputType, typeof (Type)))
+                                                                         Expression.Constant(outputType, typeof(Type)))
                                                        : Expression.Call(Expression.New(typeConverterType), mi,
                                                                          expression);
 
@@ -1131,7 +1132,7 @@ namespace WebApplications.Utilities
             }
 
             // Finally, if we want to output to string, call ToString() method.
-            if (outputType == typeof (string))
+            if (outputType == typeof(string))
             {
                 outputExpression = Expression.Call(expression, _toStringMethodInfo);
                 return true;
@@ -1539,6 +1540,23 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// An empty type array.
+        /// </summary>
+        [NotNull]
+        public static readonly Type[] EmptyTypes = new Type[0];
+        /// <summary>
+        /// An empty type array.
+        /// </summary>
+        [NotNull]
+        public static readonly bool[] EmptyBools = new bool[0];
+
+        /// <summary>
+        /// An empty generic arguments array.
+        /// </summary>
+        [NotNull]
+        public static readonly GenericArgument[] EmptyGenericArguments = new GenericArgument[0];
+
+        /// <summary>
         /// Matcheses the specified signature.
         /// </summary>
         /// <param name="signature">The signature.</param>
@@ -1577,7 +1595,7 @@ namespace WebApplications.Utilities
         {
             return Matches(signature, allowCasts, allowTypeClosures, allowSignatureClosures, 0, types);
         }
-        
+
         /// <summary>
         /// Matcheses the specified signature.
         /// </summary>
@@ -1603,21 +1621,19 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// An empty type array.
+        /// Matcheses the specified signature.
         /// </summary>
-        [NotNull]
-        public static readonly Type[] EmptyTypes = new Type[0];
-        /// <summary>
-        /// An empty type array.
-        /// </summary>
-        [NotNull]
-        public static readonly bool[] EmptyBools = new bool[0];
-
-        /// <summary>
-        /// An empty generic arguments array.
-        /// </summary>
-        [NotNull]
-        public static readonly GenericArgument[] EmptyGenericArguments = new GenericArgument[0];
+        /// <param name="signature">The signature.</param>
+        /// <param name="castsRequired">Indicates which parameters (or return type) will require casting.</param>
+        /// <param name="typeClosures">The type closures required to match (if any).</param>
+        /// <param name="signatureClosures">The signature closures required to match (if any).</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
+        /// <remarks></remarks>
+        public static bool Matches(this ISignature signature, [NotNull]out bool[] castsRequired, [NotNull] out Type[] typeClosures, [NotNull] out Type[] signatureClosures, params TypeSearch[] types)
+        {
+            return Matches(signature, out castsRequired, out typeClosures, out signatureClosures, 0, types);
+        }
 
         /// <summary>
         /// Matcheses the specified signature.
@@ -1647,9 +1663,9 @@ namespace WebApplications.Utilities
             // Get parameters as array.
             IEnumerable<Type> p = signature.ParameterTypes;
             Type[] parameters = p == null ? EmptyTypes : p.ToArray();
-            
+
             // Check we have right number of parameters (+1 for return type)
-            if ((parameters.Length + 1) != searches) 
+            if ((parameters.Length + 1) != searches)
                 return false;
 
             // Grab signature generic arguments safely.
@@ -1657,7 +1673,7 @@ namespace WebApplications.Utilities
             GenericArgument[] signatureArguments = sga == null ? EmptyGenericArguments : sga.Where(g => g.Location == GenericArgumentLocation.Signature).ToArray();
 
             // Check we have right number of generic arguments on the signature.
-            if (signatureArguments.Length != genericArguments) 
+            if (signatureArguments.Length != genericArguments)
                 return false;
 
             // Grab type generic arguments safely.
@@ -1666,7 +1682,7 @@ namespace WebApplications.Utilities
 
             // Get return type (null is equivalent to 'void').
             Type returnType = signature.ReturnType ?? typeof(void);
-            
+
             // Initialise output arrays
             castsRequired = new bool[parameters.Length + 1];
             typeClosures = new Type[typeArguments.Length];
@@ -1674,7 +1690,7 @@ namespace WebApplications.Utilities
 
             // Check return type
             TypeSearch returnTypeSearch = types.Last();
-            Debug.Assert(returnTypeSearch != null);
+            Contract.Assert(returnTypeSearch != null);
             bool requiresCast;
             GenericArgumentLocation closureLocation;
             int closurePosition;
@@ -1694,8 +1710,8 @@ namespace WebApplications.Utilities
                 while (pe.MoveNext())
                 {
                     te.MoveNext();
-                    Debug.Assert(pe.Current != null);
-                    Debug.Assert(te.Current != null);
+                    Contract.Assert(pe.Current != null);
+                    Contract.Assert(te.Current != null);
                     Type t = (Type)pe.Current;
                     TypeSearch s = ((TypeSearch)te.Current);
                     if (!t.Matches(s, out requiresCast, out closureLocation, out closurePosition, out closureType) ||
@@ -1724,12 +1740,12 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         private static bool UpdateSearchContext(ref bool castRequired, [NotNull]Type[] typeClosures, [NotNull]Type[] methodClosures, bool requiresCast, GenericArgumentLocation closureLocation, int closurePosition, Type closureType)
         {
-            Debug.Assert(closureLocation != GenericArgumentLocation.Any);
+            Contract.Assert(closureLocation != GenericArgumentLocation.Any);
 
             if (requiresCast)
             {
-                Debug.Assert(closureLocation == GenericArgumentLocation.None);
-                Debug.Assert(closurePosition < 0);
+                Contract.Assert(closureLocation == GenericArgumentLocation.None);
+                Contract.Assert(closurePosition < 0);
                 castRequired = true;
                 return true;
             }
@@ -1737,15 +1753,15 @@ namespace WebApplications.Utilities
             // Check if we have a closure location
             if (closureLocation == GenericArgumentLocation.None)
             {
-                Debug.Assert(closurePosition < 0);
+                Contract.Assert(closurePosition < 0);
                 return true;
             }
 
-            Debug.Assert(closureType != null);
+            Contract.Assert(closureType != null);
             if (closureLocation == GenericArgumentLocation.Signature)
             {
                 // Requires method closure
-                Debug.Assert(closurePosition < methodClosures.Length);
+                Contract.Assert(closurePosition < methodClosures.Length);
 
                 // If we already have a closure, ensure it matches!
                 if (methodClosures[closurePosition] != null)
@@ -1759,9 +1775,9 @@ namespace WebApplications.Utilities
             }
             else
             {
-                Debug.Assert(closureLocation == GenericArgumentLocation.Type);
+                Contract.Assert(closureLocation == GenericArgumentLocation.Type);
                 // Requires type closure
-                Debug.Assert(closurePosition < typeClosures.Length);
+                Contract.Assert(closurePosition < typeClosures.Length);
 
                 // If we already have a closure, ensure it matches!
                 if (typeClosures[closurePosition] != null)
@@ -1774,6 +1790,150 @@ namespace WebApplications.Utilities
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// Finds the best match from an enumeration of signatures.
+        /// </summary>
+        /// <param name="signatures">The signatures.</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
+        /// <remarks></remarks>
+        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return BestMatch(signatures, 0, true, true, out castsRequired, types);
+        }
+
+        /// <summary>
+        /// Finds the best match from an enumeration of signatures.
+        /// </summary>
+        /// <param name="signatures">The signatures.</param>
+        /// <param name="genericArguments">The generic arguments.</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
+        /// <remarks></remarks>
+        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments, params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return BestMatch(signatures, genericArguments, true, true, out castsRequired, types);
+        }
+
+        /// <summary>
+        /// Finds the best match from an enumeration of signatures.
+        /// </summary>
+        /// <param name="signatures">The signatures.</param>
+        /// <param name="allowClosure">if set to <see langword="true" /> will automatically close the signatures generic types if possible.</param>
+        /// <param name="allowCasts">if set to <see langword="true" /> then types will match if they can be cast to the required type.</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
+        /// <remarks></remarks>
+        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, bool allowClosure, bool allowCasts, params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return BestMatch(signatures, 0, allowClosure, allowCasts, out castsRequired, types);
+        }
+
+        /// <summary>
+        /// Finds the best match from an enumeration of signatures.
+        /// </summary>
+        /// <param name="signatures">The signatures.</param>
+        /// <param name="genericArguments">The generic arguments.</param>
+        /// <param name="allowClosure">if set to <see langword="true" /> will automatically close the signatures generic types if possible.</param>
+        /// <param name="allowCasts">if set to <see langword="true" /> then types will match if they can be cast to the required type.</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
+        /// <remarks></remarks>
+        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments, bool allowClosure, bool allowCasts, params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return BestMatch(signatures, genericArguments, allowClosure, allowCasts, out castsRequired, types);
+        }
+
+        /// <summary>
+        /// Finds the best match from an enumeration of signatures.
+        /// </summary>
+        /// <param name="signatures">The signatures.</param>
+        /// <param name="genericArguments">The generic arguments.</param>
+        /// <param name="allowClosure">if set to <see langword="true" /> will automatically close the signatures generic types if possible.</param>
+        /// <param name="allowCasts">if set to <see langword="true" /> then types will match if they can be cast to the required type.</param>
+        /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
+        /// <param name="types">The types to match against (last type should be return type).</param>
+        /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
+        /// <remarks></remarks>
+        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments, bool allowClosure, bool allowCasts, out bool[] castsRequired, params TypeSearch[] types)
+        {
+            // Holds matches along with order.
+            ISignature bestMatch = null;
+            castsRequired = EmptyBools;
+            Type[] typeClosures = EmptyTypes;
+            Type[] signatureClosures = EmptyTypes;
+            int castsCount = int.MaxValue;
+            int typeClosureCount = int.MaxValue;
+            int signatureClosureCount = int.MaxValue;
+
+            if (signatures != null)
+            {
+                foreach (ISignature signature in signatures)
+                {
+                    // Match method signature
+                    bool[] cr;
+                    Type[] tc;
+                    Type[] sc;
+                    if (!signature.Matches(out cr, out tc, out sc, genericArguments, types))
+                        continue;
+
+                    // Check if any casts were required
+                    int cc = cr.Count(c => c);
+                    if (!allowCasts &&
+                        (cc > 0))
+                        continue;
+
+                    // Check if any closures were required.
+                    int tcc = tc.Count(t => t != null);
+                    int scc = sc.Count(t => t != null);
+                    if (!allowClosure &&
+                        (tcc + scc > 0))
+                        continue;
+
+                    // Check to see if this beats the current best match
+                    if (bestMatch != null)
+                    {
+                        // If we have to close more type generic arguments then existing match is better.
+                        if (typeClosureCount < tcc) continue;
+
+                        // If type level closures are equal, look more closely
+                        if (typeClosureCount == tcc)
+                        {
+                            // If we have to close more signature generic arguments then existing match is better.
+                            if (signatureClosureCount < scc) continue;
+
+                            // If method level closures are equal, see which has more casts.
+                            if ((signatureClosureCount == scc) &&
+                                (castsCount <= cc))
+                                continue;
+                        }
+                    }
+
+                    // Set best match
+                    bestMatch = signature;
+                    castsCount = cc;
+                    castsRequired = cr;
+                    typeClosures = tc;
+                    typeClosureCount = tcc;
+                    signatureClosures = sc;
+                    signatureClosureCount = scc;
+                }
+            }
+
+            // If we don't have a match return null.
+            if (bestMatch == null) return null;
+
+            // Check to see if we have to close the signature
+            return typeClosures.Any(c => c != null) ||
+                   signatureClosures.Any(c => c != null)
+                       ? bestMatch.Close(typeClosures, signatureClosures)
+                       : bestMatch;
         }
 
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -30,6 +31,12 @@ namespace WebApplications.Utilities.Relection
         [NotNull]
         public readonly ExtendedType ExtendedType;
 
+        /// <inheritdoc/>
+        public Type DeclaringType
+        {
+            get { return ExtendedType.Type; }
+        }
+
         /// <summary>
         ///   The method info.
         /// </summary>
@@ -52,15 +59,13 @@ namespace WebApplications.Utilities.Relection
         /// <inheritdoc/>
         public IEnumerable<Type> ParameterTypes
         {
-            get { return _parameters.Value.Select(p => p.ParameterType); }
+            get
+            {
+                Contract.Assert(_parameters.Value != null);
+                return _parameters.Value.Select(p => p.ParameterType);
+            }
         }
 
-        /// <summary>
-        /// Gets the parameters count.
-        /// </summary>
-        /// <remarks></remarks>
-        public int ParametersCount { get { return _parameters.Value.Length; } }
-        
         /// <inheritdoc/>
         public IEnumerable<GenericArgument> TypeGenericArguments { get { return ExtendedType.GenericArguments; } }
 
@@ -77,11 +82,7 @@ namespace WebApplications.Utilities.Relection
             get { return _genericArguments.Value; }
         }
 
-        /// <summary>
-        /// Gets the type of the return.
-        /// </summary>
-        /// <remarks></remarks>
-        [NotNull]
+        /// <inheritdoc/>
         public Type ReturnType { get { return Info.ReturnType; } }
 
         /// <summary>
@@ -105,58 +106,107 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         /// Gets the closed version of a generic method.
         /// </summary>
-        /// <param name="genericTypes">The generic types.</param>
+        /// <param name="signatureClosures">The types required to close the method's generic arguments.</param>
         /// <returns>The closed <see cref="Method"/> if the generic types supplied are sufficient for closure; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        public Method CloseMethod([NotNull]params Type[] genericTypes)
+        [CanBeNull]
+        public Method Close([NotNull]params Type[] signatureClosures)
         {
-            int length = genericTypes.Length;
-
-            // Check we have exactly the right number of paramters.
-            if (_genericArguments.Value.Count != length)
-                return null;
-
-            // Substitute missing types with concrete ones.
-            Type[] gta = new Type[length];
-            for (int i = 0; i < length; i++)
-            {
-                Type gt = genericTypes[i];
-
-                // Must supply concrete types.
-                if (gt == null)
-                {
-                    // See if we have a concrete type for this index.
-                    Type et = _genericArguments.Value[i].Type;
-                    if ((et == null) ||
-                        (et.IsGenericType))
-                        return null;
-                    gt = et;
-                }
-                else if (gt.IsGenericType)
-                    return null;
-
-                gta[i] = gt;
-            }
-
-            // Create closed method, cache it and return.
-            string key = String.Join("|", gta.Select(t => ExtendedType.Get(t).Signature));
-            return _closedMethods.Value.GetOrAdd(
-                key,
-                k =>
-                    {
-                        try
-                        {
-                            return new Method(ExtendedType, Info.MakeGenericMethod(gta));
-                        }
-                        catch (ArgumentException)
-                        {
-                            return null;
-                        }
-                    });
+            return Close(new Type[ExtendedType.GenericArguments.Count()], signatureClosures);
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Method"/> to <see cref="System.Reflection.MethodInfo"/>.
+        /// Gets the closed version of a generic method.
+        /// </summary>
+        /// <param name="typeClosures">The types required to close the current type.</param>
+        /// <param name="signatureClosures">The types required to close the method's generic arguments.</param>
+        /// <returns>The closed <see cref="Method"/> if the generic types supplied are sufficient for closure; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        [CanBeNull]
+        public Method Close([NotNull]Type[] typeClosures, [NotNull]Type[] signatureClosures)
+        {
+            Contract.Assert(_genericArguments.Value != null);
+
+            // Check input arrays are valid.
+            if ((typeClosures.Length == ExtendedType.GenericArguments.Count()) ||
+                (signatureClosures.Length == _genericArguments.Value.Count()))
+                return null;
+            
+            // If we have any type closures then we need to close the type and look for the method on there.
+            if (typeClosures.Any(t => t != null))
+            {
+                // Close type
+                ExtendedType et = ExtendedType.CloseType(typeClosures);
+                
+                // Check closure succeeded.
+                if (et == null)
+                    return null;
+
+                // Create new search.
+                Contract.Assert(_parameters.Value != null);
+                int pCount = _parameters.Value.Length;
+                TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
+
+                Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
+                Type[] parameterTypes = _parameters.Value.Select(p => p.ParameterType).ToArray();
+
+                // Search for closed 
+                for (int i = 0; i < pCount; i++)
+                {
+                    Contract.Assert(_parameters.Value[i] != null);
+                    Type pType = _parameters.Value[i].ParameterType;
+                    if (pType.IsGenericParameter)
+                    {
+                        int position = pType.GenericParameterPosition;
+
+                        // Grab the relevant type.
+                        pType = pType.DeclaringMethod != null
+                                    ? parameterTypes[position]
+                                    : typeGenericArguments[position];
+                    }
+                    searchTypes[i] = pType;
+                }
+
+                // Add return type
+                searchTypes[pCount] = Info.ReturnType;
+
+                // Search for method on new type.
+                return et.GetMethod(Info.Name, signatureClosures.Length, searchTypes);
+            }
+
+            // Substitute missing types with concrete ones.
+            int closures = signatureClosures.Length;
+            Type[] gta = new Type[closures];
+            for (int i = 0; i < closures; i++)
+                gta[i] = signatureClosures[i] ?? _genericArguments.Value[i].Type;
+
+            // Create closed method, cache it and return.
+            string key = String.Join("|", gta.Select(t => ExtendedType.Get(t).Signature));
+
+            Contract.Assert(_closedMethods.Value != null);
+            return _closedMethods.Value.GetOrAdd(
+                key,
+                k =>
+                {
+                    try
+                    {
+                        return new Method(ExtendedType, Info.MakeGenericMethod(gta));
+                    }
+                    catch (ArgumentException)
+                    {
+                        return null;
+                    }
+                });
+        }
+
+        /// <inheritdoc/>
+        ISignature ISignature.Close(Type[] typeClosures, Type[] signatureClosures)
+        {
+            return Close(typeClosures, signatureClosures);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Method"/> to <see cref="System.Reflection.MethodInfo"/>.
         /// </summary>
         /// <param name="method">The method.</param>
         /// <returns>The result of the conversion.</returns>
@@ -167,16 +217,18 @@ namespace WebApplications.Utilities.Relection
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Reflection.MethodInfo"/> to <see cref="WebApplications.Utilities.Relection.Method"/>.
+        /// Performs an implicit conversion from <see cref="System.Reflection.MethodInfo"/> to <see cref="Method"/>.
         /// </summary>
         /// <param name="methodInfo">The method info.</param>
         /// <returns>The result of the conversion.</returns>
         /// <remarks></remarks>
         public static implicit operator Method(MethodInfo methodInfo)
         {
-            return methodInfo == null
-                       ? null
-                       : ((ExtendedType) methodInfo.DeclaringType).GetMethod(methodInfo);
+            if (methodInfo == null)
+                return null;
+            ExtendedType et = methodInfo.DeclaringType;
+            Contract.Assert(et != null);
+            return et.GetMethod(methodInfo);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -449,6 +450,31 @@ namespace WebApplications.Utilities.Relection
         }
 
         /// <summary>
+        /// Gets the <see cref="Property"/> matching the <see cref="PropertyInfo"/> if any.
+        /// </summary>
+        /// <param name="propertyInfo">The property info.</param>
+        /// <returns>The <see cref="Property"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        public Property GetProperty([NotNull] PropertyInfo propertyInfo)
+        {
+            if (propertyInfo.DeclaringType != Type) return null;
+            if (!_loaded) LoadMembers();
+            return _properties.Values.FirstOrDefault(p => p.Info == propertyInfo);
+        }
+
+        /// <summary>
+        /// Gets the indexer.
+        /// </summary>
+        /// <param name="types">The types.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public Indexer GetIndexer([NotNull] params TypeSearch[] types)
+        {
+            if (!_loaded) LoadMembers();
+            return _indexers.BestMatch(types) as Indexer;
+        }
+
+        /// <summary>
         /// Gets the <see cref="Indexer"/> matching the <see cref="PropertyInfo"/> (if any).
         /// </summary>
         /// <param name="propertyInfo">The property info.</param>
@@ -461,19 +487,6 @@ namespace WebApplications.Utilities.Relection
                 return null;
             if (!_loaded) LoadMembers();
             return _indexers.FirstOrDefault(i => i.Info == propertyInfo);
-        }
-
-        /// <summary>
-        /// Gets the <see cref="Property"/> matching the <see cref="PropertyInfo"/> if any.
-        /// </summary>
-        /// <param name="propertyInfo">The property info.</param>
-        /// <returns>The <see cref="Property"/> if found; otherwise <see langword="null"/>.</returns>
-        /// <remarks></remarks>
-        public Property GetProperty([NotNull] PropertyInfo propertyInfo)
-        {
-            if (propertyInfo.DeclaringType != Type) return null;
-            if (!_loaded) LoadMembers();
-            return _properties.Values.FirstOrDefault(p => p.Info == propertyInfo);
         }
 
         /// <summary>
@@ -515,7 +528,7 @@ namespace WebApplications.Utilities.Relection
             Methods methods;
             if (!_methods.TryGetValue(methodInfo.Name, out methods))
                 return null;
-            Debug.Assert(methods != null);
+            Contract.Assert(methods != null);
             return methods.GetOverload(methodInfo);
         }
 
@@ -533,7 +546,7 @@ namespace WebApplications.Utilities.Relection
             Methods methods;
             if (!_methods.TryGetValue(name, out methods))
                 return null;
-            Debug.Assert(methods != null);
+            Contract.Assert(methods != null);
             return methods.GetOverload(genericArguments, types);
         }
 
@@ -550,7 +563,7 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         /// Gets the constructor.
         /// </summary>
-        /// <param name="types">The parameter types and return type.</param>
+        /// <param name="types">The parameter types and return type, and return type (i.e. the constructor's type).</param>
         /// <returns>The <see cref="Constructor"/> if found; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
         public Constructor GetConstructor([NotNull] params TypeSearch[] types)
@@ -645,7 +658,7 @@ namespace WebApplications.Utilities.Relection
 
             // Make a closed type using the first types in the array.
             // TODO There is no way of avoiding a catch (unfortunately) without
-            // implementing a contraint validation algorithm - as the .NET one is
+            // implementing a constraint validation algorithm - as the .NET one is
             // not exposed - this could be done using Type.GenericParameterAttributes
             // followed by Type.GetGenericParameterConstraints.
             string key = String.Join("|", gta.Select(t => t.FullName));

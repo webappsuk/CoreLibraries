@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -73,85 +74,7 @@ namespace WebApplications.Utilities.Relection
         [CanBeNull]
         public Method GetOverload(int genericArguments, [NotNull]params TypeSearch[] types)
         {
-            // Holds matches along with order.
-            Method bestMatch = null;
-            int bestMatchRequiredCasts = int.MaxValue;
-            Type[] bestMatchRequiredTypeClosures = null;
-            Type[] bestMatchRequiredMethodClosures = null;
-
-            int tCount = types.Length;
-            foreach (Method method in _methods)
-            {
-                // Match method signature
-                bool[] castsRequired;
-                Type[] typeClosures;
-                Type[] methodClosures;
-                if (!method.Matches(out castsRequired, out typeClosures, out methodClosures, genericArguments, types))
-                    continue;
-
-                // Check to see if this beats the current best match
-                int? bmcc = null;
-                if (bestMatch != null)
-                {
-                    int btcl = bestMatchRequiredTypeClosures.Length;
-                    int tcl = typeClosures.Length;
-                    // If we have to close more type generic arguments then existing match is better.
-                    if (btcl < tcl) continue;
-
-                    // If type level closures are equal, look more closely
-                    if (btcl == tcl)
-                    {
-                        int bmcl = bestMatchRequiredMethodClosures.Length;
-                        int mcl = methodClosures.Length;
-
-                        // If we have to close more method generic arguments then existing match is better.
-                        if (bmcl < mcl) continue;
-
-                        // If method level closures are equal, see which has more casts.
-                        if (bmcl == mcl)
-                        {
-                            bmcc = castsRequired.Count(c => c);
-                            if (bestMatchRequiredCasts <= bmcc)
-                                continue;
-                        }
-                    }
-                }
-
-                // Set best match
-                bestMatch = method;
-                bestMatchRequiredCasts = bmcc ?? castsRequired.Count(c => c);
-                bestMatchRequiredTypeClosures = typeClosures;
-                bestMatchRequiredMethodClosures = methodClosures;
-            }
-
-            // If we don't have a match return null.
-            if (bestMatch == null) return null;
-
-            // Check to see if we have to close the type
-            if (bestMatchRequiredTypeClosures.Any(c => c != null))
-            {
-                Debug.Assert(ExtendedType.GenericArguments.Count() == bestMatchRequiredTypeClosures.Length);
-                
-                // Close type.
-                ExtendedType et = this.ExtendedType;
-                et = et.CloseType(bestMatchRequiredTypeClosures);
-
-                // If we failed to close our type, we're done.
-                if (et == null)
-                    return null;
-
-                // Research for method on extended type.
-                bestMatch = et.GetMethod(bestMatch.Info.Name,
-                                         genericArguments,
-                                         types);
-                return bestMatch;
-            }
-
-            // Check to see if we have to close the method
-            if (bestMatchRequiredMethodClosures.Any(m => m != null))
-                bestMatch = bestMatch.CloseMethod(bestMatchRequiredMethodClosures);
-
-            return bestMatch;
+            return _methods.BestMatch(genericArguments, types) as Method;
         }
 
         /// <summary>
