@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     ///   Wraps the constructor information with accessors for retrieving parameters.

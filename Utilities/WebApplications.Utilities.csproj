@@ -125,17 +125,17 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="ExtendedTupleGeneric.cs" />
-    <Compile Include="Relection\Constructor.cs" />
-    <Compile Include="Relection\Event.cs" />
-    <Compile Include="Relection\Field.cs" />
-    <Compile Include="Relection\GenericArgument.cs" />
-    <Compile Include="Relection\GenericArgumentLocation.cs" />
-    <Compile Include="Relection\Indexer.cs" />
-    <Compile Include="Relection\ISignature.cs" />
-    <Compile Include="Relection\Method.cs" />
-    <Compile Include="Relection\Property.cs" />
-    <Compile Include="Relection\ExtendedType.cs" />
-    <Compile Include="Relection\TypeSearch.cs" />
+    <Compile Include="Reflect\Constructor.cs" />
+    <Compile Include="Reflect\Event.cs" />
+    <Compile Include="Reflect\Field.cs" />
+    <Compile Include="Reflect\GenericArgument.cs" />
+    <Compile Include="Reflect\GenericArgumentLocation.cs" />
+    <Compile Include="Reflect\Indexer.cs" />
+    <Compile Include="Reflect\ISignature.cs" />
+    <Compile Include="Reflect\Method.cs" />
+    <Compile Include="Reflect\Property.cs" />
+    <Compile Include="Reflect\ExtendedType.cs" />
+    <Compile Include="Reflect\TypeSearch.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

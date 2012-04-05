@@ -3,16 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     /// Holds extended information (including reflection info) for a type.

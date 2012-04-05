@@ -36,7 +36,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Relection;
+using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities
 {

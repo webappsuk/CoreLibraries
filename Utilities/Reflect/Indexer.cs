@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Threading;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     ///   Wraps a <see cref="System.Reflection.PropertyInfo"/> that actually refers to an indexer with accessors.

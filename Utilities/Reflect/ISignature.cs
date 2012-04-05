@@ -22,10 +22,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     /// Interface that allows for signature matching.

@@ -29,7 +29,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Utilities.Relection;
+using WebApplications.Utilities.Reflect;
 using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Test
@@ -106,6 +106,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
+        [Ignore]
         public void Comparative_Performance()
         {
             const int loops = 100000;
@@ -151,7 +152,6 @@ namespace WebApplications.Utilities.Test
             Trace.WriteLine(s.ToString("{0} calls to GetParameters", loops));
         }
         
-#if false
         #region Nested type: ReflectionTestClass
         // <summary>Class used as test case for reflection tests</summary>
         public class ReflectionTestClass<T>
@@ -638,7 +638,5 @@ namespace WebApplications.Utilities.Test
                 return null;
             }
         }
-        
-#endif
     }
 }

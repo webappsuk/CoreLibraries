@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Threading;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     /// Used to match types in searches.

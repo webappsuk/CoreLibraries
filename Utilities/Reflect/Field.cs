@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Reflection;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     /// Wrap <see cref="FieldInfo"/> with additional information.
@@ -36,7 +36,7 @@ namespace WebApplications.Utilities.Relection
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Field"/> to <see cref="System.Reflection.FieldInfo"/>.
+        /// Performs an implicit conversion from <see cref="Field"/> to <see cref="System.Reflection.FieldInfo"/>.
         /// </summary>
         /// <param name="field">The field.</param>
         /// <returns>The result of the conversion.</returns>
@@ -47,7 +47,7 @@ namespace WebApplications.Utilities.Relection
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Reflection.FieldInfo"/> to <see cref="WebApplications.Utilities.Relection.Field"/>.
+        /// Performs an implicit conversion from <see cref="System.Reflection.FieldInfo"/> to <see cref="Field"/>.
         /// </summary>
         /// <param name="fieldInfo">The field info.</param>
         /// <returns>The result of the conversion.</returns>

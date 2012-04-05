@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     /// Holds information about a generic argument.

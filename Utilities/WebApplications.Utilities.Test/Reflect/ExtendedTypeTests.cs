@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
-using WebApplications.Utilities.Relection;
+using WebApplications.Utilities.Reflect;
 
-namespace WebApplications.Utilities.Test.Reflection
+namespace WebApplications.Utilities.Test.Reflect
 {
     [TestClass]
     public class ExtendedTypeTests : TestBase
@@ -210,6 +210,7 @@ namespace WebApplications.Utilities.Test.Reflection
         [TestMethod]
         public void ExtendedType_CanDisambiguateConstructors()
         {
+            // Implicit cast supported
             ExtendedType et = typeof(ComplexOverloads<>);
 
             // Grab all constructors
