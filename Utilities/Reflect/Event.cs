@@ -23,7 +23,7 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         [NotNull]
         public readonly EventInfo Info;
-
+        
         /// <summary>
         ///   Grabs the add method lazily.
         /// </summary>

@@ -282,7 +282,8 @@ namespace WebApplications.Utilities.Test
         {
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
-            Func<ReflectionTestClass<Guid>, int> getA = Reflection.GetGetter<ReflectionTestClass<Guid>, int>("A");
+            Func<ReflectionTestClass<Guid>, int> getA =
+                typeof (ReflectionTestClass<Guid>).GetGetter<ReflectionTestClass<Guid>, int>("A");
             testInstance.A = value;
             Assert.AreEqual(testInstance.A, getA(testInstance), "The lambda function returned by GetGetter should return the value of the field given as the parameter.");
         }
@@ -292,25 +293,18 @@ namespace WebApplications.Utilities.Test
         {
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
-            Func<ReflectionTestClass<Guid>, int> getB = Reflection.GetGetter<ReflectionTestClass<Guid>, int>("B");
+            Func<ReflectionTestClass<Guid>, int> getB =
+                typeof (ReflectionTestClass<Guid>).GetGetter<ReflectionTestClass<Guid>, int>("B");
             testInstance.B = value;
             Assert.AreEqual(value, getB(testInstance), "The lambda function returned by GetGetter should return the value of the requested property.");
         }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void GetGetter_PropertyWithNoGetter_ThrowsArgumentOutOfRangeException()
-        {
-            ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
-            Func<ReflectionTestClass<Guid>, int> getC = Reflection.GetGetter<ReflectionTestClass<Guid>, int>("C");
-        }
-
+        
         [TestMethod]
         public void GetGetter_PropertyWithExplicitGetter_ReturnsLambdaGetterForRequestedProperty()
         {
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
-            Func<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>> getLast = Reflection.GetGetter<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>>("Last");
-            Assert.AreEqual(testInstance, getLast(null), "The lambda function returned by GetGetter should return the value of the requested property.");
+            Func<ReflectionTestClass<Guid>> getLast = typeof(ReflectionTestClass<Guid>).GetGetter<ReflectionTestClass<Guid>>("Last");
+            Assert.AreEqual(testInstance, getLast(), "The lambda function returned by GetGetter should return the value of the requested property.");
         }
 
         [TestMethod]

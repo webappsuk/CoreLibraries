@@ -109,7 +109,7 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <inheritdoc/>
-        Type ISignature.ReturnType
+        public Type ReturnType
         {
             get { return ExtendedType.Type; }
         }
