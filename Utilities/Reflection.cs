@@ -52,42 +52,7 @@ namespace WebApplications.Utilities
         public const BindingFlags AccessorBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.FlattenHierarchy;
-
-        /// <summary>
-        ///   A cache for the getter methods, so that when requested they can be retrieved rather than recomputed.
-        /// </summary>
-        [NotNull]
-        private static readonly ConcurrentDictionary<string, object> _getterCache =
-            new ConcurrentDictionary<string, object>();
-
-        /// <summary>
-        ///   A cache for the setter methods, so that when requested they can be retrieved rather than recomputed.
-        /// </summary>
-        [NotNull]
-        private static readonly ConcurrentDictionary<string, object> _setterCache =
-            new ConcurrentDictionary<string, object>();
-
-        /// <summary>
-        ///   A cache for all methods so that when requested they can be retrieved rather than recomputed.
-        /// </summary>
-        [NotNull]
-        private static readonly ConcurrentDictionary<string, object> _funcCache =
-            new ConcurrentDictionary<string, object>();
-
-        /// <summary>
-        ///   A cache for all actions so that when requested they can be retrieved rather than recomputed.
-        /// </summary>
-        [NotNull]
-        private static readonly ConcurrentDictionary<string, object> _actionCache =
-            new ConcurrentDictionary<string, object>();
-
-        /// <summary>
-        ///   A cache for the constructors, so that when requested they can be retrieved rather than recomputed.
-        /// </summary>
-        [NotNull]
-        private static readonly ConcurrentDictionary<string, object> _constructorCache =
-            new ConcurrentDictionary<string, object>();
-
+        
         /// <summary>
         ///   Retrieves the lambda function equivalent of the specified getter method.
         /// </summary>
@@ -144,109 +109,103 @@ namespace WebApplications.Utilities
             [CanBeNull] Type returnType = null,
             bool checkAssignability = false)
         {
-            return
-                _getterCache.GetOrAdd(
-                    String.Format("{0}:{1}|{2}|{3}", declaringType, name, parameterType, returnType),
-                    k =>
-                    {
-                        // Find the field or property
-                        bool isField;
-                        bool isStatic;
-                        Type memberType;
-                        FieldInfo fieldInfo = declaringType.GetField(name, AccessorBindingFlags);
-                        MethodInfo propertyAccesssor;
-                        if (fieldInfo != null)
-                        {
-                            memberType = fieldInfo.FieldType;
-                            propertyAccesssor = null;
-                            isStatic = fieldInfo.IsStatic;
-                            isField = true;
-                        }
-                        else
-                        {
-                            PropertyInfo propertyInfo = declaringType.GetProperty(
-                                name, AccessorBindingFlags);
-                            if ((propertyInfo == null) ||
-                                ((propertyAccesssor = propertyInfo.GetGetMethod(true)) == null))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "name",
-                                    String.Format(
-                                        Resources.Reflection_GetGetter_NoGetterForFieldOrProperty,
-                                        name,
-                                        declaringType));
-                            }
-                            memberType = propertyInfo.PropertyType;
-                            isStatic = propertyAccesssor.IsStatic;
-                            isField = false;
-                        }
+            // Find the field or property
+            bool isField;
+            bool isStatic;
+            Type memberType;
+            FieldInfo fieldInfo = declaringType.GetField(name, AccessorBindingFlags);
+            MethodInfo propertyAccesssor;
+            if (fieldInfo != null)
+            {
+                memberType = fieldInfo.FieldType;
+                propertyAccesssor = null;
+                isStatic = fieldInfo.IsStatic;
+                isField = true;
+            }
+            else
+            {
+                PropertyInfo propertyInfo = declaringType.GetProperty(
+                    name, AccessorBindingFlags);
+                if ((propertyInfo == null) ||
+                    ((propertyAccesssor = propertyInfo.GetGetMethod(true)) == null))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "name",
+                        String.Format(
+                            Resources.Reflection_GetGetter_NoGetterForFieldOrProperty,
+                            name,
+                            declaringType));
+                }
+                memberType = propertyInfo.PropertyType;
+                isStatic = propertyAccesssor.IsStatic;
+                isField = false;
+            }
 
-                        //  Check the parameter type can be assigned from the declaring type.
-                        if (parameterType != null)
-                        {
-                            if ((checkAssignability) && (parameterType != declaringType) &&
-                                (!parameterType.IsAssignableFrom(declaringType)))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "parameterType",
-                                    String.Format(
-                                        Resources.Reflection_GetGetter_ParameterTypeNotAssignable,
-                                        name,
-                                        isField ? "field" : "property",
-                                        declaringType,
-                                        parameterType));
-                            }
-                        }
-                        else
-                            parameterType = declaringType;
+            //  Check the parameter type can be assigned from the declaring type.
+            if (parameterType != null)
+            {
+                if ((checkAssignability) && (parameterType != declaringType) &&
+                    (!parameterType.IsAssignableFrom(declaringType)))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "parameterType",
+                        String.Format(
+                            Resources.Reflection_GetGetter_ParameterTypeNotAssignable,
+                            name,
+                            isField ? "field" : "property",
+                            declaringType,
+                            parameterType));
+                }
+            }
+            else
+                parameterType = declaringType;
 
-                        // Check the return type can be assigned from the member type
-                        if (returnType != null)
-                        {
-                            if ((checkAssignability) && (returnType != memberType) &&
-                                (!returnType.IsAssignableFrom(memberType)))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "returnType",
-                                    String.Format(
-                                        Resources.Reflection_GetGetter_ReturnTypeNotAssignable,
-                                        name,
-                                        isField ? "field" : "property",
-                                        declaringType,
-                                        memberType,
-                                        returnType));
-                            }
-                        }
-                        else
-                            returnType = memberType;
+            // Check the return type can be assigned from the member type
+            if (returnType != null)
+            {
+                if ((checkAssignability) && (returnType != memberType) &&
+                    (!returnType.IsAssignableFrom(memberType)))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "returnType",
+                        String.Format(
+                            Resources.Reflection_GetGetter_ReturnTypeNotAssignable,
+                            name,
+                            isField ? "field" : "property",
+                            declaringType,
+                            memberType,
+                            returnType));
+                }
+            }
+            else
+                returnType = memberType;
 
-                        Expression expression = null;
-                        // Create input parameter expression
-                        ParameterExpression parameterExpression = Expression.Parameter(
-                            parameterType, "target");
+            Expression expression = null;
+            // Create input parameter expression
+            ParameterExpression parameterExpression = Expression.Parameter(
+                parameterType, "target");
 
-                        // If we're not static we need a parameter expression
-                        if (!isStatic)
-                        {
-                            expression = parameterExpression;
+            // If we're not static we need a parameter expression
+            if (!isStatic)
+            {
+                expression = parameterExpression;
 
-                            // Cast parameter if necessary
-                            if (parameterType != declaringType)
-                                expression = Expression.Convert(expression, declaringType);
-                        }
+                // Cast parameter if necessary
+                if (parameterType != declaringType)
+                    expression = Expression.Convert(expression, declaringType);
+            }
 
-                        // Get a member access expression
-                        expression = isField
-                                         ? Expression.Field(expression, fieldInfo)
-                                         : Expression.Property(expression, propertyAccesssor);
+            // Get a member access expression
+            expression = isField
+                             ? Expression.Field(expression, fieldInfo)
+                             : Expression.Property(expression, propertyAccesssor);
 
-                        // Cast return value if necessary
-                        if (returnType != memberType)
-                            expression = Expression.Convert(expression, returnType);
+            // Cast return value if necessary
+            if (returnType != memberType)
+                expression = Expression.Convert(expression, returnType);
 
-                        // Create lambda and compile
-                        return Expression.Lambda(expression, parameterExpression).Compile();
-                    });
+            // Create lambda and compile
+            return Expression.Lambda(expression, parameterExpression).Compile();
         }
 
         /// <summary>
@@ -314,142 +273,135 @@ namespace WebApplications.Utilities
             [CanBeNull] Type returnType = null,
             bool checkAssignability = false)
         {
+            // Find the field or property
+            bool isField;
+            bool isStatic;
+            Type memberType;
+            FieldInfo fieldInfo = declaringType.GetField(name, AccessorBindingFlags);
+            MethodInfo propertyAccesssor;
+            if (fieldInfo != null)
+            {
+                memberType = fieldInfo.FieldType;
+                propertyAccesssor = null;
+                isStatic = fieldInfo.IsStatic;
+                isField = true;
+            }
+            else
+            {
+                PropertyInfo propertyInfo = declaringType.GetProperty(
+                    name, AccessorBindingFlags);
+                if ((propertyInfo == null) ||
+                    ((propertyAccesssor = propertyInfo.GetSetMethod(true)) == null))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "name",
+                        String.Format(
+                            Resources.Reflection_GetSetter_NoSetterForFieldOrProperty,
+                            name,
+                            declaringType));
+                }
+                memberType = propertyInfo.PropertyType;
+                isStatic = propertyAccesssor.IsStatic;
+                isField = false;
+            }
+
+            //  Check the parameter type can be assigned from the declaring type.
+            if (parameterType != null)
+            {
+                if ((checkAssignability) && (parameterType != declaringType) &&
+                    (!parameterType.IsAssignableFrom(declaringType)))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "parameterType",
+                        String.Format(
+                            Resources.Reflection_GetSetter_ParameterTypeNotAssignable,
+                            name,
+                            isField ? "field" : "property",
+                            declaringType,
+                            parameterType));
+                }
+            }
+            else
+                parameterType = declaringType;
+
+            // Check the member type can be assigned from the value type
+            if (valueType != null)
+            {
+                if ((checkAssignability) && (valueType != memberType) &&
+                    (!memberType.IsAssignableFrom(valueType)))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "valueType",
+                        String.Format(
+                            Resources.Reflection_GetSetter_MemberTypeNotAssignable,
+                            name,
+                            isField ? "field" : "property",
+                            declaringType,
+                            memberType,
+                            valueType));
+                }
+            }
+            else
+                valueType = memberType;
+
+            // Check the return type can be assigned from the member type
+            if (returnType != null)
+            {
+                if ((checkAssignability) && (returnType != memberType) &&
+                    (!returnType.IsAssignableFrom(memberType)))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "returnType",
+                        String.Format(
+                            Resources.Reflection_GetSetter_ReturnTypeNotAssignable,
+                            name,
+                            isField ? "field" : "property",
+                            declaringType,
+                            memberType,
+                            returnType));
+                }
+            }
+            else
+                returnType = memberType;
+
+            Expression expression = null;
+            // Create input parameter expression
+            ParameterExpression parameterExpression = Expression.Parameter(
+                parameterType, "target");
+            ParameterExpression valueParameterExpression = Expression.Parameter(
+                valueType, "value");
+
+            // If we're not static we need a parameter expression
+            if (!isStatic)
+            {
+                expression = parameterExpression;
+
+                // Cast parameter if necessary
+                if (parameterType != declaringType)
+                    expression = Expression.Convert(expression, declaringType);
+            }
+
+            // Cast the value parameter if necessary
+            Expression valueExpression = valueParameterExpression;
+            if (valueType != memberType)
+                valueExpression = Expression.Convert(valueExpression, memberType);
+
+            // Get a member access expression
+            expression = isField
+                             ? Expression.Field(expression, fieldInfo)
+                             : Expression.Property(expression, propertyAccesssor);
+
+            // Perform assignment
+            expression = Expression.Assign(expression, valueExpression);
+
+            // Cast return value if necessary
+            if (returnType != memberType)
+                expression = Expression.Convert(expression, returnType);
+
+            // Create lambda and compile
             return
-                _setterCache.GetOrAdd(
-                    String.Format(
-                        "{0}:{1}|{2}|{3}|{4}", declaringType, name, parameterType, valueType, returnType),
-                    k =>
-                    {
-                        // Find the field or property
-                        bool isField;
-                        bool isStatic;
-                        Type memberType;
-                        FieldInfo fieldInfo = declaringType.GetField(name, AccessorBindingFlags);
-                        MethodInfo propertyAccesssor;
-                        if (fieldInfo != null)
-                        {
-                            memberType = fieldInfo.FieldType;
-                            propertyAccesssor = null;
-                            isStatic = fieldInfo.IsStatic;
-                            isField = true;
-                        }
-                        else
-                        {
-                            PropertyInfo propertyInfo = declaringType.GetProperty(
-                                name, AccessorBindingFlags);
-                            if ((propertyInfo == null) ||
-                                ((propertyAccesssor = propertyInfo.GetSetMethod(true)) == null))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "name",
-                                    String.Format(
-                                        Resources.Reflection_GetSetter_NoSetterForFieldOrProperty,
-                                        name,
-                                        declaringType));
-                            }
-                            memberType = propertyInfo.PropertyType;
-                            isStatic = propertyAccesssor.IsStatic;
-                            isField = false;
-                        }
-
-                        //  Check the parameter type can be assigned from the declaring type.
-                        if (parameterType != null)
-                        {
-                            if ((checkAssignability) && (parameterType != declaringType) &&
-                                (!parameterType.IsAssignableFrom(declaringType)))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "parameterType",
-                                    String.Format(
-                                        Resources.Reflection_GetSetter_ParameterTypeNotAssignable,
-                                        name,
-                                        isField ? "field" : "property",
-                                        declaringType,
-                                        parameterType));
-                            }
-                        }
-                        else
-                            parameterType = declaringType;
-
-                        // Check the member type can be assigned from the value type
-                        if (valueType != null)
-                        {
-                            if ((checkAssignability) && (valueType != memberType) &&
-                                (!memberType.IsAssignableFrom(valueType)))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "valueType",
-                                    String.Format(
-                                        Resources.Reflection_GetSetter_MemberTypeNotAssignable,
-                                        name,
-                                        isField ? "field" : "property",
-                                        declaringType,
-                                        memberType,
-                                        valueType));
-                            }
-                        }
-                        else
-                            valueType = memberType;
-
-                        // Check the return type can be assigned from the member type
-                        if (returnType != null)
-                        {
-                            if ((checkAssignability) && (returnType != memberType) &&
-                                (!returnType.IsAssignableFrom(memberType)))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "returnType",
-                                    String.Format(
-                                        Resources.Reflection_GetSetter_ReturnTypeNotAssignable,
-                                        name,
-                                        isField ? "field" : "property",
-                                        declaringType,
-                                        memberType,
-                                        returnType));
-                            }
-                        }
-                        else
-                            returnType = memberType;
-
-                        Expression expression = null;
-                        // Create input parameter expression
-                        ParameterExpression parameterExpression = Expression.Parameter(
-                            parameterType, "target");
-                        ParameterExpression valueParameterExpression = Expression.Parameter(
-                            valueType, "value");
-
-                        // If we're not static we need a parameter expression
-                        if (!isStatic)
-                        {
-                            expression = parameterExpression;
-
-                            // Cast parameter if necessary
-                            if (parameterType != declaringType)
-                                expression = Expression.Convert(expression, declaringType);
-                        }
-
-                        // Cast the value parameter if necessary
-                        Expression valueExpression = valueParameterExpression;
-                        if (valueType != memberType)
-                            valueExpression = Expression.Convert(valueExpression, memberType);
-
-                        // Get a member access expression
-                        expression = isField
-                                         ? Expression.Field(expression, fieldInfo)
-                                         : Expression.Property(expression, propertyAccesssor);
-
-                        // Perform assignment
-                        expression = Expression.Assign(expression, valueExpression);
-
-                        // Cast return value if necessary
-                        if (returnType != memberType)
-                            expression = Expression.Convert(expression, returnType);
-
-                        // Create lambda and compile
-                        return
-                            Expression.Lambda(expression, parameterExpression, valueParameterExpression)
-                                .Compile();
-                    });
+                Expression.Lambda(expression, parameterExpression, valueParameterExpression)
+                    .Compile();
         }
 
         /// <summary>
@@ -490,159 +442,149 @@ namespace WebApplications.Utilities
             if (methodBase == null)
                 throw new ArgumentNullException("methodBase");
 
-            return
-                _funcCache.GetOrAdd(
+            bool isConstructor = methodBase.IsConstructor;
+            bool isStatic = methodBase.IsStatic;
+            MethodInfo methodInfo;
+            ConstructorInfo constructorInfo;
+            if (isConstructor)
+            {
+                // Cannot support static constructors (cannot be called directly!)
+                if (isStatic)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "methodBase",
+                        String.Format(
+                            Resources.Reflection_GetFunc_MethodIsStaticConstructor,
+                            methodBase));
+                }
+
+                constructorInfo = methodBase as ConstructorInfo;
+                methodInfo = null;
+            }
+            else
+            {
+                methodInfo = methodBase as MethodInfo;
+                constructorInfo = null;
+                if ((methodInfo == null) ||
+                    (methodInfo.ReturnType == typeof(void)))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "methodBase",
+                        String.Format(
+                            Resources.Reflection_GetFunc_MethodHasNoReturnType,
+                            methodBase));
+                }
+            }
+
+            int count = funcTypes.Count();
+            if (count < 1)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "funcTypes",
                     String.Format(
-                        "{0}:{1}|{2}",
-                        methodBase.DeclaringType,
-                        methodBase,
-                        String.Join("|", (IEnumerable<Type>)funcTypes)),
-                    mb =>
+                        Resources.Reflection_GetFunc_NoFuncTypesSpecified,
+                        methodBase));
+            }
+
+            // Validate method info
+            ParameterInfo[] parameterInfos = methodBase.GetParameters();
+            List<Type> methodTypes = new List<Type>(count);
+
+            // If we're not static and not a constructor, the first parameter is implicitly the declaring type of the method.
+            if (!isStatic &&
+                !isConstructor)
+                methodTypes.Add(methodBase.DeclaringType);
+            // ReSharper disable PossibleNullReferenceException
+            methodTypes.AddRange(parameterInfos.Select(pi => pi.ParameterType));
+            // ReSharper restore PossibleNullReferenceException
+
+            // Finally add return type - in the case of a constructor, this is the object type.
+            methodTypes.Add(isConstructor ? methodBase.ReflectedType : methodInfo.ReturnType);
+
+            if (methodTypes.Count() != count)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "methodBase",
+                    String.Format(
+                        Resources.Reflection_GetFunc_IncorrectParameterCount,
+                        methodBase));
+            }
+
+            // Create expressions
+            ParameterExpression[] parameterExpressions = new ParameterExpression[count - 1];
+            List<Expression> pExpressions = new List<Expression>(count - 1);
+            for (int i = 0; i < count; i++)
+            {
+                Type funcType = funcTypes[i];
+                Type methodType = methodTypes[i];
+
+                Expression expression;
+                // Create parameter expressions for all
+                if (i < count - 1)
+                {
+                    // Check assignability
+                    if (checkParameterAssignability && !methodType.IsAssignableFrom(funcType))
                     {
-                        bool isConstructor = methodBase.IsConstructor;
-                        bool isStatic = methodBase.IsStatic;
-                        MethodInfo methodInfo;
-                        ConstructorInfo constructorInfo;
-                        if (isConstructor)
-                        {
-                            // Cannot support static constructors (cannot be called directly!)
-                            if (isStatic)
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "methodBase",
-                                    String.Format(
-                                        Resources.Reflection_GetFunc_MethodIsStaticConstructor,
-                                        methodBase));
-                            }
-
-                            constructorInfo = methodBase as ConstructorInfo;
-                            methodInfo = null;
-                        }
-                        else
-                        {
-                            methodInfo = methodBase as MethodInfo;
-                            constructorInfo = null;
-                            if ((methodInfo == null) ||
-                                (methodInfo.ReturnType == typeof(void)))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "methodBase",
-                                    String.Format(
-                                        Resources.Reflection_GetFunc_MethodHasNoReturnType,
-                                        methodBase));
-                            }
-                        }
-
-                        int count = funcTypes.Count();
-                        if (count < 1)
-                        {
-                            throw new ArgumentOutOfRangeException(
-                                "funcTypes",
-                                String.Format(
-                                    Resources.Reflection_GetFunc_NoFuncTypesSpecified,
-                                    methodBase));
-                        }
-
-                        // Validate method info
-                        ParameterInfo[] parameterInfos = methodBase.GetParameters();
-                        List<Type> methodTypes = new List<Type>(count);
-
-                        // If we're not static and not a constructor, the first parameter is implicitly the declaring type of the method.
-                        if (!isStatic &&
-                            !isConstructor)
-                            methodTypes.Add(methodBase.DeclaringType);
-                        // ReSharper disable PossibleNullReferenceException
-                        methodTypes.AddRange(parameterInfos.Select(pi => pi.ParameterType));
-                        // ReSharper restore PossibleNullReferenceException
-
-                        // Finally add return type - in the case of a constructor, this is the object type.
-                        methodTypes.Add(isConstructor ? methodBase.ReflectedType : methodInfo.ReturnType);
-
-                        if (methodTypes.Count() != count)
-                        {
-                            throw new ArgumentOutOfRangeException(
-                                "methodBase",
-                                String.Format(
-                                    Resources.Reflection_GetFunc_IncorrectParameterCount,
-                                    methodBase));
-                        }
-
-                        // Create expressions
-                        ParameterExpression[] parameterExpressions = new ParameterExpression[count - 1];
-                        List<Expression> pExpressions = new List<Expression>(count - 1);
-                        for (int i = 0; i < count; i++)
-                        {
-                            Type funcType = funcTypes[i];
-                            Type methodType = methodTypes[i];
-
-                            Expression expression;
-                            // Create parameter expressions for all
-                            if (i < count - 1)
-                            {
-                                // Check assignability
-                                if (checkParameterAssignability && !methodType.IsAssignableFrom(funcType))
-                                {
-                                    throw new ArgumentOutOfRangeException(
-                                        "methodBase",
-                                        String.Format(
-                                            Resources.Reflection_GetFunc_ParameterNotAssignable,
-                                            methodBase,
-                                            funcType,
-                                            methodType));
-                                }
-
-                                // Create parameter expression
-                                expression = parameterExpressions[i] = Expression.Parameter(funcType);
-
-                                // Check if we need to do a cast to the method type
-                                if (funcType != methodType)
-                                    expression = Expression.Convert(expression, methodType);
-
-                                pExpressions.Add(expression);
-                                continue;
-                            }
-
-                            // Check assignability
-                            if (checkParameterAssignability && !funcType.IsAssignableFrom(methodType))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "methodBase",
-                                    String.Format(
-                                        Resources.Reflection_GetFunc_ReturnTypeNotAssignable,
-                                        methodBase,
-                                        methodType,
-                                        funcType));
-                            }
-
-                            if (isConstructor)
-                            {
-                                // We are a constructor so use the New expression.
-                                expression = Expression.New(constructorInfo, pExpressions);
-                            }
-                            else
-                            {
-                                // Create call expression, instance methods use the first parameter of the Func<> as the instance, static
-                                // methods do not supply an instance.
-                                expression = isStatic
-                                                 ? Expression.Call(methodInfo, pExpressions)
-                                                 : Expression.Call(
-                                                     pExpressions[0],
-                                                     methodInfo,
-                                                     pExpressions.Skip(1));
-                            }
-
-                            // Check if we need to do a cast to the func result type
-                            if (funcType != methodType)
-                                expression = Expression.Convert(expression, funcType);
-
-                            return Expression.Lambda(expression, parameterExpressions).Compile();
-                        }
-                        // Sanity check, shouldn't be able to get here anyway.
-                        throw new InvalidOperationException(
+                        throw new ArgumentOutOfRangeException(
+                            "methodBase",
                             String.Format(
-                                Resources.Reflection_GetFunc_NoFuncTypesSpecified,
-                                methodBase));
-                    });
+                                Resources.Reflection_GetFunc_ParameterNotAssignable,
+                                methodBase,
+                                funcType,
+                                methodType));
+                    }
+
+                    // Create parameter expression
+                    expression = parameterExpressions[i] = Expression.Parameter(funcType);
+
+                    // Check if we need to do a cast to the method type
+                    if (funcType != methodType)
+                        expression = Expression.Convert(expression, methodType);
+
+                    pExpressions.Add(expression);
+                    continue;
+                }
+
+                // Check assignability
+                if (checkParameterAssignability && !funcType.IsAssignableFrom(methodType))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "methodBase",
+                        String.Format(
+                            Resources.Reflection_GetFunc_ReturnTypeNotAssignable,
+                            methodBase,
+                            methodType,
+                            funcType));
+                }
+
+                if (isConstructor)
+                {
+                    // We are a constructor so use the New expression.
+                    expression = Expression.New(constructorInfo, pExpressions);
+                }
+                else
+                {
+                    // Create call expression, instance methods use the first parameter of the Func<> as the instance, static
+                    // methods do not supply an instance.
+                    expression = isStatic
+                                     ? Expression.Call(methodInfo, pExpressions)
+                                     : Expression.Call(
+                                         pExpressions[0],
+                                         methodInfo,
+                                         pExpressions.Skip(1));
+                }
+
+                // Check if we need to do a cast to the func result type
+                if (funcType != methodType)
+                    expression = Expression.Convert(expression, funcType);
+
+                return Expression.Lambda(expression, parameterExpressions).Compile();
+            }
+            // Sanity check, shouldn't be able to get here anyway.
+            throw new InvalidOperationException(
+                String.Format(
+                    Resources.Reflection_GetFunc_NoFuncTypesSpecified,
+                    methodBase));
         }
 
         /// <summary>
@@ -674,15 +616,6 @@ namespace WebApplications.Utilities
             if (methodInfo == null)
                 throw new ArgumentNullException("methodInfo");
 
-            return
-                _actionCache.GetOrAdd(
-                    String.Format(
-                        "{0}:{1}|{2}",
-                        methodInfo.DeclaringType,
-                        methodInfo,
-                        String.Join("|", (IEnumerable<Type>)paramTypes)),
-                    mi =>
-                    {
                         bool isStatic = methodInfo.IsStatic;
 
                         int count = paramTypes.Count();
@@ -746,7 +679,6 @@ namespace WebApplications.Utilities
                         return
                             Expression.Lambda(Expression.Block(expression), parameterExpressions).
                                 Compile();
-                    });
         }
 
         /// <summary>
@@ -773,19 +705,15 @@ namespace WebApplications.Utilities
             if (type == null)
                 throw new ArgumentNullException("type");
 
-            return
-                _constructorCache.GetOrAdd(
-                    String.Format("{0}:{1}", type, String.Join("|", (IEnumerable<Type>)paramTypes)),
-                    k =>
-                    GetFunc(
-                        type.GetConstructor(
-                            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
-                            BindingFlags.CreateInstance,
-                            null,
-                            paramTypes.Take(paramTypes.Count() - 1).ToArray(),
-                            null),
-                        checkParameterAssignability,
-                        paramTypes));
+            return GetFunc(
+                type.GetConstructor(
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
+                    BindingFlags.CreateInstance,
+                    null,
+                    paramTypes.Take(paramTypes.Count() - 1).ToArray(),
+                    null),
+                checkParameterAssignability,
+                paramTypes);
         }
 
         /// <summary>
