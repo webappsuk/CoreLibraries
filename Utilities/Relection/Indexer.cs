@@ -127,27 +127,17 @@ namespace WebApplications.Utilities.Relection
             TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
 
             Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
-            Type[] parameterTypes = _indexParameters.Value.Select(p => p.ParameterType).ToArray();
 
             // Search for closed 
             for (int i = 0; i < pCount; i++)
             {
                 Contract.Assert(_indexParameters.Value[i] != null);
                 Type pType = _indexParameters.Value[i].ParameterType;
-                if (pType.IsGenericParameter)
-                {
-                    int position = pType.GenericParameterPosition;
-
-                    // Grab the relevant type.
-                    pType = pType.DeclaringMethod != null
-                                ? parameterTypes[position]
-                                : typeGenericArguments[position];
-                }
-                searchTypes[i] = pType;
+                searchTypes[i] = Reflection.ExpandParameterType(pType, Reflection.EmptyTypes, typeGenericArguments);
             }
 
             // Add return type
-            searchTypes[pCount] = et.Type;
+            searchTypes[pCount] = Reflection.ExpandParameterType(Info.PropertyType, Reflection.EmptyTypes, typeGenericArguments);
 
             // Search for indexer on new type.
             return et.GetIndexer(searchTypes);

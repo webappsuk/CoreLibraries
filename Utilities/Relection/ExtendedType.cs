@@ -569,13 +569,20 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         /// Gets the constructor.
         /// </summary>
-        /// <param name="types">The parameter types and return type, and return type (i.e. the constructor's type).</param>
+        /// <param name="types">The parameter types.</param>
         /// <returns>The <see cref="Constructor"/> if found; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
         public Constructor GetConstructor([NotNull] params TypeSearch[] types)
         {
             if (!_loaded) LoadMembers();
-            return _constructors.BestMatch(types) as Constructor;
+
+            // Add return type to search.
+            int tCount = types.Length;
+            TypeSearch[] t = new TypeSearch[tCount + 1];
+            Array.Copy(types, t, tCount);
+            t[tCount] = Type;
+
+            return _constructors.BestMatch(t) as Constructor;
         }
 
         /// <summary>

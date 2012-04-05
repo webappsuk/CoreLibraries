@@ -128,8 +128,8 @@ namespace WebApplications.Utilities.Relection
             Contract.Assert(_genericArguments.Value != null);
 
             // Check input arrays are valid.
-            if ((typeClosures.Length == ExtendedType.GenericArguments.Count()) ||
-                (signatureClosures.Length == _genericArguments.Value.Count()))
+            if ((typeClosures.Length != ExtendedType.GenericArguments.Count()) ||
+                (signatureClosures.Length != _genericArguments.Value.Count()))
                 return null;
             
             // If we have any type closures then we need to close the type and look for the method on there.
@@ -146,29 +146,21 @@ namespace WebApplications.Utilities.Relection
                 Contract.Assert(_parameters.Value != null);
                 int pCount = _parameters.Value.Length;
                 TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
-
                 Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
-                Type[] parameterTypes = _parameters.Value.Select(p => p.ParameterType).ToArray();
-
+                
+                Type gType;
                 // Search for closed 
                 for (int i = 0; i < pCount; i++)
                 {
                     Contract.Assert(_parameters.Value[i] != null);
                     Type pType = _parameters.Value[i].ParameterType;
-                    if (pType.IsGenericParameter)
-                    {
-                        int position = pType.GenericParameterPosition;
-
-                        // Grab the relevant type.
-                        pType = pType.DeclaringMethod != null
-                                    ? parameterTypes[position]
-                                    : typeGenericArguments[position];
-                    }
-                    searchTypes[i] = pType;
+                    Contract.Assert(pType != null);
+                    searchTypes[i] = Reflection.ExpandParameterType(pType, signatureClosures, typeGenericArguments);
                 }
 
                 // Add return type
-                searchTypes[pCount] = Info.ReturnType;
+                Type rType = Info.ReturnType;
+                searchTypes[pCount] = Reflection.ExpandParameterType(rType, signatureClosures, typeGenericArguments);
 
                 // Search for method on new type.
                 return et.GetMethod(Info.Name, signatureClosures.Length, searchTypes);

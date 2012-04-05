@@ -1766,9 +1766,23 @@ namespace WebApplications.Utilities
                 Contract.Assert(closurePosition < methodClosures.Length);
 
                 // If we already have a closure, ensure it matches!
-                if (methodClosures[closurePosition] != null)
+                Type t = methodClosures[closurePosition];
+                if (t != null)
                 {
-                    if (methodClosures[closurePosition] != closureType) return false;
+                    // Check if the types match.
+                    if (t != closureType)
+                    {
+                        // If the existing type can be assigned from the closure type we're OK
+                        if (!t.IsAssignableFrom(closureType))
+                        {
+                            // If the existing type cannot be assigned to the closure type then we don't have a match.
+                            if (!closureType.IsAssignableFrom(t))
+                                return false;
+
+                            // As the closure type is a base, update our method closure type.
+                            methodClosures[closurePosition] = closureType;
+                        }
+                    }
                 }
                 else
                 {
@@ -1782,9 +1796,23 @@ namespace WebApplications.Utilities
                 Contract.Assert(closurePosition < typeClosures.Length);
 
                 // If we already have a closure, ensure it matches!
-                if (typeClosures[closurePosition] != null)
+                Type t = typeClosures[closurePosition];
+                if (t != null)
                 {
-                    if (typeClosures[closurePosition] != closureType) return false;
+                    // Check if the types match.
+                    if (t != closureType)
+                    {
+                        // If the existing type can be assigned from the closure type we're OK
+                        if (!t.IsAssignableFrom(closureType))
+                        {
+                            // If the existing type cannot be assigned to the closure type then we don't have a match.
+                            if (!closureType.IsAssignableFrom(t))
+                                return false;
+
+                            // As the closure type is a base, update our type closure type.
+                            typeClosures[closurePosition] = closureType;
+                        }
+                    }
                 }
                 else
                 {
@@ -1936,6 +1964,42 @@ namespace WebApplications.Utilities
                    signatureClosures.Any(c => c != null)
                        ? bestMatch.Close(typeClosures, signatureClosures)
                        : bestMatch;
+        }
+
+
+        /// <summary>
+        /// Expands the parameter type.
+        /// </summary>
+        /// <param name="parameterType">Type of the input.</param>
+        /// <param name="signatureArguments">The signature arguments.</param>
+        /// <param name="typeArguments">The type arguments.</param>
+        /// <returns>Given a parameter type, will expand the type based on a set of signature and type arguments.</returns>
+        /// <remarks></remarks>
+        internal static Type ExpandParameterType([NotNull]Type parameterType, [NotNull]Type[] signatureArguments, [NotNull]Type[] typeArguments)
+        {
+            // Deal with pointers/references.
+            Type t = parameterType;
+            if ((parameterType.IsByRef || parameterType.IsPointer) &&
+                (parameterType.HasElementType))
+                t = parameterType.GetElementType();
+
+            if (t.IsGenericParameter)
+            {
+                int position = t.GenericParameterPosition;
+
+                // Grab the relevant type.
+                Type nt = t.DeclaringMethod != null
+                            ? signatureArguments[position]
+                            : typeArguments[position];
+                Contract.Assert(nt != null);
+                if (parameterType.IsByRef)
+                    parameterType = nt.MakeByRefType();
+                else if (parameterType.IsPointer)
+                    parameterType = nt.MakePointerType();
+                else
+                    parameterType = nt;
+            }
+            return parameterType;
         }
 
     }

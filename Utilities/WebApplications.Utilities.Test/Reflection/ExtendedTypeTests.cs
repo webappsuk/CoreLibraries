@@ -225,11 +225,11 @@ namespace WebApplications.Utilities.Test.Reflection
             Assert.IsFalse(constructors.Contains(staticConstructor));
 
             // Retrieve parameterless constructor
-            Constructor constructor = et.GetConstructor(et.Type);
+            Constructor constructor = et.GetConstructor();
             Assert.IsNotNull(constructor);
 
             // Retrieve the generic constructor
-            Constructor genericConstructor = et.GetConstructor(TypeSearch.T1, typeof(string), et.Type);
+            Constructor genericConstructor = et.GetConstructor(TypeSearch.T1, typeof(string));
             Assert.IsNotNull(genericConstructor);
             Assert.AreNotSame(constructor, genericConstructor);
         }
@@ -238,7 +238,7 @@ namespace WebApplications.Utilities.Test.Reflection
         public void ExtendedType_CanGetConcreteGenericConstructor()
         {
             // Retrieve the generic constructor for a generic type, but search for concrete types.
-            Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(typeof(int), typeof(string), typeof(ComplexOverloads<>));
+            Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(typeof(int), typeof(string));
             Assert.IsNotNull(genericConstructor);
             Assert.IsFalse(genericConstructor.ExtendedType.Type.ContainsGenericParameters);
             

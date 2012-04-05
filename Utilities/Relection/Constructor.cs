@@ -145,30 +145,16 @@ namespace WebApplications.Utilities.Relection
             // Create new search.
             Contract.Assert(_parameters.Value != null);
             int pCount = _parameters.Value.Length;
-            TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
-
+            TypeSearch[] searchTypes = new TypeSearch[pCount];
             Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
-            Type[] parameterTypes = _parameters.Value.Select(p => p.ParameterType).ToArray();
 
             // Search for closed 
             for (int i = 0; i < pCount; i++)
             {
                 Contract.Assert(_parameters.Value[i] != null);
                 Type pType = _parameters.Value[i].ParameterType;
-                if (pType.IsGenericParameter)
-                {
-                    int position = pType.GenericParameterPosition;
-
-                    // Grab the relevant type.
-                    pType = pType.DeclaringMethod != null
-                                ? parameterTypes[position]
-                                : typeGenericArguments[position];
-                }
-                searchTypes[i] = pType;
+                searchTypes[i] = Reflection.ExpandParameterType(pType, Reflection.EmptyTypes, typeGenericArguments);
             }
-
-            // Add return type
-            searchTypes[pCount] = et.Type;
 
             // Search for constructor on new type.
             return et.GetConstructor(searchTypes);
