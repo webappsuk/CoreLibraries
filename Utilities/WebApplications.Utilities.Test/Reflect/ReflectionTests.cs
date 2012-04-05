@@ -32,7 +32,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Reflect;
 using WebApplications.Testing;
 
-namespace WebApplications.Utilities.Test
+namespace WebApplications.Utilities.Test.Reflect
 {
     [TestClass]
     public class ReflectionTests : TestBase

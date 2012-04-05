@@ -124,7 +124,7 @@
     <Compile Include="TestCyclicConcurrentQueue.cs" />
     <Compile Include="TestPowerShell.cs" />
     <Compile Include="TestRange.cs" />
-    <Compile Include="ReflectionTests.cs" />
+    <Compile Include="Reflect\ReflectionTests.cs" />
     <Compile Include="TestSerialization.cs" />
     <Compile Include="TestSQLExtensions.cs" />
     <Compile Include="TestTaskExtensions.cs" />

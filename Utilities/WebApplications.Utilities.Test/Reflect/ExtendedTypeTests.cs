@@ -76,6 +76,8 @@ namespace WebApplications.Utilities.Test.Reflect
                 get { return 0; }
                 set { }
             }
+
+            public T Automatic { get; set; }
         }
 
         [TestMethod]
@@ -254,6 +256,15 @@ namespace WebApplications.Utilities.Test.Reflect
             List<Indexer> indexers = ((ExtendedType) typeof (ComplexOverloads<>)).Indexers.ToList();
             Assert.IsNotNull(indexers);
             Assert.AreEqual(3, indexers.Count);
+        }
+
+        [TestMethod]
+        public void ExtendedType_CanDetectAutomaticProperties()
+        {
+            ExtendedType et = typeof (ComplexOverloads<>);
+            Property property=et.GetProperty("Automatic");
+            Assert.IsNotNull(property);
+            Assert.IsTrue(property.IsAutomatic);
         }
     }
 }

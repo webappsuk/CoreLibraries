@@ -461,7 +461,8 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static bool IsAutomatic([NotNull]this PropertyInfo property)
         {
-            return GetAutomaticFieldInfo(property) != null;
+            Property p = property;
+            return p.IsAutomatic;
         }
 
         /// <summary>
@@ -474,38 +475,10 @@ namespace WebApplications.Utilities
         /// </returns>
         [UsedImplicitly]
         [CanBeNull]
-        public static FieldInfo GetAutomaticFieldInfo([NotNull]this PropertyInfo property)
+        public static Field GetAutomaticFieldInfo([NotNull]this PropertyInfo property)
         {
-            MethodInfo getMethod;
-            MethodBody methodBody;
-
-            // If the get/set accessor is missing or we can't retrieve the method body for the get accessor,
-            // then we're not an automatic property.
-            if (!property.CanRead || !property.CanWrite || ((getMethod = property.GetGetMethod()) == null) ||
-                ((methodBody = getMethod.GetMethodBody()) == null))
-                return null;
-
-            // Evaluate MSIL to resolve underlying field that is accessed.
-            byte[] getter = methodBody.GetILAsByteArray();
-            byte ldfld = (byte)(property.GetGetMethod().IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld).Value;
-            byte[] fieldToken = getter.SkipWhile(b => b != ldfld).Skip(1).Take(4).ToArray();
-            if (fieldToken.Length != 4)
-                return null;
-
-            // Grab the field
-            FieldInfo field;
-            try
-            {
-                field = property.DeclaringType.Module.ResolveField(BitConverter.ToInt32(fieldToken, 0));
-            }
-            catch
-            {
-                return null;
-            }
-
-            // Compilers don't strictly have to add this attribute, so could relax this check, but this ensures
-            // that we are indeed looking at an automatic property.
-            return field != null && field.IsDefined(typeof(CompilerGeneratedAttribute), false) ? field : null;
+            Property p = property;
+            return p.AutomaticField;
         }
 
         /// <summary>

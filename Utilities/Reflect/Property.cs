@@ -1,8 +1,11 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using JetBrains.Annotations;
 
@@ -71,6 +74,47 @@ namespace WebApplications.Utilities.Reflect
             Info = info;
             _getMethod = new Lazy<MethodInfo>(() => info.GetGetMethod(true), LazyThreadSafetyMode.PublicationOnly);
             _setMethod = new Lazy<MethodInfo>(() => info.GetSetMethod(true), LazyThreadSafetyMode.PublicationOnly);
+
+            // Tries to find the underlying field for an automatic property.
+            _automaticField = new Lazy<Field>(
+                () =>
+                    {
+                        MethodInfo getMethod;
+                        MethodBody methodBody;
+
+                        // If the get/set accessor is missing or we can't retrieve the method body for the get accessor,
+                        // then we're not an automatic property.
+                        if (!info.CanRead || !info.CanWrite || ((getMethod = info.GetGetMethod()) == null) ||
+                            ((methodBody = getMethod.GetMethodBody()) == null))
+                            return null;
+
+                        // Evaluate MSIL to resolve underlying field that is accessed.
+                        byte[] getter = methodBody.GetILAsByteArray();
+                        byte ldfld = (byte) (info.GetGetMethod().IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld).Value;
+                        byte[] fieldToken = getter.SkipWhile(b => b != ldfld).Skip(1).Take(4).ToArray();
+                        if (fieldToken.Length != 4)
+                            return null;
+
+                        // Grab the field
+                        FieldInfo field;
+                        try
+                        {
+                            Type[] typeArguments = ExtendedType.GenericArguments.Select(g => g.Type).ToArray();
+                            if (typeArguments.Length < 1)
+                                typeArguments = null;
+                            field = info.DeclaringType.Module.ResolveField(BitConverter.ToInt32(fieldToken, 0), typeArguments, null);
+                        }
+                        catch
+                        {
+                            return null;
+                        }
+
+                        // Compilers don't strictly have to add this attribute, so could relax this check, but this ensures
+                        // that we are indeed looking at an automatic property.
+                        return field != null && field.IsDefined(typeof (CompilerGeneratedAttribute), false)
+                                   ? field
+                                   : null;
+                    }, LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
@@ -327,5 +371,23 @@ namespace WebApplications.Utilities.Reflect
             return
                 Expression.Lambda<Action<T, TValue>>(expression, parameterExpression, valueParameterExpression).Compile();
         }
+
+        [NotNull]
+        private readonly Lazy<Field> _automaticField;
+
+        /// <summary>
+        /// Gets a value indicating whether this property is automatic.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is automatic; otherwise, <see langword="false" />.</value>
+        /// <remarks></remarks>
+        public bool IsAutomatic { get { return _automaticField.Value != null; } }
+
+        /// <summary>
+        /// Gets the underlying automatic field (if any).
+        /// </summary>
+        /// <value>The automatic field.</value>
+        /// <remarks></remarks>
+        [CanBeNull]
+        public Field AutomaticField { get { return _automaticField.Value; } }
     }
 }
