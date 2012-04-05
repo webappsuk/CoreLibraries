@@ -151,7 +151,7 @@ namespace WebApplications.Utilities.Test
             s.Stop();
             Trace.WriteLine(s.ToString("{0} calls to GetParameters", loops));
         }
-        
+
         #region Nested type: ReflectionTestClass
         // <summary>Class used as test case for reflection tests</summary>
         public class ReflectionTestClass<T>
@@ -165,9 +165,15 @@ namespace WebApplications.Utilities.Test
             public ReflectionTestClass(T id)
             {
                 ID = id;
+                _last = this;
             }
 
             public int B { private get; set; }
+
+            public ReflectionTestClass()
+            {
+                _last = this;
+            }
 
             public static ReflectionTestClass<T> Last
             {
@@ -218,32 +224,17 @@ namespace WebApplications.Utilities.Test
             }
         }
         #endregion
-
-        [TestMethod]
-        public void GetMethod_StaticFunction_ReturnsLambdaForRequestedFunction()
-        {
-            int a = Random.Next(0, 10);
-            int b = Random.Next(0, 10);
-            // Set the expected output for the dummy
-            ReflectionTestClass<Guid>.StaticFunctionOutput = a + b;
-            Func<int, int, int> func = typeof(ReflectionTestClass<Guid>).GetMethod("StaticMethod").Func<int, int, int>();
-            Assert.IsNotNull(func, "The lambda returned must not be null.");
-            // Note that there is no simple way to test if we have the correct function, so we instead test that parameters are received correctly
-            Assert.AreEqual(a + b, func(a, b), "When called, the lambda returned by GetMethod should return the value the requested function returns.");
-            Assert.AreEqual(a, ReflectionTestClass<Guid>.StaticFunctionInputA, "When called with parameters, the lambda calls the requested function using these parameters.");
-            Assert.AreEqual(b, ReflectionTestClass<Guid>.StaticFunctionInputB, "When called with parameters, the lambda calls the requested function using these parameters.");
-        }
-
+        
         [TestMethod]
         public void GetMethod_InstanceFunction_ReturnsLambdaForRequestedFunction()
         {
             int a = Random.Next(0, 10);
             int b = Random.Next(0, 10);
-            ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
+            ReflectionTestClass<String> testInstance = new ReflectionTestClass<String>("Test");
             // Set the expected output for the dummy
             testInstance.InstanceFunctionOutput = a + b;
-            Func<ReflectionTestClass<Guid>, int, int, int> func =
-                typeof(ReflectionTestClass<String>).GetMethod("InstanceFunction").Func<ReflectionTestClass<Guid>, int, int, int>();
+            Func<ReflectionTestClass<String>, int, int, int> func =
+                typeof(ReflectionTestClass<String>).GetMethod("InstanceFunction").Func<ReflectionTestClass<String>, int, int, int>();
             Assert.IsNotNull(func, "The lambda returned must not be null.");
             // Note that there is no simple way to test if we have the correct function, so we instead test that parameters are received correctly
             Assert.AreEqual(a + b, func(testInstance, a, b), "When called, the lambda returned by GetMethod should return the value the requested function returns.");
@@ -318,9 +309,8 @@ namespace WebApplications.Utilities.Test
         public void GetGetter_PropertyWithExplicitGetter_ReturnsLambdaGetterForRequestedProperty()
         {
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
-            Func<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>> getLast =
-                Reflection.GetGetter<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>>("Last");
-            Assert.AreEqual(testInstance, getLast(testInstance), "The lambda function returned by GetGetter should return the value of the requested property.");
+            Func<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>> getLast = Reflection.GetGetter<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>>("Last");
+            Assert.AreEqual(testInstance, getLast(null), "The lambda function returned by GetGetter should return the value of the requested property.");
         }
 
         [TestMethod]
