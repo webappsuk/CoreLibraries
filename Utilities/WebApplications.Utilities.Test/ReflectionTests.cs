@@ -78,7 +78,7 @@ namespace WebApplications.Utilities.Test
                         ExtendedType et = ExtendedType.Get(t);
                         Assert.IsNotNull(et);
                         Assert.IsNotNull(et.Methods);
-                        mCount += et.Methods.SelectMany(m => m.Overloads).Count();
+                        mCount += et.Methods.Count();
                         rCount++;
                     }
                     catch (NotSupportedException)

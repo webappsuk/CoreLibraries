@@ -64,11 +64,13 @@ namespace WebApplications.Utilities.Relection
         /// <summary>
         /// Holds all indexers.
         /// </summary>
+        [NotNull]
         private IEnumerable<Indexer> _indexers;
         /// <summary>
         /// Gets the indexers.
         /// </summary>
         /// <remarks></remarks>
+        [NotNull]
         public IEnumerable<Indexer> Indexers
         {
              get
@@ -120,31 +122,38 @@ namespace WebApplications.Utilities.Relection
         ///   Holds all methods.
         /// </summary>
         [NotNull]
-        private readonly Dictionary<string, Methods> _methods = new Dictionary<string, Methods>();
+        private readonly Dictionary<string, List<Method>> _methods = new Dictionary<string, List<Method>>();
 
         /// <summary>
-        ///   Gets the methods.
+        ///   Gets all the methods.
         /// </summary>
         [NotNull]
-        public IEnumerable<Methods> Methods
+        public IEnumerable<Method> Methods
         {
             get
             {
                 if (!_loaded) LoadMembers();
-                return _methods.Values;
+                return _methods.Values.SelectMany(m => m);
             }
         }
 
         /// <summary>
+        /// Gets the static constructor, if any.
+        /// </summary>
+        /// <value>The static constructor if found; otherwise <see langword="null"/>.</value>
+        /// <remarks>The static constructor is a special case and does not appear directly in overloads.</remarks>
+        public Constructor StaticConstructor { get; private set; }
+
+        /// <summary>
         /// Holds all constructors.
         /// </summary>
-        private Constructors _constructors;
+        private IEnumerable<Constructor> _constructors;
 
         /// <summary>
         ///   Gets the constructors.
         /// </summary>
         [NotNull]
-        public Constructors Constructors
+        public IEnumerable<Constructor> Constructors
         {
             get
             {
@@ -331,6 +340,7 @@ namespace WebApplications.Utilities.Relection
 
             if (!_loaded)
             {
+                List<Constructor> constructors = null;
                 List<Indexer> indexers = null;
                 // Get all members in one go - this is significantly faster than getting individual calls later - at the cost of potentially
                 // loading members that are not requested.
@@ -363,14 +373,15 @@ namespace WebApplications.Utilities.Relection
                     MethodInfo m = memberInfo as MethodInfo;
                     if (m != null)
                     {
-                        Methods methods;
+                        Method method = new Method(this, m);
+                        List<Method> methods;
                         if (!_methods.TryGetValue(m.Name, out methods))
                         {
-                            methods = new Methods(this, m);
+                            methods = new List<Method>();
                             _methods.Add(m.Name, methods);
                         }
-                        else
-                            methods.Add(m);
+                        Contract.Assert(methods != null);
+                        methods.Add(method);
                         continue;
                     }
 
@@ -378,10 +389,17 @@ namespace WebApplications.Utilities.Relection
                     ConstructorInfo c = memberInfo as ConstructorInfo;
                     if (c != null)
                     {
-                        if (_constructors == null)
-                            _constructors = new Constructors(this, c);
-                        else
-                            _constructors.Add(c);
+                        Constructor constructor = new Constructor(this, c);
+                        // Check if we're the static constructor
+                        if (c.IsStatic)
+                        {
+                            Contract.Assert(StaticConstructor == null);
+                            StaticConstructor = constructor;
+                            continue;
+                        }
+
+                        if (constructors == null) constructors = new List<Constructor>();
+                        constructors.Add(constructor);
                         continue;
                     }
 
@@ -398,9 +416,7 @@ namespace WebApplications.Utilities.Relection
                     if (t == null) return;
                 }
 
-                if (_constructors == null)
-                    _constructors = new Constructors(this);
-
+                _constructors = constructors ?? Enumerable.Empty<Constructor>();
                 _indexers = indexers ?? Enumerable.Empty<Indexer>();
 
                 _loaded = true;
@@ -495,10 +511,10 @@ namespace WebApplications.Utilities.Relection
         /// <param name="name">The name.</param>
         /// <returns>The <see cref="Methods"/> if found; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        public Methods GetMethods([NotNull] string name)
+        public IEnumerable<Method> GetMethods([NotNull] string name)
         {
             if (!_loaded) LoadMembers();
-            Methods methods;
+            List<Method> methods;
             return _methods.TryGetValue(name, out methods) ? methods : null;
         }
 
@@ -525,11 +541,11 @@ namespace WebApplications.Utilities.Relection
             if (methodInfo.DeclaringType != Type)
                 return null;
             if (!_loaded) LoadMembers();
-            Methods methods;
+            List<Method> methods;
             if (!_methods.TryGetValue(methodInfo.Name, out methods))
                 return null;
             Contract.Assert(methods != null);
-            return methods.GetOverload(methodInfo);
+            return methods.FirstOrDefault(m => m.Info == methodInfo);
         }
 
         /// <summary>
@@ -543,21 +559,11 @@ namespace WebApplications.Utilities.Relection
         public Method GetMethod([NotNull] string name, int genericArguments, [NotNull] params TypeSearch[] types)
         {
             if (!_loaded) LoadMembers();
-            Methods methods;
+            List<Method> methods;
             if (!_methods.TryGetValue(name, out methods))
                 return null;
             Contract.Assert(methods != null);
-            return methods.GetOverload(genericArguments, types);
-        }
-
-        /// <summary>
-        /// Gets the constructors.
-        /// </summary>
-        /// <returns>The <see cref="Constructors"/> if found; otherwise <see langword="null"/>.</returns>
-        /// <remarks></remarks>
-        public Constructors GetConstructors()
-        {
-            return Constructors;
+            return methods.BestMatch(genericArguments, types) as Method;
         }
 
         /// <summary>
@@ -569,7 +575,7 @@ namespace WebApplications.Utilities.Relection
         public Constructor GetConstructor([NotNull] params TypeSearch[] types)
         {
             if (!_loaded) LoadMembers();
-            return _constructors == null ? null : _constructors.GetOverload(types);
+            return _constructors.BestMatch(types) as Constructor;
         }
 
         /// <summary>
@@ -583,7 +589,7 @@ namespace WebApplications.Utilities.Relection
             if (constructorInfo.DeclaringType != Type)
                 return null;
             if (!_loaded) LoadMembers();
-            return _constructors == null ? null : _constructors.GetOverload(constructorInfo);
+            return _constructors == null ? null : _constructors.FirstOrDefault(c => c.Info == constructorInfo);
         }
 
         /// <summary>

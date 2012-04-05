@@ -83,50 +83,50 @@ namespace WebApplications.Utilities.Test.Reflection
         {
             ExtendedType et = ExtendedType.Get(typeof(ComplexOverloads<>));
 
-            Methods methods = et.GetMethods("A");
+            IEnumerable<Method> methods = et.GetMethods("A");
 
             Assert.IsNotNull(methods);
-            Assert.AreEqual(9, methods.Overloads.Count());
+            Assert.AreEqual(9, methods.Count());
 
-            Method invalidMethod = methods.GetOverload();
+            Method invalidMethod = et.GetMethod("A");
             Assert.IsNull(invalidMethod);
 
-            Method method1 = methods.GetOverload(TypeSearch.T1);
+            Method method1 = et.GetMethod("A", TypeSearch.T1);
             Assert.IsNotNull(method1);
             Assert.IsTrue(method1.Info.ContainsGenericParameters);
 
-            invalidMethod = methods.GetOverload(TypeSearch.Void);
+            invalidMethod = et.GetMethod("A", TypeSearch.Void);
             Assert.IsNull(invalidMethod);
 
-            Method method2 = methods.GetOverload(typeof(int), TypeSearch.Void);
+            Method method2 = et.GetMethod("A", typeof(int), TypeSearch.Void);
             Assert.IsNotNull(method2);
             Assert.AreNotEqual(method1, method2);
 
-            Method method3 = methods.GetOverload(typeof(int).MakeByRefType(), TypeSearch.Void);
+            Method method3 = et.GetMethod("A", typeof(int).MakeByRefType(), TypeSearch.Void);
             Assert.IsNotNull(method3);
             Assert.AreNotEqual(method3, method1);
             Assert.AreNotEqual(method3, method2);
 
-            Method method3b = methods.GetOverload(typeof(int).MakePointerType(), TypeSearch.Void);
+            Method method3b = et.GetMethod("A", typeof(int).MakePointerType(), TypeSearch.Void);
             Assert.IsNotNull(method3b);
             Assert.AreNotEqual(method3b, method1);
             Assert.AreNotEqual(method3b, method2);
 
-            Method method4 = methods.GetOverload(typeof(string), typeof(string), TypeSearch.Void);
+            Method method4 = et.GetMethod("A", typeof(string), typeof(string), TypeSearch.Void);
             Assert.IsNotNull(method4);
             Assert.IsTrue(method4.Info.IsStatic);
             Assert.AreNotEqual(method4, method1);
             Assert.AreNotEqual(method4, method2);
             Assert.AreNotEqual(method4, method3);
 
-            Method method5 = methods.GetOverload(typeof(string), typeof(string).MakeByRefType(), TypeSearch.Void);
+            Method method5 = et.GetMethod("A", typeof(string), typeof(string).MakeByRefType(), TypeSearch.Void);
             Assert.IsNotNull(method5);
             Assert.AreNotEqual(method5, method1);
             Assert.AreNotEqual(method5, method2);
             Assert.AreNotEqual(method5, method3b);
             Assert.AreNotEqual(method5, method4);
 
-            Method method6 = methods.GetOverload(1, typeof(string), TypeSearch.Void);
+            Method method6 = et.GetMethod("A", 1, typeof(string), TypeSearch.Void);
             Assert.IsNotNull(method6);
             Assert.AreNotEqual(method6, method1);
             Assert.AreNotEqual(method6, method2);
@@ -134,7 +134,7 @@ namespace WebApplications.Utilities.Test.Reflection
             Assert.AreNotEqual(method6, method4);
             Assert.AreNotEqual(method6, method5);
 
-            Method method7 = methods.GetOverload(2, typeof(string), TypeSearch.Void);
+            Method method7 = et.GetMethod("A", 2, typeof(string), TypeSearch.Void);
             Assert.IsNotNull(method7);
             Assert.AreNotEqual(method7, method1);
             Assert.AreNotEqual(method7, method2);
@@ -143,7 +143,7 @@ namespace WebApplications.Utilities.Test.Reflection
             Assert.AreNotEqual(method7, method5);
             Assert.AreNotEqual(method7, method6);
 
-            Method method8 = methods.GetOverload(1, new TypeSearch(GenericArgumentLocation.Type, "T"),
+            Method method8 = et.GetMethod("A", 1, new TypeSearch(GenericArgumentLocation.Type, "T"),
                                                  new TypeSearch(GenericArgumentLocation.Signature, 0, true),
                                                  TypeSearch.Void);
             Assert.IsNotNull(method8);
@@ -212,19 +212,17 @@ namespace WebApplications.Utilities.Test.Reflection
         {
             ExtendedType et = typeof(ComplexOverloads<>);
 
-            // There are two ways to retrieve all the constructors
-            Constructors constructors = et.Constructors;
+            // Grab all constructors
+            IEnumerable<Constructor> constructors = et.Constructors;
             Assert.IsNotNull(constructors);
-
-            // The second way is for consistency.
-            Constructors constructors2 = et.GetConstructors();
-            Assert.IsNotNull(constructors2);
-            Assert.AreSame(constructors, constructors2);
+            // Note only two non-static constructors (static constructor treated separately).
+            Assert.AreEqual(2, constructors.Count());
 
             // Grab the static constructor
-            Constructor staticConstructor = constructors.StaticConstructor;
+            Constructor staticConstructor = et.StaticConstructor;
             Assert.IsNotNull(staticConstructor);
             Assert.IsTrue(staticConstructor.Info.IsStatic);
+            Assert.IsFalse(constructors.Contains(staticConstructor));
 
             // Retrieve parameterless constructor
             Constructor constructor = et.GetConstructor(et.Type);
@@ -240,7 +238,7 @@ namespace WebApplications.Utilities.Test.Reflection
         public void ExtendedType_CanGetConcreteGenericConstructor()
         {
             // Retrieve the generic constructor for a generic type, but search for concrete types.
-            Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(typeof(int), typeof(string), typeof(ComplexOverloads<int>));
+            Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(typeof(int), typeof(string), typeof(ComplexOverloads<>));
             Assert.IsNotNull(genericConstructor);
             Assert.IsFalse(genericConstructor.ExtendedType.Type.ContainsGenericParameters);
             

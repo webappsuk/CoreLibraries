@@ -8,7 +8,7 @@ namespace WebApplications.Utilities.Relection
     /// Holds information about a generic argument.
     /// </summary>
     /// <remarks></remarks>
-    [DebuggerDisplay("{Name} [{Location} position {Position}]")]
+    [DebuggerDisplay("{Type} [{Location} position {Position}]")]
     public struct GenericArgument
     {
         /// <summary>
