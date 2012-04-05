@@ -313,7 +313,7 @@ namespace WebApplications.Utilities.Test
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, int, int> setA = Reflection.GetSetter<ReflectionTestClass<Guid>, int>("A");
+            Action<ReflectionTestClass<Guid>, int> setA = typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>, int>("A");
             setA(testInstance, value);
             Assert.AreEqual(value, testInstance.A, "The lambda function returned by GetSetter should change the value of the specified field.");
         }
@@ -324,8 +324,8 @@ namespace WebApplications.Utilities.Test
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, int, int> setB = Reflection.GetSetter<ReflectionTestClass<Guid>, int>("B");
-            Assert.AreEqual(setB(testInstance, value), value);
+            Action<ReflectionTestClass<Guid>, int> setB = typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>, int>("B");
+            setB(testInstance, value);
         }
 
         [TestMethod]
@@ -334,7 +334,7 @@ namespace WebApplications.Utilities.Test
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, int, int> setC = Reflection.GetSetter<ReflectionTestClass<Guid>, int>("C");
+            Action<ReflectionTestClass<Guid>, int> setC = typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>, int>("C");
             setC(testInstance, value);
             Assert.AreEqual(testInstance.SetC, value);
         }
@@ -345,29 +345,30 @@ namespace WebApplications.Utilities.Test
             DateTime value = DateTime.Now;
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, DateTime, DateTime> setDateTime =
-                Reflection.GetSetter<ReflectionTestClass<Guid>, DateTime>("DateTime");
-            setDateTime(testInstance, value);
-            //Assert.AreEqual( value, testInstance.DateTime );
+            Action<DateTime> setDateTime =
+                typeof(ReflectionTestClass<Guid>).GetSetter<DateTime>("DateTime");
+            setDateTime(value);
+            Assert.AreEqual(value, ReflectionTestClass<Guid>.DateTime);
         }
 
         [TestMethod]
-        public void GetSetter_PassingNullToSetterLambda_DoesNotThrowError()
+        [ExpectedException(typeof(NullReferenceException))]
+        public void GetSetter_PassingNullToSetterLambda_ThrowsNullReference()
         {
-            // Is this test supposed to be testing something else?
-            Func<ReflectionTestClass<Guid>, DateTime, DateTime> setDateTime =
-                Reflection.GetSetter<ReflectionTestClass<Guid>, DateTime>("DateTime");
+            Action<ReflectionTestClass<Guid>, DateTime> setDateTime =
+                typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>, DateTime>("DateTime");
             setDateTime(null, DateTime.Now);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void GetSetter_PropertyWithNoSetter_ThrowsArgumentOutOfRangeException()
+        public void GetSetter_PropertyWithNoSetter_ReturnsNull()
         {
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>, ReflectionTestClass<Guid>> setLast =
-                Reflection.GetSetter<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>>("Last");
+           Action<ReflectionTestClass<Guid>> setLast =
+                typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>>("Last");
+
+            Assert.IsNull(setLast);
         }
 
         [Ignore]

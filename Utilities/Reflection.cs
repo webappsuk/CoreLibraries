@@ -59,26 +59,19 @@ namespace WebApplications.Utilities
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
         /// <param name="type">The type from which to retrieve the getter..</param>
         /// <param name="name">The name of the field or property whose getter we want to retrieve.</param>
-        /// <param name="checkAssignability">If set to <see langword="true" /> performs assignability checks.</param>
         /// <returns>A function that takes an object of the type T and returns the value of the property or field.</returns>
         /// <remarks></remarks>
         [UsedImplicitly]
         [CanBeNull]
-        public static Func<TValue> GetGetter<TValue>([NotNull]this Type type, [NotNull]string name,
-#if DEBUG
- bool checkAssignability = true
-#else
-            bool checkAssignability = false
-#endif
-)
+        public static Func<TValue> GetGetter<TValue>([NotNull]this Type type, [NotNull]string name)
         {
             ExtendedType et = type;
             Field field = et.GetField(name);
             if (field != null)
-                return field.Getter<TValue>(checkAssignability);
+                return field.Getter<TValue>();
 
             Property property = et.GetProperty(name);
-            return property == null ? null : property.Getter<TValue>(checkAssignability);
+            return property == null ? null : property.Getter<TValue>();
         }
 
         /// <summary>
@@ -88,222 +81,62 @@ namespace WebApplications.Utilities
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
         /// <param name="type">The type from which to retrieve the getter..</param>
         /// <param name="name">The name of the field or property whose getter we want to retrieve.</param>
-        /// <param name="checkAssignability">If set to <see langword="true" /> performs assignability checks.</param>
         /// <returns>A function that takes an object of the type T and returns the value of the property or field.</returns>
         /// <remarks></remarks>
         [UsedImplicitly]
         [CanBeNull]
-        public static Func<T, TValue> GetGetter<T, TValue>([NotNull]this Type type, [NotNull]string name,
-#if DEBUG
- bool checkAssignability = true
-#else
-            bool checkAssignability = false
-#endif
-            )
+        public static Func<T, TValue> GetGetter<T, TValue>([NotNull]this Type type, [NotNull]string name)
         {
             ExtendedType et = type;
             Field field = et.GetField(name);
             if (field != null)
-                return field.Getter<T, TValue>(checkAssignability);
+                return field.Getter<T, TValue>();
 
             Property property = et.GetProperty(name);
-            return property == null ? null : property.Getter<T, TValue>(checkAssignability);
+            return property == null ? null : property.Getter<T, TValue>();
         }
 
         /// <summary>
-        ///   Retrieves the lambda function equivalent of the specified setter method.
+        /// Retrieves the lambda action equivalent of the specified static setter method.
         /// </summary>
-        /// <typeparam name="T">The declaring class' type.</typeparam>
-        /// <typeparam name="TValue">The type of the value returned.</typeparam>
+        /// <typeparam name="TValue">The type of the value returned.</typeparam>	
+        /// <param name="type">The type.</param>
         /// <param name="name">The name of the field or property whose setter we want to retrieve.</param>
-        /// <param name="checkAssignability">If set to <see langword="true"/> performs assignability checks.</param>
-        /// <returns>
-        ///   A function that takes an object of the declaring type as well as a value and sets the field or property to that value
-        ///   (and returns the new value).
-        /// </returns>
+        /// <returns>A function that takes an object of the declaring type as well as a value and sets the field or property to that value.</returns>
+        /// <remarks></remarks>
         [UsedImplicitly]
-        [NotNull]
-        public static Func<T, TValue, TValue> GetSetter<T, TValue>([NotNull] string name, bool checkAssignability = false)
+        [CanBeNull]
+        public static Action<TValue> GetSetter<TValue>([NotNull]this Type type, [NotNull] string name)
         {
-            return
-                (Func<T, TValue, TValue>)GetSetter(typeof(T), name, null, null, typeof(TValue), checkAssignability);
+            ExtendedType et = type;
+            Field field = et.GetField(name);
+            if (field != null)
+                return field.Setter<TValue>();
+
+            Property property = et.GetProperty(name);
+            return property == null ? null : property.Setter<TValue>();
         }
 
         /// <summary>
-        ///   Retrieves the lambda function equivalent of the specified setter method.
+        /// Retrieves the lambda action equivalent of the specified instance setter method.
         /// </summary>
-        /// <param name="declaringType">The declaring class' type.</param>
-        /// <param name="name">The name of the field or property.</param>
-        /// <param name="parameterType">
-        ///   <para>The type of the parameter.</para>
-        ///   <para>By default this is the <paramref name="declaringType"/>.</para>
-        /// </param>
-        /// <param name="valueType">
-        ///   <para>The value's type.</para>
-        ///   <para>By default this is the member (the field or property) type.</para>
-        /// </param>
-        /// <param name="returnType">
-        ///   <para>The return value's type.</para>
-        ///   <para>By default this is the member (the field or property) type.</para>
-        /// </param>
-        /// <param name="checkAssignability">
-        ///   If set to <see langword="true"/> checks if the member type is assignable from the <paramref name="valueType"/>,
-        ///   the <paramref name="returnType"/> is assignable from the member type and that the <paramref name="parameterType"/>
-        ///   is assignable from the <paramref name="declaringType"/>.
-        /// </param>
-        /// <returns>
-        ///   A function that takes an object of the <paramref name="declaringType"/> as well as a value and sets the field
-        ///   or property to that value (and returns the new value).
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   <para>There is no setter for the field or property specified.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="parameterType"/> is not assignable from <paramref name="declaringType"/>.</para>
-        ///   <para>-or-</para>
-        ///   <para>The member type is not assignable from <paramref name="valueType"/>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="returnType"/> is not assignable from the member type.</para>
-        /// </exception>
-        /// <seealso cref="System.Type.IsAssignableFrom"/>
+        /// <typeparam name="T">The declaring class' type.</typeparam>	
+        /// <typeparam name="TValue">The type of the value returned.</typeparam>	
+        /// <param name="type">The type.</param>
+        /// <param name="name">The name of the field or property whose setter we want to retrieve.</param>
+        /// <returns>A function that takes an object of the declaring type as well as a value and sets the field or property to that value.</returns>
+        /// <remarks></remarks>
         [UsedImplicitly]
-        [NotNull]
-        public static object GetSetter(
-            [NotNull] this Type declaringType,
-            [NotNull] string name,
-            [CanBeNull] Type parameterType = null,
-            [CanBeNull] Type valueType = null,
-            [CanBeNull] Type returnType = null,
-            bool checkAssignability = false)
+        [CanBeNull]
+        public static Action<T, TValue> GetSetter<T, TValue>([NotNull]this Type type, [NotNull] string name)
         {
-            // Find the field or property
-            bool isField;
-            bool isStatic;
-            Type memberType;
-            FieldInfo fieldInfo = declaringType.GetField(name, AccessorBindingFlags);
-            MethodInfo propertyAccesssor;
-            if (fieldInfo != null)
-            {
-                memberType = fieldInfo.FieldType;
-                propertyAccesssor = null;
-                isStatic = fieldInfo.IsStatic;
-                isField = true;
-            }
-            else
-            {
-                PropertyInfo propertyInfo = declaringType.GetProperty(
-                    name, AccessorBindingFlags);
-                if ((propertyInfo == null) ||
-                    ((propertyAccesssor = propertyInfo.GetSetMethod(true)) == null))
-                {
-                    throw new ArgumentOutOfRangeException(
-                        "name",
-                        String.Format(
-                            Resources.Reflection_GetSetter_NoSetterForFieldOrProperty,
-                            name,
-                            declaringType));
-                }
-                memberType = propertyInfo.PropertyType;
-                isStatic = propertyAccesssor.IsStatic;
-                isField = false;
-            }
+            ExtendedType et = type;
+            Field field = et.GetField(name);
+            if (field != null)
+                return field.Setter<T, TValue>();
 
-            //  Check the parameter type can be assigned from the declaring type.
-            if (parameterType != null)
-            {
-                if ((checkAssignability) && (parameterType != declaringType) &&
-                    (!parameterType.IsAssignableFrom(declaringType)))
-                {
-                    throw new ArgumentOutOfRangeException(
-                        "parameterType",
-                        String.Format(
-                            Resources.Reflection_GetSetter_ParameterTypeNotAssignable,
-                            name,
-                            isField ? "field" : "property",
-                            declaringType,
-                            parameterType));
-                }
-            }
-            else
-                parameterType = declaringType;
-
-            // Check the member type can be assigned from the value type
-            if (valueType != null)
-            {
-                if ((checkAssignability) && (valueType != memberType) &&
-                    (!memberType.IsAssignableFrom(valueType)))
-                {
-                    throw new ArgumentOutOfRangeException(
-                        "valueType",
-                        String.Format(
-                            Resources.Reflection_GetSetter_MemberTypeNotAssignable,
-                            name,
-                            isField ? "field" : "property",
-                            declaringType,
-                            memberType,
-                            valueType));
-                }
-            }
-            else
-                valueType = memberType;
-
-            // Check the return type can be assigned from the member type
-            if (returnType != null)
-            {
-                if ((checkAssignability) && (returnType != memberType) &&
-                    (!returnType.IsAssignableFrom(memberType)))
-                {
-                    throw new ArgumentOutOfRangeException(
-                        "returnType",
-                        String.Format(
-                            Resources.Reflection_GetSetter_ReturnTypeNotAssignable,
-                            name,
-                            isField ? "field" : "property",
-                            declaringType,
-                            memberType,
-                            returnType));
-                }
-            }
-            else
-                returnType = memberType;
-
-            Expression expression = null;
-            // Create input parameter expression
-            ParameterExpression parameterExpression = Expression.Parameter(
-                parameterType, "target");
-            ParameterExpression valueParameterExpression = Expression.Parameter(
-                valueType, "value");
-
-            // If we're not static we need a parameter expression
-            if (!isStatic)
-            {
-                expression = parameterExpression;
-
-                // Cast parameter if necessary
-                if (parameterType != declaringType)
-                    expression = Expression.Convert(expression, declaringType);
-            }
-
-            // Cast the value parameter if necessary
-            Expression valueExpression = valueParameterExpression;
-            if (valueType != memberType)
-                valueExpression = Expression.Convert(valueExpression, memberType);
-
-            // Get a member access expression
-            expression = isField
-                             ? Expression.Field(expression, fieldInfo)
-                             : Expression.Property(expression, propertyAccesssor);
-
-            // Perform assignment
-            expression = Expression.Assign(expression, valueExpression);
-
-            // Cast return value if necessary
-            if (returnType != memberType)
-                expression = Expression.Convert(expression, returnType);
-
-            // Create lambda and compile
-            return
-                Expression.Lambda(expression, parameterExpression, valueParameterExpression)
-                    .Compile();
+            Property property = et.GetProperty(name);
+            return property == null ? null : property.Setter<T, TValue>();
         }
 
         /// <summary>
@@ -441,7 +274,7 @@ namespace WebApplications.Utilities
 
                     // Check if we need to do a cast to the method type
                     if (funcType != methodType)
-                        expression = Expression.Convert(expression, methodType);
+                        expression = expression.Convert(methodType);
 
                     pExpressions.Add(expression);
                     continue;
@@ -478,7 +311,7 @@ namespace WebApplications.Utilities
 
                 // Check if we need to do a cast to the func result type
                 if (funcType != methodType)
-                    expression = Expression.Convert(expression, funcType);
+                    expression = expression.Convert(funcType);
 
                 return Expression.Lambda(expression, parameterExpressions).Compile();
             }
@@ -566,7 +399,7 @@ namespace WebApplications.Utilities
 
                             // Check if we need to do a cast to the method type
                             if (funcType != methodType)
-                                expression = Expression.Convert(expression, methodType);
+                                expression = expression.Convert(methodType);
 
                             pExpressions.Add(expression);
                         }

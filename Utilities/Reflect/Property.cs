@@ -110,19 +110,13 @@ namespace WebApplications.Utilities.Reflect
         /// Retrieves the lambda function equivalent of the specified static getter method.
         /// </summary>
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
-        /// <param name="checkAssignability">If set to <see langword="true" /> performs assignability checks.</param>
         /// <returns>A function that takes an object of the type T and returns the value of the property.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
         [UsedImplicitly]
         [CanBeNull]
-        public Func<TValue> Getter<TValue>(
-#if DEBUG
- bool checkAssignability = true
-#else
-            bool checkAssignability = false
-#endif
-)
+        public Func<TValue> Getter<TValue>()
         {
             MethodInfo getMethod = GetMethod;
 
@@ -136,18 +130,9 @@ namespace WebApplications.Utilities.Reflect
             Type declaringType = ExtendedType.Type;
 
             // Check the return type can be assigned from the member type
-            if ((checkAssignability) && (returnType != propertyType) &&
+            if ((returnType != propertyType) &&
                 (!returnType.IsAssignableFrom(propertyType)))
-            {
-                throw new ArgumentOutOfRangeException(
-                    String.Format(
-                        Resources.Reflection_GetGetter_ReturnTypeNotAssignable,
-                        Info.Name,
-                        "property",
-                        declaringType,
-                        propertyType,
-                        returnType));
-            }
+                return null;
 
             // Get a member access expression
             Expression expression = Expression.Property(null, Info);
@@ -156,12 +141,12 @@ namespace WebApplications.Utilities.Reflect
 
             // Cast return value if necessary
             if (returnType != propertyType)
-                expression = Expression.Convert(expression, returnType);
+                expression = expression.Convert(returnType);
 
             Contract.Assert(expression != null);
 
             // Create lambda and compile
-            return (Func<TValue>)Expression.Lambda(expression).Compile();
+            return Expression.Lambda<Func<TValue>>(expression).Compile();
         }
 
         /// <summary>
@@ -169,19 +154,13 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <typeparam name="T">The type of the parameter the function encapsulates.</typeparam>	
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
-        /// <param name="checkAssignability">If set to <see langword="true" /> performs assignability checks.</param>
         /// <returns>A function that takes an object of the type T and returns the value of the property.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
         [UsedImplicitly]
         [CanBeNull]
-        public Func<T, TValue> Getter<T, TValue>(
-#if DEBUG
- bool checkAssignability = true
-#else
-            bool checkAssignability = false
-#endif
-)
+        public Func<T, TValue> Getter<T, TValue>()
         {
             MethodInfo getMethod = GetMethod;
 
@@ -195,40 +174,23 @@ namespace WebApplications.Utilities.Reflect
             Type parameterType = typeof(T);
 
             //  Check the parameter type can be assigned from the declaring type.
-            if ((checkAssignability) && (parameterType != declaringType) &&
+            if ((parameterType != declaringType) &&
                 (!parameterType.IsAssignableFrom(declaringType)))
-            {
-                throw new ArgumentOutOfRangeException(
-                    String.Format(
-                        Resources.Reflection_GetGetter_ParameterTypeNotAssignable,
-                        Info.Name,
-                        "property",
-                        declaringType,
-                        parameterType));
-            }
+                return null;
 
             Type returnType = typeof(TValue);
 
             // Check the return type can be assigned from the member type
-            if ((checkAssignability) && (returnType != propertyType) &&
+            if ((returnType != propertyType) &&
                 (!returnType.IsAssignableFrom(propertyType)))
-            {
-                throw new ArgumentOutOfRangeException(
-                    String.Format(
-                        Resources.Reflection_GetGetter_ReturnTypeNotAssignable,
-                        Info.Name,
-                        "field",
-                        declaringType,
-                        propertyType,
-                        returnType));
-            }
+                return null;
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(parameterType, "target");
 
             // Cast parameter if necessary
             Expression expression = parameterType != declaringType
-                             ? (Expression)Expression.Convert(parameterExpression, declaringType)
+                             ? parameterExpression.Convert(declaringType)
                              : parameterExpression;
 
             // Get a member access expression
@@ -239,13 +201,131 @@ namespace WebApplications.Utilities.Reflect
 
             // Cast return value if necessary
             if (returnType != propertyType)
-                expression = Expression.Convert(expression, returnType);
+                expression = expression.Convert(returnType);
 
             Contract.Assert(expression != null);
             Contract.Assert(parameterExpression != null);
 
             // Create lambda and compile
-            return (Func<T, TValue>)Expression.Lambda(expression, parameterExpression).Compile();
+            return Expression.Lambda<Func<T, TValue>>(expression, parameterExpression).Compile();
+        }
+
+        /// <summary>
+        /// Retrieves the lambda action equivalent of the specified static setter method.
+        /// </summary>
+        /// <typeparam name="T">The type of the parameter the function encapsulates.</typeparam>	
+        /// <typeparam name="TValue">The type of the value returned.</typeparam>	
+        /// <returns>An action that sets the value of the relevant static field.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <remarks></remarks>
+        [UsedImplicitly]
+        [CanBeNull]
+        public Action<TValue> Setter<TValue>()
+        {
+            MethodInfo setMethod = SetMethod;
+
+            // Only valid for static properties.
+            if ((setMethod == null) ||
+                (!setMethod.IsStatic))
+                return null;
+
+            Type propertyType = Info.PropertyType;
+            Type valueType = typeof(TValue);
+
+            // Check the value type can be assigned to the member type
+            if ((valueType != propertyType) &&
+                (!propertyType.IsAssignableFrom(valueType)))
+                return null;
+
+            // Get a field access expression
+            Expression expression = Expression.Property(null, Info);
+
+            // Create value parameter expression
+            ParameterExpression valueParameterExpression = Expression.Parameter(
+                valueType, "value");
+            Expression valueExpression = valueType != propertyType
+                                          ? valueParameterExpression.Convert(propertyType)
+                                          : valueParameterExpression;
+
+            Contract.Assert(expression != null);
+            Contract.Assert(valueExpression != null);
+
+            // Create assignment
+            expression = Expression.Assign(expression, valueExpression);
+
+            Contract.Assert(expression != null);
+
+            // Create lambda and compile
+            return
+                Expression.Lambda<Action<TValue>>(expression, valueParameterExpression).Compile();
+        }
+
+        /// <summary>
+        /// Retrieves the lambda action equivalent of the specified instance setter method.
+        /// </summary>
+        /// <typeparam name="T">The type of the parameter the function encapsulates.</typeparam>	
+        /// <typeparam name="TValue">The type of the value returned.</typeparam>	
+        /// <returns>An action that takes an object of the type T and sets the value of the relevant field.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <remarks></remarks>
+        [UsedImplicitly]
+        [CanBeNull]
+        public Action<T, TValue> Setter<T, TValue>()
+        {
+            MethodInfo setMethod = SetMethod;
+
+            // Only valid for instance properties.
+            if ((setMethod == null) ||
+                (setMethod.IsStatic))
+                return null;
+
+            Type declaringType = ExtendedType.Type;
+            Type parameterType = typeof(T);
+
+            //  Check the parameter type can be assigned from the declaring type.
+            if ((parameterType != declaringType) &&
+                (!parameterType.IsAssignableFrom(declaringType)))
+                return null;
+
+            Type propertyType = Info.PropertyType;
+            Type valueType = typeof(TValue);
+
+            // Check the value type can be assigned to the member type
+            if ((valueType != propertyType) &&
+                (!propertyType.IsAssignableFrom(valueType)))
+                return null;
+
+            // Create input parameter expression
+            ParameterExpression parameterExpression = Expression.Parameter(
+                parameterType, "target");
+
+            // Cast parameter if necessary
+            Expression expression = parameterType != declaringType
+                             ? parameterExpression.Convert(declaringType)
+                             : parameterExpression;
+
+            // Get a member access expression
+            expression = Expression.Property(expression, Info);
+
+            // Create value parameter expression
+            ParameterExpression valueParameterExpression = Expression.Parameter(
+                valueType, "value");
+            Expression valueExpression = valueType != propertyType
+                                          ? valueParameterExpression.Convert(propertyType)
+                                          : valueParameterExpression;
+
+            Contract.Assert(expression != null);
+            Contract.Assert(valueExpression != null);
+
+            // Create assignment
+            expression = Expression.Assign(expression, valueExpression);
+
+            Contract.Assert(expression != null);
+            Contract.Assert(parameterExpression != null);
+
+            // Create lambda and compile
+            return
+                Expression.Lambda<Action<T, TValue>>(expression, parameterExpression, valueParameterExpression).Compile();
         }
     }
 }
