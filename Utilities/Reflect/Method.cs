@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using JetBrains.Annotations;
@@ -131,13 +132,13 @@ namespace WebApplications.Utilities.Reflect
             if ((typeClosures.Length != ExtendedType.GenericArguments.Count()) ||
                 (signatureClosures.Length != _genericArguments.Value.Count()))
                 return null;
-            
+
             // If we have any type closures then we need to close the type and look for the method on there.
             if (typeClosures.Any(t => t != null))
             {
                 // Close type
                 ExtendedType et = ExtendedType.CloseType(typeClosures);
-                
+
                 // Check closure succeeded.
                 if (et == null)
                     return null;
@@ -147,7 +148,7 @@ namespace WebApplications.Utilities.Reflect
                 int pCount = _parameters.Value.Length;
                 TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
                 Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
-                
+
                 Type gType;
                 // Search for closed 
                 for (int i = 0; i < pCount; i++)
@@ -221,6 +222,223 @@ namespace WebApplications.Utilities.Reflect
             ExtendedType et = methodInfo.DeclaringType;
             Contract.Assert(et != null);
             return et.GetMethod(methodInfo);
+        }
+
+        /// <summary>
+        /// Gets the lambda function equivalent of a method, for much better runtime performance than an invocation.
+        /// </summary>
+        /// <param name="funcTypes">The parameter types.</param>
+        /// <returns>A functional equivalent of the specified method info.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <exception cref="System.InvalidOperationException"></exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="methodBase" /> is a <see langword="null" />.
+        ///   </exception>
+        ///   <exception cref="ArgumentOutOfRangeException">
+        ///   <para>The method specified is a static constructor.</para>
+        ///   <para>-or-</para>
+        ///   <para>No parameter/return types specified.</para>
+        ///   <para>-or-</para>
+        ///   <para>The method specified doesn't return a value. (An Action should be used instead.)</para>
+        ///   <para>-or-</para>
+        ///   <para>The number of parameters specified in <paramref name="funcTypes" /> is incorrect.</para>
+        ///   <para>-or-</para>
+        ///   <para>The parameter type is not assignable to the type specified.</para>
+        ///   <para>-or-</para>
+        ///   <para>The return type is not assignable to the type specified.</para>
+        ///   </exception>
+        ///   <exception cref="InvalidOperationException">No parameter/return types specified.</exception>
+        /// <remarks></remarks>
+        [CanBeNull]
+        [UsedImplicitly]
+        public object GetAction([NotNull] params Type[] funcTypes)
+        {
+            // If the method is not closed or doesn't have return type, were' done.
+            if (Info.ContainsGenericParameters)
+                return null;
+
+            bool isStatic = Info.IsStatic;
+
+            int tCount = funcTypes.Count();
+            // Create array for required func types - statics take an instance as the first parameter
+            Type[] signatureTypes = new Type[tCount];
+            int a = 0;
+            if (!isStatic)
+            {
+                if (tCount < 1)
+                    return null;
+                signatureTypes[a++] = ExtendedType.Type;
+            }
+
+            // Now add parameter types.
+            int p = 0;
+            int pCount = _parameters.Value.Length;
+            for (; a < tCount; a++)
+            {
+                // Check if we run out of parameters.
+                if (p >= pCount)
+                    return null;
+
+                // actions don't support output, pointer, or by reference parameters
+                if (_parameters.Value[p].IsOut ||
+                    _parameters.Value[p].ParameterType.IsByRef ||
+                    _parameters.Value[p].ParameterType.IsPointer)
+                    return null;
+                signatureTypes[a] = _parameters.Value[p++].ParameterType;
+            }
+
+            // Any remaining parameters must be optional.
+            if ((p < pCount) &&
+                (!_parameters.Value[p].IsOptional))
+                return null;
+
+            // Create expressions
+            ParameterExpression[] parameterExpressions = new ParameterExpression[tCount];
+            Expression[] pExpressions = new Expression[tCount];
+            for (int i = 0; i < tCount; i++)
+            {
+                Type funcType = funcTypes[i];
+                Type signatureType = signatureTypes[i];
+
+                // Create parameter
+                parameterExpressions[i] = Expression.Parameter(funcType);
+                if (funcType != signatureType)
+                {
+                    // Try to convert from the input funcType to the underlying parameter type.
+                    if (!parameterExpressions[i].TryConvert(signatureType, out pExpressions[i]))
+                        return null;
+                }
+                else
+                {
+                    // No conversion necessary.
+                    pExpressions[i] = parameterExpressions[i];
+                }
+            }
+
+            // Create call expression, instance methods use the first parameter of the Func<> as the instance, static
+            // methods do not supply an instance.
+            Expression expression = isStatic
+                                            ? Expression.Call(Info, pExpressions)
+                                            : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
+
+            // Check if we have a return type.
+            if (Info.ReturnType != typeof(void))
+            {
+                // Discard result by wrapping in a block and 'returning' void.
+                LabelTarget returnTarget = Expression.Label();
+                expression = Expression.Block(
+                        expression, Expression.Return(returnTarget), Expression.Label(returnTarget));
+            }
+
+            return Expression.Lambda(expression, parameterExpressions).Compile();
+        }
+
+        /// <summary>
+        /// Gets the lambda function equivalent of a method, for much better runtime performance than an invocation.
+        /// </summary>
+        /// <param name="funcTypes">The parameter types, followed by the return type.</param>
+        /// <returns>A functional equivalent of the specified method info.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <exception cref="System.InvalidOperationException"></exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <paramref name="methodBase" /> is a <see langword="null" />.
+        ///   </exception>
+        ///   <exception cref="ArgumentOutOfRangeException">
+        ///   <para>The method specified is a static constructor.</para>
+        ///   <para>-or-</para>
+        ///   <para>No parameter/return types specified.</para>
+        ///   <para>-or-</para>
+        ///   <para>The method specified doesn't return a value. (An Action should be used instead.)</para>
+        ///   <para>-or-</para>
+        ///   <para>The number of parameters specified in <paramref name="funcTypes" /> is incorrect.</para>
+        ///   <para>-or-</para>
+        ///   <para>The parameter type is not assignable to the type specified.</para>
+        ///   <para>-or-</para>
+        ///   <para>The return type is not assignable to the type specified.</para>
+        ///   </exception>
+        ///   <exception cref="InvalidOperationException">No parameter/return types specified.</exception>
+        /// <remarks></remarks>
+        [CanBeNull]
+        [UsedImplicitly]
+        public object GetFunc([NotNull] params Type[] funcTypes)
+        {
+            // If the method is not closed or doesn't have return type, were' done.
+            if ((Info.ContainsGenericParameters) ||
+                (Info.ReturnType == typeof(void)))
+                return null;
+
+            bool isStatic = Info.IsStatic;
+
+            int tCount = funcTypes.Count();
+            // Create array for required func types - statics take an instance as the first parameter
+            Type[] signatureTypes = new Type[tCount - 1];
+            int a = 0;
+            if (!isStatic)
+            {
+                if (tCount < 1)
+                    return null;
+                signatureTypes[a++] = ExtendedType.Type;
+            }
+
+            // Now add parameter types.
+            int p = 0;
+            int pCount = _parameters.Value.Length;
+            for (; a < tCount - 1; a++)
+            {
+                // Check if we run out of parameters.
+                if (p >= pCount)
+                    return null;
+
+                // Func's don't support output, pointer, or by reference parameters
+                if (_parameters.Value[p].IsOut ||
+                    _parameters.Value[p].ParameterType.IsByRef ||
+                    _parameters.Value[p].ParameterType.IsPointer)
+                    return null;
+                signatureTypes[a] = _parameters.Value[p++].ParameterType;
+            }
+
+            // Any remaining parameters must be optional.
+            if ((p < pCount) &&
+                (!_parameters.Value[p].IsOptional))
+                return null;
+
+            // Create expressions
+            ParameterExpression[] parameterExpressions = new ParameterExpression[tCount - 1];
+            Expression[] pExpressions = new Expression[tCount - 1];
+            for (int i = 0; i < tCount - 1; i++)
+            {
+                Type funcType = funcTypes[i];
+                Type signatureType = signatureTypes[i];
+
+                // Create parameter
+                parameterExpressions[i] = Expression.Parameter(funcType);
+                if (funcType != signatureType)
+                {
+                    // Try to convert from the input funcType to the underlying parameter type.
+                    if (!parameterExpressions[i].TryConvert(signatureType, out pExpressions[i]))
+                        return null;
+                }
+                else
+                {
+                    // No conversion necessary.
+                    pExpressions[i] = parameterExpressions[i];
+                }
+            }
+            
+            // Create call expression, instance methods use the first parameter of the Func<> as the instance, static
+            // methods do not supply an instance.
+            Expression expression = isStatic
+                                            ? Expression.Call(Info, pExpressions)
+                                            : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
+
+            // Check if we need to do a cast to the func result type
+            if (funcTypes[tCount - 1] != this.Info.ReturnType &&
+                !expression.TryConvert(funcTypes[tCount - 1], out expression))
+                return null;
+
+            return Expression.Lambda(expression, parameterExpressions).Compile();
         }
     }
 }

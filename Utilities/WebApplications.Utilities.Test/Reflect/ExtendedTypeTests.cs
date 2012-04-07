@@ -27,7 +27,7 @@ namespace WebApplications.Utilities.Test.Reflect
             public static void A(string a, string b = null) { }
             public void A(string a, out string b)
             {
-                b = null;
+                b = "Test String";
             }
 
             public void A<TException>(string a) { }
@@ -78,6 +78,47 @@ namespace WebApplications.Utilities.Test.Reflect
             }
 
             public T Automatic { get; set; }
+
+            public int Add(int a, int b)
+            {
+                return a + b;
+            }
+
+            public int GetOne()
+            {
+                return 1;
+            }
+
+            public static int StaticAdd(int a, int b)
+            {
+                return a + b;
+            }
+
+            public static int StaticGetOne()
+            {
+                return 1;
+            }
+
+            public int Counter;
+            public static int StaticCounter;
+
+            public int IncrementCounter()
+            {
+                return Counter++;
+            }
+            public void IncrementCounter(int a)
+            {
+                Counter += a;
+            }
+
+            public static void StaticIncrementCounter()
+            {
+                StaticCounter++;
+            }
+            public static void StaticIncrementCounter(int a)
+            {
+                StaticCounter += a;
+            }
         }
 
         [TestMethod]
@@ -265,6 +306,140 @@ namespace WebApplications.Utilities.Test.Reflect
             Property property=et.GetProperty("Automatic");
             Assert.IsNotNull(property);
             Assert.IsTrue(property.IsAutomatic);
+        }
+
+        [TestMethod]
+        public void ExtendedType_ParameterlessInstanceFuncValid()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Method method = et.GetMethod("GetOne", typeof(int));
+            Assert.IsNotNull(method);
+            Func<ComplexOverloads<int>, int> getOne = method.GetFunc(
+                    typeof(ComplexOverloads<int>), typeof(int)) as Func<ComplexOverloads<int>, int>;
+            Assert.IsNotNull(getOne);
+
+            ComplexOverloads<int> obj = new ComplexOverloads<int>();
+            Assert.AreEqual(1, getOne(obj));
+        }
+
+        [TestMethod]
+        public void ExtendedType_InstanceFuncValid()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Method method = et.GetMethod("Add", typeof(int), typeof(int), typeof(int));
+            Assert.IsNotNull(method);
+            Func<ComplexOverloads<int>, int,int,int> add = method.GetFunc(
+                    typeof(ComplexOverloads<int>), typeof(int), typeof(int), typeof(int)) as Func<ComplexOverloads<int>, int, int, int>;
+            Assert.IsNotNull(add);
+            int a = Random.Next();
+            int b = Random.Next();
+
+            ComplexOverloads<int> obj = new ComplexOverloads<int>();
+            Assert.AreEqual(a + b, add(obj, a,b));
+        }
+
+        [TestMethod]
+        public void ExtendedType_ParameterlessStaticFuncValid()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Method method = et.GetMethod("StaticGetOne", typeof(int));
+            Assert.IsNotNull(method);
+            Func<int> getOne = method.GetFunc(typeof(int)) as Func<int>;
+            Assert.IsNotNull(getOne);
+            Assert.AreEqual(1, getOne());
+        }
+
+        [TestMethod]
+        public void ExtendedType_StaticFuncValid()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Method method = et.GetMethod("StaticAdd", typeof(int), typeof(int), typeof(int));
+            Assert.IsNotNull(method);
+            Func<int, int, int> add = method.GetFunc(typeof(int), typeof(int), typeof(int)) as Func<int, int, int>;
+            Assert.IsNotNull(add);
+            int a = Random.Next();
+            int b = Random.Next();
+            Assert.AreEqual(a + b, add(a, b));
+        }
+
+        [TestMethod]
+        public void ExtendedType_ParameterlessInstanceActionValid()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Method method = et.GetMethod("IncrementCounter", typeof(int));
+            Assert.IsNotNull(method);
+            Action<ComplexOverloads<int>> increment = method.GetAction(
+                    typeof(ComplexOverloads<int>)) as Action<ComplexOverloads<int>>;
+            Assert.IsNotNull(increment);
+
+            ComplexOverloads<int> obj = new ComplexOverloads<int>();
+            int original = obj.Counter;
+            increment(obj);
+            Assert.AreEqual(original+1, obj.Counter);
+        }
+
+        [TestMethod]
+        public void ExtendedType_InstanceActionValid()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Method method = et.GetMethod("IncrementCounter", typeof(int), typeof(void));
+            Assert.IsNotNull(method);
+            Action<ComplexOverloads<int>, int> increment =
+                    method.GetAction(typeof(ComplexOverloads<int>), typeof(int)) as Action<ComplexOverloads<int>, int>;
+            Assert.IsNotNull(increment);
+
+            ComplexOverloads<int> obj = new ComplexOverloads<int>();
+            int original = obj.Counter;
+            int a = Random.Next();
+            increment(obj, a);
+            Assert.AreEqual(original + a, obj.Counter);
+        }
+
+        [TestMethod]
+        public void ExtendedType_ParameterlessStaticActionValid()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Method method = et.GetMethod("StaticIncrementCounter", typeof(void));
+            Assert.IsNotNull(method);
+            Action increment = method.GetAction() as Action;
+            Assert.IsNotNull(increment);
+
+            int original = ComplexOverloads<int>.StaticCounter;
+            increment();
+            Assert.AreEqual(original + 1, ComplexOverloads<int>.StaticCounter);
+        }
+
+        [TestMethod]
+        public void ExtendedType_StaticActionValid()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Method method = et.GetMethod("StaticIncrementCounter", typeof(int), typeof(void));
+            Assert.IsNotNull(method);
+            Action<int> increment = method.GetAction(typeof(int)) as Action<int>;
+            Assert.IsNotNull(increment);
+
+            int a = Random.Next();
+            int original = ComplexOverloads<int>.StaticCounter;
+            increment(a);
+            Assert.AreEqual(original + a, ComplexOverloads<int>.StaticCounter);
+        }
+
+        [TestMethod]
+        public void ExtendedType_FuncConstructorValid()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Constructor constructor = et.GetConstructor(typeof(int), typeof(string));
+            Assert.IsNotNull(constructor);
+            Func<int, string, ComplexOverloads<int>> constFunc =
+                    constructor.GetFunc(typeof(int), typeof(string), typeof(ComplexOverloads<int>)) as
+                    Func<int, string, ComplexOverloads<int>>;
+            Assert.IsNotNull(constFunc);
+            int a = Random.Next();
+            string s = GenerateRandomString();
+            ComplexOverloads<int> co = constFunc(a, s);
+            Assert.IsNotNull(co);
+            Assert.AreEqual(a, co.Value);
+            Assert.AreEqual(s, co.Value2);
         }
     }
 }
