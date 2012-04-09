@@ -58,6 +58,7 @@ namespace WebApplications.Utilities.Reflect
         public IEnumerable<ParameterInfo> Parameters { get { return _parameters.Value; } }
 
         /// <inheritdoc/>
+        [NotNull]
         public IEnumerable<Type> ParameterTypes
         {
             get
@@ -148,8 +149,6 @@ namespace WebApplications.Utilities.Reflect
                 int pCount = _parameters.Value.Length;
                 TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
                 Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
-
-                Type gType;
                 // Search for closed 
                 for (int i = 0; i < pCount; i++)
                 {

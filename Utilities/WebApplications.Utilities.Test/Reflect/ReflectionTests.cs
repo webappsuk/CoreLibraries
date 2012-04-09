@@ -413,7 +413,7 @@ namespace WebApplications.Utilities.Test.Reflect
             Func<int, TypeConverterTest> func5 = Reflection.GetConversion<int, TypeConverterTest>();
             TypeConverterTest t = func5(a);
             Assert.AreEqual(a, t.Value);
-            ;
+
             Func<TypeConverterTest, int> func6 = Reflection.GetConversion<TypeConverterTest, int>();
             Assert.AreEqual(a, func6(t));
 
@@ -427,7 +427,7 @@ namespace WebApplications.Utilities.Test.Reflect
 
             byte c = (byte)r.Next(Byte.MinValue, Byte.MaxValue);
             Func<ConvertibleTest, int> func8 = Reflection.GetConversion<ConvertibleTest, int>();
-            Assert.AreEqual(c, func8(new ConvertibleTest(c)));
+            Assert.AreEqual((int)c, func8(new ConvertibleTest(c)));
 
             Assert.IsNull(Reflection.GetConversion<string, int>());
         }

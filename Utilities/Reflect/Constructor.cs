@@ -145,16 +145,19 @@ namespace WebApplications.Utilities.Reflect
             // Create new search.
             Contract.Assert(_parameters.Value != null);
             int pCount = _parameters.Value.Length;
-            TypeSearch[] searchTypes = new TypeSearch[pCount];
+            TypeSearch[] searchTypes = new TypeSearch[pCount + 1];
             Type[] typeGenericArguments = et.GenericArguments.Select(g => g.Type).ToArray();
-
             // Search for closed 
             for (int i = 0; i < pCount; i++)
             {
                 Contract.Assert(_parameters.Value[i] != null);
                 Type pType = _parameters.Value[i].ParameterType;
+                Contract.Assert(pType != null);
                 searchTypes[i] = Reflection.ExpandParameterType(pType, Reflection.EmptyTypes, typeGenericArguments);
             }
+
+            // Add return type
+            searchTypes[pCount] = et.Type;
 
             // Search for constructor on new type.
             return et.GetConstructor(searchTypes);

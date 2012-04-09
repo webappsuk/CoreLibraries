@@ -138,8 +138,11 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.IsNotNull(method1);
             Assert.IsTrue(method1.Info.ContainsGenericParameters);
 
-            invalidMethod = et.GetMethod("A", TypeSearch.Void);
-            Assert.IsNull(invalidMethod);
+            // Demonstrate cast to void
+            bool[] castsRequired;
+            invalidMethod = et.GetMethod("A", 0, true, true, out castsRequired, TypeSearch.Void);
+            Assert.IsNotNull(invalidMethod);
+            Assert.IsTrue(castsRequired[0]);
 
             Method method2 = et.GetMethod("A", typeof(int), TypeSearch.Void);
             Assert.IsNotNull(method2);
@@ -269,11 +272,11 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.IsFalse(constructors.Contains(staticConstructor));
 
             // Retrieve parameterless constructor
-            Constructor constructor = et.GetConstructor();
+            Constructor constructor = et.GetConstructor(typeof(ComplexOverloads<int>));
             Assert.IsNotNull(constructor);
 
             // Retrieve the generic constructor
-            Constructor genericConstructor = et.GetConstructor(TypeSearch.T1, typeof(string));
+            Constructor genericConstructor = et.GetConstructor(TypeSearch.T1, typeof(string), typeof(ComplexOverloads<int>));
             Assert.IsNotNull(genericConstructor);
             Assert.AreNotSame(constructor, genericConstructor);
         }
@@ -282,7 +285,8 @@ namespace WebApplications.Utilities.Test.Reflect
         public void ExtendedType_CanGetConcreteGenericConstructor()
         {
             // Retrieve the generic constructor for a generic type, but search for concrete types.
-            Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(typeof(int), typeof(string));
+            Constructor genericConstructor = ((ExtendedType)typeof(ComplexOverloads<>)).GetConstructor(
+                    typeof(int), typeof(string), typeof(ComplexOverloads<int>));
             Assert.IsNotNull(genericConstructor);
             Assert.IsFalse(genericConstructor.ExtendedType.Type.ContainsGenericParameters);
             
@@ -309,7 +313,7 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
-        public void ExtendedType_ParameterlessInstanceFuncValid()
+        public void Method_ParameterlessInstanceFuncValid()
         {
             ExtendedType et = typeof(ComplexOverloads<int>);
             Method method = et.GetMethod("GetOne", typeof(int));
@@ -323,7 +327,7 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
-        public void ExtendedType_InstanceFuncValid()
+        public void Method_InstanceFuncValid()
         {
             ExtendedType et = typeof(ComplexOverloads<int>);
             Method method = et.GetMethod("Add", typeof(int), typeof(int), typeof(int));
@@ -339,7 +343,7 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
-        public void ExtendedType_ParameterlessStaticFuncValid()
+        public void Method_ParameterlessStaticFuncValid()
         {
             ExtendedType et = typeof(ComplexOverloads<int>);
             Method method = et.GetMethod("StaticGetOne", typeof(int));
@@ -350,7 +354,7 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
-        public void ExtendedType_StaticFuncValid()
+        public void Method_StaticFuncValid()
         {
             ExtendedType et = typeof(ComplexOverloads<int>);
             Method method = et.GetMethod("StaticAdd", typeof(int), typeof(int), typeof(int));
@@ -363,7 +367,7 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
-        public void ExtendedType_ParameterlessInstanceActionValid()
+        public void Method_ParameterlessInstanceActionValid()
         {
             ExtendedType et = typeof(ComplexOverloads<int>);
             Method method = et.GetMethod("IncrementCounter", typeof(int));
@@ -379,7 +383,7 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
-        public void ExtendedType_InstanceActionValid()
+        public void Method_InstanceActionValid()
         {
             ExtendedType et = typeof(ComplexOverloads<int>);
             Method method = et.GetMethod("IncrementCounter", typeof(int), typeof(void));
@@ -396,7 +400,7 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
-        public void ExtendedType_ParameterlessStaticActionValid()
+        public void Method_ParameterlessStaticActionValid()
         {
             ExtendedType et = typeof(ComplexOverloads<int>);
             Method method = et.GetMethod("StaticIncrementCounter", typeof(void));
@@ -410,7 +414,7 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
-        public void ExtendedType_StaticActionValid()
+        public void Method_StaticActionValid()
         {
             ExtendedType et = typeof(ComplexOverloads<int>);
             Method method = et.GetMethod("StaticIncrementCounter", typeof(int), typeof(void));
@@ -425,10 +429,10 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
-        public void ExtendedType_FuncConstructorValid()
+        public void Constructor_FuncConstructorValid()
         {
             ExtendedType et = typeof(ComplexOverloads<int>);
-            Constructor constructor = et.GetConstructor(typeof(int), typeof(string));
+            Constructor constructor = et.GetConstructor(typeof(int), typeof(string), typeof(ComplexOverloads<int>));
             Assert.IsNotNull(constructor);
             Func<int, string, ComplexOverloads<int>> constFunc =
                     constructor.GetFunc(typeof(int), typeof(string), typeof(ComplexOverloads<int>)) as
@@ -440,6 +444,14 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.IsNotNull(co);
             Assert.AreEqual(a, co.Value);
             Assert.AreEqual(s, co.Value2);
+        }
+
+        [TestMethod]
+        public void ExtendedType_SearchWithCast()
+        {
+            ExtendedType et = typeof(ComplexOverloads<int>);
+            Method add = et.GetMethod("Add", typeof(short), typeof(short), typeof(int));
+            Assert.IsNotNull(add);
         }
     }
 }

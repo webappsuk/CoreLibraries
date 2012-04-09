@@ -570,47 +570,14 @@ namespace WebApplications.Utilities
         /// The <see cref="MethodInfo"/> for <see cref="object.ToString()"/>.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _toStringMethodInfo = typeof(object).GetMethod("ToString",
-                                                               BindingFlags.Instance | BindingFlags.Public);
+        public static readonly MethodInfo ToStringMethodInfo = ExtendedType.Get(typeof(object)).GetMethod("ToString", typeof(string));
 
         /// <summary>
         ///   The <see cref="Expression"/> to get the <see cref="CultureInfo.CurrentCulture">current CultureInfo</see>.
         /// </summary>
         [NotNull]
-        private static readonly Expression _currentCultureExpression =
-            Expression.Call(
-            typeof(CultureInfo).GetProperty("CurrentCulture", BindingFlags.Static | BindingFlags.Public).
-          GetGetMethod());
-
-        /// <summary>
-        ///   The standard conversion methods implemented by <see cref="System.IConvertible"/>.
-        /// </summary>
-        /// <remarks>
-        ///   Does not include:
-        ///   <list type="bullet">
-        ///     <item><description><see cref="System.IConvertible.ToType">ToType</see> - It isn't specific.</description></item>
-        ///     <item><description><see cref="System.IConvertible.GetTypeCode">GetTypeCode</see> - Isn't actually a conversion method.</description></item>
-        ///   </list>
-        /// </remarks>
-        private static readonly Dictionary<Type, string> _iConvertibleMethods =
-            new Dictionary<Type, string>
-                {
-                    {typeof (bool), "ToBoolean"},
-                    {typeof (char), "ToChar"},
-                    {typeof (sbyte), "ToSByte"},
-                    {typeof (byte), "ToByte"},
-                    {typeof (short), "ToInt16"},
-                    {typeof (ushort), "ToUInt16"},
-                    {typeof (int), "ToInt32"},
-                    {typeof (uint), "ToUInt32"},
-                    {typeof (long), "ToInt64"},
-                    {typeof (ulong), "ToUInt64"},
-                    {typeof (float), "ToSingle"},
-                    {typeof (double), "ToDouble"},
-                    {typeof (decimal), "ToDecimal"},
-                    {typeof (DateTime), "ToDateTime"},
-                    {typeof (string), "ToString"}
-                };
+        public static readonly Expression CurrentCultureExpression =
+                Expression.Call(ExtendedType.Get(typeof(CultureInfo)).GetProperty("CurrentCulture").GetMethod);
 
         /// <summary>
         ///   Converts the specified expression to the output type.
@@ -652,130 +619,8 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static bool TryConvert([NotNull]this Expression expression, [NotNull]Type outputType, [NotNull]out Expression outputExpression)
         {
-            // If the types are the same we don't need to convert.
-            if (expression.Type == outputType)
-            {
-                outputExpression = expression;
-                return true;
-            }
-
-            try
-            {
-                // Try creating conversion.
-                outputExpression = Expression.Convert(expression, outputType);
-                return true;
-            }
-            catch (InvalidOperationException)
-            {
-                // Ignore failures due to lack of coercion operator.
-            }
-
-            // Look for IConvertible method
-            string method;
-            if ((_iConvertibleMethods.TryGetValue(outputType, out method)) &&
-                (expression.Type.GetInterface("IConvertible") != null))
-            {
-                MethodInfo mi = expression.Type.GetMethod(
-                    method,
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy,
-                    null,
-                    new[] { typeof(IFormatProvider) },
-                    null);
-                if (mi != null)
-                {
-                    // Call the IConvertible method on the object, passing in CultureInfo.CurrentCulture as the parameter.
-                    outputExpression = Expression.Call(expression, mi, _currentCultureExpression);
-                    return true;
-                }
-            }
-
-            /*
-             * TypeConverter support
-             */
-
-            // Look for TypeConverter on output type.
-            bool useTo = false;
-            TypeConverterAttribute typeConverterAttribute = outputType
-                .GetCustomAttributes(typeof(TypeConverterAttribute), false)
-                .OfType<TypeConverterAttribute>()
-                .FirstOrDefault();
-
-            if ((typeConverterAttribute == null) ||
-                (string.IsNullOrWhiteSpace(typeConverterAttribute.ConverterTypeName)))
-            {
-                // Look for TypeConverter on expression type.
-                useTo = true;
-                typeConverterAttribute = expression.Type
-                    .GetCustomAttributes(typeof(TypeConverterAttribute), false)
-                    .OfType<TypeConverterAttribute>()
-                    .FirstOrDefault();
-            }
-
-            if ((typeConverterAttribute != null) &&
-                (!string.IsNullOrWhiteSpace(typeConverterAttribute.ConverterTypeName)))
-            {
-                try
-                {
-                    // Try to get the type for the typeconverter
-                    Type typeConverterType = Type.GetType(typeConverterAttribute.ConverterTypeName);
-
-                    if (typeConverterType != null)
-                    {
-                        // Try to create an instance of the typeconverter without parameters
-                        TypeConverter converter = Activator.CreateInstance(typeConverterType) as TypeConverter;
-                        if ((converter != null) &&
-                            (useTo ? converter.CanConvertTo(outputType) : converter.CanConvertFrom(expression.Type)))
-                        {
-                            // We have a converter that supports the necessary conversion
-                            MethodInfo mi = useTo
-                                                ? typeConverterType.GetMethod(
-                                                    "ConvertTo",
-                                                    BindingFlags.Instance | BindingFlags.Public |
-                                                    BindingFlags.FlattenHierarchy,
-                                                    null,
-                                                    new[] { typeof(object), typeof(Type) },
-                                                    null)
-                                                : typeConverterType.GetMethod(
-                                                    "ConvertFrom",
-                                                    BindingFlags.Instance | BindingFlags.Public |
-                                                    BindingFlags.FlattenHierarchy,
-                                                    null,
-                                                    new[] { typeof(object) },
-                                                    null);
-                            if (mi != null)
-                            {
-                                // The convert methods accepts the value as an object parameters, so we may need a cast.
-                                if (expression.Type != typeof(object))
-                                    expression = Expression.Convert(expression, typeof(object));
-
-                                // Create an expression which creates a new instance of the type converter and passes in
-                                // the existing expression as the first parameter to ConvertTo or ConvertFrom.
-                                outputExpression = useTo
-                                                       ? Expression.Call(Expression.New(typeConverterType), mi,
-                                                                         expression,
-                                                                         Expression.Constant(outputType, typeof(Type)))
-                                                       : Expression.Call(Expression.New(typeConverterType), mi,
-                                                                         expression);
-
-                                return true;
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            // Finally, if we want to output to string, call ToString() method.
-            if (outputType == typeof(string))
-            {
-                outputExpression = Expression.Call(expression, _toStringMethodInfo);
-                return true;
-            }
-
-            outputExpression = expression;
-            return false;
+            ExtendedType et = outputType;
+            return et.TryConvert(expression, out outputExpression);
         }
 
 
@@ -834,6 +679,7 @@ namespace WebApplications.Utilities
         public static bool ImplicitlyCastsTo([NotNull]this Type type, [NotNull]Type destinationType)
         {
             return (type == destinationType) ||
+                   (destinationType.IsAssignableFrom(type)) ||
                    (GetCastMethod(type, destinationType, includeExplicit: false) != null) ||
                    (GetCastMethod(destinationType, type, forwards: false, includeExplicit: false) != null);
         }
@@ -868,8 +714,21 @@ namespace WebApplications.Utilities
         public static bool CastsTo([NotNull]this Type type, [NotNull]Type destinationType)
         {
             return (type == destinationType) ||
+                   (destinationType.IsAssignableFrom(type)) ||
                    (GetCastMethod(type, destinationType) != null) ||
                    (GetCastMethod(destinationType, type, forwards: false) != null);
+        }
+
+        /// <summary>
+        /// Determines whether this type can be converted to the specified type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="destinationType">Type of the destination.</param>
+        /// <returns><see langword="true" /> if this types can convert to the specified destination type; otherwise, <see langword="false" />.</returns>
+        /// <remarks></remarks>
+        public static bool CanConvertTo([NotNull]this Type type, [NotNull]Type destinationType)
+        {
+            return ((ExtendedType)type).CanConvertTo(destinationType);
         }
 
         /// <summary>
@@ -1116,10 +975,11 @@ namespace WebApplications.Utilities
             if (type == typeSearch.Type) return true;
 
             // If we're allowing casting and search type can be cast to type, we have a match.
+            // TODO Arguably, we need to be able to check whether the Expression.Convert works.
             if (typeSearch.Type != null &&
                 (isOutputType
-                        ? typeSearch.Type.IsAssignableFrom(type)
-                        : type.IsAssignableFrom(typeSearch.Type)))
+                        ? type.CanConvertTo(typeSearch.Type)
+                        : typeSearch.Type.CanConvertTo(type)))
             {
                 requiresCast = true;
                 return true;

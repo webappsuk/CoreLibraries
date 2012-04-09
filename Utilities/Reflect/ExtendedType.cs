@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Enumerations;
 
 namespace WebApplications.Utilities.Reflect
 {
@@ -31,7 +35,37 @@ namespace WebApplications.Utilities.Reflect
         public const BindingFlags AllMembersBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.DeclaredOnly;
-        
+
+        /// <summary>
+        ///   The standard conversion methods implemented by <see cref="System.IConvertible"/>.
+        /// </summary>
+        /// <remarks>
+        ///   Does not include:
+        ///   <list type="bullet">
+        ///     <item><description><see cref="System.IConvertible.ToType">ToType</see> - It isn't specific.</description></item>
+        ///     <item><description><see cref="System.IConvertible.GetTypeCode">GetTypeCode</see> - Isn't actually a conversion method.</description></item>
+        ///   </list>
+        /// </remarks>
+        private static readonly Dictionary<Type, string> _iConvertibleMethods =
+            new Dictionary<Type, string>
+                {
+                    {typeof (bool), "ToBoolean"},
+                    {typeof (char), "ToChar"},
+                    {typeof (sbyte), "ToSByte"},
+                    {typeof (byte), "ToByte"},
+                    {typeof (short), "ToInt16"},
+                    {typeof (ushort), "ToUInt16"},
+                    {typeof (int), "ToInt32"},
+                    {typeof (uint), "ToUInt32"},
+                    {typeof (long), "ToInt64"},
+                    {typeof (ulong), "ToUInt64"},
+                    {typeof (float), "ToSingle"},
+                    {typeof (double), "ToDouble"},
+                    {typeof (decimal), "ToDecimal"},
+                    {typeof (DateTime), "ToDateTime"},
+                    {typeof (string), "ToString"}
+                };
+
         /// <summary>
         /// The underlying type.
         /// </summary>
@@ -69,11 +103,11 @@ namespace WebApplications.Utilities.Reflect
         [NotNull]
         public IEnumerable<Indexer> Indexers
         {
-             get
-             {
-                 if (_loaded) LoadMembers();
-                 return _indexers;
-             }
+            get
+            {
+                if (_loaded) LoadMembers();
+                return _indexers;
+            }
         }
 
         /// <summary>
@@ -239,6 +273,51 @@ namespace WebApplications.Utilities.Reflect
             get { return _genericArguments.Value; }
         }
 
+        private readonly Lazy<Type> _nonNullableType;
+
+        /// <summary>
+        /// If this is a nullable type (i.e. <see cref="Nullable{T}"/>) then returns the underlying non-nullable type;
+        /// otherwise returns <see cref="Type"/>.
+        /// </summary>
+        /// <value>The type of the non nullable type.</value>
+        /// <remarks></remarks>
+        public Type NonNullableType { get { return _nonNullableType.Value; } }
+
+        /// <summary>
+        /// Gets a value indicating whether this type is a nullable type (i.e. <see cref="Nullable{T}"/>).
+        /// </summary>
+        /// <value><see langword="true" /> if this type is nullable type; otherwise, <see langword="false" />.</value>
+        /// <remarks></remarks>
+        public bool IsNullableType { get { return Type != _nonNullableType.Value; } }
+
+        private readonly Lazy<bool> _isConvertible;
+
+        /// <summary>
+        /// Gets a value indicating whether this type is convertible.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is convertible; otherwise, <see langword="false" />.</value>
+        /// <remarks></remarks>
+        public bool IsConvertible { get { return _isConvertible.Value; } }
+
+        private readonly Lazy<Dictionary<string, Type>> _interfaces;
+
+        /// <summary>
+        /// Gets the interfaces implemented by this type.
+        /// </summary>
+        /// <value>The interfaces.</value>
+        /// <remarks></remarks>
+        public IEnumerable<Type> Interfaces { get { return _interfaces.Value.Values; } }
+
+        /// <summary>
+        /// Holds user defined methods that cast from this type to another type.
+        /// </summary>
+        private Dictionary<Type, CastMethod> _castsTo = new Dictionary<Type, CastMethod>();
+
+        /// <summary>
+        /// Holds user defined methods that cast to this type from another type.
+        /// </summary>
+        private Dictionary<Type, CastMethod> _castsFrom = new Dictionary<Type, CastMethod>();
+
         /// <summary>
         /// Indicates whether members have been loaded.
         /// </summary>
@@ -310,6 +389,43 @@ namespace WebApplications.Utilities.Reflect
                           .Select((g, i) => new GenericArgument(GenericArgumentLocation.Type, i, g))
                           .ToList(),
                 LazyThreadSafetyMode.PublicationOnly);
+
+            _nonNullableType =
+                    new Lazy<Type>(
+                            () =>
+                            (Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                                    ? Type.GetGenericArguments()[0]
+                                    : Type,
+                            LazyThreadSafetyMode.PublicationOnly);
+
+            _isConvertible = new Lazy<bool>(
+                    () =>
+                    {
+                        Type t = _nonNullableType.Value;
+                        if (t.IsEnum)
+                            return true;
+                        switch (Type.GetTypeCode(t))
+                        {
+                            case TypeCode.Boolean:
+                            case TypeCode.Char:
+                            case TypeCode.SByte:
+                            case TypeCode.Byte:
+                            case TypeCode.Int16:
+                            case TypeCode.UInt16:
+                            case TypeCode.Int32:
+                            case TypeCode.UInt32:
+                            case TypeCode.Int64:
+                            case TypeCode.UInt64:
+                            case TypeCode.Single:
+                            case TypeCode.Double:
+                                return true;
+                            default:
+                                return false;
+                        }
+                    },
+                    LazyThreadSafetyMode.PublicationOnly);
+
+            _interfaces = new Lazy<Dictionary<string, Type>>(() => Type.GetInterfaces().ToDictionary(t => t.FullName, t => t), LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
@@ -369,7 +485,49 @@ namespace WebApplications.Utilities.Reflect
                     MethodInfo m = memberInfo as MethodInfo;
                     if (m != null)
                     {
-                        Method method = new Method(this, m);
+                        // Check for cast methods
+                        bool isCast;
+                        bool isExplicit;
+                        switch (m.Name)
+                        {
+                            case "op_Implicit":
+                                isCast = true;
+                                isExplicit = false;
+                                break;
+                            case "op_Explicit":
+                                isCast = true;
+                                isExplicit = true;
+                                break;
+                            default:
+                                isCast = false;
+                                isExplicit = false;
+                                break;
+                        }
+
+                        Method method;
+                        if (isCast)
+                        {
+                            // Create cast method and add to our cast dictionary.
+                            CastMethod cm = new CastMethod(this, m, isExplicit);
+                            if (cm.FromType == Type)
+                            {
+                                Contract.Assert(cm.ToType != Type);
+                                _castsTo.Add(cm.ToType, cm);
+                            }
+                            else
+                            {
+                                Contract.Assert(cm.ToType == Type);
+                                _castsFrom.Add(cm.FromType, cm);
+                            }
+
+                            // Use the cast method as a method
+                            method = cm;
+                        }
+                        else
+                        {
+                            method = new Method(this, m);
+                        }
+
                         List<Method> methods;
                         if (!_methods.TryGetValue(m.Name, out methods))
                         {
@@ -420,6 +578,71 @@ namespace WebApplications.Utilities.Reflect
             // Release spin lock.
             if (taken)
                 _loadLock.Exit();
+        }
+
+        /// <summary>
+        /// Whether this type implements a cast from the specified type.
+        /// </summary>
+        /// <param name="fromType">The type to cast from.</param>
+        /// <param name="implicitOnly">if set to <see langword="true" /> only allows implicit casts.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public bool ImplementsCastFrom([NotNull] Type fromType, bool implicitOnly = true)
+        {
+            CastMethod cast = this.GetCastFromMethod(fromType);
+            return cast != null && (!implicitOnly || !cast.IsExplicit);
+        }
+
+        /// <summary>
+        /// Gets the user-defined method that implements a cast from the given type to this type (if any
+        /// exist on this type).
+        /// </summary>
+        /// <param name="fromType">The type to cast from.</param>
+        /// <returns>The method that implements the cast; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        [CanBeNull]
+        public CastMethod GetCastFromMethod([NotNull] Type fromType)
+        {
+            CastMethod cast;
+            return _castsFrom.TryGetValue(fromType, out cast) ? cast : null;
+        }
+
+        /// <summary>
+        /// Whether this type implements a cast to the specified type.
+        /// </summary>
+        /// <param name="toType">The type to cast to.</param>
+        /// <param name="implicitOnly">if set to <see langword="true" /> only allows implicit casts.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public bool ImplementsCastTo([NotNull] Type toType, bool implicitOnly = true)
+        {
+            CastMethod cast = this.GetCastToMethod(toType);
+            return cast != null && (!implicitOnly || !cast.IsExplicit);
+        }
+
+        /// <summary>
+        /// Gets the user-defined method that implements a cast to the given type from this type (if any
+        /// exist on this type).
+        /// </summary>
+        /// <param name="toType">The type to cast to.</param>
+        /// <returns>The method that implements the cast; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        [CanBeNull]
+        public CastMethod GetCastToMethod([NotNull] Type toType)
+        {
+            CastMethod cast;
+            return _castsTo.TryGetValue(toType, out cast) ? cast : null;
+        }
+
+        /// <summary>
+        /// Checks to see if this type implements a particular interface.
+        /// </summary>
+        /// <param name="interfaceType">Type of the interface.</param>
+        /// <returns><see langword="true"/> if <see cref="Type"/> implements the interface type; otherwise <see langword="false"/>.</returns>
+        /// <remarks></remarks>
+        public bool Implements([NotNull] Type interfaceType)
+        {
+            return _interfaces.Value.ContainsKey(interfaceType.FullName);
         }
 
         /// <summary>
@@ -482,8 +705,21 @@ namespace WebApplications.Utilities.Reflect
         /// <remarks></remarks>
         public Indexer GetIndexer([NotNull] params TypeSearch[] types)
         {
+            bool[] castsRequired;
+            return this.GetIndexer(out castsRequired, types);
+        }
+
+        /// <summary>
+        /// Gets the indexer.
+        /// </summary>
+        /// <param name="types">The types.</param>
+        /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public Indexer GetIndexer(out bool[] castsRequired, [NotNull] params TypeSearch[] types)
+        {
             if (!_loaded) LoadMembers();
-            return _indexers.BestMatch(types) as Indexer;
+            return _indexers.BestMatch(0, true, true, out castsRequired, types) as Indexer;
         }
 
         /// <summary>
@@ -515,18 +751,6 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Gets the method.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="types">The parameter types and return type.</param>
-        /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
-        /// <remarks></remarks>
-        public Method GetMethod([NotNull] string name, [NotNull] params TypeSearch[] types)
-        {
-            return GetMethod(name, 0, types);
-        }
-
-        /// <summary>
         /// Gets the <see cref="Method"/> matching the <see cref="MethodInfo"/> (if any).
         /// </summary>
         /// <param name="methodInfo">The method info.</param>
@@ -548,37 +772,92 @@ namespace WebApplications.Utilities.Reflect
         /// Gets the method.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="genericArguments">The number of generic arguments.</param>
         /// <param name="types">The parameter types and return type.</param>
         /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
+        public Method GetMethod([NotNull] string name, [NotNull] params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return GetMethod(name, 0, true, true, out castsRequired, types);
+        }
+
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="genericArguments">The number of generic arguments.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        /// <remarks></remarks>
         public Method GetMethod([NotNull] string name, int genericArguments, [NotNull] params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return GetMethod(name, genericArguments, true, true, out castsRequired, types);
+        }
+
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="genericArguments">The number of generic arguments.</param>
+        /// <param name="allowClosure">if set to <see langword="true" /> will automatically close the signatures generic types if possible.</param>
+        /// <param name="allowCasts">if set to <see langword="true" /> then types will match if they can be cast to the required type.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        /// <remarks></remarks>
+        public Method GetMethod([NotNull] string name, int genericArguments, bool allowClosure, bool allowCasts, [NotNull] params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return GetMethod(name, genericArguments, allowClosure, allowCasts, out castsRequired, types);
+        }
+
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="genericArguments">The number of generic arguments.</param>
+        /// <param name="allowClosure">if set to <see langword="true" /> will automatically close the signatures generic types if possible.</param>
+        /// <param name="allowCasts">if set to <see langword="true" /> then types will match if they can be cast to the required type.</param>
+        /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        /// <remarks></remarks>
+        public Method GetMethod([NotNull] string name, int genericArguments, bool allowClosure, bool allowCasts, out bool[] castsRequired, [NotNull] params TypeSearch[] types)
         {
             if (!_loaded) LoadMembers();
             List<Method> methods;
             if (!_methods.TryGetValue(name, out methods))
+            {
+                castsRequired = Reflection.EmptyBools;
                 return null;
+            }
             Contract.Assert(methods != null);
-            return methods.BestMatch(genericArguments, types) as Method;
+            return methods.BestMatch(genericArguments, allowClosure, allowCasts, out castsRequired, types) as Method;
+        }
+        
+        /// <summary>
+        /// Gets the constructor.
+        /// </summary>
+        /// <param name="types">The parameter types and return type (normally the same as <see cref="Type" />).</param>
+        /// <returns>The <see cref="Constructor" /> if found; otherwise <see langword="null" />.</returns>
+        /// <remarks></remarks>
+        public Constructor GetConstructor([NotNull] params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return this.GetConstructor(out castsRequired, types);
         }
 
         /// <summary>
         /// Gets the constructor.
         /// </summary>
-        /// <param name="types">The parameter types.</param>
+        /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
+        /// <param name="types">The parameter types and return type (normally the same as <see cref="Type"/>).</param>
         /// <returns>The <see cref="Constructor"/> if found; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        public Constructor GetConstructor([NotNull] params TypeSearch[] types)
+        public Constructor GetConstructor(out bool[] castsRequired, [NotNull] params TypeSearch[] types)
         {
             if (!_loaded) LoadMembers();
-
-            // Add return type to search.
-            int tCount = types.Length;
-            TypeSearch[] t = new TypeSearch[tCount + 1];
-            Array.Copy(types, t, tCount);
-            t[tCount] = Type;
-
-            return _constructors.BestMatch(t) as Constructor;
+            return _constructors.BestMatch(0, true, true, out castsRequired, types) as Constructor;
         }
 
         /// <summary>
@@ -687,7 +966,7 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.ExtendedType"/> to <see cref="System.Type"/>.
+        /// Performs an implicit conversion from <see cref="ExtendedType"/> to <see cref="System.Type"/>.
         /// </summary>
         /// <param name="extendedType">Type of the extended.</param>
         /// <returns>The result of the conversion.</returns>
@@ -698,7 +977,7 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Type"/> to <see cref="WebApplications.Utilities.Relection.ExtendedType"/>.
+        /// Performs an implicit conversion from <see cref="System.Type"/> to <see cref="ExtendedType"/>.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>The result of the conversion.</returns>
@@ -706,6 +985,199 @@ namespace WebApplications.Utilities.Reflect
         public static implicit operator ExtendedType(Type type)
         {
             return type == null ? null : Get(type);
+        }
+
+        /// <summary>
+        /// Creates a cache for casts on demand.
+        /// </summary>
+        private readonly Lazy<ConcurrentDictionary<Type, bool>> _convertToCache =
+            new Lazy<ConcurrentDictionary<Type, bool>>(() => new ConcurrentDictionary<Type, bool>(), LazyThreadSafetyMode.PublicationOnly);
+
+        /// <summary>
+        /// Determines whether this instance can be converted to the specified type.  Unlike the built in cast system,
+        /// this returns true if a cast is possible AND if IConvertible can be used.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns><see langword="true" /> if this instance can be cast to the specified type; otherwise, <see langword="false" />.</returns>
+        /// <remarks></remarks>
+        public bool CanConvertTo(Type type)
+        {
+            if (Type == type)
+                return true;
+
+            if ((type == null) ||
+                (type.IsGenericTypeDefinition) ||
+                (type.ContainsGenericParameters))
+                return false;
+
+            return this._convertToCache.Value.GetOrAdd(
+                type,
+                t =>
+                {
+                    // Get extended type information for destination type.
+                    ExtendedType dest = type;
+
+                    // First we check to see if a cast is possible
+                    if ((NonNullableType == dest.NonNullableType) || (NonNullableType.IsEquivalentTo(NonNullableType)) ||
+                        (dest.NonNullableType != typeof(bool) && this.IsConvertible && dest.IsConvertible) ||
+                        (this.ImplementsCastTo(dest)) ||
+                        (dest.ImplementsCastFrom(this)) ||
+                        (this.Implements(typeof(IConvertible)) && _iConvertibleMethods.ContainsKey(type)))
+                        return true;
+
+                    // TODO SUPPORT TYPE CONVERTERS
+                    return false;
+                });
+        }
+
+        /// <summary>
+        /// Converts the specified expression to the output type.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="outputExpression">The output expression.</param>
+        /// <returns>Returns <see langword="true" /> if the conversion succeeded; otherwise returns <see langword="false" />.</returns>
+        /// <remarks>This version is more powerful than the Expression.Convert CLR method in that it supports
+        /// ToString() conversion, IConvertible and TypeConverters. It also prevents exceptions being thrown.</remarks>
+        [UsedImplicitly]
+        public bool TryConvert([NotNull]Expression expression, [NotNull]out Expression outputExpression)
+        {
+            Type expressionType = expression.Type;
+            // If the types are the same we don't need to convert.
+            if (expression.Type == Type)
+            {
+                outputExpression = expression;
+                return true;
+            }
+
+            outputExpression = expression;
+
+            // Check the cast is possible
+            ExtendedType et = expressionType;
+            if (!et.CanConvertTo(Type))
+                return false;
+
+            try
+            {
+                // Try creating conversion.
+                outputExpression = Expression.Convert(expression, Type);
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                // Ignore failures due to lack of coercion operator.
+            }
+
+            // Look for IConvertible method
+            string method;
+            if (et.Implements(typeof(IConvertible)))
+            {
+                string methodName;
+                IEnumerable<Method> methods;
+                if ((_iConvertibleMethods.TryGetValue(Type, out methodName)) &&
+                    ((methods=et.GetMethods(methodName)) != null))
+                {
+                    Method cm =
+                            methods.FirstOrDefault(
+                                    m =>
+                                    m.ParameterTypes.Count() == 1 && m.ParameterTypes.First() == typeof(IFormatProvider));
+                    if (cm != null)
+                    {
+                        // Call the IConvertible method on the object, passing in CultureInfo.CurrentCulture as the parameter.
+                        outputExpression = Expression.Call(
+                                expression, cm.Info, Reflection.CurrentCultureExpression);
+                        return true;
+                    }
+                }
+            }
+
+            /*
+             * TypeConverter support
+             * TODO MORE OPTIMISATION REQUIRED
+             */
+
+            // Look for TypeConverter on output type.
+            bool useTo = false;
+            TypeConverterAttribute typeConverterAttribute = Type
+                .GetCustomAttributes(typeof(TypeConverterAttribute), false)
+                .OfType<TypeConverterAttribute>()
+                .FirstOrDefault();
+
+            if ((typeConverterAttribute == null) ||
+                (string.IsNullOrWhiteSpace(typeConverterAttribute.ConverterTypeName)))
+            {
+                // Look for TypeConverter on expression type.
+                useTo = true;
+                typeConverterAttribute = expression.Type
+                    .GetCustomAttributes(typeof(TypeConverterAttribute), false)
+                    .OfType<TypeConverterAttribute>()
+                    .FirstOrDefault();
+            }
+
+            if ((typeConverterAttribute != null) &&
+                (!string.IsNullOrWhiteSpace(typeConverterAttribute.ConverterTypeName)))
+            {
+                try
+                {
+                    // Try to get the type for the typeconverter
+                    Type typeConverterType = Type.GetType(typeConverterAttribute.ConverterTypeName);
+
+                    if (typeConverterType != null)
+                    {
+                        // Try to create an instance of the typeconverter without parameters
+                        TypeConverter converter = Activator.CreateInstance(typeConverterType) as TypeConverter;
+                        if ((converter != null) &&
+                            (useTo ? converter.CanConvertTo(Type) : converter.CanConvertFrom(expression.Type)))
+                        {
+                            // We have a converter that supports the necessary conversion
+                            MethodInfo mi = useTo
+                                                ? typeConverterType.GetMethod(
+                                                    "ConvertTo",
+                                                    BindingFlags.Instance | BindingFlags.Public |
+                                                    BindingFlags.FlattenHierarchy,
+                                                    null,
+                                                    new[] { typeof(object), typeof(Type) },
+                                                    null)
+                                                : typeConverterType.GetMethod(
+                                                    "ConvertFrom",
+                                                    BindingFlags.Instance | BindingFlags.Public |
+                                                    BindingFlags.FlattenHierarchy,
+                                                    null,
+                                                    new[] { typeof(object) },
+                                                    null);
+                            if (mi != null)
+                            {
+                                // The convert methods accepts the value as an object parameters, so we may need a cast.
+                                if (expression.Type != typeof(object))
+                                    expression = Expression.Convert(expression, typeof(object));
+
+                                // Create an expression which creates a new instance of the type converter and passes in
+                                // the existing expression as the first parameter to ConvertTo or ConvertFrom.
+                                outputExpression = useTo
+                                                       ? Expression.Call(Expression.New(typeConverterType), mi,
+                                                                         expression,
+                                                                         Expression.Constant(Type, typeof(Type)))
+                                                       : Expression.Call(Expression.New(typeConverterType), mi,
+                                                                         expression);
+
+                                return true;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            // Finally, if we want to output to string, call ToString() method.
+            if (Type == typeof(string))
+            {
+                outputExpression = Expression.Call(expression, Reflection.ToStringMethodInfo);
+                return true;
+            }
+
+            outputExpression = expression;
+            return false;
         }
     }
 }
