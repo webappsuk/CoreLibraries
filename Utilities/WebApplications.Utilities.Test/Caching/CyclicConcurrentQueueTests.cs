@@ -354,7 +354,7 @@ namespace WebApplications.Utilities.Test.Caching
                 while (enumerator.MoveNext())
                     iterationResult.Add(enumerator.Current);
             }
-            Assert.IsTrue(capacity < iterationResult.Count, "Iteration count ({0}) should always be smaller than the capacity ({1})", iterationResult.Count, capacity);
+            Assert.IsTrue(capacity > iterationResult.Count, "Iteration count ({0}) should always be smaller than the capacity ({1})", iterationResult.Count, capacity);
         }
 
         [TestMethod]
