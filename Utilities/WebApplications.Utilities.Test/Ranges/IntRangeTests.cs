@@ -197,7 +197,7 @@ namespace WebApplications.Utilities.Test.Ranges
         public void IntRange_UsingLargestPossibleParameters_IteratesSuccessfully()
         {
             // Step chosen to avoid an unfeasible number of iterations
-            var intRange = new IntRange(int.MinValue, int.MaxValue, int.MaxValue/16);
+            var intRange = new IntRange(int.MinValue, int.MaxValue, int.MaxValue / 16);
 
             bool iterated = false;
             foreach (int i in intRange)
@@ -206,6 +206,17 @@ namespace WebApplications.Utilities.Test.Ranges
             }
 
             Assert.AreEqual(true, iterated, "When iterating across full range, at least one value should be returned");
+        }
+
+        [TestMethod]
+        public void IntRange_UsingZeroStep_ThrowsSomeException()
+        {
+            Assert.Fail("Currently does not check it is not zero");
+
+            // Step chosen to avoid an unfeasible number of iterations
+            var intRange = new IntRange(-Random.Next(), Random.Next(), 0);
+
+            List<int> result = intRange.ToList();
         }
 
         [TestMethod]

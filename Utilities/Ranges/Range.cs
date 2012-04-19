@@ -76,8 +76,8 @@ namespace WebApplications.Utilities.Ranges
                     parameterAExpression,
                     parameterBExpression).Compile();
 
-            // Change type of parameter B to T
-            parameterBExpression = Expression.Parameter(typeof (TValue), "b");
+            // Change type of parameter B to TValue (from TStep)
+            parameterBExpression = Expression.Parameter(typeof(TValue), "b");
 
             // Create lambda for less than and compile
             LessThan =
@@ -150,9 +150,8 @@ namespace WebApplications.Utilities.Ranges
         /// <filterpriority>1</filterpriority>
         public IEnumerator<TValue> GetEnumerator()
         {
-            TValue end = Add(End, Step);
-            for (TValue loop = Start; LessThan(loop, end); loop = Add(loop, Step))
-                yield return loop;
+                for (TValue loop = Start; !LessThan(End, loop); loop = Add(loop, Step))
+                    yield return loop;
         }
 
         /// <summary>
@@ -192,8 +191,7 @@ namespace WebApplications.Utilities.Ranges
         /// <filterpriority>1</filterpriority>
         public IEnumerator<TValue> GetEnumerator(TStep step)
         {
-            TValue end = Add(End, step);
-            for (TValue loop = Start; LessThan(loop, end); loop = Add(loop, step))
+            for (TValue loop = Start; !LessThan(End, loop); loop = Add(loop, step))
                 yield return loop;
         }
 
