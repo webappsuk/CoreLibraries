@@ -55,8 +55,10 @@ namespace WebApplications.Utilities
         private static readonly ConcurrentDictionary<Type, Func<object, object, bool>> _equalityFunctions =
             new ConcurrentDictionary<Type, Func<object, object, bool>>();
 
-        private static readonly Dictionary<string, string> JSONEscapedCharacters = new Dictionary<string, string> { { "\\", @"\\" }, { "\"", @"\""" }, { "\b", @"\b" }, { "\f", @"\f" }, { "\n", @"\n" }, { "\r", @"\r" }, { "\t", @"\t" } };
-        private static readonly Regex MatchJSONEscapedCharacters = new Regex(String.Join("|",JSONEscapedCharacters.Keys.Select(k=>String.Format("\\x{0:X2}",(int)k.ToCharArray()[0])).ToArray()));
+        /// <summary>
+        /// Characters to escape for JSON (and their new value).
+        /// </summary>
+        private static readonly Dictionary<char, string> _jsonEscapedCharacters = new Dictionary<char, string> { { '\\', @"\\" }, { '\"', @"\""" }, { '\b', @"\b" }, { '\f', @"\f" }, { '\n', @"\n" }, { '\r', @"\r" }, { '\t', @"\t" } };
 
         /// <summary>
         ///   The Epoch date time (used by JavaScript).
@@ -534,6 +536,51 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Encodes a string for JSON.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        public static string ToJSON(this string input)
+        {
+            if (input == null)
+                return "null";
+            // TODO establish approx. increase in length of JSON encoding.
+            StringBuilder stringBuilder = new StringBuilder((int)(input.Length * 1.3) + 2);
+            stringBuilder.AppendJSON(input);
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Appends a string to the specified <see cref="StringBuilder"/> encoding it for JSON.
+        /// </summary>
+        /// <param name="stringBuilder">The string builder.</param>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        public static StringBuilder AppendJSON([NotNull] this StringBuilder stringBuilder, [CanBeNull] string input)
+        {
+            if (input == null)
+            {
+                stringBuilder.Append("null");
+                return stringBuilder;
+            }
+            
+            stringBuilder.Append("\"");
+            foreach (char c in input)
+            {
+                string replacement;
+
+                // TODO May be worth adding escaping for unicode character - if so increase pre-allocated memory.
+                if (_jsonEscapedCharacters.TryGetValue(c, out replacement))
+                    stringBuilder.Append(replacement);
+                else
+                    stringBuilder.Append(c);
+            }
+            stringBuilder.Append("\"");
+
+            return stringBuilder;
+        }
+
+        /// <summary>
         ///   Converts a list to its JSON representation.
         /// </summary>
         /// <param name="list">The list to convert.</param>
@@ -543,11 +590,24 @@ namespace WebApplications.Utilities
         /// </remarks>
         public static string ToJSON(this IEnumerable<string> list)
         {
-            return list == null || !list.Any()
-                       ? "[]"
-                       : String.Format(
-                           "[{0}]",
-                           String.Join(", ", list.Select(s => "\"" + MatchJSONEscapedCharacters.Replace(s,m=>JSONEscapedCharacters[m.ToString()]) + "\"").ToArray()));
+            if ((list == null) ||
+                (!list.Any()))
+                return "[]";
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append("[");
+            bool includeComma = false;
+            foreach (string s in list)
+            {
+                if (includeComma)
+                    stringBuilder.Append(",");
+                else
+                    includeComma = true;
+                stringBuilder.AppendJSON(s);
+            }
+
+            stringBuilder.Append("]");
+            return stringBuilder.ToString();
         }
 
         /// <summary>
