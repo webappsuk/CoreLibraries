@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -170,6 +171,14 @@ namespace WebApplications.Testing
             if (count < 1)
                 throw new InvalidOperationException("The enumeration did not return any results.");
             return filtered[RandomGenerator.Next(count)];
+        }
+
+        public static bool IsNull(this object value)
+        {
+            if (value == null || DBNull.Value == value)
+                return true;
+            INullable nullable = value as INullable;
+            return nullable != null && nullable.IsNull;
         }
     }
 }

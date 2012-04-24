@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using JetBrains.Annotations;
 
 namespace WebApplications.Testing.Data
@@ -21,6 +20,11 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         private ObjectReader()
         {
+        }
+
+        public void AddRecordSet(RecordSetDefinition recordSetDefinition)
+        {
+            
         }
 
         /// <summary>
@@ -64,7 +68,7 @@ namespace WebApplications.Testing.Data
                                                               columnCount));
             }
 
-            SqlTableDefinition tableDefinition = new SqlTableDefinition("dbo", "RandomTable");
+            ColumnDefinition[] columnDefinition = new ColumnDefinition[columnCount];
             for (int c = 0; c < columnCount; c++)
             {
                 Type columnType = columnTypes != null
@@ -73,9 +77,14 @@ namespace WebApplications.Testing.Data
 
                 // TODO tableDefinition.AddColumn(new SqlColumn(c, columnNames[c],));
             }
+
+            RecordSetDefinition recordSetDefinition = new RecordSetDefinition(columnDefinition);
+
+            // Add the record set with the new fake table definition.
+            AddRandomRecordSet(recordSetDefinition, minRows, maxRows);
         }
 
-        public void AddRandomRecordSet(SqlTableDefinition tableDefinition, int minRows = 0, int maxRows = 1000)
+        public void AddRandomRecordSet(RecordSetDefinition recordSetDefinition, int minRows = 0, int maxRows = 1000)
         {
             if (minRows < 0)
                 throw new ArgumentOutOfRangeException("minRows", minRows,
@@ -101,7 +110,15 @@ namespace WebApplications.Testing.Data
             int rows = minRows == maxRows
                            ? minRows
                            : Tester.RandomGenerator.Next(minRows, maxRows);
+            
+            // Add the record set.
+            AddRecordSet(recordSetDefinition);
 
+            // Generate fake data.
+            for (int row = 0; row < rows; row++)
+            {
+
+            }
         }
 
         /// <summary>
