@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace WebApplications.Testing
@@ -9,8 +10,88 @@ namespace WebApplications.Testing
     /// <summary>
     /// Useful extension methods.
     /// </summary>
-    public static class Extensions
+    public static class Tester
     {
+        /// <summary>
+        /// A random number generator.
+        /// </summary>
+        [NotNull]
+        public static readonly Random RandomGenerator = new Random();
+
+        public static bool GenerateRandomBoolean(Random random = null)
+        {
+            return (random ?? RandomGenerator).Next(2) == 1;
+        }
+        public static byte GenerateRandomByte(Random random = null)
+        {
+            return (byte)(random ?? RandomGenerator).Next(0x100);
+        }
+        public static char GenerateRandomChar(Random random = null)
+        {
+            return (char)(random ?? RandomGenerator).Next(0x10000);
+        }
+        public static short GenerateRandomInt16(Random random = null)
+        {
+            byte[] bytes = new byte[2];
+            (random ?? RandomGenerator).NextBytes(bytes);
+            return BitConverter.ToInt16(bytes, 0);
+        }
+        public static int GenerateRandomInt32(Random random = null)
+        {
+            byte[] bytes = new byte[4];
+            (random ?? RandomGenerator).NextBytes(bytes);
+            return BitConverter.ToInt32(bytes, 0);
+        }
+        public static long GenerateRandomInt64(Random random = null)
+        {
+            byte[] bytes = new byte[8];
+            (random ?? RandomGenerator).NextBytes(bytes);
+            return BitConverter.ToInt64(bytes, 0);
+        }
+        public static float GenerateRandomFloat(Random random = null)
+        {
+            byte[] bytes = new byte[4];
+            (random ?? RandomGenerator).NextBytes(bytes);
+            return BitConverter.ToSingle(bytes, 0);
+        }
+        public static decimal GenerateDecimal(Random random = null)
+        {
+            return
+                new decimal(new[]
+                                {
+                                    GenerateRandomInt32(random),
+                                    GenerateRandomInt32(random),
+                                    GenerateRandomInt32(random),
+                                    GenerateRandomInt32(random)
+                                });
+        }
+        public static DateTime GenerateRandomDateTime(Random random = null)
+        {
+            return new DateTime(GenerateRandomInt64());
+        }
+        
+        /// <summary>
+        /// Generates a random string.
+        /// </summary>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <param name="unicode">if set to <see langword="true" /> string is UTF16; otherwise it uses ASCII.</param>
+        /// <param name="nullProbability">The probability of a null being returned (0.0 for no nulls).</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static string GenerateRandomString(int maxLength = -1, bool unicode = true, double nullProbability = 0.0)
+        {
+            // Check for random nulls
+            if ((nullProbability > 0.0) &&
+                (RandomGenerator.NextDouble() < nullProbability))
+                return null;
+
+            // Get string length, if there's no maximum then use 8001 (as 8000 is max specific size in SQL Server).
+            int length = (maxLength < 0 ? 8001 : maxLength) * (unicode ? 2 : 1);
+            byte[] bytes = new byte[length];
+            Tester.RandomGenerator.NextBytes(bytes);
+            return unicode ? new UnicodeEncoding().GetString(bytes) : new ASCIIEncoding().GetString(bytes);
+        }
+
         /// <summary>
         /// Returns a formatted <see cref="string"/> with ' completed in {ms}ms.' appended.
         /// </summary>
@@ -31,7 +112,6 @@ namespace WebApplications.Testing
         public static string ToString([NotNull] this Stopwatch stopwatch, [CanBeNull] string format = null,
                                       [NotNull] params object[] parameters)
         {
-
             if (String.IsNullOrEmpty(format))
             {
                 format = "Stopwatch";
@@ -67,7 +147,7 @@ namespace WebApplications.Testing
             List<T> filtered = predicate == null ? enumeration.ToList() : enumeration.Where(predicate).ToList();
 
             int count = filtered.Count;
-            return count < 1 ? default(T) : filtered[TestBase.Random.Next(count)];
+            return count < 1 ? default(T) : filtered[RandomGenerator.Next(count)];
         }
 
         /// <summary>
@@ -89,7 +169,7 @@ namespace WebApplications.Testing
             int count = filtered.Count;
             if (count < 1)
                 throw new InvalidOperationException("The enumeration did not return any results.");
-            return filtered[TestBase.Random.Next(count)];
+            return filtered[RandomGenerator.Next(count)];
         }
     }
 }

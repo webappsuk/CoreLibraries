@@ -1,0 +1,174 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ import namespace="System.Text" #> 
+<#
+int maxParameters = 35;
+#>#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// Solution: WebApplications.Utilities 
+// Project: WebApplications.Utilities
+// File: TaskExtensionOverloads.cs
+// 
+// This software, its object code and source code and all modifications made to
+// the same (the “Software”) are, and shall at all times remain, the proprietary
+// information and intellectual property rights of Web Applications (UK) Limited. 
+// You are only entitled to use the Software as expressly permitted by Web
+// Applications (UK) Limited within the Software Customisation and
+// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
+// distribution, licensing, sale, transfer or other use of the Software other than
+// as expressly permitted in the Agreement is expressly forbidden.  Web
+// Applications (UK) Limited reserves its rights to take action against you and
+// your employer in accordance with its contractual and common law rights
+// (including injunctive relief) should you breach the terms of the Agreement or
+// otherwise infringe its copyright or other intellectual property rights in the
+// Software.
+// 
+// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
+
+namespace WebApplications.Testing
+{
+    /// <summary>
+    /// Extension methods for tuples.
+    /// </summary>
+    public static partial class ExtendedTuple
+    {
+<# 
+            StringBuilder typeParams = new StringBuilder();
+            StringBuilder tuple = new StringBuilder();
+            StringBuilder tupleEnd = new StringBuilder();
+            StringBuilder typeComments = new StringBuilder();
+            StringBuilder paramsComments = new StringBuilder();
+            StringBuilder paramsFuncComments = new StringBuilder();
+            StringBuilder paramsWithType = new StringBuilder();
+            StringBuilder paramsFuncWithType = new StringBuilder();
+            StringBuilder paramsWithoutType = new StringBuilder();
+            StringBuilder paramsFuncWithoutType = new StringBuilder();
+            for (int i = 1; i <= maxParameters; i++)
+            {
+                typeParams.Append(String.Format("{0}T{1}", i > 1 ? ", " : String.Empty, i));
+                if (i > 1)
+                {
+                    tuple.Append(", ");
+                    if ((i - 1)%7 == 0)
+                    {
+                        tuple.Append("Tuple<");
+                        tupleEnd.Append(">");
+                    }
+                }
+                tuple.Append(String.Format("T{0}", i));
+                paramsWithoutType.Clear();
+				paramsFuncWithoutType.Clear();
+                for (int j = 1; j <= i; j++)
+                {
+                    if (j > 1)
+                    {
+                        paramsWithoutType.Append(", ");
+						paramsFuncWithoutType.Append(", ");
+                        if ((j - 1)%7 == 0)
+                        {
+                            int closeCount = 1;
+                            paramsWithoutType.Append("new Tuple<");
+                            paramsFuncWithoutType.Append("new Tuple<");
+                            for (int k = j; k <= i; k++)
+                            {
+                                if (k > j)
+                                {
+                                    if ((k - 1)%7 == 0)
+                                    {
+                                        paramsWithoutType.Append(", Tuple<");
+                                        paramsFuncWithoutType.Append(", Tuple<");
+                                        closeCount++;
+                                    }
+                                    else
+                                    {
+                                        paramsWithoutType.Append(", ");
+                                        paramsFuncWithoutType.Append(", ");
+                                    }
+                                }
+                                paramsWithoutType.Append(String.Format("T{0}", k));
+                                paramsFuncWithoutType.Append(String.Format("T{0}", k));
+                            }
+                            paramsWithoutType.Append(new string('>', closeCount));
+                            paramsFuncWithoutType.Append(new string('>', closeCount));
+                            paramsWithoutType.Append("(");
+                            paramsFuncWithoutType.Append("(");
+                        }
+                    }
+                    paramsWithoutType.Append(String.Format("item{0}", j));
+                    paramsFuncWithoutType.Append(String.Format("func{0}(input)", j));
+                }
+                paramsWithoutType.Append(new string(')', (i - 1)/7));
+                paramsFuncWithoutType.Append(new string(')', (i - 1)/7));
+                typeComments.Append(
+                    String.Format("{0}        /// <typeparam name=\"T{1}\">The type of item {1}.</typeparam>",
+                                  Environment.NewLine,
+                                  i));
+                paramsComments.Append(
+                    String.Format("{0}        /// <param name=\"item{1}\">Item {1} of the tuple.</param>",
+                                  Environment.NewLine,
+                                  i));
+				paramsFuncComments.Append(
+                    String.Format("{0}        /// <param name=\"func{1}\">Function that returns item {1} of the tuple.</param>",
+                                  Environment.NewLine,
+                                  i));
+                paramsWithType.Append(String.Format("{2}{0}            T{1} item{1}",
+                                                    Environment.NewLine,
+                                                    i,
+                                                    i > 1 ? "," : ""));
+				paramsFuncWithType.Append(String.Format("{2}{0}            [NotNull]Func<TInput, T{1}> func{1}",
+                                                    Environment.NewLine,
+                                                    i,
+                                                    i > 1 ? "," : ""));
+                String t = tuple.ToString() + tupleEnd.ToString();
+	#>
+		
+		#region <#= i #> items.
+        /// <summary>
+        /// Used to create a tuple in nested format.
+        /// </summary><#= typeComments #><#= paramsComments #>
+        /// <returns>A tuple with <#= i #> items (using nested tuples where necessary).</returns>
+        /// <remarks></remarks>
+        [UsedImplicitly]
+        public static Tuple< <#= t #>> Create<<#= typeParams #>>(<#= paramsWithType #>
+            )
+        {
+		    return new Tuple< <#= t #>>(<#= paramsWithoutType #>);
+        }
+		
+        /// <summary>
+        /// Used to create an enumeration of tuples from an enumeration of objects, by specifying how each item is extracted.
+        /// </summary>
+        /// <typeparam name="TInput">The input type.</typeparam><#= typeComments #>
+        /// <param name="inputEnumeration">The enumeration of inputs.</param><#= paramsFuncComments #>
+        /// <returns>A tuple with <#= i #> items (using nested tuples where necessary).</returns>
+        /// <remarks></remarks>
+        [UsedImplicitly]
+        public static IEnumerable<Tuple< <#= t #>>> ToTuple<TInput, <#= typeParams #>>(
+            [NotNull]this IEnumerable<TInput> inputEnumeration,<#= paramsFuncWithType #>
+            )
+        {
+            return inputEnumeration.Select(input => new Tuple< <#= t #>>(<#= paramsFuncWithoutType #>));
+        }
+		#endregion
+<# 
+}
+#>
+	}
+}
+ 
+<#+
+  // Insert any template procedures here
+#>

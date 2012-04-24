@@ -1,0 +1,300 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ExtendedEnumGeneric_Clear_CouldNotClearFlags" xml:space="preserve">
+    <value>The '{0}' value of the {1} enum does could not be cleared with the value '{2}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_Combine_CouldNotCombineFlags" xml:space="preserve">
+    <value>Could not combine flags of type '{0}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_DoesNotContainName" xml:space="preserve">
+    <value>The {0} enum does not contain the name '{1}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_DoesNotContainRawValue" xml:space="preserve">
+    <value>The {0} enum does not contain the raw value '{1}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_DoesNotContainValue" xml:space="preserve">
+    <value>The {0} enum does not contain the value '{1}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_Intersect_CouldNotIntersectFlags" xml:space="preserve">
+    <value>The '{0}' value of the {1} enum does could not be intersected with the value '{2}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_Invert_CouldNotInvertFlags" xml:space="preserve">
+    <value>The '{0}' value of the {1} enum does could not be inverted.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_Set_CouldNotSetFlags" xml:space="preserve">
+    <value>The '{0}' value of the {1} enum could not be set with the value '{2}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_SplitFlags_CouldNotSplitFlags" xml:space="preserve">
+    <value>Could not split flags '{0}' of type '{1}'.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_TypeIsFlagEnum" xml:space="preserve">
+    <value>Type {0} is a flag enum.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_TypeIsNotAnEnum" xml:space="preserve">
+    <value>Type {0} is not an enum.</value>
+  </data>
+  <data name="ExtendedEnumGeneric_TypeIsNotFlagEnum" xml:space="preserve">
+    <value>Type {0} is not a flag enum.</value>
+  </data>
+  <data name="ExtendedTuple_CannotCastItemAtIndex" xml:space="preserve">
+    <value>Cannot cast item at index {0} of Tuple from type {1} to type {2}.</value>
+  </data>
+  <data name="ExtendedTuple_CouldNotFindProperty" xml:space="preserve">
+    <value>The tuple '{0}' does not have a '{1}' property.</value>
+  </data>
+  <data name="ExtendedTuple_MoreThanEightGenericArguments" xml:space="preserve">
+    <value>The tuple '{0}' has more than 8 generic arguments, which is unsupported.</value>
+  </data>
+  <data name="ExtendedTuple_TypeIsNotValidTuple" xml:space="preserve">
+    <value>The type '{0}' is not a valid tuple type.</value>
+  </data>
+  <data name="Reflection_Convert_ConversionFailed" xml:space="preserve">
+    <value>Could not convert the expression of type '{0}' to an expression of type '{1}'.</value>
+  </data>
+  <data name="Reflection_GetAction_IncorrectParameterCount" xml:space="preserve">
+    <value>Can not create a lambda action from '{0}', incorrect parameter count.</value>
+  </data>
+  <data name="Reflection_GetAction_ParameterNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda action from '{0}', cannot assign type '{1}' to parameter of type '{2}'.</value>
+  </data>
+  <data name="Reflection_GetFunc_IncorrectParameterCount" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', incorrect parameter count.</value>
+  </data>
+  <data name="Reflection_GetFunc_MethodHasNoReturnType" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', as it is a method with no return type, use Action&lt;&gt;() instead.</value>
+  </data>
+  <data name="Reflection_GetFunc_MethodIsStaticConstructor" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', as it is a static constructor.</value>
+  </data>
+  <data name="Reflection_GetFunc_NoFuncTypesSpecified" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', no parameter/return types specified.</value>
+  </data>
+  <data name="Reflection_GetFunc_ParameterNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', cannot assign type '{1}' to parameter of type '{2}'.</value>
+  </data>
+  <data name="Reflection_GetFunc_ReturnTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function from '{0}', cannot assign return type {1} to {2}.</value>
+  </data>
+  <data name="Reflection_GetGetter_NoGetterForFieldOrProperty" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' getter on the type '{1}' as the name does not correspond to a field or property with a get accessor.</value>
+  </data>
+  <data name="Reflection_GetGetter_ParameterTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the parameter type '{3}' is not assignable from the '{2}' declaring type.</value>
+  </data>
+  <data name="Reflection_GetGetter_ReturnTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the {1} type '{3}' is not assignable to the '{4}' return type.</value>
+  </data>
+  <data name="Reflection_GetSetter_MemberTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} setter on the type '{2}' as the {1} type '{3}' is not assignable from the '{4}' value type.</value>
+  </data>
+  <data name="Reflection_GetSetter_NoSetterForFieldOrProperty" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' setter on the type '{1}' as the name does not correspond to a field or property with a set accessor.</value>
+  </data>
+  <data name="Reflection_GetSetter_ParameterTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} setter on the type '{2}' as the parameter type '{3}' is not assignable from the '{2}' declaring type.</value>
+  </data>
+  <data name="Reflection_GetSetter_ReturnTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} setter on the type '{2}' as the {1} type '{3}' is not assignable to the '{4}' return type.</value>
+  </data>
+  <data name="Reflector_GetGetter_DoesNotHaveGetter" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' getter on the type '{1}' as the name does not correspond to a field or property with a get accessor.</value>
+  </data>
+  <data name="Reflector_GetGetter_MemberDoesNotExist" xml:space="preserve">
+    <value>The member '{0}' does not exist on the type '{1}'.</value>
+  </data>
+  <data name="Reflector_GetGetter_ParameterTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the parameter type '{3}' is not assignable from the '{2}' declaring type.</value>
+  </data>
+  <data name="Reflector_GetGetter_ReturnTypeNotAssignable" xml:space="preserve">
+    <value>Can not create a lambda function of the '{0}' {1} getter on the type '{2}' as the {1} type '{3}' is not assignable to the '{4}' return type.</value>
+  </data>
+  <data name="SqlTypeSize_ToString" xml:space="preserve">
+    <value>Maximum length: {0}; Precision: {1}; Scale: {2}.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_BinaryDataTruncated" xml:space="preserve">
+    <value>Truncating binary data of length '{0}' bytes when converting to SQL type '{1}' which only accepts '{2}' bytes.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CannotAcceptEnumerationType" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept an enumeration of '{1}'.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CannotAcceptType" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept type '{1}'.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CanNotCast" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept an enumeration of '{1}'.  Cannot cast '{2}' to '{3}' for the column with ordinal {4}.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CanNotConvertKeyType" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept an enumeration of '{1}'.  Cannot convert key type '{2}' to '{3}'.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_ColumnNumberAndTupleSizeMismatch" xml:space="preserve">
+    <value>Structured type '{0}' cannot accept an enumeration of '{1}'.  The type only accepts {2} columns, but the tuple supplies '{3}.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CouldNotConvertBinaryData" xml:space="preserve">
+    <value>Could not convert binary data of length '{0}' bytes to SQL type '{1}' which only accepts '{2}' bytes.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CouldNotConvertDateTimeToSqlType" xml:space="preserve">
+    <value>Could not convert DateTime '{0}' to SQL type '{1}' which only accepts DateTimes in the '{2}' range.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CouldNotConvertString" xml:space="preserve">
+    <value>Could not convert string of length '{0}' characters to SQL type '{1}' which only accepts '{2}' characters.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_CouldNotSerializeObject" xml:space="preserve">
+    <value>Could not serialize object of type '{0}' into SQL type '{1}' as it requires '{2}' bytes and the SQL type only accepts '{3}' bytes.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_DateTimeTruncated" xml:space="preserve">
+    <value>Truncating DateTime '{0}' when converting to SQL type '{1}' which only accepts DateTimes in the '{2}' range.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_FatalErrorOccurred" xml:space="preserve">
+    <value>Fatal error whilst trying to create type convertor for '{0}' type on SQL Type '{1}'. {2}</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_NotCreatedAsSqlTableType" xml:space="preserve">
+    <value>Structured type '{0}' was not created as a SqlTableType.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_NoTypeSpecified" xml:space="preserve">
+    <value>No type specified for converting to SQL Type '{0}'.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_StringContainsUnicodeCharacters" xml:space="preserve">
+    <value>Could not pass string into SQL type '{0}' as it contains Unicode characters and the SQL type only accepts ASCII characters.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_StringTruncated" xml:space="preserve">
+    <value>Truncating string of length '{0}' characters when converting to SQL type '{1}' which only accepts '{2}' characters.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_UdtTypeNotSupported" xml:space="preserve">
+    <value>UDT type '{0}' is not supported.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_UnicodeCharactersLost" xml:space="preserve">
+    <value>Losing Unicode characters when converting string into SQL type '{0}' as the SQL type only accepts ASCII characters.</value>
+  </data>
+  <data name="SqlType_GetClrToSqlConverter_UnsupportedSqlDbType" xml:space="preserve">
+    <value>Unsupported SqlDbType '{0}'.</value>
+  </data>
+  <data name="SqlType_UnknownSqlSystemType" xml:space="preserve">
+    <value>Unknown SQL system type found '{0}', trying NVarChar.</value>
+  </data>
+  <data name="TriState_ExplicitBoolConversion_CannotCastUnknownState" xml:space="preserve">
+    <value>Cannot cast an unknown TriState to a Boolean</value>
+  </data>
+  <data name="TriState_ExplicitByteConversion_ValueGreaterThanThree" xml:space="preserve">
+    <value>Cannot cast byte '{0}' to TriState, value must be less than 3.</value>
+  </data>
+  <data name="TriState_ToString_FormatException" xml:space="preserve">
+    <value>The {0} format string is not supported.</value>
+  </data>
+</root>
