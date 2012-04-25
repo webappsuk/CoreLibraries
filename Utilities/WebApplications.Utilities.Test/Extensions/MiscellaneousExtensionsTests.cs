@@ -782,6 +782,33 @@ namespace WebApplications.Utilities.Test.Extentions
         }
 
         [TestMethod]
+        public void PreserveStackTrace_NullException_ReturnsNull()
+        {
+            Assert.IsNull(((Exception)null).PreserveStackTrace());
+        }
+
+        [TestMethod]
+        public void PreserveStackTrace_ExceptionLaterReThrown_StackTraceIsPreserved()
+        {
+            try
+            {
+                try
+                {
+                    throw new Exception("Exception to preserve the stack trace of");
+                }
+                catch (Exception exception)
+                {
+                    exception.PreserveStackTrace();
+                    throw;
+                }
+            }
+            catch(Exception exception)
+            {
+                Assert.AreEqual(2,exception.StackTrace.Split('\n').Count());
+            }
+        }
+
+        [TestMethod]
         public void Mod_PositiveInt_ReturnsModulus()
         {
             int number = Random.Next();
