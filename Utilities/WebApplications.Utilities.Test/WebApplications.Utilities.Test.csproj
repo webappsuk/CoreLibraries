@@ -104,11 +104,6 @@
     <Compile Include="Ranges\RangeTests.cs" />
     <Compile Include="Ranges\ShortRangeTests.cs" />
     <Compile Include="Reflect\ExtendedTypeTests.cs" />
-    <Compile Include="Serialization\ExtendedSerializationBinderTests.cs" />
-    <Compile Include="Serialization\SerializeTests.cs" />
-    <Compile Include="Serialization\XElementSurrogateTests.cs" />
-    <Compile Include="Serialization\XmlElementSurrogateTests.cs" />
-    <Compile Include="Serialization\XmlFormatterTests.cs" />
     <Compile Include="SingletonTests.cs" />
     <Compile Include="TestCacheQueue.cs" />
     <Compile Include="TestCombGuid.cs" />
@@ -125,7 +120,6 @@
     <Compile Include="TestPowerShell.cs" />
     <Compile Include="TestRange.cs" />
     <Compile Include="Reflect\ReflectionTests.cs" />
-    <Compile Include="TestSerialization.cs" />
     <Compile Include="TestSQLExtensions.cs" />
     <Compile Include="TestTaskExtensions.cs" />
     <Compile Include="TestWeak.cs" />

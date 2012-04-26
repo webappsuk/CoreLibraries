@@ -173,12 +173,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ReflectionOverloads.tt</DependentUpon>
     </Compile>
-    <Compile Include="Serialization\DelegateSerializer.cs" />
-    <Compile Include="Serialization\ExtendedSerializationBinder.cs" />
-    <Compile Include="Serialization\Serialize.cs" />
-    <Compile Include="Serialization\XElementSurrogate.cs" />
-    <Compile Include="Serialization\XmlElementSurrogate.cs" />
-    <Compile Include="Serialization\XmlFormatter.cs" />
     <Compile Include="Singleton.cs" />
     <Compile Include="SqlExtensions.cs" />
     <Compile Include="Threading\ApmWrap.cs" />
