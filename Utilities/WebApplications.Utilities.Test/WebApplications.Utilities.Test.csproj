@@ -114,7 +114,6 @@
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestCulture.cs" />
     <Compile Include="TestDeterministic.cs" />
-    <Compile Include="TestContextStack.cs" />
     <Compile Include="TestExtendedEnum.cs" />
     <Compile Include="TestHashing.cs" />
     <Compile Include="TestCyclicConcurrentQueue.cs" />

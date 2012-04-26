@@ -569,7 +569,7 @@ namespace WebApplications.Utilities
             {
                 string replacement;
 
-                // TODO May be worth adding escaping for unicode character - if so increase pre-allocated memory.
+                // TODO May be worth adding escaping for unicode character.
                 if (_jsonEscapedCharacters.TryGetValue(c, out replacement))
                     stringBuilder.Append(replacement);
                 else
@@ -1110,6 +1110,7 @@ namespace WebApplications.Utilities
         ///   The enumeration sorted so that all elements that have dependencies follow their dependencies.
         /// </returns>
         /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
+        /// <exception cref="ArgumentException">There are duplicates in <paramref name="enumerable"/>.</exception>
         [NotNull]
         [UsedImplicitly]
         public static IEnumerable<T> TopologicalSortEdges<T>([NotNull] this IEnumerable<T> enumerable,
@@ -1147,18 +1148,22 @@ namespace WebApplications.Utilities
                 T t = outputQueue.Dequeue();
                 yield return t;
 
-                // Get dependants and remove
-                List<T> deps;
-                if (!dependants.TryGetValue(t, out deps)) continue;
+                // Get dependants of the yielded element and remove the reverse reference from their depenencies
+                List<T> dependentsOfLastYield;
+                if (!dependants.TryGetValue(t, out dependentsOfLastYield)) continue;
                 dependants.Remove(t);
 
-                foreach (T dependant in deps)
+                foreach (T dependant in dependentsOfLastYield)
                 {
+                    // Check the dependant was actually included in enumerable
+                    List<T> deps;
+                    if (!dependencies.TryGetValue(dependant, out deps)) continue;
+
                     // Remove dependency
-                    dependencies[dependant].Remove(t);
+                    deps.Remove(t);
 
                     // if we have no dependencies left add to output queue for processing.
-                    if (dependencies[dependant].Count < 1)
+                    if (deps.Count < 1)
                         outputQueue.Enqueue(dependant);
                 }
             }
