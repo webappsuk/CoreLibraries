@@ -26,6 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PostSharpSearchPath>..\WebApplications.Utilities.Weavers\bin\Debug</PostSharpSearchPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,6 +36,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PostSharpSearchPath>..\WebApplications.Utilities.Weavers\bin\Release</PostSharpSearchPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AsyncCtpLibrary">
@@ -85,6 +87,7 @@
     <Compile Include="Configuration\ParameterCollectionTests.cs" />
     <Compile Include="Configuration\ParameterElementTests.cs" />
     <Compile Include="DebuggingExtensionsTests.cs" />
+    <Compile Include="Extensions\ArraySplitTests.cs" />
     <Compile Include="Extensions\EqualityFunctionsTests.cs" />
     <Compile Include="Extensions\GetObjectsByIdTests.cs" />
     <Compile Include="Extensions\MiscellaneousExtensionsTests.cs" />
@@ -100,11 +103,7 @@
     <Compile Include="Ranges\LongRangeTests.cs" />
     <Compile Include="Ranges\RangeTests.cs" />
     <Compile Include="Ranges\ShortRangeTests.cs" />
-    <Compile Include="Serialization\ExtendedSerializationBinderTests.cs" />
-    <Compile Include="Serialization\SerializeTests.cs" />
-    <Compile Include="Serialization\XElementSurrogateTests.cs" />
-    <Compile Include="Serialization\XmlElementSurrogateTests.cs" />
-    <Compile Include="Serialization\XmlFormatterTests.cs" />
+    <Compile Include="Reflect\ExtendedTypeTests.cs" />
     <Compile Include="SingletonTests.cs" />
     <Compile Include="TestCacheQueue.cs" />
     <Compile Include="TestCombGuid.cs" />
@@ -114,14 +113,12 @@
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestCulture.cs" />
     <Compile Include="TestDeterministic.cs" />
-    <Compile Include="TestContextStack.cs" />
     <Compile Include="TestExtendedEnum.cs" />
     <Compile Include="TestHashing.cs" />
     <Compile Include="TestCyclicConcurrentQueue.cs" />
     <Compile Include="TestPowerShell.cs" />
     <Compile Include="TestRange.cs" />
-    <Compile Include="ReflectionTests.cs" />
-    <Compile Include="TestSerialization.cs" />
+    <Compile Include="Reflect\ReflectionTests.cs" />
     <Compile Include="TestSQLExtensions.cs" />
     <Compile Include="TestTaskExtensions.cs" />
     <Compile Include="TestWeak.cs" />

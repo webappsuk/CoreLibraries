@@ -28,9 +28,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Security;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
@@ -38,7 +36,6 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Enumerations;
-using WebApplications.Utilities.Serialization;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
@@ -1218,36 +1215,6 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        ///   Use reflection to gain access to the InternalPreserveStackTrace method.
-        /// </summary>
-        private static readonly Action<Exception> _preserveStackTrace =
-            typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.NonPublic | BindingFlags.Instance).
-                Action<Exception>();
-
-        /// <summary>
-        ///   Preserves the stack trace during exception re-throws.
-        /// </summary>
-        /// <param name="exception">The exception thrown.</param>
-        /// <returns>A copy of the exception with the stack trace preserved.</returns>
-        [UsedImplicitly]
-        public static Exception PreserveStackTrace(this Exception exception)
-        {
-            if (exception == null)
-            {
-                return null;
-            }
-            try
-            {
-                _preserveStackTrace(exception);
-            }
-            catch (MethodAccessException)
-            {
-            }
-            // Copy exception.
-            return exception.SerializeToByteArray().Deserialize<Exception>();
-        }
-
-        /// <summary>
         /// Calculates the modulus of the value.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -1329,6 +1296,53 @@ namespace WebApplications.Utilities
             long mod = (long)value % (long)modulus;
             if (mod < 0) mod += (long)modulus;
             return (ulong)mod;
+        }
+
+        /// <summary>
+        /// Splits the specified array at the selected indices.
+        /// </summary>
+        /// <typeparam name="T">The array object type.</typeparam>
+        /// <param name="array">The array.</param>
+        /// <param name="indices">The indices.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        [NotNull]
+        public static T[][] Split<T>([NotNull]this T[] array, [NotNull] params int[] indices)
+        {
+            int length = array.Length;
+            
+            // Sort indices, removing any out of bounds and adding an end value of length.
+            int[] orderedIndices = indices
+                .Where(i => i < length && i > -1)
+                .OrderBy(i => i)
+                .Concat(new[] {length})
+                .ToArray();
+
+            // If there is only one index we return the original
+            // aray in a single element enumeration.
+            if (orderedIndices.Length < 2)
+                return new[] {array};
+
+            T[][] arrays = new T[orderedIndices.Length][];
+            int start = 0;
+            int chunkIndex = 0;
+            foreach (int index in orderedIndices)
+            {
+                // If end and start are equal, add an empty array.
+                if (index == start)
+                {
+                    arrays[chunkIndex++] = new T[0];
+                    continue;
+                }
+
+                int chunkLength = index - start;
+                T[] chunk = new T[chunkLength];
+                Array.Copy(array, start, chunk, 0, chunkLength);
+                arrays[chunkIndex++] = chunk;
+
+                start = index;
+            }
+            return arrays;
         }
     }
 }

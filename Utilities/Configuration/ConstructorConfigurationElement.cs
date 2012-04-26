@@ -272,7 +272,7 @@ namespace WebApplications.Utilities.Configuration
                             Resources.ConstructorConfigurationElement_GetConstructor_CreatedTypeNotAssignable,
                             instanceType,
                             returnType));
-                create = Expression.Convert(create, returnType);
+                create = create.Convert(returnType);
             }
 
             // Compile the lambda and return

@@ -41,7 +41,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\WebApplications.Utilities\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">./</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -125,12 +125,18 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="ExtendedTupleGeneric.cs" />
-    <Compile Include="Relection\Constructor.cs" />
-    <Compile Include="Relection\Event.cs" />
-    <Compile Include="Relection\Method.cs" />
-    <Compile Include="Relection\Overloadable.cs" />
-    <Compile Include="Relection\Property.cs" />
-    <Compile Include="Relection\Reflector.cs" />
+    <Compile Include="Reflect\CastMethod.cs" />
+    <Compile Include="Reflect\Constructor.cs" />
+    <Compile Include="Reflect\Event.cs" />
+    <Compile Include="Reflect\Field.cs" />
+    <Compile Include="Reflect\GenericArgument.cs" />
+    <Compile Include="Reflect\GenericArgumentLocation.cs" />
+    <Compile Include="Reflect\Indexer.cs" />
+    <Compile Include="Reflect\ISignature.cs" />
+    <Compile Include="Reflect\Method.cs" />
+    <Compile Include="Reflect\Property.cs" />
+    <Compile Include="Reflect\ExtendedType.cs" />
+    <Compile Include="Reflect\TypeSearch.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -167,12 +173,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ReflectionOverloads.tt</DependentUpon>
     </Compile>
-    <Compile Include="Serialization\DelegateSerializer.cs" />
-    <Compile Include="Serialization\ExtendedSerializationBinder.cs" />
-    <Compile Include="Serialization\Serialize.cs" />
-    <Compile Include="Serialization\XElementSurrogate.cs" />
-    <Compile Include="Serialization\XmlElementSurrogate.cs" />
-    <Compile Include="Serialization\XmlFormatter.cs" />
     <Compile Include="Singleton.cs" />
     <Compile Include="SqlExtensions.cs" />
     <Compile Include="Threading\ApmWrap.cs" />

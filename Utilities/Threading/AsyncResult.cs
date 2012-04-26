@@ -167,7 +167,6 @@ namespace WebApplications.Utilities.Threading
         [UsedImplicitly]
         public void SetAsCompleted(Exception exception = null, bool completedSynchronously = false)
         {
-            this._exception = exception.PreserveStackTrace();
             if (Interlocked.Exchange(ref this._completedState, completedSynchronously ? StateCompletedSynchronously : StateCompletedAsynchronously) != StatePending)
             {
                 throw new InvalidOperationException("You can set a result only once");

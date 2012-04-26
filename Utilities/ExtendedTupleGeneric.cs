@@ -112,7 +112,7 @@ namespace WebApplications.Utilities
                     {
                         // If we're not an object convert to object.
                         if (types[tIndex] != typeof(object))
-                            propertyExpression = Expression.Convert(propertyExpression, typeof(object));
+                            propertyExpression = propertyExpression.Convert(typeof(object));
 
                         // Add switch case to return value of property.
                         switchCases.Add(
