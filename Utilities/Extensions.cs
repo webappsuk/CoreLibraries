@@ -28,9 +28,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Security;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
@@ -38,7 +36,6 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Enumerations;
-using WebApplications.Utilities.Serialization;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
@@ -1150,36 +1147,6 @@ namespace WebApplications.Utilities
         public static AsyncCallback WrapCallback<T>([NotNull] this AsyncCallback callback, T data, SynchronizationContext syncContext = null)
         {
             return ApmWrap<T>.WrapCallback(callback, data, syncContext);
-        }
-
-        /// <summary>
-        ///   Use reflection to gain access to the InternalPreserveStackTrace method.
-        /// </summary>
-        private static readonly Action<Exception> _preserveStackTrace =
-            typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.NonPublic | BindingFlags.Instance).
-                Action<Exception>();
-
-        /// <summary>
-        ///   Preserves the stack trace during exception re-throws.
-        /// </summary>
-        /// <param name="exception">The exception thrown.</param>
-        /// <returns>A copy of the exception with the stack trace preserved.</returns>
-        [UsedImplicitly]
-        public static Exception PreserveStackTrace(this Exception exception)
-        {
-            if (exception == null)
-            {
-                return null;
-            }
-            try
-            {
-                _preserveStackTrace(exception);
-            }
-            catch (MethodAccessException)
-            {
-            }
-            // Copy exception.
-            return exception.SerializeToByteArray().Deserialize<Exception>();
         }
 
         /// <summary>
