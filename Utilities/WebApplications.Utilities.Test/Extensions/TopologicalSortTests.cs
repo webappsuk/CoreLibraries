@@ -73,8 +73,8 @@ namespace WebApplications.Utilities.Test.Extensions
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             // Correct order for this set of edges is for the output to be the exact reverse of the input
             CollectionAssert.AreEqual(enumerable.Reverse().ToList(), result.ToList());
-            }
-    
+        }
+
         [TestMethod]
         public void TopologicalSortEdges_NoDependancies_CountMatchesInput()
         {
@@ -82,6 +82,15 @@ namespace WebApplications.Utilities.Test.Extensions
             IEnumerable<KeyValuePair<TestReferenceType, TestReferenceType>> edges = new List<KeyValuePair<TestReferenceType, TestReferenceType>>();
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             Assert.AreEqual(enumerable.Count(), result.Count());
+        }
+
+        [TestMethod]
+        public void TopologicalSortEdges_NoDependancies_IsStable()
+        {
+            IEnumerable<TestReferenceType> enumerable = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            IEnumerable<KeyValuePair<TestReferenceType, TestReferenceType>> edges = new List<KeyValuePair<TestReferenceType, TestReferenceType>>();
+            IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
+            CollectionAssert.AreEqual(enumerable.ToList(),result.ToList());
         }
 
         [TestMethod]
@@ -147,9 +156,137 @@ namespace WebApplications.Utilities.Test.Extensions
             List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
                 enumerable.Skip(1).Zip(enumerable, (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
             // Then add loop by connecting first entry to last
-            edges.Add(new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(),enumerable.Last()));
+            edges.Add(new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.Last()));
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             TestReferenceType firstStep = result.First();
+        }
+
+        [TestMethod]
+        public void TopologicalSortEdges_SimpleDependancyChainWithDuplicateEdges_CountMatchesInput()
+        {
+            IEnumerable<TestReferenceType> enumerable = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            // Edges are such that each entry is dependent on the entry next in the list
+            List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
+                enumerable.Skip(1).Zip(enumerable, (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
+            // Introduce duplicate edge
+            edges.Add(edges[Random.Next(0, edges.Count)]);
+            IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
+            Assert.AreEqual(enumerable.Count(), result.Count());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.ArgumentException))]
+        public void TopologicalSortEdges_SimpleDependancyChainWithDuplicateItems_ThrowsArgumentException()
+        {
+            List<TestReferenceType> items = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            // Edges are such that each entry is dependent on the entry next in the list
+            List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
+                items.Skip(1).Zip(items, (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
+            // Introduce duplicate item
+            items.Add(items[Random.Next(0, items.Count)]);
+            IEnumerable<TestReferenceType> result = items.TopologicalSortEdges(edges);
+            TestReferenceType firstStep = result.First();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(System.InvalidOperationException))]
+        public void TopologicalSortEdges_SimpleDependancyChainWithMissingDependancy_ThrowsAInvalidOperationExceptionOnIteration()
+        {
+            IEnumerable<TestReferenceType> enumerable = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            // Edges are such that each entry is dependent on the entry next in the list
+            List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
+                enumerable.Skip(1).Zip(enumerable, (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
+            // Then add edge making last item depend on an item which is not in the list
+            edges.Add(new KeyValuePair<TestReferenceType, TestReferenceType>(new TestReferenceType(), enumerable.Last()));
+            IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges).ToList();
+        }
+
+        [TestMethod]
+        public void TopologicalSortEdges_SimpleDependancyChainWithMissingDependant_OutputCountMatchesInput()
+        {
+            IEnumerable<TestReferenceType> enumerable = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            // Edges are such that each entry is dependent on the entry next in the list
+            List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
+                enumerable.Skip(1).Zip(enumerable, (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
+            // Then add edge makeing last item depended on by an item which is not in the list
+            edges.Add(new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.Last(), new TestReferenceType()));
+            IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
+            Assert.AreEqual(enumerable.Count(),result.Count());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NullReferenceException))]
+        public void TopologicalSortDependants_CallbackReturnsNull_ThrowsNullReferenceException()
+        {
+            IEnumerable<int> enumerable = Enumerable.Range(1, Random.Next(10, 100)).ToList();
+            IEnumerable<int> result = enumerable.Reverse().TopologicalSortDependants(n => null).ToList();
+        }
+
+        [TestMethod]
+        public void TopologicalSortDependants_SimpleDependancyChain_ResultOrderIsCorrect()
+        {
+            IEnumerable<int> enumerable = Enumerable.Range(1, Random.Next(10, 100)).ToList();
+            IEnumerable<int> result = enumerable.TopologicalSortDependants(n => n > 1 ? new List<int> { n - 1 } : new List<int>());
+            // Correct order is reverse of original sequence
+            CollectionAssert.AreEqual(enumerable.Reverse().ToList(), result.ToList());
+        }
+
+        [TestMethod]
+        public void TopologicalSortDependencies_SimpleDependancyChain_ResultOrderIsCorrect()
+        {
+            IEnumerable<int> enumerable = Enumerable.Range(1, Random.Next(10, 100)).ToList();
+            // reverse is added just to prove sorting actually occurs, as original order is the correct solution
+            IEnumerable<int> result = enumerable.Reverse().TopologicalSortDependencies(n => n > 1 ? new List<int> { n - 1 } : new List<int>());
+            CollectionAssert.AreEqual(enumerable.ToList(), result.ToList());
+        }
+
+        [TestMethod]
+        public void TopologicalSortDependencies_BinaryDependancyTree_EachItemComesAfterItsDependency()
+        {
+            IEnumerable<int> enumerable = Enumerable.Range(1, Random.Next(10, 100)).ToList();
+            // reverse is added just to prove sorting actually occurs, as original order is a correct solution
+            List<int> result = enumerable.Reverse().TopologicalSortDependencies(n => n > 1 ? new List<int> { n / 2 } : new List<int>()).ToList();
+            Assert.IsTrue(result.Select((i, n) => i > result.IndexOf(n / 2)).All(b => b));
+        }
+
+        [TestMethod]
+        public void TopologicalSortDependants_BinaryDependancyTree_EachItemComesAfterItsDependency()
+        {
+            IEnumerable<int> enumerable = Enumerable.Range(1, Random.Next(10, 100)).ToList();
+            // reverse is added just to prove sorting actually occurs, as original order is a correct solution
+            List<int> result = enumerable.Reverse().TopologicalSortDependants(n => Enumerable.Range(0, 2).Select(i=>n*2+i).Where(m=>m<=enumerable.Count())).ToList();
+            Assert.IsTrue(result.Select((i, n) => i > result.IndexOf(n / 2)).All(b => b));
+        }
+
+        [TestMethod]
+        public void TopologicalSortDependants_TwoTiersWithAllItemsOnTopDependantOnAllItemsOnBottom_AllTopItemsComeAfterAllBottomItems()
+        {
+            List<TestReferenceType> top = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            List<TestReferenceType> bottom = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            List<TestReferenceType> result = top.Concat(bottom).TopologicalSortDependants(item => bottom.Contains(item) ? top : new List<TestReferenceType>()).ToList();
+            CollectionAssert.AreEquivalent(result.Take(bottom.Count()).ToList(), bottom);
+            CollectionAssert.AreEquivalent(result.Skip(bottom.Count()).ToList(), top);
+        }
+
+        [TestMethod]
+        public void TopologicalSortDependencies_TwoTiersWithAllItemsOnTopDependantOnAllItemsOnBottom_AllTopItemsComeAfterAllBottomItems()
+        {
+            List<TestReferenceType> top = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            List<TestReferenceType> bottom = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            List<TestReferenceType> result = top.Concat(bottom).TopologicalSortDependencies(item => top.Contains(item) ? bottom : new List<TestReferenceType>()).ToList();
+            CollectionAssert.AreEquivalent(result.Take(bottom.Count()).ToList(), bottom);
+            CollectionAssert.AreEquivalent(result.Skip(bottom.Count()).ToList(), top);
+        }
+
+        [TestMethod]
+        public void TopologicalSortDependencies_TwoTiersWithAllItemsOnTopDependantOnAllItemsOnBottom_IsStable()
+        {
+            // Same test as TopologicalSortDependencies_TwoTiersWithAllItemsOnTopDependantOnAllItemsOnBottom_AllTopItemsComeAfterAllBottomItems but also asserts result is stable
+            List<TestReferenceType> top = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            List<TestReferenceType> bottom = Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
+            List<TestReferenceType> result = top.Concat(bottom).TopologicalSortDependencies(item => top.Contains(item) ? bottom : new List<TestReferenceType>()).ToList();
+            CollectionAssert.AreEqual(result.Take(bottom.Count()).ToList(), bottom);
+            CollectionAssert.AreEqual(result.Skip(bottom.Count()).ToList(), top);
         }
     }
 }
