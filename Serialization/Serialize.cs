@@ -574,6 +574,25 @@ namespace WebApplications.Utilities.Serialization
             return SerializeToByteArray(obj, GetFormatter(context, contextState));
         }
 
+		/// <summary>
+        ///   Serializes object tree to <see cref="byte"/> <see cref="Array"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the objects in the enumeration.</typeparam>
+        /// <param name="enumerable">The enumerable to serialize.</param>
+        /// <param name="formatter">The formatter for the serialized object.</param>
+        /// <returns>
+        ///   <paramref name="enumerable"/> serialized to a <see cref="byte"/> <see cref="Array"/>.
+        /// </returns>
+        [UsedImplicitly]
+        [NotNull]
+        public static byte[] SerializeToByteArray<T>(
+            [NotNull] this IEnumerable<T> enumerable,
+            [NotNull] IFormatter formatter)
+        {
+            return SerializeToByteArray((object)enumerable.ToList(), formatter);
+        }
+
+		
         /// <summary>
         ///   Serializes object tree to <see cref="byte"/> <see cref="Array"/>.
         /// </summary>
