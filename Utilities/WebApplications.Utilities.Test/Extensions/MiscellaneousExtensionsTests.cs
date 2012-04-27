@@ -151,29 +151,54 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void ToEnglish_NegativeNumber_PrefixedByNegative()
         {
-            double value = -Random.Next();
+            long value = -Random.Next();
             Assert.IsTrue(value.ToEnglish().StartsWith("Negative "), "For values less than zero, the result of ToEnglish should begin with 'Negative '.");
         }
 
         [TestMethod]
         public void ToEnglish_NegativeNumber_SameAsPositivePrefixedByWordNegative()
         {
-            double value = Random.Next();
-            Assert.AreEqual(String.Format("Negative {0}",value.ToEnglish()),(-value).ToEnglish(), "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
+            long value = Random.Next();
+            Assert.AreEqual(String.Format("Negative {0}", value.ToEnglish()), (-value).ToEnglish(), "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
+        }
+
+        [TestMethod]
+        public void ToEnglish_NegativeFloatingPointNumber_PrefixedByNegative()
+        {
+            double value = -Random.Next() + Random.NextDouble();
+            Assert.IsTrue(value.ToEnglish().StartsWith("Negative "), "For values less than zero, the result of ToEnglish should begin with 'Negative '.");
+        }
+
+        [TestMethod]
+        public void ToEnglish_NegativeFloatingPointNumber_SameAsPositivePrefixedByWordNegative()
+        {
+            double value = Random.Next() + Random.NextDouble();
+            Assert.AreEqual(String.Format("Negative {0}", value.ToEnglish()), (-value).ToEnglish(), "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
         }
 
         [TestMethod]
         public void ToEnglish_Zero_GivesZero()
         {
-            Assert.Fail("Currently causes an infinite loop");
             Assert.AreEqual("Zero", 0.ToEnglish(), "The result of ToEnglish for the number 0 should be 'Zero'.");
         }
 
         [TestMethod]
-        public void ToEnglish_ValueInHundreds_ProvidesWordAndAfterHundred()
+        public void ToEnglish_FloatingPointZero_GivesZero()
+        {
+            Assert.AreEqual("Zero", 0.0.ToEnglish(), "The result of ToEnglish for the number 0 should be 'Zero'.");
+        }
+
+        [TestMethod]
+        public void ToEnglish_ValueBetweenOneAndTwoHundred_ProvidesWordAndAfterHundred()
         {
             int value = Random.Next(1, 100);
-            Assert.AreEqual(String.Format("One Hundred And {0}",value.ToEnglish()), (100+value).ToEnglish(), "The result of ToEnglish for a number between 101 and 199 should start with 'One Hundred And'.");
+            Assert.AreEqual(String.Format("One Hundred And {0}", value.ToEnglish()), (100 + value).ToEnglish(), "The result of ToEnglish for a number between 101 and 199 should start with 'One Hundred And'.");
+        }
+
+        [TestMethod]
+        public void ToEnglish_ExactlyOneHundred_DoesNotContainAndAfterHundred()
+        {
+            Assert.AreEqual("One Hundred", 100.ToEnglish(), "The result of ToEnglish for a 100 should be 'One Hundred'.");
         }
 
         [TestMethod]
@@ -259,7 +284,7 @@ namespace WebApplications.Utilities.Test.Extentions
         {
             List<int> listA = new List<int>() { 1, 2, 3, 4, 5, 6 };
             List<int> listB = new List<int>() { 1, 2, 3, 99, 5, 6 };
-            Assert.IsTrue(listA.DeepEquals(listB), "DeepEquals should be false for lists of identical length but with different values.");
+            Assert.IsFalse(listA.DeepEquals(listB), "DeepEquals should be false for lists of identical length but with different values.");
         }
 
         [TestMethod]

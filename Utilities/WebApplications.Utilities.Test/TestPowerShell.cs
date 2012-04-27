@@ -32,6 +32,7 @@ namespace WebApplications.Utilities.Test
     [TestClass]
     public class TestPowerShell
     {
+        [Ignore]
         [TestMethod]
         public void TestMethod1()
         {

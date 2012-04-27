@@ -500,24 +500,36 @@ namespace WebApplications.Utilities.Test.Configuration
         private class TestClassWithConstructorWithOutParam
         {
             public string Value { get; private set; }
+            public string ConstructorUsed { get; private set; }
 
             public TestClassWithConstructorWithOutParam(string value, out string outParam)
             {
                 Value = value;
                 outParam = value;
+                ConstructorUsed = "ConstructorWithOutParam";
+            }
+
+            public TestClassWithConstructorWithOutParam(string value)
+            {
+                Value = value;
+                ConstructorUsed = "ConstructorWithoutOutParam";
             }
         }
 
         [TestMethod]
-        public void GetConstructor_TypeHasConstructorWithOutParam_OutParamIsIgnored()
+        public void GetConstructor_TypeHasConstructorWithOutParam_ConstructorWithOutParamIsIgnored()
         {
             ConstructorConfigurationElement constructorConfigurationElement =
                 GenerateConstructorConfigurationElementForType(typeof(TestClassWithConstructorWithOutParam));
 
             string parameterValue = Random.Next().ToString(CultureInfo.InvariantCulture);
             constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "value", Value = parameterValue });
+            constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "outParam", Value = parameterValue, IsRequired = false});
 
-            constructorConfigurationElement.GetConstructor<TestClassWithConstructorWithOutParam>();
+            Func<TestClassWithConstructorWithOutParam> constructor = constructorConfigurationElement.GetConstructor<TestClassWithConstructorWithOutParam>();
+
+            // As the constructor with the out param is ignored, we should find the alternative has been used instead
+            Assert.AreEqual("ConstructorWithoutOutParam", constructor().ConstructorUsed);
         }
 
         private class TestClassWithConstructorWithRefParam
@@ -540,8 +552,9 @@ namespace WebApplications.Utilities.Test.Configuration
 
             string parameterValue = Random.Next().ToString(CultureInfo.InvariantCulture);
             constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "value", Value = parameterValue });
-            constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "refParam", Value = parameterValue });
+            constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "refParam", Value = parameterValue, IsRequired = false });
 
+            // An exception is thrown as no valid cosntructer could be found as a result of the exclusion
             constructorConfigurationElement.GetConstructor<TestClassWithConstructorWithRefParam>();
         }
 

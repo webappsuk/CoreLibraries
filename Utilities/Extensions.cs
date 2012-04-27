@@ -164,7 +164,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public static string ToEnglish(this int number)
         {
-            return ToEnglish((long)number);
+            return ToEnglishProcessInteger(number);
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public static string ToEnglish(this long number)
         {
-            return ToEnglish((double)number);
+            return ToEnglishProcessInteger(number);
         }
 
         /// <summary>
@@ -188,22 +188,22 @@ namespace WebApplications.Utilities
         /// </returns>
         public static string ToEnglish(this double number)
         {
-            string sign = null;
-            if (number < 0)
-            {
-                sign = "Negative";
-                number = Math.Abs(number);
-            }
+
+            string integerString = ToEnglishProcessInteger((long)number);
+
+            number = Math.Abs(number) % 1;
 
             int decimalDigits = 0;
-            Console.WriteLine(number);
-            while (number < 1 ||
-                   (number - Math.Floor(number) > 1e-10))
+
+            if (number > 0)
             {
-                number *= 10;
-                decimalDigits++;
+                while (number < 1 ||
+                       (number - Math.Floor(number) > 1e-10))
+                {
+                    number *= 10;
+                    decimalDigits++;
+                }
             }
-            Console.WriteLine("Total Decimal Digits: {0}", decimalDigits);
 
             string decimalString = null;
             while (decimalDigits-- > 0)
@@ -211,6 +211,23 @@ namespace WebApplications.Utilities
                 int digit = (int)(number % 10);
                 number /= 10;
                 decimalString = _onesMapping[digit] + " " + decimalString;
+            }
+
+            return
+                String.Format(
+                    "{0}{1}{2}",
+                    integerString,
+                    (decimalString != null) ? " Point " : "",
+                    decimalString).Trim();
+        }
+
+        private static string ToEnglishProcessInteger(long number)
+        {
+            string sign = null;
+            if (number < 0)
+            {
+                sign = "Negative";
+                number = Math.Abs(number);
             }
 
             string retVal = null;
@@ -224,7 +241,7 @@ namespace WebApplications.Utilities
                     int numberToProcess = (number >= 1e16) ? 0 : (int)(number % 1000);
                     number = number / 1000;
 
-                    string groupDescription = ProcessGroup(numberToProcess);
+                    string groupDescription = ToEnglishProcessGroup(numberToProcess);
                     if (groupDescription != null)
                     {
                         if (@group > 0)
@@ -238,15 +255,13 @@ namespace WebApplications.Utilities
 
             return
                 String.Format(
-                    "{0}{4}{1}{3}{2}",
+                    "{0}{2}{1}",
                     sign,
                     retVal,
-                    decimalString,
-                    (decimalString != null) ? " Point " : "",
                     (sign != null) ? " " : "").Trim();
         }
 
-        private static string ProcessGroup(int number)
+        private static string ToEnglishProcessGroup(int number)
         {
             int tens = number % 100;
             int hundreds = number / 100;
@@ -256,6 +271,8 @@ namespace WebApplications.Utilities
                 retVal = _onesMapping[hundreds] + " " + _groupMapping[0];
             if (tens > 0)
             {
+                if (hundreds > 0)
+                    retVal += " And";
                 if (tens < 20)
                     retVal += ((retVal != null) ? " " : "") + _onesMapping[tens];
                 else
@@ -468,8 +485,9 @@ namespace WebApplications.Utilities
         {
             return enumerableA == null
                        ? enumerableB == null
+                       : enumerableB == null ? false
                        : enumerableA.Count() == enumerableB.Count() &&
-                         !enumerableA.Any(i => !enumerableB.Contains(i));
+                         enumerableA.All(i => enumerableB.Contains(i));
         }
 
         /// <summary>
@@ -493,8 +511,9 @@ namespace WebApplications.Utilities
         {
             return enumerableA == null
                        ? enumerableB == null
-                       : enumerableA.Count() == enumerableB.Count() &&
-                         !enumerableA.Any(i => !enumerableB.Contains(i, comparer));
+                       : enumerableB == null ? false
+                       : (enumerableA.Count() == enumerableB.Count() &&
+                         enumerableA.All(i => enumerableB.Contains(i, comparer)));
         }
 
         /// <summary>
@@ -859,7 +878,7 @@ namespace WebApplications.Utilities
         /// </remarks>
         public static Int64 GetEpochTime(this DateTime dateTime)
         {
-            return (Int64)(dateTime.ToUniversalTime() - EpochStart).TotalMilliseconds;
+            return (Int64)(dateTime - EpochStart).TotalMilliseconds;
         }
 
         /// <summary>
@@ -890,8 +909,24 @@ namespace WebApplications.Utilities
         ///   <paramref name="input"/> was <see langword="null"/>.
         /// </exception>
         public static string StripHTML(this string input)
-        {
-            return _htmlRegex.Replace(input, String.Empty);
+        { // TODO: a) make more efficient b) question purpose/usage
+            int depthCounter = 0;
+            StringBuilder builder = new StringBuilder(input.Length);
+            foreach (char c in input)
+            {
+                if(c=='<')
+                {
+                    depthCounter++;
+                } else if (depthCounter > 0)
+                {
+                    if (c == '>')
+                        depthCounter--;
+                } else
+                {
+                    builder.Append(c);
+                }
+            }
+            return builder.ToString();
         }
 
         /// <summary>
@@ -947,6 +982,8 @@ namespace WebApplications.Utilities
             }
             else if (lastSpaceIndex > -1)
                 retValue = retValue.Remove(lastSpaceIndex);
+            else
+                retValue = "";
 
             return String.Format("{0}{1}", retValue,
                                  includeEllipsis && retValue.Length < valueToTruncate.Length
