@@ -114,11 +114,7 @@ namespace WebApplications.Testing.Data
             // Add the record set.
             AddRecordSet(recordSetDefinition);
 
-            // Generate fake data.
-            for (int row = 0; row < rows; row++)
-            {
 
-            }
         }
 
         /// <summary>

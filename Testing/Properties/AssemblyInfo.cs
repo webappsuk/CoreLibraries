@@ -21,6 +21,7 @@
 #endregion
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("WebApplications.Testing")]
@@ -34,4 +35,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("1.1.*")]
+
+[assembly: InternalsVisibleTo("WebApplications.Testing.Test, PublicKey="+
+    "0024000004800000940000000602000000240000525341310004000001000100c98369527d33a0" +
+    "e42ce4370a6787476d234d889153a121806de01c29d2c304526c884c8c4b8108a82537d3fb97e0" +
+    "41356a0b6e9ea8e2e3dd391afe868bb6e5b73fa52213f3ba75190c0d054521a41c94bd855af0eb" +
+    "1323c5aa235f1efc92bedcffa80a6b0606098f241e08a5867c11ab17105997bbc2c403de428f80" +
+    "7894529a")]
 

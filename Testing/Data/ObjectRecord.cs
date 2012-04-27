@@ -19,19 +19,13 @@ namespace WebApplications.Testing.Data
         /// The current table definition.
         /// </summary>
         [NotNull]
-        public readonly RecordSetDefinition TableDefinition;
+        public readonly RecordSetDefinition RecordSetDefinition;
 
         /// <summary>
         /// The column values.
         /// </summary>
         [NotNull]
         private readonly object[] _columnValues;
-
-        /// <summary>
-        /// Holds columns as an array.
-        /// </summary>
-        [NotNull]
-        private readonly ColumnDefinition[] _columnsDefinition;
 
         /// <summary>
         /// Gets the column values.
@@ -44,13 +38,39 @@ namespace WebApplications.Testing.Data
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectRecord" /> class.
         /// </summary>
-        /// <param name="tableDefinition">The table definition.</param>
+        /// <param name="recordSetDefinition">The table definition.</param>
+        /// <param name="randomData">if set to <see langword="true" /> fills columns with random data; otherwise fills them with SQL null values.</param>
+        /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) - 
+        /// this is only applicable is <see cref="randomData"/> is set to <see langword="true"/> [Defaults to 0.1 = 10%].</param>
+        /// <remarks></remarks>
+        public ObjectRecord([NotNull]RecordSetDefinition recordSetDefinition, bool randomData = true, double nullProbability = 0.1)
+        {
+            RecordSetDefinition = recordSetDefinition;
+            int columnCount = recordSetDefinition.ColumnsArray.Length;
+            _columnValues = new object[columnCount];
+
+            if (!randomData)
+            {
+                // Just fill with nulls
+                for (int c = 0; c < columnCount; c++)
+                    _columnValues[c] = recordSetDefinition.ColumnsArray[c].NullValue;
+            } else
+            {
+                // Fill values with random data
+                for (int c = 0; c < columnCount; c++)
+                    _columnValues[c] = recordSetDefinition.ColumnsArray[c].GetRandomValue(nullProbability);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectRecord" /> class.
+        /// </summary>
+        /// <param name="recordSetDefinition">The table definition.</param>
         /// <param name="columnValues">The column values.</param>
         /// <remarks></remarks>
-        public ObjectRecord([NotNull]RecordSetDefinition tableDefinition, [NotNull]params object[] columnValues)
+        public ObjectRecord([NotNull]RecordSetDefinition recordSetDefinition, [NotNull]params object[] columnValues)
         {
-            TableDefinition = tableDefinition;
-            _columnsDefinition = TableDefinition.Columns.ToArray();
+            RecordSetDefinition = recordSetDefinition;
             _columnValues = columnValues;
             // TODO Validate column values.
         }
@@ -58,25 +78,25 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public string GetName(int i)
         {
-            return _columnsDefinition[i].Name;
+            return RecordSetDefinition.ColumnsArray[i].Name;
         }
 
         /// <inhertidoc />
         public string GetDataTypeName(int i)
         {
-            return _columnsDefinition[i].MetaType.TypeName;
+            return RecordSetDefinition.ColumnsArray[i].TypeName;
         }
 
         /// <inhertidoc />
         public Type GetFieldType(int i)
         {
-            return _columnsDefinition[i].MetaType.ClassType;
+            return RecordSetDefinition.ColumnsArray[i].ClassType;
         }
 
         /// <inhertidoc />
         public object GetValue(int i)
         {
-            return _columnsDefinition[i];
+            return _columnValues[i];
         }
 
         /// <inhertidoc />
@@ -84,8 +104,8 @@ namespace WebApplications.Testing.Data
         {
             if (values == null)
                 throw new NullReferenceException();
-            int length = values.Length < _columnsDefinition.Length ? values.Length : _columnsDefinition.Length;
-            Array.Copy(_columnsDefinition, values, length);
+            int length = values.Length < _columnValues.Length ? values.Length : _columnValues.Length;
+            Array.Copy(_columnValues, values, length);
             return length;
         }
 
@@ -93,9 +113,9 @@ namespace WebApplications.Testing.Data
         public int GetOrdinal(string name)
         {
             CompareInfo compare = CultureInfo.InvariantCulture.CompareInfo;
-            for (int c =0; c < _columnsDefinition.Length; c++)
+            for (int c =0; c < RecordSetDefinition.ColumnsArray.Length; c++)
             {
-                if (compare.Compare(_columnsDefinition[c].Name, name, CompareOptions.IgnoreCase | CompareOptions.IgnoreKanaType | CompareOptions.IgnoreWidth) == 0)
+                if (compare.Compare(RecordSetDefinition.ColumnsArray[c].Name, name, CompareOptions.IgnoreCase | CompareOptions.IgnoreKanaType | CompareOptions.IgnoreWidth) == 0)
                     return c;
             }
             throw new IndexOutOfRangeException();
@@ -280,19 +300,19 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public int FieldCount
         {
-            get { return _columnsDefinition.Length; }
+            get { return RecordSetDefinition.FieldCount; }
         }
 
         /// <inhertidoc />
         public object this[int i]
         {
-            get { return _columnsDefinition[i]; }
+            get { return GetValue(i); }
         }
 
         /// <inhertidoc />
         public object this[string name]
         {
-            get { return _columnsDefinition[GetOrdinal(name)]; }
+            get { return GetValue(GetOrdinal(name)); }
         }
     }
 }
