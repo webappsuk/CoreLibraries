@@ -55,6 +55,7 @@ namespace WebApplications.Testing.Test
         [TestMethod]
         public void TestRandomiser()
         {
+            // We test the Variant type as it randomly selects one of the other types under the hood.
             Parallel.For(
                 0,
                 999999,

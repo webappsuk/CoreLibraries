@@ -71,9 +71,6 @@ namespace WebApplications.Testing
             return BitConverter.ToDouble(bytes, 0);
         }
 
-        private const int SignMask = unchecked((int) 0x80000000);
-        private const byte DECIMAL_NEG = 0x80;
-        private const byte DECIMAL_ADD = 0x00;
 
         // Scale mask for the flags field. This byte in the flags field contains
         // the power of 10 to divide the Decimal value by. The scale byte must 
@@ -85,10 +82,18 @@ namespace WebApplications.Testing
             random = random ?? RandomGenerator;
 
             // Calculate last byte
-            int msb;
-            do
-                msb = GenerateRandomInt32(random); while ((msb & ~(unchecked((int) 0x80000000) | 0x00FF0000)) != 0 ||
-                                                          (msb & 0x00FF0000) > (28 << 16));
+            // We need a scale from 0-28 and a sign, so calculate a random number between -28 & 28.
+            // This makes +'ves sligthly more common (as 0 is positive) but is faster.
+            int scale = -28 + random.Next(57);
+            int sign = 0;
+            if (scale < 0)
+            {
+                sign = unchecked((int) 0x80000000);
+                scale = -scale;
+            }
+
+            // Now we can create msb.
+            int msb = sign + (scale << 16);
 
 
             return
@@ -648,7 +653,9 @@ namespace WebApplications.Testing
         /// <returns></returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        /// <remarks></remarks>
+        /// <remarks>
+        /// <para>Does not support SqlDbType.Structured.</para>
+        /// </remarks>
         public static object GenerateRandomSqlValue(SqlDbType sqlDbType, int length = -1, double nullProbability = 0.1, bool fill = false, Random random = null)
         {
             random = random ?? RandomGenerator;
@@ -723,12 +730,15 @@ namespace WebApplications.Testing
                             return SqlGeometry.Point(-90 + (random.Next(180000) / 1000), -15069.0 + (random.Next(3013800) / 100),
                                                _validSrids[random.Next(_validSrids.Length)]);
                         default:
-                            int depth = random.Next(1, 10);
-                            int[] values = new int[depth];
-                            for (int a = 0; a < depth; a++)
-                                values[a] = random.Next(100);
-                            return SqlHierarchyId.Parse(string.Join(@"/", values));
-
+                            // TODO this does not generate every possible variation, but it's robust.
+                            int count = random.Next(1, 100);
+                            StringBuilder s = new StringBuilder("/");
+                            for (int a = 0; a < count; a++)
+                            {
+                                s.Append(Math.Abs(GenerateRandomInt32(random)));
+                                s.Append("/");
+                            }
+                            return SqlHierarchyId.Parse(s.ToString());
                     }
                 case SqlDbType.Date:
                     return GenerateRandomDateTime(random).Date;
