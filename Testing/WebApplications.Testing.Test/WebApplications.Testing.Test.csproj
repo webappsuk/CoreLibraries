@@ -61,6 +61,7 @@
     <Compile Include="TestDataRecord.cs" />
     <Compile Include="TestExtensionsTests.cs" />
     <Compile Include="TestExceptionRecord.cs" />
+    <Compile Include="Examples.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

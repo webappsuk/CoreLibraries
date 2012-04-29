@@ -60,11 +60,11 @@
   <ItemGroup>
     <Compile Include="Data\ColumnDefinition.cs" />
     <Compile Include="Data\ExceptionRecord.cs" />
-    <Compile Include="Data\IObjectRecordSet.cs" />
+    <Compile Include="Data\IObjectSet.cs" />
     <Compile Include="Data\ObjectRecord.cs" />
     <Compile Include="Data\ObjectReader.cs" />
-    <Compile Include="Data\ObjectRecordSet.cs" />
-    <Compile Include="Data\RandomRecordSet.cs" />
+    <Compile Include="Data\ObjectSet.cs" />
+    <Compile Include="Data\RandomSet.cs" />
     <Compile Include="Data\RecordSetDefinition.cs" />
     <Compile Include="Data\MetaType.cs" />
     <Compile Include="Data\SqlErrorCollectionPrototype.cs" />

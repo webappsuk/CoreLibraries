@@ -13,7 +13,7 @@ namespace WebApplications.Testing.Data
     /// Holds a collection of records.
     /// </summary>
     /// <remarks></remarks>
-    public class ObjectRecordSet : IObjectRecordSet, ICollection<IObjectRecord>
+    public class ObjectSet : IObjectSet, ICollection<IObjectRecord>
     {
         /// <summary>
         /// The underlying list of records.
@@ -28,12 +28,12 @@ namespace WebApplications.Testing.Data
         private readonly RecordSetDefinition _definition;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectRecordSet" /> class.
+        /// Initializes a new instance of the <see cref="ObjectSet" /> class.
         /// </summary>
         /// <param name="recordSetDefinition">The record set definition.</param>
         /// <param name="records">The records.</param>
         /// <remarks></remarks>
-        public ObjectRecordSet([NotNull]RecordSetDefinition recordSetDefinition, IEnumerable<IObjectRecord> records = null)
+        public ObjectSet([NotNull]RecordSetDefinition recordSetDefinition, IEnumerable<IObjectRecord> records = null)
         {
             Contract.Requires(recordSetDefinition != null);
             _definition = recordSetDefinition;

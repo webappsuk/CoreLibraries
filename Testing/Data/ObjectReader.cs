@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace WebApplications.Testing.Data
@@ -12,19 +13,18 @@ namespace WebApplications.Testing.Data
     /// The object reader.
     /// </summary>
     /// <remarks></remarks>
-    public class ObjectReader : IDataReader, ICollection<IObjectRecordSet>
+    public class ObjectReader : IDataReader, ICollection<IObjectSet>
     {
         /// <summary>
         /// Holds the internal record sets.
         /// </summary>
-        [NotNull]
-        private readonly List<IObjectRecordSet> _recordSets = new List<IObjectRecordSet>();
+        [NotNull] private readonly List<IObjectSet> _recordSets;
 
         /// <summary>
         /// The internal enumeror over the sets.
         /// </summary>
         [CanBeNull]
-        private IEnumerator<IObjectRecordSet> _setEnumerator;
+        private IEnumerator<IObjectSet> _setEnumerator;
 
         /// <summary>
         /// The internal enumeror over the records in the current set.
@@ -40,9 +40,13 @@ namespace WebApplications.Testing.Data
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectReader" /> class.
         /// </summary>
+        /// <param name="recordSets">The record sets.</param>
         /// <remarks></remarks>
-        private ObjectReader()
+        public ObjectReader(IEnumerable<IObjectSet> recordSets = null)
         {
+            _recordSets = recordSets == null
+                              ? new List<IObjectSet>()
+                              : recordSets.ToList();
         }
 
         /// <summary>
@@ -51,7 +55,7 @@ namespace WebApplications.Testing.Data
         /// <value>The current record.</value>
         /// <remarks></remarks>
         [NotNull]
-        public IObjectRecordSet CurrentSet
+        public IObjectSet CurrentSet
         {
             get
             {
@@ -62,7 +66,7 @@ namespace WebApplications.Testing.Data
                 if (_setEnumerator == null)
                     _setEnumerator = _recordSets.GetEnumerator();
 
-                IObjectRecordSet currentSet = _setEnumerator.Current;
+                IObjectSet currentSet = _setEnumerator.Current;
                 if (currentSet == null)
                     throw new InvalidOperationException("Reached end of recordsets.");
 
@@ -373,7 +377,7 @@ namespace WebApplications.Testing.Data
         }
 
         /// <inheritdoc/>
-        public IEnumerator<IObjectRecordSet> GetEnumerator()
+        public IEnumerator<IObjectSet> GetEnumerator()
         {
             return _recordSets.GetEnumerator();
         }
@@ -385,7 +389,7 @@ namespace WebApplications.Testing.Data
         }
 
         /// <inheritdoc/>
-        public void Add(IObjectRecordSet item)
+        public void Add(IObjectSet item)
         {
             if (_isClosed)
                 throw new InvalidOperationException("Data reader is closed.");
@@ -407,19 +411,19 @@ namespace WebApplications.Testing.Data
         }
 
         /// <inheritdoc/>
-        public bool Contains(IObjectRecordSet item)
+        public bool Contains(IObjectSet item)
         {
             return _recordSets.Contains(item);
         }
 
         /// <inheritdoc/>
-        public void CopyTo(IObjectRecordSet[] array, int arrayIndex)
+        public void CopyTo(IObjectSet[] array, int arrayIndex)
         {
             _recordSets.CopyTo(array, arrayIndex);
         }
 
         /// <inheritdoc/>
-        public bool Remove(IObjectRecordSet item)
+        public bool Remove(IObjectSet item)
         {
             if (_isClosed)
                 throw new InvalidOperationException("Data reader is closed.");

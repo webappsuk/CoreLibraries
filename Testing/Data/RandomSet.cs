@@ -9,17 +9,17 @@ namespace WebApplications.Testing.Data
     /// Create a random record set.
     /// </summary>
     /// <remarks></remarks>
-    public class RandomRecordSet : ObjectRecordSet
+    public class RandomSet : ObjectSet
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomRecordSet" /> class.
+        /// Initializes a new instance of the <see cref="RandomSet" /> class.
         /// </summary>
         /// <param name="columns">The number of columns, if less than one, then a random number is chosen.</param>
         /// <param name="minRows">The minimum number of rows [defaults to 0].</param>
         /// <param name="maxRows">The maximum number of rows [defaults to 1000].</param>
         /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) [Defaults to 0.1 = 10%].</param>
         /// <remarks></remarks>
-        public RandomRecordSet(
+        public RandomSet(
             int columns = 0,
             int minRows = 0,
             int maxRows = 1000,
@@ -30,7 +30,7 @@ namespace WebApplications.Testing.Data
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomRecordSet" /> class.
+        /// Initializes a new instance of the <see cref="RandomSet" /> class.
         /// </summary>
         /// <param name="recordSetDefinition">The record set definition.</param>
         /// <param name="minRows">The min rows.</param>
@@ -38,7 +38,7 @@ namespace WebApplications.Testing.Data
         /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) [Defaults to 0.1 = 10%].</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        public RandomRecordSet([NotNull]RecordSetDefinition recordSetDefinition, int minRows = 0, int maxRows = 1000, double nullProbability = 0.1)
+        public RandomSet([NotNull]RecordSetDefinition recordSetDefinition, int minRows = 0, int maxRows = 1000, double nullProbability = 0.1)
             : base(recordSetDefinition, GenerateRecords(recordSetDefinition, minRows, maxRows, nullProbability))
         {
         }

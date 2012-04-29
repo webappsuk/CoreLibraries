@@ -8,7 +8,7 @@ namespace WebApplications.Testing.Data
     /// Defines a collection of records.
     /// </summary>
     /// <remarks></remarks>
-    public interface IObjectRecordSet : IEnumerable<IObjectRecord>
+    public interface IObjectSet : IEnumerable<IObjectRecord>
     {
         /// <summary>
         /// Gets the definition.
