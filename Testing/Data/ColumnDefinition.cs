@@ -68,6 +68,9 @@ namespace WebApplications.Testing.Data
         /// </remarks>
         public readonly bool Fill;
 
+        /// <summary>
+        /// The column name.
+        /// </summary>
         [NotNull]
         public readonly string Name;
         
@@ -333,7 +336,7 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public object GetRandomValue(double nullProbability = 0.0)
         {
-            return Tester.GenerateRandomSqlValue(SqlDbType, FixedLength, nullProbability, Fill);
+            return Tester.RandomGenerator.GenerateRandomSqlValue(SqlDbType, FixedLength, nullProbability, Fill);
         }
 
         public static readonly DateTime MinSmallDateTime = new DateTime(1990, 1, 1);
@@ -364,7 +367,8 @@ namespace WebApplications.Testing.Data
                 case SqlDbType.VarBinary:
                     byte[] bytes = (byte[])value;
                     sqlValue = bytes;
-                    return bytes.Length <= FixedLength;
+                    return FixedLength < 0 ||
+                        (bytes.Length <= FixedLength);
                 case SqlDbType.Bit:
                     sqlValue = (bool) value;
                     return true;
@@ -373,7 +377,8 @@ namespace WebApplications.Testing.Data
                 case SqlDbType.VarChar:
                     string s = (string) value;
                     sqlValue = s;
-                    return s.Length <= FixedLength;
+                    return FixedLength < 0 ||
+                        (s.Length <= FixedLength);
                 case SqlDbType.DateTime:
                 case SqlDbType.DateTime2:
                     sqlValue = (DateTime) value;
@@ -393,7 +398,8 @@ namespace WebApplications.Testing.Data
                 case SqlDbType.Xml:
                     string ns = (string)value;
                     sqlValue = ns;
-                    return ns.Length <= (FixedLength/2);
+                    return FixedLength < 0 ||
+                        (ns.Length <= (FixedLength/2));
                 case SqlDbType.Real:
                     sqlValue = (float)value;
                     return true;
@@ -434,6 +440,16 @@ namespace WebApplications.Testing.Data
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return string.Format("Column #{0} \"{1}\" {2}{3}",
+                                 Ordinal,
+                                 Name,
+                                 SqlDbType,
+                                 IsFixedLength ? "[" + FixedLength + "]" : string.Empty);
         }
     }
 }

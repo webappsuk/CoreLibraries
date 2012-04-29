@@ -1,291 +1,324 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 
 namespace WebApplications.Testing.Data
 {
-    public class ObjectReader : IDataReader
+    /// <summary>
+    /// The object reader.
+    /// </summary>
+    /// <remarks></remarks>
+    public class ObjectReader : IDataReader, ICollection<IObjectRecordSet>
     {
         /// <summary>
-        /// The internal enumeror.
+        /// Holds the internal record sets.
         /// </summary>
         [NotNull]
-        private readonly IEnumerator<object[]> _enumerator;
-        
+        private readonly List<IObjectRecordSet> _recordSets = new List<IObjectRecordSet>();
+
+        /// <summary>
+        /// The internal enumeror over the sets.
+        /// </summary>
+        [CanBeNull]
+        private IEnumerator<IObjectRecordSet> _setEnumerator;
+
+        /// <summary>
+        /// The internal enumeror over the records in the current set.
+        /// </summary>
+        [CanBeNull]
+        private IEnumerator<IObjectRecord> _recordEnumerator;
+
+        /// <summary>
+        /// Whether the reader is closed.
+        /// </summary>
+        private bool _isClosed;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectReader" /> class.
         /// </summary>
-        /// <param name="objects">The objects.</param>
         /// <remarks></remarks>
         private ObjectReader()
         {
         }
 
-        public void AddRecordSet(RecordSetDefinition recordSetDefinition)
-        {
-            
-        }
-
         /// <summary>
-        /// Adds a random record set.
+        /// Gets the current record.
         /// </summary>
-        /// <param name="maxColumns">The max number of columns, recordset will have between 1 and max columns inclusive [defaults to 10].</param>
-        /// <param name="minRows">The minimum number of rows [defaults to 0].</param>
-        /// <param name="maxRows">The maximum number of rows [defaults to 1000].</param>
+        /// <value>The current record.</value>
         /// <remarks></remarks>
-        public void AddRandomRecordSet(
-            int maxColumns = 10,
-            int minRows = 0,
-            int maxRows = 1000)
+        [NotNull]
+        public IObjectRecordSet CurrentSet
         {
-            if (maxColumns < 1)
-                throw new ArgumentOutOfRangeException("maxColumns", maxColumns,
-                                                      String.Format(
-                                                          "The maximum number of columns '{0}' must be greater than 1.",
-                                                          maxColumns));
-
-            int columnCounts = Tester.RandomGenerator.Next(maxRows) + 1;
-            string[] columnNames = new string[columnCounts];
-            Type[] types = new Type[columnCounts];
-
-        }
-
-        public void AddRandomRecordSet(
-            [NotNull]string[] columnNames,
-            [CanBeNull]Type[] columnTypes = null,
-            int minRows = 0,
-            int maxRows = 1000)
-        {
-            int columnCount = columnNames.Length;
-            if (columnTypes != null)
+            get
             {
-                if (columnTypes.Length != columnCount)
-                    throw new ArgumentOutOfRangeException("columnTypes", columnTypes,
-                                                          String.Format(
-                                                              "The number of column types '{0}' must match the number of column names '{1}'.",
-                                                              columnTypes.Length,
-                                                              columnCount));
+                if (_isClosed)
+                    throw new InvalidOperationException("Data reader is closed.");
+
+                // Create a set enumerator.
+                if (_setEnumerator == null)
+                    _setEnumerator = _recordSets.GetEnumerator();
+
+                IObjectRecordSet currentSet = _setEnumerator.Current;
+                if (currentSet == null)
+                    throw new InvalidOperationException("Reached end of recordsets.");
+
+                return currentSet;
             }
-
-            ColumnDefinition[] columnDefinition = new ColumnDefinition[columnCount];
-            for (int c = 0; c < columnCount; c++)
-            {
-                Type columnType = columnTypes != null
-                                      ? columnTypes[c]
-                                      : typeof (int); // TODO Randomise
-
-                // TODO tableDefinition.AddColumn(new SqlColumn(c, columnNames[c],));
-            }
-
-            RecordSetDefinition recordSetDefinition = new RecordSetDefinition(columnDefinition);
-
-            // Add the record set with the new fake table definition.
-            AddRandomRecordSet(recordSetDefinition, minRows, maxRows);
-        }
-
-        public void AddRandomRecordSet(RecordSetDefinition recordSetDefinition, int minRows = 0, int maxRows = 1000)
-        {
-            if (minRows < 0)
-                throw new ArgumentOutOfRangeException("minRows", minRows,
-                                                      String.Format(
-                                                          "The minimum number of rows '{0}' cannot be negative.",
-                                                          minRows));
-            if (maxRows < 0)
-                throw new ArgumentOutOfRangeException("maxRows", maxRows,
-                                                      String.Format(
-                                                          "The minimum number of rows '{0}' cannot be negative.",
-                                                          maxRows));
-
-            if (minRows > maxRows)
-            {
-                throw new ArgumentOutOfRangeException("minRows", minRows,
-                                                      String.Format(
-                                                          "The minimum number of rows '{0}' cannot exceed the maximum number of rows '{1}'.",
-                                                          minRows,
-                                                          maxRows));
-            }
-
-            // Calculate number of rows.
-            int rows = minRows == maxRows
-                           ? minRows
-                           : Tester.RandomGenerator.Next(minRows, maxRows);
-            
-            // Add the record set.
-            AddRecordSet(recordSetDefinition);
-
-
         }
 
         /// <summary>
-        /// Resets the current enumerator.
+        /// Gets the current record.
+        /// </summary>
+        /// <value>The current record.</value>
+        /// <remarks></remarks>
+        [NotNull]
+        public IObjectRecord Current
+        {
+            get
+            {
+                if (_isClosed)
+                    throw new InvalidOperationException("Data reader is closed.");
+
+                // If we haven't got a record enumerator create one.
+                if (_recordEnumerator == null)
+                    _recordEnumerator = CurrentSet.GetEnumerator();
+
+                if (_recordEnumerator.Current == null)
+                    throw new InvalidOperationException("Reached end of the current recordset.");
+
+                return _recordEnumerator.Current;
+            }
+        }
+
+        /// <summary>
+        /// Resets the data reader, clearing enumerators, re-opening and allowing recordset collection to be modified.
         /// </summary>
         /// <remarks></remarks>
         public void Reset()
         {
-            _enumerator.Reset();
+            _isClosed = false;
+            Dispose();
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            _enumerator.Dispose();
+            if (_setEnumerator != null)
+                _setEnumerator.Dispose();
+            _setEnumerator = null;
+            if (_recordEnumerator != null)
+                _recordEnumerator.Dispose();
+            _recordEnumerator = null;
         }
 
         /// <inheritdoc/>
         public string GetName(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return CurrentSet.Definition[i].Name;
         }
 
         /// <inheritdoc/>
         public string GetDataTypeName(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return CurrentSet.Definition[i].TypeName;
         }
 
         /// <inheritdoc/>
         public Type GetFieldType(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return CurrentSet.Definition[i].ClassType;
         }
 
         /// <inheritdoc/>
         public object GetValue(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetValue(i);
         }
 
         /// <inheritdoc/>
         public int GetValues(object[] values)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetValues(values);
         }
 
         /// <inheritdoc/>
         public int GetOrdinal(string name)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return CurrentSet.Definition.GetOrdinal(name);
         }
 
         /// <inheritdoc/>
         public bool GetBoolean(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetBoolean(i);
         }
 
         /// <inheritdoc/>
         public byte GetByte(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetByte(i);
         }
 
         /// <inheritdoc/>
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetBytes(i, fieldOffset, buffer, bufferoffset, length);
         }
 
         /// <inheritdoc/>
         public char GetChar(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetChar(i);
         }
 
         /// <inheritdoc/>
         public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetChars(i, fieldoffset, buffer, bufferoffset, length);
         }
 
         /// <inheritdoc/>
         public Guid GetGuid(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetGuid(i);
         }
 
         /// <inheritdoc/>
         public short GetInt16(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetInt16(i);
         }
 
         /// <inheritdoc/>
         public int GetInt32(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetInt32(i);
         }
 
         /// <inheritdoc/>
         public long GetInt64(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetInt64(i);
         }
 
         /// <inheritdoc/>
         public float GetFloat(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetFloat(i);
         }
 
         /// <inheritdoc/>
         public double GetDouble(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetDouble(i);
         }
 
         /// <inheritdoc/>
         public string GetString(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetString(i);
         }
 
         /// <inheritdoc/>
         public decimal GetDecimal(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetDecimal(i);
         }
 
         /// <inheritdoc/>
         public DateTime GetDateTime(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetDateTime(i);
         }
 
         /// <inheritdoc/>
         public IDataReader GetData(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.GetData(i);
         }
 
         /// <inheritdoc/>
         public bool IsDBNull(int i)
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            return Current.IsDBNull(i);
         }
 
         /// <inheritdoc/>
         public int FieldCount
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                if (_isClosed)
+                    throw new InvalidOperationException("Data reader is closed.");
+                return CurrentSet.Definition.FieldCount;
+            }
         }
 
         /// <inheritdoc/>
         object IDataRecord.this[int i]
         {
-            get { throw new NotImplementedException(); }
+            get { return GetValue(i); }
         }
 
         /// <inheritdoc/>
         object IDataRecord.this[string name]
         {
-            get { throw new NotImplementedException(); }
+            get { return GetValue(GetOrdinal(name)); }
         }
 
         /// <inheritdoc/>
         public void Close()
         {
-            throw new NotImplementedException();
+            Dispose();
+            _isClosed = true;
         }
 
         /// <inheritdoc/>
@@ -297,13 +330,28 @@ namespace WebApplications.Testing.Data
         /// <inheritdoc/>
         public bool NextResult()
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            _recordEnumerator = null;
+            
+            // Create set enumerator if not present.
+            if (_setEnumerator == null)
+                _setEnumerator = _recordSets.GetEnumerator();
+
+            return _setEnumerator.MoveNext();
         }
 
         /// <inheritdoc/>
         public bool Read()
         {
-            throw new NotImplementedException();
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+
+            // If we haven't got a record enumerator create one.
+            if (_recordEnumerator == null)
+                _recordEnumerator = CurrentSet.GetEnumerator();
+
+            return _recordEnumerator.Current != null && _recordEnumerator.MoveNext();
         }
 
         /// <inheritdoc/>
@@ -315,13 +363,82 @@ namespace WebApplications.Testing.Data
         /// <inheritdoc/>
         public bool IsClosed
         {
-            get { throw new NotImplementedException(); }
+            get { return _isClosed; }
         }
 
         /// <inheritdoc/>
         public int RecordsAffected
         {
             get { return -1; }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerator<IObjectRecordSet> GetEnumerator()
+        {
+            return _recordSets.GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        public void Add(IObjectRecordSet item)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            if (_setEnumerator != null)
+                throw new InvalidOperationException("Cannot modify data reader once it has started being read.");
+
+            _recordSets.Add(item);
+        }
+
+        /// <inheritdoc/>
+        public void Clear()
+        {
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            if (_setEnumerator != null)
+                throw new InvalidOperationException("Cannot modify data reader once it has started being read.");
+
+            _recordSets.Clear();
+        }
+
+        /// <inheritdoc/>
+        public bool Contains(IObjectRecordSet item)
+        {
+            return _recordSets.Contains(item);
+        }
+
+        /// <inheritdoc/>
+        public void CopyTo(IObjectRecordSet[] array, int arrayIndex)
+        {
+            _recordSets.CopyTo(array, arrayIndex);
+        }
+
+        /// <inheritdoc/>
+        public bool Remove(IObjectRecordSet item)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            if (_setEnumerator != null)
+                throw new InvalidOperationException("Cannot modify data reader once it has started being read.");
+
+            return _recordSets.Remove(item);
+        }
+
+        /// <inheritdoc/>
+        public int Count
+        {
+            get { return _recordSets.Count; }
+        }
+
+        /// <inheritdoc/>
+        public bool IsReadOnly
+        {
+            get { return false; }
         }
     }
 }

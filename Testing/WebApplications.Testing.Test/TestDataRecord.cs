@@ -49,7 +49,7 @@ namespace WebApplications.Testing.Test
 
             var timeSpanTicks = TimeSpan.FromHours(28).Ticks;
 
-            ObjectRecord record = new ObjectRecord(recordSetDefinition);
+            ObjectRecord record = new ObjectRecord(recordSetDefinition, 1, DateTime.Now, "MyName");
         }
 
         [TestMethod]
@@ -58,8 +58,8 @@ namespace WebApplications.Testing.Test
             // We test the Variant type as it randomly selects one of the other types under the hood.
             Parallel.For(
                 0,
-                999999,
-                i => Tester.GenerateRandomSqlValue(SqlDbType.Variant, -1, 0.05));
+                99999,
+                i => Tester.RandomGenerator.GenerateRandomSqlValue(SqlDbType.Variant, -1, 0.05));
 
         }
     }

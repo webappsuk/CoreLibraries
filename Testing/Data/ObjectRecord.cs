@@ -9,17 +9,28 @@ using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Testing.Data
 {
+    public interface IObjectRecord : IDataRecord
+    {
+        /// <summary>
+        /// Gets the record set definition.
+        /// </summary>
+        /// <value>The record set definition.</value>
+        /// <remarks></remarks>
+        [NotNull]
+        RecordSetDefinition RecordSetDefinition { get; }
+    }
+
     /// <summary>
     /// Implements a record.
     /// </summary>
     /// <remarks></remarks>
-    public class ObjectRecord : IDataRecord
+    public class ObjectRecord : IObjectRecord
     {
         /// <summary>
         /// The current table definition.
         /// </summary>
         [NotNull]
-        public readonly RecordSetDefinition RecordSetDefinition;
+        private readonly RecordSetDefinition _recordSetDefinition;
 
         /// <summary>
         /// The column values.
@@ -43,22 +54,22 @@ namespace WebApplications.Testing.Data
         /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) - 
         /// this is only applicable is <see cref="randomData"/> is set to <see langword="true"/> [Defaults to 0.1 = 10%].</param>
         /// <remarks></remarks>
-        public ObjectRecord([NotNull]RecordSetDefinition recordSetDefinition, bool randomData = true, double nullProbability = 0.1)
+        public ObjectRecord([NotNull]RecordSetDefinition recordSetDefinition, bool randomData = false, double nullProbability = 0.1)
         {
-            RecordSetDefinition = recordSetDefinition;
-            int columnCount = recordSetDefinition.ColumnsArray.Length;
+            _recordSetDefinition = recordSetDefinition;
+            int columnCount = recordSetDefinition.FieldCount;
             _columnValues = new object[columnCount];
 
             if (!randomData)
             {
                 // Just fill with nulls
                 for (int c = 0; c < columnCount; c++)
-                    _columnValues[c] = recordSetDefinition.ColumnsArray[c].NullValue;
+                    _columnValues[c] = recordSetDefinition[c].NullValue;
             } else
             {
                 // Fill values with random data
                 for (int c = 0; c < columnCount; c++)
-                    _columnValues[c] = recordSetDefinition.ColumnsArray[c].GetRandomValue(nullProbability);
+                    _columnValues[c] = recordSetDefinition[c].GetRandomValue(nullProbability);
             }
         }
 
@@ -67,30 +78,44 @@ namespace WebApplications.Testing.Data
         /// </summary>
         /// <param name="recordSetDefinition">The table definition.</param>
         /// <param name="columnValues">The column values.</param>
-        /// <remarks></remarks>
+        /// <remarks>
+        /// If the number of column values supplied is less than the number of columns then the remaining columns are set to
+        /// their equivalent null value.
+        /// </remarks>
         public ObjectRecord([NotNull]RecordSetDefinition recordSetDefinition, [NotNull]params object[] columnValues)
         {
-            RecordSetDefinition = recordSetDefinition;
-            _columnValues = columnValues;
-            // TODO Validate column values.
+            int length = columnValues.Length;
+            int columns = recordSetDefinition.FieldCount;
+            if (length > columns)
+                throw new ArgumentException(
+                    string.Format(
+                        "The number of values specified '{0}' cannot exceed the number of expected columns '{1}'.",
+                        length, columns), "columnValues");
+
+            _recordSetDefinition = recordSetDefinition;
+            _columnValues = new object[recordSetDefinition.FieldCount];
+
+            // Import values or set to null.
+            for (int i = 0; i < columns; i++)
+                this[i] = i < length ? columnValues[i] : _recordSetDefinition[i].NullValue;
         }
 
         /// <inhertidoc />
         public string GetName(int i)
         {
-            return RecordSetDefinition.ColumnsArray[i].Name;
+            return _recordSetDefinition[i].Name;
         }
 
         /// <inhertidoc />
         public string GetDataTypeName(int i)
         {
-            return RecordSetDefinition.ColumnsArray[i].TypeName;
+            return _recordSetDefinition[i].TypeName;
         }
 
         /// <inhertidoc />
         public Type GetFieldType(int i)
         {
-            return RecordSetDefinition.ColumnsArray[i].ClassType;
+            return _recordSetDefinition[i].ClassType;
         }
 
         /// <inhertidoc />
@@ -112,13 +137,7 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public int GetOrdinal(string name)
         {
-            CompareInfo compare = CultureInfo.InvariantCulture.CompareInfo;
-            for (int c =0; c < RecordSetDefinition.ColumnsArray.Length; c++)
-            {
-                if (compare.Compare(RecordSetDefinition.ColumnsArray[c].Name, name, CompareOptions.IgnoreCase | CompareOptions.IgnoreKanaType | CompareOptions.IgnoreWidth) == 0)
-                    return c;
-            }
-            throw new IndexOutOfRangeException();
+            return _recordSetDefinition.GetOrdinal(name);
         }
 
         /// <inhertidoc />
@@ -300,19 +319,43 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public int FieldCount
         {
-            get { return RecordSetDefinition.FieldCount; }
+            get { return _recordSetDefinition.FieldCount; }
         }
 
         /// <inhertidoc />
         public object this[int i]
         {
             get { return GetValue(i); }
+            set
+            {
+                // Check to see if value is changing
+                if (_columnValues[i] == value)
+                    return;
+                
+                // Validate value
+                object sqlValue;
+                if (!_recordSetDefinition[i].Validate(value, out sqlValue))
+                    throw new ArgumentException(
+                        string.Format(
+                            "Cannot set the value of column '{0}' to {1}.",
+                            i,
+                            value == null ? "null" : "'" + value + "'"), 
+                            "value");
+
+                _columnValues[i] = sqlValue;
+            }
         }
 
         /// <inhertidoc />
         public object this[string name]
         {
             get { return GetValue(GetOrdinal(name)); }
+        }
+
+        /// <inhertidoc />
+        public RecordSetDefinition RecordSetDefinition
+        {
+            get { return _recordSetDefinition; }
         }
     }
 }

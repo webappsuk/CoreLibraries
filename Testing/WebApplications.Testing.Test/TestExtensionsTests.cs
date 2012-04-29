@@ -12,10 +12,11 @@ namespace WebApplications.Testing.Test
         public void Stopwatch_ToString_ReturnsCorrectFormat()
         {
             Stopwatch s = new Stopwatch();
+            Random random = Tester.RandomGenerator;
             s.Start();
-            Thread.Sleep(Tester.RandomGenerator.Next(0, 1000));
+            Thread.Sleep(random.Next(0, 1000));
             s.Stop();
-            string randomString = Tester.GenerateRandomString();
+            string randomString = random.GenerateRandomString();
             Assert.AreEqual(
                 String.Format("Test stopwatch {0} completed in {1}ms.", randomString,
                               (s.ElapsedTicks*1000M)/Stopwatch.Frequency),

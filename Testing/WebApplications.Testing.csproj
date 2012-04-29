@@ -59,10 +59,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\ColumnDefinition.cs" />
+    <Compile Include="Data\ExceptionRecord.cs" />
+    <Compile Include="Data\IObjectRecordSet.cs" />
     <Compile Include="Data\ObjectRecord.cs" />
     <Compile Include="Data\ObjectReader.cs" />
+    <Compile Include="Data\ObjectRecordSet.cs" />
+    <Compile Include="Data\RandomRecordSet.cs" />
     <Compile Include="Data\RecordSetDefinition.cs" />
     <Compile Include="Data\MetaType.cs" />
+    <Compile Include="Data\SqlErrorCollectionPrototype.cs" />
+    <Compile Include="Data\SqlErrorPrototype.cs" />
+    <Compile Include="Data\SqlExceptionPrototype.cs" />
     <Compile Include="Data\SqlUdtInfo.cs" />
     <Compile Include="Data\TdsDateTime.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

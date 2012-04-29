@@ -5,9 +5,11 @@ using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using Microsoft.SqlServer.Types;
+using WebApplications.Testing.Data;
 
 namespace WebApplications.Testing
 {
@@ -17,67 +19,121 @@ namespace WebApplications.Testing
     public static class Tester
     {
         /// <summary>
+        /// Creates one random generator per thread.
+        /// </summary>
+        [NotNull]
+        private static readonly ThreadLocal<Random> _randomGenerators = new ThreadLocal<Random>(() => new Random());
+
+        /// <summary>
         /// A random number generator.
         /// </summary>
-        [NotNull] public static readonly Random RandomGenerator = new Random();
+        [NotNull] public static Random RandomGenerator { get { return _randomGenerators.Value; }}
 
-        public static bool GenerateRandomBoolean(Random random = null)
+        /// <summary>
+        /// Generates a random boolean.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static bool GenerateRandomBoolean(this Random random )
         {
             return (random ?? RandomGenerator).Next(2) == 1;
         }
 
-        public static byte GenerateRandomByte(Random random = null)
+        /// <summary>
+        /// Generates a random byte.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static byte GenerateRandomByte(this Random random)
         {
             return (byte) (random ?? RandomGenerator).Next(0x100);
         }
 
-        public static char GenerateRandomChar(Random random = null)
+        /// <summary>
+        /// Generates a random char.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static char GenerateRandomChar(this Random random)
         {
             return (char) (random ?? RandomGenerator).Next(0x10000);
         }
 
-        public static short GenerateRandomInt16(Random random = null)
+        /// <summary>
+        /// Generates a random Int16.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static short GenerateRandomInt16(this Random random)
         {
             byte[] bytes = new byte[2];
             (random ?? RandomGenerator).NextBytes(bytes);
             return BitConverter.ToInt16(bytes, 0);
         }
 
-        public static int GenerateRandomInt32(Random random = null)
+        /// <summary>
+        /// Generates a random Int32.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static int GenerateRandomInt32(this Random random)
         {
             byte[] bytes = new byte[4];
             (random ?? RandomGenerator).NextBytes(bytes);
             return BitConverter.ToInt32(bytes, 0);
         }
 
-        public static long GenerateRandomInt64(Random random = null)
+        /// <summary>
+        /// Generates a random Int64.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static long GenerateRandomInt64(this Random random)
         {
             byte[] bytes = new byte[8];
             (random ?? RandomGenerator).NextBytes(bytes);
             return BitConverter.ToInt64(bytes, 0);
         }
 
-        public static float GenerateRandomFloat(Random random = null)
+        /// <summary>
+        /// Generates a random float.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static float GenerateRandomFloat(this Random random)
         {
             byte[] bytes = new byte[4];
             (random ?? RandomGenerator).NextBytes(bytes);
             return BitConverter.ToSingle(bytes, 0);
         }
 
-        public static double GenerateRandomDouble(Random random = null)
+        /// <summary>
+        /// Generates a random double.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static double GenerateRandomDouble(this Random random)
         {
             byte[] bytes = new byte[8];
             (random ?? RandomGenerator).NextBytes(bytes);
             return BitConverter.ToDouble(bytes, 0);
         }
 
-
-        // Scale mask for the flags field. This byte in the flags field contains
-        // the power of 10 to divide the Decimal value by. The scale byte must 
-        // contain a value between 0 and 28 inclusive.
-        private const int ScaleMask = 0x00FF0000;
-
-        public static decimal GenerateRandomDecimal(Random random = null)
+        /// <summary>
+        /// Generates a random decimal.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static decimal GenerateRandomDecimal(this Random random)
         {
             random = random ?? RandomGenerator;
 
@@ -107,13 +163,13 @@ namespace WebApplications.Testing
         }
 
         /// <summary>
-        /// Generates a random date time, with a specific <see cref="DateTimeKind"/>.
+        /// Generates a random date time, with a specific <see cref="DateTimeKind" />.
         /// </summary>
-        /// <param name="kind">The <see cref="DateTimeKind"/>.</param>
-        /// <param name="random">The random.</param>
+        /// <param name="random">The random generator.</param>
+        /// <param name="kind">The <see cref="DateTimeKind" />.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        public static DateTime GenerateRandomDateTime(DateTimeKind kind, Random random = null)
+        public static DateTime GenerateRandomDateTime(this Random random, DateTimeKind kind)
         {
             // Last two bits are used internally by date time.
             long ticks = GenerateRandomInt64(random) & 0x3FFFFFFFFFFFFFFF;
@@ -128,12 +184,10 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random date time.
         /// </summary>
-        /// <param name="random">The random.</param>
+        /// <param name="random">The random generator.</param>
         /// <returns></returns>
-        /// <remarks>
-        /// Also generates a random <see cref="DateTimeKind"/>.
-        /// </remarks>
-        public static DateTime GenerateRandomDateTime(Random random = null)
+        /// <remarks>Also generates a random <see cref="DateTimeKind" />.</remarks>
+        public static DateTime GenerateRandomDateTime(this Random random)
         {
             random = random ?? RandomGenerator;
             // Last two bits are used internally by date time.
@@ -163,38 +217,41 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random date time.
         /// </summary>
-        /// <param name="random">The random.</param>
+        /// <param name="random">The random generator.</param>
         /// <returns></returns>
-        /// <remarks>
-        /// Also generates a random <see cref="DateTimeKind"/>.
-        /// </remarks>
-        public static DateTimeOffset GenerateRandomDateTimeOffset(Random random = null)
+        /// <remarks>Also generates a random <see cref="DateTimeKind" />.</remarks>
+        public static DateTimeOffset GenerateRandomDateTimeOffset(this Random random)
         {
             random = random ?? RandomGenerator;
             // Last two bits are used internally by date time.
-            long ticks = GenerateRandomInt64() & 0x3FFFFFFFFFFFFFFF;
+            long ticks = random.GenerateRandomInt64() & 0x3FFFFFFFFFFFFFFF;
 
             // If ticks is more than max value, just and it to ensure less than max value.
             if (ticks > 0x2bca2875f4373fff)
                 ticks &= 0x2bca2875f4373fff;
 
-            // Calculate random offset (+/- 14 hours)
-            TimeSpan offset = TimeSpan.FromHours(-14) + TimeSpan.FromMinutes(random.Next(1680));
+            // Calculate random offset +/- 14 hours in minutes (offsets must be in minutes)
+            long offsetTicks = (TimeSpan.TicksPerHour*-14) + (TimeSpan.TicksPerMinute*random.Next(1680));
 
-            return new DateTimeOffset(ticks, offset);
+            // Ensure offsetTicks don't take us outside of the DateTime range.
+            // We could decrease/increase ticks and round to nearest minute, but it is easier just to set to 0.
+            long ticksOffset = offsetTicks - ticks;
+            if ((ticksOffset < 0) ||
+                (ticksOffset > 0x2bca2875f4373fff)) offsetTicks = 0;
+
+            return new DateTimeOffset(ticks, TimeSpan.FromTicks(offsetTicks));
         }
 
         /// <summary>
         /// Generates a random string.
         /// </summary>
+        /// <param name="random">The random generator.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <param name="unicode">if set to <see langword="true" /> string is UTF16; otherwise it uses ASCII.</param>
         /// <param name="nullProbability">The probability of a null being returned (0.0 for no nulls).</param>
-        /// <param name="random">The random.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        public static string GenerateRandomString(int maxLength = -1, bool unicode = true, double nullProbability = 0.0,
-                                                  Random random = null)
+        public static string GenerateRandomString(this Random random, int maxLength = -1, bool unicode = true, double nullProbability = 0.0)
         {
             random = random ?? RandomGenerator;
             // Check for random nulls
@@ -642,21 +699,45 @@ namespace WebApplications.Testing
                                                             104001
                                                         };
 
+
+
+
+        /// <summary>
+        /// Generates a random <see cref="SqlDbType"/> for a column.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static SqlDbType GenerateRandomSqlDbTypeForColumn(this Random random)
+        {
+            return _sqlDbTypes[(random ?? RandomGenerator).Next(_sqlDbTypes.Length)];
+        }
+
+        /// <summary>
+        /// Generates a random SRID.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static int GenerateRandomSRID(this Random random)
+        {
+            return _validSrids[(random ?? RandomGenerator).Next(_validSrids.Length)];
+        }
+
         /// <summary>
         /// Generates the random SQL value.
         /// </summary>
+        /// <param name="random">The random generator.</param>
         /// <param name="sqlDbType">Type of the SQL db.</param>
         /// <param name="length">The length (if fixed length).</param>
         /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) [Defaults to 0.0 = 0%].</param>
         /// <param name="fill">if set to <see langword="true" /> expects the column to be full (only appropriate for fixed length columns).</param>
-        /// <param name="random">The random.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        /// <remarks>
-        /// <para>Does not support SqlDbType.Structured.</para>
-        /// </remarks>
-        public static object GenerateRandomSqlValue(SqlDbType sqlDbType, int length = -1, double nullProbability = 0.1, bool fill = false, Random random = null)
+        ///   <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <remarks>Does not support SqlDbType.Structured.</remarks>
+        public static object GenerateRandomSqlValue(this Random random, SqlDbType sqlDbType, int length = -1, double nullProbability = 0.1, bool fill = false)
         {
             random = random ?? RandomGenerator;
 
@@ -674,7 +755,7 @@ namespace WebApplications.Testing
             switch (sqlDbType)
             {
                 case SqlDbType.BigInt:
-                    return GenerateRandomInt64(random);
+                    return random.GenerateRandomInt64();
                 case SqlDbType.Binary:
                 case SqlDbType.Image:
                 case SqlDbType.Timestamp:
@@ -683,40 +764,40 @@ namespace WebApplications.Testing
                     random.NextBytes(bytes);
                     return bytes;
                 case SqlDbType.Bit:
-                    return GenerateRandomBoolean(random);
+                    return random.GenerateRandomBoolean();
                 case SqlDbType.DateTime:
-                    return GenerateRandomDateTime(DateTimeKind.Unspecified, random);
+                    return random.GenerateRandomDateTime(DateTimeKind.Unspecified);
                 case SqlDbType.Decimal:
-                    return GenerateRandomDecimal(random);
+                    return random.GenerateRandomDecimal();
                 case SqlDbType.Real:
                 case SqlDbType.Float:
-                    return GenerateRandomFloat(random);
+                    return random.GenerateRandomFloat();
                 case SqlDbType.Int:
-                    return GenerateRandomInt32(random);
+                    return random.GenerateRandomInt32();
                 case SqlDbType.Money:
-                    return GenerateRandomDecimal(random);
+                    return random.GenerateRandomDecimal();
                 case SqlDbType.NChar:
                 case SqlDbType.NText:
                 case SqlDbType.NVarChar:
-                    return GenerateRandomString(length / 2, random: random);
+                    return random.GenerateRandomString(length / 2);
                 case SqlDbType.UniqueIdentifier:
                     return Guid.NewGuid();
                 case SqlDbType.SmallDateTime:
                     // Resolution is to the minute, so we calculate minutes and multiply by ticks per minute.
                     return new DateTime((long)random.Next(0x60000000) * 0x23c34600);
                 case SqlDbType.SmallInt:
-                    return GenerateRandomInt16(random);
+                    return random.GenerateRandomInt16();
                 case SqlDbType.SmallMoney:
-                    return (decimal)GenerateRandomInt32(random) / 10000;
+                    return (decimal)random.GenerateRandomInt32() / 10000;
                 case SqlDbType.TinyInt:
-                    return GenerateRandomByte(random);
+                    return random.GenerateRandomByte();
                 case SqlDbType.Char:
                 case SqlDbType.Text:
                 case SqlDbType.VarChar:
-                    return GenerateRandomString(length, false, random: random);
+                    return random.GenerateRandomString(length, false);
                 case SqlDbType.Variant:
                     // Generate an object of random type.
-                    return GenerateRandomSqlValue(_sqlDbTypes[random.Next(_sqlDbTypes.Length)], length, 0, false, random);
+                    return random.GenerateRandomSqlValue(random.GenerateRandomSqlDbTypeForColumn(), length, 0);
                 case SqlDbType.Xml:
                     // TODO code technically generate a random document here.
                     return "<TestDocument><Node attribute=\"attributeValue\">Node value</Node></TestDocument>";
@@ -725,10 +806,10 @@ namespace WebApplications.Testing
                     {
                         case 0:
                             return SqlGeography.Point(-90 + (random.Next(180000) / 1000), -15069.0 + (random.Next(3013800) / 100),
-                                               _validSrids[random.Next(_validSrids.Length)]);
+                                               random.GenerateRandomSRID());
                         case 1:
                             return SqlGeometry.Point(-90 + (random.Next(180000) / 1000), -15069.0 + (random.Next(3013800) / 100),
-                                               _validSrids[random.Next(_validSrids.Length)]);
+                                               random.GenerateRandomSRID());
                         default:
                             // TODO this does not generate every possible variation, but it's robust.
                             int count = random.Next(1, 100);
@@ -741,17 +822,42 @@ namespace WebApplications.Testing
                             return SqlHierarchyId.Parse(s.ToString());
                     }
                 case SqlDbType.Date:
-                    return GenerateRandomDateTime(random).Date;
+                    return random.GenerateRandomDateTime().Date;
                 case SqlDbType.Time:
-                    return GenerateRandomDateTime(random).TimeOfDay;
+                    return random.GenerateRandomDateTime().TimeOfDay;
                 case SqlDbType.DateTime2:
-                    return GenerateRandomDateTime(random).Date;
+                    return random.GenerateRandomDateTime().Date;
                 case SqlDbType.DateTimeOffset:
-                    return GenerateRandomDateTimeOffset(random);
+                    return random.GenerateRandomDateTimeOffset();
                 default:
                     // NB SqlDbType.Structured is not valid for a column.
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        /// <summary>
+        /// Generates a random record set definition
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <param name="columns">The columns (if less than one, is random).</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        ///   <exception cref="System.ArgumentOutOfRangeException"></exception>
+        ///   <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <remarks></remarks>
+        [NotNull]
+        public static RecordSetDefinition GenerateRandomRecordSetDefinition(this Random random, int columns = 0)
+        {
+            random = random ?? RandomGenerator;
+            if (columns < 1)
+                columns = random.Next(100) + 1;
+
+            ColumnDefinition[] columnDefinitions = new ColumnDefinition[columns];
+            for (int c = 0; c < columns; c++)
+                columnDefinitions[c] = new ColumnDefinition("Column " + (c + 1),
+                                                            random.GenerateRandomSqlDbTypeForColumn());
+
+            return new RecordSetDefinition(columnDefinitions);
         }
 
         /// <summary>
