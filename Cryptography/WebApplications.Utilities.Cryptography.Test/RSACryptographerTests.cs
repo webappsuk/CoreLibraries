@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -203,6 +204,20 @@ namespace WebApplications.Utilities.Cryptography.Test
             _providerWrapper.Decrypt(null, out isLatestKey);
 
             Assert.IsFalse(isLatestKey, "For a null input string 'isLatestKey' output should be false");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CryptographicException))]
+        public void Decrypt_InputEncryptedWithKeyNotInConfig_CryptographicException()
+        {
+            const string encryptedStringNotUsingKeyInConfiguration = "I0Qu6rZYA2OB1FXhhGB8J6+VyeEVVAvZkaYBKi8j4XY23ecgN1Zpprhzcrql7U6eUKZWtPaxfDwoEa9g6Bq0f1uE1pVMhrlxQDw3n6KFI5chvFLFpMA85APth08F2yzEh1yjXj6iynV9ZZlGyUQ/+lMJY0fjg45fNnv23C4aFbM=";
+
+            bool isLatestKey;
+            string decrypted = _providerWrapper.Decrypt(encryptedStringNotUsingKeyInConfiguration, out isLatestKey);
+
+            Trace.WriteLine("Result: " + decrypted);
+
+            Assert.Fail("CryptographicException was expected when using an encrypted string that does not exist within our configuration");
         }
     }
 }
