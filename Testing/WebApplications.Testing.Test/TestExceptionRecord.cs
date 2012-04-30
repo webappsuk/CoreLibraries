@@ -24,14 +24,14 @@ namespace WebApplications.Testing.Test
                                  for (int loop = 0; loop < loops; loop++)
                                  {
                                      // Generate random values.
-                                     int infoNumber = random.GenerateRandomInt32();
-                                     byte errorState = random.GenerateRandomByte();
+                                     int infoNumber = random.RandomInt32();
+                                     byte errorState = random.RandomByte();
                                      byte errorClass = (byte) random.Next(1, 26);
-                                     string server = random.GenerateRandomString();
-                                     string errorMessage = random.GenerateRandomString();
-                                     string procedure = random.GenerateRandomString();
-                                     int lineNumber = random.GenerateRandomInt32();
-                                     uint wind32ErrorCode = (uint) Math.Abs(random.GenerateRandomInt32());
+                                     string server = random.RandomString();
+                                     string errorMessage = random.RandomString();
+                                     string procedure = random.RandomString();
+                                     int lineNumber = random.RandomInt32();
+                                     uint wind32ErrorCode = (uint) Math.Abs(random.RandomInt32());
 
                                      // Create prototype.
                                      SqlErrorPrototype sqlErrorPrototype = new SqlErrorPrototype(infoNumber, errorState,

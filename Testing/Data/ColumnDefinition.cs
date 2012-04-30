@@ -336,7 +336,7 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public object GetRandomValue(double nullProbability = 0.0)
         {
-            return Tester.RandomGenerator.GenerateRandomSqlValue(SqlDbType, FixedLength, nullProbability, Fill);
+            return Tester.RandomGenerator.RandomSqlValue(SqlDbType, FixedLength, nullProbability, Fill);
         }
 
         public static readonly DateTime MinSmallDateTime = new DateTime(1990, 1, 1);

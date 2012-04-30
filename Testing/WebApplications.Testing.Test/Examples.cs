@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing.Data;
 
@@ -43,6 +45,24 @@ namespace WebApplications.Testing.Test
 
             // Whereas this one has a random set of columns (with random types).
             reader.Add(new RandomSet(10));
+
+            // Create a random number generator
+            Random random = new Random();
+            
+            // Generate a random number between 0 and Int.MaxValue-1 inclusive.
+            int a = random.Next();
+            // Generate a random number between 0 and 49 inclusive.
+            int b = random.Next(50);
+            // Generate a random number between 10 and 49 inclusive.
+            int c = random.Next(10, 50);
+
+            // Generate a random double between 0.0 inclusive and 1.0 exclusive
+            double d = random.NextDouble();
+
+            // Fill a buffer with random bytes (each byte having every possible value).
+            byte[] buffer = new byte[10];
+            random.NextBytes(buffer);
         }
     }
+
 }

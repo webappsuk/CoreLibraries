@@ -24,7 +24,7 @@ namespace WebApplications.Testing.Data
             int minRows = 0,
             int maxRows = 1000,
             double nullProbability = 0.1)
-            : this(Tester.RandomGenerator.GenerateRandomRecordSetDefinition(columns), minRows, maxRows, nullProbability)
+            : this(Tester.RandomGenerator.RandomRecordSetDefinition(columns), minRows, maxRows, nullProbability)
         {
 
         }

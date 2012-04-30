@@ -59,7 +59,7 @@ namespace WebApplications.Testing.Test
             Parallel.For(
                 0,
                 99999,
-                i => Tester.RandomGenerator.GenerateRandomSqlValue(SqlDbType.Variant, -1, 0.05));
+                i => Tester.RandomGenerator.RandomSqlValue(SqlDbType.Variant, -1, 0.05));
 
         }
     }

@@ -16,7 +16,7 @@ namespace WebApplications.Testing.Test
             s.Start();
             Thread.Sleep(random.Next(0, 1000));
             s.Stop();
-            string randomString = random.GenerateRandomString();
+            string randomString = random.RandomString();
             Assert.AreEqual(
                 String.Format("Test stopwatch {0} completed in {1}ms.", randomString,
                               (s.ElapsedTicks*1000M)/Stopwatch.Frequency),
