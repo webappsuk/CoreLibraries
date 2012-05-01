@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Data\ColumnDefinition.cs" />
     <Compile Include="Data\ExceptionRecord.cs" />
+    <Compile Include="Data\IObjectRecord.cs" />
     <Compile Include="Data\IObjectSet.cs" />
     <Compile Include="Data\ObjectRecord.cs" />
     <Compile Include="Data\ObjectReader.cs" />

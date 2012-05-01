@@ -29,6 +29,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -77,23 +79,22 @@ namespace WebApplications.Testing.Data
         /// </summary>
         /// <value>The current record.</value>
         /// <remarks></remarks>
-        [NotNull]
         public IObjectSet CurrentSet
         {
             get
             {
                 if (_isClosed)
-                    throw new InvalidOperationException("Data reader is closed.");
+                    return null;
 
                 // Create a set enumerator.
                 if (_setEnumerator == null)
+                {
+                    _recordEnumerator = null;
                     _setEnumerator = _recordSets.GetEnumerator();
-
-                IObjectSet currentSet = _setEnumerator.Current;
-                if (currentSet == null)
-                    throw new InvalidOperationException("Reached end of recordsets.");
-
-                return currentSet;
+                    if (!_setEnumerator.MoveNext())
+                        return null;
+                }
+                return _setEnumerator.Current;
             }
         }
 
@@ -102,20 +103,27 @@ namespace WebApplications.Testing.Data
         /// </summary>
         /// <value>The current record.</value>
         /// <remarks></remarks>
-        [NotNull]
         public IObjectRecord Current
         {
             get
             {
                 if (_isClosed)
-                    throw new InvalidOperationException("Data reader is closed.");
+                    return null;
+
+                IObjectSet set = CurrentSet;
+                if (set == null)
+                {
+                    _recordEnumerator = null;
+                    return null;
+                }
 
                 // If we haven't got a record enumerator create one.
                 if (_recordEnumerator == null)
-                    _recordEnumerator = CurrentSet.GetEnumerator();
-
-                if (_recordEnumerator.Current == null)
-                    throw new InvalidOperationException("Reached end of the current recordset.");
+                {
+                    _recordEnumerator = set.GetEnumerator();
+                    if (!_recordEnumerator.MoveNext())
+                        return null;
+                }
 
                 return _recordEnumerator.Current;
             }
@@ -207,177 +215,37 @@ namespace WebApplications.Testing.Data
         /// <inheritdoc/>
         public string GetName(int i)
         {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return CurrentSet.Definition[i].Name;
+            IObjectSet set = CurrentSet;
+            if (set == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+            return set.Definition[i].Name;
         }
 
         /// <inheritdoc/>
         public string GetDataTypeName(int i)
         {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return CurrentSet.Definition[i].TypeName;
+            IObjectSet set = CurrentSet;
+            if (set == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+            return set.Definition[i].TypeName;
         }
 
         /// <inheritdoc/>
         public Type GetFieldType(int i)
         {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return CurrentSet.Definition[i].ClassType;
-        }
-
-        /// <inheritdoc/>
-        public object GetValue(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetValue(i);
-        }
-
-        /// <inheritdoc/>
-        public int GetValues(object[] values)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetValues(values);
+            IObjectSet set = CurrentSet;
+            if (set == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+            return set.Definition[i].ClassType;
         }
 
         /// <inheritdoc/>
         public int GetOrdinal(string name)
         {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return CurrentSet.Definition.GetOrdinal(name);
-        }
-
-        /// <inheritdoc/>
-        public bool GetBoolean(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetBoolean(i);
-        }
-
-        /// <inheritdoc/>
-        public byte GetByte(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetByte(i);
-        }
-
-        /// <inheritdoc/>
-        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetBytes(i, fieldOffset, buffer, bufferoffset, length);
-        }
-
-        /// <inheritdoc/>
-        public char GetChar(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetChar(i);
-        }
-
-        /// <inheritdoc/>
-        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetChars(i, fieldoffset, buffer, bufferoffset, length);
-        }
-
-        /// <inheritdoc/>
-        public Guid GetGuid(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetGuid(i);
-        }
-
-        /// <inheritdoc/>
-        public short GetInt16(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetInt16(i);
-        }
-
-        /// <inheritdoc/>
-        public int GetInt32(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetInt32(i);
-        }
-
-        /// <inheritdoc/>
-        public long GetInt64(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetInt64(i);
-        }
-
-        /// <inheritdoc/>
-        public float GetFloat(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetFloat(i);
-        }
-
-        /// <inheritdoc/>
-        public double GetDouble(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetDouble(i);
-        }
-
-        /// <inheritdoc/>
-        public string GetString(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetString(i);
-        }
-
-        /// <inheritdoc/>
-        public decimal GetDecimal(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetDecimal(i);
-        }
-
-        /// <inheritdoc/>
-        public DateTime GetDateTime(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetDateTime(i);
-        }
-
-        /// <inheritdoc/>
-        public IDataReader GetData(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.GetData(i);
-        }
-
-        /// <inheritdoc/>
-        public bool IsDBNull(int i)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            return Current.IsDBNull(i);
+            IObjectSet set = CurrentSet;
+            if (set == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+            return set.Definition.GetOrdinal(name);
         }
 
         /// <inheritdoc/>
@@ -385,20 +253,257 @@ namespace WebApplications.Testing.Data
         {
             get
             {
-                if (_isClosed)
-                    throw new InvalidOperationException("Data reader is closed.");
-                return CurrentSet.Definition.FieldCount;
+                IObjectSet set = CurrentSet;
+                if (set == null)
+                    throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+                return set.Definition.FieldCount;
             }
         }
 
         /// <inheritdoc/>
-        object IDataRecord.this[int i]
+        public object GetValue(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetValue"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetValue(i);
+        }
+
+        /// <inheritdoc/>
+        public int GetValues(object[] values)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetValues"));
+
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetValues(values);
+        }
+
+        /// <inheritdoc/>
+        public bool GetBoolean(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetBoolean"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetBoolean(i);
+        }
+
+        /// <inheritdoc/>
+        public byte GetByte(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetByte"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetByte(i);
+        }
+
+        /// <inheritdoc/>
+        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetBytes"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetBytes(i, fieldOffset, buffer, bufferoffset, length);
+        }
+
+        /// <inheritdoc/>
+        public char GetChar(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetChar"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetChar(i);
+        }
+
+        /// <inheritdoc/>
+        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetChars"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetChars(i, fieldoffset, buffer, bufferoffset, length);
+        }
+
+        /// <inheritdoc/>
+        public Guid GetGuid(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetGuid"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetGuid(i);
+        }
+
+        /// <inheritdoc/>
+        public short GetInt16(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetInt16"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetInt16(i);
+        }
+
+        /// <inheritdoc/>
+        public int GetInt32(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetInt32"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetInt32(i);
+        }
+
+        /// <inheritdoc/>
+        public long GetInt64(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetInt64"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetInt64(i);
+        }
+
+        /// <inheritdoc/>
+        public float GetFloat(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetFloat"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetFloat(i);
+        }
+
+        /// <inheritdoc/>
+        public double GetDouble(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetDouble"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetDouble(i);
+        }
+
+        /// <inheritdoc/>
+        public string GetString(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetString"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetString(i);
+        }
+
+        /// <inheritdoc/>
+        public decimal GetDecimal(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetDecimal"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetDecimal(i);
+        }
+
+        /// <inheritdoc/>
+        public DateTime GetDateTime(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetDateTime"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetDateTime(i);
+        }
+
+        /// <inheritdoc/>
+        public IDataReader GetData(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "GetData"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.GetData(i);
+        }
+
+        /// <inheritdoc/>
+        public bool IsDBNull(int i)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException(string.Format("Invalid attempt to call {0} when reader is closed.",
+                                                                  "IsDBNull"));
+            IObjectRecord record = Current;
+            if (record == null)
+                throw new InvalidOperationException("Invalid attempt to read when no data is present.");
+
+            return record.IsDBNull(i);
+        }
+
+        /// <inheritdoc/>
+        public object this[int i]
         {
             get { return GetValue(i); }
         }
 
         /// <inheritdoc/>
-        object IDataRecord.this[string name]
+        public object this[string name]
         {
             get { return GetValue(GetOrdinal(name)); }
         }
@@ -425,7 +530,11 @@ namespace WebApplications.Testing.Data
 
             // Create set enumerator if not present.
             if (_setEnumerator == null)
+            {
                 _setEnumerator = _recordSets.GetEnumerator();
+                if (!_setEnumerator.MoveNext())
+                    return false;
+            }
 
             return _setEnumerator.MoveNext();
         }
@@ -438,7 +547,15 @@ namespace WebApplications.Testing.Data
 
             // If we haven't got a record enumerator create one.
             if (_recordEnumerator == null)
-                _recordEnumerator = CurrentSet.GetEnumerator();
+            {
+                IObjectSet set = CurrentSet;
+                if (set == null)
+                    return false;
+
+                _recordEnumerator = set.GetEnumerator();
+                if (!_recordEnumerator.MoveNext())
+                    return false;
+            }
 
             return _recordEnumerator.Current != null && _recordEnumerator.MoveNext();
         }

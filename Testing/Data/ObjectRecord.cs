@@ -29,21 +29,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
+using System.Globalization;
 using JetBrains.Annotations;
 
 namespace WebApplications.Testing.Data
 {
-    public interface IObjectRecord : IDataRecord
-    {
-        /// <summary>
-        /// Gets the record set definition.
-        /// </summary>
-        /// <value>The record set definition.</value>
-        /// <remarks></remarks>
-        [NotNull]
-        RecordSetDefinition RecordSetDefinition { get; }
-    }
-
     /// <summary>
     /// Implements a record.
     /// </summary>
@@ -149,31 +139,6 @@ namespace WebApplications.Testing.Data
             get { return _columnValues; }
         }
 
-        #region IObjectRecord Members
-        /// <inhertidoc />
-        public string GetName(int i)
-        {
-            return _recordSetDefinition[i].Name;
-        }
-
-        /// <inhertidoc />
-        public string GetDataTypeName(int i)
-        {
-            return _recordSetDefinition[i].TypeName;
-        }
-
-        /// <inhertidoc />
-        public Type GetFieldType(int i)
-        {
-            return _recordSetDefinition[i].ClassType;
-        }
-
-        /// <inhertidoc />
-        public object GetValue(int i)
-        {
-            return _columnValues[i];
-        }
-
         /// <summary>
         /// Sets the value. of the column with the specified index.
         /// </summary>
@@ -183,6 +148,10 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public void SetValue(int i, object value)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
+
             // Check to see if value is changing
             if (_columnValues[i] == value)
                 return;
@@ -198,6 +167,43 @@ namespace WebApplications.Testing.Data
                     "value");
 
             _columnValues[i] = sqlValue;
+        }
+
+        #region IObjectRecord Members
+        /// <inhertidoc />
+        public string GetName(int i)
+        {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
+            return _recordSetDefinition[i].Name;
+        }
+
+        /// <inhertidoc />
+        public string GetDataTypeName(int i)
+        {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
+            return _recordSetDefinition[i].TypeName;
+        }
+
+        /// <inhertidoc />
+        public Type GetFieldType(int i)
+        {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
+            return _recordSetDefinition[i].ClassType;
+        }
+
+        /// <inhertidoc />
+        public object GetValue(int i)
+        {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
+            return _columnValues[i];
         }
 
         /// <inhertidoc />
@@ -219,6 +225,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public bool GetBoolean(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -230,6 +239,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public byte GetByte(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -241,6 +253,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             if (buffer == null)
                 return 0;
 
@@ -258,6 +273,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public char GetChar(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -269,6 +287,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public long GetChars(int i, long fieldOffset, char[] buffer, int bufferoffset, int length)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             if (buffer == null)
                 return 0;
 
@@ -286,6 +307,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public Guid GetGuid(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -297,6 +321,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public short GetInt16(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -308,6 +335,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public int GetInt32(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -319,6 +349,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public long GetInt64(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -330,6 +363,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public float GetFloat(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -341,6 +377,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public double GetDouble(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -352,6 +391,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public string GetString(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (!(o is string))
                 throw new InvalidCastException();
@@ -361,6 +403,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public decimal GetDecimal(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -372,6 +417,9 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         public DateTime GetDateTime(int i)
         {
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
             object o = _columnValues[i];
             if (o == null)
                 throw new SqlNullValueException();
@@ -383,13 +431,17 @@ namespace WebApplications.Testing.Data
         /// <inhertidoc />
         IDataReader IDataRecord.GetData(int i)
         {
+            // This isn't supported by SqlDataReader.
             throw new NotSupportedException();
         }
 
         /// <inhertidoc />
         public bool IsDBNull(int i)
         {
-            return _columnValues[i] == null;
+            if ((i < 0) ||
+                (i > FieldCount))
+                throw new IndexOutOfRangeException(i.ToString(CultureInfo.InvariantCulture));
+            return _columnValues[i].IsNull();
         }
 
         /// <inhertidoc />

@@ -126,7 +126,13 @@ namespace WebApplications.Testing.Data
         [NotNull]
         public ColumnDefinition this[int index]
         {
-            get { return _columnsArray[index]; }
+            get
+            {
+                if ((index < 0) ||
+                    (index > FieldCount))
+                    throw new IndexOutOfRangeException(index.ToString(CultureInfo.InvariantCulture));
+                return _columnsArray[index];
+            }
         }
 
 
@@ -148,7 +154,7 @@ namespace WebApplications.Testing.Data
                                     CompareOptions.IgnoreWidth) == 0)
                     return c;
             }
-            throw new IndexOutOfRangeException();
+            throw new IndexOutOfRangeException(name);
         }
     }
 }

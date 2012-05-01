@@ -28,6 +28,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing.Data;
 
@@ -72,7 +73,7 @@ namespace WebApplications.Testing.Test
                                       {
                                           dataRecord,
                                           randomRecord,
-                                          exceptionRecord
+                                          //exceptionRecord
                                       };
 
             // We can add recordsets to an ObjectReader
@@ -92,6 +93,21 @@ namespace WebApplications.Testing.Test
 
             // Whereas this one has a random set of columns (with random types).
             reader.Add(new RandomSet(10));
+
+            // Now that we have a reader we can use it like a normal reader - it even simulates disposal.
+            using (IDataReader dataReader = reader)
+            {
+                int recordset = 1;
+                do
+                {
+                    Trace.Write("Recordset #" + recordset);
+                    int rows = 0;
+                    while (dataReader.Read())
+                        rows++;
+                    Trace.WriteLine(" - " + rows + " rows.");
+                    recordset++;
+                } while (dataReader.NextResult());
+            }
         }
     }
 }
