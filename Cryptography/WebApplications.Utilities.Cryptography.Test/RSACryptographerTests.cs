@@ -219,5 +219,31 @@ namespace WebApplications.Utilities.Cryptography.Test
 
             Assert.Fail("CryptographicException was expected when using an encrypted string that does not exist within our configuration");
         }
+
+        [TestMethod]
+        public void TryDecrypt_ReturnValue_ReturnsFalseWhenKeyIsNotLatestKey()
+        {
+            const string encryptedStringUsingExpiredKeyInConfiguration = "CkTj6c4LPWXjfAxHKpuITqXFaerCiZ9rfAzyf8FS/5qYWbQ1HMGsADO6rF7fuAljjvfCM5HoYvZe7zBAjxU2kVfuVmaHKGGYJyrtjwKvRURXwkXgUUO8HanpJtU4UjvO0AU3sBgJCc5NUXS/tU9oT4D/SbaHcvQUtFfThAiuT0w=";
+
+            string decryptedString;
+            bool? isLatestKey;
+
+            _providerWrapper.Encrypt("a new key will be made now");
+            bool decrypted = _providerWrapper.TryDecrypt(encryptedStringUsingExpiredKeyInConfiguration, out decryptedString, out isLatestKey);
+
+            Assert.IsTrue(decrypted, "'decrypted' should return true");
+            Assert.IsFalse(isLatestKey.Value, "IsLatestKey should return false");
+        }
+
+        [TestMethod]
+        public void TryDecrypt_NullInputString_FalseReturned()
+        {
+            string decryptedString;
+            bool? isLatestKey;
+
+            bool decrypted = _providerWrapper.TryDecrypt(null, out decryptedString, out isLatestKey);
+
+            Assert.IsFalse(decrypted, "TryDecrypt should return false when using null input string");
+        }
     }
 }
