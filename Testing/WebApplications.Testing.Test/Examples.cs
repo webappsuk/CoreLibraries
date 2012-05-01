@@ -44,7 +44,9 @@ namespace WebApplications.Testing.Test
             RecordSetDefinition recordSetDefinition = new RecordSetDefinition(
                 new ColumnDefinition("ID", SqlDbType.Int),
                 new ColumnDefinition("Name", SqlDbType.Char, 50),
-                new ColumnDefinition("Description", SqlDbType.NVarChar)
+                new ColumnDefinition("Description", SqlDbType.NVarChar),
+                // This column is not nullable so defaults to true
+                new ColumnDefinition("Active", SqlDbType.Bit, isNullable:false, defaultValue:true)
                 );
 
             // Now we can create a record

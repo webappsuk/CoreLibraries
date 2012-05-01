@@ -86,5 +86,12 @@ namespace WebApplications.Testing.Test
                 99999,
                 i => Tester.RandomGenerator.RandomSqlValue(SqlDbType.Variant, -1, 0.05));
         }
+
+        [TestMethod]
+        public void TestColumns()
+        {
+            // The random set will generate random column values and set them, so create a lot of rows of a lot of values.
+            RandomSet randomSet = new RandomSet(500, 100, 100);
+        }
     }
 }

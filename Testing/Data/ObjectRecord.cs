@@ -56,7 +56,7 @@ namespace WebApplications.Testing.Data
         /// Initializes a new instance of the <see cref="ObjectRecord" /> class.
         /// </summary>
         /// <param name="recordSetDefinition">The table definition.</param>
-        /// <param name="randomData">if set to <see langword="true" /> fills columns with random data; otherwise fills them with SQL null values.</param>
+        /// <param name="randomData">if set to <see langword="true" /> fills columns with random data; otherwise fills them with their default values.</param>
         /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) -
         /// this is only applicable is <see cref="randomData" /> is set to <see langword="true" /> [Defaults to 0.1 = 10%].</param>
         /// <param name="columnGenerators">The column generators is an array of functions that generate a value for each column, if the function is
@@ -86,17 +86,18 @@ namespace WebApplications.Testing.Data
                     (columnGenerators.Length > c) &&
                     (columnGenerators[c] != null))
                 {
-                    _columnValues[c] = columnGenerators[c](rowNumber);
+                    // Use generator to get value
+                    this[c] = columnGenerators[c](rowNumber);
                 }
                 else if (randomData)
                 {
                     // Generate random value.
-                    _columnValues[c] = recordSetDefinition[c].GetRandomValue(nullProbability);
+                    this[c] = recordSetDefinition[c].GetRandomValue(nullProbability);
                 }
                 else
                 {
-                    // Just set to equivalent null.
-                    _columnValues[c] = recordSetDefinition[c].NullValue;
+                    // Just set to default value (no need to revalidate so set directly).
+                    _columnValues[c] = recordSetDefinition[c].DefaultValue;
                 }
             }
         }
@@ -108,7 +109,7 @@ namespace WebApplications.Testing.Data
         /// <param name="columnValues">The column values.</param>
         /// <remarks>
         /// If the number of column values supplied is less than the number of columns then the remaining columns are set to
-        /// their equivalent null value.
+        /// their equivalent default value.
         /// </remarks>
         public ObjectRecord([NotNull] RecordSetDefinition recordSetDefinition, [NotNull] params object[] columnValues)
         {
@@ -125,7 +126,7 @@ namespace WebApplications.Testing.Data
 
             // Import values or set to null.
             for (int i = 0; i < columns; i++)
-                SetValue(i, i < length ? columnValues[i] : _recordSetDefinition[i].NullValue);
+                SetValue(i, i < length ? columnValues[i] : _recordSetDefinition[i].DefaultValue);
         }
 
         /// <summary>
@@ -162,7 +163,7 @@ namespace WebApplications.Testing.Data
                 throw new ArgumentException(
                     string.Format(
                         "Cannot set the value of column '{0}' to {1}.",
-                        i,
+                        _recordSetDefinition[i].ToString(),
                         value == null ? "null" : "'" + value + "'"),
                     "value");
 

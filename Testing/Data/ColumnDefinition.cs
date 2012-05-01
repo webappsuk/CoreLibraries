@@ -36,9 +36,6 @@ namespace WebApplications.Testing.Data
 {
     public class ColumnDefinition
     {
-        public static readonly DateTime MinSmallDateTime = new DateTime(1990, 1, 1);
-        public static readonly DateTime MaxSmallDateTime = new DateTime(2079, 6, 7) - new TimeSpan(1);
-
         /// <summary>
         /// The .NET <see cref="Type"/> that this column accepts.
         /// </summary>
@@ -79,12 +76,34 @@ namespace WebApplications.Testing.Data
         [NotNull] public readonly Type SqlType;
 
         /// <summary>
+        /// Whether the column is nullable.
+        /// </summary>
+        public readonly bool IsIsNullable;
+
+        /// <summary>
+        /// The columns default value.
+        /// </summary>
+        public readonly object DefaultValue;
+
+        /// <summary>
         /// The equivalent SQL Server type name.
         /// </summary>
         [NotNull] public readonly string TypeName;
 
-        public ColumnDefinition([NotNull] string name, DbType dbType, int length = -1, bool fill = false)
-            : this(name, dbType.ToSqlDbType(), length, fill)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ColumnDefinition" /> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="dbType">The columns type.</param>
+        /// <param name="length">The length (if fixed length).</param>
+        /// <param name="fill">if set to <see langword="true" /> expects the column to be full (only appropriate for fixed length columns).</param>
+        /// <param name="isNullable">if set to <see langword="true" /> the column is nullable.</param>
+        /// <param name="defaultValue">The default value (required if column is not nullable).</param>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        ///   <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <remarks></remarks>
+        public ColumnDefinition([NotNull] string name, DbType dbType, int length = -1, bool fill = false, bool isNullable = true, object defaultValue = null)
+            : this(name, dbType.ToSqlDbType(), length, fill, isNullable, defaultValue)
         {
         }
 
@@ -92,16 +111,20 @@ namespace WebApplications.Testing.Data
         /// Initializes a new instance of the <see cref="ColumnDefinition" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="sqlDbType">Type of the SQL db.</param>
+        /// <param name="sqlDbType">The columns type.</param>
         /// <param name="length">The length (if fixed length).</param>
         /// <param name="fill">if set to <see langword="true" /> expects the column to be full (only appropriate for fixed length columns).</param>
+        /// <param name="isNullable">if set to <see langword="true" /> the column is nullable.</param>
+        /// <param name="defaultValue">The default value (required if column is not nullable).</param>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        public ColumnDefinition([NotNull] string name, SqlDbType sqlDbType, int length = -1, bool fill = false)
+        public ColumnDefinition([NotNull] string name, SqlDbType sqlDbType, int length = -1, bool fill = false, bool isNullable = true, object defaultValue = null)
         {
             Name = name;
             SqlDbType = sqlDbType;
             Fill = fill;
+            IsIsNullable = isNullable;
             switch (sqlDbType)
             {
                 case SqlDbType.BigInt:
@@ -324,22 +347,33 @@ namespace WebApplications.Testing.Data
                 Fill = true;
 
             // Set length if specified
-            if (length <= -1) return;
+            if (length > -1)
+            {
+                // If we already have a fixed length, we can't set explicitly.
+                if (FixedLength > -1)
+                    throw new ArgumentOutOfRangeException("length", length,
+                                                          string.Format(
+                                                              "The '{0}' sql type has a fixed length of '{1}' and so cannot be set explicitly to '{2}'.",
+                                                              SqlDbType,
+                                                              FixedLength,
+                                                              length));
+                FixedLength = length;
+            }
 
-            // If we already have a fixed length, we can't set explicitly.
-            if (FixedLength > -1)
-                throw new ArgumentOutOfRangeException("length", length,
+            if (!Validate(defaultValue, out DefaultValue))
+                throw new ArgumentOutOfRangeException("defaultValue", defaultValue,
                                                       string.Format(
-                                                          "The '{0}' sql type has a fixed length of '{1}' and so cannot be set explicitly to '{2}'.",
-                                                          SqlDbType,
-                                                          FixedLength,
-                                                          length));
-            FixedLength = length;
+                                                          "The '{0}' column's default value is not valid.", this));
         }
 
         [NotNull]
         public RecordSetDefinition RecordSetDefinition { get; internal set; }
 
+        /// <summary>
+        /// Gets the ordinal.
+        /// </summary>
+        /// <value>The ordinal.</value>
+        /// <remarks></remarks>
         public int Ordinal { get; internal set; }
 
         /// <summary>
@@ -348,7 +382,12 @@ namespace WebApplications.Testing.Data
         [NotNull]
         public object NullValue
         {
-            get { return SqlDbType.NullValue(); }
+            get
+            {
+                if (!IsIsNullable)
+                    throw new InvalidOperationException("The column cannot is not nullable.");
+                return SqlDbType.NullValue();
+            }
         }
 
         /// <summary>
@@ -367,15 +406,24 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public object GetRandomValue(double nullProbability = 0.0)
         {
-            return Tester.RandomGenerator.RandomSqlValue(SqlDbType, FixedLength, nullProbability, Fill);
+            return Tester.RandomGenerator.RandomSqlValue(SqlDbType, FixedLength, IsIsNullable ? nullProbability : 0.0,
+                                                         Fill);
         }
 
+        /// <summary>
+        /// Validates the specified value, to see if it is valid for this column.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="sqlValue">The SQL value.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <remarks></remarks>
         public bool Validate(object value, out object sqlValue)
         {
             if (value.IsNull())
             {
                 sqlValue = NullValue;
-                return true;
+                return IsIsNullable;
             }
 
             if (!ClassType.IsInstanceOfType(value))
@@ -413,10 +461,12 @@ namespace WebApplications.Testing.Data
                     sqlValue = (DateTime) value;
                     return true;
                 case SqlDbType.Decimal:
+                case SqlDbType.Money:
+                case SqlDbType.SmallMoney:
                     sqlValue = (decimal) value;
                     return true;
                 case SqlDbType.Float:
-                    sqlValue = (float) value;
+                    sqlValue = (double) value;
                     return true;
                 case SqlDbType.Int:
                     sqlValue = (int) value;
@@ -438,7 +488,7 @@ namespace WebApplications.Testing.Data
                 case SqlDbType.SmallDateTime:
                     DateTime dt = (DateTime) value;
                     sqlValue = dt;
-                    return dt >= MinSmallDateTime && dt <= MaxSmallDateTime;
+                    return dt >= Tester.MinSmallDateTime && dt <= Tester.MaxSmallDateTime;
                 case SqlDbType.SmallInt:
                     sqlValue = (Int16) value;
                     return true;
@@ -467,18 +517,21 @@ namespace WebApplications.Testing.Data
                     sqlValue = (DateTimeOffset) value;
                     return true;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException("SqlDbType", SqlDbType,
+                                                          string.Format("Unsupported SqlDbType for column '{0}'", this));
             }
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("Column #{0} \"{1}\" {2}{3}",
+            return string.Format("Column #{0} \"{1}\" {2}{3}{4}{5}",
                                  Ordinal,
                                  Name,
                                  SqlDbType,
-                                 IsFixedLength ? "[" + FixedLength + "]" : string.Empty);
+                                 IsFixedLength ? "[" + FixedLength + "]" : string.Empty,
+                                 IsIsNullable ? string.Empty : " NOT NULL",
+                                 !DefaultValue.IsNull() ? " (Default Value='" + DefaultValue + "')" : string.Empty);
         }
     }
 }

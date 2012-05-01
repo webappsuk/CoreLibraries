@@ -724,7 +724,7 @@ namespace WebApplications.Testing
             // Get string length, if there's no maximum then use 8001 (as 8000 is max specific size in SQL Server).
             int length = (maxLength < 0 ? random.Next(10000) : maxLength)*(unicode ? 2 : 1);
             if (length < 1)
-                return string.Empty;
+                return String.Empty;
 
             byte[] bytes = new byte[length];
             random.NextBytes(bytes);
@@ -789,11 +789,14 @@ namespace WebApplications.Testing
                     return random.RandomInt64();
                 case SqlDbType.Binary:
                 case SqlDbType.Image:
-                case SqlDbType.Timestamp:
                 case SqlDbType.VarBinary:
                     byte[] bytes = new byte[length];
                     random.NextBytes(bytes);
                     return bytes;
+                case SqlDbType.Timestamp:
+                    byte[] tBytes = new byte[8];
+                    random.NextBytes(tBytes);
+                    return tBytes;
                 case SqlDbType.Bit:
                     return random.RandomBoolean();
                 case SqlDbType.DateTime:
@@ -801,8 +804,9 @@ namespace WebApplications.Testing
                 case SqlDbType.Decimal:
                     return random.RandomDecimal();
                 case SqlDbType.Real:
-                case SqlDbType.Float:
                     return random.RandomFloat();
+                case SqlDbType.Float:
+                    return random.RandomDouble();
                 case SqlDbType.Int:
                     return random.RandomInt32();
                 case SqlDbType.Money:
@@ -815,7 +819,7 @@ namespace WebApplications.Testing
                     return Guid.NewGuid();
                 case SqlDbType.SmallDateTime:
                     // Resolution is to the minute, so we calculate minutes and multiply by ticks per minute.
-                    return new DateTime((long) random.Next(0x60000000)*0x23c34600);
+                    return MinSmallDateTime + TimeSpan.FromMinutes(random.Next(47036160));
                 case SqlDbType.SmallInt:
                     return random.RandomInt16();
                 case SqlDbType.SmallMoney:
@@ -827,8 +831,8 @@ namespace WebApplications.Testing
                 case SqlDbType.VarChar:
                     return random.RandomString(length, false);
                 case SqlDbType.Variant:
-                    // Generate an object of random type.
-                    return random.RandomSqlValue(random.RandomSqlDbTypeForColumn(), length, 0);
+                    // Generate an object of random type - but don't allow nulls this time (as we've already had a shot at being null).
+                    return random.RandomSqlValue(random.RandomSqlDbTypeForColumn(), length, 0, fill);
                 case SqlDbType.Xml:
                     // TODO code technically generate a random document here.
                     return "<TestDocument><Node attribute=\"attributeValue\">Node value</Node></TestDocument>";
@@ -887,8 +891,15 @@ namespace WebApplications.Testing
 
             ColumnDefinition[] columnDefinitions = new ColumnDefinition[columns];
             for (int c = 0; c < columns; c++)
+            {
+                SqlDbType type = random.RandomSqlDbTypeForColumn();
+                bool isNullable = random.RandomBoolean();
+                object defaultValue = random.RandomSqlValue(type, nullProbability: isNullable ? 0.5 : 0);
                 columnDefinitions[c] = new ColumnDefinition("Column " + (c + 1),
-                                                            random.RandomSqlDbTypeForColumn());
+                                                            type,
+                                                            isNullable: isNullable,
+                                                            defaultValue: defaultValue);
+            }
 
             return new RecordSetDefinition(columnDefinitions);
         }
@@ -1087,5 +1098,15 @@ namespace WebApplications.Testing
                     return DBNull.Value;
             }
         }
+
+        /// <summary>
+        /// The minumum value for SmallDateTime.
+        /// </summary>
+        public static readonly DateTime MinSmallDateTime = new DateTime(1990, 1, 1);
+
+        /// <summary>
+        /// The maximum value for SmallDateTime.
+        /// </summary>
+        public static readonly DateTime MaxSmallDateTime = new DateTime(2079, 6, 7) - new TimeSpan(1);
     }
 }
