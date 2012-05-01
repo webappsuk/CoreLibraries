@@ -1,63 +1,53 @@
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
 using Microsoft.SqlServer.Types;
 
 namespace WebApplications.Testing.Data
 {
     public class ColumnDefinition
     {
-        [NotNull]
-        public RecordSetDefinition RecordSetDefinition { get; internal set; }
-
-        public int Ordinal { get; internal set; }
+        public static readonly DateTime MinSmallDateTime = new DateTime(1990, 1, 1);
+        public static readonly DateTime MaxSmallDateTime = new DateTime(2079, 6, 7) - new TimeSpan(1);
 
         /// <summary>
-        /// The <see cref="SqlDbType"/>.
+        /// The .NET <see cref="Type"/> that this column accepts.
         /// </summary>
-        public readonly SqlDbType SqlDbType;
+        [NotNull] public readonly Type ClassType;
 
         /// <summary>
         /// The <see cref="DbType"/>.
         /// </summary>
         public readonly DbType DbType;
-
-        /// <summary>
-        /// The equivalent SQL Server type name.
-        /// </summary>
-        [NotNull]
-        public readonly string TypeName;
-
-        /// <summary>
-        /// The .NET <see cref="Type"/> that this column accepts.
-        /// </summary>
-        [NotNull]
-        public readonly Type ClassType;
-
-        /// <summary>
-        /// The SQL Clr Type for the column.
-        /// </summary>
-        [NotNull]
-        public readonly Type SqlType;
-
-        /// <summary>
-        /// The SQL Null value for this column.
-        /// </summary>
-        [NotNull]
-        public object NullValue { get { return SqlDbType.NullValue(); } }
-
-        /// <summary>
-        /// The fixed length for the type (-1 indicates variable length - i.e. 'var' types).
-        /// </summary>
-        public readonly int FixedLength;
-
-        /// <summary>
-        /// Whether the length is fixed.
-        /// </summary>
-        public bool IsFixedLength { get { return FixedLength > -1; } }
 
         /// <summary>
         /// Whether column should be full.
@@ -69,13 +59,32 @@ namespace WebApplications.Testing.Data
         public readonly bool Fill;
 
         /// <summary>
+        /// The fixed length for the type (-1 indicates variable length - i.e. 'var' types).
+        /// </summary>
+        public readonly int FixedLength;
+
+        /// <summary>
         /// The column name.
         /// </summary>
-        [NotNull]
-        public readonly string Name;
-        
-        public ColumnDefinition([NotNull]string name, DbType dbType, int length = -1, bool fill = false)
-            : this (name, dbType.ToSqlDbType(), length, fill)
+        [NotNull] public readonly string Name;
+
+        /// <summary>
+        /// The <see cref="SqlDbType"/>.
+        /// </summary>
+        public readonly SqlDbType SqlDbType;
+
+        /// <summary>
+        /// The SQL Clr Type for the column.
+        /// </summary>
+        [NotNull] public readonly Type SqlType;
+
+        /// <summary>
+        /// The equivalent SQL Server type name.
+        /// </summary>
+        [NotNull] public readonly string TypeName;
+
+        public ColumnDefinition([NotNull] string name, DbType dbType, int length = -1, bool fill = false)
+            : this(name, dbType.ToSqlDbType(), length, fill)
         {
         }
 
@@ -88,7 +97,7 @@ namespace WebApplications.Testing.Data
         /// <param name="fill">if set to <see langword="true" /> expects the column to be full (only appropriate for fixed length columns).</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        public ColumnDefinition([NotNull]string name, SqlDbType sqlDbType, int length = -1, bool fill = false)
+        public ColumnDefinition([NotNull] string name, SqlDbType sqlDbType, int length = -1, bool fill = false)
         {
             Name = name;
             SqlDbType = sqlDbType;
@@ -105,204 +114,204 @@ namespace WebApplications.Testing.Data
                 case SqlDbType.Binary:
                     DbType = DbType.Binary;
                     TypeName = "binary";
-                    ClassType = typeof(byte[]);
+                    ClassType = typeof (byte[]);
                     SqlType = typeof (SqlBinary);
                     FixedLength = -1;
                     break;
                 case SqlDbType.Bit:
                     DbType = DbType.Boolean;
                     TypeName = "bit";
-                    ClassType = typeof(bool);
-                    SqlType = typeof(SqlBoolean);
+                    ClassType = typeof (bool);
+                    SqlType = typeof (SqlBoolean);
                     FixedLength = 1;
                     break;
                 case SqlDbType.Char:
                     DbType = DbType.AnsiStringFixedLength;
                     TypeName = "char";
-                    ClassType = typeof(string);
-                    SqlType = typeof(SqlString);
+                    ClassType = typeof (string);
+                    SqlType = typeof (SqlString);
                     FixedLength = -1;
                     break;
                 case SqlDbType.DateTime:
                     DbType = DbType.DateTime;
                     TypeName = "datetime";
-                    ClassType = typeof(DateTime);
-                    SqlType = typeof(SqlDateTime);
+                    ClassType = typeof (DateTime);
+                    SqlType = typeof (SqlDateTime);
                     FixedLength = 8;
                     break;
                 case SqlDbType.Decimal:
                     DbType = DbType.Decimal;
                     TypeName = "decimal";
-                    ClassType = typeof(Decimal);
-                    SqlType = typeof(SqlDecimal);
+                    ClassType = typeof (Decimal);
+                    SqlType = typeof (SqlDecimal);
                     FixedLength = 17;
                     break;
                 case SqlDbType.Float:
                     DbType = DbType.Double;
                     TypeName = "float";
-                    ClassType = typeof(double);
-                    SqlType = typeof(SqlDouble);
+                    ClassType = typeof (double);
+                    SqlType = typeof (SqlDouble);
                     FixedLength = 8;
                     break;
                 case SqlDbType.Image:
                     DbType = DbType.Double;
                     TypeName = "image";
-                    ClassType = typeof(byte[]);
-                    SqlType = typeof(SqlBinary);
+                    ClassType = typeof (byte[]);
+                    SqlType = typeof (SqlBinary);
                     FixedLength = -1;
                     break;
                 case SqlDbType.Int:
                     DbType = DbType.Int32;
                     TypeName = "int";
-                    ClassType = typeof(int);
-                    SqlType = typeof(SqlInt32);
+                    ClassType = typeof (int);
+                    SqlType = typeof (SqlInt32);
                     FixedLength = 4;
                     break;
                 case SqlDbType.Money:
                     DbType = DbType.Currency;
                     TypeName = "money";
-                    ClassType = typeof(Decimal);
-                    SqlType = typeof(SqlMoney);
+                    ClassType = typeof (Decimal);
+                    SqlType = typeof (SqlMoney);
                     FixedLength = 8;
                     break;
                 case SqlDbType.NChar:
                     DbType = DbType.StringFixedLength;
                     TypeName = "nchar";
-                    ClassType = typeof(string);
-                    SqlType = typeof(SqlString);
+                    ClassType = typeof (string);
+                    SqlType = typeof (SqlString);
                     FixedLength = -1;
                     break;
                 case SqlDbType.NText:
                     DbType = DbType.String;
                     TypeName = "ntext";
-                    ClassType = typeof(string);
-                    SqlType = typeof(SqlString);
+                    ClassType = typeof (string);
+                    SqlType = typeof (SqlString);
                     FixedLength = -1;
                     break;
                 case SqlDbType.NVarChar:
                     DbType = DbType.String;
                     TypeName = "nvarchar";
-                    ClassType = typeof(string);
-                    SqlType = typeof(SqlString);
+                    ClassType = typeof (string);
+                    SqlType = typeof (SqlString);
                     FixedLength = -1;
                     break;
                 case SqlDbType.Real:
                     DbType = DbType.Single;
                     TypeName = "real";
-                    ClassType = typeof(float);
-                    SqlType = typeof(SqlSingle);
+                    ClassType = typeof (float);
+                    SqlType = typeof (SqlSingle);
                     FixedLength = 4;
                     break;
                 case SqlDbType.UniqueIdentifier:
                     DbType = DbType.Guid;
                     TypeName = "uniqueidentifier";
-                    ClassType = typeof(Guid);
-                    SqlType = typeof(SqlGuid);
+                    ClassType = typeof (Guid);
+                    SqlType = typeof (SqlGuid);
                     FixedLength = 16;
                     break;
                 case SqlDbType.SmallDateTime:
                     DbType = DbType.DateTime;
                     TypeName = "smalldatetime";
-                    ClassType = typeof(DateTime);
-                    SqlType = typeof(SqlDateTime);
+                    ClassType = typeof (DateTime);
+                    SqlType = typeof (SqlDateTime);
                     FixedLength = 4;
                     break;
                 case SqlDbType.SmallInt:
                     DbType = DbType.Int16;
                     TypeName = "smallint";
-                    ClassType = typeof(short);
-                    SqlType = typeof(SqlInt16);
+                    ClassType = typeof (short);
+                    SqlType = typeof (SqlInt16);
                     FixedLength = 2;
                     break;
                 case SqlDbType.SmallMoney:
                     DbType = DbType.Currency;
                     TypeName = "smallmoney";
-                    ClassType = typeof(Decimal);
-                    SqlType = typeof(SqlMoney);
+                    ClassType = typeof (Decimal);
+                    SqlType = typeof (SqlMoney);
                     FixedLength = 4;
                     break;
                 case SqlDbType.Text:
                     DbType = DbType.AnsiString;
                     TypeName = "text";
-                    ClassType = typeof(string);
-                    SqlType = typeof(SqlString);
+                    ClassType = typeof (string);
+                    SqlType = typeof (SqlString);
                     FixedLength = -1;
                     break;
                 case SqlDbType.Timestamp:
                     DbType = DbType.Binary;
                     TypeName = "timestamp";
-                    ClassType = typeof(byte[]);
-                    SqlType = typeof(SqlBinary);
+                    ClassType = typeof (byte[]);
+                    SqlType = typeof (SqlBinary);
                     FixedLength = 8;
                     break;
                 case SqlDbType.TinyInt:
                     DbType = DbType.Byte;
                     TypeName = "tinyint";
-                    ClassType = typeof(byte);
-                    SqlType = typeof(SqlByte);
+                    ClassType = typeof (byte);
+                    SqlType = typeof (SqlByte);
                     FixedLength = -1;
                     break;
                 case SqlDbType.VarBinary:
                     DbType = DbType.Binary;
                     TypeName = "varbinary";
-                    ClassType = typeof(byte[]);
-                    SqlType = typeof(SqlBinary);
+                    ClassType = typeof (byte[]);
+                    SqlType = typeof (SqlBinary);
                     FixedLength = -1;
                     break;
                 case SqlDbType.VarChar:
                     DbType = DbType.AnsiString;
                     TypeName = "varchar";
-                    ClassType = typeof(string);
-                    SqlType = typeof(SqlString);
+                    ClassType = typeof (string);
+                    SqlType = typeof (SqlString);
                     FixedLength = -1;
                     break;
                 case SqlDbType.Variant:
                     DbType = DbType.Object;
                     TypeName = "sql_variant";
-                    ClassType = typeof(object);
-                    SqlType = typeof(object);
+                    ClassType = typeof (object);
+                    SqlType = typeof (object);
                     FixedLength = -1;
                     break;
                 case SqlDbType.Xml:
                     DbType = DbType.Xml;
                     TypeName = "xml";
-                    ClassType = typeof(string);
-                    SqlType = typeof(SqlXml);
+                    ClassType = typeof (string);
+                    SqlType = typeof (SqlXml);
                     FixedLength = -1;
                     break;
                 case SqlDbType.Udt:
                     DbType = DbType.Object;
                     TypeName = "udt";
-                    ClassType = typeof(object);
-                    SqlType = typeof(object);
+                    ClassType = typeof (object);
+                    SqlType = typeof (object);
                     FixedLength = -1;
                     break;
                 case SqlDbType.Date:
                     DbType = DbType.Date;
                     TypeName = "date";
-                    ClassType = typeof(DateTime);
-                    SqlType = typeof(DateTime);
+                    ClassType = typeof (DateTime);
+                    SqlType = typeof (DateTime);
                     FixedLength = 3;
                     break;
                 case SqlDbType.Time:
                     DbType = DbType.Time;
                     TypeName = "time";
-                    ClassType = typeof(TimeSpan);
-                    SqlType = typeof(TimeSpan);
+                    ClassType = typeof (TimeSpan);
+                    SqlType = typeof (TimeSpan);
                     FixedLength = -1;
                     break;
                 case SqlDbType.DateTime2:
                     DbType = DbType.DateTime2;
                     TypeName = "datetime2";
-                    ClassType = typeof(DateTime);
-                    SqlType = typeof(DateTime);
+                    ClassType = typeof (DateTime);
+                    SqlType = typeof (DateTime);
                     FixedLength = -1;
                     break;
                 case SqlDbType.DateTimeOffset:
                     DbType = DbType.DateTimeOffset;
                     TypeName = "datetimeoffset";
-                    ClassType = typeof(DateTimeOffset);
-                    SqlType = typeof(DateTimeOffset);
+                    ClassType = typeof (DateTimeOffset);
+                    SqlType = typeof (DateTimeOffset);
                     FixedLength = -1;
                     break;
                 default:
@@ -328,6 +337,28 @@ namespace WebApplications.Testing.Data
             FixedLength = length;
         }
 
+        [NotNull]
+        public RecordSetDefinition RecordSetDefinition { get; internal set; }
+
+        public int Ordinal { get; internal set; }
+
+        /// <summary>
+        /// The SQL Null value for this column.
+        /// </summary>
+        [NotNull]
+        public object NullValue
+        {
+            get { return SqlDbType.NullValue(); }
+        }
+
+        /// <summary>
+        /// Whether the length is fixed.
+        /// </summary>
+        public bool IsFixedLength
+        {
+            get { return FixedLength > -1; }
+        }
+
         /// <summary>
         /// Gets the random value.
         /// </summary>
@@ -339,8 +370,6 @@ namespace WebApplications.Testing.Data
             return Tester.RandomGenerator.RandomSqlValue(SqlDbType, FixedLength, nullProbability, Fill);
         }
 
-        public static readonly DateTime MinSmallDateTime = new DateTime(1990, 1, 1);
-        public static readonly DateTime MaxSmallDateTime = new DateTime(2079, 6, 7) - new TimeSpan(1);
         public bool Validate(object value, out object sqlValue)
         {
             if (value.IsNull())
@@ -365,10 +394,10 @@ namespace WebApplications.Testing.Data
                 case SqlDbType.Image:
                 case SqlDbType.Timestamp:
                 case SqlDbType.VarBinary:
-                    byte[] bytes = (byte[])value;
+                    byte[] bytes = (byte[]) value;
                     sqlValue = bytes;
                     return FixedLength < 0 ||
-                        (bytes.Length <= FixedLength);
+                           (bytes.Length <= FixedLength);
                 case SqlDbType.Bit:
                     sqlValue = (bool) value;
                     return true;
@@ -378,43 +407,43 @@ namespace WebApplications.Testing.Data
                     string s = (string) value;
                     sqlValue = s;
                     return FixedLength < 0 ||
-                        (s.Length <= FixedLength);
+                           (s.Length <= FixedLength);
                 case SqlDbType.DateTime:
                 case SqlDbType.DateTime2:
                     sqlValue = (DateTime) value;
                     return true;
                 case SqlDbType.Decimal:
-                    sqlValue = (decimal)value;
+                    sqlValue = (decimal) value;
                     return true;
                 case SqlDbType.Float:
-                    sqlValue = (float)value;
+                    sqlValue = (float) value;
                     return true;
                 case SqlDbType.Int:
-                    sqlValue = (int)value;
+                    sqlValue = (int) value;
                     return true;
                 case SqlDbType.NChar:
                 case SqlDbType.NText:
                 case SqlDbType.NVarChar:
                 case SqlDbType.Xml:
-                    string ns = (string)value;
+                    string ns = (string) value;
                     sqlValue = ns;
                     return FixedLength < 0 ||
-                        (ns.Length <= (FixedLength/2));
+                           (ns.Length <= (FixedLength/2));
                 case SqlDbType.Real:
-                    sqlValue = (float)value;
+                    sqlValue = (float) value;
                     return true;
                 case SqlDbType.UniqueIdentifier:
-                    sqlValue = (Guid)value;
+                    sqlValue = (Guid) value;
                     return true;
                 case SqlDbType.SmallDateTime:
                     DateTime dt = (DateTime) value;
                     sqlValue = dt;
                     return dt >= MinSmallDateTime && dt <= MaxSmallDateTime;
                 case SqlDbType.SmallInt:
-                    sqlValue = (Int16)value;
+                    sqlValue = (Int16) value;
                     return true;
                 case SqlDbType.TinyInt:
-                    sqlValue = (byte)value;
+                    sqlValue = (byte) value;
                     return true;
                 case SqlDbType.Variant:
                     sqlValue = value;
@@ -435,7 +464,7 @@ namespace WebApplications.Testing.Data
                     sqlValue = (TimeSpan) value;
                     return true;
                 case SqlDbType.DateTimeOffset:
-                    sqlValue = (DateTimeOffset)value;
+                    sqlValue = (DateTimeOffset) value;
                     return true;
                 default:
                     throw new ArgumentOutOfRangeException();

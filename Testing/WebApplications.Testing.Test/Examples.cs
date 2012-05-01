@@ -1,7 +1,33 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Data;
-using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+using System.Data.SqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing.Data;
 
@@ -26,12 +52,27 @@ namespace WebApplications.Testing.Test
             // Or we can create one with random values
             IObjectRecord randomRecord = new ObjectRecord(recordSetDefinition, true);
 
+            // To create a record that throws an exception we first create a SqlException
+            // We can't do this directly, but we can use our prototypes to construct one.
+
+            // SqlExceptions are made from a collection of SqlErrors - which can make like this :
+            SqlErrorCollection errorCollection = new SqlErrorCollectionPrototype
+                                                {
+                                                    new SqlErrorPrototype(1000, 80, 17, "MyFakeServer",
+                                                                          "Connection Timeout.", "spMySproc", 54)
+                                                };
+
+            SqlException sqlException = new SqlExceptionPrototype(errorCollection, "9.0.0.0", Guid.NewGuid());
+            IObjectRecord exceptionRecord = new ExceptionRecord(sqlException);
+
             // We can stick these records into a recordset
-            // Note the records must have the same RecordSetDefinition
+            // Note the records must have the same RecordSetDefinition (unless it's an exception record)
+            // The final record will through an exception when reached!
             ObjectSet recordSet = new ObjectSet(recordSetDefinition)
                                       {
                                           dataRecord,
-                                          randomRecord
+                                          randomRecord,
+                                          exceptionRecord
                                       };
 
             // We can add recordsets to an ObjectReader
@@ -43,26 +84,14 @@ namespace WebApplications.Testing.Test
             // We can also add random record sets - this one has the same definition as the first.
             reader.Add(new RandomSet(recordSetDefinition));
 
+            // We can also fix certain rows values using the column generators arry, a null indicates
+            // that the column should us a random value, otherwise a lambda can be supplied - in this case
+            // it sets the row to the row number (1 - indexed).
+            reader.Add(new RandomSet(recordSetDefinition,
+                                     columnGenerators: new Func<int, object>[] {null, row => "Row #" + row}));
+
             // Whereas this one has a random set of columns (with random types).
             reader.Add(new RandomSet(10));
-
-            // Create a random number generator
-            Random random = new Random();
-            
-            // Generate a random number between 0 and Int.MaxValue-1 inclusive.
-            int a = random.Next();
-            // Generate a random number between 0 and 49 inclusive.
-            int b = random.Next(50);
-            // Generate a random number between 10 and 49 inclusive.
-            int c = random.Next(10, 50);
-
-            // Generate a random double between 0.0 inclusive and 1.0 exclusive
-            double d = random.NextDouble();
-
-            // Fill a buffer with random bytes (each byte having every possible value).
-            byte[] buffer = new byte[10];
-            random.NextBytes(buffer);
         }
     }
-
 }

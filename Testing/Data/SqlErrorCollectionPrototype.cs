@@ -1,6 +1,32 @@
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -25,14 +51,17 @@ namespace WebApplications.Testing.Data
         /// <summary>
         /// Creates a new <see cref="SqlErrorCollection"/>.
         /// </summary>
-        [NotNull]
-        private static readonly Func<SqlErrorCollection> _constructor;
+        [NotNull] private static readonly Func<SqlErrorCollection> _constructor;
 
         /// <summary>
         /// Adds a <see cref="SqlError"/> to a <see cref="SqlErrorCollection"/>.
         /// </summary>
-        [NotNull]
-        private static readonly Action<SqlErrorCollection, SqlError> _adder;
+        [NotNull] private static readonly Action<SqlErrorCollection, SqlError> _adder;
+
+        /// <summary>
+        /// The equivalent <see cref="SqlErrorCollection" />.
+        /// </summary>
+        [NotNull] public readonly SqlErrorCollection SqlErrorCollection;
 
         /// <summary>
         /// Creates the <see cref="_constructor"/> function and the <see cref="_adder"/> action.
@@ -59,7 +88,7 @@ namespace WebApplications.Testing.Data
 
             // Create instance parameter
             ParameterExpression instanceParameter = Expression.Parameter(typeof (SqlErrorCollection), "collection");
-            
+
             // Create method parameter
             ParameterExpression errorParamter = Expression.Parameter(typeof (SqlError), "error");
 
@@ -67,28 +96,6 @@ namespace WebApplications.Testing.Data
                 Expression.Lambda<Action<SqlErrorCollection, SqlError>>(
                     Expression.Call(instanceParameter, addMethod, errorParamter), instanceParameter, errorParamter).
                     Compile();
-        }
-
-        /// <summary>
-        /// The equivalent <see cref="SqlErrorCollection" />.
-        /// </summary>
-        [NotNull]
-        public readonly SqlErrorCollection SqlErrorCollection;
-
-        /// <summary>
-        /// Gets the error at the specified index.
-        /// </summary>
-        /// 
-        /// <returns>
-        /// A <see cref="T:System.Data.SqlClient.SqlError"/> that contains the error at the specified index.
-        /// </returns>
-        /// <param name="index">The zero-based index of the error to retrieve. </param><exception cref="T:System.IndexOutOfRangeException">Index parameter is outside array bounds. </exception><filterpriority>2</filterpriority>
-        public SqlError this[int index]
-        {
-            get
-            {
-                return SqlErrorCollection[index];
-            }
         }
 
         /// <summary>
@@ -104,12 +111,26 @@ namespace WebApplications.Testing.Data
         /// </summary>
         /// <param name="collection">The collection.</param>
         /// <remarks></remarks>
-        public SqlErrorCollectionPrototype([NotNull]SqlErrorCollection collection)
+        public SqlErrorCollectionPrototype([NotNull] SqlErrorCollection collection)
         {
             Contract.Assert(collection != null);
             SqlErrorCollection = collection;
         }
 
+        /// <summary>
+        /// Gets the error at the specified index.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// A <see cref="T:System.Data.SqlClient.SqlError"/> that contains the error at the specified index.
+        /// </returns>
+        /// <param name="index">The zero-based index of the error to retrieve. </param><exception cref="T:System.IndexOutOfRangeException">Index parameter is outside array bounds. </exception><filterpriority>2</filterpriority>
+        public SqlError this[int index]
+        {
+            get { return SqlErrorCollection[index]; }
+        }
+
+        #region ICollection Members
         /// <inheritdoc/>
         public IEnumerator GetEnumerator()
         {
@@ -139,6 +160,7 @@ namespace WebApplications.Testing.Data
         {
             get { return false; }
         }
+        #endregion
 
         /// <summary>
         /// Adds the specified error to the collection.

@@ -1,37 +1,59 @@
-﻿// Type: System.Data.SqlClient.SqlUdtInfo
-// Assembly: System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-// Assembly location: C:\Windows\Microsoft.NET\Framework\v4.0.30319\System.Data.dll
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
 
-using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
+using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Testing.Data
 {
     public class SqlUdtInfo
     {
-        public readonly Format SerializationFormat;
+        [ThreadStatic] private static Dictionary<Type, SqlUdtInfo> m_types2UdtInfo;
         public readonly bool IsByteOrdered;
         public readonly bool IsFixedLength;
         public readonly int MaxByteSize;
         public readonly string Name;
+        public readonly Format SerializationFormat;
         public readonly string ValidationMethodName;
-        [ThreadStatic]
-        private static Dictionary<Type, SqlUdtInfo> m_types2UdtInfo;
 
         private SqlUdtInfo(SqlUserDefinedTypeAttribute attr)
         {
-            this.SerializationFormat = attr.Format;
-            this.IsByteOrdered = attr.IsByteOrdered;
-            this.IsFixedLength = attr.IsFixedLength;
-            this.MaxByteSize = attr.MaxByteSize;
-            this.Name = attr.Name;
-            this.ValidationMethodName = attr.ValidationMethodName;
+            SerializationFormat = attr.Format;
+            IsByteOrdered = attr.IsByteOrdered;
+            IsFixedLength = attr.IsFixedLength;
+            MaxByteSize = attr.MaxByteSize;
+            Name = attr.Name;
+            ValidationMethodName = attr.ValidationMethodName;
         }
 
         internal static SqlUdtInfo GetFromType(Type target)
         {
-            SqlUdtInfo fromType = SqlUdtInfo.TryGetFromType(target);
+            SqlUdtInfo fromType = TryGetFromType(target);
             if (fromType == null)
                 throw new InvalidOperationException();
             else
@@ -40,15 +62,15 @@ namespace WebApplications.Testing.Data
 
         internal static SqlUdtInfo TryGetFromType(Type target)
         {
-            if (SqlUdtInfo.m_types2UdtInfo == null)
-                SqlUdtInfo.m_types2UdtInfo = new Dictionary<Type, SqlUdtInfo>();
-            SqlUdtInfo sqlUdtInfo = (SqlUdtInfo)null;
-            if (!SqlUdtInfo.m_types2UdtInfo.TryGetValue(target, out sqlUdtInfo))
+            if (m_types2UdtInfo == null)
+                m_types2UdtInfo = new Dictionary<Type, SqlUdtInfo>();
+            SqlUdtInfo sqlUdtInfo = (SqlUdtInfo) null;
+            if (!m_types2UdtInfo.TryGetValue(target, out sqlUdtInfo))
             {
-                object[] customAttributes = target.GetCustomAttributes(typeof(SqlUserDefinedTypeAttribute), false);
+                object[] customAttributes = target.GetCustomAttributes(typeof (SqlUserDefinedTypeAttribute), false);
                 if (customAttributes != null && customAttributes.Length == 1)
-                    sqlUdtInfo = new SqlUdtInfo((SqlUserDefinedTypeAttribute)customAttributes[0]);
-                SqlUdtInfo.m_types2UdtInfo.Add(target, sqlUdtInfo);
+                    sqlUdtInfo = new SqlUdtInfo((SqlUserDefinedTypeAttribute) customAttributes[0]);
+                m_types2UdtInfo.Add(target, sqlUdtInfo);
             }
             return sqlUdtInfo;
         }

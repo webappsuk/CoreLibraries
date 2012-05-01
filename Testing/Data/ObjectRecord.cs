@@ -1,11 +1,35 @@
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
-using System.Globalization;
-using System.Linq;
 using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Testing.Data
 {
@@ -27,49 +51,63 @@ namespace WebApplications.Testing.Data
     public class ObjectRecord : IObjectRecord
     {
         /// <summary>
-        /// The current table definition.
-        /// </summary>
-        [NotNull]
-        private readonly RecordSetDefinition _recordSetDefinition;
-
-        /// <summary>
         /// The column values.
         /// </summary>
         [NotNull]
         private readonly object[] _columnValues;
 
         /// <summary>
-        /// Gets the column values.
+        /// The current table definition.
         /// </summary>
-        /// <value>The column data.</value>
-        /// <remarks></remarks>
         [NotNull]
-        public IEnumerable<object> ColumnValues { get { return _columnValues; }}
+        private readonly RecordSetDefinition _recordSetDefinition;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectRecord" /> class.
         /// </summary>
         /// <param name="recordSetDefinition">The table definition.</param>
         /// <param name="randomData">if set to <see langword="true" /> fills columns with random data; otherwise fills them with SQL null values.</param>
-        /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) - 
-        /// this is only applicable is <see cref="randomData"/> is set to <see langword="true"/> [Defaults to 0.1 = 10%].</param>
+        /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) -
+        /// this is only applicable is <see cref="randomData" /> is set to <see langword="true" /> [Defaults to 0.1 = 10%].</param>
+        /// <param name="columnGenerators">The column generators is an array of functions that generate a value for each column, if the function is
+        /// <see langword="null" /> for a particular index then a random value is generated, if it is not null then the function is used.  The function takes
+        /// the current row number as it's only parameter and must return an object of the correct type for the column.</param>
+        /// <param name="rowNumber">The optional row number to pass to the generator.</param>
+        /// <exception cref="System.ArgumentException">Thrown if the number of column generators exceeds the number of columns in the record set definition.</exception>
         /// <remarks></remarks>
-        public ObjectRecord([NotNull]RecordSetDefinition recordSetDefinition, bool randomData = false, double nullProbability = 0.1)
+        public ObjectRecord([NotNull] RecordSetDefinition recordSetDefinition, bool randomData = false,
+                            double nullProbability = 0.1,
+                            Func<int, object>[] columnGenerators = null, int rowNumber = 1)
         {
             _recordSetDefinition = recordSetDefinition;
             int columnCount = recordSetDefinition.FieldCount;
             _columnValues = new object[columnCount];
 
-            if (!randomData)
+            if ((columnGenerators != null) &&
+                (columnGenerators.Length > recordSetDefinition.FieldCount))
+                throw new ArgumentException(
+                    "The number of column generators must not exceed the number of columns in the record set definition.",
+                    "columnGenerators");
+
+            for (int c = 0; c < columnCount; c++)
             {
-                // Just fill with nulls
-                for (int c = 0; c < columnCount; c++)
-                    _columnValues[c] = recordSetDefinition[c].NullValue;
-            } else
-            {
-                // Fill values with random data
-                for (int c = 0; c < columnCount; c++)
+                // Check if we have a generator
+                if ((columnGenerators != null) &&
+                    (columnGenerators.Length > c) &&
+                    (columnGenerators[c] != null))
+                {
+                    _columnValues[c] = columnGenerators[c](rowNumber);
+                }
+                else if (randomData)
+                {
+                    // Generate random value.
                     _columnValues[c] = recordSetDefinition[c].GetRandomValue(nullProbability);
+                }
+                else
+                {
+                    // Just set to equivalent null.
+                    _columnValues[c] = recordSetDefinition[c].NullValue;
+                }
             }
         }
 
@@ -82,7 +120,7 @@ namespace WebApplications.Testing.Data
         /// If the number of column values supplied is less than the number of columns then the remaining columns are set to
         /// their equivalent null value.
         /// </remarks>
-        public ObjectRecord([NotNull]RecordSetDefinition recordSetDefinition, [NotNull]params object[] columnValues)
+        public ObjectRecord([NotNull] RecordSetDefinition recordSetDefinition, [NotNull] params object[] columnValues)
         {
             int length = columnValues.Length;
             int columns = recordSetDefinition.FieldCount;
@@ -97,9 +135,21 @@ namespace WebApplications.Testing.Data
 
             // Import values or set to null.
             for (int i = 0; i < columns; i++)
-                this[i] = i < length ? columnValues[i] : _recordSetDefinition[i].NullValue;
+                SetValue(i, i < length ? columnValues[i] : _recordSetDefinition[i].NullValue);
         }
 
+        /// <summary>
+        /// Gets the column values.
+        /// </summary>
+        /// <value>The column data.</value>
+        /// <remarks></remarks>
+        [NotNull]
+        public IEnumerable<object> ColumnValues
+        {
+            get { return _columnValues; }
+        }
+
+        #region IObjectRecord Members
         /// <inhertidoc />
         public string GetName(int i)
         {
@@ -122,6 +172,32 @@ namespace WebApplications.Testing.Data
         public object GetValue(int i)
         {
             return _columnValues[i];
+        }
+
+        /// <summary>
+        /// Sets the value. of the column with the specified index.
+        /// </summary>
+        /// <param name="i">The index.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="System.ArgumentException">The value is not valid for the specified index.</exception>
+        /// <remarks></remarks>
+        public void SetValue(int i, object value)
+        {
+            // Check to see if value is changing
+            if (_columnValues[i] == value)
+                return;
+
+            // Validate value
+            object sqlValue;
+            if (!_recordSetDefinition[i].Validate(value, out sqlValue))
+                throw new ArgumentException(
+                    string.Format(
+                        "Cannot set the value of column '{0}' to {1}.",
+                        i,
+                        value == null ? "null" : "'" + value + "'"),
+                    "value");
+
+            _columnValues[i] = sqlValue;
         }
 
         /// <inhertidoc />
@@ -148,7 +224,7 @@ namespace WebApplications.Testing.Data
                 throw new SqlNullValueException();
             if (!(o is bool))
                 throw new InvalidCastException();
-            return (bool) o;
+            return (bool)o;
         }
 
         /// <inhertidoc />
@@ -173,8 +249,8 @@ namespace WebApplications.Testing.Data
                 throw new SqlNullValueException();
             if (!(o is byte[]))
                 throw new InvalidCastException();
-            byte[] bytes = (byte[]) o;
-            length = (bytes.Length - fieldOffset) < length ? (int)(bytes.Length-fieldOffset) : length;
+            byte[] bytes = (byte[])o;
+            length = (bytes.Length - fieldOffset) < length ? (int)(bytes.Length - fieldOffset) : length;
             Array.Copy(bytes, fieldOffset, buffer, bufferoffset, length);
             return length;
         }
@@ -326,24 +402,7 @@ namespace WebApplications.Testing.Data
         public object this[int i]
         {
             get { return GetValue(i); }
-            set
-            {
-                // Check to see if value is changing
-                if (_columnValues[i] == value)
-                    return;
-                
-                // Validate value
-                object sqlValue;
-                if (!_recordSetDefinition[i].Validate(value, out sqlValue))
-                    throw new ArgumentException(
-                        string.Format(
-                            "Cannot set the value of column '{0}' to {1}.",
-                            i,
-                            value == null ? "null" : "'" + value + "'"), 
-                            "value");
-
-                _columnValues[i] = sqlValue;
-            }
+            set { SetValue(i, value); }
         }
 
         /// <inhertidoc />
@@ -357,5 +416,6 @@ namespace WebApplications.Testing.Data
         {
             get { return _recordSetDefinition; }
         }
+        #endregion
     }
 }

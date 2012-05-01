@@ -1,9 +1,34 @@
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -21,21 +46,19 @@ namespace WebApplications.Testing.Data
         [NotNull] private readonly List<IObjectSet> _recordSets;
 
         /// <summary>
-        /// The internal enumeror over the sets.
+        /// Whether the reader is closed.
         /// </summary>
-        [CanBeNull]
-        private IEnumerator<IObjectSet> _setEnumerator;
+        private bool _isClosed;
 
         /// <summary>
         /// The internal enumeror over the records in the current set.
         /// </summary>
-        [CanBeNull]
-        private IEnumerator<IObjectRecord> _recordEnumerator;
+        [CanBeNull] private IEnumerator<IObjectRecord> _recordEnumerator;
 
         /// <summary>
-        /// Whether the reader is closed.
+        /// The internal enumeror over the sets.
         /// </summary>
-        private bool _isClosed;
+        [CanBeNull] private IEnumerator<IObjectSet> _setEnumerator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectReader" /> class.
@@ -98,16 +121,78 @@ namespace WebApplications.Testing.Data
             }
         }
 
-        /// <summary>
-        /// Resets the data reader, clearing enumerators, re-opening and allowing recordset collection to be modified.
-        /// </summary>
-        /// <remarks></remarks>
-        public void Reset()
+        #region ICollection<IObjectSet> Members
+        /// <inheritdoc/>
+        public IEnumerator<IObjectSet> GetEnumerator()
         {
-            _isClosed = false;
-            Dispose();
+            return _recordSets.GetEnumerator();
         }
 
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <inheritdoc/>
+        public void Add(IObjectSet item)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            if (_setEnumerator != null)
+                throw new InvalidOperationException("Cannot modify data reader once it has started being read.");
+
+            _recordSets.Add(item);
+        }
+
+        /// <inheritdoc/>
+        public void Clear()
+        {
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            if (_setEnumerator != null)
+                throw new InvalidOperationException("Cannot modify data reader once it has started being read.");
+
+            _recordSets.Clear();
+        }
+
+        /// <inheritdoc/>
+        public bool Contains(IObjectSet item)
+        {
+            return _recordSets.Contains(item);
+        }
+
+        /// <inheritdoc/>
+        public void CopyTo(IObjectSet[] array, int arrayIndex)
+        {
+            _recordSets.CopyTo(array, arrayIndex);
+        }
+
+        /// <inheritdoc/>
+        public bool Remove(IObjectSet item)
+        {
+            if (_isClosed)
+                throw new InvalidOperationException("Data reader is closed.");
+            if (_setEnumerator != null)
+                throw new InvalidOperationException("Cannot modify data reader once it has started being read.");
+
+            return _recordSets.Remove(item);
+        }
+
+        /// <inheritdoc/>
+        public int Count
+        {
+            get { return _recordSets.Count; }
+        }
+
+        /// <inheritdoc/>
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
+        #endregion
+
+        #region IDataReader Members
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -337,7 +422,7 @@ namespace WebApplications.Testing.Data
             if (_isClosed)
                 throw new InvalidOperationException("Data reader is closed.");
             _recordEnumerator = null;
-            
+
             // Create set enumerator if not present.
             if (_setEnumerator == null)
                 _setEnumerator = _recordSets.GetEnumerator();
@@ -375,74 +460,16 @@ namespace WebApplications.Testing.Data
         {
             get { return -1; }
         }
+        #endregion
 
-        /// <inheritdoc/>
-        public IEnumerator<IObjectSet> GetEnumerator()
+        /// <summary>
+        /// Resets the data reader, clearing enumerators, re-opening and allowing recordset collection to be modified.
+        /// </summary>
+        /// <remarks></remarks>
+        public void Reset()
         {
-            return _recordSets.GetEnumerator();
-        }
-
-        /// <inheritdoc/>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        /// <inheritdoc/>
-        public void Add(IObjectSet item)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            if (_setEnumerator != null)
-                throw new InvalidOperationException("Cannot modify data reader once it has started being read.");
-
-            _recordSets.Add(item);
-        }
-
-        /// <inheritdoc/>
-        public void Clear()
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            if (_setEnumerator != null)
-                throw new InvalidOperationException("Cannot modify data reader once it has started being read.");
-
-            _recordSets.Clear();
-        }
-
-        /// <inheritdoc/>
-        public bool Contains(IObjectSet item)
-        {
-            return _recordSets.Contains(item);
-        }
-
-        /// <inheritdoc/>
-        public void CopyTo(IObjectSet[] array, int arrayIndex)
-        {
-            _recordSets.CopyTo(array, arrayIndex);
-        }
-
-        /// <inheritdoc/>
-        public bool Remove(IObjectSet item)
-        {
-            if (_isClosed)
-                throw new InvalidOperationException("Data reader is closed.");
-            if (_setEnumerator != null)
-                throw new InvalidOperationException("Cannot modify data reader once it has started being read.");
-
-            return _recordSets.Remove(item);
-        }
-
-        /// <inheritdoc/>
-        public int Count
-        {
-            get { return _recordSets.Count; }
-        }
-
-        /// <inheritdoc/>
-        public bool IsReadOnly
-        {
-            get { return false; }
+            _isClosed = false;
+            Dispose();
         }
     }
 }

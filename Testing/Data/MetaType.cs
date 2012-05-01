@@ -44,234 +44,196 @@ namespace WebApplications.Testing.Data
     /// <remarks></remarks>
     internal sealed class MetaType
     {
-        [NotNull]
-        public static readonly MetaType MetaBigInt = new MetaType(19, byte.MaxValue, 8, true, false, false,
-                                                                  127, 38, "bigint", typeof(long),
-                                                                  typeof(SqlInt64), SqlDbType.BigInt,
-                                                                  DbType.Int64, 0);
+        [NotNull] public static readonly MetaType MetaBigInt = new MetaType(19, byte.MaxValue, 8, true, false, false,
+                                                                            127, 38, "bigint", typeof (long),
+                                                                            typeof (SqlInt64), SqlDbType.BigInt,
+                                                                            DbType.Int64, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaBinary = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                  false, false, 173, 173, "binary",
-                                                                  typeof(byte[]), typeof(SqlBinary),
-                                                                  SqlDbType.Binary, DbType.Binary, 2);
+        [NotNull] public static readonly MetaType MetaBinary = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                            false, false, 173, 173, "binary",
+                                                                            typeof (byte[]), typeof (SqlBinary),
+                                                                            SqlDbType.Binary, DbType.Binary, 2);
 
-        [NotNull]
-        public static readonly MetaType MetaBit = new MetaType(byte.MaxValue, byte.MaxValue, 1, true, false,
-                                                               false, 50, 104, "bit", typeof(bool),
-                                                               typeof(SqlBoolean), SqlDbType.Bit,
-                                                               DbType.Boolean, 0);
+        [NotNull] public static readonly MetaType MetaBit = new MetaType(byte.MaxValue, byte.MaxValue, 1, true, false,
+                                                                         false, 50, 104, "bit", typeof (bool),
+                                                                         typeof (SqlBoolean), SqlDbType.Bit,
+                                                                         DbType.Boolean, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
-                                                                false, 175, 175, "char", typeof(string),
-                                                                typeof(SqlString), SqlDbType.Char,
-                                                                DbType.AnsiStringFixedLength, 7);
+        [NotNull] public static readonly MetaType MetaChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
+                                                                          false, 175, 175, "char", typeof (string),
+                                                                          typeof (SqlString), SqlDbType.Char,
+                                                                          DbType.AnsiStringFixedLength, 7);
 
-        [NotNull]
-        public static readonly MetaType MetaDate = new MetaType(byte.MaxValue, byte.MaxValue, 3, true, false,
-                                                                false, 40, 40, "date", typeof(DateTime),
-                                                                typeof(DateTime), SqlDbType.Date, DbType.Date,
-                                                                0);
+        [NotNull] public static readonly MetaType MetaDate = new MetaType(byte.MaxValue, byte.MaxValue, 3, true, false,
+                                                                          false, 40, 40, "date", typeof (DateTime),
+                                                                          typeof (DateTime), SqlDbType.Date, DbType.Date,
+                                                                          0);
 
-        [NotNull]
-        public static readonly MetaType MetaDateTime = new MetaType(23, 3, 8, true, false, false, 61, 111,
-                                                                    "datetime", typeof(DateTime),
-                                                                    typeof(SqlDateTime), SqlDbType.DateTime,
-                                                                    DbType.DateTime, 0);
+        [NotNull] public static readonly MetaType MetaDateTime = new MetaType(23, 3, 8, true, false, false, 61, 111,
+                                                                              "datetime", typeof (DateTime),
+                                                                              typeof (SqlDateTime), SqlDbType.DateTime,
+                                                                              DbType.DateTime, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaDateTime2 = new MetaType(byte.MaxValue, 7, -1, false, false, false,
-                                                                     42, 42, "datetime2", typeof(DateTime),
-                                                                     typeof(DateTime), SqlDbType.DateTime2,
-                                                                     DbType.DateTime2, 1);
+        [NotNull] public static readonly MetaType MetaDateTime2 = new MetaType(byte.MaxValue, 7, -1, false, false, false,
+                                                                               42, 42, "datetime2", typeof (DateTime),
+                                                                               typeof (DateTime), SqlDbType.DateTime2,
+                                                                               DbType.DateTime2, 1);
 
-        [NotNull]
-        public static readonly MetaType MetaDateTimeOffset = new MetaType(byte.MaxValue, 7, -1, false, false,
-                                                                          false, 43, 43, "datetimeoffset",
-                                                                          typeof(DateTimeOffset),
-                                                                          typeof(DateTimeOffset),
-                                                                          SqlDbType.DateTimeOffset,
-                                                                          DbType.DateTimeOffset, 1);
+        [NotNull] public static readonly MetaType MetaDateTimeOffset = new MetaType(byte.MaxValue, 7, -1, false, false,
+                                                                                    false, 43, 43, "datetimeoffset",
+                                                                                    typeof (DateTimeOffset),
+                                                                                    typeof (DateTimeOffset),
+                                                                                    SqlDbType.DateTimeOffset,
+                                                                                    DbType.DateTimeOffset, 1);
 
-        [NotNull]
-        public static readonly MetaType MetaDecimal = new MetaType(38, 4, 17, true, false, false, 108, 108,
-                                                                   "decimal", typeof(Decimal),
-                                                                   typeof(SqlDecimal), SqlDbType.Decimal,
-                                                                   DbType.Decimal, 2);
+        [NotNull] public static readonly MetaType MetaDecimal = new MetaType(38, 4, 17, true, false, false, 108, 108,
+                                                                             "decimal", typeof (Decimal),
+                                                                             typeof (SqlDecimal), SqlDbType.Decimal,
+                                                                             DbType.Decimal, 2);
 
-        [NotNull]
-        public static readonly MetaType MetaFloat = new MetaType(15, byte.MaxValue, 8, true, false, false, 62,
-                                                                 109, "float", typeof(double),
-                                                                 typeof(SqlDouble), SqlDbType.Float,
-                                                                 DbType.Double, 0);
+        [NotNull] public static readonly MetaType MetaFloat = new MetaType(15, byte.MaxValue, 8, true, false, false, 62,
+                                                                           109, "float", typeof (double),
+                                                                           typeof (SqlDouble), SqlDbType.Float,
+                                                                           DbType.Double, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaImage = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
-                                                                 false, 34, 34, "image", typeof(byte[]),
-                                                                 typeof(SqlBinary), SqlDbType.Image,
-                                                                 DbType.Binary, 0);
+        [NotNull] public static readonly MetaType MetaImage = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
+                                                                           false, 34, 34, "image", typeof (byte[]),
+                                                                           typeof (SqlBinary), SqlDbType.Image,
+                                                                           DbType.Binary, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaInt = new MetaType(10, byte.MaxValue, 4, true, false, false, 56,
-                                                               38, "int", typeof(int), typeof(SqlInt32),
-                                                               SqlDbType.Int, DbType.Int32, 0);
+        [NotNull] public static readonly MetaType MetaInt = new MetaType(10, byte.MaxValue, 4, true, false, false, 56,
+                                                                         38, "int", typeof (int), typeof (SqlInt32),
+                                                                         SqlDbType.Int, DbType.Int32, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaMaxVarBinary = new MetaType(byte.MaxValue, byte.MaxValue, -1,
-                                                                        false, true, true, 165, 165,
-                                                                        "varbinary", typeof(byte[]),
-                                                                        typeof(SqlBinary),
-                                                                        SqlDbType.VarBinary, DbType.Binary, 2);
+        [NotNull] public static readonly MetaType MetaMaxVarBinary = new MetaType(byte.MaxValue, byte.MaxValue, -1,
+                                                                                  false, true, true, 165, 165,
+                                                                                  "varbinary", typeof (byte[]),
+                                                                                  typeof (SqlBinary),
+                                                                                  SqlDbType.VarBinary, DbType.Binary, 2);
 
-        [NotNull]
-        public static readonly MetaType MetaMaxVarChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                      true, true, 167, 167, "varchar",
-                                                                      typeof(string), typeof(SqlString),
-                                                                      SqlDbType.VarChar, DbType.AnsiString, 7);
+        [NotNull] public static readonly MetaType MetaMaxVarChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                                true, true, 167, 167, "varchar",
+                                                                                typeof (string), typeof (SqlString),
+                                                                                SqlDbType.VarChar, DbType.AnsiString, 7);
 
-        [NotNull]
-        public static readonly MetaType MetaMoney = new MetaType(19, byte.MaxValue, 8, true, false, false, 60,
-                                                                 110, "money", typeof(Decimal),
-                                                                 typeof(SqlMoney), SqlDbType.Money,
-                                                                 DbType.Currency, 0);
+        [NotNull] public static readonly MetaType MetaMoney = new MetaType(19, byte.MaxValue, 8, true, false, false, 60,
+                                                                           110, "money", typeof (Decimal),
+                                                                           typeof (SqlMoney), SqlDbType.Money,
+                                                                           DbType.Currency, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaNChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                 false, false, 239, 239, "nchar",
-                                                                 typeof(string), typeof(SqlString),
-                                                                 SqlDbType.NChar, DbType.StringFixedLength, 7);
+        [NotNull] public static readonly MetaType MetaNChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                           false, false, 239, 239, "nchar",
+                                                                           typeof (string), typeof (SqlString),
+                                                                           SqlDbType.NChar, DbType.StringFixedLength, 7);
 
-        [NotNull]
-        public static readonly MetaType MetaNText = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
-                                                                 false, 99, 99, "ntext", typeof(string),
-                                                                 typeof(SqlString), SqlDbType.NText,
-                                                                 DbType.String, 7);
+        [NotNull] public static readonly MetaType MetaNText = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
+                                                                           false, 99, 99, "ntext", typeof (string),
+                                                                           typeof (SqlString), SqlDbType.NText,
+                                                                           DbType.String, 7);
 
-        [NotNull]
-        public static readonly MetaType MetaNVarChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                    false, false, 231, 231, "nvarchar",
-                                                                    typeof(string), typeof(SqlString),
-                                                                    SqlDbType.NVarChar, DbType.String, 7);
+        [NotNull] public static readonly MetaType MetaNVarChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                              false, false, 231, 231, "nvarchar",
+                                                                              typeof (string), typeof (SqlString),
+                                                                              SqlDbType.NVarChar, DbType.String, 7);
 
-        [NotNull]
-        public static readonly MetaType MetaMaxNVarChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                       true, true, 231, 231, "nvarchar",
-                                                                       typeof(string), typeof(SqlString),
-                                                                       SqlDbType.NVarChar, DbType.String, 7);
+        [NotNull] public static readonly MetaType MetaMaxNVarChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                                 true, true, 231, 231, "nvarchar",
+                                                                                 typeof (string), typeof (SqlString),
+                                                                                 SqlDbType.NVarChar, DbType.String, 7);
 
-        [NotNull]
-        public static readonly MetaType MetaMaxUdt = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                  true, true, 240, 240, "udt", typeof(object),
-                                                                  typeof(object), SqlDbType.Udt,
-                                                                  DbType.Object, 0);
+        [NotNull] public static readonly MetaType MetaMaxUdt = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                            true, true, 240, 240, "udt", typeof (object),
+                                                                            typeof (object), SqlDbType.Udt,
+                                                                            DbType.Object, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaReal = new MetaType(7, byte.MaxValue, 4, true, false, false, 59,
-                                                                109, "real", typeof(float),
-                                                                typeof(SqlSingle), SqlDbType.Real,
-                                                                DbType.Single, 0);
+        [NotNull] public static readonly MetaType MetaReal = new MetaType(7, byte.MaxValue, 4, true, false, false, 59,
+                                                                          109, "real", typeof (float),
+                                                                          typeof (SqlSingle), SqlDbType.Real,
+                                                                          DbType.Single, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaSmallDateTime = new MetaType(16, 0, 4, true, false, false, 58, 111,
-                                                                         "smalldatetime", typeof(DateTime),
-                                                                         typeof(SqlDateTime),
-                                                                         SqlDbType.SmallDateTime,
-                                                                         DbType.DateTime, 0);
+        [NotNull] public static readonly MetaType MetaSmallDateTime = new MetaType(16, 0, 4, true, false, false, 58, 111,
+                                                                                   "smalldatetime", typeof (DateTime),
+                                                                                   typeof (SqlDateTime),
+                                                                                   SqlDbType.SmallDateTime,
+                                                                                   DbType.DateTime, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaSmallInt = new MetaType(5, byte.MaxValue, 2, true, false, false,
-                                                                    52, 38, "smallint", typeof(short),
-                                                                    typeof(SqlInt16), SqlDbType.SmallInt,
-                                                                    DbType.Int16, 0);
+        [NotNull] public static readonly MetaType MetaSmallInt = new MetaType(5, byte.MaxValue, 2, true, false, false,
+                                                                              52, 38, "smallint", typeof (short),
+                                                                              typeof (SqlInt16), SqlDbType.SmallInt,
+                                                                              DbType.Int16, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaSmallMoney = new MetaType(10, byte.MaxValue, 4, true, false, false,
-                                                                      122, 110, "smallmoney", typeof(Decimal),
-                                                                      typeof(SqlMoney), SqlDbType.SmallMoney,
-                                                                      DbType.Currency, 0);
+        [NotNull] public static readonly MetaType MetaSmallMoney = new MetaType(10, byte.MaxValue, 4, true, false, false,
+                                                                                122, 110, "smallmoney", typeof (Decimal),
+                                                                                typeof (SqlMoney), SqlDbType.SmallMoney,
+                                                                                DbType.Currency, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaSmallVarBinary = new MetaType(byte.MaxValue, byte.MaxValue, -1,
-                                                                          false, false, false, 37, 173,
-                                                                          string.Empty, typeof(byte[]),
-                                                                          typeof(SqlBinary), (SqlDbType)24,
-                                                                          DbType.Binary, 2);
+        [NotNull] public static readonly MetaType MetaSmallVarBinary = new MetaType(byte.MaxValue, byte.MaxValue, -1,
+                                                                                    false, false, false, 37, 173,
+                                                                                    string.Empty, typeof (byte[]),
+                                                                                    typeof (SqlBinary), (SqlDbType) 24,
+                                                                                    DbType.Binary, 2);
 
-        [NotNull]
-        public static readonly MetaType MetaSUDT = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
-                                                                false, 31, 31, "", typeof(SqlDataRecord),
-                                                                typeof(SqlDataRecord), SqlDbType.Structured,
-                                                                DbType.Object, 0);
+        [NotNull] public static readonly MetaType MetaSUDT = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
+                                                                          false, 31, 31, "", typeof (SqlDataRecord),
+                                                                          typeof (SqlDataRecord), SqlDbType.Structured,
+                                                                          DbType.Object, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaTable = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                 false, false, 243, 243, "table",
-                                                                 typeof(IEnumerable<DbDataRecord>),
-                                                                 typeof(IEnumerable<DbDataRecord>),
-                                                                 SqlDbType.Structured, DbType.Object, 0);
+        [NotNull] public static readonly MetaType MetaTable = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                           false, false, 243, 243, "table",
+                                                                           typeof (IEnumerable<DbDataRecord>),
+                                                                           typeof (IEnumerable<DbDataRecord>),
+                                                                           SqlDbType.Structured, DbType.Object, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaText = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
-                                                                false, 35, 35, "text", typeof(string),
-                                                                typeof(SqlString), SqlDbType.Text,
-                                                                DbType.AnsiString, 0);
+        [NotNull] public static readonly MetaType MetaText = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
+                                                                          false, 35, 35, "text", typeof (string),
+                                                                          typeof (SqlString), SqlDbType.Text,
+                                                                          DbType.AnsiString, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaTime = new MetaType(byte.MaxValue, 7, -1, false, false, false, 41,
-                                                                41, "time", typeof(TimeSpan),
-                                                                typeof(TimeSpan), SqlDbType.Time, DbType.Time,
-                                                                1);
+        [NotNull] public static readonly MetaType MetaTime = new MetaType(byte.MaxValue, 7, -1, false, false, false, 41,
+                                                                          41, "time", typeof (TimeSpan),
+                                                                          typeof (TimeSpan), SqlDbType.Time, DbType.Time,
+                                                                          1);
 
-        [NotNull]
-        public static readonly MetaType MetaTimestamp = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                     false, false, 173, 173, "timestamp",
-                                                                     typeof(byte[]), typeof(SqlBinary),
-                                                                     SqlDbType.Timestamp, DbType.Binary, 2);
+        [NotNull] public static readonly MetaType MetaTimestamp = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                               false, false, 173, 173, "timestamp",
+                                                                               typeof (byte[]), typeof (SqlBinary),
+                                                                               SqlDbType.Timestamp, DbType.Binary, 2);
 
-        [NotNull]
-        public static readonly MetaType MetaTinyInt = new MetaType(3, byte.MaxValue, 1, true, false, false, 48,
-                                                                   38, "tinyint", typeof(byte),
-                                                                   typeof(SqlByte), SqlDbType.TinyInt,
-                                                                   DbType.Byte, 0);
+        [NotNull] public static readonly MetaType MetaTinyInt = new MetaType(3, byte.MaxValue, 1, true, false, false, 48,
+                                                                             38, "tinyint", typeof (byte),
+                                                                             typeof (SqlByte), SqlDbType.TinyInt,
+                                                                             DbType.Byte, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaUdt = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
-                                                               true, 240, 240, "udt", typeof(object),
-                                                               typeof(object), SqlDbType.Udt, DbType.Object,
-                                                               0);
+        [NotNull] public static readonly MetaType MetaUdt = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
+                                                                         true, 240, 240, "udt", typeof (object),
+                                                                         typeof (object), SqlDbType.Udt, DbType.Object,
+                                                                         0);
 
-        [NotNull]
-        public static readonly MetaType MetaVarBinary = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                     false, false, 165, 165, "varbinary",
-                                                                     typeof(byte[]), typeof(SqlBinary),
-                                                                     SqlDbType.VarBinary, DbType.Binary, 2);
+        [NotNull] public static readonly MetaType MetaVarBinary = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                               false, false, 165, 165, "varbinary",
+                                                                               typeof (byte[]), typeof (SqlBinary),
+                                                                               SqlDbType.VarBinary, DbType.Binary, 2);
 
-        [NotNull]
-        public static readonly MetaType MetaVarChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                   false, false, 167, 167, "varchar",
-                                                                   typeof(string), typeof(SqlString),
-                                                                   SqlDbType.VarChar, DbType.AnsiString, 7);
+        [NotNull] public static readonly MetaType MetaVarChar = new MetaType(byte.MaxValue, byte.MaxValue, -1, false,
+                                                                             false, false, 167, 167, "varchar",
+                                                                             typeof (string), typeof (SqlString),
+                                                                             SqlDbType.VarChar, DbType.AnsiString, 7);
 
-        [NotNull]
-        public static readonly MetaType MetaXml = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
-                                                               true, 241, 241, "xml", typeof(string),
-                                                               typeof(SqlXml), SqlDbType.Xml, DbType.Xml, 0);
+        [NotNull] public static readonly MetaType MetaXml = new MetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
+                                                                         true, 241, 241, "xml", typeof (string),
+                                                                         typeof (SqlXml), SqlDbType.Xml, DbType.Xml, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaUniqueId = new MetaType(byte.MaxValue, byte.MaxValue, 16, true,
-                                                                    false, false, 36, 36, "uniqueidentifier",
-                                                                    typeof(Guid), typeof(SqlGuid),
-                                                                    SqlDbType.UniqueIdentifier, DbType.Guid, 0);
+        [NotNull] public static readonly MetaType MetaUniqueId = new MetaType(byte.MaxValue, byte.MaxValue, 16, true,
+                                                                              false, false, 36, 36, "uniqueidentifier",
+                                                                              typeof (Guid), typeof (SqlGuid),
+                                                                              SqlDbType.UniqueIdentifier, DbType.Guid, 0);
 
-        [NotNull]
-        public static readonly MetaType MetaVariant = new MetaType(byte.MaxValue, byte.MaxValue, -1, true,
-                                                                   false, false, 98, 98, "sql_variant",
-                                                                   typeof(object), typeof(object),
-                                                                   SqlDbType.Variant, DbType.Object, 0);
+        [NotNull] public static readonly MetaType MetaVariant = new MetaType(byte.MaxValue, byte.MaxValue, -1, true,
+                                                                             false, false, 98, 98, "sql_variant",
+                                                                             typeof (object), typeof (object),
+                                                                             SqlDbType.Variant, DbType.Object, 0);
 
-        [NotNull]
-        public readonly Type ClassType;
+        [NotNull] public readonly Type ClassType;
         public readonly DbType DbType;
         public readonly int FixedLength;
         public readonly bool Is100Supported;
@@ -293,11 +255,9 @@ namespace WebApplications.Testing.Data
         public readonly byte PropBytes;
         public readonly byte Scale;
         public readonly SqlDbType SqlDbType;
-        [NotNull]
-        public readonly Type SqlType;
+        [NotNull] public readonly Type SqlType;
         public readonly byte TDSType;
-        [NotNull]
-        public readonly string TypeName;
+        [NotNull] public readonly string TypeName;
 
         private MetaType(byte precision, byte scale, int fixedLength, bool isFixed, bool isLong, bool isPlp,
                          byte tdsType, byte nullableTdsType, [NotNull] string typeName, [NotNull] Type classType,
@@ -364,7 +324,7 @@ namespace WebApplications.Testing.Data
         {
             return type == SqlDbType.Image || type == SqlDbType.Binary ||
                    (type == SqlDbType.VarBinary || type == SqlDbType.Timestamp) || type == SqlDbType.Udt ||
-                   type == (SqlDbType)24;
+                   type == (SqlDbType) 24;
         }
 
         private static bool _is70Supported(SqlDbType type)
@@ -451,7 +411,7 @@ namespace WebApplications.Testing.Data
                     return MetaVarChar;
                 case SqlDbType.Variant:
                     return MetaVariant;
-                case (SqlDbType)24:
+                case (SqlDbType) 24:
                     return MetaSmallVarBinary;
                 case SqlDbType.Xml:
                     return MetaXml;
@@ -566,55 +526,55 @@ namespace WebApplications.Testing.Data
                 case TypeCode.Empty:
                     throw new ArgumentOutOfRangeException("dataType");
                 case TypeCode.Object:
-                    if (dataType == typeof(byte[]))
+                    if (dataType == typeof (byte[]))
                     {
-                        return !inferLen || ((byte[])value).Length <= 8000 ? MetaVarBinary : MetaImage;
+                        return !inferLen || ((byte[]) value).Length <= 8000 ? MetaVarBinary : MetaImage;
                     }
-                    if (dataType == typeof(Guid))
+                    if (dataType == typeof (Guid))
                         return MetaUniqueId;
-                    if (dataType == typeof(object))
+                    if (dataType == typeof (object))
                         return MetaVariant;
-                    if (dataType == typeof(SqlBinary))
+                    if (dataType == typeof (SqlBinary))
                         return MetaVarBinary;
-                    if (dataType == typeof(SqlBoolean))
+                    if (dataType == typeof (SqlBoolean))
                         return MetaBit;
-                    if (dataType == typeof(SqlByte))
+                    if (dataType == typeof (SqlByte))
                         return MetaTinyInt;
-                    if (dataType == typeof(SqlBytes))
+                    if (dataType == typeof (SqlBytes))
                         return MetaVarBinary;
-                    if (dataType == typeof(SqlChars))
+                    if (dataType == typeof (SqlChars))
                         return MetaNVarChar;
-                    if (dataType == typeof(SqlDateTime))
+                    if (dataType == typeof (SqlDateTime))
                         return MetaDateTime;
-                    if (dataType == typeof(SqlDouble))
+                    if (dataType == typeof (SqlDouble))
                         return MetaFloat;
-                    if (dataType == typeof(SqlGuid))
+                    if (dataType == typeof (SqlGuid))
                         return MetaUniqueId;
-                    if (dataType == typeof(SqlInt16))
+                    if (dataType == typeof (SqlInt16))
                         return MetaSmallInt;
-                    if (dataType == typeof(SqlInt32))
+                    if (dataType == typeof (SqlInt32))
                         return MetaInt;
-                    if (dataType == typeof(SqlInt64))
+                    if (dataType == typeof (SqlInt64))
                         return MetaBigInt;
-                    if (dataType == typeof(SqlMoney))
+                    if (dataType == typeof (SqlMoney))
                         return MetaMoney;
-                    if (dataType == typeof(SqlDecimal))
+                    if (dataType == typeof (SqlDecimal))
                         return MetaDecimal;
-                    if (dataType == typeof(SqlSingle))
+                    if (dataType == typeof (SqlSingle))
                         return MetaReal;
-                    if (dataType == typeof(SqlXml) || dataType == typeof(XmlReader))
+                    if (dataType == typeof (SqlXml) || dataType == typeof (XmlReader))
                         return MetaXml;
-                    if (dataType == typeof(SqlString))
+                    if (dataType == typeof (SqlString))
                     {
-                        return !inferLen || ((SqlString)value).IsNull
+                        return !inferLen || ((SqlString) value).IsNull
                                    ? MetaNVarChar
-                                   : PromoteStringType(((SqlString)value).Value);
+                                   : PromoteStringType(((SqlString) value).Value);
                     }
-                    if (dataType == typeof(IEnumerable<DbDataRecord>) || dataType == typeof(DataTable))
+                    if (dataType == typeof (IEnumerable<DbDataRecord>) || dataType == typeof (DataTable))
                         return MetaTable;
-                    if (dataType == typeof(TimeSpan))
+                    if (dataType == typeof (TimeSpan))
                         return MetaTime;
-                    if (dataType == typeof(DateTimeOffset))
+                    if (dataType == typeof (DateTimeOffset))
                         return MetaDateTimeOffset;
                     if (SqlUdtInfo.TryGetFromType(dataType) != null)
                         return MetaUdt;
@@ -651,7 +611,7 @@ namespace WebApplications.Testing.Data
                 case TypeCode.DateTime:
                     return MetaDateTime;
                 case TypeCode.String:
-                    return !inferLen ? MetaNVarChar : PromoteStringType((string)value);
+                    return !inferLen ? MetaNVarChar : PromoteStringType((string) value);
                 default:
                     throw new ArgumentOutOfRangeException("dataType");
             }
@@ -660,33 +620,33 @@ namespace WebApplications.Testing.Data
         [NotNull]
         public static object GetNullSqlValue(Type sqlType)
         {
-            if (sqlType == typeof(SqlSingle))
+            if (sqlType == typeof (SqlSingle))
                 return SqlSingle.Null;
-            if (sqlType == typeof(SqlString))
+            if (sqlType == typeof (SqlString))
                 return SqlString.Null;
-            if (sqlType == typeof(SqlDouble))
+            if (sqlType == typeof (SqlDouble))
                 return SqlDouble.Null;
-            if (sqlType == typeof(SqlBinary))
+            if (sqlType == typeof (SqlBinary))
                 return SqlBinary.Null;
-            if (sqlType == typeof(SqlGuid))
+            if (sqlType == typeof (SqlGuid))
                 return SqlGuid.Null;
-            if (sqlType == typeof(SqlBoolean))
+            if (sqlType == typeof (SqlBoolean))
                 return SqlBoolean.Null;
-            if (sqlType == typeof(SqlByte))
+            if (sqlType == typeof (SqlByte))
                 return SqlByte.Null;
-            if (sqlType == typeof(SqlInt16))
+            if (sqlType == typeof (SqlInt16))
                 return SqlInt16.Null;
-            if (sqlType == typeof(SqlInt32))
+            if (sqlType == typeof (SqlInt32))
                 return SqlInt32.Null;
-            if (sqlType == typeof(SqlInt64))
+            if (sqlType == typeof (SqlInt64))
                 return SqlInt64.Null;
-            if (sqlType == typeof(SqlDecimal))
+            if (sqlType == typeof (SqlDecimal))
                 return SqlDecimal.Null;
-            if (sqlType == typeof(SqlDateTime))
+            if (sqlType == typeof (SqlDateTime))
                 return SqlDateTime.Null;
-            if (sqlType == typeof(SqlMoney))
+            if (sqlType == typeof (SqlMoney))
                 return SqlMoney.Null;
-            if (sqlType == typeof(SqlXml))
+            if (sqlType == typeof (SqlXml))
                 return SqlXml.Null;
 
             return DBNull.Value;
@@ -722,33 +682,33 @@ namespace WebApplications.Testing.Data
 
             object obj = null;
             if (sqlVal is SqlSingle)
-                obj = ((SqlSingle)sqlVal).Value;
+                obj = ((SqlSingle) sqlVal).Value;
             else if (sqlVal is SqlString)
-                obj = ((SqlString)sqlVal).Value;
+                obj = ((SqlString) sqlVal).Value;
             else if (sqlVal is SqlDouble)
-                obj = ((SqlDouble)sqlVal).Value;
+                obj = ((SqlDouble) sqlVal).Value;
             else if (sqlVal is SqlBinary)
-                obj = ((SqlBinary)sqlVal).Value;
+                obj = ((SqlBinary) sqlVal).Value;
             else if (sqlVal is SqlGuid)
-                obj = ((SqlGuid)sqlVal).Value;
+                obj = ((SqlGuid) sqlVal).Value;
             else if (sqlVal is SqlBoolean)
-                obj = ((SqlBoolean)sqlVal).Value;
+                obj = ((SqlBoolean) sqlVal).Value;
             else if (sqlVal is SqlByte)
-                obj = ((SqlByte)sqlVal).Value;
+                obj = ((SqlByte) sqlVal).Value;
             else if (sqlVal is SqlInt16)
-                obj = ((SqlInt16)sqlVal).Value;
+                obj = ((SqlInt16) sqlVal).Value;
             else if (sqlVal is SqlInt32)
-                obj = ((SqlInt32)sqlVal).Value;
+                obj = ((SqlInt32) sqlVal).Value;
             else if (sqlVal is SqlInt64)
-                obj = ((SqlInt64)sqlVal).Value;
+                obj = ((SqlInt64) sqlVal).Value;
             else if (sqlVal is SqlDecimal)
-                obj = ((SqlDecimal)sqlVal).Value;
+                obj = ((SqlDecimal) sqlVal).Value;
             else if (sqlVal is SqlDateTime)
-                obj = ((SqlDateTime)sqlVal).Value;
+                obj = ((SqlDateTime) sqlVal).Value;
             else if (sqlVal is SqlMoney)
-                obj = ((SqlMoney)sqlVal).Value;
+                obj = ((SqlMoney) sqlVal).Value;
             else if (sqlVal is SqlXml)
-                obj = ((SqlXml)sqlVal).Value;
+                obj = ((SqlXml) sqlVal).Value;
             return obj;
         }
 
@@ -758,7 +718,7 @@ namespace WebApplications.Testing.Data
         {
             SqlUserDefinedTypeAttribute[] definedTypeAttributeArray =
                 (SqlUserDefinedTypeAttribute[])
-                sqlValue.GetType().GetCustomAttributes(typeof(SqlUserDefinedTypeAttribute), true);
+                sqlValue.GetType().GetCustomAttributes(typeof (SqlUserDefinedTypeAttribute), true);
         }
 
         public static object GetSqlValueFromComVariant(object comVal)
@@ -767,35 +727,35 @@ namespace WebApplications.Testing.Data
             if (comVal != null && DBNull.Value != comVal)
             {
                 if (comVal is float)
-                    obj = new SqlSingle((float)comVal);
+                    obj = new SqlSingle((float) comVal);
                 else if (comVal is string)
-                    obj = new SqlString((string)comVal);
+                    obj = new SqlString((string) comVal);
                 else if (comVal is double)
-                    obj = new SqlDouble((double)comVal);
+                    obj = new SqlDouble((double) comVal);
                 else if (comVal is byte[])
-                    obj = new SqlBinary((byte[])comVal);
+                    obj = new SqlBinary((byte[]) comVal);
                 else if (comVal is char)
-                    obj = new SqlString(((char)comVal).ToString());
+                    obj = new SqlString(((char) comVal).ToString());
                 else if (comVal is char[])
-                    obj = new SqlChars((char[])comVal);
+                    obj = new SqlChars((char[]) comVal);
                 else if (comVal is Guid)
-                    obj = new SqlGuid((Guid)comVal);
+                    obj = new SqlGuid((Guid) comVal);
                 else if (comVal is bool)
-                    obj = new SqlBoolean((bool)comVal);
+                    obj = new SqlBoolean((bool) comVal);
                 else if (comVal is byte)
-                    obj = new SqlByte((byte)comVal);
+                    obj = new SqlByte((byte) comVal);
                 else if (comVal is short)
-                    obj = new SqlInt16((short)comVal);
+                    obj = new SqlInt16((short) comVal);
                 else if (comVal is int)
-                    obj = new SqlInt32((int)comVal);
+                    obj = new SqlInt32((int) comVal);
                 else if (comVal is long)
-                    obj = new SqlInt64((long)comVal);
+                    obj = new SqlInt64((long) comVal);
                 else if (comVal is Decimal)
-                    obj = new SqlDecimal((Decimal)comVal);
+                    obj = new SqlDecimal((Decimal) comVal);
                 else if (comVal is DateTime)
-                    obj = new SqlDateTime((DateTime)comVal);
+                    obj = new SqlDateTime((DateTime) comVal);
                 else if (comVal is XmlReader)
-                    obj = new SqlXml((XmlReader)comVal);
+                    obj = new SqlXml((XmlReader) comVal);
                 else if (comVal is TimeSpan || comVal is DateTimeOffset)
                     obj = comVal;
             }
@@ -805,7 +765,7 @@ namespace WebApplications.Testing.Data
         public static SqlDbType GetSqlDbTypeFromOleDbType(short dbType, string typeName)
         {
             SqlDbType sqlDbType = SqlDbType.Variant;
-            switch ((OleDbType)dbType)
+            switch ((OleDbType) dbType)
             {
                 case OleDbType.Guid:
                     sqlDbType = SqlDbType.UniqueIdentifier;
@@ -827,7 +787,7 @@ namespace WebApplications.Testing.Data
                 case OleDbType.Decimal:
                     sqlDbType = SqlDbType.Decimal;
                     break;
-                case (OleDbType)132:
+                case (OleDbType) 132:
                     sqlDbType = SqlDbType.Udt;
                     break;
                 case OleDbType.DBDate:
@@ -849,13 +809,13 @@ namespace WebApplications.Testing.Data
                             break;
                     }
                     break;
-                case (OleDbType)141:
+                case (OleDbType) 141:
                     sqlDbType = SqlDbType.Xml;
                     break;
-                case (OleDbType)145:
+                case (OleDbType) 145:
                     sqlDbType = SqlDbType.Time;
                     break;
-                case (OleDbType)146:
+                case (OleDbType) 146:
                     sqlDbType = SqlDbType.DateTimeOffset;
                     break;
                 case OleDbType.LongVarChar:
@@ -922,7 +882,7 @@ namespace WebApplications.Testing.Data
                     return MetaVarChar;
                 case 173:
                 case 45:
-                    return 80 != (int)userType ? MetaBinary : MetaTimestamp;
+                    return 80 != (int) userType ? MetaBinary : MetaTimestamp;
                 case 175:
                 case 47:
                     return MetaChar;
@@ -1012,7 +972,7 @@ namespace WebApplications.Testing.Data
             else
             {
                 sqlDateTime = new SqlDateTime(dateTime.AddSeconds(30.0));
-                tdsDateTime.Time = sqlDateTime.TimeTicks / SqlDateTime.SQLTicksPerMinute;
+                tdsDateTime.Time = sqlDateTime.TimeTicks/SqlDateTime.SQLTicksPerMinute;
             }
             tdsDateTime.Days = sqlDateTime.DayTicks;
             return tdsDateTime;
@@ -1021,7 +981,7 @@ namespace WebApplications.Testing.Data
         public static DateTime ToDateTime(int sqlDays, int sqlTime, int length)
         {
             return length == 4
-                       ? new SqlDateTime(sqlDays, sqlTime * SqlDateTime.SQLTicksPerMinute).Value
+                       ? new SqlDateTime(sqlDays, sqlTime*SqlDateTime.SQLTicksPerMinute).Value
                        : new SqlDateTime(sqlDays, sqlTime).Value;
         }
 
@@ -1029,7 +989,7 @@ namespace WebApplications.Testing.Data
         {
             if (scale <= 2)
                 return 3;
-            return (int)scale <= 4 ? 4 : 5;
+            return (int) scale <= 4 ? 4 : 5;
         }
     }
 }
