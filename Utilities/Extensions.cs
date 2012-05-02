@@ -29,6 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
@@ -1380,6 +1381,34 @@ namespace WebApplications.Utilities
                 start = index;
             }
             return arrays;
+        }
+
+        /// <summary>
+        ///   Use reflection to gain access to the InternalPreserveStackTrace method.
+        /// </summary>
+        [NotNull]
+        private static readonly Action<Exception> _preserveStackTrace =
+            typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.NonPublic | BindingFlags.Instance).
+                Action<Exception>();
+
+        /// <summary>
+        ///   Preserves the stack trace during exception re-throws.
+        /// </summary>
+        /// <param name="exception">The exception thrown.</param>
+        /// <returns>A copy of the exception with the stack trace preserved.</returns>
+        [UsedImplicitly]
+        public static void PreserveStackTrace(this Exception exception)
+        {
+            if (exception == null)
+                return;
+
+            try
+            {
+                _preserveStackTrace(exception);
+            }
+            catch (MethodAccessException)
+            {
+            }
         }
     }
 }

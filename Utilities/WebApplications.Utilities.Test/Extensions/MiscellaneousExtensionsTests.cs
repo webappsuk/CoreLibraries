@@ -807,9 +807,10 @@ namespace WebApplications.Utilities.Test.Extentions
         }
 
         [TestMethod]
-        public void PreserveStackTrace_NullException_ReturnsNull()
+        public void PreserveStackTrace_NullException()
         {
-            Assert.IsNull(((Exception)null).PreserveStackTrace());
+            // Ensure this doesn't error
+            ((Exception) null).PreserveStackTrace();
         }
 
         [TestMethod]
