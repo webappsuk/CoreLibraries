@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
@@ -121,8 +122,10 @@ namespace WebApplications.Testing.Data
         /// Gets the <see cref="ColumnDefinition" /> at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <returns>The <see cref="ColumnDefinition"/>.</returns>
+        /// <returns>The <see cref="ColumnDefinition" />.</returns>
+        /// <exception cref="System.IndexOutOfRangeException">Thrown if the supplied index is out of range.</exception>
         /// <remarks></remarks>
+        [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         [NotNull]
         public ColumnDefinition this[int index]
         {

@@ -38,7 +38,7 @@ namespace WebApplications.Testing.Data
     /// Implements a record.
     /// </summary>
     /// <remarks></remarks>
-    public class ObjectRecord : IObjectRecord
+    public sealed class ObjectRecord : IObjectRecord
     {
         /// <summary>
         /// The column values.

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
@@ -37,8 +38,11 @@ namespace WebApplications.Testing
     public abstract class TestDatabaseBase : TestBase
     {
         /// <summary>
-        /// Static constructor of the <see cref="T:System.Object"/> class, used to initialize the locatoin of the data directory for all tests.
+        /// Static constructor of the <see cref="T:System.Object" /> class, used to initialize the locatoin of the data directory for all tests.
         /// </summary>
+        /// <exception cref="System.InvalidOperationException">Thrown if the data directory cannot be found.</exception>
+        /// <remarks></remarks>
+        [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         static TestDatabaseBase()
         {
             // Find the data directory

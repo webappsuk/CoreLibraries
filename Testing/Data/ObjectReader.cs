@@ -40,7 +40,7 @@ namespace WebApplications.Testing.Data
     /// The object reader.
     /// </summary>
     /// <remarks></remarks>
-    public class ObjectReader : IDataReader, ICollection<IObjectSet>
+    public sealed class ObjectReader : IDataReader, ICollection<IObjectSet>
     {
         /// <summary>
         /// Holds the internal record sets.

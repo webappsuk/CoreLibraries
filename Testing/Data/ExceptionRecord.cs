@@ -36,7 +36,7 @@ namespace WebApplications.Testing.Data
     /// Record that throws an exception.
     /// </summary>
     /// <remarks></remarks>
-    public class ExceptionRecord : IObjectRecord
+    public sealed class ExceptionRecord : IObjectRecord
     {
         /// <summary>
         /// The exception that will be thrown when accessing this record.
