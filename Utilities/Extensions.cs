@@ -24,6 +24,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -1404,5 +1405,19 @@ namespace WebApplications.Utilities
             {
             }
         }
+        
+        /// <summary>
+        /// Determines whether the specified value is null (includes <see cref="DBNull.Value"/> and <see cref="INullable"/> support).
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
+        public static bool IsNull(this object value)
+        {
+            if (ReferenceEquals(value, null) || ReferenceEquals(value, DBNull.Value))
+                return true;
+            INullable nullable = value as INullable;
+            return !ReferenceEquals(nullable, null) && nullable.IsNull;
+        }
+
     }
 }
