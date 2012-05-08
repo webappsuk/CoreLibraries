@@ -1274,9 +1274,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ushort Mod(this ushort value, ushort modulus)
         {
-            int mod = value % modulus;
-            if (mod < 0) mod += modulus;
-            return (ushort)mod;
+            return (ushort) (value % modulus);
         }
 
         /// <summary>
@@ -1288,7 +1286,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static int Mod(this int value, int modulus)
         {
-            int mod = value%modulus;
+            int mod = value % modulus;
             if (mod < 0) mod += modulus;
             return mod;
         }
@@ -1302,9 +1300,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static uint Mod(this uint value, uint modulus)
         {
-            long mod = value % modulus;
-            if (mod < 0) mod += modulus;
-            return (uint)mod;
+            return value % modulus;
         }
 
         /// <summary>
@@ -1330,9 +1326,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ulong Mod(this ulong value, ulong modulus)
         {
-            long mod = (long)value % (long)modulus;
-            if (mod < 0) mod += (long)modulus;
-            return (ulong)mod;
+            return value % modulus;
         }
 
         /// <summary>
