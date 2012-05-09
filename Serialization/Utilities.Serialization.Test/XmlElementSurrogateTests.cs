@@ -3,9 +3,8 @@ using System.Runtime.Serialization;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
-using WebApplications.Utilities.Serialization;
 
-namespace WebApplications.Utilities.Test.Serialization
+namespace WebApplications.Utilities.Serialization.Test
 {
     [TestClass]
     public class XmlElementSurrogateTests : TestBase

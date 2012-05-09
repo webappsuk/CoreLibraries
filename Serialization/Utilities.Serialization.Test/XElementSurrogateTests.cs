@@ -5,12 +5,11 @@ using System.Xml;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
-using WebApplications.Utilities.Serialization;
 
-namespace WebApplications.Utilities.Test.Serialization
+namespace WebApplications.Utilities.Serialization.Test
 {
     [TestClass]
-    public class XElementSurrogateTests : TestBase
+    public class XElementSurrogateTests : SerializationTestBase
     {
         [TestMethod]
         public void XElementSurrogate_Implements_ISerializationSurrogate()
@@ -47,7 +46,7 @@ namespace WebApplications.Utilities.Test.Serialization
         public void GetObjectData_XElementWithAttribute_ReturnsSameAsToStringCalledWithDisableFormatting()
         {
             XElement element = new XElement("name");
-            element.SetAttributeValue("attrName", GenerateRandomString());
+            element.SetAttributeValue("attrName", Random.RandomString());
             String data = GetDataValueFromGetObjectData(element);
             String toStringResult = element.ToString(SaveOptions.DisableFormatting);
             Assert.AreEqual(toStringResult, data);
@@ -74,7 +73,7 @@ namespace WebApplications.Utilities.Test.Serialization
         [TestMethod]
         public void SetObjectData_EmptyXElement_ReturnsXElementWithSameName()
         {
-            String elementName = String.Format("Name{0}", Random.Next());
+            String elementName = String.Format("Name{0}", Random.RandomString());
             XElement element = new XElement(elementName);
             String data = GetDataValueFromGetObjectData(element);
             XElement result = SetObjectDataWithDataValue(data);
@@ -86,7 +85,7 @@ namespace WebApplications.Utilities.Test.Serialization
         {
             String elementName = String.Format("Name{0}", Random.Next());
             XElement element = new XElement(elementName);
-            String value = GenerateRandomString();
+            String value = Random.RandomString();
             element.SetAttributeValue("attrName", value);
             String data = GetDataValueFromGetObjectData(element);
             XElement result = SetObjectDataWithDataValue(data);

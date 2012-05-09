@@ -2,20 +2,14 @@
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
-using WebApplications.Utilities.Serialization;
 
-namespace WebApplications.Utilities.Test.Serialization
+namespace WebApplications.Utilities.Serialization.Test
 {
     [TestClass]
-    public class XmlFormatterTests : TestBase
+    public class XmlFormatterTests : SerializationTestBase
     {
-
         #region Classes used to test serialization of various structures
 
         class NotSerializableButImplementsISerializableTestClass : ISerializable

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.IO;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -15,12 +12,11 @@ using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using WebApplications.Testing;
-using WebApplications.Utilities.Serialization;
 
-namespace WebApplications.Utilities.Test.Serialization
+namespace WebApplications.Utilities.Serialization.Test
 {
     [TestClass]
-    public class SerializeTests : TestBase
+    public class SerializeTests : SerializationTestBase
     {
         // Warning: As the class under tests has many static methods and fields, test order will inevitably affect test results. Bear this in mind if adding new tests.
 
@@ -46,7 +42,7 @@ namespace WebApplications.Utilities.Test.Serialization
 
         private static List<string> GenerateRandomListOfString()
         {
-            return Enumerable.Range(10, Random.Next(10,30)).Select(n => GenerateRandomString(n)).ToList();
+            return Enumerable.Range(10, Random.Next(10,30)).Select(n => Random.RandomString(n)).ToList();
         }
 
         private static bool CompareStreamData(Stream stream, byte[] data)
@@ -215,7 +211,7 @@ namespace WebApplications.Utilities.Test.Serialization
         public void AppendSerialization_UnicodeStringInputAsEnumerable_StringBuilderContainsValidBase64()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendSerialization(GenerateRandomString());
+            stringBuilder.AppendSerialization(Random.RandomString());
             String result = stringBuilder.ToString();
             Assert.AreNotEqual("", result);
             Assert.IsTrue(ValidBase64.IsMatch(result));
@@ -225,7 +221,7 @@ namespace WebApplications.Utilities.Test.Serialization
         public void AppendSerialization_UnicodeStringsInputAsObject_StringBuilderContainsValidBase64()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendSerialization((Object)GenerateRandomString());
+            stringBuilder.AppendSerialization((Object)Random.RandomString());
             String result = stringBuilder.ToString();
             Assert.AreNotEqual("", result);
             Assert.IsTrue(ValidBase64.IsMatch(result));
@@ -246,7 +242,7 @@ namespace WebApplications.Utilities.Test.Serialization
         [TestMethod]
         public void AppendSerialization_CustomFormatter_SerializeMethodOfFormatterCalledWithObj()
         {
-            object obj = (Object)GenerateRandomString();
+            object obj = Random.RandomString();
             var mockFormatter = new Mock<IFormatter>();
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendSerialization(obj, formatter: mockFormatter.Object);
@@ -258,7 +254,7 @@ namespace WebApplications.Utilities.Test.Serialization
         public void AppendSerialization_CustomFormatterForEnumerable_SerializeMethodOfFormatterCalledWithEnumerableToList()
         {
             String[] list = GenerateRandomListOfString().ToArray();
-            IEnumerable<String> enumerable = (IEnumerable<String>) list;
+            IEnumerable<String> enumerable = list;
 
             var mockFormatter = new Mock<IFormatter>();
             StringBuilder stringBuilder = new StringBuilder();

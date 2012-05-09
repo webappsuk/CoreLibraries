@@ -12,8 +12,4 @@
     <description>$description$</description>
     <tags>Utility Utilities Serialization</tags>
   </metadata>
-  <files>
-    <file src="app.config.transform" target="Content" />
-    <file src="web.config.transform" target="Content" />
-  </files>
 </package>

@@ -44,8 +44,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WebApplications.Testing">
+      <HintPath>packages\WebApplications.Testing.1.1.4505.18361\lib\net40\WebApplications.Testing.dll</HintPath>
+    </Reference>
     <Reference Include="WebApplications.Utilities">
-      <HintPath>packages\WebApplications.Utilities.1.1.4499.19307\lib\net40\WebApplications.Utilities.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.1.1.4505.19773\lib\net40\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
