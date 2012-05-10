@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Serialization;
 
 namespace WebApplications.Utilities.Database
 {
@@ -143,6 +147,44 @@ namespace WebApplications.Utilities.Database
             return descendents.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value)
                 .Union(interfaces.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value))
                 .Union(runtimes);
+        }
+
+        /// <summary>
+        ///   Gets a serialized object from a data reader by column name.
+        /// </summary>
+        /// <param name="reader">The data reader object.</param>
+        /// <param name="column">The name of the column to get.</param>
+        /// <param name="nullValue">The value to use if the data is null.</param>
+        /// <param name="context">The de-serialization context.</param>
+        /// <param name="contextState">The de-serialization context state.</param>
+        /// <returns>
+        /// The de-serialized object from the specified <paramref name="column"/>.
+        /// </returns>
+        /// <exception cref="IndexOutOfRangeException">
+        ///   The <paramref name="column"/> name provided is invalid.
+        /// </exception>
+        /// <exception cref="System.Security.SecurityException">
+        ///   The caller doesn't have the right permissions for deserialization.
+        /// </exception>
+        /// <exception cref="SerializationException">
+        ///   The serialization stream supports seeking but its length is 0.
+        /// </exception>
+        public static object GetObjectByName(
+            this SqlDataReader reader,
+            string column,
+            object nullValue = null,
+            object context = null,
+            StreamingContextStates contextState = StreamingContextStates.Other)
+        {
+            int ordinal = reader.GetOrdinal(column);
+            if (reader.IsDBNull(ordinal))
+                return nullValue;
+
+            SqlBytes bytes = reader.GetSqlBytes(ordinal);
+            using (Stream serializationStream = bytes.Stream)
+            {
+                return Serialize.GetFormatter(context, contextState).Deserialize(serializationStream);
+            }
         }
     }
 }

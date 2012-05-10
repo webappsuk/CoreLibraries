@@ -48,6 +48,9 @@
       <HintPath>packages\JetBrains.Annotations.5.1.3000.12\lib\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Nito.AsyncEx">
+      <HintPath>packages\Nito.AsyncEx.0.5.0\lib\net40-client\Nito.AsyncEx.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -58,10 +61,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WebApplications.Utilities">
-      <HintPath>packages\WebApplications.Utilities.1.1.4458.16336\lib\net40\WebApplications.Utilities.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.1.1.4513.19760\lib\net40\WebApplications.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Logging">
-      <HintPath>packages\WebApplications.Utilities.Logging.1.1.4458.16459\lib\net40\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.Logging.1.1.4513.21126\lib\net40\WebApplications.Utilities.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="WebApplications.Utilities.Serialization">
+      <HintPath>packages\WebApplications.Utilities.Serialization.1.1.4513.16109\lib\net40\WebApplications.Utilities.Serialization.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

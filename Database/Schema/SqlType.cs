@@ -945,9 +945,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         }
 
                                         // Create key selector
-                                        Func<object, object> keySelector =
-                                            (Func<object, object>)
-                                            enumerationType.GetGetter("Key", typeof (object), typeof (object));
+                                        Func<object, object> keySelector = enumerationType.GetGetter<object, object>("Key");
                                         Func<object, TypeConstraintMode, object> k =
                                             (o, m) => keyConvertor(keySelector(o), m);
 
@@ -961,9 +959,7 @@ namespace WebApplications.Utilities.Database.Schema
                                                 LogLevel.Critical, this, enumerationType.Name);
                                             return null;
                                         }
-                                        Func<object, object> valueSelector =
-                                            (Func<object, object>)
-                                            enumerationType.GetGetter("Value", typeof (object), typeof (object));
+                                        Func<object, object> valueSelector = enumerationType.GetGetter<object, object>("Value");
                                         Func<object, TypeConstraintMode, object> v =
                                             (o, m) => valueConvertor(valueSelector(o), m);
 

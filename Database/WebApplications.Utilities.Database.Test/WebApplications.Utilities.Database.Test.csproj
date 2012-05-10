@@ -62,15 +62,14 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing, Version=1.1.4505.18361, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Testing.1.1.4505.18361\lib\net40\WebApplications.Testing.dll</HintPath>
+    <Reference Include="WebApplications.Testing">
+      <HintPath>..\packages\WebApplications.Testing.1.1.4513.18305\lib\net40\WebApplications.Testing.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.1.1.4458.16336\lib\net40\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.1.1.4513.19760\lib\net40\WebApplications.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Logging">
-      <HintPath>..\packages\WebApplications.Utilities.Logging.1.1.4458.16459\lib\net40\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.1.1.4513.21126\lib\net40\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
