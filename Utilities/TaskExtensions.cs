@@ -574,36 +574,35 @@ namespace WebApplications.Utilities
 
             // Create the continuation task that will run once the APM method completes.
             Task t = new Task(
-                delegate
-                {
-                    Exception exception = null;
-                    OperationCanceledException canceledException = null;
-                    TResult result = default(TResult);
-                    try
+                () =>
                     {
-                        result = endMethod(asyncResult);
-                    }
-                    catch (OperationCanceledException ex)
-                    {
-                        canceledException = ex;
-                    }
-                    catch (Exception ex)
-                    {
-                        exception = ex;
-                    }
-                    finally
-                    {
-                        if ((canceledException != null) || cancellationToken.IsCancellationRequested)
-                            // The task was cancelled
-                            // note we don't call the cancellation method as the APM call is already finished.
-                            tcs.TrySetCanceled();
-                        else if (exception != null)
-                            tcs.TrySetException(exception);
-                        else
-                            tcs.TrySetResult(result);
-                    }
-                },
-                null,
+                        Exception exception = null;
+                        OperationCanceledException canceledException = null;
+                        TResult result = default(TResult);
+                        try
+                        {
+                            result = endMethod(asyncResult);
+                        }
+                        catch (OperationCanceledException ex)
+                        {
+                            canceledException = ex;
+                        }
+                        catch (Exception ex)
+                        {
+                            exception = ex;
+                        }
+                        finally
+                        {
+                            if ((canceledException != null) || cancellationToken.IsCancellationRequested)
+                                // The task was cancelled
+                                // note we don't call the cancellation method as the APM call is already finished.
+                                tcs.TrySetCanceled();
+                            else if (exception != null)
+                                tcs.TrySetException(exception);
+                            else
+                                tcs.TrySetResult(result);
+                        }
+                    },
                 cancellationToken,
                 creationOptions);
 

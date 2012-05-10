@@ -32,6 +32,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebApplications.Utilities.Test
 {
+    [Ignore]
     [TestClass]
     public class TestSQLExtensions
     {
@@ -163,7 +164,6 @@ namespace WebApplications.Utilities.Test
                               Loops,
                               stopwatch.ElapsedMilliseconds));
         }
-
 
         [TestMethod]
         public void TestTVP3()

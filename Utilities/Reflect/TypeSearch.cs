@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Threading;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     /// Used to match types in searches.
     /// </summary>
     /// <remarks></remarks>
-    [DebuggerDisplay("{DebugString}")]
+    [DebuggerDisplay("{Type} [Location: {GenericArgumentLocation}; Name: {GenericArgumentName}; Position: {GenericArgumentPosition}]")]
     public class TypeSearch
     {
         #region Defaults
@@ -222,31 +219,6 @@ namespace WebApplications.Utilities.Relection
         public static implicit operator TypeSearch(Type type)
         {
             return type != null ? new TypeSearch(type) : null;
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        /// <remarks></remarks>
-        [UsedImplicitly]
-        public string DebugString
-        {
-            get
-            {
-                return String.Format("Type: {0}{1}",
-                                            Type == null ? "Unspecified" : "'" + ((ExtendedType)Type).Signature + "'",
-                                            GenericArgumentLocation == GenericArgumentLocation.None
-                                                ? String.Empty
-                                                : String.Format(" [Location: {0}; Name: {1}; Position: {2}",
-                                                                GenericArgumentLocation,
-                                                                GenericArgumentName == null
-                                                                    ? "Unspecified"
-                                                                    : "'" + GenericArgumentName + "'",
-                                                                GenericArgumentPosition < 0
-                                                                    ? "Unspecified"
-                                                                    : GenericArgumentPosition.ToString()));
-            }
         }
     }
 }

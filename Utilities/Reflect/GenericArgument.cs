@@ -2,13 +2,13 @@ using System;
 using System.Diagnostics;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     /// Holds information about a generic argument.
     /// </summary>
     /// <remarks></remarks>
-    [DebuggerDisplay("{Name} [{Location} position {Position}]")]
+    [DebuggerDisplay("{Type} [{Location} position {Position}]")]
     public struct GenericArgument
     {
         /// <summary>

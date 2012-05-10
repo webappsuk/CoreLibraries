@@ -22,18 +22,14 @@
 
 using System;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class LongRangeTests : TestBase
+    public class LongRangeTests : UtilitiesTestBase
     {
-
         private static long RandomLong( long minimum, long maximum )
         {
             return (long) (minimum + ((ulong)(maximum - minimum) * Random.NextDouble()));

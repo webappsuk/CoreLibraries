@@ -31,12 +31,12 @@ using WebApplications.Testing;
 namespace WebApplications.Utilities.Test.Extensions
 {
     [TestClass]
-    public class ToJSONTests : TestBase
+    public class ToJSONTests : UtilitiesTestBase
     {
 
         // Using http://www.json.org/ as standard
 
-        private static readonly Dictionary<string, string> ControlChars = new Dictionary<string, string> { { @"\b", "\b" }, { @"\f", "\f" }, { @"\n", "\n" }, { @"\r", "\r" }, { @"\t", "\t" } };
+        private static readonly Dictionary<string, string> _controlChars = new Dictionary<string, string> { { @"\b", "\b" }, { @"\f", "\f" }, { @"\n", "\n" }, { @"\r", "\r" }, { @"\t", "\t" } };
 
         private static readonly Regex MatchEmptyList = new Regex(@"\[\s*\]");
         private static readonly Regex MatchListContents = new Regex(@"\[(?<contents>[^]]*)\]");
@@ -45,11 +45,35 @@ namespace WebApplications.Utilities.Test.Extensions
         private static readonly Regex MatchParenthesesContents = new Regex(@"\((?<contents>[^)]*)\)");
 
         [TestMethod]
+        public void ToJSON_EmptyString_IsDoubleQuotationMarkPair()
+        {
+            string json = string.Empty.ToJSON();
+            Assert.AreEqual("\"\"",json);
+        }
+
+        [TestMethod]
         public void ToJSON_EmptyList_IsSquareBracketPair()
         {
             IEnumerable<string> list = new string[] { };
             string json = list.ToJSON();
             Assert.IsTrue(MatchEmptyList.IsMatch(json), "The JSON representation of an empty list should be an empty pair of square brackets. Found <{0}>.", json);
+        }
+
+        [TestMethod]
+        public void ToJSON_StringWithoutEscapedChars_ConformsToStandards()
+        {
+            string entry = String.Format("Single entry {0}.", Random.Next()); // Should not include characters which need escaping due to last Assert.
+            string json = entry.ToJSON();
+            Match stringMatch = MatchStringContents.Match(json);
+            Assert.IsTrue(stringMatch.Success, "The JSON representation of a string should be enclosed in double quotation marks with backslash escapes. Found <{0}>.", json);
+            Assert.AreEqual(entry, stringMatch.Groups["contents"].Value, "An alphanumeric value should be unchanged when encapsulated using ToJSON.");
+        }
+
+        [TestMethod]
+        public void ToJSON_NullString_ConformsToStandards()
+        {
+            string json = ((string)null).ToJSON();
+            Assert.AreEqual("null", json, "The JSON representation of null is the word null without any quotation marks. Found <{0}>.",json);
         }
 
         [TestMethod]
@@ -86,9 +110,23 @@ namespace WebApplications.Utilities.Test.Extensions
         }
 
         [TestMethod]
-        public void ToJSON_ControlCharacters_AreEscaped()
+        public void ToJSON_ControlCharactersInString_AreEscaped()
         {
-            foreach (KeyValuePair<string, string> controlChar in ControlChars)
+            foreach (KeyValuePair<string, string> controlChar in _controlChars)
+            {
+                string entry = String.Format("Control char ({1}) {0}.", Random.Next(), controlChar.Value);
+                string json = entry.ToJSON();
+                Match stringMatch = MatchStringContents.Match(json);
+                Assert.IsTrue(stringMatch.Success, "The JSON representation of a string should be enclosed in double quotation marks with backslash escapes. Found <{0}>.", json);
+                Assert.AreEqual(controlChar.Key, MatchParenthesesContents.Match(stringMatch.Groups["contents"].Value).Groups["contents"].Value,
+                    "Control characters should be escaped with backslashes by ToJSON.");
+            }
+        }
+
+        [TestMethod]
+        public void ToJSON_ControlCharactersInList_AreEscaped()
+        {
+            foreach (KeyValuePair<string, string> controlChar in _controlChars)
             {
                 string entry = String.Format("Control char ({1}) {0}.", Random.Next(), controlChar.Value);
                 IEnumerable<string> list = new string[] { entry };
@@ -129,5 +167,33 @@ namespace WebApplications.Utilities.Test.Extensions
             Assert.AreEqual("\\\\", MatchParenthesesContents.Match(stringMatch.Groups["contents"].Value).Groups["contents"].Value,
                 "Backslashes should be double-escaped with backslashes by ToJSON.");
         }
+
+        [TestMethod]
+        public void AppendJSON_EmptyString_AppendsDoubleQuotationMarkPair()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendJSON(string.Empty);
+            Assert.AreEqual("\"\"", stringBuilder.ToString());
+        }
+
+        [TestMethod]
+        public void AppendJSON_NullString_AppendsWordNull()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendJSON(null);
+            Assert.AreEqual("null", stringBuilder.ToString());
+        }
+
+        [TestMethod]
+        public void AppendJSON_ExistingDataInStringBuilder_AppendsSameDataAsReturnedByToJSON()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            string existingData = Random.RandomString(Random.Next(10, 100));
+            string addedString = Random.RandomString(Random.Next(10, 100));
+            stringBuilder.Append(existingData);
+            stringBuilder.AppendJSON(addedString);
+            Assert.AreEqual(String.Format("{0}{1}",existingData,addedString.ToJSON()), stringBuilder.ToString());
+        }
+
     }
 }

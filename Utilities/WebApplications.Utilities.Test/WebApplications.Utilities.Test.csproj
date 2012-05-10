@@ -39,19 +39,13 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncCtpLibrary">
-      <HintPath>..\packages\AsyncCTP.1.1.0.0\lib\net40\AsyncCtpLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="JetBrains.Annotations, Version=5.1.3000.12, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <HintPath>..\packages\JetBrains.Annotations.5.1.3000.12\lib\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Moq">
+    <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="Nito.AsyncEx">
-      <HintPath>..\packages\Nito.AsyncEx.0.5.0\lib\net40-client\Nito.AsyncEx.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -66,9 +60,9 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing, Version=1.1.4428.21557, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Testing, Version=1.1.4513.18305, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Testing.1.1.4428.21557\lib\net40\WebApplications.Testing.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Testing.1.1.4513.18305\lib\net40\WebApplications.Testing.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -103,12 +97,7 @@
     <Compile Include="Ranges\LongRangeTests.cs" />
     <Compile Include="Ranges\RangeTests.cs" />
     <Compile Include="Ranges\ShortRangeTests.cs" />
-    <Compile Include="Reflection\ExtendedTypeTests.cs" />
-    <Compile Include="Serialization\ExtendedSerializationBinderTests.cs" />
-    <Compile Include="Serialization\SerializeTests.cs" />
-    <Compile Include="Serialization\XElementSurrogateTests.cs" />
-    <Compile Include="Serialization\XmlElementSurrogateTests.cs" />
-    <Compile Include="Serialization\XmlFormatterTests.cs" />
+    <Compile Include="Reflect\ExtendedTypeTests.cs" />
     <Compile Include="SingletonTests.cs" />
     <Compile Include="TestCacheQueue.cs" />
     <Compile Include="TestCombGuid.cs" />
@@ -118,19 +107,18 @@
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestCulture.cs" />
     <Compile Include="TestDeterministic.cs" />
-    <Compile Include="TestContextStack.cs" />
     <Compile Include="TestExtendedEnum.cs" />
     <Compile Include="TestHashing.cs" />
     <Compile Include="TestCyclicConcurrentQueue.cs" />
     <Compile Include="TestPowerShell.cs" />
     <Compile Include="TestRange.cs" />
-    <Compile Include="ReflectionTests.cs" />
-    <Compile Include="TestSerialization.cs" />
+    <Compile Include="Reflect\ReflectionTests.cs" />
     <Compile Include="TestSQLExtensions.cs" />
     <Compile Include="TestTaskExtensions.cs" />
     <Compile Include="TestWeak.cs" />
     <Compile Include="Enumerations\TriStateTests.cs" />
     <Compile Include="TupleExtensionsTests.cs" />
+    <Compile Include="UtilitiesTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebApplications.Utilities.csproj">

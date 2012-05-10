@@ -235,6 +235,16 @@ namespace WebApplications.Utilities.Caching
                 if (index == 0)
                     chunkNum++;
                 _head++;
+                if( _head % capacity == 0 )
+                {
+                    index = 0;
+                    chunkNum = 0;
+                }
+            }
+            // If a wrap around occurred, ensure the tail catches up
+            if( _head > capacity )
+            {
+                _tail = _head - capacity;
             }
         }
 
@@ -247,7 +257,7 @@ namespace WebApplications.Utilities.Caching
             // We snapshot the head now.
             long head = _head;
 
-            // Grab the head - this can jump forward during enumeration.
+            // Grab the tail - this can jump forward during enumeration.
             long tail = _tail;
 
             long indexLong = index;
@@ -340,7 +350,7 @@ namespace WebApplications.Utilities.Caching
             // We snapshot the head now.
             long head = _head;
 
-            // Grab the head - this can jump forward during enumeration.
+            // Grab the tail - this can jump forward during enumeration.
             long tail = _tail;
             unchecked
             {
@@ -551,7 +561,6 @@ namespace WebApplications.Utilities.Caching
                         found = 1;
                         long elementNumberInChunk = index & (_chunkSize - 1);
                         result = chunk.Array[elementNumberInChunk];
-                        chunk.Array[elementNumberInChunk] = default(T);
                     }
                     else
                         // Need to loop to grab new spinlock.

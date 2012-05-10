@@ -164,9 +164,17 @@ namespace WebApplications.Utilities.Configuration
                 int os = 0;
                 foreach (ParameterInfo pi in pis)
                 {
-                    // We can ignore output parameters and retvals.
-                    if ((pi.IsRetval) || (pi.IsOut))
+                    // We can ignore retvals.
+                    if (pi.IsRetval)
                         continue;
+
+                    // If we encounter an output or reference value, we will not be able to use the constructer, and so must exclude it
+                    if (pi.IsOut || pi.ParameterType.IsByRef)
+                    {
+                        rs = -1;
+                        break;
+                    }
+
 
                     // If the parameter name is unknown, then can't match!
                     if (pi.Name == null)
@@ -272,7 +280,7 @@ namespace WebApplications.Utilities.Configuration
                             Resources.ConstructorConfigurationElement_GetConstructor_CreatedTypeNotAssignable,
                             instanceType,
                             returnType));
-                create = Expression.Convert(create, returnType);
+                create = create.Convert(returnType);
             }
 
             // Compile the lambda and return

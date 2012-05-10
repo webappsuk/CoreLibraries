@@ -29,13 +29,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Utilities.Relection;
+using WebApplications.Utilities.Reflect;
 using WebApplications.Testing;
 
-namespace WebApplications.Utilities.Test
+namespace WebApplications.Utilities.Test.Reflect
 {
     [TestClass]
-    public class ReflectionTests : TestBase
+    public class ReflectionTests : UtilitiesTestBase
     {
         /// <summary>
         /// Tests reflection of events.
@@ -78,7 +78,7 @@ namespace WebApplications.Utilities.Test
                         ExtendedType et = ExtendedType.Get(t);
                         Assert.IsNotNull(et);
                         Assert.IsNotNull(et.Methods);
-                        mCount += et.Methods.SelectMany(m => m.Overloads).Count();
+                        mCount += et.Methods.Count();
                         rCount++;
                     }
                     catch (NotSupportedException)
@@ -106,6 +106,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
+        [Ignore]
         public void Comparative_Performance()
         {
             const int loops = 100000;
@@ -150,8 +151,7 @@ namespace WebApplications.Utilities.Test
             s.Stop();
             Trace.WriteLine(s.ToString("{0} calls to GetParameters", loops));
         }
-        
-#if false
+
         #region Nested type: ReflectionTestClass
         // <summary>Class used as test case for reflection tests</summary>
         public class ReflectionTestClass<T>
@@ -165,9 +165,15 @@ namespace WebApplications.Utilities.Test
             public ReflectionTestClass(T id)
             {
                 ID = id;
+                _last = this;
             }
 
             public int B { private get; set; }
+
+            public ReflectionTestClass()
+            {
+                _last = this;
+            }
 
             public static ReflectionTestClass<T> Last
             {
@@ -218,32 +224,17 @@ namespace WebApplications.Utilities.Test
             }
         }
         #endregion
-
-        [TestMethod]
-        public void GetMethod_StaticFunction_ReturnsLambdaForRequestedFunction()
-        {
-            int a = Random.Next(0, 10);
-            int b = Random.Next(0, 10);
-            // Set the expected output for the dummy
-            ReflectionTestClass<Guid>.StaticFunctionOutput = a + b;
-            Func<int, int, int> func = typeof(ReflectionTestClass<Guid>).GetMethod("StaticMethod").Func<int, int, int>();
-            Assert.IsNotNull(func, "The lambda returned must not be null.");
-            // Note that there is no simple way to test if we have the correct function, so we instead test that parameters are received correctly
-            Assert.AreEqual(a + b, func(a, b), "When called, the lambda returned by GetMethod should return the value the requested function returns.");
-            Assert.AreEqual(a, ReflectionTestClass<Guid>.StaticFunctionInputA, "When called with parameters, the lambda calls the requested function using these parameters.");
-            Assert.AreEqual(b, ReflectionTestClass<Guid>.StaticFunctionInputB, "When called with parameters, the lambda calls the requested function using these parameters.");
-        }
-
+        
         [TestMethod]
         public void GetMethod_InstanceFunction_ReturnsLambdaForRequestedFunction()
         {
             int a = Random.Next(0, 10);
             int b = Random.Next(0, 10);
-            ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
+            ReflectionTestClass<String> testInstance = new ReflectionTestClass<String>("Test");
             // Set the expected output for the dummy
             testInstance.InstanceFunctionOutput = a + b;
-            Func<ReflectionTestClass<Guid>, int, int, int> func =
-                typeof(ReflectionTestClass<String>).GetMethod("InstanceFunction").Func<ReflectionTestClass<Guid>, int, int, int>();
+            Func<ReflectionTestClass<String>, int, int, int> func =
+                typeof(ReflectionTestClass<String>).GetMethod("InstanceFunction").Func<ReflectionTestClass<String>, int, int, int>();
             Assert.IsNotNull(func, "The lambda returned must not be null.");
             // Note that there is no simple way to test if we have the correct function, so we instead test that parameters are received correctly
             Assert.AreEqual(a + b, func(testInstance, a, b), "When called, the lambda returned by GetMethod should return the value the requested function returns.");
@@ -291,7 +282,8 @@ namespace WebApplications.Utilities.Test
         {
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
-            Func<ReflectionTestClass<Guid>, int> getA = Reflection.GetGetter<ReflectionTestClass<Guid>, int>("A");
+            Func<ReflectionTestClass<Guid>, int> getA =
+                typeof (ReflectionTestClass<Guid>).GetGetter<ReflectionTestClass<Guid>, int>("A");
             testInstance.A = value;
             Assert.AreEqual(testInstance.A, getA(testInstance), "The lambda function returned by GetGetter should return the value of the field given as the parameter.");
         }
@@ -301,26 +293,18 @@ namespace WebApplications.Utilities.Test
         {
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
-            Func<ReflectionTestClass<Guid>, int> getB = Reflection.GetGetter<ReflectionTestClass<Guid>, int>("B");
+            Func<ReflectionTestClass<Guid>, int> getB =
+                typeof (ReflectionTestClass<Guid>).GetGetter<ReflectionTestClass<Guid>, int>("B");
             testInstance.B = value;
             Assert.AreEqual(value, getB(testInstance), "The lambda function returned by GetGetter should return the value of the requested property.");
         }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void GetGetter_PropertyWithNoGetter_ThrowsArgumentOutOfRangeException()
-        {
-            ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
-            Func<ReflectionTestClass<Guid>, int> getC = Reflection.GetGetter<ReflectionTestClass<Guid>, int>("C");
-        }
-
+        
         [TestMethod]
         public void GetGetter_PropertyWithExplicitGetter_ReturnsLambdaGetterForRequestedProperty()
         {
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
-            Func<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>> getLast =
-                Reflection.GetGetter<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>>("Last");
-            Assert.AreEqual(testInstance, getLast(testInstance), "The lambda function returned by GetGetter should return the value of the requested property.");
+            Func<ReflectionTestClass<Guid>> getLast = typeof(ReflectionTestClass<Guid>).GetGetter<ReflectionTestClass<Guid>>("Last");
+            Assert.AreEqual(testInstance, getLast(), "The lambda function returned by GetGetter should return the value of the requested property.");
         }
 
         [TestMethod]
@@ -329,7 +313,7 @@ namespace WebApplications.Utilities.Test
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, int, int> setA = Reflection.GetSetter<ReflectionTestClass<Guid>, int>("A");
+            Action<ReflectionTestClass<Guid>, int> setA = typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>, int>("A");
             setA(testInstance, value);
             Assert.AreEqual(value, testInstance.A, "The lambda function returned by GetSetter should change the value of the specified field.");
         }
@@ -340,8 +324,8 @@ namespace WebApplications.Utilities.Test
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, int, int> setB = Reflection.GetSetter<ReflectionTestClass<Guid>, int>("B");
-            Assert.AreEqual(setB(testInstance, value), value);
+            Action<ReflectionTestClass<Guid>, int> setB = typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>, int>("B");
+            setB(testInstance, value);
         }
 
         [TestMethod]
@@ -350,7 +334,7 @@ namespace WebApplications.Utilities.Test
             int value = Random.Next();
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, int, int> setC = Reflection.GetSetter<ReflectionTestClass<Guid>, int>("C");
+            Action<ReflectionTestClass<Guid>, int> setC = typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>, int>("C");
             setC(testInstance, value);
             Assert.AreEqual(testInstance.SetC, value);
         }
@@ -361,29 +345,30 @@ namespace WebApplications.Utilities.Test
             DateTime value = DateTime.Now;
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, DateTime, DateTime> setDateTime =
-                Reflection.GetSetter<ReflectionTestClass<Guid>, DateTime>("DateTime");
-            setDateTime(testInstance, value);
-            //Assert.AreEqual( value, testInstance.DateTime );
+            Action<DateTime> setDateTime =
+                typeof(ReflectionTestClass<Guid>).GetSetter<DateTime>("DateTime");
+            setDateTime(value);
+            Assert.AreEqual(value, ReflectionTestClass<Guid>.DateTime);
         }
 
         [TestMethod]
-        public void GetSetter_PassingNullToSetterLambda_DoesNotThrowError()
+        [ExpectedException(typeof(NullReferenceException))]
+        public void GetSetter_PassingNullToSetterLambda_ThrowsNullReference()
         {
-            // Is this test supposed to be testing something else?
-            Func<ReflectionTestClass<Guid>, DateTime, DateTime> setDateTime =
-                Reflection.GetSetter<ReflectionTestClass<Guid>, DateTime>("DateTime");
+            Action<ReflectionTestClass<Guid>, DateTime> setDateTime =
+                typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>, DateTime>("DateTime");
             setDateTime(null, DateTime.Now);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void GetSetter_PropertyWithNoSetter_ThrowsArgumentOutOfRangeException()
+        public void GetSetter_PropertyWithNoSetter_ReturnsNull()
         {
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
 
-            Func<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>, ReflectionTestClass<Guid>> setLast =
-                Reflection.GetSetter<ReflectionTestClass<Guid>, ReflectionTestClass<Guid>>("Last");
+           Action<ReflectionTestClass<Guid>> setLast =
+                typeof(ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>>("Last");
+
+            Assert.IsNull(setLast);
         }
 
         [Ignore]
@@ -428,7 +413,7 @@ namespace WebApplications.Utilities.Test
             Func<int, TypeConverterTest> func5 = Reflection.GetConversion<int, TypeConverterTest>();
             TypeConverterTest t = func5(a);
             Assert.AreEqual(a, t.Value);
-            ;
+
             Func<TypeConverterTest, int> func6 = Reflection.GetConversion<TypeConverterTest, int>();
             Assert.AreEqual(a, func6(t));
 
@@ -442,7 +427,7 @@ namespace WebApplications.Utilities.Test
 
             byte c = (byte)r.Next(Byte.MinValue, Byte.MaxValue);
             Func<ConvertibleTest, int> func8 = Reflection.GetConversion<ConvertibleTest, int>();
-            Assert.AreEqual(c, func8(new ConvertibleTest(c)));
+            Assert.AreEqual((int)c, func8(new ConvertibleTest(c)));
 
             Assert.IsNull(Reflection.GetConversion<string, int>());
         }
@@ -638,7 +623,5 @@ namespace WebApplications.Utilities.Test
                 return null;
             }
         }
-        
-#endif
     }
 }

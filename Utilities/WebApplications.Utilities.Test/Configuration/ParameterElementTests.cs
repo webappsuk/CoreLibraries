@@ -29,7 +29,7 @@ namespace WebApplications.Utilities.Test.Configuration
         [TestMethod]
         public void Name_SetToString_ReturnsSetValue()
         {
-            string testString = GenerateRandomString(Random.Next(3, 100));
+            string testString = Random.RandomString(Random.Next(3, 100));
             _parameterElement.Name = testString;
             Assert.AreEqual(testString, _parameterElement.Name, "The Name field should return the same value as it was last set to.");
         }
@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Test.Configuration
         [TestMethod]
         public void Value_SetToString_ReturnsSetValue()
         {
-            string testString = GenerateRandomString(Random.Next(3, 100));
+            string testString = Random.RandomString(Random.Next(3, 100));
             _parameterElement.Value = testString;
             Assert.AreEqual(testString, _parameterElement.Value, "The Value field should return the same value as it was last set to.");
         }

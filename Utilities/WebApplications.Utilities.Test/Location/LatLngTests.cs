@@ -20,20 +20,14 @@
 // © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
 #endregion
 
-using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Location;
 
 namespace WebApplications.Utilities.Test.Location
 {
     [TestClass]
-    public class LatLngTests : TestBase
+    public class LatLngTests : UtilitiesTestBase
     {
-        
         private const double _MaxLat = 90;
         private const double _MinLat = -90;
         private const double _MaxLng = 180;

@@ -21,17 +21,12 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Caching;
@@ -39,7 +34,7 @@ using WebApplications.Utilities.Caching;
 namespace WebApplications.Utilities.Test
 {
     [TestClass]
-    public class TestCyclicConcurrentQueue : TestBase
+    public class TestCyclicConcurrentQueue : UtilitiesTestBase
     {
         private long _operations;
 
@@ -50,7 +45,7 @@ namespace WebApplications.Utilities.Test
 
             CyclicConcurrentQueue<string> queue = new CyclicConcurrentQueue<string>(capacity);
 
-            string testStr = GenerateRandomString();
+            string testStr = Random.RandomString();
             queue.Enqueue(testStr);
             string item;
             Assert.IsTrue(queue.TryDequeue(out item));
@@ -103,7 +98,7 @@ namespace WebApplications.Utilities.Test
         {
             CyclicConcurrentQueue<string> queue = new CyclicConcurrentQueue<string>(1000);
 
-            string testStr = GenerateRandomString();
+            string testStr = Random.RandomString();
             queue.Enqueue(testStr);
             string item;
             Assert.IsTrue(queue.TryDequeue(out item));
@@ -155,7 +150,7 @@ namespace WebApplications.Utilities.Test
 
             ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
 
-            string testStr = GenerateRandomString();
+            string testStr = Random.RandomString();
             queue.Enqueue(testStr);
             string item;
             Assert.IsTrue(queue.TryDequeue(out item));
@@ -208,7 +203,7 @@ namespace WebApplications.Utilities.Test
         {
             ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
 
-            string testStr = GenerateRandomString();
+            string testStr = Random.RandomString();
             queue.Enqueue(testStr);
             string item;
             Assert.IsTrue(queue.TryDequeue(out item));

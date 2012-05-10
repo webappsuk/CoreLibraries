@@ -21,20 +21,13 @@
 #endregion
 using System;
 using System.Globalization;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using WebApplications.Testing;
-using WebApplications.Utilities;
 
 namespace WebApplications.Utilities.Test.Extensions
 {
     [TestClass]
-    public class EqualityFunctionsTests : TestBase
+    public class EqualityFunctionsTests : UtilitiesTestBase
     {
-
         #region Test Classes
 
         private class TestTypeWithEquals

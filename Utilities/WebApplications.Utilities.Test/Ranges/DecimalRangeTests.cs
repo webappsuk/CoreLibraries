@@ -22,18 +22,14 @@
 
 using System;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class DecimalRangeTests : TestBase
+    public class DecimalRangeTests : UtilitiesTestBase
     {
-
         /// <summary>
         /// Chose a random decimal using a uniform distribution on a given range.
         /// </summary>
@@ -53,17 +49,6 @@ namespace WebApplications.Utilities.Test.Ranges
                 minimum /= 10;
             }
             return (resized?10M:1M) * (minimum + (decimal)(Random.NextDouble() * (double)(maximum - minimum)));
-        }
-
-        /// <summary>
-        /// Chose a random decimal using a uniform distribution between 0 and 1.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.Decimal"/> between 0 and 1.
-        /// </returns>
-        private static decimal RandomDecimal()
-        {
-            return (decimal)Random.NextDouble();
         }
 
         /// <summary>

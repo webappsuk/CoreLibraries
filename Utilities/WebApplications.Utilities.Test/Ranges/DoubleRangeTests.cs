@@ -22,18 +22,14 @@
 
 using System;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class DoubleRangeTests : TestBase
+    public class DoubleRangeTests : UtilitiesTestBase
     {
-
         private static double RandomDouble(double minimum, double maximum)
         {
             if (maximum < minimum)

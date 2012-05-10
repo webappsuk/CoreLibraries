@@ -22,20 +22,15 @@
 
 using System;
 using System.Diagnostics;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Moq;
-using WebApplications.Utilities;
 using WebApplications.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebApplications.Utilities.Test
 {
     [TestClass]
-    public class DebuggingExtensionsTests : TestBase
+    public class DebuggingExtensionsTests : UtilitiesTestBase
     {
 
         [TestMethod]
@@ -55,7 +50,7 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void StopwatchToString_FormatStringWithNoParameters_StopwatchReferreredToUsingFormatString()
         {
-            String value = Random.Next().ToString();
+            String value = Random.RandomString();
             Stopwatch testStopwatch = new Stopwatch();
             Assert.AreEqual(String.Format("{0} completed in 0ms.", value), testStopwatch.ToString(value), "Where a format string without additional parameters is provided, this is used for the stopwatch name.");
         }
@@ -63,9 +58,9 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void StopwatchToString_FormatStringWithParameters_StopwatchReferreredToUsingFormattedString()
         {
-            String value1 = Random.Next().ToString();
-            String value2 = Random.Next().ToString();
-            String value3 = Random.Next().ToString();
+            String value1 = Random.RandomString();
+            String value2 = Random.RandomString();
+            String value3 = Random.RandomString();
             Stopwatch testStopwatch = new Stopwatch();
             Assert.AreEqual(String.Format("{0} test {2} {1} completed in 0ms.", value1, value2, value3), testStopwatch.ToString("{0} test {2} {1}", value1, value2, value3),
                 "Where a format string with parameters is provided, this is formatted and used for the stopwatch name.");

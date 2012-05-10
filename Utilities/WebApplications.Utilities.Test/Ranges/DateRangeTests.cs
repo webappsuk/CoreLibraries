@@ -23,15 +23,13 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class DateRangeTests : TestBase
+    public class DateRangeTests : UtilitiesTestBase
     {
         private static readonly int MaxDays = (DateTime.MaxValue-DateTime.MinValue).Days;
 

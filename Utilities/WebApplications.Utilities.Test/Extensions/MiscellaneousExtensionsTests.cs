@@ -21,7 +21,6 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Collections.Generic;
@@ -29,15 +28,14 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using WebApplications.Testing;
-using WebApplications.Utilities;
 
-namespace WebApplications.Utilities.Test.Extentions
+namespace WebApplications.Utilities.Test.Extensions
 {
     [TestClass]
-    public class MiscellaneousExtensionsTests : TestBase
+    public class MiscellaneousExtensionsTests : UtilitiesTestBase
     {
-
         [TestMethod]
         public void EpochStart_Value_IsUnixEpoch()
         {
@@ -149,29 +147,54 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void ToEnglish_NegativeNumber_PrefixedByNegative()
         {
-            double value = -Random.Next();
+            long value = -Random.Next();
             Assert.IsTrue(value.ToEnglish().StartsWith("Negative "), "For values less than zero, the result of ToEnglish should begin with 'Negative '.");
         }
 
         [TestMethod]
         public void ToEnglish_NegativeNumber_SameAsPositivePrefixedByWordNegative()
         {
-            double value = Random.Next();
-            Assert.AreEqual(String.Format("Negative {0}",value.ToEnglish()),(-value).ToEnglish(), "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
+            long value = Random.Next();
+            Assert.AreEqual(String.Format("Negative {0}", value.ToEnglish()), (-value).ToEnglish(), "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
+        }
+
+        [TestMethod]
+        public void ToEnglish_NegativeFloatingPointNumber_PrefixedByNegative()
+        {
+            double value = -Random.Next() + Random.NextDouble();
+            Assert.IsTrue(value.ToEnglish().StartsWith("Negative "), "For values less than zero, the result of ToEnglish should begin with 'Negative '.");
+        }
+
+        [TestMethod]
+        public void ToEnglish_NegativeFloatingPointNumber_SameAsPositivePrefixedByWordNegative()
+        {
+            double value = Random.Next() + Random.NextDouble();
+            Assert.AreEqual(String.Format("Negative {0}", value.ToEnglish()), (-value).ToEnglish(), "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
         }
 
         [TestMethod]
         public void ToEnglish_Zero_GivesZero()
         {
-            Assert.Fail("Currently causes an infinite loop");
             Assert.AreEqual("Zero", 0.ToEnglish(), "The result of ToEnglish for the number 0 should be 'Zero'.");
         }
 
         [TestMethod]
-        public void ToEnglish_ValueInHundreds_ProvidesWordAndAfterHundred()
+        public void ToEnglish_FloatingPointZero_GivesZero()
+        {
+            Assert.AreEqual("Zero", 0.0.ToEnglish(), "The result of ToEnglish for the number 0 should be 'Zero'.");
+        }
+
+        [TestMethod]
+        public void ToEnglish_ValueBetweenOneAndTwoHundred_ProvidesWordAndAfterHundred()
         {
             int value = Random.Next(1, 100);
-            Assert.AreEqual(String.Format("One Hundred And {0}",value.ToEnglish()), (100+value).ToEnglish(), "The result of ToEnglish for a number between 101 and 199 should start with 'One Hundred And'.");
+            Assert.AreEqual(String.Format("One Hundred And {0}", value.ToEnglish()), (100 + value).ToEnglish(), "The result of ToEnglish for a number between 101 and 199 should start with 'One Hundred And'.");
+        }
+
+        [TestMethod]
+        public void ToEnglish_ExactlyOneHundred_DoesNotContainAndAfterHundred()
+        {
+            Assert.AreEqual("One Hundred", 100.ToEnglish(), "The result of ToEnglish for a 100 should be 'One Hundred'.");
         }
 
         [TestMethod]
@@ -257,7 +280,7 @@ namespace WebApplications.Utilities.Test.Extentions
         {
             List<int> listA = new List<int>() { 1, 2, 3, 4, 5, 6 };
             List<int> listB = new List<int>() { 1, 2, 3, 99, 5, 6 };
-            Assert.IsTrue(listA.DeepEquals(listB), "DeepEquals should be false for lists of identical length but with different values.");
+            Assert.IsFalse(listA.DeepEquals(listB), "DeepEquals should be false for lists of identical length but with different values.");
         }
 
         [TestMethod]
@@ -518,7 +541,7 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void XmlEscape_UnicodeString_OutputContainsValidXmlText()
         {
-            String output = GenerateRandomString().XmlEscape();
+            String output = Random.RandomString().XmlEscape();
             XmlDocument xml = new XmlDocument();
             // The following line throws an exception if the output is not valid xml
             xml.LoadXml(String.Format("<xml>{0}</xml>", output));
@@ -721,9 +744,236 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void GetDateTime_CombGuid_GivesSameResultAsCombGuidGetDateTime()
         {
-            Guid standardGuid = CombGuid.NewCombGuid();
-            Assert.AreEqual(CombGuid.GetDateTime(standardGuid), standardGuid.GetDateTime());
+            Guid combGuid = CombGuid.NewCombGuid();
+            Assert.AreEqual(CombGuid.GetDateTime(combGuid), combGuid.GetDateTime());
         }
 
+        [TestMethod]
+        public void UnWrap_AfterPerformingWrap_ReturnsWrappedObject()
+        {
+            string wrappedObject = Random.RandomString(10);
+            IAsyncResult initial = new Mock<IAsyncResult>().Object;
+            IAsyncResult wrapped = initial.Wrap(wrappedObject);
+            string unwrappedObject = wrapped.Unwrap<string>();
+            Assert.AreEqual(wrappedObject, unwrappedObject);
+        }
+
+        [TestMethod]
+        public void UnWrap_AfterPerformingWrapThenUnwrapped_OriginalCanBeUnwrappedAgain()
+        {
+            string wrappedObject = Random.RandomString(10);
+            IAsyncResult initial = new Mock<IAsyncResult>().Object;
+            IAsyncResult wrapped = initial.Wrap(wrappedObject);
+            string unwrappedObject = wrapped.Unwrap<string>();
+            Assert.AreEqual(wrappedObject, wrapped.Unwrap<string>());
+        }
+
+        [TestMethod]
+        public void UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputted_ReturnsWrappedObject()
+        {
+            string wrappedObject = Random.RandomString(10);
+            IAsyncResult initial = new Mock<IAsyncResult>().Object;
+            IAsyncResult wrapped = initial.Wrap(wrappedObject);
+            IAsyncResult unwrapped;
+            string unwrappedObject = wrapped.Unwrap<string>(out unwrapped);
+            Assert.AreEqual(wrappedObject, unwrappedObject);
+        }
+
+        [TestMethod]
+        public void UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputted_OriginalCanBeUnwrappedAgain()
+        {
+            string wrappedObject = Random.RandomString(10);
+            IAsyncResult initial = new Mock<IAsyncResult>().Object;
+            IAsyncResult wrapped = initial.Wrap(wrappedObject);
+            IAsyncResult unwrapped;
+            string unwrappedObject = wrapped.Unwrap<string>(out unwrapped);
+            Assert.AreEqual(wrappedObject, wrapped.Unwrap<string>());
+        }
+
+        [ExpectedException(typeof(InvalidCastException))]
+        [TestMethod]
+        public void UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputtedThenUnwrappingOutput_ThrowsInvalidCastException()
+        {
+            string wrappedObject = Random.RandomString(10);
+            IAsyncResult initial = new Mock<IAsyncResult>().Object;
+            IAsyncResult wrapped = initial.Wrap(wrappedObject);
+            IAsyncResult unwrapped;
+            string unwrappedObject = wrapped.Unwrap<string>(out unwrapped);
+            unwrapped.Unwrap<string>();
+        }
+
+        [TestMethod]
+        public void PreserveStackTrace_NullException()
+        {
+            // Ensure this doesn't error
+            ((Exception) null).PreserveStackTrace();
+        }
+
+        [TestMethod]
+        public void PreserveStackTrace_ExceptionLaterReThrown_StackTraceIsPreserved()
+        {
+            try
+            {
+                try
+                {
+                    throw new Exception("Exception to preserve the stack trace of");
+                }
+                catch (Exception exception)
+                {
+                    exception.PreserveStackTrace();
+                    throw;
+                }
+            }
+            catch(Exception exception)
+            {
+                Assert.AreEqual(2,exception.StackTrace.Split('\n').Count());
+            }
+        }
+
+        [TestMethod]
+        public void Mod_PositiveInt_ReturnsModulus()
+        {
+            int number = Random.Next();
+            int mod = Random.Next(2, 100);
+            int result = number.Mod(mod);
+            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void Mod_NegativeInt_ReturnsPositiveModulus()
+        {
+            int number = -Random.Next();
+            int mod = Random.Next(2, 100);
+            int result = number.Mod(mod);
+            Assert.AreEqual(((number % mod) + mod) % mod, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void Mod_PositiveIntWithExactMultiple_ReturnsZero()
+        {
+            int mod = Random.Next(2, 100);
+            int number = Random.Next(1,int.MaxValue/mod) * mod;
+            int result = number.Mod(mod);
+            Assert.AreEqual(0, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void Mod_NegativeIntWithExactMultiple_ReturnsZero()
+        {
+            int mod = Random.Next(2, 100);
+            int number = -Random.Next(1, int.MaxValue / mod) * mod;
+            int result = number.Mod(mod);
+            Assert.AreEqual(0, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void Mod_PositiveUInt_ReturnsModulus()
+        {
+            uint number = (uint)Random.Next();
+            uint mod = (uint)Random.Next(2, 100);
+            uint result = number.Mod(mod);
+            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void Mod_PositiveLong_ReturnsModulus()
+        {
+            long number = Random.Next();
+            long mod = Random.Next(2, 100);
+            long result = number.Mod(mod);
+            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void Mod_NegativeLong_ReturnsPositiveModulus()
+        {
+            long number = -Random.Next();
+            long mod = Random.Next(2, 100);
+            long result = number.Mod(mod);
+            Assert.AreEqual(((number % mod) + mod) % mod, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void Mod_PositiveULong_ReturnsModulus()
+        {
+            ulong number = (ulong)Random.Next();
+            ulong mod = (ulong)Random.Next(2, 100);
+            ulong result = number.Mod(mod);
+            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void Mod_PositiveShort_ReturnsModulus()
+        {
+            short number = (short)Random.Next(0,short.MaxValue);
+            short mod = (short)Random.Next(2, 100);
+            long result = number.Mod(mod);
+            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void Mod_NegativeShort_ReturnsPositiveModulus()
+        {
+            short number = (short)-Random.Next(0, short.MaxValue);
+            short mod = (short)Random.Next(2, 100);
+            short result = number.Mod(mod);
+            Assert.AreEqual(((number % mod) + mod) % mod, result,"Expected result is {0}%{1}",number,mod);
+        }
+
+        [TestMethod]
+        public void Mod_PositiveUShort_ReturnsModulus()
+        {
+            ushort number = (ushort)Random.Next(0, ushort.MaxValue);
+            ushort mod = (ushort)Random.Next(2, 100);
+            long result = number.Mod(mod);
+            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+        }
+
+        [TestMethod]
+        public void IsNull_ValueType_ReturnsFalse()
+        {
+            int value = Random.Next();
+            Assert.IsFalse(value.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_NotNullNullableValueType_ReturnsFalse()
+        {
+            int? value = Random.Next();
+            Assert.IsFalse(value.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_NullNullableValueType_ReturnsTrue()
+        {
+            int? value = null;
+            Assert.IsTrue(value.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_Null_ReturnsTrue()
+        {
+            Assert.IsTrue(((object)null).IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_DBNull_ReturnsTrue()
+        {
+            Assert.IsTrue(DBNull.Value.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_NullReference_ReturnsTrue()
+        {
+            MiscellaneousExtensionsTests reference = null;
+            Assert.IsTrue(reference.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_ReferenceType_ReturnsFalse()
+        {
+            MiscellaneousExtensionsTests reference = new MiscellaneousExtensionsTests();
+            Assert.IsFalse(reference.IsNull());
+        }
     }
 }

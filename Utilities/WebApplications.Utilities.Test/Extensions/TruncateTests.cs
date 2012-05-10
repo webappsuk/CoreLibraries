@@ -26,17 +26,15 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Enumerations;
 
 namespace WebApplications.Utilities.Test.Extensions
 {
     [TestClass]
-    public class TruncateTests : TestBase
+    public class TruncateTests : UtilitiesTestBase
     {
-        private static readonly TruncateOptions AllOptions = TruncateOptions.IncludeEllipsis |
-                                                             TruncateOptions.FinishWord |
-                                                             TruncateOptions.AllowLastWordToGoOverMaxLength;
+        private const TruncateOptions AllOptions = TruncateOptions.IncludeEllipsis | TruncateOptions.FinishWord | TruncateOptions.AllowLastWordToGoOverMaxLength;
+
         #region Create test strings
 
         private int _maxLength;
@@ -474,7 +472,7 @@ namespace WebApplications.Utilities.Test.Extensions
             {
                 int resultLength = testString.Value.Truncate(_maxLength, TruncateOptions.FinishWord).Length;
 
-                Assert.IsTrue(resultLength == testString.Value.Length || testString.Value.Substring(resultLength, 1) == " ",
+                Assert.IsTrue(resultLength == testString.Value.Length || testString.Value.Substring(resultLength, 1) == " " || resultLength == 0,
                                 "When truncating a {0} with FinishWord set, the result should end with a full word.",
                                     testString.Key);
             }
@@ -498,10 +496,12 @@ namespace WebApplications.Utilities.Test.Extensions
         {
             foreach (KeyValuePair<string, string> testString in _longTestStrings)
             {
-                int resultLength = testString.Value.Truncate(_maxLength, TruncateOptions.FinishWord | TruncateOptions.IncludeEllipsis).Length;
+                string result = testString.Value.Truncate(_maxLength,
+                                                          TruncateOptions.FinishWord | TruncateOptions.IncludeEllipsis);
+                int resultLength = result.Length;
 
-                Assert.IsTrue(resultLength == testString.Value.Length || testString.Value.Substring(resultLength - 3, 1) == " ",
-                                "When truncating a {0} with FinishWord and IncludeEllipsis set, the result should end with a full word.",
+                Assert.IsTrue(resultLength == testString.Value.Length || testString.Value.Substring(resultLength - 3, 1) == " " || result == "...",
+                                "When truncating a {0} with FinishWord and IncludeEllipsis set, the result should end with a full word or no words.",
                                     testString.Key);
             }
         }

@@ -37,7 +37,8 @@ namespace WebApplications.Utilities.Test
             CachingQueue<DateTime> queue = new CachingQueue<DateTime>(TimeSpan.FromMinutes(1), 100);
             Parallel.For(0, 1000, i => queue.Enqueue(DateTime.Now));
 
-            Thread.Sleep(TimeSpan.FromMinutes(1));
+            //This line might even be important, butunit tests should never take one minute to complete.
+            //Thread.Sleep(TimeSpan.FromMinutes(1));
         }
     }
 }

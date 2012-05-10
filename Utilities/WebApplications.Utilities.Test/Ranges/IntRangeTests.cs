@@ -22,18 +22,15 @@
 
 using System;
 using System.Linq;
-using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class IntRangeTests : TestBase 
+    public class IntRangeTests : UtilitiesTestBase 
     {
-
         [TestMethod]
         public void IntRange_ConvertingToString_IsNotBlank()
         {
@@ -44,7 +41,7 @@ namespace WebApplications.Utilities.Test.Ranges
 
             var intRange = new IntRange(start, end, step);
 
-            Assert.AreNotEqual("", intRange.ToString(), "String representation of range must not be an empty string");
+            Assert.AreNotEqual(string.Empty, intRange.ToString(), "String representation of range must not be an empty string");
         }
 
         [TestMethod]
@@ -197,7 +194,7 @@ namespace WebApplications.Utilities.Test.Ranges
         public void IntRange_UsingLargestPossibleParameters_IteratesSuccessfully()
         {
             // Step chosen to avoid an unfeasible number of iterations
-            var intRange = new IntRange(int.MinValue, int.MaxValue, int.MaxValue/16);
+            var intRange = new IntRange(int.MinValue, int.MaxValue, int.MaxValue / 16);
 
             bool iterated = false;
             foreach (int i in intRange)
@@ -206,6 +203,17 @@ namespace WebApplications.Utilities.Test.Ranges
             }
 
             Assert.AreEqual(true, iterated, "When iterating across full range, at least one value should be returned");
+        }
+
+        [TestMethod]
+        public void IntRange_UsingZeroStep_ThrowsSomeException()
+        {
+            Assert.Fail("Currently does not check it is not zero");
+
+            // Step chosen to avoid an unfeasible number of iterations
+            var intRange = new IntRange(-Random.Next(), Random.Next(), 0);
+
+            List<int> result = intRange.ToList();
         }
 
         [TestMethod]

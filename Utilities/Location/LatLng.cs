@@ -27,7 +27,7 @@ namespace WebApplications.Utilities.Location
     /// <summary>
     ///   Stores the Latitude/Longitude of a point.
     /// </summary>
-    public class LatLng
+    public struct LatLng
     {
         internal const double EarthsRadiusInKilometers = 6371;
 
@@ -130,7 +130,7 @@ namespace WebApplications.Utilities.Location
                         Math.Cos(pointTwo.Longitude - pointOne.Longitude)
                                 )*EarthsRadiusInKilometers).ToRadians();
                 default:
-                    throw new ArgumentOutOfRangeException("Calculation");
+                    throw new ArgumentOutOfRangeException("calculation");
             }
         }
 
@@ -145,19 +145,30 @@ namespace WebApplications.Utilities.Location
         public static LatLng MidPoint(LatLng pointOne, LatLng pointTwo)
         {
             double dLon = (pointTwo.Longitude - pointTwo.Longitude).ToRadians();
-            double Bx = Math.Cos(pointTwo.Latitude.ToRadians())*Math.Cos(dLon);
-            double By = Math.Cos(pointTwo.Latitude.ToRadians())*Math.Sin(dLon);
+            double bx = Math.Cos(pointTwo.Latitude.ToRadians())*Math.Cos(dLon);
+            double by = Math.Cos(pointTwo.Latitude.ToRadians())*Math.Sin(dLon);
 
             double latitude = (Math.Atan2(
                 Math.Sin(pointOne.Latitude.ToRadians()) + Math.Sin(pointTwo.Latitude.ToRadians()),
                 Math.Sqrt(
-                    (Math.Cos(pointOne.Latitude.ToRadians()) + Bx)*
-                    (Math.Cos(pointOne.Latitude.ToRadians()) + Bx) + By*By))).ToDegrees();
+                    (Math.Cos(pointOne.Latitude.ToRadians()) + bx)*
+                    (Math.Cos(pointOne.Latitude.ToRadians()) + bx) + by*by))).ToDegrees();
 
             double longitude = pointOne.Longitude +
-                               Math.Atan2(By, Math.Cos(pointOne.Latitude.ToRadians()) + Bx).ToDegrees();
+                               Math.Atan2(by, Math.Cos(pointOne.Latitude.ToRadians()) + bx).ToDegrees();
 
             return new LatLng(latitude, longitude);
+        }
+
+        /// <summary>
+        ///   Returns a <see cref="string"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        ///   A <see cref="string"/> representation of this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return String.Format("Lat: {0}, Long: {1}", Latitude, Longitude);
         }
     }
 }

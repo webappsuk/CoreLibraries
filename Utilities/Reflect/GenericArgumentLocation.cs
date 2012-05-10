@@ -1,6 +1,6 @@
 using System;
 
-namespace WebApplications.Utilities.Relection
+namespace WebApplications.Utilities.Reflect
 {
     /// <summary>
     /// The location of a generic argument.

@@ -21,18 +21,15 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Enumerations;
 
 namespace WebApplications.Utilities.Test.Enumerations
 {
     [TestClass]
-    public class TriStateTests : TestBase
+    public class TriStateTests : UtilitiesTestBase
     {
         [TestMethod]
         public void TriState_TrueState_IsEquivilantToYesAndPositive()

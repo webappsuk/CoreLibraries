@@ -23,15 +23,13 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class DateTimeRangeTests : TestBase
+    public class DateTimeRangeTests : UtilitiesTestBase
     {
         private static readonly TimeSpan MinSpan = TimeSpan.FromSeconds(1);
         private static readonly TimeSpan MaxSpan = (DateTime.MaxValue - DateTime.MinValue);

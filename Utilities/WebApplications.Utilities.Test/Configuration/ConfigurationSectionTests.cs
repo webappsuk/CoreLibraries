@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Testing;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Test.Configuration
@@ -57,7 +58,7 @@ namespace WebApplications.Utilities.Test.Configuration
         public void Xmlns_SetToString_ReturnsSetValue()
         {
             ConfigurationSectionTestClass configurationSection = GenerateBlankConfigurationSectionTestClass();
-            string testString = GenerateRandomString(Random.Next(3, 100));
+            string testString = Random.RandomString(Random.Next(3, 100));
             configurationSection.Xmlns = testString;
             Assert.AreEqual(testString, configurationSection.Xmlns, "The Xmlns field should return the same value as it was last set to.");
         }

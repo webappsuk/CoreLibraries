@@ -2,10 +2,10 @@
 using System.ComponentModel;
 using System.Configuration;
 using System.Globalization;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Testing;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Test.Configuration
@@ -73,7 +73,7 @@ namespace WebApplications.Utilities.Test.Configuration
             ConstructorConfigurationElement constructorConfigurationElement =
                 GenerateEmptyConstructorConfigurationElement();
 
-            String name = GenerateRandomString(10);
+            String name = Random.RandomString(10);
             ParameterElement parameter = new ParameterElement { Name = name };
 
             constructorConfigurationElement.Parameters.Add(parameter);
@@ -500,24 +500,36 @@ namespace WebApplications.Utilities.Test.Configuration
         private class TestClassWithConstructorWithOutParam
         {
             public string Value { get; private set; }
+            public string ConstructorUsed { get; private set; }
 
             public TestClassWithConstructorWithOutParam(string value, out string outParam)
             {
                 Value = value;
                 outParam = value;
+                ConstructorUsed = "ConstructorWithOutParam";
+            }
+
+            public TestClassWithConstructorWithOutParam(string value)
+            {
+                Value = value;
+                ConstructorUsed = "ConstructorWithoutOutParam";
             }
         }
 
         [TestMethod]
-        public void GetConstructor_TypeHasConstructorWithOutParam_OutParamIsIgnored()
+        public void GetConstructor_TypeHasConstructorWithOutParam_ConstructorWithOutParamIsIgnored()
         {
             ConstructorConfigurationElement constructorConfigurationElement =
                 GenerateConstructorConfigurationElementForType(typeof(TestClassWithConstructorWithOutParam));
 
             string parameterValue = Random.Next().ToString(CultureInfo.InvariantCulture);
             constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "value", Value = parameterValue });
+            constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "outParam", Value = parameterValue, IsRequired = false});
 
-            constructorConfigurationElement.GetConstructor<TestClassWithConstructorWithOutParam>();
+            Func<TestClassWithConstructorWithOutParam> constructor = constructorConfigurationElement.GetConstructor<TestClassWithConstructorWithOutParam>();
+
+            // As the constructor with the out param is ignored, we should find the alternative has been used instead
+            Assert.AreEqual("ConstructorWithoutOutParam", constructor().ConstructorUsed);
         }
 
         private class TestClassWithConstructorWithRefParam
@@ -540,8 +552,9 @@ namespace WebApplications.Utilities.Test.Configuration
 
             string parameterValue = Random.Next().ToString(CultureInfo.InvariantCulture);
             constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "value", Value = parameterValue });
-            constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "refParam", Value = parameterValue });
+            constructorConfigurationElement.Parameters.Add(new ParameterElement { Name = "refParam", Value = parameterValue, IsRequired = false });
 
+            // An exception is thrown as no valid cosntructer could be found as a result of the exclusion
             constructorConfigurationElement.GetConstructor<TestClassWithConstructorWithRefParam>();
         }
 

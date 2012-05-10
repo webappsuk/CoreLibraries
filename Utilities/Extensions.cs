@@ -24,11 +24,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -38,7 +38,6 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Enumerations;
-using WebApplications.Utilities.Serialization;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
@@ -55,8 +54,10 @@ namespace WebApplications.Utilities
         private static readonly ConcurrentDictionary<Type, Func<object, object, bool>> _equalityFunctions =
             new ConcurrentDictionary<Type, Func<object, object, bool>>();
 
-        private static readonly Dictionary<string, string> JSONEscapedCharacters = new Dictionary<string, string> { { "\\", @"\\" }, { "\"", @"\""" }, { "\b", @"\b" }, { "\f", @"\f" }, { "\n", @"\n" }, { "\r", @"\r" }, { "\t", @"\t" } };
-        private static readonly Regex MatchJSONEscapedCharacters = new Regex(String.Join("|",JSONEscapedCharacters.Keys.Select(k=>String.Format("\\x{0:X2}",(int)k.ToCharArray()[0])).ToArray()));
+        /// <summary>
+        /// Characters to escape for JSON (and their new value).
+        /// </summary>
+        private static readonly Dictionary<char, string> _jsonEscapedCharacters = new Dictionary<char, string> { { '\\', @"\\" }, { '\"', @"\""" }, { '\b', @"\b" }, { '\f', @"\f" }, { '\n', @"\n" }, { '\r', @"\r" }, { '\t', @"\t" } };
 
         /// <summary>
         ///   The Epoch date time (used by JavaScript).
@@ -165,7 +166,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public static string ToEnglish(this int number)
         {
-            return ToEnglish((long)number);
+            return ToEnglishProcessInteger(number);
         }
 
         /// <summary>
@@ -177,7 +178,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public static string ToEnglish(this long number)
         {
-            return ToEnglish((double)number);
+            return ToEnglishProcessInteger(number);
         }
 
         /// <summary>
@@ -189,22 +190,22 @@ namespace WebApplications.Utilities
         /// </returns>
         public static string ToEnglish(this double number)
         {
-            string sign = null;
-            if (number < 0)
-            {
-                sign = "Negative";
-                number = Math.Abs(number);
-            }
+
+            string integerString = ToEnglishProcessInteger((long)number);
+
+            number = Math.Abs(number) % 1;
 
             int decimalDigits = 0;
-            Console.WriteLine(number);
-            while (number < 1 ||
-                   (number - Math.Floor(number) > 1e-10))
+
+            if (number > 0)
             {
-                number *= 10;
-                decimalDigits++;
+                while (number < 1 ||
+                       (number - Math.Floor(number) > 1e-10))
+                {
+                    number *= 10;
+                    decimalDigits++;
+                }
             }
-            Console.WriteLine("Total Decimal Digits: {0}", decimalDigits);
 
             string decimalString = null;
             while (decimalDigits-- > 0)
@@ -212,6 +213,23 @@ namespace WebApplications.Utilities
                 int digit = (int)(number % 10);
                 number /= 10;
                 decimalString = _onesMapping[digit] + " " + decimalString;
+            }
+
+            return
+                String.Format(
+                    "{0}{1}{2}",
+                    integerString,
+                    (decimalString != null) ? " Point " : "",
+                    decimalString).Trim();
+        }
+
+        private static string ToEnglishProcessInteger(long number)
+        {
+            string sign = null;
+            if (number < 0)
+            {
+                sign = "Negative";
+                number = Math.Abs(number);
             }
 
             string retVal = null;
@@ -225,7 +243,7 @@ namespace WebApplications.Utilities
                     int numberToProcess = (number >= 1e16) ? 0 : (int)(number % 1000);
                     number = number / 1000;
 
-                    string groupDescription = ProcessGroup(numberToProcess);
+                    string groupDescription = ToEnglishProcessGroup(numberToProcess);
                     if (groupDescription != null)
                     {
                         if (@group > 0)
@@ -239,15 +257,13 @@ namespace WebApplications.Utilities
 
             return
                 String.Format(
-                    "{0}{4}{1}{3}{2}",
+                    "{0}{2}{1}",
                     sign,
                     retVal,
-                    decimalString,
-                    (decimalString != null) ? " Point " : "",
                     (sign != null) ? " " : "").Trim();
         }
 
-        private static string ProcessGroup(int number)
+        private static string ToEnglishProcessGroup(int number)
         {
             int tens = number % 100;
             int hundreds = number / 100;
@@ -257,6 +273,8 @@ namespace WebApplications.Utilities
                 retVal = _onesMapping[hundreds] + " " + _groupMapping[0];
             if (tens > 0)
             {
+                if (hundreds > 0)
+                    retVal += " And";
                 if (tens < 20)
                     retVal += ((retVal != null) ? " " : "") + _onesMapping[tens];
                 else
@@ -469,8 +487,9 @@ namespace WebApplications.Utilities
         {
             return enumerableA == null
                        ? enumerableB == null
+                       : enumerableB == null ? false
                        : enumerableA.Count() == enumerableB.Count() &&
-                         !enumerableA.Any(i => !enumerableB.Contains(i));
+                         enumerableA.All(i => enumerableB.Contains(i));
         }
 
         /// <summary>
@@ -494,8 +513,9 @@ namespace WebApplications.Utilities
         {
             return enumerableA == null
                        ? enumerableB == null
-                       : enumerableA.Count() == enumerableB.Count() &&
-                         !enumerableA.Any(i => !enumerableB.Contains(i, comparer));
+                       : enumerableB == null ? false
+                       : (enumerableA.Count() == enumerableB.Count() &&
+                         enumerableA.All(i => enumerableB.Contains(i, comparer)));
         }
 
         /// <summary>
@@ -515,6 +535,51 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Encodes a string for JSON.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        public static string ToJSON(this string input)
+        {
+            if (input == null)
+                return "null";
+            // TODO establish approx. increase in length of JSON encoding.
+            StringBuilder stringBuilder = new StringBuilder((int)(input.Length * 1.3) + 2);
+            stringBuilder.AppendJSON(input);
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Appends a string to the specified <see cref="StringBuilder"/> encoding it for JSON.
+        /// </summary>
+        /// <param name="stringBuilder">The string builder.</param>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        public static StringBuilder AppendJSON([NotNull] this StringBuilder stringBuilder, [CanBeNull] string input)
+        {
+            if (input == null)
+            {
+                stringBuilder.Append("null");
+                return stringBuilder;
+            }
+            
+            stringBuilder.Append("\"");
+            foreach (char c in input)
+            {
+                string replacement;
+
+                // TODO May be worth adding escaping for unicode character.
+                if (_jsonEscapedCharacters.TryGetValue(c, out replacement))
+                    stringBuilder.Append(replacement);
+                else
+                    stringBuilder.Append(c);
+            }
+            stringBuilder.Append("\"");
+
+            return stringBuilder;
+        }
+
+        /// <summary>
         ///   Converts a list to its JSON representation.
         /// </summary>
         /// <param name="list">The list to convert.</param>
@@ -524,11 +589,24 @@ namespace WebApplications.Utilities
         /// </remarks>
         public static string ToJSON(this IEnumerable<string> list)
         {
-            return list == null || !list.Any()
-                       ? "[]"
-                       : String.Format(
-                           "[{0}]",
-                           String.Join(", ", list.Select(s => "\"" + MatchJSONEscapedCharacters.Replace(s,m=>JSONEscapedCharacters[m.ToString()]) + "\"").ToArray()));
+            if ((list == null) ||
+                (!list.Any()))
+                return "[]";
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append("[");
+            bool includeComma = false;
+            foreach (string s in list)
+            {
+                if (includeComma)
+                    stringBuilder.Append(",");
+                else
+                    includeComma = true;
+                stringBuilder.AppendJSON(s);
+            }
+
+            stringBuilder.Append("]");
+            return stringBuilder.ToString();
         }
 
         /// <summary>
@@ -802,7 +880,7 @@ namespace WebApplications.Utilities
         /// </remarks>
         public static Int64 GetEpochTime(this DateTime dateTime)
         {
-            return (Int64)(dateTime.ToUniversalTime() - EpochStart).TotalMilliseconds;
+            return (Int64)(dateTime - EpochStart).TotalMilliseconds;
         }
 
         /// <summary>
@@ -833,8 +911,24 @@ namespace WebApplications.Utilities
         ///   <paramref name="input"/> was <see langword="null"/>.
         /// </exception>
         public static string StripHTML(this string input)
-        {
-            return _htmlRegex.Replace(input, String.Empty);
+        { // TODO: a) make more efficient b) question purpose/usage
+            int depthCounter = 0;
+            StringBuilder builder = new StringBuilder(input.Length);
+            foreach (char c in input)
+            {
+                if(c=='<')
+                {
+                    depthCounter++;
+                } else if (depthCounter > 0)
+                {
+                    if (c == '>')
+                        depthCounter--;
+                } else
+                {
+                    builder.Append(c);
+                }
+            }
+            return builder.ToString();
         }
 
         /// <summary>
@@ -890,6 +984,8 @@ namespace WebApplications.Utilities
             }
             else if (lastSpaceIndex > -1)
                 retValue = retValue.Remove(lastSpaceIndex);
+            else
+                retValue = "";
 
             return String.Format("{0}{1}", retValue,
                                  includeEllipsis && retValue.Length < valueToTruncate.Length
@@ -1013,6 +1109,7 @@ namespace WebApplications.Utilities
         ///   The enumeration sorted so that all elements that have dependencies follow their dependencies.
         /// </returns>
         /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
+        /// <exception cref="ArgumentException">There are duplicates in <paramref name="enumerable"/>.</exception>
         [NotNull]
         [UsedImplicitly]
         public static IEnumerable<T> TopologicalSortEdges<T>([NotNull] this IEnumerable<T> enumerable,
@@ -1050,18 +1147,22 @@ namespace WebApplications.Utilities
                 T t = outputQueue.Dequeue();
                 yield return t;
 
-                // Get dependants and remove
-                List<T> deps;
-                if (!dependants.TryGetValue(t, out deps)) continue;
+                // Get dependants of the yielded element and remove the reverse reference from their depenencies
+                List<T> dependentsOfLastYield;
+                if (!dependants.TryGetValue(t, out dependentsOfLastYield)) continue;
                 dependants.Remove(t);
 
-                foreach (T dependant in deps)
+                foreach (T dependant in dependentsOfLastYield)
                 {
+                    // Check the dependant was actually included in enumerable
+                    List<T> deps;
+                    if (!dependencies.TryGetValue(dependant, out deps)) continue;
+
                     // Remove dependency
-                    dependencies[dependant].Remove(t);
+                    deps.Remove(t);
 
                     // if we have no dependencies left add to output queue for processing.
-                    if (dependencies[dependant].Count < 1)
+                    if (deps.Count < 1)
                         outputQueue.Enqueue(dependant);
                 }
             }
@@ -1153,36 +1254,6 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        ///   Use reflection to gain access to the InternalPreserveStackTrace method.
-        /// </summary>
-        private static readonly Action<Exception> _preserveStackTrace =
-            typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.NonPublic | BindingFlags.Instance).
-                Action<Exception>();
-
-        /// <summary>
-        ///   Preserves the stack trace during exception re-throws.
-        /// </summary>
-        /// <param name="exception">The exception thrown.</param>
-        /// <returns>A copy of the exception with the stack trace preserved.</returns>
-        [UsedImplicitly]
-        public static Exception PreserveStackTrace(this Exception exception)
-        {
-            if (exception == null)
-            {
-                return null;
-            }
-            try
-            {
-                _preserveStackTrace(exception);
-            }
-            catch (MethodAccessException)
-            {
-            }
-            // Copy exception.
-            return exception.SerializeToByteArray().Deserialize<Exception>();
-        }
-
-        /// <summary>
         /// Calculates the modulus of the value.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -1205,9 +1276,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ushort Mod(this ushort value, ushort modulus)
         {
-            int mod = value % modulus;
-            if (mod < 0) mod += modulus;
-            return (ushort)mod;
+            return (ushort) (value % modulus);
         }
 
         /// <summary>
@@ -1219,7 +1288,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static int Mod(this int value, int modulus)
         {
-            int mod = value%modulus;
+            int mod = value % modulus;
             if (mod < 0) mod += modulus;
             return mod;
         }
@@ -1233,9 +1302,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static uint Mod(this uint value, uint modulus)
         {
-            long mod = value % modulus;
-            if (mod < 0) mod += modulus;
-            return (uint)mod;
+            return value % modulus;
         }
 
         /// <summary>
@@ -1261,9 +1328,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ulong Mod(this ulong value, ulong modulus)
         {
-            long mod = (long)value % (long)modulus;
-            if (mod < 0) mod += (long)modulus;
-            return (ulong)mod;
+            return value % modulus;
         }
 
         /// <summary>
@@ -1312,5 +1377,47 @@ namespace WebApplications.Utilities
             }
             return arrays;
         }
+
+        /// <summary>
+        ///   Use reflection to gain access to the InternalPreserveStackTrace method.
+        /// </summary>
+        [NotNull]
+        private static readonly Action<Exception> _preserveStackTrace =
+            typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.NonPublic | BindingFlags.Instance).
+                Action<Exception>();
+
+        /// <summary>
+        ///   Preserves the stack trace during exception re-throws.
+        /// </summary>
+        /// <param name="exception">The exception thrown.</param>
+        /// <returns>A copy of the exception with the stack trace preserved.</returns>
+        [UsedImplicitly]
+        public static void PreserveStackTrace(this Exception exception)
+        {
+            if (exception == null)
+                return;
+
+            try
+            {
+                _preserveStackTrace(exception);
+            }
+            catch (MethodAccessException)
+            {
+            }
+        }
+        
+        /// <summary>
+        /// Determines whether the specified value is null (includes <see cref="DBNull.Value"/> and <see cref="INullable"/> support).
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
+        public static bool IsNull(this object value)
+        {
+            if (ReferenceEquals(value, null) || ReferenceEquals(value, DBNull.Value))
+                return true;
+            INullable nullable = value as INullable;
+            return !ReferenceEquals(nullable, null) && nullable.IsNull;
+        }
+
     }
 }
