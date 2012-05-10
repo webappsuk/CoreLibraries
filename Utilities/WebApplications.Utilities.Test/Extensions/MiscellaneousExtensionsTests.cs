@@ -928,5 +928,52 @@ namespace WebApplications.Utilities.Test.Extensions
             long result = number.Mod(mod);
             Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
         }
+
+        [TestMethod]
+        public void IsNull_ValueType_ReturnsFalse()
+        {
+            int value = Random.Next();
+            Assert.IsFalse(value.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_NotNullNullableValueType_ReturnsFalse()
+        {
+            int? value = Random.Next();
+            Assert.IsFalse(value.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_NullNullableValueType_ReturnsTrue()
+        {
+            int? value = null;
+            Assert.IsTrue(value.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_Null_ReturnsTrue()
+        {
+            Assert.IsTrue(((object)null).IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_DBNull_ReturnsTrue()
+        {
+            Assert.IsTrue(DBNull.Value.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_NullReference_ReturnsTrue()
+        {
+            MiscellaneousExtensionsTests reference = null;
+            Assert.IsTrue(reference.IsNull());
+        }
+
+        [TestMethod]
+        public void IsNull_ReferenceType_ReturnsFalse()
+        {
+            MiscellaneousExtensionsTests reference = new MiscellaneousExtensionsTests();
+            Assert.IsFalse(reference.IsNull());
+        }
     }
 }

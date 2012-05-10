@@ -14,7 +14,7 @@ namespace WebApplications.Utilities.Test.Caching
     {
 
         // Fix the maximum capacity under test as overwise OutOfMemoryExceptions are thrown
-        public const int MaxCapacity = 10000000;
+        public const int MaxCapacity = 268435456;
 
         CyclicConcurrentQueue<T> CreateCyclicConcurrentQueue<T>(long capacity)
         {
@@ -222,15 +222,17 @@ namespace WebApplications.Utilities.Test.Caching
         public void TryDequeue_SomethingQueued_OutputsLeastRecentlyEnqueuedItem()
         {
             long capacity = Random.Next(10, MaxCapacity);
-            List<int> enqueuedItems = Enumerable.Range(1, Random.Next(2, (int)capacity)).Select(n => Random.Next()).ToList();
+            IEnumerable<int> enqueuedItems = Enumerable.Range(1, Random.Next(2, (int)capacity-1)).Select(n => Random.Next());
             CyclicConcurrentQueue<int> cyclicConcurrentQueue = CreateCyclicConcurrentQueue<int>(capacity);
+            int firstItem = Random.Next();
+            cyclicConcurrentQueue.Enqueue(firstItem);
             foreach (int enqueuedItem in enqueuedItems)
             {
                 cyclicConcurrentQueue.Enqueue(enqueuedItem);
             }
             int dequeued;
             cyclicConcurrentQueue.TryDequeue(out dequeued);
-            Assert.AreEqual(enqueuedItems.First(), dequeued);
+            Assert.AreEqual(firstItem, dequeued);
         }
 
         [TestMethod]
@@ -274,15 +276,18 @@ namespace WebApplications.Utilities.Test.Caching
         public void TryPeek_ItemsQueued_OutputsLeastRecentlyEnqueuedItem()
         {
             long capacity = Random.Next(10, MaxCapacity);
-            List<int> enqueuedItems = Enumerable.Range(1,Random.Next(2,(int)capacity)).Select(n=>Random.Next()).ToList();
+            //Note: Using random choice for each number takes too long
+            IEnumerable<int> enqueuedItems = Enumerable.Range(1, Random.Next(2, (int)capacity - 1));//.Select(n=>Random.Next());
             CyclicConcurrentQueue<int> cyclicConcurrentQueue = CreateCyclicConcurrentQueue<int>(capacity);
+            int firstItem = Random.Next();
+            cyclicConcurrentQueue.Enqueue(firstItem);
             foreach (int enqueuedItem in enqueuedItems)
             {
                 cyclicConcurrentQueue.Enqueue(enqueuedItem);
             }
             int peeked;
             cyclicConcurrentQueue.TryPeek(out peeked);
-            Assert.AreEqual(enqueuedItems.First(), peeked);
+            Assert.AreEqual(firstItem, peeked);
         }
 
         [TestMethod]

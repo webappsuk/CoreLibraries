@@ -24,6 +24,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -1275,9 +1276,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ushort Mod(this ushort value, ushort modulus)
         {
-            int mod = value % modulus;
-            if (mod < 0) mod += modulus;
-            return (ushort)mod;
+            return (ushort) (value % modulus);
         }
 
         /// <summary>
@@ -1289,7 +1288,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static int Mod(this int value, int modulus)
         {
-            int mod = value%modulus;
+            int mod = value % modulus;
             if (mod < 0) mod += modulus;
             return mod;
         }
@@ -1303,9 +1302,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static uint Mod(this uint value, uint modulus)
         {
-            long mod = value % modulus;
-            if (mod < 0) mod += modulus;
-            return (uint)mod;
+            return value % modulus;
         }
 
         /// <summary>
@@ -1331,9 +1328,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ulong Mod(this ulong value, ulong modulus)
         {
-            long mod = (long)value % (long)modulus;
-            if (mod < 0) mod += (long)modulus;
-            return (ulong)mod;
+            return value % modulus;
         }
 
         /// <summary>
@@ -1410,5 +1405,19 @@ namespace WebApplications.Utilities
             {
             }
         }
+        
+        /// <summary>
+        /// Determines whether the specified value is null (includes <see cref="DBNull.Value"/> and <see cref="INullable"/> support).
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
+        public static bool IsNull(this object value)
+        {
+            if (ReferenceEquals(value, null) || ReferenceEquals(value, DBNull.Value))
+                return true;
+            INullable nullable = value as INullable;
+            return !ReferenceEquals(nullable, null) && nullable.IsNull;
+        }
+
     }
 }
