@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Cryptography.Test
 {
     [TestClass]
-    public class RSACryptographerTests : TestBase
+    public class RSACryptographerTests : SerializationTestBase
     {
         private const string InputString = "I do not like them sam-I-am I do not like green eggs and ham.";
         private readonly CryptoProviderWrapper _providerWrapper = new CryptoProviderWrapper("1");
@@ -35,7 +32,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Encrypt_LongString_SuccessfulEncryption()
         {
-            string input = GenerateRandomString(5000, false);
+            string input = Random.RandomString(5000, false);
             string encrypted = _providerWrapper.Encrypt(input);
 
             Trace.WriteLine(encrypted);
@@ -45,7 +42,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Encrypt_UnicodeString_SuccessfulEncryption()
         {
-            string input = GenerateRandomString(10);
+            string input = Random.RandomString(10);
             string encrypted = _providerWrapper.Encrypt(input);
 
             Trace.WriteLine(encrypted);
@@ -94,7 +91,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Encrypt_SameTwoUnicodeInputStrings_DifferentEcryptionResult()
         {
-            string input = GenerateRandomString(10);
+            string input = Random.RandomString(10);
 
             string encryptedResult1 = _providerWrapper.Encrypt(input);
             Trace.WriteLine(encryptedResult1);
@@ -108,7 +105,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Decrypt_SameTwoInputStrings_SameDecryptionResult()
         {
-            string input = GenerateRandomString(10, false);
+            string input = Random.RandomString(10, false);
 
             string encryptedResult1 = _providerWrapper.Encrypt(input);
             Trace.WriteLine("Encrypted A: " + encryptedResult1);
@@ -130,7 +127,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Decrypt_SameTwoUnicodeInputStrings_SameDecryptionResult()
         {
-            string input = GenerateRandomString(10);
+            string input = Random.RandomString(10);
 
             string encryptedResult1 = _providerWrapper.Encrypt(input);
             Trace.WriteLine("Encrypted A: " + encryptedResult1);
@@ -164,7 +161,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         [TestMethod]
         public void Decrypt_UnicodeString_SuccessfulDecryption()
         {
-            string input = GenerateRandomString(10);
+            string input = Random.RandomString(10);
             string encrypted = _providerWrapper.Encrypt(input);
 
             bool isLatestKey;

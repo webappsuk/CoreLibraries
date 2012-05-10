@@ -52,11 +52,13 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing">
-      <HintPath>..\packages\WebApplications.Testing.1.1.4428.21557\lib\net40\WebApplications.Testing.dll</HintPath>
+    <Reference Include="WebApplications.Testing, Version=1.1.4505.18361, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Testing.1.1.4505.18361\lib\net40\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.1.1.4451.28834\lib\net40\WebApplications.Utilities.dll</HintPath>
+    <Reference Include="WebApplications.Utilities, Version=1.1.4505.19773, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.1.1.4505.19773\lib\net40\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -67,9 +69,12 @@
   <ItemGroup>
     <Compile Include="AESCryptographerTests.cs" />
     <Compile Include="CryptoProviderWrapperTests.cs" />
+    <Compile Include="KeyElementTests.cs" />
+    <Compile Include="ProviderElementTests.cs" />
     <Compile Include="RSACryptographerTests.cs" />
     <Compile Include="CryptographyConfigurationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializationTestBase.cs" />
     <Compile Include="TestXmlEncryption.cs" />
   </ItemGroup>
   <ItemGroup>
