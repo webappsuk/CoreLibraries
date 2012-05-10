@@ -1,14 +1,7 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Diagnostics;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Configuration;
-using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Scheduling.Configuration;
 using WebApplications.Utilities.Scheduling.Schedules;
 

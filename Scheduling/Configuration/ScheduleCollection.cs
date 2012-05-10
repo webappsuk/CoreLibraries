@@ -15,7 +15,7 @@ namespace WebApplications.Utilities.Scheduling.Configuration
     public class ScheduleCollection : ConfigurationElementCollection<string, ScheduleElement>, IEnumerable<PeriodicSchedule>
     {
         /// <summary>
-        /// Gets the element key.
+        /// Gets the element key.   
         /// </summary>
         /// <param name="element">The element.</param>
         /// <returns></returns>
