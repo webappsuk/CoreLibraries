@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Testing;
 using WebApplications.Utilities.Database.Configuration;
 using WebApplications.Utilities.Database.Exceptions;
-using WebApplications.Utilities.Database.Schema;
 
 namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 {
@@ -14,8 +14,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_ExecutesSuccessfully()
         {
-            string localDataConnString = CreateConnectionString("DifferentLocalData");
-            SqlProgram readerTest = new SqlProgram(connectionString: localDataConnString,
+            SqlProgram readerTest = new SqlProgram(connectionString: _differentConnectionString,
                                                    name: "spUltimateSproc");
 
             readerTest.ExecuteReader();
@@ -24,11 +23,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReaderAll_ExecutesSuccessfully()
         {
-            string localDataConnString = CreateConnectionString("LocalData");
-            string localDataCopyConnString = CreateConnectionString("LocalDataCopy");
 
             SqlProgram readerTest =
-                new SqlProgram(connection: new LoadBalancedConnection(localDataConnString, localDataCopyConnString),
+                new SqlProgram(connection: new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString),
                                name: "spNonQuery");
 
             readerTest.ExecuteReader();
@@ -39,8 +36,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_WithReturnResultSet_ExecutesSuccessfully()
         {
-            string localDataConnString = CreateConnectionString("DifferentLocalData");
-            SqlProgram readerTest = new SqlProgram(connectionString: localDataConnString,
+            SqlProgram readerTest = new SqlProgram(connectionString: _differentConnectionString,
                                                    name: "spUltimateSproc");
 
             dynamic result = readerTest.ExecuteReader<dynamic>(
@@ -72,9 +68,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData");
             SqlProgram<string, int, decimal, bool> readerTest =
-                new SqlProgram<string, int, decimal, bool>(connectionString, "spUltimateSproc");
+                new SqlProgram<string, int, decimal, bool>(_differentConnectionString, "spUltimateSproc");
 
             dynamic result = readerTest.ExecuteReader<dynamic>(
                 c =>
@@ -111,9 +106,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_WithEnumerableIntParameter_ReturnsSingleColumnTableMatchingTheParameterType()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<int>> tableTypeTest =
-                new SqlProgram<IEnumerable<int>>(connectionString, "spTakesIntTable");
+                new SqlProgram<IEnumerable<int>>(_differentConnectionString, "spTakesIntTable");
 
             IList<int> result = tableTypeTest.ExecuteReader(
                 new[] { 0, 1, 2, 3 },
@@ -133,13 +127,12 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_WithEnumerableKeyValuePairParameter_ReturnsTwoColumnTableMatchingTheParameterTypes()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<KeyValuePair<int, string>>> tableTypeTest =
-                new SqlProgram<IEnumerable<KeyValuePair<int, string>>>(connectionString, "spTakesKvpTable");
+                new SqlProgram<IEnumerable<KeyValuePair<int, string>>>(_differentConnectionString, "spTakesKvpTable");
 
-            string str1 = GenerateRandomString(10, false);
-            string str2 = GenerateRandomString(10, false);
-            string str3 = GenerateRandomString(10, false);
+            string str1 = Random.RandomString(10, false);
+            string str2 = Random.RandomString(10, false);
+            string str3 = Random.RandomString(10, false);
 
             IDictionary<int, string> result = tableTypeTest.ExecuteReader(
                 new Dictionary<int, string>
@@ -165,12 +158,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_WithTupleParameter_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<int, string, bool>>> tableTypeTest =
-                new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(connectionString, "spTakesTupleTable");
+                new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(_differentConnectionString, "spTakesTupleTable");
 
-            string str1 = Guid.NewGuid().ToString().Substring(0, 10);
-            string str2 = Guid.NewGuid().ToString().Substring(0, 10);
+            string str1 = Random.RandomString(10, false);
+            string str2 = Random.RandomString(10, false);
 
             IList<dynamic> result =
                 tableTypeTest.ExecuteReader(
@@ -208,8 +200,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_WithByteArrayParameter_ReturnsSameArrayInReader()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
-            SqlProgram<byte[]> byteArrayTest = new SqlProgram<byte[]>(connectionString, "spTakeByteArrayLength10");
+            SqlProgram<byte[]> byteArrayTest = new SqlProgram<byte[]>(_differentConnectionString, "spTakeByteArrayLength10");
 
             int length = Random.Next(1, 10);
             byte[] testParam = new byte[length];
@@ -257,11 +248,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_WithSerializableObjectParameter_ReturnsByteArray()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
-            SqlProgram<TestSerializableObject> serializeObjectTest = new SqlProgram<TestSerializableObject>(connectionString, "spTakeByteArray");
+            SqlProgram<TestSerializableObject> serializeObjectTest = new SqlProgram<TestSerializableObject>(_differentConnectionString, "spTakeByteArray");
 
-            TestSerializableObject objecToSerialize = new TestSerializableObject
-                                       {String1 = GenerateRandomString(), String2 = GenerateRandomString()};
+            TestSerializableObject objecToSerialize = new TestSerializableObject { String1 = Random.RandomString(), String2 = Random.RandomString() };
             serializeObjectTest.ExecuteReader(
                 objecToSerialize,
                 reader =>
@@ -284,9 +273,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteReader_WithNestedTupleParameter_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>> tupleTableTypeTest =
-                new SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>>(connectionString, "spTakesMultiTupleTable");
+                new SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>>(_differentConnectionString, "spTakesMultiTupleTable");
 
             var rows =
                 new List
@@ -300,27 +288,24 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             for (int i = 0; i < Random.Next(3, 10); i++)
             {
                 rows.Add(ExtendedTuple.Create(
-                    Random.Next(),
-                    Guid.NewGuid().ToString(),
+                    Random.RandomInt32(),
+                    Random.RandomString(),
                     false,
                     true,
-                    1.24M,
-                    134.23M,
-                    Random.NextDouble(),
-                    Guid.NewGuid().ToString(),
-                    (short) Random.Next(short.MinValue, short.MaxValue),
-                    new TestSerializableObject
-                        {String1 = Guid.NewGuid().ToString(), String2 = Guid.NewGuid().ToString()},
-                    (byte) Random.Next(byte.MinValue, byte.MaxValue),
-                    new DateTime(Random.Next(1900, 2100), Random.Next(1, 12), Random.Next(1, 27), Random.Next(0, 23),
-                                 Random.Next(0, 59), Random.Next(0, 59)),
-                    new DateTime(Random.Next(1900, 2100), Random.Next(1, 12), Random.Next(1, 27), Random.Next(0, 23),
-                                 Random.Next(0, 59), Random.Next(0, 59)),
+                    Random.RandomDecimal(),
+                    Random.RandomDecimal(),
+                    Random.RandomDouble(),
+                    Random.RandomString(),
+                    Random.RandomInt16(),
+                    new TestSerializableObject { String1 = Random.RandomString(), String2 = Random.RandomString() },
+                    Random.RandomByte(),
+                    Random.RandomDateTime(),
+                    Random.RandomDateTime(),
                     new XElement("Test", new XAttribute("attribute", Random.Next())),
-                    Random.Next(),
-                    (long) ((Random.NextDouble()*2.0 - 1.0)*long.MaxValue),
-                    Random.Next(),
-                    Random.Next()));
+                    Random.RandomInt32(),
+                    Random.RandomInt64(),
+                    Random.RandomInt32(),
+                    Random.RandomInt32()));
             }
 
             var indexer =

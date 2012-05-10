@@ -23,23 +23,18 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using JetBrains.Annotations;
+using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Database.Test
 {
-    public abstract class TestBase
+    public abstract class DatabaseTestBase : TestBase
     {
+        protected static readonly Random Random = new Random();
+
         protected readonly string LocalDatabaseConnectionString = CreateConnectionString("LocalData");
-
         protected readonly string LocalDatabaseCopyConnectionString = CreateConnectionString("LocalDataCopy");
-
         protected readonly string DifferentLocalDatabaseConnectionString = CreateConnectionString("DifferentLocalData");
-
-        /// <summary>
-        /// Random number generator
-        /// </summary>
-        [NotNull] protected readonly Random Random = new Random();
 
         /// <summary>
         /// Lazy loader for database connection
@@ -51,10 +46,10 @@ namespace WebApplications.Utilities.Database.Test
         /// Static constructor of the <see cref="T:System.Object"/> class, used to initialize the locatoin of the data directory for all tests.
         /// </summary>
         /// <remarks></remarks>
-        static TestBase()
+        static DatabaseTestBase()
         {
             // Find the data directory
-            string path = Path.GetDirectoryName(typeof (TestBase).Assembly.Location);
+            string path = Path.GetDirectoryName(typeof (DatabaseTestBase).Assembly.Location);
             string root = Path.GetPathRoot(path);
             string dataDirectory;
             do
@@ -76,7 +71,7 @@ namespace WebApplications.Utilities.Database.Test
             AppDomain.CurrentDomain.SetData("DataDirectory", dataDirectory);
         }
 
-        protected TestBase()
+        protected DatabaseTestBase()
         {
             _conn = new Lazy<LoadBalancedConnection>(() => new LoadBalancedConnection(CreateConnectionString("LocalData")));
         }
@@ -88,22 +83,6 @@ namespace WebApplications.Utilities.Database.Test
         protected LoadBalancedConnection Connection
         {
             get { return _conn.Value; }
-        }
-
-        /// <summary>
-        /// Generates a random string.
-        /// </summary>
-        /// <param name="maxLength">Maximum length.</param>
-        /// <param name="unicode">if set to <see langword="true"/> string is UTF16; otherwise it uses ASCII.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
-        protected string GenerateRandomString(int maxLength = -1, bool unicode = true)
-        {
-            // Get string length, if there's no maximum then use 8001 (as 8000 is max specific size in SQL Server).
-            int length = (maxLength < 0 ? 8001 : maxLength)*(unicode ? 2 : 1);
-            byte[] bytes = new byte[length];
-            Random.NextBytes(bytes);
-            return unicode ? new UnicodeEncoding().GetString(bytes) : new ASCIIEncoding().GetString(bytes);
         }
 
         /// <summary>

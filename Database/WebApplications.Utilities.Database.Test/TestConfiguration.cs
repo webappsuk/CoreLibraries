@@ -8,7 +8,7 @@ using WebApplications.Utilities.Database.Configuration;
 namespace WebApplications.Utilities.Database.Test
 {
     [TestClass]
-    public class TestConfiguration : TestBase
+    public class TestConfiguration : DatabaseTestBase
     {
         [TestMethod]
         public void TestLbc()

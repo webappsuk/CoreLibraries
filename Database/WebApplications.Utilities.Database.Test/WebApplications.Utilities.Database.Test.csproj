@@ -62,9 +62,9 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing, Version=1.1.4428.21557, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Testing, Version=1.1.4505.18361, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Testing.1.1.4428.21557\lib\net40\WebApplications.Testing.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Testing.1.1.4505.18361\lib\net40\WebApplications.Testing.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities">
       <HintPath>..\packages\WebApplications.Utilities.1.1.4458.16336\lib\net40\WebApplications.Utilities.dll</HintPath>
@@ -94,7 +94,7 @@
     <Compile Include="TestSqlProgram\SqlProgramTestBase.cs" />
     <Compile Include="TestSqlProgram\ExecuteReaderAsyncAndExecuteReaderAllAsync.cs" />
     <Compile Include="TestSqlProgram\ExecuteScalarAndExecuteScalarAllTests.cs" />
-    <Compile Include="TestBase.cs" />
+    <Compile Include="DatabaseTestBase.cs" />
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestDatabaseSchema.cs" />
     <Compile Include="TestPerformance.cs" />
@@ -113,7 +113,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\DifferentLocalData.mdf" />

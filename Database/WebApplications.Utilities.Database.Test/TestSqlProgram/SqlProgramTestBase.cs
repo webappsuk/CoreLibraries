@@ -1,6 +1,6 @@
 namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 {
-    public abstract class SqlProgramTestBase : TestBase
+    public abstract class SqlProgramTestBase : DatabaseTestBase
     {
         protected const string AString = "John Dough";
         protected const int AInt = 30;

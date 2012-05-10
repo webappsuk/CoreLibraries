@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Testing;
 using WebApplications.Utilities.Database.Exceptions;
 
 namespace WebApplications.Utilities.Database.Test.TestSqlProgram
@@ -11,8 +11,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteScalar_WithNoParameters_ExecuteReturnsExpectedString()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData");
-            SqlProgram program = new SqlProgram(connectionString: connectionString, name: "spReturnsScalar");
+            SqlProgram program = new SqlProgram(connectionString: _differentConnectionString, name: "spReturnsScalar");
 
             string scalarResult = program.ExecuteScalar<string>();
             Assert.AreEqual("HelloWorld", scalarResult);
@@ -21,10 +20,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteScalarAll_WithNoParameters_ExecuteReturnsExpectedString()
         {
-            string localDataConnString = CreateConnectionString("LocalData");
-            string localDataCopyConnString = CreateConnectionString("LocalDataCopy");
-
-            SqlProgram program = new SqlProgram(new LoadBalancedConnection(localDataConnString, localDataCopyConnString), "spReturnsScalarString");
+            SqlProgram program = new SqlProgram(new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString), "spReturnsScalarString");
             IList<string> scalarResult = program.ExecuteScalarAll<string>().ToList();
             Assert.AreEqual(2, scalarResult.Count);
 
@@ -36,22 +32,18 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [ExpectedException(typeof(SqlProgramExecutionException))]
         public void ExecuteScalarAll_WithUnknownProgramForConnection_ThrowsSqlProgramExecutionException()
         {
-            string localDataConnString = CreateConnectionString("LocalData");
-            string localDataCopyConnString = CreateConnectionString("DifferentLocalData");
-
-            SqlProgram program = new SqlProgram(new LoadBalancedConnection(localDataConnString, localDataCopyConnString), "spReturnsScalar");
+            SqlProgram program = new SqlProgram(new LoadBalancedConnection(_localConnectionString, _differentConnectionString), "spReturnsScalar");
             program.ExecuteScalarAll<string>();
         }
 
         [TestMethod]
         public void ExecuteScalar_WithParameters_ReturnedExpectedString()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData");
             SqlProgram<string, int, decimal, bool> program =
-                new SqlProgram<string, int, decimal, bool>(connectionString: connectionString,
+                new SqlProgram<string, int, decimal, bool>(connectionString: _differentConnectionString,
                                                            name: "spWithParametersReturnsScalarString");
 
-            string randomString = GenerateRandomString(20, false);
+            string randomString = Random.RandomString(20, false);
             string scalarResult = program.ExecuteScalar<string>(
                 c =>
                 {
@@ -67,15 +59,12 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteScalarAll_WithParameters_ReturnedExpectedString()
         {
-            string localDataConnString = CreateConnectionString("LocalData");
-            string localDataCopyConnString = CreateConnectionString("LocalDataCopy");
-
             SqlProgram<string, int, decimal, bool> program =
                 new SqlProgram<string, int, decimal, bool>(
-                    connection: new LoadBalancedConnection(localDataConnString, localDataCopyConnString),
+                    connection: new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString),
                     name: "spWithParametersReturnsScalar");
 
-            string randomString = GenerateRandomString(20, false);
+            string randomString = Random.RandomString(20, false);
             IList<string> scalarResult = program.ExecuteScalarAll<string>(
                 c =>
                     {

@@ -9,7 +9,7 @@ using WebApplications.Utilities.Logging;
 namespace WebApplications.Utilities.Database.Test
 {
     [TestClass]
-    public class LoadBalanceConnectionTests : TestBase
+    public class LoadBalanceConnectionTests : DatabaseTestBase
     {
         [TestMethod]
         [ExpectedException(typeof(LoggingException))]

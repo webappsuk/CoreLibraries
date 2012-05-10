@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Testing;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Logging;
 
@@ -11,11 +12,19 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 {
     public partial class SqlProgramTests
     {
+        private readonly string _localConnectionString = CreateConnectionString("LocalData");
+        private readonly string _localConnectionStringWithAsync = CreateConnectionString("LocalData", true);
+
+        private readonly string _localCopyConnectionString = CreateConnectionString("LocalDataCopy");
+        private readonly string _localCopyConnectionStringWithAsync = CreateConnectionString("LocalDataCopy", true);
+
+        private readonly string _differentConnectionString = CreateConnectionString("DifferentLocalData");
+        private readonly string _differentConnectionStringWithAsync = CreateConnectionString("DifferentLocalData", true);
+
         [TestMethod]
         public void ExecuteNonQuery_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("LocalData");
-            SqlProgram nonQueryTest = new SqlProgram(connectionString: connectionString, name: "spNonQuery");
+            SqlProgram nonQueryTest = new SqlProgram(connectionString: _localConnectionString, name: "spNonQuery");
             int nonQueryResult = nonQueryTest.ExecuteNonQuery();
             Assert.AreEqual(-1, nonQueryResult);
         }
@@ -23,11 +32,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQueryAll_ExecutesSuccessfully()
         {
-            string localDataConnString = CreateConnectionString("LocalData");
-            string localDataCopyConnString = CreateConnectionString("LocalDataCopy");
-
             SqlProgram nonQueryTest =
-                new SqlProgram(connection: new LoadBalancedConnection(localDataConnString, localDataCopyConnString),
+                new SqlProgram(connection: new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString),
                                name: "spNonQuery");
             List<int> nonQueryResult = nonQueryTest.ExecuteNonQueryAll().ToList();
             Assert.AreEqual(2, nonQueryResult.Count);
@@ -39,11 +45,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithParameters_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("LocalData");
-            SqlProgram<string, int> nonQueryTest = new SqlProgram<string, int>(connectionString: connectionString, name: "spNonQuery");
+            SqlProgram<string, int> nonQueryTest = new SqlProgram<string, int>(connectionString: _localConnectionString, name: "spNonQuery");
 
-            string randomString = GenerateRandomString(20);
-            int randomInt = Random.Next();
+            string randomString = Random.RandomString(20);
+            int randomInt = Random.RandomInt32();
 
             int nonQueryResult = nonQueryTest.ExecuteNonQuery(
                 c =>
@@ -57,16 +62,15 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithNullableType_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<int?, string, bool>>> tableTypeTest =
-                new SqlProgram<IEnumerable<Tuple<int?, string, bool>>>(connectionString, "spTakesTupleTable");
+                new SqlProgram<IEnumerable<Tuple<int?, string, bool>>>(_differentConnectionString, "spTakesTupleTable");
 
             int nonQueryResult =
                 tableTypeTest.ExecuteNonQuery(
                     new List<Tuple<int?, string, bool>>
                         {
-                            new Tuple<int?, string, bool>(null, GenerateRandomString(10), false),
-                            new Tuple<int?, string, bool>(2, GenerateRandomString(10), true)
+                            new Tuple<int?, string, bool>(null, Random.RandomString(), false),
+                            new Tuple<int?, string, bool>(2, Random.RandomString(10), true)
                         });
             Assert.AreEqual(-1, nonQueryResult);
         }
@@ -74,15 +78,12 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQueryAll_WithParameters_ExecutesSuccessfully()
         {
-            string localDataConnString = CreateConnectionString("LocalData");
-            string localDataCopyConnString = CreateConnectionString("LocalDataCopy");
-
             SqlProgram<string, int> nonQueryTest =
-                new SqlProgram<string, int>(connection: new LoadBalancedConnection(localDataConnString, localDataCopyConnString),
+                new SqlProgram<string, int>(connection: new LoadBalancedConnection(_localConnectionString, _localCopyConnectionString),
                                name: "spNonQuery");
 
-            string randomString = GenerateRandomString(20);
-            int randomInt = Random.Next();
+            string randomString = Random.RandomString(20);
+            int randomInt = Random.RandomInt32();
 
             List<int> nonQueryResult = nonQueryTest.ExecuteNonQueryAll(
                 c =>
@@ -100,15 +101,12 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [ExpectedException(typeof(LoggingException))]
         public void ExecuteNonQueryAll_WithUnknownProgramForConnection_ThrowsLoggingException()
         {
-            string localDataConnString = CreateConnectionString("LocalData");
-            string localDataCopyConnString = CreateConnectionString("DifferentLocalData");
-
             SqlProgram<string, int> nonQueryTest =
-                new SqlProgram<string, int>(connection: new LoadBalancedConnection(localDataConnString, localDataCopyConnString),
+                new SqlProgram<string, int>(connection: new LoadBalancedConnection(_localConnectionString, _differentConnectionString),
                                name: "spNonQuery");
 
-            string randomString = GenerateRandomString();
-            int randomInt = Random.Next();
+            string randomString = Random.RandomString();
+            int randomInt = Random.RandomInt32();
 
             nonQueryTest.ExecuteNonQueryAll(
                 c =>
@@ -122,9 +120,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [ExpectedException(typeof(SqlProgramExecutionException))]
         public void ExecuteNonQuery_WithTimeoutSet_ThrowsSqlProgramExecutionExceptionOnTimeout()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData");
             SqlProgram<int> timeoutTest =
-                new SqlProgram<int>(connectionString, "spTimeoutTest",
+                new SqlProgram<int>(_differentConnectionString, "spTimeoutTest",
                                     defaultCommandTimeout: new TimeSpan(0, 0, 5));
             DateTime timeStarted = DateTime.Now;
             timeoutTest.ExecuteNonQuery(10);
@@ -135,9 +132,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQueryAsync_ExecutesProcedureSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<int> timeoutTest =
-                new SqlProgram<int>(connectionString, "spTimeoutTest");
+                new SqlProgram<int>(_differentConnectionString, "spTimeoutTest");
             Task<int> task = timeoutTest.ExecuteNonQueryAsync();
             task.Wait();
             Assert.IsTrue(task.IsCompleted);
@@ -146,9 +142,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithEnumerableIntParameter_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<int>> tableTypeTest =
-                new SqlProgram<IEnumerable<int>>(connectionString, "spTakesIntTable");
+                new SqlProgram<IEnumerable<int>>(_differentConnectionString, "spTakesIntTable");
 
             int nonQueryResult = tableTypeTest.ExecuteNonQuery(new[] { 1, 2, 3, 4 });
             Assert.AreEqual(-1, nonQueryResult);
@@ -157,16 +152,15 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithEnumerableKeyValuePairParameter_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<KeyValuePair<int, string>>> tableTypeTest =
-                new SqlProgram<IEnumerable<KeyValuePair<int, string>>>(connectionString, "spTakesKvpTable");
+                new SqlProgram<IEnumerable<KeyValuePair<int, string>>>(_differentConnectionString, "spTakesKvpTable");
 
             int nonQueryResult = tableTypeTest.ExecuteNonQuery(
                 new Dictionary<int, string>
                     {
-                        {1, GenerateRandomString(10, false)},
-                        {2, GenerateRandomString(10, false)},
-                        {3, GenerateRandomString(10, false)}
+                        {1, Random.RandomString(10, false)},
+                        {2, Random.RandomString(10, false)},
+                        {3, Random.RandomString(10, false)}
                     });
             Assert.AreEqual(-1, nonQueryResult);
         }
@@ -174,16 +168,15 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithTupleParameter_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<int, string, bool>>> tableTypeTest =
-                new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(connectionString, "spTakesTupleTable");
+                new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(_differentConnectionString, "spTakesTupleTable");
 
             int nonQueryResult =
                 tableTypeTest.ExecuteNonQuery(
                     new List<Tuple<int, string, bool>>
                         {
-                            new Tuple<int, string, bool>(1, GenerateRandomString(10), false),
-                            new Tuple<int, string, bool>(2, GenerateRandomString(10), true)
+                            new Tuple<int, string, bool>(1, Random.RandomString(10), false),
+                            new Tuple<int, string, bool>(2, Random.RandomString(10), true)
                         });
             Assert.AreEqual(-1, nonQueryResult);
         }
@@ -191,19 +184,18 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithTupleParameterAndOtherParameters_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<string, string, string, DateTime, short?>>, int, DateTime> tableTypeTest =
                 new SqlProgram<IEnumerable<Tuple<string, string, string, DateTime, short?>>, int, DateTime>(
-                    connectionString, "spTakesTupleTablePlusTwo");
+                    _differentConnectionString, "spTakesTupleTablePlusTwo");
 
             List<TestType> myList =
                 new List<TestType>
                     {
                         new TestType
                             {
-                                Name = GenerateRandomString(100),
-                                Body = GenerateRandomString(500),
-                                Email = GenerateRandomString(100),
+                                Name = Random.RandomString(100),
+                                Body = Random.RandomString(500),
+                                Email = Random.RandomString(100),
                                 Created = DateTime.Today,
                                 LoginId = null
                             }
@@ -212,7 +204,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             int nonQueryResult =
                 tableTypeTest.ExecuteNonQuery(
                         myList.ToTuple(e => e.Name, e => e.Body, e => e.Email, e => e.Created, e => e.LoginId),
-                    Random.Next());
+                    Random.RandomInt32());
 
             Assert.AreEqual(-1, nonQueryResult);
         }
@@ -220,20 +212,18 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithNullableDateTimeParameterSetToNull_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<string, int?, decimal, bool, DateTime?> nullableTypesTest =
-                new SqlProgram<string, int?, decimal, bool, DateTime?>(connectionString, "spUltimateSproc");
+                new SqlProgram<string, int?, decimal, bool, DateTime?>(_differentConnectionString, "spUltimateSproc");
 
-            nullableTypesTest.ExecuteNonQuery(GenerateRandomString(20), Random.Next(), decimal.Zero, true, null);
+            nullableTypesTest.ExecuteNonQuery(Random.RandomString(20), Random.RandomInt32(), decimal.Zero, true, null);
             Assert.IsNotNull(nullableTypesTest);
         }
 
         [TestMethod]
         public void ExecuteNonQuery_WithMoreNullableDateTimeParameterSetToNull_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             var nullableTypesTest =
-                new SqlProgram<int, DateTime?, DateTime?, DateTime?, DateTime?, int?, int?, int?>(connectionString, "spLoadsOfNullables");
+                new SqlProgram<int, DateTime?, DateTime?, DateTime?, DateTime?, int?, int?, int?>(_differentConnectionString, "spLoadsOfNullables");
 
             nullableTypesTest.ExecuteNonQuery(1, null, null, null, null, null, null, 1);
             Assert.IsNotNull(nullableTypesTest);
@@ -242,16 +232,15 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithKeyValuePairParmeterAndAdditionalNullableTableParametersNotSet_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<KeyValuePair<int, string>>> nullableTypesTest =
-                new SqlProgram<IEnumerable<KeyValuePair<int, string>>>(connectionString, "spTakesTableAdditionalColumns");
+                new SqlProgram<IEnumerable<KeyValuePair<int, string>>>(_differentConnectionString, "spTakesTableAdditionalColumns");
 
             nullableTypesTest.ExecuteNonQuery(
                 new Dictionary<int, string>
                     {
-                        { Random.Next(), GenerateRandomString(50) },
-                        { Random.Next(), GenerateRandomString(50) },
-                        { Random.Next(), GenerateRandomString(50) }
+                        { Random.RandomInt32(), Random.RandomString(50) },
+                        { Random.RandomInt32(), Random.RandomString(50) },
+                        { Random.RandomInt32(), Random.RandomString(50) }
                     });
             Assert.IsNotNull(nullableTypesTest);
         }
@@ -259,17 +248,16 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithTupleParmeterAndAdditionalNullableTableParametersNotSet_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<int, string>>> nullableTypesTest =
-                new SqlProgram<IEnumerable<Tuple<int, string>>>(connectionString, "spTakesTableAdditionalColumns");
+                new SqlProgram<IEnumerable<Tuple<int, string>>>(_differentConnectionString, "spTakesTableAdditionalColumns");
 
             nullableTypesTest.ExecuteNonQuery(
                 new List<Tuple<int, string>>
                     {
-                        new Tuple<int, string>(Random.Next(), GenerateRandomString(50)),
-                        new Tuple<int, string>(Random.Next(), GenerateRandomString(50)),
-                        new Tuple<int, string>(Random.Next(), GenerateRandomString(50)),
-                        new Tuple<int, string>(Random.Next(), GenerateRandomString(50))
+                        new Tuple<int, string>(Random.RandomInt32(), Random.RandomString(50)),
+                        new Tuple<int, string>(Random.RandomInt32(), Random.RandomString(50)),
+                        new Tuple<int, string>(Random.RandomInt32(), Random.RandomString(50)),
+                        new Tuple<int, string>(Random.RandomInt32(), Random.RandomString(50))
                     });
             Assert.IsNotNull(nullableTypesTest);
         }
@@ -277,16 +265,15 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithTupleParmeterAndSomeAdditionalNullableTableParametersSet_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<int, string, DateTime?>>> nullableTypesTest =
-                new SqlProgram<IEnumerable<Tuple<int, string, DateTime?>>>(connectionString, "spTakesTableAdditionalColumns");
+                new SqlProgram<IEnumerable<Tuple<int, string, DateTime?>>>(_differentConnectionString, "spTakesTableAdditionalColumns");
 
             nullableTypesTest.ExecuteNonQuery(
                 new List<Tuple<int, string, DateTime?>>
                     {
-                        new Tuple<int, string, DateTime?>(Random.Next(), GenerateRandomString(50), DateTime.Today),
-                        new Tuple<int, string, DateTime?>(Random.Next(), GenerateRandomString(50), DateTime.Today),
-                        new Tuple<int, string, DateTime?>(Random.Next(), GenerateRandomString(50), DateTime.Today)
+                        new Tuple<int, string, DateTime?>(Random.RandomInt32(), Random.RandomString(50), DateTime.Today),
+                        new Tuple<int, string, DateTime?>(Random.RandomInt32(), Random.RandomString(50), DateTime.Today),
+                        new Tuple<int, string, DateTime?>(Random.RandomInt32(), Random.RandomString(50), DateTime.Today)
                     });
             Assert.IsNotNull(nullableTypesTest);
         }
@@ -294,16 +281,15 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithTupleParmeterOfMixedNullableColumns_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<string, int?, DateTime>>> nullableTypesTest =
-                new SqlProgram<IEnumerable<Tuple<string, int?, DateTime>>>(connectionString, "spTakesMixedNullableColumns");
+                new SqlProgram<IEnumerable<Tuple<string, int?, DateTime>>>(_differentConnectionString, "spTakesMixedNullableColumns");
 
             nullableTypesTest.ExecuteNonQuery(
                 new List<Tuple<string, int?, DateTime>>
                     {
-                        new Tuple<string, int?, DateTime>(GenerateRandomString(50), null, DateTime.Today),
-                        new Tuple<string, int?, DateTime>(GenerateRandomString(50), null, DateTime.Today),
-                        new Tuple<string, int?, DateTime>(GenerateRandomString(50), null, DateTime.Today)
+                        new Tuple<string, int?, DateTime>(Random.RandomString(50), null, DateTime.Today),
+                        new Tuple<string, int?, DateTime>(Random.RandomString(50), null, DateTime.Today),
+                        new Tuple<string, int?, DateTime>(Random.RandomString(50), null, DateTime.Today)
                     });
             Assert.IsNotNull(nullableTypesTest);
         }
@@ -311,9 +297,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithTupleParameterSetToNull_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<int, string, bool>>> tableTypeTest =
-                new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(connectionString, "spTakesTupleTable");
+                new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(_differentConnectionString, "spTakesTupleTable");
 
             int nonQueryResult =
                 tableTypeTest.ExecuteNonQuery(null);
@@ -323,9 +308,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithEmptyTupleParameter_ExecutesSuccessfully()
         {
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<Tuple<int, string, bool>>> tableTypeTest =
-                new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(connectionString, "spTakesTupleTable");
+                new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(_differentConnectionString, "spTakesTupleTable");
 
             int nonQueryResult =
                 tableTypeTest.ExecuteNonQuery(new List<Tuple<int, string, bool>>());
@@ -340,15 +324,14 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             System.Xml.XmlElement childNode = document.CreateElement("MyTestChild");
             System.Xml.XmlAttribute anAttribute = document.CreateAttribute("anattribute");
 
-            childNode.InnerText = Guid.NewGuid().ToString();
-            anAttribute.Value = Random.Next().ToString();
+            childNode.InnerText = Random.RandomString(20);
+            anAttribute.Value = Random.RandomInt32().ToString();
             rootNode.Attributes.Append(anAttribute);
             document.AppendChild(rootNode);
             rootNode.AppendChild(childNode);
 
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<System.Xml.XmlDocument> xmlTypeTest =
-                new SqlProgram<System.Xml.XmlDocument>(connectionString, "spTakesXml");
+                new SqlProgram<System.Xml.XmlDocument>(_differentConnectionString, "spTakesXml");
 
             int nonQueryResult =
                 xmlTypeTest.ExecuteNonQuery(document);
@@ -363,15 +346,14 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             System.Xml.XmlElement childNode = document.CreateElement("MyTestChild");
             System.Xml.XmlAttribute anAttribute = document.CreateAttribute("anattribute");
 
-            childNode.InnerText = Guid.NewGuid().ToString();
-            anAttribute.Value = Random.Next().ToString();
+            childNode.InnerText = Random.RandomString(20);
+            anAttribute.Value = Random.RandomInt32().ToString();
             rootNode.Attributes.Append(anAttribute);
             document.AppendChild(rootNode);
             rootNode.AppendChild(childNode);
 
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<System.Xml.XmlDocument>> xmlTypeTest =
-                new SqlProgram<IEnumerable<System.Xml.XmlDocument>>(connectionString, "spTakesTableXml");
+                new SqlProgram<IEnumerable<System.Xml.XmlDocument>>(_differentConnectionString, "spTakesTableXml");
 
             int nonQueryResult =
                 xmlTypeTest.ExecuteNonQuery(new List<System.Xml.XmlDocument> { document, document });
@@ -386,15 +368,14 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             System.Xml.XmlElement childNode = document.CreateElement("MyTestChild");
             System.Xml.XmlAttribute anAttribute = document.CreateAttribute("anattribute");
 
-            childNode.InnerText = Guid.NewGuid().ToString();
-            anAttribute.Value = Random.Next().ToString();
+            childNode.InnerText = Random.RandomString(20);
+            anAttribute.Value = Random.RandomInt32().ToString();
             rootNode.Attributes.Append(anAttribute);
             document.AppendChild(rootNode);
             rootNode.AppendChild(childNode);
 
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<System.Xml.XmlElement> xmlTypeTest =
-                new SqlProgram<System.Xml.XmlElement>(connectionString, "spTakesXml");
+                new SqlProgram<System.Xml.XmlElement>(_differentConnectionString, "spTakesXml");
 
             int nonQueryResult =
                 xmlTypeTest.ExecuteNonQuery(rootNode);
@@ -409,15 +390,14 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             System.Xml.XmlElement childNode = document.CreateElement("MyTestChild");
             System.Xml.XmlAttribute anAttribute = document.CreateAttribute("anattribute");
 
-            childNode.InnerText = Guid.NewGuid().ToString();
-            anAttribute.Value = Random.Next().ToString();
+            childNode.InnerText = Random.RandomString(20);
+            anAttribute.Value = Random.RandomInt32().ToString();
             rootNode.Attributes.Append(anAttribute);
             document.AppendChild(rootNode);
             rootNode.AppendChild(childNode);
 
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<System.Xml.XmlElement>> xmlTypeTest =
-                new SqlProgram<IEnumerable<System.Xml.XmlElement>>(connectionString, "spTakesTableXml");
+                new SqlProgram<IEnumerable<System.Xml.XmlElement>>(_differentConnectionString, "spTakesTableXml");
 
             int nonQueryResult =
                 xmlTypeTest.ExecuteNonQuery(new List<System.Xml.XmlElement> { rootNode, rootNode });
@@ -428,12 +408,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public void ExecuteNonQuery_WithXDocumentParameter_ExecutesSuccessfully()
         {
             XDocument document = new XDocument();
-            document.Add(new XElement("MyTestRoot", new XAttribute("myattribute", Random.Next()),
-                new XElement("MyTestChild", Guid.NewGuid())));
+            document.Add(new XElement("MyTestRoot", new XAttribute("myattribute", Random.RandomInt32()),
+                new XElement("MyTestChild", Random.RandomString(20))));
 
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<XDocument> xmlTypeTest =
-                new SqlProgram<XDocument>(connectionString, "spTakesXml");
+                new SqlProgram<XDocument>(_differentConnectionString, "spTakesXml");
 
             int nonQueryResult =
                 xmlTypeTest.ExecuteNonQuery(document);
@@ -444,7 +423,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public void ExecuteNonQuery_WithTableParameterWhichTakesXDocument_ExecutesSuccessfully()
         {
             XDocument document = new XDocument();
-            document.Add(new XElement("MyTestRoot", new XAttribute("myattribute", Random.Next()),
+            document.Add(new XElement("MyTestRoot", new XAttribute("myattribute", Random.RandomInt32()),
                 new XElement("MyTestChild", Guid.NewGuid())));
 
             string connectionString = CreateConnectionString("DifferentLocalData", true);
@@ -459,12 +438,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithXElementParameter_ExecutesSuccessfully()
         {
-            XElement element = new XElement("MyTestRoot", new XAttribute("myattribute", Random.Next()),
-                                            new XElement("MyTestChild", Guid.NewGuid()));
+            XElement element = new XElement("MyTestRoot", new XAttribute("myattribute", Random.RandomInt32()),
+                                            new XElement("MyTestChild", Random.RandomString(20)));
 
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<XElement> xmlTypeTest =
-                new SqlProgram<XElement>(connectionString, "spTakesXml");
+                new SqlProgram<XElement>(_differentConnectionString, "spTakesXml");
 
             int nonQueryResult =
                 xmlTypeTest.ExecuteNonQuery(element);
@@ -474,12 +452,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public void ExecuteNonQuery_WithXElementParameter_XElement()
         {
-            XElement element = new XElement("MyTestRoot", new XAttribute("myattribute", Random.Next()),
-                                            new XElement("MyTestChild", Guid.NewGuid()));
+            XElement element = new XElement("MyTestRoot", new XAttribute("myattribute", Random.RandomInt32()),
+                                            new XElement("MyTestChild", Random.RandomString(20)));
 
-            string connectionString = CreateConnectionString("DifferentLocalData", true);
             SqlProgram<IEnumerable<XElement>> xmlTypeTest =
-                new SqlProgram<IEnumerable<XElement>>(connectionString, "spTakesTableXml");
+                new SqlProgram<IEnumerable<XElement>>(_differentConnectionString, "spTakesTableXml");
 
             int nonQueryResult =
                 xmlTypeTest.ExecuteNonQuery(new [] { element, element });
