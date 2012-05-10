@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,7 +8,7 @@ using WebApplications.Testing;
 namespace WebApplications.Utilities.Test.Extensions
 {
     [TestClass]
-    public class GetObjectsByIdTests : TestBase
+    public class GetObjectsByIdTests : UtilitiesTestBase
     {
 
         // This value should be in WebApplications.Utilities.Extensions.DefaultSplitChars (which sadly is not a compile time constant)
@@ -107,7 +106,7 @@ namespace WebApplications.Utilities.Test.Extensions
             int num;
             do
             {
-                separator = GenerateRandomString(1);
+                separator = Random.RandomString(1);
             } while (int.TryParse(separator, out num));
             List<int> list = CreateRandomIdList();
             String csvList = CreateListOfIds(list, separator);
@@ -245,7 +244,7 @@ namespace WebApplications.Utilities.Test.Extensions
             int num;
             do
             {
-                separator = GenerateRandomString(1);
+                separator = Random.RandomString(1);
             } while (int.TryParse(separator, out num));
             List<short> list = CreateRandomId16List();
             String csvList = CreateListOfIds(list, separator);
@@ -383,7 +382,7 @@ namespace WebApplications.Utilities.Test.Extensions
             long num;
             do
             {
-                separator = GenerateRandomString(1);
+                separator = Random.RandomString(1);
             } while (long.TryParse(separator, out num));
             List<long> list = CreateRandomId64List();
             String csvList = CreateListOfIds(list, separator);

@@ -21,19 +21,14 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using System.Text;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class RangeTests : TestBase
+    public class RangeTests : UtilitiesTestBase
     {
-
         [TestMethod]
         public void Range_NumberBelowRange_BindReturnsStart()
         {

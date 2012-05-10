@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +10,7 @@ using WebApplications.Utilities.Caching;
 namespace WebApplications.Utilities.Test.Caching
 {
     [TestClass]
-    public class CyclicConcurrentQueueTests : TestBase
+    public class CyclicConcurrentQueueTests : UtilitiesTestBase
     {
 
         // Fix the maximum capacity under test as overwise OutOfMemoryExceptions are thrown
@@ -45,7 +44,7 @@ namespace WebApplications.Utilities.Test.Caching
         [TestMethod]
         public void Constructor_CapacityInRange_DoesNotReturnNull()
         {
-            long validCapacity = 1 + (long) Random.NextDouble()*(long.MaxValue - 2);
+            long validCapacity = 1 + (long) Random.RandomDouble()*(long.MaxValue - 2);
             CyclicConcurrentQueue<Guid> cyclicConcurrentQueue = CreateCyclicConcurrentQueue<Guid>(validCapacity);
             Assert.IsNotNull(cyclicConcurrentQueue);
         }
@@ -75,7 +74,7 @@ namespace WebApplications.Utilities.Test.Caching
         public void ToArray_InitialCollectionSmallerThanCapacity_MatchesInitialCollection()
         {
             List<Guid> initialValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
-            long capacity = initialValues.Count + (long)Random.NextDouble() * (MaxCapacity - initialValues.Count);
+            long capacity = initialValues.Count + Random.RandomInt64() * (MaxCapacity - initialValues.Count);
             CyclicConcurrentQueue<Guid> cyclicConcurrentQueue = CreateCyclicConcurrentQueue<Guid>(initialValues, capacity);
             CollectionAssert.AreEqual(initialValues.ToArray(), cyclicConcurrentQueue.ToArray());
         }

@@ -21,16 +21,13 @@
 #endregion
 
 using System;
-using System.Text;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Test
 {
     [TestClass]
-    public class SingletonTests : TestBase
+    public class SingletonTests : UtilitiesTestBase
     {
 
         private class TestSingletonWithoutKeyedConstructor : Singleton<int, TestSingletonWithoutKeyedConstructor>

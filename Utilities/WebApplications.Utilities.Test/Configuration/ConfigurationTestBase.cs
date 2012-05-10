@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
-using WebApplications.Testing;
-using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Test.Configuration
 {
-    public abstract class ConfigurationTestBase : TestBase
+    public abstract class ConfigurationTestBase : UtilitiesTestBase
     {
 
         /// <summary>

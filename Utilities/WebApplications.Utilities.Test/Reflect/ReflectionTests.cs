@@ -35,7 +35,7 @@ using WebApplications.Testing;
 namespace WebApplications.Utilities.Test.Reflect
 {
     [TestClass]
-    public class ReflectionTests : TestBase
+    public class ReflectionTests : UtilitiesTestBase
     {
         /// <summary>
         /// Tests reflection of events.

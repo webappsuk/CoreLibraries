@@ -22,18 +22,14 @@
 
 using System;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class ShortRangeTests : TestBase
+    public class ShortRangeTests : UtilitiesTestBase
     {
-
         [TestMethod]
         public void ShortRange_ConvertingToString_IsNotBlank()
         {
@@ -44,7 +40,7 @@ namespace WebApplications.Utilities.Test.Ranges
 
             var shortRange = new ShortRange(start, end, step);
 
-            Assert.AreNotEqual("", shortRange.ToString(), "String representation of range must not be an empty string");
+            Assert.AreNotEqual(string.Empty, shortRange.ToString(), "String representation of range must not be an empty string");
         }
 
         [TestMethod]

@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 
 namespace WebApplications.Utilities.Test.Extensions
 {
     [TestClass]
-    public class TopologicalSortTests : TestBase
+    public class TopologicalSortTests : UtilitiesTestBase
     {
 
         //TODO: cyclic dependancies, duplicate elements, duplicate edges, edges referencing unlisted elements

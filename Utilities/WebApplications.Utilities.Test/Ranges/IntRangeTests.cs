@@ -22,18 +22,15 @@
 
 using System;
 using System.Linq;
-using System.Text;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities.Test.Ranges
 {
     [TestClass]
-    public class IntRangeTests : TestBase 
+    public class IntRangeTests : UtilitiesTestBase 
     {
-
         [TestMethod]
         public void IntRange_ConvertingToString_IsNotBlank()
         {
@@ -44,7 +41,7 @@ namespace WebApplications.Utilities.Test.Ranges
 
             var intRange = new IntRange(start, end, step);
 
-            Assert.AreNotEqual("", intRange.ToString(), "String representation of range must not be an empty string");
+            Assert.AreNotEqual(string.Empty, intRange.ToString(), "String representation of range must not be an empty string");
         }
 
         [TestMethod]

@@ -31,7 +31,7 @@ using WebApplications.Testing;
 namespace WebApplications.Utilities.Test.Extensions
 {
     [TestClass]
-    public class ToJSONTests : TestBase
+    public class ToJSONTests : UtilitiesTestBase
     {
 
         // Using http://www.json.org/ as standard
@@ -188,8 +188,8 @@ namespace WebApplications.Utilities.Test.Extensions
         public void AppendJSON_ExistingDataInStringBuilder_AppendsSameDataAsReturnedByToJSON()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            string existingData = GenerateRandomString(Random.Next(10, 100));
-            string addedString = GenerateRandomString(Random.Next(10, 100));
+            string existingData = Random.RandomString(Random.Next(10, 100));
+            string addedString = Random.RandomString(Random.Next(10, 100));
             stringBuilder.Append(existingData);
             stringBuilder.AppendJSON(addedString);
             Assert.AreEqual(String.Format("{0}{1}",existingData,addedString.ToJSON()), stringBuilder.ToString());

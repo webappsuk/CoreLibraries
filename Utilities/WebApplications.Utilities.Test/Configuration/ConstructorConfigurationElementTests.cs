@@ -2,10 +2,10 @@
 using System.ComponentModel;
 using System.Configuration;
 using System.Globalization;
-using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Testing;
 using WebApplications.Utilities.Configuration;
 
 namespace WebApplications.Utilities.Test.Configuration
@@ -73,7 +73,7 @@ namespace WebApplications.Utilities.Test.Configuration
             ConstructorConfigurationElement constructorConfigurationElement =
                 GenerateEmptyConstructorConfigurationElement();
 
-            String name = GenerateRandomString(10);
+            String name = Random.RandomString(10);
             ParameterElement parameter = new ParameterElement { Name = name };
 
             constructorConfigurationElement.Parameters.Add(parameter);

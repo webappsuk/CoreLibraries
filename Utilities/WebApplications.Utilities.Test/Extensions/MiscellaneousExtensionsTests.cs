@@ -21,7 +21,6 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Collections.Generic;
@@ -31,15 +30,12 @@ using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using WebApplications.Testing;
-using WebApplications.Utilities;
-using WebApplications.Utilities.Threading;
 
-namespace WebApplications.Utilities.Test.Extentions
+namespace WebApplications.Utilities.Test.Extensions
 {
     [TestClass]
-    public class MiscellaneousExtensionsTests : TestBase
+    public class MiscellaneousExtensionsTests : UtilitiesTestBase
     {
-
         [TestMethod]
         public void EpochStart_Value_IsUnixEpoch()
         {
@@ -545,7 +541,7 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void XmlEscape_UnicodeString_OutputContainsValidXmlText()
         {
-            String output = GenerateRandomString().XmlEscape();
+            String output = Random.RandomString().XmlEscape();
             XmlDocument xml = new XmlDocument();
             // The following line throws an exception if the output is not valid xml
             xml.LoadXml(String.Format("<xml>{0}</xml>", output));
@@ -755,7 +751,7 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void UnWrap_AfterPerformingWrap_ReturnsWrappedObject()
         {
-            string wrappedObject = GenerateRandomString(10);
+            string wrappedObject = Random.RandomString(10);
             IAsyncResult initial = new Mock<IAsyncResult>().Object;
             IAsyncResult wrapped = initial.Wrap(wrappedObject);
             string unwrappedObject = wrapped.Unwrap<string>();
@@ -765,7 +761,7 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void UnWrap_AfterPerformingWrapThenUnwrapped_OriginalCanBeUnwrappedAgain()
         {
-            string wrappedObject = GenerateRandomString(10);
+            string wrappedObject = Random.RandomString(10);
             IAsyncResult initial = new Mock<IAsyncResult>().Object;
             IAsyncResult wrapped = initial.Wrap(wrappedObject);
             string unwrappedObject = wrapped.Unwrap<string>();
@@ -775,7 +771,7 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputted_ReturnsWrappedObject()
         {
-            string wrappedObject = GenerateRandomString(10);
+            string wrappedObject = Random.RandomString(10);
             IAsyncResult initial = new Mock<IAsyncResult>().Object;
             IAsyncResult wrapped = initial.Wrap(wrappedObject);
             IAsyncResult unwrapped;
@@ -786,7 +782,7 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputted_OriginalCanBeUnwrappedAgain()
         {
-            string wrappedObject = GenerateRandomString(10);
+            string wrappedObject = Random.RandomString(10);
             IAsyncResult initial = new Mock<IAsyncResult>().Object;
             IAsyncResult wrapped = initial.Wrap(wrappedObject);
             IAsyncResult unwrapped;
@@ -798,7 +794,7 @@ namespace WebApplications.Utilities.Test.Extentions
         [TestMethod]
         public void UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputtedThenUnwrappingOutput_ThrowsInvalidCastException()
         {
-            string wrappedObject = GenerateRandomString(10);
+            string wrappedObject = Random.RandomString(10);
             IAsyncResult initial = new Mock<IAsyncResult>().Object;
             IAsyncResult wrapped = initial.Wrap(wrappedObject);
             IAsyncResult unwrapped;

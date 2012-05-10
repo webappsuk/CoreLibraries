@@ -8,7 +8,7 @@ using WebApplications.Utilities.Reflect;
 namespace WebApplications.Utilities.Test.Reflect
 {
     [TestClass]
-    public class ExtendedTypeTests : TestBase
+    public class ExtendedTypeTests : UtilitiesTestBase
     {
         /// <summary>
         /// A class with complicated overloads illustrating classic failure cases.
@@ -439,7 +439,7 @@ namespace WebApplications.Utilities.Test.Reflect
                     Func<int, string, ComplexOverloads<int>>;
             Assert.IsNotNull(constFunc);
             int a = Random.Next();
-            string s = GenerateRandomString();
+            string s = Random.RandomString();
             ComplexOverloads<int> co = constFunc(a, s);
             Assert.IsNotNull(co);
             Assert.AreEqual(a, co.Value);
