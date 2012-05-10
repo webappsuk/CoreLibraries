@@ -42,9 +42,6 @@
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="Nito.AsyncEx">
-      <HintPath>..\packages\Nito.AsyncEx.0.5.0\lib\net40-client\Nito.AsyncEx.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
@@ -53,16 +50,11 @@
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing, Version=1.1.4505.18361, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Testing.1.1.4505.18361\lib\net40\WebApplications.Testing.dll</HintPath>
+    <Reference Include="WebApplications.Testing">
+      <HintPath>..\packages\WebApplications.Testing.1.1.4513.18305\lib\net40\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities, Version=1.1.4505.19773, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.1.1.4505.19773\lib\net40\WebApplications.Utilities.dll</HintPath>
-    </Reference>
-    <Reference Include="WebApplications.Utilities.Serialization">
-      <HintPath>..\packages\WebApplications.Utilities.Serialization.1.1.4512.24049\lib\net40\WebApplications.Utilities.Serialization.dll</HintPath>
+    <Reference Include="WebApplications.Utilities">
+      <HintPath>..\packages\WebApplications.Utilities.1.1.4513.19760\lib\net40\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

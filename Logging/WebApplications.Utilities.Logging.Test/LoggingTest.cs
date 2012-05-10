@@ -22,26 +22,23 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
-using WebApplications.Utilities.Serialization;
 
 namespace Utilities.Logging.Test
 {
     [TestClass]
-    public class LoggingTest
+    public class LoggingTests : TestBase
     {
-        public const int Loops = 10000;
-        public const int ChangeConfigAt = -500;
+        private const int Loops = 10000;
+        private const int ChangeConfigAt = -500;
 
         [TestMethod]
         public void TestMemoryCache()
@@ -53,7 +50,7 @@ namespace Utilities.Logging.Test
             Log.Flush();
             IEnumerable<Log> logs = Log.Get(DateTime.Now, startDate);
             Assert.IsNotNull(logs);
-            Assert.IsTrue(logs.Count() > 0, "No logs found!");
+            Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
             Log.Flush();
         }
@@ -87,56 +84,28 @@ namespace Utilities.Logging.Test
         }
 
         [TestMethod]
-        public void TestSerialization()
-        {
-            // Example log with context.
-            Log.Add(new Dictionary<string, string> { { "A", "1" }, { "B", "2" } }, "Test log item {0}.", "Test");
-            Log.Flush();
-            List<Log> logs = Log.Get(DateTime.Now, 100).ToList();
-            string serialized = logs.SerializeToString();
-            Trace.WriteLine(serialized);
-            List<Log> deserializedLogs = serialized.Deserialize<List<Log>>();
-
-            Assert.AreEqual(logs.Count, deserializedLogs.Count);
-
-            List<Log>.Enumerator le = logs.GetEnumerator();
-            List<Log>.Enumerator de = deserializedLogs.GetEnumerator();
-            while (le.MoveNext())
-            {
-                Assert.IsTrue(de.MoveNext());
-                Assert.AreEqual(le.Current.ToString(), de.Current.ToString());
-                Assert.AreEqual(le.Current.Xml.ToString(), de.Current.Xml.ToString());
-                Trace.WriteLine(le.Current.Xml);
-            }
-
-            byte[] serializedBytes = logs.First().SerializeToByteArray();
-            Trace.WriteLine(string.Format("First log took {0} bytes.", serializedBytes.Length));
-        }
-
-        [TestMethod]
         public void TestOperations()
         {
             Operation.Wrap(
                 o =>
-                    {
-                        Assert.IsNotNull(Operation.Current);
-                        Assert.AreEqual(o, Operation.Current);
+                {
+                    Assert.IsNotNull(Operation.Current);
+                    Assert.AreEqual(o, Operation.Current);
 
-                        Log.Add(OperationFunction("Test value", 1));
+                    Log.Add(OperationFunction("Test value", 1));
 
-                        Log.Flush();
-                    }, "TestOperations", instance: this);
+                    Log.Flush();
+                }, "TestOperations", instance: this);
         }
 
-        [NotNull]
-        public string OperationFunction([NotNull]string aValue, int anotherValue, TimeSpan timeSpan = default(TimeSpan))
+        private string OperationFunction(string aValue, int anotherValue, TimeSpan timeSpan = default(TimeSpan))
         {
             return Operation.Wrap(
                 () =>
-                    {
-                        Log.Add("Inside OperationFunction");
-                        return aValue;
-                    }, "OperationFunction",
+                {
+                    Log.Add("Inside OperationFunction");
+                    return aValue;
+                }, "OperationFunction",
                 instance: this,
                 arguments: new Dictionary<string, object>
                                {
@@ -151,41 +120,41 @@ namespace Utilities.Logging.Test
         {
             Operation.Wrap(
                 () =>
+                {
+                    using (new LogContext("First Value", "A").Region)
                     {
-                        using (new LogContext("First Value", "A").Region)
+                        using (LogContext.CreateRegion(new Dictionary<string, string> { { "Second Value", "B" } }))
                         {
-                            using (LogContext.CreateRegion(new Dictionary<string, string> { { "Second Value", "B" } }))
-                            {
-                                Log.Add("Test Context 1");
-                                Log.Add(new LogContext("Third Value", "C", "First Value", null, "Forth Value"), "Test Context 2",
-                                        1,
-                                        2, null, "A string");
-                                new LoggingException(new InvalidOperationException("A test invalid operation"),
-                                                     "Test logging exception", 1, 2, null, "A string");
-                            }
-                            Log.Add("Test Context 3");
+                            Log.Add("Test Context 1");
+                            Log.Add(new LogContext("Third Value", "C", "First Value", null, "Forth Value"), "Test Context 2",
+                                    1,
+                                    2, null, "A string");
+                            new LoggingException(new InvalidOperationException("A test invalid operation"),
+                                                 "Test logging exception", 1, 2, null, "A string");
                         }
-                        Log.Add("Test Context 4");
-                        Log.Flush();
-                    },
+                        Log.Add("Test Context 3");
+                    }
+                    Log.Add("Test Context 4");
+                    Log.Flush();
+                },
                 "TestContext", instance: this);
         }
 
         [TestMethod]
-        public void TestExcpetions()
+        public void TestExceptions()
         {
             new TestException();
         }
 
-        public class TestException :LoggingException
+        private class TestException : LoggingException
         {
-            public TestException() :this("Test {0}.", "message")
-            { 
-                
-            }
-            public TestException([NotNull] string message, [NotNull] params object[] parameters) : base(message, parameters)
-            {
-            }
+            public TestException()
+                : this("Test {0}.", "message")
+            { }
+
+            private TestException(string message, params object[] parameters)
+                : base(message, parameters)
+            { }
         }
     }
 }
