@@ -76,6 +76,9 @@
     <Reference Include="JetBrains.Annotations, Version=5.1.3000.12, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <HintPath>packages\JetBrains.Annotations.5.1.3000.12\lib\JetBrains.Annotations.dll</HintPath>
     </Reference>
+    <Reference Include="Nito.AsyncEx">
+      <HintPath>packages\Nito.AsyncEx.0.8.0\lib\net40-client\Nito.AsyncEx.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
