@@ -1178,5 +1178,23 @@ namespace WebApplications.Utilities.Reflect
             outputExpression = expression;
             return false;
         }
+
+        /// <summary> 
+        /// Checks to see if a type descends from another type. 
+        /// </summary> 
+        /// <param name="baseType">Type of the base.</param> 
+        /// <returns></returns> 
+        /// <remarks></remarks> 
+        public bool DescendsFrom([NotNull]Type baseType)
+        {
+            Type sourceType = this.Type;
+            do
+            {
+                if (sourceType == baseType)
+                    return true;
+                sourceType = sourceType.BaseType;
+            } while (sourceType != null);
+            return false;
+        } 
     }
 }

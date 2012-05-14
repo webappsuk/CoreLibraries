@@ -1498,5 +1498,22 @@ namespace WebApplications.Utilities
             return parameterType;
         }
 
+        /// <summary> 
+        /// Checks to see if a type descends from another type. 
+        /// </summary> 
+        /// <param name="sourceType">Type of the source.</param> 
+        /// <param name="baseType">Type of the base.</param> 
+        /// <returns></returns> 
+        /// <remarks></remarks> 
+        public static bool DescendsFrom([NotNull]this Type sourceType, [NotNull]Type baseType)
+        {
+            do
+            {
+                if (sourceType == baseType)
+                    return true;
+                sourceType = sourceType.BaseType;
+            } while (sourceType != null);
+            return false;
+        } 
     }
 }
