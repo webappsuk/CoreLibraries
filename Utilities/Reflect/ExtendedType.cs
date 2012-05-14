@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Enumerations;
 
 namespace WebApplications.Utilities.Reflect
 {
@@ -203,7 +201,7 @@ namespace WebApplications.Utilities.Reflect
         ///   All the customer attributes on the type.
         /// </summary>
         [NotNull]
-        public IEnumerable<Attribute> CustomerAttributes
+        public IEnumerable<Attribute> CustomAttributes
         {
             get { return _customAttributes.Value ?? Enumerable.Empty<Attribute>(); }
         }
@@ -306,6 +304,7 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <value>The interfaces.</value>
         /// <remarks></remarks>
+        [NotNull]
         public IEnumerable<Type> Interfaces { get { return _interfaces.Value.Values; } }
 
         /// <summary>
@@ -351,7 +350,7 @@ namespace WebApplications.Utilities.Reflect
                     {
                         // Look for default member.
                         DefaultMemberAttribute defaultMemberAttribute =
-                            Enumerable.OfType<DefaultMemberAttribute>(this.CustomerAttributes).SingleOrDefault();
+                            Enumerable.OfType<DefaultMemberAttribute>(this.CustomAttributes).SingleOrDefault();
                         return defaultMemberAttribute != null
                                    ? defaultMemberAttribute.MemberName
                                    : null;
