@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 
@@ -200,6 +201,46 @@ namespace WebApplications.Utilities.Cryptography.Test
             _providerWrapper.Decrypt(null, out isLatestKey);
 
             Assert.IsFalse(isLatestKey, "For a null input string 'isLatestKey' output should be false");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CryptographicException))]
+        public void Decrypt_InputEncryptedWithKeyNotInConfig_CryptographicException()
+        {
+            const string encryptedStringNotUsingKeyInConfiguration = "I0Qu6rZYA2OB1FXhhGB8J6+VyeEVVAvZkaYBKi8j4XY23ecgN1Zpprhzcrql7U6eUKZWtPaxfDwoEa9g6Bq0f1uE1pVMhrlxQDw3n6KFI5chvFLFpMA85APth08F2yzEh1yjXj6iynV9ZZlGyUQ/+lMJY0fjg45fNnv23C4aFbM=";
+
+            bool isLatestKey;
+            string decrypted = _providerWrapper.Decrypt(encryptedStringNotUsingKeyInConfiguration, out isLatestKey);
+
+            Trace.WriteLine("Result: " + decrypted);
+
+            Assert.Fail("CryptographicException was expected when using an encrypted string that does not exist within our configuration");
+        }
+
+        [TestMethod]
+        public void TryDecrypt_ReturnValue_ReturnsFalseWhenKeyIsNotLatestKey()
+        {
+            const string encryptedStringUsingExpiredKeyInConfiguration = "CkTj6c4LPWXjfAxHKpuITqXFaerCiZ9rfAzyf8FS/5qYWbQ1HMGsADO6rF7fuAljjvfCM5HoYvZe7zBAjxU2kVfuVmaHKGGYJyrtjwKvRURXwkXgUUO8HanpJtU4UjvO0AU3sBgJCc5NUXS/tU9oT4D/SbaHcvQUtFfThAiuT0w=";
+
+            string decryptedString;
+            bool? isLatestKey;
+
+            _providerWrapper.Encrypt("a new key will be made now");
+            bool decrypted = _providerWrapper.TryDecrypt(encryptedStringUsingExpiredKeyInConfiguration, out decryptedString, out isLatestKey);
+
+            Assert.IsTrue(decrypted, "'decrypted' should return true");
+            Assert.IsFalse(isLatestKey.Value, "IsLatestKey should return false");
+        }
+
+        [TestMethod]
+        public void TryDecrypt_NullInputString_FalseReturned()
+        {
+            string decryptedString;
+            bool? isLatestKey;
+
+            bool decrypted = _providerWrapper.TryDecrypt(null, out decryptedString, out isLatestKey);
+
+            Assert.IsFalse(decrypted, "TryDecrypt should return false when using null input string");
         }
     }
 }

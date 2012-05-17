@@ -155,16 +155,28 @@ namespace WebApplications.Utilities.Cryptography
                     CspParameters keyContainer = new CspParameters { KeyContainerName = key.Value };
                     RSACryptoServiceProvider provider = new RSACryptoServiceProvider(keyContainer);
 
-                    byte[] byteArray = provider.Decrypt(Convert.FromBase64String(block), false);
+                    byte[] byteArray;
+                    try
+                    {
+                        byteArray = provider.Decrypt(Convert.FromBase64String(block), false);
+                    }
+                    catch(CryptographicException)
+                    {
+                        endPosition = -1;
+                        continue;
+                    }
+                    
                     decrypted += Encoding.Unicode.GetString(byteArray);
-
                     startPosition = endPosition + 1;
 
                     // If no = is found -1 is returned, this is the last block.
                     endPosition = input.IndexOf("=", startPosition);
                 }
 
-                return decrypted.TrimEnd('\0');
+                if(decrypted != string.Empty)
+                {
+                    return decrypted.TrimEnd('\0');
+                }
             }
 
             // If we get here, decryption failed.

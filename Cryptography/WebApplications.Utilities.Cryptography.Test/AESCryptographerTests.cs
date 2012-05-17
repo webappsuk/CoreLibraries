@@ -208,6 +208,28 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(CryptographicException))]
+        public void Decrypt_StringInputNotUsingKeysInConfiguration_CryptographicException()
+        {
+            bool isLatestKey;
+            _providerWrapper.Decrypt("FK5WAQDPSRYDRS2UB4S86FZ747M5JT7CF6CTDAHJMTXJSMP8PK52", out isLatestKey);
+
+            Assert.Fail("CryptographicException was expected when the input was encrypted using a key not found within the configuration");
+        }
+
+        [TestMethod]
+        public void TryDecrypt_ReturnValue_ReturnsFalseWhenKeyIsNotLatestKey()
+        {
+            string decryptedString;
+            bool? isLatestKey;
+
+            _providerWrapper.Encrypt("a new key will be made now");
+            bool decrypted = _providerWrapper.TryDecrypt("FJN58QU5ZX66NCRGT6UKQ9DDZYB4DA5WBEFEWUBX9PKHS587QNZ1", out decryptedString, out isLatestKey);
+
+            Assert.IsFalse(isLatestKey.Value, "IsLatestKey should return false");
+        }
+
+        [TestMethod]
         public void TryDecrypt_NullInputString_FalseReturned()
         {
             string decryptedString;
