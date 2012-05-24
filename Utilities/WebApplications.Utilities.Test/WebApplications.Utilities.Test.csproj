@@ -60,9 +60,9 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing, Version=1.1.4513.18305, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Testing, Version=1.1.4517.27417, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Testing.1.1.4513.18305\lib\net40\WebApplications.Testing.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Testing.1.1.4517.27417\lib\net40\WebApplications.Testing.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +88,7 @@
     <Compile Include="Extensions\ToJSONTests.cs" />
     <Compile Include="Extensions\TopologicalSortTests.cs" />
     <Compile Include="Extensions\TruncateTests.cs" />
+    <Compile Include="FinancialsTests.cs" />
     <Compile Include="Location\LatLngTests.cs" />
     <Compile Include="Ranges\DateRangeTests.cs" />
     <Compile Include="Ranges\DateTimeTests.cs" />

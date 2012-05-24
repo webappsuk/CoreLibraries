@@ -128,6 +128,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="ExtendedTupleGeneric.cs" />
+    <Compile Include="Financials\Financial.cs" />
     <Compile Include="Reflect\CastMethod.cs" />
     <Compile Include="Reflect\Constructor.cs" />
     <Compile Include="Reflect\Event.cs" />
