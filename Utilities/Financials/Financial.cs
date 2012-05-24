@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Financials
 {
@@ -13,6 +15,8 @@ namespace WebApplications.Utilities.Financials
         /// <value>
         /// The currency.
         /// </value>
+        [NotNull]
+        [UsedImplicitly]
         public CurrencyInfo Currency { get; private set; }
 
         /// <summary>
@@ -21,6 +25,7 @@ namespace WebApplications.Utilities.Financials
         /// <value>
         /// The amount.
         /// </value>
+        [UsedImplicitly]
         public decimal Amount { get; private set; }
 
         /// <summary>
@@ -28,8 +33,10 @@ namespace WebApplications.Utilities.Financials
         /// </summary>
         /// <param name="currency">The currency.</param>
         /// <param name="amount"> </param>
-        public Financial(CurrencyInfo currency, decimal amount)
+        public Financial([NotNull]CurrencyInfo currency, decimal amount)
         {
+            Contract.Requires(currency != null, "Parameter 'currency' can not be null");
+
             Currency = currency;
             Amount = amount;
         }
@@ -42,7 +49,9 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static Financial operator +(Financial a, Financial b)
+        [NotNull]
+        [UsedImplicitly]
+        public static Financial operator +([NotNull]Financial a, [NotNull]Financial b)
         {
             ValidateCurrenciesMatch(a.Currency, b.Currency, "Addition");
             return new Financial(a.Currency, a.Amount + b.Amount);
@@ -56,7 +65,9 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static Financial operator +(Financial financial, decimal amount)
+        [NotNull]
+        [UsedImplicitly]
+        public static Financial operator +([NotNull]Financial financial, decimal amount)
         {
             Financial clone = (Financial)financial.Clone();
             clone.Amount = financial.Amount + amount;
@@ -71,7 +82,9 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static Financial operator -(Financial a, Financial b)
+        [NotNull]
+        [UsedImplicitly]
+        public static Financial operator -([NotNull]Financial a, [NotNull]Financial b)
         {
             ValidateCurrenciesMatch(a.Currency, b.Currency, "Subtraction");
             return new Financial(a.Currency, a.Amount - b.Amount);
@@ -85,7 +98,9 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static Financial operator -(Financial financial, decimal amount)
+        [NotNull]
+        [UsedImplicitly]
+        public static Financial operator -([NotNull]Financial financial, decimal amount)
         {
             Financial clone = (Financial)financial.Clone();
             clone.Amount = financial.Amount - amount;
@@ -100,7 +115,8 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator <(Financial a, Financial b)
+        [UsedImplicitly]
+        public static bool operator <([NotNull]Financial a, [NotNull]Financial b)
         {
             ValidateCurrenciesMatch(a.Currency, b.Currency, "less than");
             return a.Amount < b.Amount;
@@ -114,7 +130,8 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator >(Financial a, Financial b)
+        [UsedImplicitly]
+        public static bool operator >([NotNull]Financial a, [NotNull]Financial b)
         {
             ValidateCurrenciesMatch(a.Currency, b.Currency, "more than");
             return a.Amount > b.Amount;
@@ -128,7 +145,8 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator <=(Financial a, Financial b)
+        [UsedImplicitly]
+        public static bool operator <=([NotNull]Financial a, [NotNull]Financial b)
         {
             ValidateCurrenciesMatch(a.Currency, b.Currency, "less than or equal to");
             return a.Amount <= b.Amount;
@@ -142,7 +160,8 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator >=(Financial a, Financial b)
+        [UsedImplicitly]
+        public static bool operator >=([NotNull]Financial a, [NotNull]Financial b)
         {
             ValidateCurrenciesMatch(a.Currency, b.Currency, "more than or equal to");
             return a.Amount >= b.Amount;
@@ -156,7 +175,8 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static Financial operator *(Financial a, Financial b)
+        [UsedImplicitly]
+        public static Financial operator *([NotNull]Financial a, [NotNull]Financial b)
         {
             return new Financial(a.Currency, a.Amount * b.Amount);
         }
