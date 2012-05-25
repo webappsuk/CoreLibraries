@@ -10,7 +10,7 @@ using WebApplications.Utilities.Caching;
 namespace WebApplications.Utilities.Test.Caching
 {
     [TestClass]
-    public class ConcurrentLookupTests : TestBase
+    public class ConcurrentLookupTests : UtilitiesTestBase
     {
         [TestMethod]
         public void ConcurrentLookup_NoParameters_IsNotNull()
@@ -38,7 +38,7 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(20))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(20))).ToList();
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             Assert.AreEqual(collection.Count, concurrentLookup.Count);
         }
@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Test.Caching
             List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select( n => Guid.NewGuid()).ToList();
             int numberOfDuplicates = Random.Next(1, keys.Count/2);
             List<KeyValuePair<Guid, string>> collection = keys.Concat(keys.Take(numberOfDuplicates)).Select(
-                key => new KeyValuePair<Guid, string>(key, GenerateRandomString(20))
+                key => new KeyValuePair<Guid, string>(key, Random.RandomString(20))
                 ).ToList();
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             Assert.AreEqual(collection.Count - numberOfDuplicates, concurrentLookup.Count);
@@ -61,7 +61,7 @@ namespace WebApplications.Utilities.Test.Caching
             List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
             int numberOfDuplicates = Random.Next(1, keys.Count / 2);
             List<KeyValuePair<Guid, string>> collection = keys.Concat(keys.Take(numberOfDuplicates)).Select(
-                key => new KeyValuePair<Guid, string>(key, GenerateRandomString(20))
+                key => new KeyValuePair<Guid, string>(key, Random.RandomString(20))
                 ).ToList();
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             CollectionAssert.AreEquivalent(keys, concurrentLookup.Select(grouping => grouping.Key).ToList());
@@ -73,7 +73,7 @@ namespace WebApplications.Utilities.Test.Caching
             List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
             int numberOfDuplicates = Random.Next(1, keys.Count / 2);
             List<KeyValuePair<Guid, string>> collection = keys.Concat(keys.Take(numberOfDuplicates)).Select(
-                key => new KeyValuePair<Guid, string>(key, GenerateRandomString(20))
+                key => new KeyValuePair<Guid, string>(key, Random.RandomString(20))
                 ).ToList();
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             foreach (IGrouping<Guid, string> grouping in concurrentLookup)
@@ -87,10 +87,10 @@ namespace WebApplications.Utilities.Test.Caching
         public void This_ExistingKey_EnumerationMatchesAllCollectionEntriesMatchingKey()
         {
             Guid matchingKey = Guid.NewGuid();
-            List<string> matchingValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => GenerateRandomString(20)).ToList();
+            List<string> matchingValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Random.RandomString(20)).ToList();
             IEnumerable<KeyValuePair<Guid, string>> otherEntries =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)));
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             IEnumerable<KeyValuePair<Guid, string>> collection = matchingValues.Select(
                 value => new KeyValuePair<Guid, string>(matchingKey, value))
                 .Concat(otherEntries);
@@ -104,7 +104,7 @@ namespace WebApplications.Utilities.Test.Caching
             Guid absentKey = Guid.NewGuid();
             IEnumerable<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)));
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             CollectionAssert.AreEquivalent(Enumerable.Empty<string>().ToList(), concurrentLookup[absentKey].ToList());
         }
@@ -113,10 +113,10 @@ namespace WebApplications.Utilities.Test.Caching
         public void TryGet_ExistingKey_OutputEnumerationMatchesAllCollectionEntriesMatchingKey()
         {
             Guid matchingKey = Guid.NewGuid();
-            List<string> matchingValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => GenerateRandomString(20)).ToList();
+            List<string> matchingValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Random.RandomString(20)).ToList();
             IEnumerable<KeyValuePair<Guid, string>> otherEntries =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)));
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             IEnumerable<KeyValuePair<Guid, string>> collection = matchingValues.Select(
                 value => new KeyValuePair<Guid, string>(matchingKey, value))
                 .Concat(otherEntries);
@@ -131,10 +131,10 @@ namespace WebApplications.Utilities.Test.Caching
         public void TryGet_ExistingKey_OutputKeyMatchesKey()
         {
             Guid matchingKey = Guid.NewGuid();
-            List<string> matchingValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => GenerateRandomString(20)).ToList();
+            List<string> matchingValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Random.RandomString(20)).ToList();
             IEnumerable<KeyValuePair<Guid, string>> otherEntries =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)));
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             IEnumerable<KeyValuePair<Guid, string>> collection = matchingValues.Select(
                 value => new KeyValuePair<Guid, string>(matchingKey, value))
                 .Concat(otherEntries);
@@ -151,7 +151,7 @@ namespace WebApplications.Utilities.Test.Caching
             Guid absentKey = Guid.NewGuid();
             IEnumerable<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)));
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             IGrouping<Guid, String> output;
             concurrentLookup.TryGet(absentKey, out output);
@@ -163,7 +163,7 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             Guid existingKey = collection[Random.Next(0, collection.Count)].Key;
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             Assert.IsTrue(concurrentLookup.Contains(existingKey));
@@ -175,7 +175,7 @@ namespace WebApplications.Utilities.Test.Caching
             Guid absentKey = Guid.NewGuid();
             IEnumerable<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)));
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             Assert.IsFalse(concurrentLookup.Contains(absentKey));
         }
@@ -185,7 +185,7 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             Guid existingKey = collection[Random.Next(0, collection.Count)].Key;
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             IGrouping<Guid, String> output;
@@ -198,7 +198,7 @@ namespace WebApplications.Utilities.Test.Caching
             Guid absentKey = Guid.NewGuid();
             IEnumerable<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)));
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             IGrouping<Guid, String> output;
             Assert.IsFalse(concurrentLookup.TryGet(absentKey, out output));
@@ -209,7 +209,7 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             Guid existingKey = collection[Random.Next(0, collection.Count)].Key;
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             Assert.IsTrue(concurrentLookup.Remove(existingKey));
@@ -221,7 +221,7 @@ namespace WebApplications.Utilities.Test.Caching
             Guid absentKey = Guid.NewGuid();
             IEnumerable<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)));
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             Assert.IsFalse(concurrentLookup.Remove(absentKey));
         }
@@ -231,7 +231,7 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             Guid existingKey = collection[Random.Next(0, collection.Count)].Key;
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             concurrentLookup.Remove(existingKey);
@@ -243,7 +243,7 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             KeyValuePair<Guid,string> existing = collection[Random.Next(0, collection.Count)];
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             Assert.IsTrue(concurrentLookup.Remove(existing.Key,existing.Value));
@@ -255,9 +255,9 @@ namespace WebApplications.Utilities.Test.Caching
             Guid absentKey = Guid.NewGuid();
             IEnumerable<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)));
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
-            Assert.IsFalse(concurrentLookup.Remove(absentKey,GenerateRandomString(15)));
+            Assert.IsFalse(concurrentLookup.Remove(absentKey,Random.RandomString(15)));
         }
 
         [TestMethod]
@@ -266,7 +266,7 @@ namespace WebApplications.Utilities.Test.Caching
             Guid absentKey = Guid.NewGuid();
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             string existingValue = collection[Random.Next(0, collection.Count)].Value;
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             Assert.IsFalse(concurrentLookup.Remove(absentKey, existingValue));
@@ -277,10 +277,10 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             Guid existingKey = collection[Random.Next(0, collection.Count)].Key;
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
-            Assert.IsFalse(concurrentLookup.Remove(existingKey, GenerateRandomString(50)));
+            Assert.IsFalse(concurrentLookup.Remove(existingKey, Random.RandomString(50)));
         }
 
         [TestMethod]
@@ -288,7 +288,7 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             KeyValuePair<Guid,string> existing = collection[Random.Next(0, collection.Count)];
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             concurrentLookup.Remove(existing.Key,existing.Value);
@@ -301,10 +301,10 @@ namespace WebApplications.Utilities.Test.Caching
             Guid existingKeyWithDuplicates = Guid.NewGuid();
             List<KeyValuePair<Guid, string>> existingValues =
                 Enumerable.Range(1, Random.Next(2, 10)).Select(
-                    n => new KeyValuePair<Guid, string>(existingKeyWithDuplicates, GenerateRandomString(20))).ToList();
+                    n => new KeyValuePair<Guid, string>(existingKeyWithDuplicates, Random.RandomString(20))).ToList();
             IEnumerable<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10)))
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)))
                     .Concat(existingValues);
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             concurrentLookup.Remove(existingKeyWithDuplicates,existingValues.First().Value);
@@ -316,9 +316,9 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             Guid newKey = Guid.NewGuid();
-            String newValue = GenerateRandomString(20);
+            String newValue = Random.RandomString(20);
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             concurrentLookup.Add(newKey, newValue);
             Assert.IsTrue(concurrentLookup.Contains(newKey));
@@ -329,9 +329,9 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             Guid newKey = Guid.NewGuid();
-            String newValue = GenerateRandomString(20);
+            String newValue = Random.RandomString(20);
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             concurrentLookup.Add(newKey, newValue);
             CollectionAssert.Contains(concurrentLookup[newKey].ToList(), newValue);
@@ -342,9 +342,9 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             Guid newKey = Guid.NewGuid();
-            String newValue = GenerateRandomString(20);
+            String newValue = Random.RandomString(20);
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             concurrentLookup.Add(newKey, newValue);
             concurrentLookup.Add(newKey, newValue);
@@ -356,9 +356,9 @@ namespace WebApplications.Utilities.Test.Caching
         {
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
-                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), GenerateRandomString(10))).ToList();
+                    n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
             Guid newKey = Guid.NewGuid();
-            String newValue = GenerateRandomString(20);
+            String newValue = Random.RandomString(20);
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             concurrentLookup.Add(newKey, newValue);
             concurrentLookup.Add(newKey, newValue);
