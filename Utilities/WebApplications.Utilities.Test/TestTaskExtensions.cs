@@ -49,8 +49,9 @@ namespace WebApplications.Utilities.Test
         public void TestContinueWithAll()
         {
             Random random = new Random();
-            Parallel.For(0, 1000, i =>
-                                      {
+            //TODO: Check if there was any reason for performing this test a thousand times (and so taking over a minute to complete)
+            //Parallel.For(0, 1000, i =>
+            //                          {
                                           int taskCount = random.Next(50);
                                           int expectedResult = 0;
                                           List<Task<int>> tasks = new List<Task<int>>(taskCount);
@@ -65,7 +66,7 @@ namespace WebApplications.Utilities.Test
                                               t != null ? t.Aggregate(0, (current, task) => current + task.Result) : 0,
                                               TaskCreationOptions.None);
                                           Assert.AreEqual(expectedResult, continuation.Result);
-                                      });
+            //                          });
         }
     }
 }

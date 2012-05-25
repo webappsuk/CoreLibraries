@@ -43,7 +43,7 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual(s1, s2);
             Assert.AreEqual(s1, s3);
 
-            const int testCount = 100000;
+            const int testCount = 100;
             for (int a = 0; a < 10; a++)
             {
                 TestHash(new SHA384CryptoServiceProvider(), testCount, a);

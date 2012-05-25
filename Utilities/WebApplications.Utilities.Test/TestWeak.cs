@@ -209,7 +209,7 @@ namespace WebApplications.Utilities.Test
             Trace.WriteLine(stopwatch.ToString("Checking '{0}' elements", weakCount));
         }
 
-
+        [Ignore] // Not a test. Also, takes too long.
         [TestMethod]
         public void TestConcurrencySpeeds()
         {
