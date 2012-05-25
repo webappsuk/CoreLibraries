@@ -63,7 +63,7 @@ namespace WebApplications.Utilities.Test
         public const int Loops = 1000000;
 
         [TestMethod]
-        //[Ignore]
+        [Ignore] // TODO: Create tests
         public void TestLookupPerformance()
         {
             // Load enum info.
