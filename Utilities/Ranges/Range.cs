@@ -150,8 +150,14 @@ namespace WebApplications.Utilities.Ranges
         /// <filterpriority>1</filterpriority>
         public IEnumerator<TValue> GetEnumerator()
         {
-                for (TValue loop = Start; !LessThan(End, loop); loop = Add(loop, Step))
+                for (TValue loop = Start, next = Start; !LessThan(End, loop); loop = next)
+                {
+                    next = Add(loop, Step);
+                    // Perform checks which are normally done behind the scenes to avoid infinite loops due to overflows
+                    if(!LessThan(loop,next))
+                        yield break;
                     yield return loop;
+                }
         }
 
         /// <summary>
