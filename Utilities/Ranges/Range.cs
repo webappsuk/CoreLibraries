@@ -152,8 +152,18 @@ namespace WebApplications.Utilities.Ranges
         {
                 for (TValue loop = Start, next = Start; !LessThan(End, loop); loop = next)
                 {
-                    next = Add(loop, Step);
-                    // Perform checks which are normally done behind the scenes to avoid infinite loops due to overflows
+                    try
+                    {
+                        next = Add(loop, Step);
+                    } catch(ArgumentOutOfRangeException) // For dates
+                    {
+                        yield break;
+                    }
+                    catch (OverflowException) // For decimals
+                    {
+                        yield break;
+                    }
+                    // Perform checks which are normally done behind the scenes to avoid infinite loops due to interger overflows
                     if(!LessThan(loop,next))
                         yield break;
                     yield return loop;
@@ -197,8 +207,25 @@ namespace WebApplications.Utilities.Ranges
         /// <filterpriority>1</filterpriority>
         public IEnumerator<TValue> GetEnumerator(TStep step)
         {
-            for (TValue loop = Start; !LessThan(End, loop); loop = Add(loop, step))
+            for (TValue loop = Start, next = Start; !LessThan(End, loop); loop = next)
+            {
+                try
+                {
+                    next = Add(loop, step);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    yield break;
+                }
+                catch (OverflowException)
+                {
+                    yield break;
+                }
+                // Perform checks avoid infinite loops due to integer overflows
+                if (!LessThan(loop, next))
+                    yield break;
                 yield return loop;
+            }
         }
 
         /// <summary>
