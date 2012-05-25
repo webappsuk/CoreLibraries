@@ -44,6 +44,11 @@ namespace WebApplications.Utilities.Caching
     public class CyclicConcurrentQueue<T> : IProducerConsumerCollection<T>
     {
         /// <summary>
+        /// The maximum capacity which can be created.
+        /// </summary>
+        public const long MaxCapacity = int.MaxValue*(long)4096;
+
+        /// <summary>
         /// Holds a chunk.
         /// </summary>
         /// <remarks></remarks>
@@ -177,11 +182,11 @@ namespace WebApplications.Utilities.Caching
         /// <remarks></remarks>
         public CyclicConcurrentQueue(long capacity)
         {
-            if (capacity > long.MaxValue - 1)
+            if (capacity > MaxCapacity - 1)
                 throw new ArgumentOutOfRangeException("capacity",
                                                       Resources.
                                                           LimitedConcurrentQueue_LimitedConcurrentQueue_Maximum_Capacity,
-                                                      (long.MaxValue - 1).ToString());
+                                                      MaxCapacity.ToString());
             if (capacity < 1)
                 throw new ArgumentOutOfRangeException("capacity",
                                                       Resources.
