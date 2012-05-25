@@ -249,7 +249,7 @@ namespace WebApplications.Utilities.Test.Ranges
             {
                 if (previous.HasValue)
                 {
-                    Assert.AreEqual(i - previous, step, "Difference between iteration values should match the step value supplied");
+                    Assert.AreEqual((double)(i - previous.Value), (double)step, (double)step * 1e-6, "Difference between iteration values should match the step value supplied to within one millionth");
                 }
                 previous = i;
             }

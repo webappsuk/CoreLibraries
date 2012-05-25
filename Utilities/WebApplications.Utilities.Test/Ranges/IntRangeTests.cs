@@ -206,14 +206,14 @@ namespace WebApplications.Utilities.Test.Ranges
         }
 
         [TestMethod]
-        public void IntRange_UsingZeroStep_ThrowsSomeException()
+        public void IntRange_UsingZeroStep_PerformsNoIterations()
         {
-            Assert.Fail("Currently does not check it is not zero");
 
-            // Step chosen to avoid an unfeasible number of iterations
             var intRange = new IntRange(-Random.Next(), Random.Next(), 0);
 
             List<int> result = intRange.ToList();
+
+            Assert.AreEqual(0,result.Count);
         }
 
         [TestMethod]

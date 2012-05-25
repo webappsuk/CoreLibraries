@@ -247,7 +247,7 @@ namespace WebApplications.Utilities.Test.Ranges
             TimeSpan step = TimeSpan.FromTicks(length.Ticks / Random.Next(4, 1000));
 
             //ensure that step size is a factor of the length of the range
-            start += TimeSpan.FromDays(length.Ticks % step.Ticks);
+            start += TimeSpan.FromTicks(length.Ticks % step.Ticks);
 
             var dateRange = new DateTimeRange(start, end, step);
 
