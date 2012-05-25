@@ -8,6 +8,6 @@ namespace WebApplications.Utilities.Test
     /// </summary>
     public class UtilitiesTestBase : TestBase
     {
-        protected static readonly Random Random = new Random();
+        protected static readonly Random Random = Tester.RandomGenerator;
     }
 }
