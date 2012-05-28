@@ -661,10 +661,10 @@ namespace WebApplications.Utilities.Database.Schema
                 {
                     _error = databaseSchemaException;
                     _loaded = false;
-                    Schemas = new List<string>(0);
-                    Types = new List<SqlType>(0);
-                    ProgramDefinitions = new List<SqlProgramDefinition>(0);
-                    Tables = new List<SqlTableDefinition>(0);
+                    Schemas = Enumerable.Empty<string>();
+                    Types = Enumerable.Empty<SqlType>();
+                    ProgramDefinitions = Enumerable.Empty<SqlProgramDefinition>();
+                    Tables = Enumerable.Empty<SqlTableDefinition>();
                 }
                 catch (Exception exception)
                 {
@@ -673,10 +673,10 @@ namespace WebApplications.Utilities.Database.Schema
                         Resources.DatabaseSchema_Load_ErrorOccurred,
                         LogLevel.Critical);
                     _loaded = false;
-                    Schemas = new List<string>(0);
-                    Types = new List<SqlType>(0);
-                    ProgramDefinitions = new List<SqlProgramDefinition>(0);
-                    Tables = new List<SqlTableDefinition>(0);
+                    Schemas = Enumerable.Empty<string>();
+                    Types = Enumerable.Empty<SqlType>();
+                    ProgramDefinitions = Enumerable.Empty<SqlProgramDefinition>();
+                    Tables = Enumerable.Empty<SqlTableDefinition>();
                 }
 
                 // ReSharper disable PossibleNullReferenceException

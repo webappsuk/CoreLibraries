@@ -312,7 +312,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                 new SqlProgram<IEnumerable<Tuple<int, string, bool>>>(_differentConnectionString, "spTakesTupleTable");
 
             int nonQueryResult =
-                tableTypeTest.ExecuteNonQuery(new List<Tuple<int, string, bool>>());
+                tableTypeTest.ExecuteNonQuery(Enumerable.Empty<Tuple<int, string, bool>>());
             Assert.AreEqual(-1, nonQueryResult);
         }
 

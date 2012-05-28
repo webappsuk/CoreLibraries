@@ -371,7 +371,7 @@ namespace WebApplications.Utilities.Database.Schema
 
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
             if ((parameters == null) || ((sCount = parameters.Count()) < 1))
-                return new List<SqlProgramParameter>(0);
+                return Enumerable.Empty<SqlProgramParameter>();
             // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
             int dCount = Parameters.Count();
@@ -542,7 +542,7 @@ namespace WebApplications.Utilities.Database.Schema
 
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
             if ((parameters == null) || ((sCount = parameters.Count()) < 1))
-                return new List<SqlProgramParameter>(0);
+                return Enumerable.Empty<SqlProgramParameter>();
             // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
             int dCount = Parameters.Count();
