@@ -193,15 +193,15 @@ namespace WebApplications.Utilities
         ///   <paramref name="isoCode"/> cannot be null.
         /// </remarks>
         [NotNull]
-        public static List<CultureInfo> CultureInfoFromCurrencyISO([NotNull] string isoCode)
+        public static IEnumerable<CultureInfo> CultureInfoFromCurrencyISO([NotNull] string isoCode)
         {
             Contract.Requires(isoCode != null, Resources.CultureHelper_RegionInfoCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
-                return new List<CultureInfo>(0);
+                return Enumerable.Empty<CultureInfo>();
             return _currencyCultureInfo.ContainsKey(isoCode)
                        ? new List<CultureInfo>(_currencyCultureInfo[isoCode].Keys.Distinct())
-                       : new List<CultureInfo>(0);
+                       : Enumerable.Empty<CultureInfo>();
         }
 
         /// <summary>
@@ -216,15 +216,15 @@ namespace WebApplications.Utilities
         ///   <paramref name="isoCode"/> cannot be null.
         /// </remarks>
         [NotNull]
-        public static List<RegionInfo> RegionInfoFromCurrencyISO([NotNull] string isoCode)
+        public static IEnumerable<RegionInfo> RegionInfoFromCurrencyISO([NotNull] string isoCode)
         {
             Contract.Requires(isoCode != null, Resources.CultureHelper_IsoCodeCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
-                return new List<RegionInfo>(0);
+                return Enumerable.Empty<RegionInfo>();
             return _currencyCultureInfo.ContainsKey(isoCode)
                        ? new List<RegionInfo>(_currencyCultureInfo[isoCode].Values.Distinct())
-                       : new List<RegionInfo>(0);
+                       : Enumerable.Empty<RegionInfo>();
         }
 
         /// <summary>
