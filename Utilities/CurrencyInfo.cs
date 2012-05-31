@@ -25,6 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Resources;
 using JetBrains.Annotations;
@@ -75,78 +76,6 @@ namespace WebApplications.Utilities
         public readonly IEnumerable<RegionInfo> Regions;
 
         /// <summary>
-        ///   Load currency resources, which are located in Currencies.resx.
-        /// </summary>
-        static CurrencyInfo()
-        {
-            // Find currencies resource
-            ResourceManager resourceManager = new ResourceManager("WebApplications.Utilities.Currencies",
-                                                                  Assembly.GetExecutingAssembly());
-            ResourceSet resourceSet = resourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
-            if (resourceSet == null)
-                return;
-
-            // Loop through all currency strings
-            foreach (DictionaryEntry kvp in resourceSet)
-            {
-                string currencyCode = kvp.Key.ToString();
-                // Skip invalid or already seen currency codes
-                if ((currencyCode.Length != 3) || (_currencyInfos.ContainsKey(currencyCode)))
-                    continue;
-
-                // Split resource string into 3 parts
-                string[] detailArray = kvp.Value.ToString().Split(',');
-                if (detailArray.Length != 3)
-                    continue;
-
-                // Parse exponent
-                int? exponent;
-                if (detailArray[1].Length > 0)
-                {
-                    int e;
-                    if (!Int32.TryParse(detailArray[1], out e))
-                        continue;
-                    exponent = e;
-                }
-                else
-                    exponent = null;
-
-                CurrencyInfo info = new CurrencyInfo(currencyCode, detailArray[0], exponent, detailArray[2]);
-                _currencyInfos.Add(currencyCode, info);
-                foreach (RegionInfo region in info.Regions)
-                {
-                    if (!_currencyInfoRegions.ContainsKey(region))
-                        _currencyInfoRegions.Add(region, info);
-                }
-                foreach (CultureInfo culture in info.Cultures)
-                {
-                    if (!_currencyInfoCultures.ContainsKey(culture))
-                        _currencyInfoCultures.Add(culture, info);
-                }
-            }
-        }
-
-        /// <summary>
-        ///   Initialize a new instance of <see cref="CurrencyInfo"/>.
-        /// </summary>
-        /// <param name="code">The ISO Code.</param>
-        /// <param name="num">The ISO Number.</param>
-        /// <param name="exponent">
-        ///   The exponent, which is the number of decimals available in the currency.
-        /// </param>
-        /// <param name="fullName">The currency's full name.</param>
-        private CurrencyInfo([NotNull] string code, [NotNull] string num, [CanBeNull] int? exponent,
-                             [NotNull] string fullName)
-        {
-            Code = code;
-            ISONumber = num;
-            Exponent = exponent;
-            FullName = fullName;
-            Regions = CultureHelper.RegionInfoFromCurrencyISO(code) ?? new List<RegionInfo>(0);
-            Cultures = CultureHelper.CultureInfoFromCurrencyISO(code) ?? new List<CultureInfo>(0);
-        }
-
-        /// <summary>
         ///   Gets the ISO Code.
         /// </summary>
         [NotNull]
@@ -155,8 +84,7 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Gets the ISO Number.
         /// </summary>
-        [NotNull]
-        public string ISONumber { get; private set; }
+        public int ISONumber { get; private set; }
 
         /// <summary>
         ///   Gets the exponent, which is the number of decimals available in the currency.
@@ -171,6 +99,90 @@ namespace WebApplications.Utilities
         public string FullName { get; private set; }
 
         /// <summary>
+        ///   Load currency resources, which are located in Currencies.resx.
+        /// </summary>
+        static CurrencyInfo()
+        {
+            ResourceManager resourceManager = 
+                new ResourceManager("WebApplications.Utilities.Currencies", Assembly.GetExecutingAssembly());
+
+            ResourceSet resourceSet = resourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+            if (resourceSet == null)
+                return;
+
+            foreach (DictionaryEntry entry in resourceSet)
+                CreateCurrencyInfo(entry);
+        }
+
+        private static void CreateCurrencyInfo(DictionaryEntry entry)
+        {
+            string currencyCode = entry.Key.ToString();
+            if ((currencyCode.Length != 3) || (_currencyInfos.ContainsKey(currencyCode)))
+                return;
+
+            string[] details = entry.Value.ToString().Split(',');
+
+            if (details.Length != 3)
+                return;
+
+            int isoNumber = int.Parse(details[0]);
+            int? exponent = ParseExponent(details[1]);
+            string fullName = details[2];
+
+            CurrencyInfo currencyInfo = new CurrencyInfo(currencyCode, isoNumber, exponent, fullName);
+            _currencyInfos.Add(currencyCode, currencyInfo);
+
+            AddRegions(currencyInfo);
+            AddCultures(currencyInfo);
+        }
+
+        private static void AddCultures(CurrencyInfo info)
+        {
+            foreach (CultureInfo culture in info.Cultures.Where(culture => !_currencyInfoCultures.ContainsKey(culture)))
+                _currencyInfoCultures.Add(culture, info);
+        }
+
+        private static void AddRegions(CurrencyInfo info)
+        {
+            foreach (RegionInfo region in info.Regions.Where(region => !_currencyInfoRegions.ContainsKey(region)))
+                _currencyInfoRegions.Add(region, info);
+        }
+
+        private static int? ParseExponent([NotNull]string value)
+        {
+            if (value.Length <= 0)
+                return null;
+
+            int e;
+            if (!int.TryParse(value, out e))
+                return null;
+            int? exponent = e;
+            return exponent;
+        }
+
+        /// <summary>
+        ///   Initialize a new instance of <see cref="CurrencyInfo"/>.
+        /// </summary>
+        /// <param name="code">The ISO Code.</param>
+        /// <param name="isoNumber">The ISO Number.</param>
+        /// <param name="exponent">
+        ///   The exponent, which is the number of decimals available in the currency.
+        /// </param>
+        /// <param name="fullName">The currency's full name.</param>
+        private CurrencyInfo([NotNull] string code, int isoNumber, [CanBeNull] int? exponent,
+                             [NotNull] string fullName)
+        {
+            Code = code;
+            ISONumber = isoNumber;
+            Exponent = exponent;
+            FullName = fullName;
+            Regions = CultureHelper.RegionInfoFromCurrencyISO(code);
+            Cultures = CultureHelper.CultureInfoFromCurrencyISO(code);
+        }
+
+
+
+        /// <summary>
         ///   Retrieves a <see cref="CurrencyInfo"/> with the ISO Code specified.
         /// </summary>
         /// <param name="currencyCode">The ISO Code.</param>
@@ -178,7 +190,7 @@ namespace WebApplications.Utilities
         ///   The <see cref="CurrencyInfo"/> that corresponds to the <paramref name="currencyCode"/> specified (if any);
         ///   otherwise the default value for the type is returned.
         /// </returns>
-        /// <remarks>
+        /// <remarks>l
         ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> for this method,
         ///   <paramref name="currencyCode"/> cannot be null.
         /// </remarks>

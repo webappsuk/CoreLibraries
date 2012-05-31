@@ -399,4 +399,10 @@
   <data name="LimitedConcurrentQueue_LimitedConcurrentQueue_Maximum_Capacity" xml:space="preserve">
     <value>Maximum capacity is {0}.</value>
   </data>
+  <data name="Financial_Currencies_Do_Not_Match" xml:space="preserve">
+    <value>The currency of the first operand '{0}' did not match that of the second '{1}' during an {2} operation.</value>
+  </data>
+  <data name="Financial_Sum_EmptyEnumeration" xml:space="preserve">
+    <value>The financials argument contains no elements.</value>
+  </data>
 </root>

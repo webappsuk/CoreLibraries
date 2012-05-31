@@ -42,23 +42,27 @@ namespace WebApplications.Utilities
         ///   A lookup of <see cref="CultureInfo"/>s and <see cref="System.Globalization.RegionInfo"/>s
         ///   by currency ISO code (e.g. USD, GBP, JPY).
         /// </summary>
+        [NotNull]
         private static readonly Dictionary<string, Dictionary<CultureInfo, RegionInfo>> _currencyCultureInfo;
 
         /// <summary>
         ///   A lookup of regions by their English name.
         /// </summary>
+        [NotNull]
         private static readonly Dictionary<string, RegionInfo> _regionNames;
 
         /// <summary>
         ///   All the specified culture names.
         /// </summary>
-        [NotNull] private static readonly List<string> _cultureNames;
+        [NotNull]
+        private static readonly List<string> _cultureNames;
 
         /// <summary>
         ///   The invariant culture LCID.
         /// </summary>
         /// <seealso cref="System.Globalization.CultureInfo.InvariantCulture"/>
-        [UsedImplicitly] public static readonly int InvariantLCID;
+        [UsedImplicitly]
+        public static readonly int InvariantLCID;
 
         /// <summary>
         ///   Gets the cultures (both specific and neutral) as well as the currency and
@@ -92,7 +96,7 @@ namespace WebApplications.Utilities
                     cdict = new Dictionary<CultureInfo, RegionInfo>();
                     _currencyCultureInfo.Add(ri.ISOCurrencySymbol, cdict);
                 }
-
+                Contract.Assert(cdict != null);
                 cdict.Add(ci, ri);
                 if (!_regionNames.ContainsKey(ri.EnglishName))
                     _regionNames.Add(ri.EnglishName, ri);
@@ -198,7 +202,7 @@ namespace WebApplications.Utilities
             Contract.Requires(isoCode != null, Resources.CultureHelper_RegionInfoCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
-                return Enumerable.Empty<CultureInfo>();
+                return new List<CultureInfo>(0);
             return _currencyCultureInfo.ContainsKey(isoCode)
                        ? new List<CultureInfo>(_currencyCultureInfo[isoCode].Keys.Distinct())
                        : Enumerable.Empty<CultureInfo>();
@@ -221,7 +225,7 @@ namespace WebApplications.Utilities
             Contract.Requires(isoCode != null, Resources.CultureHelper_IsoCodeCannotBeNull);
 
             if (string.IsNullOrEmpty(isoCode))
-                return Enumerable.Empty<RegionInfo>();
+                return new List<RegionInfo>(0);
             return _currencyCultureInfo.ContainsKey(isoCode)
                        ? new List<RegionInfo>(_currencyCultureInfo[isoCode].Values.Distinct())
                        : Enumerable.Empty<RegionInfo>();
@@ -250,21 +254,22 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(currencyISO != null, Resources.CultureHelper_CurrencyIsoCannotBeNull);
 
-            List<CultureInfo> c = null;
+            CultureInfo[] c = null;
 
             if (!string.IsNullOrEmpty(currencyISO))
-                c = CultureInfoFromCurrencyISO(currencyISO);
+                c = CultureInfoFromCurrencyISO(currencyISO).ToArray();
 
             if ((c != null) &&
-                (c.Count > 0))
+                (c.Length > 0))
             {
                 CultureInfo cinfo = c[0];
                 if (countryISO != null)
                 {
                     // Find best match
-                    for (int i = c.Count - 1; i >= 0; i--)
+                    for (int i = c.Length - 1; i >= 0; i--)
                     {
                         cinfo = c[i];
+                        if (cinfo == null) continue;
                         RegionInfo r = new RegionInfo(cinfo.LCID);
                         if (r.TwoLetterISORegionName.Equals(countryISO))
                             break;

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Financials
@@ -7,7 +9,7 @@ namespace WebApplications.Utilities.Financials
     /// <summary>
     /// Represents a financial value and currency binding.
     /// </summary>
-    public class Financial : ICloneable, IEquatable<Financial>
+    public class Financial : IEquatable<Financial>
     {
         /// <summary>
         /// Gets or sets the currency.
@@ -42,6 +44,59 @@ namespace WebApplications.Utilities.Financials
         }
 
         /// <summary>
+        /// Exchanges the specified currency.
+        /// </summary>
+        /// <param name="currency">The currency.</param>
+        /// <param name="exchangeRate">The exchange rate.</param>
+        /// <param name="inputCharge">The input charge.</param>
+        /// <param name="outputCharge">The output charge.</param>
+        /// <returns>A <see cref="Financial"/> with the exchange rate and charges applied.</returns>
+        public Financial Exchange([NotNull] CurrencyInfo currency, decimal exchangeRate = decimal.One, decimal inputCharge = decimal.Zero, decimal outputCharge = decimal.Zero)
+        {
+            if (Currency == currency)
+                return this;
+
+            decimal amount = Amount;
+            amount += inputCharge;
+            amount *= exchangeRate;
+            amount += outputCharge;
+
+            return new Financial(currency, amount);
+        }
+
+        /// <summary>
+        /// Sums the amounts specified financials.
+        /// </summary>
+        /// <param name="financials">The financials.</param>
+        /// <returns><see cref="Financial"/> object with an amount of the specified financials summed.</returns>
+        public static Financial Sum([NotNull] IEnumerable<Financial> financials)
+        {
+            Financial[] financialsArray = financials.ToArray();
+
+            if (!financialsArray.Any())
+                throw new InvalidOperationException(Resources.Financial_Sum_EmptyEnumeration);
+
+            decimal summedAmounts = financialsArray.Sum(f => f.Amount);
+            return new Financial(financialsArray.First().Currency, summedAmounts);
+        }
+
+        /// <summary>
+        /// Averages the specified financials.
+        /// </summary>
+        /// <param name="financials">The financials.</param>
+        /// <returns><see cref="Financial"/> object with an amount of the specified financials averaged.</returns>
+        public static Financial Average(IEnumerable<Financial> financials)
+        {
+            Financial[] financialsArray = financials.ToArray();
+
+            if (!financialsArray.Any())
+                throw new InvalidOperationException(Resources.Financial_Sum_EmptyEnumeration);
+
+            decimal averageAmount = financialsArray.Average(f => f.Amount);
+            return new Financial(financialsArray.First().Currency, averageAmount);
+        }
+
+        /// <summary>
         /// Implements the operator +.
         /// </summary>
         /// <param name="a">A.</param>
@@ -69,9 +124,7 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator +([NotNull]Financial financial, decimal amount)
         {
-            Financial clone = (Financial)financial.Clone();
-            clone.Amount = financial.Amount + amount;
-            return clone;
+            return new Financial(financial.Currency, financial.Amount + amount);
         }
 
         /// <summary>
@@ -102,9 +155,7 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator -([NotNull]Financial financial, decimal amount)
         {
-            Financial clone = (Financial)financial.Clone();
-            clone.Amount = financial.Amount - amount;
-            return clone;
+            return new Financial(financial.Currency, financial.Amount - amount);
         }
 
         /// <summary>
@@ -182,23 +233,6 @@ namespace WebApplications.Utilities.Financials
         }
 
         /// <summary>
-        /// Validates the currencies match.
-        /// </summary>
-        /// <param name="a">A.</param>
-        /// <param name="b">The b.</param>
-        /// <param name="operation">The operation.</param>
-        private static void ValidateCurrenciesMatch(CurrencyInfo a, CurrencyInfo b, string operation)
-        {
-            if (a != b)
-                throw new InvalidOperationException(
-                    string.Format(
-                        "The currency of the first operand '{0}' did not match that of the second '{1}' during an {2} operation.",
-                        a,
-                        b,
-                        operation));
-        }
-
-        /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
@@ -222,14 +256,20 @@ namespace WebApplications.Utilities.Financials
         }
 
         /// <summary>
-        /// Creates a new object that is a copy of the current instance.
+        /// Validates the currencies match.
         /// </summary>
-        /// <returns>
-        /// A new object that is a copy of this instance.
-        /// </returns>
-        public object Clone()
+        /// <param name="a">A.</param>
+        /// <param name="b">The b.</param>
+        /// <param name="operation">The operation.</param>
+        private static void ValidateCurrenciesMatch(CurrencyInfo a, CurrencyInfo b, string operation)
         {
-            return new Financial(Currency, Amount);
+            if (a != b)
+                throw new InvalidOperationException(
+                    string.Format(
+                        Resources.Financial_Currencies_Do_Not_Match,
+                        a,
+                        b,
+                        operation));
         }
     }
 }
