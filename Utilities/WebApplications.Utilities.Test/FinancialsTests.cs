@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Financials;
@@ -350,6 +353,52 @@ namespace WebApplications.Utilities.Test
         public void TestAverageWithNoFinancialsInEnumerableThrowsNoFinancialsException()
         {
             Financial.Average(Enumerable.Empty<Financial>());
+        }
+
+        [TestMethod]
+        public void TestToStringFormatsUsingCurrentCultureWhenPossible()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get(CultureInfo.CurrentUICulture);
+            Financial financial = new Financial(currencyInfo, amount);
+            String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "Financial {0:C}", amount);
+            Assert.AreEqual(expectedFormat, financial.ToString());
+        }
+
+        [TestMethod]
+        public void TestToStringFormatsUsingCurrentLanguageWhenPossible()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB"); // No Euro in GB, but Ireland has and also at least speaks English (en).
+            Financial financial = new Financial(currencyInfo, amount);
+            String currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+            List<String> expectedFormats = currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == currentLanguage).Select(mc =>
+                String.Format(mc, "Financial {0:C}", amount)).ToList();
+            CollectionAssert.Contains(expectedFormats, financial.ToString());
+        }
+
+        [TestMethod]
+        public void TestToStringFormatsUsingCurrentCurrencyWhenPossible()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de"); // No pound in Germany, nor any German speaking countries.
+            Financial financial = new Financial(currencyInfo, amount);
+            List<String> expectedFormats = currencyInfo.Cultures.Select(mc =>
+                String.Format(mc, "Financial {0:C}", amount)).ToList();
+            CollectionAssert.Contains(expectedFormats, financial.ToString());
+        }
+
+        [TestMethod]
+        public void TestToStringFormatsUsingCurrentCultureIsCorrectCurrencyIsNotPossible()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("XXX"); // Noone uses this dubiously named currency
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de");
+            Financial financial = new Financial(currencyInfo, amount);
+            String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "Financial {0:C}", amount);
+            Assert.AreEqual(expectedFormat, financial.ToString());
         }
     }
 }
