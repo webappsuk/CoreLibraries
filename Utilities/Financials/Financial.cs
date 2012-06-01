@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -252,7 +253,22 @@ namespace WebApplications.Utilities.Financials
         /// </returns>
         public override string ToString()
         {
-            return string.Format("Financial {0}{1}", Amount, Currency.Code);
+            CultureInfo culture = CultureInfo.CurrentUICulture;
+            if (!Currency.Cultures.Contains(CultureInfo.CurrentUICulture))
+            {
+                List<CultureInfo> matchingCultures = Currency.Cultures.Where(c=>c.TwoLetterISOLanguageName==CultureInfo.CurrentUICulture.TwoLetterISOLanguageName).ToList();
+                if( matchingCultures.Count > 0 )
+                {
+                    culture = matchingCultures.First();
+                } else
+                {
+                    if( Currency.Cultures.Any() )
+                    {
+                        culture = Currency.Cultures.First();
+                    }
+                }
+            }
+            return string.Format(culture,"Financial {0:C}", Amount);
         }
 
         /// <summary>
