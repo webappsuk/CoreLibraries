@@ -114,6 +114,10 @@ namespace WebApplications.Utilities
                 CreateCurrencyInfo(entry);
         }
 
+        /// <summary>
+        /// Creates the currency info.
+        /// </summary>
+        /// <param name="entry">The entry from the resource file.</param>
         private static void CreateCurrencyInfo(DictionaryEntry entry)
         {
             string currencyCode = entry.Key.ToString();
@@ -136,18 +140,31 @@ namespace WebApplications.Utilities
             AddCultures(currencyInfo);
         }
 
+        /// <summary>
+        /// Adds the cultures.
+        /// </summary>
+        /// <param name="info">The currency info.</param>
         private static void AddCultures(CurrencyInfo info)
         {
             foreach (CultureInfo culture in info.Cultures.Where(culture => !_currencyInfoCultures.ContainsKey(culture)))
                 _currencyInfoCultures.Add(culture, info);
         }
 
+        /// <summary>
+        /// Adds the regions.
+        /// </summary>
+        /// <param name="info">The region info.</param>
         private static void AddRegions(CurrencyInfo info)
         {
             foreach (RegionInfo region in info.Regions.Where(region => !_currencyInfoRegions.ContainsKey(region)))
                 _currencyInfoRegions.Add(region, info);
         }
 
+        /// <summary>
+        /// Parses the exponent.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The parsed exponent.</returns>
         private static int? ParseExponent([NotNull]string value)
         {
             if (value.Length <= 0)

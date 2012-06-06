@@ -127,6 +127,7 @@ namespace WebApplications.Utilities.Threading
         ///   Adds the entry to the top of the stack.
         /// </summary>
         /// <param name="entry">The entry.</param>
+        [NotNull]
         [UsedImplicitly]
         public IDisposable Region(T entry)
         {
@@ -137,6 +138,7 @@ namespace WebApplications.Utilities.Threading
         ///   Creates a region in which the stack does not exist.
         ///   This is useful for security when passing off to a set of untrusted code.
         /// </summary>
+        [NotNull]
         [UsedImplicitly]
         public IDisposable Clean()
         {
