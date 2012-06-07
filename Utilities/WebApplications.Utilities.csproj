@@ -129,6 +129,7 @@
     </Compile>
     <Compile Include="ExtendedTupleGeneric.cs" />
     <Compile Include="Financials\Financial.cs" />
+    <Compile Include="Ranges\FinancialRange.cs" />
     <Compile Include="Reflect\CastMethod.cs" />
     <Compile Include="Reflect\Constructor.cs" />
     <Compile Include="Reflect\Event.cs" />
