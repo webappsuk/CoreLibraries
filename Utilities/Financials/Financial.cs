@@ -299,6 +299,13 @@ namespace WebApplications.Utilities.Financials
             }
         }
 
+        /// <summary>
+        /// Formats the currency.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
         private string FormatCurrency(CultureInfo culture)
         {
             if (!Currency.Cultures.Contains(culture))
