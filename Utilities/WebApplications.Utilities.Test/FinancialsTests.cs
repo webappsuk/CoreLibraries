@@ -361,7 +361,7 @@ namespace WebApplications.Utilities.Test
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get(CultureInfo.CurrentUICulture);
             Financial financial = new Financial(currencyInfo, amount);
-            String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "Financial {0:C}", amount);
+            String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "{0:C}", amount);
             Assert.AreEqual(expectedFormat, financial.ToString());
         }
 
@@ -374,31 +374,170 @@ namespace WebApplications.Utilities.Test
             Financial financial = new Financial(currencyInfo, amount);
             String currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             List<String> expectedFormats = currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == currentLanguage).Select(mc =>
-                String.Format(mc, "Financial {0:C}", amount)).ToList();
+                String.Format(mc, "{0:C}", amount)).ToList();
             CollectionAssert.Contains(expectedFormats, financial.ToString());
         }
 
         [TestMethod]
-        public void TestToStringFormatsUsingCurrentCurrencyWhenPossible()
+        public void TestToStringFormatsUsingCorrectCurrencyWhenCurrencyOfCurrentUICultureDoesNotMatch()
         {
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de"); // No pound in Germany, nor any German speaking countries.
             Financial financial = new Financial(currencyInfo, amount);
             List<String> expectedFormats = currencyInfo.Cultures.Select(mc =>
-                String.Format(mc, "Financial {0:C}", amount)).ToList();
+                String.Format(mc, "{0:C}", amount)).ToList();
             CollectionAssert.Contains(expectedFormats, financial.ToString());
         }
 
         [TestMethod]
-        public void TestToStringFormatsUsingCurrentCultureIsCorrectCurrencyIsNotPossible()
+        public void TestToStringFormatsUsingCurrentCultureIfCorrectCurrencyIsNotPossible()
         {
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("XXX"); // Noone uses this dubiously named currency
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de");
             Financial financial = new Financial(currencyInfo, amount);
-            String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "Financial {0:C}", amount);
+            String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "{0:C}", amount);
             Assert.AreEqual(expectedFormat, financial.ToString());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormatException))]
+        public void TestFormatWithInvalidFormatThrowsFormatException()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
+            Financial financial = new Financial(currencyInfo, amount);
+            string s = String.Format("{0:NOTVALID}", financial);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormatException))]
+        public void TestFormatWithFormatProviderAndInvalidFormatThrowsFormatException()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
+            Financial financial = new Financial(currencyInfo, amount);
+            string s = String.Format(CultureInfo.CurrentUICulture, "{0:NOTVALID}", financial);
+        }
+
+        [TestMethod]
+        public void TestFormatWithFormatIReturnsAmountAndIsoCode()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            Financial financial = new Financial(currencyInfo, amount);
+            String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "{0} {1}", amount, currencyInfo.Code);
+            Assert.AreEqual(expectedFormat, String.Format("{0:I}", financial));
+        }
+
+        [TestMethod]
+        public void TestFormatWithFormatIAndFormatProviderReturnsAmountAndIsoCode()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            Financial financial = new Financial(currencyInfo, amount);
+            IFormatProvider provider = new CultureInfo("fr-ca").NumberFormat;
+            String expectedFormat = String.Format(provider, "{0} {1}", amount, currencyInfo.Code);
+            Assert.AreEqual(expectedFormat, String.Format(provider,"{0:I}", financial));
+        }
+
+        [TestMethod]
+        public void TestFormatWithNoFormatUsesFormatI()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            Financial financial = new Financial(currencyInfo, amount);
+            String expectedFormat = String.Format("{0:I}", financial);
+            Assert.AreEqual(expectedFormat, String.Format("{0}", financial));
+        }
+
+        [TestMethod]
+        public void TestFormatWithFormatCReturnsSameAsToString()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
+            Financial financial = new Financial(currencyInfo, amount);
+            String expectedFormat = financial.ToString();
+            Assert.AreEqual(expectedFormat, String.Format("{0:C}", financial));
+        }
+
+        [TestMethod]
+        public void TestFormatWithFormatCAndCurrentCultureAsProviderReturnsSameAsToString()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
+            Financial financial = new Financial(currencyInfo, amount);
+            IFormatProvider provider = CultureInfo.CurrentUICulture;
+            String expectedFormat = financial.ToString();
+            Assert.AreEqual(expectedFormat, String.Format(provider, "{0:C}", financial));
+        }
+
+        [TestMethod]
+        public void TestFormatWithFormatCAndWhenProviderIsNotCultureInfoReturnsSameAsToString()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
+            Financial financial = new Financial(currencyInfo, amount);
+            IFormatProvider provider = NumberFormatInfo.InvariantInfo;
+            String expectedFormat = financial.ToString();
+            Assert.AreEqual(expectedFormat, String.Format(provider, "{0:C}", financial));
+        }
+
+        [TestMethod]
+        public void TestFormatWithFormatCFormatsUsingSpecifiedCultureWhenPossible()
+        {
+            Decimal amount = Random.RandomDecimal();
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
+            CultureInfo provider = new CultureInfo("en-GB");
+            CurrencyInfo currencyInfo = CurrencyInfo.Get(provider);
+            Financial financial = new Financial(currencyInfo, amount);
+            String expectedFormat = String.Format(provider, "{0:C}", amount);
+            Assert.AreEqual(expectedFormat, String.Format(provider, "{0:C}", financial));
+        }
+
+        [TestMethod]
+        public void TestFormatWithFormatCFormatsUsingCorrectLanguageWhenPossible()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-fr"); // Now if CurrentUICulture is used instead, we get French formatting.
+            CultureInfo provider = new CultureInfo("en-GB"); // No Euro in GB, but Ireland has and also at least speaks English (en).
+            Financial financial = new Financial(currencyInfo, amount);
+            String correctLanguage = provider.TwoLetterISOLanguageName;
+            List<String> expectedFormats = currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == correctLanguage).Select(mc =>
+                String.Format(mc, "{0:C}", amount)).ToList();
+            String actualFormat = String.Format(provider, "{0:C}", financial);
+            CollectionAssert.Contains(expectedFormats, actualFormat);
+        }
+
+        [TestMethod]
+        public void TestFormatWithFormatCFormatsUsingCurrentCurrencyWhenSpecifiedCurrencyDoesNotMatch()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
+            CultureInfo provider = new CultureInfo("De-de"); // No pound in Germany, nor any German speaking countries.
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
+            Financial financial = new Financial(currencyInfo, amount);
+            List<String> expectedFormats = currencyInfo.Cultures.Select(mc =>
+                String.Format(mc, "{0:C}", amount)).ToList();
+            String actualFormat = String.Format(provider, "{0:C}", financial);
+            CollectionAssert.Contains(expectedFormats, actualFormat);
+        }
+
+        [TestMethod]
+        public void TestFormatWithFormatCFormatsUsingSpecifiedCultureIfCorrectCurrencyIsNotPossible()
+        {
+            Decimal amount = Random.RandomDecimal();
+            CurrencyInfo currencyInfo = CurrencyInfo.Get("XXX"); // Noone uses this dubiously named currency
+            CultureInfo provider = new CultureInfo("De-de");
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+            Financial financial = new Financial(currencyInfo, amount);
+            String expectedFormat = String.Format(provider, "{0:C}", amount);
+            Assert.AreEqual(expectedFormat, String.Format(provider, "{0:C}", financial));
         }
     }
 }

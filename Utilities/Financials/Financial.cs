@@ -10,7 +10,7 @@ namespace WebApplications.Utilities.Financials
     /// <summary>
     /// Represents a financial value and currency binding.
     /// </summary>
-    public class Financial : IEquatable<Financial>
+    public class Financial : IEquatable<Financial>, IFormattable
     {
         /// <summary>
         /// Gets or sets the currency.
@@ -253,22 +253,63 @@ namespace WebApplications.Utilities.Financials
         /// </returns>
         public override string ToString()
         {
-            CultureInfo culture = CultureInfo.CurrentUICulture;
-            if (!Currency.Cultures.Contains(CultureInfo.CurrentUICulture))
+            return FormatCurrency(CultureInfo.CurrentUICulture);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format style: "I" for the value followed by the ISO currency code, "C" for a culture specific currency format.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
+        public string ToString(string format)
+        {
+            return this.ToString(format, CultureInfo.CurrentUICulture);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format style: "I" for the value followed by the ISO currency code, "C" for a culture specific currency format.</param>
+        /// <param name="provider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
+        public string ToString(string format, IFormatProvider provider)
+        {
+            if (String.IsNullOrEmpty(format)) format = "I";
+            switch (format.ToUpperInvariant())
             {
-                List<CultureInfo> matchingCultures = Currency.Cultures.Where(c=>c.TwoLetterISOLanguageName==CultureInfo.CurrentUICulture.TwoLetterISOLanguageName).ToList();
-                if( matchingCultures.Count > 0 )
-                {
-                    culture = matchingCultures.First();
-                } else
-                {
-                    if( Currency.Cultures.Any() )
+                case "I":
+                    return String.Format(provider, "{0} {1}", Amount, Currency.Code);
+                case "C":
+                    CultureInfo culture;
+                    try
                     {
-                        culture = Currency.Cultures.First();
+                        culture = (CultureInfo)provider;
                     }
-                }
+                    catch (InvalidCastException)
+                    {
+                        culture = CultureInfo.CurrentUICulture;
+                    }
+                    return FormatCurrency(culture);
+                default:
+                    throw new FormatException(String.Format("The {0} format string is not supported.", format));
             }
-            return string.Format(culture,"Financial {0:C}", Amount);
+        }
+
+        private string FormatCurrency(CultureInfo culture)
+        {
+            if (!Currency.Cultures.Contains(culture))
+            {
+                List<CultureInfo> matchingCultures = Currency.Cultures.Where(c => c.TwoLetterISOLanguageName == culture.TwoLetterISOLanguageName).ToList();
+                if (matchingCultures.Count > 0)
+                    culture = matchingCultures.First();
+                else if (Currency.Cultures.Any())
+                    culture = Currency.Cultures.First();
+            }
+            return String.Format(culture, "{0:C}", Amount);
         }
 
         /// <summary>
