@@ -287,8 +287,9 @@ namespace WebApplications.Utilities.Financials
                     CultureInfo culture;
                     try
                     {
-                        culture = (CultureInfo) provider;
-                    } catch( InvalidCastException )
+                        culture = (CultureInfo)provider;
+                    }
+                    catch (InvalidCastException)
                     {
                         culture = CultureInfo.CurrentUICulture;
                     }
