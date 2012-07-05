@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebApplications.Utilities</RootNamespace>
     <AssemblyName>WebApplications.Utilities</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -54,7 +54,6 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\WebApplications.Utilities.xml</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -66,7 +65,6 @@
     <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Release\WebApplications.Utilities.xml</DocumentationFile>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -78,18 +76,16 @@
     <Reference Include="JetBrains.Annotations, Version=5.1.3000.12, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <HintPath>packages\JetBrains.Annotations.5.1.3000.12\lib\JetBrains.Annotations.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>packages\Newtonsoft.Json.4.5.7\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Nito.AsyncEx">
+      <HintPath>packages\Nito.AsyncEx.0.8.0\lib\net40-client\Nito.AsyncEx.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq">
@@ -102,29 +98,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAnnotations\Attributes\Display\ApiLocationAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Display\DisplayAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Display\IdPropertyAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\CompareAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\EmailAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\ExcludeAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\Base.cs" />
-    <Compile Include="DataAnnotations\ExtJsValidators\Compare.cs" />
-    <Compile Include="DataAnnotations\ExtJsValidators\EMail.cs" />
-    <Compile Include="DataAnnotations\ExtJsValidators\Exclusion.cs" />
-    <Compile Include="DataAnnotations\ExtJsValidators\Format.cs" />
-    <Compile Include="DataAnnotations\ExtJsValidators\Inclusion.cs" />
-    <Compile Include="DataAnnotations\ExtJsValidators\Length.cs" />
-    <Compile Include="DataAnnotations\ExtJsValidators\Presence.cs" />
-    <Compile Include="DataAnnotations\ExtJsValidators\Sieve.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\IncludeAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\ITravellerValidator.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\MaxLengthAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\MinLengthAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\RegularExpressionAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\RequiredAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\SieveAttribute.cs" />
-    <Compile Include="DataAnnotations\Attributes\Validators\StringLengthAttribute.cs" />
     <Compile Include="BigArray.cs" />
     <Compile Include="Caching\CachingDictionaryBase.cs" />
     <Compile Include="Caching\CachingQueue.cs" />
@@ -148,10 +121,6 @@
     <Compile Include="Configuration\ConfigurationSection.cs" />
     <Compile Include="Configuration\ParameterCollection.cs" />
     <Compile Include="Configuration\ParameterElement.cs" />
-    <Compile Include="DataAnnotations\ExtJsField.cs" />
-    <Compile Include="DataAnnotations\ExtJsMetaData.cs" />
-    <Compile Include="DataAnnotations\ExtJsModelSerializer.cs" />
-    <Compile Include="DataAnnotations\Utility.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
     <Compile Include="ExtendedTupleOverloads.cs">
       <DependentUpon>ExtendedTupleOverloads.tt</DependentUpon>
