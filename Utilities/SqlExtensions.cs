@@ -173,7 +173,7 @@ namespace WebApplications.Utilities
         /// <exception cref="NullReferenceException">
         ///   <paramref name="dataReader"/> is <see langword="null"/>.
         /// </exception>
-        public static T GetValue<T>(this SqlDataReader dataReader, int ordinal, T nullValue = default(T))
+        public static T GetValue<T>(this IDataReader dataReader, int ordinal, T nullValue = default(T))
         {
             return dataReader.IsDBNull(ordinal) ? nullValue : (T) dataReader.GetValue(ordinal);
         }
@@ -195,7 +195,7 @@ namespace WebApplications.Utilities
         /// <exception cref="NullReferenceException">
         ///   <paramref name="dataReader"/> is <see langword="null"/>.
         /// </exception>
-        public static T GetValue<T>(this SqlDataReader dataReader, string columnName, T nullValue = default(T))
+        public static T GetValue<T>(this IDataReader dataReader, string columnName, T nullValue = default(T))
         {
             int ordinal = dataReader.GetOrdinal(columnName);
             return dataReader.IsDBNull(ordinal) ? nullValue : (T) dataReader.GetValue(ordinal);
@@ -222,7 +222,7 @@ namespace WebApplications.Utilities
         ///   <paramref name="dataReader"/> is <see langword="null"/>.
         /// </exception>
         public static bool TryGetValue<T>(
-            this SqlDataReader dataReader, string columnName, out T value, T nullValue = default(T))
+            this IDataReader dataReader, string columnName, out T value, T nullValue = default(T))
         {
             int ordinal = -1;
             for (int i = 0; i < dataReader.FieldCount; i++)
