@@ -1419,5 +1419,29 @@ namespace WebApplications.Utilities
             return !ReferenceEquals(nullable, null) && nullable.IsNull;
         }
 
+        /// <summary>
+        /// Splits the string into lines.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        [NotNull]
+        public static IEnumerable<string> SplitLines([NotNull]this string input)
+        {
+            return _lineSplitter.Split(input);
+        }
+
+        /// <summary>
+        /// Lowers the case of the first letter.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        [NotNull]
+        public static string LowerCaseFirstLetter([NotNull]this string input)
+        {
+            return input.Substring(0, 1).ToLower() + input.Substring(1);
+        }
+
+        [NotNull]
+        private readonly static Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
     }
 }

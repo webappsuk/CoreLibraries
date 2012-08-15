@@ -102,7 +102,6 @@
     <add key="VBdocman_comModules_Configuration...ParameterElement.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_CultureHelper.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_CurrencyInfo.cs"><![CDATA[On]]></add>
-    <add key="VBdocman_comModules_DebuggingExtensions.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Enumerations...TriState.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Enumerations...TruncateOptions.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_EqualityBuilder.cs"><![CDATA[On]]></add>
@@ -111,6 +110,7 @@
     <add key="VBdocman_comModules_Location...DistanceCalculation.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Location...LatLng.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Properties...AssemblyInfo.cs"><![CDATA[On]]></add>
+    <add key="VBdocman_comModules_Ranges...ByteRange.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Ranges...DateRange.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Ranges...DateTimeRange.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Ranges...DecimalRange.cs"><![CDATA[On]]></add>
@@ -119,14 +119,9 @@
     <add key="VBdocman_comModules_Ranges...LongRange.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Ranges...Range.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Ranges...ShortRange.cs"><![CDATA[On]]></add>
+    <add key="VBdocman_comModules_Ranges...TimeSpanRangecs.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Reflection.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_ReflectionOverloads.cs"><![CDATA[On]]></add>
-    <add key="VBdocman_comModules_Serialization...DelegateSerializer.cs"><![CDATA[On]]></add>
-    <add key="VBdocman_comModules_Serialization...ExtendedSerializationBinder.cs"><![CDATA[On]]></add>
-    <add key="VBdocman_comModules_Serialization...Serialize.cs"><![CDATA[On]]></add>
-    <add key="VBdocman_comModules_Serialization...XElementSurrogate.cs"><![CDATA[On]]></add>
-    <add key="VBdocman_comModules_Serialization...XmlElementSurrogate.cs"><![CDATA[On]]></add>
-    <add key="VBdocman_comModules_Serialization...XmlFormatter.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Singleton.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_SqlExtensions.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_TaskExtensions.cs"><![CDATA[On]]></add>
