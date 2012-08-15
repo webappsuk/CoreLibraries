@@ -111,5 +111,12 @@ namespace WebApplications.Testing.Test
                 } while (dataReader.NextResult());
             }
         }
+
+        [TestMethod]
+        public void RobsExample()
+        {
+            IObjectRecord exceptionRecord = new ExceptionRecord(new Data.Exceptions.SqlInvalidConnectionException());
+
+        }
     }
 }
