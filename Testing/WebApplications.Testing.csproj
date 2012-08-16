@@ -59,6 +59,13 @@
   <ItemGroup>
     <Compile Include="Data\ColumnDefinition.cs" />
     <Compile Include="Data\ExceptionRecord.cs" />
+    <Compile Include="Data\Exceptions\SqlConversionException.cs" />
+    <Compile Include="Data\Exceptions\SqlNullException.cs" />
+    <Compile Include="Data\Exceptions\SqlDatabaseException.cs" />
+    <Compile Include="Data\Exceptions\SqlIdentityColumnValueException.cs" />
+    <Compile Include="Data\Exceptions\SqlInvalidObjectException.cs" />
+    <Compile Include="Data\Exceptions\SqlInvalidColumnException.cs" />
+    <Compile Include="Data\Exceptions\SqlInvalidSyntaxException.cs" />
     <Compile Include="Data\Exceptions\SqlEventSessionStoppedException.cs" />
     <Compile Include="Data\Exceptions\SqlInvalidConnectionException.cs" />
     <Compile Include="Data\Exceptions\InvalidUserOrDatabaseException.cs" />

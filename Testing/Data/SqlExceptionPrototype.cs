@@ -191,6 +191,19 @@ namespace WebApplications.Testing.Data
         }
 
         /// <summary>
+        /// Gets a message that describes the current exception.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The message describing the current exception.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public string Message
+        {
+            get { return SqlException.Message; }
+        }
+
+        /// <summary>
         /// Gets a numeric error code from SQL Server that represents an error, warning or "no data found" message. For more information about how to decode these values, see SQL Server Books Online.
         /// </summary>
         /// 
@@ -263,7 +276,7 @@ namespace WebApplications.Testing.Data
             return new
                 SqlErrorCollectionPrototype
                        {
-                           new SqlErrorPrototype(infoNumber, errorState, errorClass, errorMessage)
+                           new SqlErrorPrototype(infoNumber, errorState, errorClass, errorMessage: errorMessage)
                        };
         }
     }
