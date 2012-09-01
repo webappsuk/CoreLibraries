@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Financials;
 
@@ -58,10 +59,11 @@ namespace WebApplications.Utilities.Ranges
         /// The <paramref name="start" /> value was greater than the <paramref name="end" /> value.
         ///   </exception>
         /// <remarks></remarks>
-        public FinancialRange([NotNull]Financial start, [NotNull]Financial end, Financial step) 
+        public FinancialRange([NotNull]Financial start, [NotNull]Financial end, [NotNull]Financial step) 
             : base(start, end, step.Amount)
         {
             Contract.Requires(start.Currency == end.Currency, "The currencies in the financial parameters must match.");
+            Contract.Requires(step.Currency == start.Currency, "The currencies in the financial parameters must match.");
             Contract.Requires(step.Currency == start.Currency, "The currencies in the financial parameters must match.");
         }
 

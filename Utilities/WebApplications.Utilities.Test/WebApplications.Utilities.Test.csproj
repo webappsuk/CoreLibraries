@@ -60,9 +60,8 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing, Version=1.1.4517.27417, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Testing.1.1.4517.27417\lib\net40\WebApplications.Testing.dll</HintPath>
+    <Reference Include="WebApplications.Testing">
+      <HintPath>..\packages\WebApplications.Testing.1.1.4610.18394\lib\net40\WebApplications.Testing.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +94,7 @@
     <Compile Include="Ranges\DateTimeTests.cs" />
     <Compile Include="Ranges\DecimalRangeTests.cs" />
     <Compile Include="Ranges\DoubleRangeTests.cs" />
+    <Compile Include="Ranges\FinancialRangeTests.cs" />
     <Compile Include="Ranges\IntRangeTests.cs" />
     <Compile Include="Ranges\LongRangeTests.cs" />
     <Compile Include="Ranges\RangeTests.cs" />

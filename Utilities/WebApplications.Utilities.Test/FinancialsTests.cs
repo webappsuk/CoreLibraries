@@ -539,5 +539,32 @@ namespace WebApplications.Utilities.Test
             String expectedFormat = String.Format(provider, "{0:C}", amount);
             Assert.AreEqual(expectedFormat, String.Format(provider, "{0:C}", financial));
         }
+
+        [TestMethod]
+        public void TestFinancialEqualityComparerReturnsTrueForEqualFinancials()
+        {
+            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 10);
+            Financial financialB = new Financial(CurrencyInfo.Get("GBP"), 10);
+
+            Assert.IsTrue(financialA == financialB);
+        }
+
+        [TestMethod]
+        public void TestFinancialEqualityComparerReturnsFalseForNonEqualFinancialAmounts()
+        {
+            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 10);
+            Financial financialB = new Financial(CurrencyInfo.Get("GBP"), 11);
+
+            Assert.IsFalse(financialA == financialB);
+        }
+
+        [TestMethod]
+        public void TestFinancialEqualityComparerReturnsFalseForNonEqualFinancialCurrencies()
+        {
+            Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 10);
+            Financial financialB = new Financial(CurrencyInfo.Get("EUR"), 10);
+
+            Assert.IsFalse(financialA == financialB);
+        }
     }
 }

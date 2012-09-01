@@ -32,7 +32,7 @@ namespace WebApplications.Utilities.Ranges
     /// </summary>
     /// <typeparam name="TValue">The type of the values in the range.</typeparam>
     /// <typeparam name="TStep">The type of the step used to iterate through the collection.</typeparam>
-    public class Range<TValue, TStep> : IEnumerable<TValue>
+    public class Range<TValue, TStep> : IEnumerable<TValue>, IEquatable<Range<TValue,TStep>>
     {
         /// <summary>
         ///   Method for performing additions.
@@ -225,6 +225,37 @@ namespace WebApplications.Utilities.Ranges
                 if (!LessThan(loop, next))
                     yield break;
                 yield return loop;
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            Range<TValue, TStep> range = obj as Range<TValue, TStep>;
+            if (ReferenceEquals(null, range)) return false;
+            return EqualityComparer<TValue>.Default.Equals(End, range.End) && 
+                EqualityComparer<TValue>.Default.Equals(Start, range.Start) && 
+                EqualityComparer<TStep>.Default.Equals(Step, range.Step);
+        }
+
+        public bool Equals(Range<TValue, TStep> other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return EqualityComparer<TValue>.Default.Equals(End, other.End) &&
+                EqualityComparer<TValue>.Default.Equals(Start, other.Start) &&
+                EqualityComparer<TStep>.Default.Equals(Step, other.Step);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = EqualityComparer<TValue>.Default.GetHashCode(End);
+                hashCode = (hashCode * 397) ^ EqualityComparer<TValue>.Default.GetHashCode(Start);
+                hashCode = (hashCode * 397) ^ EqualityComparer<TStep>.Default.GetHashCode(Step);
+                return hashCode;
             }
         }
 

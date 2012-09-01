@@ -220,6 +220,35 @@ namespace WebApplications.Utilities.Financials
         }
 
         /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="a">A.</param>
+        /// <param name="b">The b.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator ==(Financial a, Financial b)
+        {
+            if (ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
+            return Equals(a.Amount, b.Amount) &&
+                   Equals(a.Currency, b.Currency);
+        }
+
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="a">A.</param>
+        /// <param name="b">The b.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator !=(Financial a, Financial b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
         /// Implements the operator *.
         /// </summary>
         /// <param name="a">A.</param>
@@ -231,6 +260,35 @@ namespace WebApplications.Utilities.Financials
         public static Financial operator *([NotNull]Financial a, [NotNull]Financial b)
         {
             return new Financial(a.Currency, a.Amount * b.Amount);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj)) return true;
+            Financial financial = obj as Financial;
+            if (ReferenceEquals(null, obj)) return false;
+            return Equals(financial);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Currency.GetHashCode() * 397) ^ Amount.GetHashCode();
+            }
         }
 
         /// <summary>
