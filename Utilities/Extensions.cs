@@ -1443,5 +1443,16 @@ namespace WebApplications.Utilities
 
         [NotNull]
         private readonly static Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
+
+        /// <summary>
+        /// Increase number by a percentage.
+        /// </summary>
+        /// <param name="number">The number.</param>
+        /// <param name="increaseByPercent">Percentage to increase by.</param>
+        /// <returns>The number increased by given percentage.</returns>
+        public static double AddPercentage(this double number, double increaseByPercent)
+        {
+            return number + (number * increaseByPercent) / 100;
+        }
     }
 }
