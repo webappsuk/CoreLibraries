@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities.Logging 
-// Project: WebApplications.Utilities.Logging
-// File: SqlLogger.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -40,29 +45,22 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         ///   Holds the SQL meta data for storing logs to a db.
         /// </summary>
-        [NonSerialized]
-        [NotNull]
-        private static readonly SqlMetaData[] _tblLogEntry;
+        [NonSerialized] [NotNull] private static readonly SqlMetaData[] _tblLogEntry;
 
         /// <summary>
         ///   Holds the SQL meta data for storing operations to a db.
         /// </summary>
-        [NonSerialized]
-        [NotNull]
-        private static readonly SqlMetaData[] _tblOperation;
+        [NonSerialized] [NotNull] private static readonly SqlMetaData[] _tblOperation;
 
         /// <summary>
         ///   Holds the SQL meta data for storing tuples to a db.
         /// </summary>
-        [NonSerialized]
-        [NotNull]
-        private static readonly SqlMetaData[] _tblDictionary;
+        [NonSerialized] [NotNull] private static readonly SqlMetaData[] _tblDictionary;
 
         /// <summary>
         ///   The database connection string.
         /// </summary>
-        [NotNull]
-        private readonly string _connectionString;
+        [NotNull] private readonly string _connectionString;
 
         /// <summary>
         ///   The last time a log was added.
@@ -100,22 +98,22 @@ namespace WebApplications.Utilities.Logging.Loggers
                                    new SqlMetaData("StackTrace", SqlDbType.NVarChar, -1)
                                };
             _tblOperation = new[]
-                               {
-                                   new SqlMetaData("GUID", SqlDbType.UniqueIdentifier),
-                                   new SqlMetaData("ParentGUID", SqlDbType.UniqueIdentifier),
-                                   new SqlMetaData("CategoryName", SqlDbType.NVarChar, -1),
-                                   new SqlMetaData("Name", SqlDbType.NVarChar, -1),
-                                   new SqlMetaData("InstanceHash", SqlDbType.Int),
-                                   new SqlMetaData("Method", SqlDbType.NVarChar, -1),
-                                   new SqlMetaData("ThreadId", SqlDbType.Int),
-                                   new SqlMetaData("ThreadName", SqlDbType.NVarChar, -1),
-                               };
+                                {
+                                    new SqlMetaData("GUID", SqlDbType.UniqueIdentifier),
+                                    new SqlMetaData("ParentGUID", SqlDbType.UniqueIdentifier),
+                                    new SqlMetaData("CategoryName", SqlDbType.NVarChar, -1),
+                                    new SqlMetaData("Name", SqlDbType.NVarChar, -1),
+                                    new SqlMetaData("InstanceHash", SqlDbType.Int),
+                                    new SqlMetaData("Method", SqlDbType.NVarChar, -1),
+                                    new SqlMetaData("ThreadId", SqlDbType.Int),
+                                    new SqlMetaData("ThreadName", SqlDbType.NVarChar, -1),
+                                };
             _tblDictionary = new[]
-                               {
-                                   new SqlMetaData("GUID", SqlDbType.UniqueIdentifier),
-                                   new SqlMetaData("Name", SqlDbType.NVarChar, 200),
-                                   new SqlMetaData("Value", SqlDbType.NVarChar, -1)
-                               };
+                                 {
+                                     new SqlMetaData("GUID", SqlDbType.UniqueIdentifier),
+                                     new SqlMetaData("Name", SqlDbType.NVarChar, 200),
+                                     new SqlMetaData("Value", SqlDbType.NVarChar, -1)
+                                 };
         }
 
 
@@ -167,7 +165,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 _sqlTimeout = 120;
             else
             {
-                _sqlTimeout = (int)Math.Ceiling(sqlTimeout.TotalSeconds);
+                _sqlTimeout = (int) Math.Ceiling(sqlTimeout.TotalSeconds);
                 if (_sqlTimeout < 1)
                     throw new LoggingException(Resources.Sqllogger_TimeoutLessThanOneSecond,
                                                LogLevel.Critical, sqlTimeout);
@@ -191,7 +189,11 @@ namespace WebApplications.Utilities.Logging.Loggers
                     connection.Open();
 
                     using (
-                        SqlCommand command = new SqlCommand("spRegisterApplication", connection) { CommandType = CommandType.StoredProcedure, CommandTimeout = _sqlTimeout })
+                        SqlCommand command = new SqlCommand("spRegisterApplication", connection)
+                                                 {
+                                                     CommandType = CommandType.StoredProcedure,
+                                                     CommandTimeout = _sqlTimeout
+                                                 })
                     {
                         command.Parameters.AddWithValue("@ApplicationGuid", _applicationGuid);
                         command.Parameters.AddWithValue("@ApplicationName", applicationName);
@@ -212,7 +214,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="log">The log to add.</param>
         public override void Add(Log log)
         {
-            Add(new List<Log> { log });
+            Add(new List<Log> {log});
         }
 
         /// <summary>
@@ -235,8 +237,8 @@ namespace WebApplications.Utilities.Logging.Loggers
 
                 // Build structure for context.
                 context.AddRange(
-                        log.Context.Select(
-                            kvp => new Tuple<CombGuid, string, string>(log.Guid, kvp.Key, kvp.Value)));
+                    log.Context.Select(
+                        kvp => new Tuple<CombGuid, string, string>(log.Guid, kvp.Key, kvp.Value)));
 
                 // Build structures for operations and their arguments
                 Operation operation = log.Operation;
@@ -266,18 +268,23 @@ namespace WebApplications.Utilities.Logging.Loggers
                 connection.Open();
 
                 using (
-                    SqlCommand command = new SqlCommand("spLog", connection) { CommandType = CommandType.StoredProcedure, CommandTimeout = _sqlTimeout })
+                    SqlCommand command = new SqlCommand("spLog", connection)
+                                             {CommandType = CommandType.StoredProcedure, CommandTimeout = _sqlTimeout})
                 {
                     command.Parameters.AddWithValue("@ApplicationGuid", _applicationGuid);
 
                     command.Parameters.Add(
-                        new SqlParameter("@LogEntry", SqlDbType.Structured) { Value = loglist.Any() ? loglist.Select(GetLogData) : null });
+                        new SqlParameter("@LogEntry", SqlDbType.Structured)
+                            {Value = loglist.Any() ? loglist.Select(GetLogData) : null});
                     command.Parameters.Add(
-                        new SqlParameter("@Context", SqlDbType.Structured) { Value = context.Any() ? context.Select(GetTupleData) : null });
+                        new SqlParameter("@Context", SqlDbType.Structured)
+                            {Value = context.Any() ? context.Select(GetTupleData) : null});
                     command.Parameters.Add(
-                        new SqlParameter("@Operation", SqlDbType.Structured) { Value = operations.Any() ? operations.Select(GetOperationData) : null });
+                        new SqlParameter("@Operation", SqlDbType.Structured)
+                            {Value = operations.Any() ? operations.Select(GetOperationData) : null});
                     command.Parameters.Add(
-                        new SqlParameter("@Argument", SqlDbType.Structured) { Value = arguments.Any() ? arguments.Select(GetTupleData) : null });
+                        new SqlParameter("@Argument", SqlDbType.Structured)
+                            {Value = arguments.Any() ? arguments.Select(GetTupleData) : null});
 
                     command.ExecuteNonQuery();
                 }
@@ -296,12 +303,15 @@ namespace WebApplications.Utilities.Logging.Loggers
             SqlDataRecord sqlDataRecord = new SqlDataRecord(_tblLogEntry);
             sqlDataRecord.SetGuid(0, log.Guid.Guid);
             sqlDataRecord.SetGuid(1, log.Group.Guid);
-            sqlDataRecord.SetInt32(2, (int)log.Level);
+            sqlDataRecord.SetInt32(2, (int) log.Level);
             sqlDataRecord.SetString(3, log.Message);
             sqlDataRecord.SetInt32(4, log.ThreadId);
             sqlDataRecord.SetString(5, log.ThreadName);
             sqlDataRecord.SetDateTime(6, log.TimeStamp + _expireAfter);
-            sqlDataRecord.Set(7, log.Operation != null && log.Operation.Guid != CombGuid.Empty ? log.Operation.Guid.Guid : (Guid?)null);
+            sqlDataRecord.Set(7,
+                              log.Operation != null && log.Operation.Guid != CombGuid.Empty
+                                  ? log.Operation.Guid.Guid
+                                  : (Guid?) null);
             sqlDataRecord.Set(8, log.ExceptionType);
             sqlDataRecord.Set(9, log.StackTrace);
             return sqlDataRecord;
@@ -314,7 +324,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <returns>
         ///   The converted <see cref="Operation">operation</see> as a <see cref="SqlDataRecord"/> object.
         /// </returns>
-        private static SqlDataRecord GetOperationData([NotNull]Operation operation)
+        private static SqlDataRecord GetOperationData([NotNull] Operation operation)
         {
             // Create new record
             SqlDataRecord sqlDataRecord = new SqlDataRecord(_tblOperation);
@@ -337,7 +347,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         /// <param name="tuple">The tuple to get the SQL data record from.</param>
         /// <returns>The converted tuple as a <see cref="SqlDataRecord"/> object.</returns>
-        private static SqlDataRecord GetTupleData([NotNull]Tuple<CombGuid, string, string> tuple)
+        private static SqlDataRecord GetTupleData([NotNull] Tuple<CombGuid, string, string> tuple)
         {
             // Create new record
             SqlDataRecord sqlDataRecord = new SqlDataRecord(_tblDictionary);
@@ -352,15 +362,15 @@ namespace WebApplications.Utilities.Logging.Loggers
 
 #if false
 
-        /// <summary>
-        ///   Gets all of the logs from the end date backwards up to the start date.
-        /// </summary>
-        /// <param name="endDate">The last date to get logs from (exclusive).</param>
-        /// <param name="startDate">The start date to get logs up to (inclusive).</param>
-        /// <returns>
-        ///   The retrieved logs in reverse date order, the first being the newest log before the <paramref name="endDate"/>
-        ///   and the last being the first log after the <paramref name="startDate"/>.
-        /// </returns>
+    /// <summary>
+    ///   Gets all of the logs from the end date backwards up to the start date.
+    /// </summary>
+    /// <param name="endDate">The last date to get logs from (exclusive).</param>
+    /// <param name="startDate">The start date to get logs up to (inclusive).</param>
+    /// <returns>
+    ///   The retrieved logs in reverse date order, the first being the newest log before the <paramref name="endDate"/>
+    ///   and the last being the first log after the <paramref name="startDate"/>.
+    /// </returns>
         public override IEnumerable<Log> Get(DateTime endDate, DateTime startDate)
         {
             return GetLogsFromDatabase(startDate, endDate, int.MinValue);

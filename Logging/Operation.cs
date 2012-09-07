@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities.Logging 
-// Project: WebApplications.Utilities.Logging
-// File: Operation.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -64,13 +69,15 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The category name.
         /// </summary>
-        [NotNull]
-        public readonly string CategoryName;
+        [NotNull] public readonly string CategoryName;
 
         /// <summary>
         ///   The time the operation was <see cref="CombGuid.Created">created</see>.
         /// </summary>
-        public DateTime Created { get { return this.Guid.Created; } }
+        public DateTime Created
+        {
+            get { return Guid.Created; }
+        }
 
         /// <summary>
         ///   The unique ID for the current operation.
@@ -85,14 +92,12 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The method that initiated the operation.
         /// </summary>
-        [NotNull]
-        public readonly string Method = String.Empty;
+        [NotNull] public readonly string Method = String.Empty;
 
         /// <summary>
         ///   The operation name.
         /// </summary>
-        [NotNull]
-        public readonly string Name = String.Empty;
+        [NotNull] public readonly string Name = String.Empty;
 
         /// <summary>
         ///   The thread the operation began on.
@@ -102,8 +107,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The <see cref="Thread.Name">name</see> (or the ID if no name is set) of the thread the operation began on.
         /// </summary>
-        [NotNull]
-        public readonly string ThreadName;
+        [NotNull] public readonly string ThreadName;
 
         /// <summary>
         ///   Gets the current operations arguments.
@@ -182,18 +186,18 @@ namespace WebApplications.Utilities.Logging
             bool logUnhandledExceptions = true)
         {
             Wrap(o =>
-                          {
-                              action();
-                              return 0;
-                          },
-                      name,
-                      categoryName,
-                      methodName,
-                      instance,
-                      arguments,
-                      warningDuration,
-                      criticalDuration,
-                      logUnhandledExceptions);
+                     {
+                         action();
+                         return 0;
+                     },
+                 name,
+                 categoryName,
+                 methodName,
+                 instance,
+                 arguments,
+                 warningDuration,
+                 criticalDuration,
+                 logUnhandledExceptions);
         }
 
         /// <summary>
@@ -292,14 +296,14 @@ namespace WebApplications.Utilities.Logging
             bool logUnhandledExceptions = true)
         {
             return Wrap(o => function(),
-                 name,
-                 categoryName,
-                 methodName,
-                 instance,
-                 arguments,
-                 warningDuration,
-                 criticalDuration,
-                 logUnhandledExceptions);
+                        name,
+                        categoryName,
+                        methodName,
+                        instance,
+                        arguments,
+                        warningDuration,
+                        criticalDuration,
+                        logUnhandledExceptions);
         }
 
         /// <summary>
@@ -336,10 +340,10 @@ namespace WebApplications.Utilities.Logging
         public static T Wrap<T>(
             [NotNull] Func<Operation, T> function,
             [NotNull] string name,
-            [CanBeNull] string categoryName = null, 
-            [CanBeNull] string methodName = null, 
+            [CanBeNull] string categoryName = null,
+            [CanBeNull] string methodName = null,
             [CanBeNull] object instance = null,
-            [CanBeNull] IEnumerable<KeyValuePair<string, object>> arguments = null, 
+            [CanBeNull] IEnumerable<KeyValuePair<string, object>> arguments = null,
             TimeSpan warningDuration = default(TimeSpan), TimeSpan criticalDuration = default(TimeSpan),
             bool logUnhandledExceptions = true)
         {
@@ -378,7 +382,7 @@ namespace WebApplications.Utilities.Logging
                     operation.Dispose();
                 }
             }
-            
+
             // Don't bother catching exceptions
             using (operation)
             {
@@ -413,10 +417,10 @@ namespace WebApplications.Utilities.Logging
         /// </param>
         private Operation(
             [NotNull] string name,
-            [CanBeNull] string categoryName = null, 
-            [CanBeNull] string methodName = null, 
+            [CanBeNull] string categoryName = null,
+            [CanBeNull] string methodName = null,
             [CanBeNull] object instance = null,
-            [CanBeNull] IEnumerable<KeyValuePair<string, object>> arguments = null, 
+            [CanBeNull] IEnumerable<KeyValuePair<string, object>> arguments = null,
             TimeSpan warningDuration = default(TimeSpan), TimeSpan criticalDuration = default(TimeSpan))
             : this(CombGuid.NewCombGuid(DateTime.Now))
         {
@@ -688,14 +692,14 @@ namespace WebApplications.Utilities.Logging
         }
 
 #if false
-        /// <summary>
-        ///   Gets the operation.
-        /// </summary>
-        /// <param name = "operationRow">The operation row.</param>
-        /// <param name = "operations">The operations.</param>
-        /// <param name = "arguments">The arguments.</param>
-        /// <returns></returns>
-        /// <exception cref="LoggingException">Could not find parent operation '{0}'</exception>
+    /// <summary>
+    ///   Gets the operation.
+    /// </summary>
+    /// <param name = "operationRow">The operation row.</param>
+    /// <param name = "operations">The operations.</param>
+    /// <param name = "arguments">The arguments.</param>
+    /// <returns></returns>
+    /// <exception cref="LoggingException">Could not find parent operation '{0}'</exception>
         internal static Operation GetOperation(
             [NotNull] OperationRow operationRow,
             [NotNull] Dictionary<Guid, OperationRow> operations,

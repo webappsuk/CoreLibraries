@@ -1,29 +1,33 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities.Logging 
-// Project: WebApplications.Utilities.Logging
-// File: LogStatic.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,99 +45,74 @@ namespace WebApplications.Utilities.Logging
     /// </summary>
     public sealed partial class Log
     {
-        [NonSerialized]
-        private const string NodeLog = "Log";
-        [NonSerialized]
-        private const string NodeThread = "Thread";
-        [NonSerialized]
-        private const string NodeLevel = "Level";
-        [NonSerialized]
-        private const string NodeMessage = "Message";
-        [NonSerialized]
-        private const string NodeExceptionType = "ExceptionType";
-        [NonSerialized]
-        private const string NodeStackTrace = "StackTrace";
-        [NonSerialized]
-        private const string AttributeId = "id";
-        [NonSerialized]
-        private const string AttributeTimestamp = "time";
-        [NonSerialized]
-        private const string AttributeLoggroup = "logGroup";
+        [NonSerialized] private const string NodeLog = "Log";
+        [NonSerialized] private const string NodeThread = "Thread";
+        [NonSerialized] private const string NodeLevel = "Level";
+        [NonSerialized] private const string NodeMessage = "Message";
+        [NonSerialized] private const string NodeExceptionType = "ExceptionType";
+        [NonSerialized] private const string NodeStackTrace = "StackTrace";
+        [NonSerialized] private const string AttributeId = "id";
+        [NonSerialized] private const string AttributeTimestamp = "time";
+        [NonSerialized] private const string AttributeLoggroup = "logGroup";
 
         /// <summary>
         ///   Holds weak reference to log items.
         /// </summary>
-        [NonSerialized]
-        private static readonly WeakConcurrentDictionary<CombGuid, Log> _logItems =
+        [NonSerialized] private static readonly WeakConcurrentDictionary<CombGuid, Log> _logItems =
             new WeakConcurrentDictionary<CombGuid, Log>(allowResurrection: true);
 
         /// <summary>
         ///   The currently logged levels, which is all of the log levels that the registered loggers are
         ///   interested in ANDed with the current <see cref="ValidLevels"/>.
         /// </summary>
-        [NonSerialized]
-        private static LogLevels _loggedLevels = LogLevels.None;
+        [NonSerialized] private static LogLevels _loggedLevels = LogLevels.None;
 
         /// <summary>
         ///   Dictionary of all available loggers.
         /// </summary>
-        [NonSerialized]
-        [NotNull]
-        private static readonly ConcurrentDictionary<string, ILogger> _loggers =
+        [NonSerialized] [NotNull] private static readonly ConcurrentDictionary<string, ILogger> _loggers =
             new ConcurrentDictionary<string, ILogger>();
 
         /// <summary>
         ///   Holds a pointer to the default memory logger, used for caching.
         /// </summary>
-        [UsedImplicitly]
-        [NonSerialized]
-        [CanBeNull]
-        public static MemoryLogger DefaultMemoryLogger;
+        [UsedImplicitly] [NonSerialized] [CanBeNull] public static MemoryLogger DefaultMemoryLogger;
 
         /// <summary>
         ///   Used to signal the arrival of a new log item
         /// </summary>
-        [NonSerialized]
-        private static readonly ManualResetEventSlim _logSignal = new ManualResetEventSlim(false);
+        [NonSerialized] private static readonly ManualResetEventSlim _logSignal = new ManualResetEventSlim(false);
 
         /// <summary>
         ///   Used to signal when a batch has emptied the queue.
         /// </summary>
-        [NonSerialized]
-        private static readonly ManualResetEventSlim _batchComplete = new ManualResetEventSlim(true);
+        [NonSerialized] private static readonly ManualResetEventSlim _batchComplete = new ManualResetEventSlim(true);
 
         /// <summary>
         ///   Used to signal when the logging thread should pause.
         /// </summary>
-        [NonSerialized]
-        private static readonly ManualResetEventSlim _continue = new ManualResetEventSlim(true);
+        [NonSerialized] private static readonly ManualResetEventSlim _continue = new ManualResetEventSlim(true);
 
         /// <summary>
         ///   Used to signal when the logging thread is pausing.
         /// </summary>
-        [NonSerialized]
-        private static readonly ManualResetEventSlim _pausing = new ManualResetEventSlim(false);
+        [NonSerialized] private static readonly ManualResetEventSlim _pausing = new ManualResetEventSlim(false);
 
         /// <summary>
         ///   The <see cref="Thread"/> that handles the logging.
         /// </summary>
-        [NonSerialized]
-        [CanBeNull]
-        private static Thread _loggerThread;
+        [NonSerialized] [CanBeNull] private static Thread _loggerThread;
 
         /// <summary>
         ///   A queue of log items waiting to be dumped to loggers.
         /// </summary>
-        [NonSerialized]
-        private static readonly ConcurrentQueue<Log> _logQueue = new ConcurrentQueue<Log>();
+        [NonSerialized] private static readonly ConcurrentQueue<Log> _logQueue = new ConcurrentQueue<Log>();
 
 
         /// <summary>
         ///   Used to synchronise methods.
         /// </summary>
-        [NonSerialized]
-        [NotNull]
-        private static readonly object _lock = new object();
+        [NonSerialized] [NotNull] private static readonly object _lock = new object();
 
         /// <summary>
         ///   Initializes static members of the <see cref="Log" /> class.
@@ -256,7 +235,7 @@ namespace WebApplications.Utilities.Logging
                     // If we don't have a logging thread create it.
                     if (_loggerThread == null)
                     {
-                        _loggerThread = new Thread(LoggerThread) { Priority = ThreadPriority.BelowNormal };
+                        _loggerThread = new Thread(LoggerThread) {Priority = ThreadPriority.BelowNormal};
                         _loggerThread.Start();
                     }
                 }
@@ -800,33 +779,33 @@ namespace WebApplications.Utilities.Logging
                 Parallel.ForEach(
                     _loggers.Values.Where(l => l != null && l.ValidLevels != LogLevels.None),
                     l =>
-                    {
-                        try
                         {
-                            LogLevels validLogLevels = ValidLevels & l.ValidLevels;
-                            // Only add log items that are valid for this logger.
-                            IEnumerable<Log> loggerLogs = validLogLevels != LogLevels.All
-                                                              ? batch.Where(
-                                                                  logItem =>
-                                                                  logItem != null &&
-                                                                  logItem.Level.IsValid(validLogLevels))
-                                                              : batch;
+                            try
+                            {
+                                LogLevels validLogLevels = ValidLevels & l.ValidLevels;
+                                // Only add log items that are valid for this logger.
+                                IEnumerable<Log> loggerLogs = validLogLevels != LogLevels.All
+                                                                  ? batch.Where(
+                                                                      logItem =>
+                                                                      logItem != null &&
+                                                                      logItem.Level.IsValid(validLogLevels))
+                                                                  : batch;
 
-                            if (loggerLogs.Any())
-                                l.Add(loggerLogs);
-                        }
-                        catch (Exception e)
-                        {
-                            // Disable this logger as it threw an exception
-                            new LoggingException(
-                                e,
-                                Resources.LogStatic_LogBatch_FatalErrorOccured,
-                                LogLevel.Critical,
-                                l.Name,
-                                e.Message);
-                            TryRemoveLogger(l.Name, out l);
-                        }
-                    });
+                                if (loggerLogs.Any())
+                                    l.Add(loggerLogs);
+                            }
+                            catch (Exception e)
+                            {
+                                // Disable this logger as it threw an exception
+                                new LoggingException(
+                                    e,
+                                    Resources.LogStatic_LogBatch_FatalErrorOccured,
+                                    LogLevel.Critical,
+                                    l.Name,
+                                    e.Message);
+                                TryRemoveLogger(l.Name, out l);
+                            }
+                        });
             }
             finally
             {
