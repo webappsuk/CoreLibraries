@@ -1,14 +1,41 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
-using Microsoft.Build.Framework;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Pdb;
+using MethodAttributes = Mono.Cecil.MethodAttributes;
 
 namespace WebApplications.Utilities.Initializer
 {
@@ -46,7 +73,7 @@ namespace WebApplications.Utilities.Initializer
         /// <remarks></remarks>
         static Injector()
         {
-            _injectorType = typeof(Injector);
+            _injectorType = typeof (Injector);
             _assemblyFileName = _injectorType.Assembly.Location;
             _typeName = _injectorType.FullName;
         }
@@ -69,7 +96,8 @@ namespace WebApplications.Utilities.Initializer
         /// <param name="useIsolatedAppDomain">if set to <c>true</c> uses a new <see cref="AppDomain"/>.</param>
         /// <returns>Any errors; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        public static IEnumerable<Output> Inject(string assemblyFile, string typeName, string methodName, string strongNameKeyPair, bool useIsolatedAppDomain)
+        public static IEnumerable<Output> Inject(string assemblyFile, string typeName, string methodName,
+                                                 string strongNameKeyPair, bool useIsolatedAppDomain)
         {
             Injector injector;
             if (!useIsolatedAppDomain)
@@ -85,7 +113,7 @@ namespace WebApplications.Utilities.Initializer
                 childDomain = AppDomain.CreateDomain("InjectionDomain");
 
                 // Create an instance of the injector object in the new domain.
-                injector = (Injector)childDomain.CreateInstanceFromAndUnwrap(
+                injector = (Injector) childDomain.CreateInstanceFromAndUnwrap(
                     _assemblyFileName,
                     _typeName,
                     false,
@@ -114,8 +142,9 @@ namespace WebApplications.Utilities.Initializer
         /// <param name="strongNameKeyPair">The strong name key pair.</param>
         /// <returns>Any errors; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        [SecuritySafeCritical] 
-        private IEnumerable<Output> DoInject(string assemblyFile, string typeName, string methodName, string strongNameKeyPair)
+        [SecuritySafeCritical]
+        private IEnumerable<Output> DoInject(string assemblyFile, string typeName, string methodName,
+                                             string strongNameKeyPair)
         {
             OutputCollection outputCollection = new OutputCollection();
             try
@@ -208,7 +237,8 @@ namespace WebApplications.Utilities.Initializer
                 AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(assemblyFile, readParams);
                 if (assembly == null)
                 {
-                    outputCollection.Add(OutputImportance.Error, "Failed to load assembly definition for '{0}'.", assemblyFile);
+                    outputCollection.Add(OutputImportance.Error, "Failed to load assembly definition for '{0}'.",
+                                         assemblyFile);
                     return outputCollection;
                 }
 
@@ -216,13 +246,15 @@ namespace WebApplications.Utilities.Initializer
                 ModuleDefinition module = assembly.MainModule;
                 if (module == null)
                 {
-                    outputCollection.Add(OutputImportance.Error, "Failed to load main module definition from assembly '{0}'.", assemblyFile);
+                    outputCollection.Add(OutputImportance.Error,
+                                         "Failed to load main module definition from assembly '{0}'.", assemblyFile);
                     return outputCollection;
                 }
 
                 if (module.Types == null)
                 {
-                    outputCollection.Add(OutputImportance.Error, "Failed to load main module types from assembly '{0}'.", assemblyFile);
+                    outputCollection.Add(OutputImportance.Error, "Failed to load main module types from assembly '{0}'.",
+                                         assemblyFile);
                     return outputCollection;
                 }
 
@@ -230,7 +262,8 @@ namespace WebApplications.Utilities.Initializer
                 TypeDefinition moduleType = module.Types.SingleOrDefault(t => t.Name == "<Module>");
                 if (moduleType == null)
                 {
-                    outputCollection.Add(OutputImportance.Error, "Could not find type '<Module>' in assembly '{0}'.", assemblyFile);
+                    outputCollection.Add(OutputImportance.Error, "Could not find type '<Module>' in assembly '{0}'.",
+                                         assemblyFile);
                     return outputCollection;
                 }
 
@@ -238,7 +271,8 @@ namespace WebApplications.Utilities.Initializer
                 TypeReference voidRef = module.TypeSystem.Void;
                 if (voidRef == null)
                 {
-                    outputCollection.Add(OutputImportance.Error, "Could not find type 'void' in assembly '{0}'.", assemblyFile);
+                    outputCollection.Add(OutputImportance.Error, "Could not find type 'void' in assembly '{0}'.",
+                                         assemblyFile);
                     return outputCollection;
                 }
 
@@ -247,7 +281,8 @@ namespace WebApplications.Utilities.Initializer
 
                 if (typeDefinition == null)
                 {
-                    outputCollection.Add(OutputImportance.Warning, "Could not find type '{0}' in assembly '{1}'.", typeName, assemblyFile);
+                    outputCollection.Add(OutputImportance.Warning, "Could not find type '{0}' in assembly '{1}'.",
+                                         typeName, assemblyFile);
                     return outputCollection;
                 }
 
@@ -287,9 +322,9 @@ namespace WebApplications.Utilities.Initializer
                                      methodName, typeName, assemblyFile);
 
                 // Create the module initializer.
-                MethodDefinition cctor = new MethodDefinition(".cctor", Mono.Cecil.MethodAttributes.Static
-                                                                        | Mono.Cecil.MethodAttributes.SpecialName
-                                                                        | Mono.Cecil.MethodAttributes.RTSpecialName, voidRef);
+                MethodDefinition cctor = new MethodDefinition(".cctor", MethodAttributes.Static
+                                                                        | MethodAttributes.SpecialName
+                                                                        | MethodAttributes.RTSpecialName, voidRef);
                 ILProcessor il = cctor.Body.GetILProcessor();
                 il.Append(il.Create(OpCodes.Call, callee));
                 il.Append(il.Create(OpCodes.Ret));
