@@ -38,4 +38,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2012")]
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.1.*")]
+[assembly: AssemblyVersion("2.0.*")]

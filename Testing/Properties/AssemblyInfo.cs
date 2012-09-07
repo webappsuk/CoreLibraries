@@ -39,7 +39,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2012")]
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.1.*")]
+[assembly: AssemblyVersion("2.0.*")]
 [assembly: InternalsVisibleTo("WebApplications.Testing.Test, PublicKey=" +
                               "0024000004800000940000000602000000240000525341310004000001000100c98369527d33a0" +
                               "e42ce4370a6787476d234d889153a121806de01c29d2c304526c884c8c4b8108a82537d3fb97e0" +
