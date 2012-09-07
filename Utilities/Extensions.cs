@@ -122,13 +122,6 @@ namespace WebApplications.Utilities
                                                              RegexOptions.Compiled | RegexOptions.IgnoreCase |
                                                              RegexOptions.Multiline);
 
-        /// <summary>
-        ///   Use reflection to gain access to the InternalPreserveStackTrace method.
-        /// </summary>
-        [NotNull] private static readonly Action<Exception> _preserveStackTrace =
-            typeof (Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.NonPublic | BindingFlags.Instance).
-                Action<Exception>();
-
         [NotNull] private static readonly Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
 
         /// <summary>
@@ -1384,26 +1377,6 @@ namespace WebApplications.Utilities
                 start = index;
             }
             return arrays;
-        }
-
-        /// <summary>
-        ///   Preserves the stack trace during exception re-throws.
-        /// </summary>
-        /// <param name="exception">The exception thrown.</param>
-        /// <returns>A copy of the exception with the stack trace preserved.</returns>
-        [UsedImplicitly]
-        public static void PreserveStackTrace(this Exception exception)
-        {
-            if (exception == null)
-                return;
-
-            try
-            {
-                _preserveStackTrace(exception);
-            }
-            catch (MethodAccessException)
-            {
-            }
         }
 
         /// <summary>

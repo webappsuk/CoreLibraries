@@ -28,6 +28,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using JetBrains.Annotations;
 
@@ -274,14 +275,18 @@ namespace WebApplications.Utilities.Threading
         [UsedImplicitly]
         public void SetAsCompleted(Exception exception = null, bool completedSynchronously = false)
         {
-            exception.PreserveStackTrace();
-            _exception = exception;
-            if (
-                Interlocked.Exchange(ref _completedState,
-                                     completedSynchronously ? StateCompletedSynchronously : StateCompletedAsynchronously) !=
-                StatePending)
+            ExceptionDispatchInfo exceptionInfo = exception != null
+                ? ExceptionDispatchInfo.Capture(exception)
+                : null;
+
+            _exception = exceptionInfo != null
+                ? exceptionInfo.SourceException
+                : exception;
+
+            if (Interlocked.Exchange(ref _completedState,
+                completedSynchronously ? StateCompletedSynchronously : StateCompletedAsynchronously) != StatePending)
             {
-                throw new InvalidOperationException("You can set a result only once");
+                throw new InvalidOperationException(Resources.AsyncResult_SetAsCompleted_CanOnlySetResultOnce);
             }
             ManualResetEvent mre = _asyncWaitHandle;
             if ((mre != null) && CallingThreadShouldSetTheEvent())

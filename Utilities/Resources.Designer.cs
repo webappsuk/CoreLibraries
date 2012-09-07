@@ -61,6 +61,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can set a result only once.
+        /// </summary>
+        internal static string AsyncResult_SetAsCompleted_CanOnlySetResultOnce {
+            get {
+                return ResourceManager.GetString("AsyncResult_SetAsCompleted_CanOnlySetResultOnce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The cache expiry must be at least 1s..
         /// </summary>
         internal static string CachingQueue_ExpiryTooShort {
