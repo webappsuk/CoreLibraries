@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
@@ -20,17 +47,18 @@ namespace WebApplications.Utilities.Threading
         private const int StateCompletedAsynchronously = 2;
         private const int StateCompletedSynchronously = 1;
         private const int StatePending = 0;
+
+        [NotNull] private static readonly AsyncCallback _asyncCallbackHelper =
+            AsyncCallbackCompleteOpHelperNoReturnValue;
+
+        [NotNull] private static readonly WaitCallback _waitCallbackHelper = WaitCallbackCompleteOpHelperNoReturnValue;
         private readonly AsyncCallback _asyncCallback;
         private readonly object _asyncState;
+        private readonly object _initiatingObject;
         private volatile ManualResetEvent _asyncWaitHandle;
         private int _completedState;
         private int _eventSet;
         private Exception _exception;
-        private readonly object _initiatingObject;
-        [NotNull]
-        private static readonly AsyncCallback _asyncCallbackHelper = AsyncCallbackCompleteOpHelperNoReturnValue;
-        [NotNull]
-        private static readonly WaitCallback _waitCallbackHelper = WaitCallbackCompleteOpHelperNoReturnValue;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="AsyncResult"/> class.
@@ -42,8 +70,8 @@ namespace WebApplications.Utilities.Threading
         [UsedImplicitly]
         public AsyncResult(AsyncCallback asyncCallback, object state)
         {
-            this._asyncCallback = asyncCallback;
-            this._asyncState = state;
+            _asyncCallback = asyncCallback;
+            _asyncState = state;
         }
 
         /// <summary>
@@ -59,12 +87,91 @@ namespace WebApplications.Utilities.Threading
         public AsyncResult(AsyncCallback asyncCallback, object state, object initiatingObject)
             : this(asyncCallback, state)
         {
-            this._initiatingObject = initiatingObject;
+            _initiatingObject = initiatingObject;
         }
 
-        private static void AsyncCallbackCompleteOpHelperNoReturnValue([NotNull]IAsyncResult otherAsyncResult)
+        /// <summary>
+        ///   Gets the <see cref="object"/> that was used to initiate the asynchronous operation.
+        /// </summary>
+        [UsedImplicitly]
+        public object InitiatingObject
         {
-            ((AsyncResult)otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
+            get { return _initiatingObject; }
+        }
+
+        /// <summary>
+        ///   Gets a <see cref="bool"/> value that indicates whether the asynchronous operation has cancelled.
+        /// </summary>
+        /// <value>
+        ///   Returns <see langword="true"/> if the operation is cancelled; otherwise returns <see langword="false"/>.
+        /// </value>
+        public bool IsCancelled
+        {
+            get { return (Thread.VolatileRead(ref _completedState) == StateCancelled); }
+        }
+
+        #region IAsyncResult Members
+        /// <summary>
+        ///   Gets a user-defined object that qualifies or contains information about an asynchronous operation.
+        /// </summary>
+        public object AsyncState
+        {
+            get { return _asyncState; }
+        }
+
+        /// <summary>
+        ///   Gets a WaitHandle that is used to wait for an asynchronous operation to complete.
+        /// </summary>
+        /// <returns>A wait handle that is used to wait for an asynchronous operation to complete.</returns>
+        public WaitHandle AsyncWaitHandle
+        {
+            get
+            {
+                if (_asyncWaitHandle == null)
+                {
+                    ManualResetEvent mre = new ManualResetEvent(false);
+#pragma warning disable 420
+                    if (Interlocked.CompareExchange(ref _asyncWaitHandle, mre, null) != null)
+#pragma warning restore 420
+                    {
+                        mre.Close();
+                    }
+                    else if (IsCompleted && CallingThreadShouldSetTheEvent())
+                    {
+                        _asyncWaitHandle.Set();
+                    }
+                }
+                return _asyncWaitHandle;
+            }
+        }
+
+        /// <summary>
+        ///   Gets a <see cref="bool"/> value that indicates whether the asynchronous operation completed synchronously.
+        /// </summary>
+        /// <value>
+        ///   Returns <see langword="true"/> if the asynchronous operation completed synchronously; otherwise returns <see langword="false"/>.
+        /// </value>
+        public bool CompletedSynchronously
+        {
+            get { return (Thread.VolatileRead(ref _completedState) == StateCompletedSynchronously); }
+        }
+
+        /// <summary>
+        ///   Gets a <see cref="bool"/> value that indicates whether the asynchronous operation has completed.
+        /// </summary>
+        /// <value>
+        ///   Returns <see langword="true"/> if the operation is complete; otherwise returns <see langword="false"/>.
+        /// </value>
+        /// <remarks>This includes the cancelled state which will return <see langword="true"/>.</remarks>
+        public bool IsCompleted
+        {
+            get { return (Thread.VolatileRead(ref _completedState) != StatePending); }
+        }
+        #endregion
+
+        private static void AsyncCallbackCompleteOpHelperNoReturnValue([NotNull] IAsyncResult otherAsyncResult)
+        {
+            ((AsyncResult) otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
         }
 
         /// <summary>
@@ -80,7 +187,7 @@ namespace WebApplications.Utilities.Threading
 
         private bool CallingThreadShouldSetTheEvent()
         {
-            return (Interlocked.Exchange(ref this._eventSet, 1) == 0);
+            return (Interlocked.Exchange(ref _eventSet, 1) == 0);
         }
 
         /// <summary>
@@ -95,7 +202,7 @@ namespace WebApplications.Utilities.Threading
             Exception exception = null;
             try
             {
-                this.OnCompleteOperation(ar);
+                OnCompleteOperation(ar);
             }
             catch (TargetInvocationException e)
             {
@@ -107,7 +214,7 @@ namespace WebApplications.Utilities.Threading
             }
             finally
             {
-                this.SetAsCompleted(exception, false);
+                SetAsCompleted(exception, false);
             }
         }
 
@@ -118,20 +225,20 @@ namespace WebApplications.Utilities.Threading
         [UsedImplicitly]
         public void EndInvoke()
         {
-            if (!this.IsCompleted || (this._asyncWaitHandle != null))
+            if (!IsCompleted || (_asyncWaitHandle != null))
             {
-                this.AsyncWaitHandle.WaitOne();
+                AsyncWaitHandle.WaitOne();
             }
 #pragma warning disable 420
-            ManualResetEvent mre = Interlocked.Exchange(ref this._asyncWaitHandle, null);
+            ManualResetEvent mre = Interlocked.Exchange(ref _asyncWaitHandle, null);
 #pragma warning restore 420
             if (mre != null)
             {
                 mre.Close();
             }
-            if (this._exception != null)
+            if (_exception != null)
             {
-                throw this._exception;
+                throw _exception;
             }
         }
 
@@ -168,19 +275,22 @@ namespace WebApplications.Utilities.Threading
         public void SetAsCompleted(Exception exception = null, bool completedSynchronously = false)
         {
             exception.PreserveStackTrace();
-            this._exception = exception;
-            if (Interlocked.Exchange(ref this._completedState, completedSynchronously ? StateCompletedSynchronously : StateCompletedAsynchronously) != StatePending)
+            _exception = exception;
+            if (
+                Interlocked.Exchange(ref _completedState,
+                                     completedSynchronously ? StateCompletedSynchronously : StateCompletedAsynchronously) !=
+                StatePending)
             {
                 throw new InvalidOperationException("You can set a result only once");
             }
-            ManualResetEvent mre = this._asyncWaitHandle;
-            if ((mre != null) && this.CallingThreadShouldSetTheEvent())
+            ManualResetEvent mre = _asyncWaitHandle;
+            if ((mre != null) && CallingThreadShouldSetTheEvent())
             {
                 mre.Set();
             }
-            if (this._asyncCallback != null)
+            if (_asyncCallback != null)
             {
-                this._asyncCallback(this);
+                _asyncCallback(this);
             }
         }
 
@@ -192,119 +302,27 @@ namespace WebApplications.Utilities.Threading
         {
             // Set the state to completed asynchronously, you can do this even if already completed as you
             // can cancel at any time.
-            bool alreadyCompleted = Interlocked.Exchange(ref this._completedState, StateCancelled) !=
+            bool alreadyCompleted = Interlocked.Exchange(ref _completedState, StateCancelled) !=
                                     StatePending;
             // Set the exception
-            this._exception = new OperationCanceledException();
+            _exception = new OperationCanceledException();
             if (alreadyCompleted)
                 return;
 
-            ManualResetEvent mre = this._asyncWaitHandle;
-            if ((mre != null) && this.CallingThreadShouldSetTheEvent())
+            ManualResetEvent mre = _asyncWaitHandle;
+            if ((mre != null) && CallingThreadShouldSetTheEvent())
             {
                 mre.Set();
             }
-            if (this._asyncCallback != null)
+            if (_asyncCallback != null)
             {
-                this._asyncCallback(this);
+                _asyncCallback(this);
             }
         }
 
-        private static void WaitCallbackCompleteOpHelperNoReturnValue([NotNull]object o)
+        private static void WaitCallbackCompleteOpHelperNoReturnValue([NotNull] object o)
         {
-            ((AsyncResult)o).CompleteOpHelper(null);
-        }
-
-        /// <summary>
-        ///   Gets a user-defined object that qualifies or contains information about an asynchronous operation.
-        /// </summary>
-        public object AsyncState
-        {
-            get
-            {
-                return this._asyncState;
-            }
-        }
-
-        /// <summary>
-        ///   Gets a WaitHandle that is used to wait for an asynchronous operation to complete.
-        /// </summary>
-        /// <returns>A wait handle that is used to wait for an asynchronous operation to complete.</returns>
-        public WaitHandle AsyncWaitHandle
-        {
-            get
-            {
-                if (this._asyncWaitHandle == null)
-                {
-                    ManualResetEvent mre = new ManualResetEvent(false);
-#pragma warning disable 420
-                    if (Interlocked.CompareExchange(ref this._asyncWaitHandle, mre, null) != null)
-#pragma warning restore 420
-                    {
-                        mre.Close();
-                    }
-                    else if (this.IsCompleted && this.CallingThreadShouldSetTheEvent())
-                    {
-                        this._asyncWaitHandle.Set();
-                    }
-                }
-                return this._asyncWaitHandle;
-            }
-        }
-
-        /// <summary>
-        ///   Gets a <see cref="bool"/> value that indicates whether the asynchronous operation completed synchronously.
-        /// </summary>
-        /// <value>
-        ///   Returns <see langword="true"/> if the asynchronous operation completed synchronously; otherwise returns <see langword="false"/>.
-        /// </value>
-        public bool CompletedSynchronously
-        {
-            get
-            {
-                return (Thread.VolatileRead(ref this._completedState) == StateCompletedSynchronously);
-            }
-        }
-
-        /// <summary>
-        ///   Gets the <see cref="object"/> that was used to initiate the asynchronous operation.
-        /// </summary>
-        [UsedImplicitly]
-        public object InitiatingObject
-        {
-            get
-            {
-                return this._initiatingObject;
-            }
-        }
-
-        /// <summary>
-        ///   Gets a <see cref="bool"/> value that indicates whether the asynchronous operation has completed.
-        /// </summary>
-        /// <value>
-        ///   Returns <see langword="true"/> if the operation is complete; otherwise returns <see langword="false"/>.
-        /// </value>
-        /// <remarks>This includes the cancelled state which will return <see langword="true"/>.</remarks>
-        public bool IsCompleted
-        {
-            get
-            {
-                return (Thread.VolatileRead(ref this._completedState) != StatePending);
-            }
-        }
-
-        /// <summary>
-        ///   Gets a <see cref="bool"/> value that indicates whether the asynchronous operation has cancelled.
-        /// </summary>
-        /// <value>
-        ///   Returns <see langword="true"/> if the operation is cancelled; otherwise returns <see langword="false"/>.
-        /// </value>
-        public bool IsCancelled
-        {
-            get
-            {
-                return (Thread.VolatileRead(ref this._completedState) == StateCancelled);
-            }
+            ((AsyncResult) o).CompleteOpHelper(null);
         }
     }
 
@@ -316,12 +334,12 @@ namespace WebApplications.Utilities.Threading
     [UsedImplicitly]
     public class AsyncResult<TResult> : AsyncResult
     {
-        private TResult _result;
         // ReSharper disable StaticFieldInGenericType
-        [NotNull]
-        private static readonly AsyncCallback _asyncCallbackHelper = AsyncCallbackCompleteOpHelperWithReturnValue;
-        [NotNull]
-        private static readonly WaitCallback _waitCallbackHelper = WaitCallbackCompleteOpHelperWithReturnValue;
+        [NotNull] private static readonly AsyncCallback _asyncCallbackHelper =
+            AsyncCallbackCompleteOpHelperWithReturnValue;
+
+        [NotNull] private static readonly WaitCallback _waitCallbackHelper = WaitCallbackCompleteOpHelperWithReturnValue;
+        private TResult _result;
         // ReSharper restore StaticFieldInGenericType
 
         /// <summary>
@@ -348,16 +366,17 @@ namespace WebApplications.Utilities.Threading
         {
         }
 
-        private static void AsyncCallbackCompleteOpHelperWithReturnValue([NotNull]IAsyncResult otherAsyncResult)
+        private static void AsyncCallbackCompleteOpHelperWithReturnValue([NotNull] IAsyncResult otherAsyncResult)
         {
-            ((AsyncResult<TResult>)otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
+            ((AsyncResult<TResult>) otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
         }
 
         /// <summary>
         ///   Returns an <see cref="IAsyncResult"/> for an operation that was queued to the thread pool.
         /// </summary>
         /// <returns>The <see cref="IAsyncResult"/>.</returns>
-        [UsedImplicitly]protected new IAsyncResult BeginInvokeOnWorkerThread()
+        [UsedImplicitly]
+        protected new IAsyncResult BeginInvokeOnWorkerThread()
         {
             ThreadPool.QueueUserWorkItem(_waitCallbackHelper, this);
             return this;
@@ -376,7 +395,7 @@ namespace WebApplications.Utilities.Threading
             Exception exception = null;
             try
             {
-                result = this.OnCompleteOperation(ar);
+                result = OnCompleteOperation(ar);
             }
             catch (Exception e)
             {
@@ -384,7 +403,7 @@ namespace WebApplications.Utilities.Threading
             }
             if (exception == null)
             {
-                this.SetAsCompleted(result, false);
+                SetAsCompleted(result, false);
             }
             else
             {
@@ -401,7 +420,7 @@ namespace WebApplications.Utilities.Threading
         public new TResult EndInvoke()
         {
             base.EndInvoke();
-            return this._result;
+            return _result;
         }
 
         /// <summary>
@@ -437,13 +456,13 @@ namespace WebApplications.Utilities.Threading
         [UsedImplicitly]
         public void SetAsCompleted(TResult result, bool completedSynchronously = false)
         {
-            this._result = result;
+            _result = result;
             SetAsCompleted(null, completedSynchronously);
         }
 
-        private static void WaitCallbackCompleteOpHelperWithReturnValue([NotNull]object o)
+        private static void WaitCallbackCompleteOpHelperWithReturnValue([NotNull] object o)
         {
-            ((AsyncResult<TResult>)o).CompleteOpHelper(null);
+            ((AsyncResult<TResult>) o).CompleteOpHelper(null);
         }
     }
 }

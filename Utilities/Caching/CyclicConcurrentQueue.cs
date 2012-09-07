@@ -1,23 +1,28 @@
 ﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities
-// File: LimitedConcurrentQueue.cs
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -46,124 +51,12 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         /// The maximum capacity which can be created.
         /// </summary>
-        public const long MaxCapacity = int.MaxValue*(long)4096;
-
-        /// <summary>
-        /// Holds a chunk.
-        /// </summary>
-        /// <remarks></remarks>
-        private class Chunk
-        {
-            /// <summary> 
-            /// The spin lock for this chunk.
-            /// </summary>
-            public SpinLock SpinLock = new SpinLock();
-
-            /// <summary>
-            /// The array.
-            /// </summary>
-            [NotNull]
-            public readonly T[] Array;
-
-            /// <summary>
-            /// The chunk size.
-            /// </summary>
-            public readonly long Size;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="CyclicConcurrentQueue&lt;T&gt;.Chunk"/> class.
-            /// </summary>
-            /// <param name="size">The size.</param>
-            /// <remarks></remarks>
-            public Chunk(long size)
-            {
-                Size = size;
-                Array = new T[size];
-            }
-        }
-
-        /// <summary>
-        /// Underlying array of chunks.
-        /// </summary>
-        [NotNull]
-        private readonly Chunk[] _chunks;
-
-        /// <summary>
-        /// Points at the start of the elements that are being written to.
-        /// </summary>
-        private long _head;
-
-        /// <summary>
-        /// Point at the next element to read from the queue.
-        /// </summary>
-        private long _tail;
+        public const long MaxCapacity = int.MaxValue*(long) 4096;
 
         /// <summary>
         /// The maximum capacity of the queue.  As items are queued beyond the capacity, items are dequeued automatically.
         /// </summary>
         public readonly long Capacity;
-
-        /// <inheritdoc/>
-        bool ICollection.IsSynchronized
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        /// <inheritdoc/>
-        object ICollection.SyncRoot
-        {
-            get
-            {
-                throw new NotSupportedException(Resources.LimitedConcurrentQueue_SyncRoot_ICollection_SyncRoot_Unsupported);
-            }
-        }
-
-        /// <summary>
-        /// Gets a value that indicates whether the <see cref="CyclicConcurrentQueue{T}"/> is empty.
-        /// </summary>
-        /// 
-        /// <returns>
-        /// true if the <see cref="CyclicConcurrentQueue{T}"/> is empty; otherwise, false.
-        /// </returns>
-        public bool IsEmpty
-        {
-            get { return _head == _tail; }
-        }
-
-        /// <inheritdoc/>
-        int ICollection.Count
-        {
-            get
-            {
-                long count;
-                unchecked
-                {
-                    count = _head - _tail;
-                }
-                if (count > int.MaxValue)
-                    throw new InvalidOperationException(String.Format("Count '{0}' is too big to be expressed as an interger.", count));
-                return (int)count;
-            }
-        }
-
-        /// <summary>
-        /// Gets the number of elements contained in the <see cref="T:System.Collections.ICollection"/>.
-        /// </summary>
-        /// <returns>The number of elements contained in the <see cref="T:System.Collections.ICollection"/>.</returns>
-        /// <remarks></remarks>
-        public long Count
-        {
-            get
-            {
-                unchecked
-                {
-                    return _head - _tail;
-                }
-            }
-        }
 
         /// <summary>
         /// This holds the Chunk size for each array chunk.
@@ -174,6 +67,21 @@ namespace WebApplications.Utilities.Caching
         /// This holds the Chunk size for each array chunk, log 2.
         /// </summary>
         private readonly int _chunkSizeLog2;
+
+        /// <summary>
+        /// Underlying array of chunks.
+        /// </summary>
+        [NotNull] private readonly Chunk[] _chunks;
+
+        /// <summary>
+        /// Points at the start of the elements that are being written to.
+        /// </summary>
+        private long _head;
+
+        /// <summary>
+        /// Point at the next element to read from the queue.
+        /// </summary>
+        private long _tail;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CyclicConcurrentQueue{T}"/> class.
@@ -206,7 +114,7 @@ namespace WebApplications.Utilities.Caching
                 numChunks >>= 1;
                 _chunkSizeLog2++;
             }
-            if ((numChunks * _chunkSize) < capacity)
+            if ((numChunks*_chunkSize) < capacity)
                 numChunks++;
 
             _chunks = new Chunk[numChunks];
@@ -226,7 +134,7 @@ namespace WebApplications.Utilities.Caching
         /// <param name="capacity">The capacity.</param>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="collection"/> argument is null.</exception>
         /// <remarks></remarks>
-        public CyclicConcurrentQueue([NotNull]IEnumerable<T> collection, long capacity)
+        public CyclicConcurrentQueue([NotNull] IEnumerable<T> collection, long capacity)
             : this(capacity)
         {
             if (collection == null)
@@ -236,20 +144,82 @@ namespace WebApplications.Utilities.Caching
             foreach (T item in collection)
             {
                 _chunks[chunkNum].Array[index] = item;
-                index = (index + 1) % _chunkSize;
+                index = (index + 1)%_chunkSize;
                 if (index == 0)
                     chunkNum++;
                 _head++;
-                if( _head % capacity == 0 )
+                if (_head%capacity == 0)
                 {
                     index = 0;
                     chunkNum = 0;
                 }
             }
             // If a wrap around occurred, ensure the tail catches up
-            if( _head > capacity )
+            if (_head > capacity)
             {
                 _tail = _head - capacity;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether the <see cref="CyclicConcurrentQueue{T}"/> is empty.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// true if the <see cref="CyclicConcurrentQueue{T}"/> is empty; otherwise, false.
+        /// </returns>
+        public bool IsEmpty
+        {
+            get { return _head == _tail; }
+        }
+
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="T:System.Collections.ICollection"/>.
+        /// </summary>
+        /// <returns>The number of elements contained in the <see cref="T:System.Collections.ICollection"/>.</returns>
+        /// <remarks></remarks>
+        public long Count
+        {
+            get
+            {
+                unchecked
+                {
+                    return _head - _tail;
+                }
+            }
+        }
+
+        #region IProducerConsumerCollection<T> Members
+        /// <inheritdoc/>
+        bool ICollection.IsSynchronized
+        {
+            get { return false; }
+        }
+
+        /// <inheritdoc/>
+        object ICollection.SyncRoot
+        {
+            get
+            {
+                throw new NotSupportedException(
+                    Resources.LimitedConcurrentQueue_SyncRoot_ICollection_SyncRoot_Unsupported);
+            }
+        }
+
+        /// <inheritdoc/>
+        int ICollection.Count
+        {
+            get
+            {
+                long count;
+                unchecked
+                {
+                    count = _head - _tail;
+                }
+                if (count > int.MaxValue)
+                    throw new InvalidOperationException(
+                        String.Format("Count '{0}' is too big to be expressed as an interger.", count));
+                return (int) count;
             }
         }
 
@@ -304,7 +274,7 @@ namespace WebApplications.Utilities.Caching
                         if (count < length) length = count;
 
                         Array.Copy(chunk.Array, start, array, indexLong, length);
-                        indexLong += (int)length;
+                        indexLong += (int) length;
                         tail += length;
                     }
 
@@ -317,27 +287,27 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         /// <inheritdoc/>
         bool IProducerConsumerCollection<T>.TryAdd(T item)
         {
-            this.Enqueue(item);
+            Enqueue(item);
             return true;
         }
 
         /// <inheritdoc/>
         bool IProducerConsumerCollection<T>.TryTake(out T item)
         {
-            return this.TryDequeue(out item);
+            return TryDequeue(out item);
         }
 
         /// <inheritdoc/>
         [NotNull]
         public T[] ToArray()
         {
-            return ((IEnumerable<T>)this).ToArray();
+            return ((IEnumerable<T>) this).ToArray();
         }
 
         /// <inheritdoc/>
@@ -346,7 +316,7 @@ namespace WebApplications.Utilities.Caching
             if (array == null)
                 throw new ArgumentNullException("array");
 
-            ((ICollection)this).CopyTo(array, index);
+            ((ICollection) this).CopyTo(array, index);
         }
 
         /// <inheritdoc/>
@@ -411,6 +381,7 @@ namespace WebApplications.Utilities.Caching
                 }
             }
         }
+        #endregion
 
         /// <summary>
         /// Adds an object to the end of the <see cref="CyclicConcurrentQueue{T}"/>.
@@ -579,5 +550,40 @@ namespace WebApplications.Utilities.Caching
                 if (found == 1) return true;
             } while (true);
         }
+
+        #region Nested type: Chunk
+        /// <summary>
+        /// Holds a chunk.
+        /// </summary>
+        /// <remarks></remarks>
+        private class Chunk
+        {
+            /// <summary>
+            /// The array.
+            /// </summary>
+            [NotNull] public readonly T[] Array;
+
+            /// <summary>
+            /// The chunk size.
+            /// </summary>
+            public readonly long Size;
+
+            /// <summary> 
+            /// The spin lock for this chunk.
+            /// </summary>
+            public SpinLock SpinLock = new SpinLock();
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CyclicConcurrentQueue&lt;T&gt;.Chunk"/> class.
+            /// </summary>
+            /// <param name="size">The size.</param>
+            /// <remarks></remarks>
+            public Chunk(long size)
+            {
+                Size = size;
+                Array = new T[size];
+            }
+        }
+        #endregion
     }
 }

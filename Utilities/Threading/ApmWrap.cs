@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -17,7 +44,8 @@ namespace WebApplications.Utilities.Threading
     ///   wish to add some context or state of your own to complete the wrapping.</para>
     ///   <para>Based on Jeff Ritcher's wintellect threading libraries.</para>
     /// </remarks>
-    [StructLayout(LayoutKind.Sequential), DebuggerStepThrough]
+    [StructLayout(LayoutKind.Sequential)]
+    [DebuggerStepThrough]
     [UsedImplicitly]
     public struct ApmWrap<T>
     {
@@ -32,7 +60,7 @@ namespace WebApplications.Utilities.Threading
         [UsedImplicitly]
         public bool Equals(ApmWrap<T> value)
         {
-            return this.SyncContext.Equals(value.SyncContext);
+            return SyncContext.Equals(value.SyncContext);
         }
 
         /// <summary>
@@ -44,7 +72,7 @@ namespace WebApplications.Utilities.Threading
         /// </returns>
         public override bool Equals(object obj)
         {
-            return ((obj is ApmWrap<T>) && this.Equals((ApmWrap<T>)obj));
+            return ((obj is ApmWrap<T>) && Equals((ApmWrap<T>) obj));
         }
 
         /// <summary>
@@ -117,17 +145,18 @@ namespace WebApplications.Utilities.Threading
         /// </returns>
         [UsedImplicitly]
         [NotNull]
-        public static AsyncCallback WrapCallback([NotNull] AsyncCallback callback, T data, SynchronizationContext syncContext = null)
+        public static AsyncCallback WrapCallback([NotNull] AsyncCallback callback, T data,
+                                                 SynchronizationContext syncContext = null)
         {
             if (callback == null)
                 return null;
 
             ApmWrapper wrapper = new ApmWrapper
-            {
-                Data = data,
-                AsyncCallback = callback,
-                SyncContext = syncContext
-            };
+                                     {
+                                         Data = data,
+                                         AsyncCallback = callback,
+                                         SyncContext = syncContext
+                                     };
             return wrapper.AsyncCallbackInternal;
         }
 
@@ -143,7 +172,7 @@ namespace WebApplications.Utilities.Threading
         [NotNull]
         public static IAsyncResult Wrap([NotNull] IAsyncResult result, T data)
         {
-            return new ApmWrapper { Data = data, AsyncResult = result };
+            return new ApmWrapper {Data = data, AsyncResult = result};
         }
 
         /// <summary>
@@ -156,7 +185,7 @@ namespace WebApplications.Utilities.Threading
         [UsedImplicitly]
         public static T Unwrap([NotNull] ref IAsyncResult result)
         {
-            ApmWrapper apmWrap = (ApmWrapper)result;
+            ApmWrapper apmWrap = (ApmWrapper) result;
             result = apmWrap.AsyncResult;
             return apmWrap.Data;
         }
@@ -176,66 +205,6 @@ namespace WebApplications.Utilities.Threading
             }
 
             /// <summary>
-            ///   The internal callback.
-            /// </summary>
-            /// <param name="result">The status of the asynchronous operation.</param>
-            internal void AsyncCallbackInternal(IAsyncResult result)
-            {
-                this.AsyncResult = result;
-                if (this.SyncContext == null)
-                {
-                    this.AsyncCallback(this);
-                }
-                else
-                {
-                    this.SyncContext.Post(PostCallback, this);
-                }
-            }
-
-            /// <summary>
-            ///   Determines whether the specified <see cref="object"/> is equal to this instance.
-            /// </summary>
-            /// <param name="obj">The object to compare with the current instance.</param>
-            /// <returns>
-            ///   Returns <see langword="true"/> if the specified <see cref="object"/> is equal to this instance; otherwise returns <see langword="false"/>.
-            /// </returns>
-            public override bool Equals(object obj)
-            {
-                return this.AsyncResult.Equals(obj);
-            }
-
-            /// <summary>
-            ///   Returns a hash code for this instance.
-            /// </summary>
-            /// <returns>A 32-bit signed integer hash code for this instance.</returns>
-            /// <remarks>Suitable for use in hashing algorithms and also for data structures like a hash table.</remarks>
-            /// <seealso cref="System.Object.GetHashCode"/>
-            public override int GetHashCode()
-            {
-                return this.AsyncResult.GetHashCode();
-            }
-
-            /// <summary>
-            ///   Posts the callback.
-            /// </summary>
-            /// <param name="state">The object passed to the delegate.</param>
-            private static void PostCallback(object state)
-            {
-                ApmWrapper apmWrap = (ApmWrapper)state;
-                if (apmWrap != null)
-                    apmWrap.AsyncCallback(apmWrap);
-            }
-
-            /// <summary>
-            ///   Returns a <see cref="string"/> that represents this instance.
-            /// </summary>
-            /// <returns>A <see cref="string"/> representation of the instance.</returns>
-            public override string ToString()
-            {
-                return this.AsyncResult.ToString();
-            }
-
-            /// <summary>
             ///   Gets or sets the <see cref="AsyncCallback">async callback</see>.
             /// </summary>
             /// <remarks>This is the method to call when the asynchronous operation has completed.</remarks>
@@ -248,60 +217,10 @@ namespace WebApplications.Utilities.Threading
             internal IAsyncResult AsyncResult { get; set; }
 
             /// <summary>
-            ///   Gets a user-defined object that qualifies or contains information about an asynchronous operation.
-            /// </summary>
-            /// <seealso cref="IAsyncResult.AsyncState"/>
-            public object AsyncState
-            {
-                get
-                {
-                    return this.AsyncResult.AsyncState;
-                }
-            }
-
-            /// <summary>
-            ///   Gets a <see cref="System.Threading.WaitHandle"/> which is used to wait for an asynchronous operation to complete.
-            /// </summary>
-            /// <returns>A wait handle that is used to wait for an asynchronous operation to complete.</returns>
-            public WaitHandle AsyncWaitHandle
-            {
-                get
-                {
-                    return this.AsyncResult.AsyncWaitHandle;
-                }
-            }
-
-            /// <summary>
-            ///   Gets a <see cref="bool"/> value indicating whether the asynchronous operation completed synchronously.
-            /// </summary>
-            /// <returns>
-            ///   Returns <see langword="true"/> if the asynchronous operation completed synchronously; otherwise returns <see langword="false"/>.
-            /// </returns>
-            public bool CompletedSynchronously
-            {
-                get
-                {
-                    return this.AsyncResult.CompletedSynchronously;
-                }
-            }
-
-            /// <summary>
             ///   Gets or sets the data to embed.
             /// </summary>
             /// <value>The data embedded in the result object.</value>
             internal T Data { get; set; }
-
-            /// <summary>
-            ///   Gets a <see cref="bool"/> value that indicates whether the asynchronous operation has completed.
-            /// </summary>
-            /// <value>Returns <see langword="true"/> if the operation is complete; otherwise returns <see langword="false"/>.</value>
-            public bool IsCompleted
-            {
-                get
-                {
-                    return this.AsyncResult.IsCompleted;
-                }
-            }
 
             /// <summary>
             ///   Gets or sets the <see cref="SynchronizationContext">synchronization context</see>.
@@ -312,6 +231,106 @@ namespace WebApplications.Utilities.Threading
             /// </remarks>
             [UsedImplicitly]
             internal SynchronizationContext SyncContext { get; set; }
+
+            #region IAsyncResult Members
+            /// <summary>
+            ///   Gets a user-defined object that qualifies or contains information about an asynchronous operation.
+            /// </summary>
+            /// <seealso cref="IAsyncResult.AsyncState"/>
+            public object AsyncState
+            {
+                get { return AsyncResult.AsyncState; }
+            }
+
+            /// <summary>
+            ///   Gets a <see cref="System.Threading.WaitHandle"/> which is used to wait for an asynchronous operation to complete.
+            /// </summary>
+            /// <returns>A wait handle that is used to wait for an asynchronous operation to complete.</returns>
+            public WaitHandle AsyncWaitHandle
+            {
+                get { return AsyncResult.AsyncWaitHandle; }
+            }
+
+            /// <summary>
+            ///   Gets a <see cref="bool"/> value indicating whether the asynchronous operation completed synchronously.
+            /// </summary>
+            /// <returns>
+            ///   Returns <see langword="true"/> if the asynchronous operation completed synchronously; otherwise returns <see langword="false"/>.
+            /// </returns>
+            public bool CompletedSynchronously
+            {
+                get { return AsyncResult.CompletedSynchronously; }
+            }
+
+            /// <summary>
+            ///   Gets a <see cref="bool"/> value that indicates whether the asynchronous operation has completed.
+            /// </summary>
+            /// <value>Returns <see langword="true"/> if the operation is complete; otherwise returns <see langword="false"/>.</value>
+            public bool IsCompleted
+            {
+                get { return AsyncResult.IsCompleted; }
+            }
+            #endregion
+
+            /// <summary>
+            ///   The internal callback.
+            /// </summary>
+            /// <param name="result">The status of the asynchronous operation.</param>
+            internal void AsyncCallbackInternal(IAsyncResult result)
+            {
+                AsyncResult = result;
+                if (SyncContext == null)
+                {
+                    AsyncCallback(this);
+                }
+                else
+                {
+                    SyncContext.Post(PostCallback, this);
+                }
+            }
+
+            /// <summary>
+            ///   Determines whether the specified <see cref="object"/> is equal to this instance.
+            /// </summary>
+            /// <param name="obj">The object to compare with the current instance.</param>
+            /// <returns>
+            ///   Returns <see langword="true"/> if the specified <see cref="object"/> is equal to this instance; otherwise returns <see langword="false"/>.
+            /// </returns>
+            public override bool Equals(object obj)
+            {
+                return AsyncResult.Equals(obj);
+            }
+
+            /// <summary>
+            ///   Returns a hash code for this instance.
+            /// </summary>
+            /// <returns>A 32-bit signed integer hash code for this instance.</returns>
+            /// <remarks>Suitable for use in hashing algorithms and also for data structures like a hash table.</remarks>
+            /// <seealso cref="System.Object.GetHashCode"/>
+            public override int GetHashCode()
+            {
+                return AsyncResult.GetHashCode();
+            }
+
+            /// <summary>
+            ///   Posts the callback.
+            /// </summary>
+            /// <param name="state">The object passed to the delegate.</param>
+            private static void PostCallback(object state)
+            {
+                ApmWrapper apmWrap = (ApmWrapper) state;
+                if (apmWrap != null)
+                    apmWrap.AsyncCallback(apmWrap);
+            }
+
+            /// <summary>
+            ///   Returns a <see cref="string"/> that represents this instance.
+            /// </summary>
+            /// <returns>A <see cref="string"/> representation of the instance.</returns>
+            public override string ToString()
+            {
+                return AsyncResult.ToString();
+            }
         }
     }
 }

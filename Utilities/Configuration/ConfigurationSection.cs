@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities
-// File: ConfigurationSection.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -53,60 +58,62 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         ///   Holds the constructor function.
         /// </summary>
-        [NotNull]
-        private static readonly Func<T> _constructor = typeof(T).ConstructorFunc<T>();
+        [NotNull] private static readonly Func<T> _constructor = typeof (T).ConstructorFunc<T>();
 
         /// <summary>
         /// Calculates the section name.
         /// </summary>
-        [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private static readonly Lazy<string> _sectionName =
+        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly Lazy<string> _sectionName =
             new Lazy<string>(
                 () =>
-                {
+                    {
+                        // Try to find attribute
+                        ConfigurationSectionAttribute attribute =
+                            (ConfigurationSectionAttribute)
+                            typeof (T).GetCustomAttributes(typeof (ConfigurationSectionAttribute), false).
+                                FirstOrDefault();
 
-                    // Try to find attribute
-                    ConfigurationSectionAttribute attribute =
-                        (ConfigurationSectionAttribute)
-                        typeof(T).GetCustomAttributes(typeof(ConfigurationSectionAttribute), false).
-                            FirstOrDefault();
+                        string sectionName = attribute != null ? attribute.Name : null;
 
-                    string sectionName = attribute != null ? attribute.Name : null;
+                        if (!String.IsNullOrEmpty(sectionName))
+                            return sectionName;
 
-                    if (!String.IsNullOrEmpty(sectionName))
+                        // Get type name (after last '.')
+                        sectionName = typeof (T).Name;
+
+                        int len = sectionName.Length;
+
+                        // If it ends with 'configuration' strip it.
+                        if (len > 20 &&
+                            sectionName.EndsWith("configurationsection",
+                                                 StringComparison.CurrentCultureIgnoreCase))
+                            sectionName = sectionName.Substring(0, len -= 20);
+                        else if (len > 13 &&
+                                 sectionName.EndsWith("configuration",
+                                                      StringComparison.CurrentCultureIgnoreCase))
+                            sectionName = sectionName.Substring(0, len -= 13);
+                        else if (len > 7 &&
+                                 sectionName.EndsWith("section",
+                                                      StringComparison.CurrentCultureIgnoreCase))
+                            sectionName = sectionName.Substring(0, len -= 7);
+                        else if (len > 6 &&
+                                 sectionName.EndsWith("config",
+                                                      StringComparison.CurrentCultureIgnoreCase))
+                            sectionName = sectionName.Substring(0, len -= 6);
+
+                        // Convert to lower camel case
+                        sectionName = sectionName.Substring(0, 1).ToLower() + (len > 1
+                                                                                   ? sectionName.
+                                                                                         Substring(1)
+                                                                                   : string.Empty);
                         return sectionName;
+                    }, LazyThreadSafetyMode.PublicationOnly);
 
-                    // Get type name (after last '.')
-                    sectionName = typeof(T).Name;
 
-                    int len = sectionName.Length;
-
-                    // If it ends with 'configuration' strip it.
-                    if (len > 20 &&
-                        sectionName.EndsWith("configurationsection",
-                                             StringComparison.CurrentCultureIgnoreCase))
-                        sectionName = sectionName.Substring(0, len -= 20);
-                    else if (len > 13 &&
-                             sectionName.EndsWith("configuration",
-                                                  StringComparison.CurrentCultureIgnoreCase))
-                        sectionName = sectionName.Substring(0, len -= 13);
-                    else if (len > 7 &&
-                             sectionName.EndsWith("section",
-                                                  StringComparison.CurrentCultureIgnoreCase))
-                        sectionName = sectionName.Substring(0, len -= 7);
-                    else if (len > 6 &&
-                             sectionName.EndsWith("config",
-                                                  StringComparison.CurrentCultureIgnoreCase))
-                        sectionName = sectionName.Substring(0, len -= 6);
-
-                    // Convert to lower camel case
-                    sectionName = sectionName.Substring(0, 1).ToLower() + (len > 1
-                                                                               ? sectionName.
-                                                                                     Substring(1)
-                                                                               : string.Empty);
-                    return sectionName;
-                }, LazyThreadSafetyMode.PublicationOnly);
+        /// <summary>
+        ///   Holds the currently active configuration section.
+        /// </summary>
+        [CanBeNull] private static T _active;
 
         /// <summary>
         ///   Gets the name of the configuration section.
@@ -124,14 +131,10 @@ namespace WebApplications.Utilities.Configuration
         /// </remarks>
         [NotNull]
         [UsedImplicitly]
-        public static string SectionName { get { return _sectionName.Value; } }
-
-
-        /// <summary>
-        ///   Holds the currently active configuration section.
-        /// </summary>
-        [CanBeNull]
-        private static T _active;
+        public static string SectionName
+        {
+            get { return _sectionName.Value; }
+        }
 
         /// <summary>
         ///   Gets or sets the active configuration.
@@ -173,6 +176,23 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <summary>
+        ///   Gets the XMLNS.
+        /// </summary>
+        /// <remarks>
+        ///   This allows a configuration section to reference a specific namespace for Visual Studio intellisense support.
+        ///   Without this property, specifying a namespace on a configuration section will cause the configuration section
+        ///   to fail to load at runtime.
+        /// </remarks>
+        /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
+        [ConfigurationProperty("xmlns", IsRequired = false)]
+        [UsedImplicitly]
+        public string Xmlns
+        {
+            get { return (string) base["xmlns"]; }
+            set { base["xmlns"] = value; }
+        }
+
+        /// <summary>
         ///   Occurs when the <see cref="Active"/> ConfigurationSection is changed.
         /// </summary>
         [UsedImplicitly]
@@ -210,56 +230,6 @@ namespace WebApplications.Utilities.Configuration
         }
 
         /// <summary>
-        ///   Gets the XMLNS.
-        /// </summary>
-        /// <remarks>
-        ///   This allows a configuration section to reference a specific namespace for Visual Studio intellisense support.
-        ///   Without this property, specifying a namespace on a configuration section will cause the configuration section
-        ///   to fail to load at runtime.
-        /// </remarks>
-        /// <exception cref="ConfigurationErrorsException">The property is read-only or locked.</exception>
-        [ConfigurationProperty("xmlns", IsRequired = false)]
-        [UsedImplicitly]
-        public string Xmlns
-        {
-            get { return (string)base["xmlns"]; }
-            set { base["xmlns"] = value; }
-        }
-
-        #region Nested type: ConfigurationChangedEventArgs
-        /// <summary>
-        ///   Information about the configuration changed event.
-        /// </summary>
-        public class ConfigurationChangedEventArgs : EventArgs
-        {
-            /// <summary>
-            ///   The new Configuration
-            /// </summary>
-            [NotNull]
-            [UsedImplicitly]
-            public T NewConfiguration;
-
-            /// <summary>
-            ///   The old configuration (if any).
-            /// </summary>
-            [NotNull]
-            [UsedImplicitly]
-            public T OldConfiguration;
-
-            /// <summary>
-            ///   Initializes a new instance of the <see cref="ConfigurationSection&lt;T&gt;.ConfigurationChangedEventArgs"/> class.
-            /// </summary>
-            /// <param name="oldConfiguration">The old configuration.</param>
-            /// <param name="newConfiguration">The new configuration.</param>
-            public ConfigurationChangedEventArgs([NotNull] T oldConfiguration, [NotNull] T newConfiguration)
-            {
-                OldConfiguration = oldConfiguration;
-                NewConfiguration = newConfiguration;
-            }
-        }
-        #endregion
-
-        /// <summary>
         ///   Gets the configuration property.
         /// </summary>
         /// <typeparam name="TProp">The property type.</typeparam>
@@ -269,7 +239,7 @@ namespace WebApplications.Utilities.Configuration
         [UsedImplicitly]
         protected TProp GetProperty<TProp>(string propertyName)
         {
-            return (TProp)base[propertyName];
+            return (TProp) base[propertyName];
         }
 
         /// <summary>
@@ -284,5 +254,34 @@ namespace WebApplications.Utilities.Configuration
         {
             base[propertyName] = value;
         }
+
+        #region Nested type: ConfigurationChangedEventArgs
+        /// <summary>
+        ///   Information about the configuration changed event.
+        /// </summary>
+        public class ConfigurationChangedEventArgs : EventArgs
+        {
+            /// <summary>
+            ///   The new Configuration
+            /// </summary>
+            [NotNull] [UsedImplicitly] public T NewConfiguration;
+
+            /// <summary>
+            ///   The old configuration (if any).
+            /// </summary>
+            [NotNull] [UsedImplicitly] public T OldConfiguration;
+
+            /// <summary>
+            ///   Initializes a new instance of the <see cref="ConfigurationSection&lt;T&gt;.ConfigurationChangedEventArgs"/> class.
+            /// </summary>
+            /// <param name="oldConfiguration">The old configuration.</param>
+            /// <param name="newConfiguration">The new configuration.</param>
+            public ConfigurationChangedEventArgs([NotNull] T oldConfiguration, [NotNull] T newConfiguration)
+            {
+                OldConfiguration = oldConfiguration;
+                NewConfiguration = newConfiguration;
+            }
+        }
+        #endregion
     }
 }

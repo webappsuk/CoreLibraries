@@ -1,6 +1,31 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Text;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -29,7 +54,8 @@ namespace WebApplications.Utilities.Test.Caching
         [TestMethod]
         public void ConcurrentLookup_WithInitialCollection_IsNotNull()
         {
-            ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(Enumerable.Empty<KeyValuePair<Guid, string>>(), 0, 0, null, null);
+            ConcurrentLookup<Guid, String> concurrentLookup =
+                new ConcurrentLookup<Guid, string>(Enumerable.Empty<KeyValuePair<Guid, string>>(), 0, 0, null, null);
             Assert.IsNotNull(concurrentLookup);
         }
 
@@ -46,7 +72,7 @@ namespace WebApplications.Utilities.Test.Caching
         [TestMethod]
         public void Count_InitialCollectionContainsDuplicatesKeys_MatchesNumberOfUniqueKeys()
         {
-            List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select( n => Guid.NewGuid()).ToList();
+            List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
             int numberOfDuplicates = Random.Next(1, keys.Count/2);
             List<KeyValuePair<Guid, string>> collection = keys.Concat(keys.Take(numberOfDuplicates)).Select(
                 key => new KeyValuePair<Guid, string>(key, Random.RandomString(20))
@@ -59,7 +85,7 @@ namespace WebApplications.Utilities.Test.Caching
         public void GetEnumerator_InitialCollectionContainsDuplicatesKeys_GroupingKeysMatchUniqueCollectionKeys()
         {
             List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
-            int numberOfDuplicates = Random.Next(1, keys.Count / 2);
+            int numberOfDuplicates = Random.Next(1, keys.Count/2);
             List<KeyValuePair<Guid, string>> collection = keys.Concat(keys.Take(numberOfDuplicates)).Select(
                 key => new KeyValuePair<Guid, string>(key, Random.RandomString(20))
                 ).ToList();
@@ -71,7 +97,7 @@ namespace WebApplications.Utilities.Test.Caching
         public void GetEnumerator_InitialCollectionContainsDuplicatesKeys_GroupingsMatchCollectionEntriesMatchingKey()
         {
             List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
-            int numberOfDuplicates = Random.Next(1, keys.Count / 2);
+            int numberOfDuplicates = Random.Next(1, keys.Count/2);
             List<KeyValuePair<Guid, string>> collection = keys.Concat(keys.Take(numberOfDuplicates)).Select(
                 key => new KeyValuePair<Guid, string>(key, Random.RandomString(20))
                 ).ToList();
@@ -79,7 +105,8 @@ namespace WebApplications.Utilities.Test.Caching
             foreach (IGrouping<Guid, string> grouping in concurrentLookup)
             {
                 Assert.IsNotNull(grouping);
-                CollectionAssert.AreEquivalent(collection.Where(e=>e.Key==grouping.Key).Select(e=>e.Value).ToList(), grouping.ToList());
+                CollectionAssert.AreEquivalent(
+                    collection.Where(e => e.Key == grouping.Key).Select(e => e.Value).ToList(), grouping.ToList());
             }
         }
 
@@ -87,7 +114,8 @@ namespace WebApplications.Utilities.Test.Caching
         public void This_ExistingKey_EnumerationMatchesAllCollectionEntriesMatchingKey()
         {
             Guid matchingKey = Guid.NewGuid();
-            List<string> matchingValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Random.RandomString(20)).ToList();
+            List<string> matchingValues =
+                Enumerable.Range(1, Random.Next(10, 100)).Select(n => Random.RandomString(20)).ToList();
             IEnumerable<KeyValuePair<Guid, string>> otherEntries =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
                     n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
@@ -113,7 +141,8 @@ namespace WebApplications.Utilities.Test.Caching
         public void TryGet_ExistingKey_OutputEnumerationMatchesAllCollectionEntriesMatchingKey()
         {
             Guid matchingKey = Guid.NewGuid();
-            List<string> matchingValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Random.RandomString(20)).ToList();
+            List<string> matchingValues =
+                Enumerable.Range(1, Random.Next(10, 100)).Select(n => Random.RandomString(20)).ToList();
             IEnumerable<KeyValuePair<Guid, string>> otherEntries =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
                     n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
@@ -131,7 +160,8 @@ namespace WebApplications.Utilities.Test.Caching
         public void TryGet_ExistingKey_OutputKeyMatchesKey()
         {
             Guid matchingKey = Guid.NewGuid();
-            List<string> matchingValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Random.RandomString(20)).ToList();
+            List<string> matchingValues =
+                Enumerable.Range(1, Random.Next(10, 100)).Select(n => Random.RandomString(20)).ToList();
             IEnumerable<KeyValuePair<Guid, string>> otherEntries =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
                     n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
@@ -142,7 +172,7 @@ namespace WebApplications.Utilities.Test.Caching
             IGrouping<Guid, String> output;
             concurrentLookup.TryGet(matchingKey, out output);
             Assert.IsNotNull(output);
-            Assert.AreEqual(matchingKey,output.Key);
+            Assert.AreEqual(matchingKey, output.Key);
         }
 
         [TestMethod]
@@ -244,9 +274,9 @@ namespace WebApplications.Utilities.Test.Caching
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
                     n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
-            KeyValuePair<Guid,string> existing = collection[Random.Next(0, collection.Count)];
+            KeyValuePair<Guid, string> existing = collection[Random.Next(0, collection.Count)];
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
-            Assert.IsTrue(concurrentLookup.Remove(existing.Key,existing.Value));
+            Assert.IsTrue(concurrentLookup.Remove(existing.Key, existing.Value));
         }
 
         [TestMethod]
@@ -257,7 +287,7 @@ namespace WebApplications.Utilities.Test.Caching
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
                     n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)));
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
-            Assert.IsFalse(concurrentLookup.Remove(absentKey,Random.RandomString(15)));
+            Assert.IsFalse(concurrentLookup.Remove(absentKey, Random.RandomString(15)));
         }
 
         [TestMethod]
@@ -289,9 +319,9 @@ namespace WebApplications.Utilities.Test.Caching
             List<KeyValuePair<Guid, string>> collection =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(
                     n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10))).ToList();
-            KeyValuePair<Guid,string> existing = collection[Random.Next(0, collection.Count)];
+            KeyValuePair<Guid, string> existing = collection[Random.Next(0, collection.Count)];
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
-            concurrentLookup.Remove(existing.Key,existing.Value);
+            concurrentLookup.Remove(existing.Key, existing.Value);
             Assert.IsFalse(concurrentLookup.Contains(existing.Key));
         }
 
@@ -307,7 +337,7 @@ namespace WebApplications.Utilities.Test.Caching
                     n => new KeyValuePair<Guid, string>(Guid.NewGuid(), Random.RandomString(10)))
                     .Concat(existingValues);
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
-            concurrentLookup.Remove(existingKeyWithDuplicates,existingValues.First().Value);
+            concurrentLookup.Remove(existingKeyWithDuplicates, existingValues.First().Value);
             Assert.IsTrue(concurrentLookup.Contains(existingKeyWithDuplicates));
         }
 
@@ -348,7 +378,7 @@ namespace WebApplications.Utilities.Test.Caching
             ConcurrentLookup<Guid, String> concurrentLookup = new ConcurrentLookup<Guid, string>(collection);
             concurrentLookup.Add(newKey, newValue);
             concurrentLookup.Add(newKey, newValue);
-            CollectionAssert.AreEqual(new List<String> { newValue, newValue }, concurrentLookup[newKey].ToList());
+            CollectionAssert.AreEqual(new List<String> {newValue, newValue}, concurrentLookup[newKey].ToList());
         }
 
         [TestMethod]
@@ -363,7 +393,7 @@ namespace WebApplications.Utilities.Test.Caching
             concurrentLookup.Add(newKey, newValue);
             concurrentLookup.Add(newKey, newValue);
             concurrentLookup.Remove(newKey, newValue);
-            CollectionAssert.AreEqual(new List<String> { newValue }, concurrentLookup[newKey].ToList());
+            CollectionAssert.AreEqual(new List<String> {newValue}, concurrentLookup[newKey].ToList());
         }
 
         // TODO: test: Concurrency, updating keys??, choosing the equality things, GUID clashes on value add (lol)

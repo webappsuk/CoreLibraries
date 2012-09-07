@@ -1,38 +1,39 @@
-#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities
-// File: Reflection.cs
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
@@ -48,10 +49,54 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Binding flags for returning all fields/properties from a type.
         /// </summary>
-        [UsedImplicitly]
-        public const BindingFlags AccessorBindingFlags =
+        [UsedImplicitly] public const BindingFlags AccessorBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.FlattenHierarchy;
+
+        /// <summary>
+        /// Cache the conversions so that when requested they can be retrieved rather than recomputed.
+        /// </summary>
+        private static readonly ConcurrentDictionary<string, object> _converters =
+            new ConcurrentDictionary<string, object>();
+
+        /// <summary>
+        /// The <see cref="MethodInfo"/> for <see cref="object.ToString()"/>.
+        /// </summary>
+        [NotNull] public static readonly MethodInfo ToStringMethodInfo =
+            ExtendedType.Get(typeof (object)).GetMethod("ToString", typeof (string));
+
+        /// <summary>
+        ///   The <see cref="Expression"/> to get the <see cref="CultureInfo.CurrentCulture">current CultureInfo</see>.
+        /// </summary>
+        [NotNull] public static readonly Expression CurrentCultureExpression =
+            Expression.Call(ExtendedType.Get(typeof (CultureInfo)).GetProperty("CurrentCulture").GetMethod);
+
+        /// <summary>
+        ///   <see cref="Regex"/> for matching generic types.
+        /// </summary>
+        private static readonly Regex _genericRegex =
+            new Regex(@"(?<FullName>\[(?<Name>\w[.+'\w]*?),\s*(?<Assembly>\w[.+\w]*?),.*?\])", RegexOptions.Compiled);
+
+        /// <summary>
+        ///   Cache the simplified type names, so that when requested they can be retrieved rather than recomputed.
+        /// </summary>
+        private static readonly ConcurrentDictionary<string, string> _simplifications =
+            new ConcurrentDictionary<string, string>();
+
+        /// <summary>
+        /// An empty type array.
+        /// </summary>
+        [NotNull] public static readonly Type[] EmptyTypes = new Type[0];
+
+        /// <summary>
+        /// An empty type array.
+        /// </summary>
+        [NotNull] public static readonly bool[] EmptyBools = new bool[0];
+
+        /// <summary>
+        /// An empty generic arguments array.
+        /// </summary>
+        [NotNull] public static readonly GenericArgument[] EmptyGenericArguments = new GenericArgument[0];
 
         /// <summary>
         /// Retrieves the lambda function equivalent of the specified property/field getter static method.
@@ -63,7 +108,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         [CanBeNull]
-        public static Func<TValue> GetGetter<TValue>([NotNull]this Type type, [NotNull]string name)
+        public static Func<TValue> GetGetter<TValue>([NotNull] this Type type, [NotNull] string name)
         {
             ExtendedType et = type;
             Field field = et.GetField(name);
@@ -85,7 +130,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         [CanBeNull]
-        public static Func<T, TValue> GetGetter<T, TValue>([NotNull]this Type type, [NotNull]string name)
+        public static Func<T, TValue> GetGetter<T, TValue>([NotNull] this Type type, [NotNull] string name)
         {
             ExtendedType et = type;
             Field field = et.GetField(name);
@@ -106,7 +151,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         [CanBeNull]
-        public static Action<TValue> GetSetter<TValue>([NotNull]this Type type, [NotNull] string name)
+        public static Action<TValue> GetSetter<TValue>([NotNull] this Type type, [NotNull] string name)
         {
             ExtendedType et = type;
             Field field = et.GetField(name);
@@ -128,7 +173,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         [CanBeNull]
-        public static Action<T, TValue> GetSetter<T, TValue>([NotNull]this Type type, [NotNull] string name)
+        public static Action<T, TValue> GetSetter<T, TValue>([NotNull] this Type type, [NotNull] string name)
         {
             ExtendedType et = type;
             Field field = et.GetField(name);
@@ -201,7 +246,7 @@ namespace WebApplications.Utilities
                 methodInfo = methodBase as MethodInfo;
                 constructorInfo = null;
                 if ((methodInfo == null) ||
-                    (methodInfo.ReturnType == typeof(void)))
+                    (methodInfo.ReturnType == typeof (void)))
                 {
                     throw new ArgumentOutOfRangeException(
                         "methodBase",
@@ -344,76 +389,76 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         [NotNull]
         public static object GetAction(
-            [NotNull]this MethodInfo methodInfo,
+            [NotNull] this MethodInfo methodInfo,
             bool checkParameterAssignability,
-            [NotNull]params Type[] paramTypes)
+            [NotNull] params Type[] paramTypes)
         {
             if (methodInfo == null)
                 throw new ArgumentNullException("methodInfo");
 
-                        bool isStatic = methodInfo.IsStatic;
+            bool isStatic = methodInfo.IsStatic;
 
-                        int count = paramTypes.Count();
+            int count = paramTypes.Count();
 
-                        // Validate method info
-                        ParameterInfo[] parameterInfos = methodInfo.GetParameters();
-                        List<Type> methodTypes = new List<Type>(count);
+            // Validate method info
+            ParameterInfo[] parameterInfos = methodInfo.GetParameters();
+            List<Type> methodTypes = new List<Type>(count);
 
-                        // If we're not static the first parameter is implicitly the declaring type of the method.
-                        if (!isStatic)
-                            methodTypes.Add(methodInfo.DeclaringType);
-                        methodTypes.AddRange(parameterInfos.Select(pi => pi.ParameterType));
+            // If we're not static the first parameter is implicitly the declaring type of the method.
+            if (!isStatic)
+                methodTypes.Add(methodInfo.DeclaringType);
+            methodTypes.AddRange(parameterInfos.Select(pi => pi.ParameterType));
 
-                        if (methodTypes.Count() != count)
-                        {
-                            throw new ArgumentOutOfRangeException(
-                                "methodInfo",
-                                String.Format(
-                                    Resources.Reflection_GetAction_IncorrectParameterCount,
-                                    methodInfo));
-                        }
+            if (methodTypes.Count() != count)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "methodInfo",
+                    String.Format(
+                        Resources.Reflection_GetAction_IncorrectParameterCount,
+                        methodInfo));
+            }
 
-                        // Create expressions
-                        ParameterExpression[] parameterExpressions = new ParameterExpression[count];
-                        List<Expression> pExpressions = new List<Expression>(count);
+            // Create expressions
+            ParameterExpression[] parameterExpressions = new ParameterExpression[count];
+            List<Expression> pExpressions = new List<Expression>(count);
 
-                        Expression expression;
-                        for (int i = 0; i < count; i++)
-                        {
-                            Type funcType = paramTypes[i];
-                            Type methodType = methodTypes[i];
-                            // Check assignability
-                            if (checkParameterAssignability && !methodType.IsAssignableFrom(funcType))
-                            {
-                                throw new ArgumentOutOfRangeException(
-                                    "methodInfo",
-                                    String.Format(
-                                        Resources.Reflection_GetAction_ParameterNotAssignable,
-                                        methodInfo,
-                                        funcType,
-                                        methodType));
-                            }
+            Expression expression;
+            for (int i = 0; i < count; i++)
+            {
+                Type funcType = paramTypes[i];
+                Type methodType = methodTypes[i];
+                // Check assignability
+                if (checkParameterAssignability && !methodType.IsAssignableFrom(funcType))
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "methodInfo",
+                        String.Format(
+                            Resources.Reflection_GetAction_ParameterNotAssignable,
+                            methodInfo,
+                            funcType,
+                            methodType));
+                }
 
-                            // Create parameter expression
-                            expression = parameterExpressions[i] = Expression.Parameter(funcType);
+                // Create parameter expression
+                expression = parameterExpressions[i] = Expression.Parameter(funcType);
 
-                            // Check if we need to do a cast to the method type
-                            if (funcType != methodType)
-                                expression = expression.Convert(methodType);
+                // Check if we need to do a cast to the method type
+                if (funcType != methodType)
+                    expression = expression.Convert(methodType);
 
-                            pExpressions.Add(expression);
-                        }
+                pExpressions.Add(expression);
+            }
 
 
-                        // Create call expression, instance methods use the first parameter of the action as the instance, static
-                        // methods do not supply an instance.
-                        expression = isStatic
-                                         ? Expression.Call(methodInfo, pExpressions)
-                                         : Expression.Call(
-                                             pExpressions[0], methodInfo, pExpressions.Skip(1));
-                        return
-                            Expression.Lambda(Expression.Block(expression), parameterExpressions).
-                                Compile();
+            // Create call expression, instance methods use the first parameter of the action as the instance, static
+            // methods do not supply an instance.
+            expression = isStatic
+                             ? Expression.Call(methodInfo, pExpressions)
+                             : Expression.Call(
+                                 pExpressions[0], methodInfo, pExpressions.Skip(1));
+            return
+                Expression.Lambda(Expression.Block(expression), parameterExpressions).
+                    Compile();
         }
 
         /// <summary>
@@ -433,9 +478,9 @@ namespace WebApplications.Utilities
         [NotNull]
         [UsedImplicitly]
         public static object GetConstructorFunc(
-            [NotNull]this Type type,
+            [NotNull] this Type type,
             bool checkParameterAssignability,
-            [NotNull]params Type[] paramTypes)
+            [NotNull] params Type[] paramTypes)
         {
             if (type == null)
                 throw new ArgumentNullException("type");
@@ -459,7 +504,7 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the specified property is automatic; otherwise <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public static bool IsAutomatic([NotNull]this PropertyInfo property)
+        public static bool IsAutomatic([NotNull] this PropertyInfo property)
         {
             Property p = property;
             return p.IsAutomatic;
@@ -475,7 +520,7 @@ namespace WebApplications.Utilities
         /// </returns>
         [UsedImplicitly]
         [CanBeNull]
-        public static Field GetAutomaticFieldInfo([NotNull]this PropertyInfo property)
+        public static Field GetAutomaticFieldInfo([NotNull] this PropertyInfo property)
         {
             Property p = property;
             return p.AutomaticField;
@@ -493,7 +538,7 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static Func<TIn, TOut> GetConversion<TIn, TOut>()
         {
-            return GetConversion<TIn, TOut>(typeof(TIn));
+            return GetConversion<TIn, TOut>(typeof (TIn));
         }
 
         /// <summary>
@@ -506,7 +551,7 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static Func<object, object> GetConversion()
         {
-            return GetConversion<object, object>(typeof(object));
+            return GetConversion<object, object>(typeof (object));
         }
 
         /// <summary>
@@ -525,11 +570,6 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Cache the conversions so that when requested they can be retrieved rather than recomputed.
-        /// </summary>
-        private readonly static ConcurrentDictionary<string, object> _converters = new ConcurrentDictionary<string, object>();
-
-        /// <summary>
         ///   Gets the conversion from the input type to the output type as a lambda expression.
         /// </summary>
         /// <typeparam name="TIn">The type of the input for the function.</typeparam>
@@ -541,43 +581,30 @@ namespace WebApplications.Utilities
         ///   Conversions are cached, which saves a conversion being recomputed if it's requested more than once.
         /// </remarks>
         [UsedImplicitly]
-        public static Func<TIn, TOut> GetConversion<TIn, TOut>([NotNull]this Type inputType, Type outputType = null)
+        public static Func<TIn, TOut> GetConversion<TIn, TOut>([NotNull] this Type inputType, Type outputType = null)
         {
             if (outputType == null)
-                outputType = typeof(TOut);
+                outputType = typeof (TOut);
 
-            return (Func<TIn, TOut>)_converters.GetOrAdd(
+            return (Func<TIn, TOut>) _converters.GetOrAdd(
                 string.Format("{0}|{1}|{2}|{3}",
-                              typeof(TIn).FullName,
+                              typeof (TIn).FullName,
                               inputType.FullName,
                               outputType.FullName,
-                              typeof(TOut).FullName),
+                              typeof (TOut).FullName),
                 k =>
-                {
-                    // Build the expression as a series of conversions.
-                    ParameterExpression parameterExpression = Expression.Parameter(typeof(TIn), "inputValue");
-                    Expression body = parameterExpression;
-                    return !body.TryConvert(inputType, out body) ||
-                           !body.TryConvert(outputType, out body) ||
-                           !body.TryConvert(typeof(TOut), out body)
-                               ? (object)null
-                               : Expression.Lambda<Func<TIn, TOut>>(Expression.Block(body), parameterExpression)
-                                     .Compile();
-                });
+                    {
+                        // Build the expression as a series of conversions.
+                        ParameterExpression parameterExpression = Expression.Parameter(typeof (TIn), "inputValue");
+                        Expression body = parameterExpression;
+                        return !body.TryConvert(inputType, out body) ||
+                               !body.TryConvert(outputType, out body) ||
+                               !body.TryConvert(typeof (TOut), out body)
+                                   ? (object) null
+                                   : Expression.Lambda<Func<TIn, TOut>>(Expression.Block(body), parameterExpression)
+                                         .Compile();
+                    });
         }
-
-        /// <summary>
-        /// The <see cref="MethodInfo"/> for <see cref="object.ToString()"/>.
-        /// </summary>
-        [NotNull]
-        public static readonly MethodInfo ToStringMethodInfo = ExtendedType.Get(typeof(object)).GetMethod("ToString", typeof(string));
-
-        /// <summary>
-        ///   The <see cref="Expression"/> to get the <see cref="CultureInfo.CurrentCulture">current CultureInfo</see>.
-        /// </summary>
-        [NotNull]
-        public static readonly Expression CurrentCultureExpression =
-                Expression.Call(ExtendedType.Get(typeof(CultureInfo)).GetProperty("CurrentCulture").GetMethod);
 
         /// <summary>
         ///   Converts the specified expression to the output type.
@@ -592,7 +619,7 @@ namespace WebApplications.Utilities
         /// <exception cref="InvalidOperationException">The conversion is not supported.</exception>
         [NotNull]
         [UsedImplicitly]
-        public static Expression Convert([NotNull]this Expression expression, [NotNull]Type outputType)
+        public static Expression Convert([NotNull] this Expression expression, [NotNull] Type outputType)
         {
             Expression outputExpression;
             if (!TryConvert(expression, outputType, out outputExpression))
@@ -617,7 +644,8 @@ namespace WebApplications.Utilities
         ///   ToString() conversion, IConvertible and TypeConverters. It also prevents exceptions being thrown.
         /// </remarks>
         [UsedImplicitly]
-        public static bool TryConvert([NotNull]this Expression expression, [NotNull]Type outputType, [NotNull]out Expression outputExpression)
+        public static bool TryConvert([NotNull] this Expression expression, [NotNull] Type outputType,
+                                      [NotNull] out Expression outputExpression)
         {
             ExtendedType et = outputType;
             return et.TryConvert(expression, out outputExpression);
@@ -652,18 +680,18 @@ namespace WebApplications.Utilities
                 .GetMethods(BindingFlags.Static | BindingFlags.Public)
                 .FirstOrDefault(
                     m =>
-                    {
-                        // Check for correct name, and return type
-                        if (((!includeImplicit || m.Name != "op_Implicit") &&
-                             (!includeExplicit || m.Name != "op_Explicit")) ||
-                            (m.ReturnType != (forwards ? destinationType : type)))
-                            return false;
+                        {
+                            // Check for correct name, and return type
+                            if (((!includeImplicit || m.Name != "op_Implicit") &&
+                                 (!includeExplicit || m.Name != "op_Explicit")) ||
+                                (m.ReturnType != (forwards ? destinationType : type)))
+                                return false;
 
-                        // Check parameters
-                        ParameterInfo[] parameters = m.GetParameters();
-                        return (parameters.Length == 1) &&
-                               (parameters[0].ParameterType == (forwards ? type : destinationType));
-                    });
+                            // Check parameters
+                            ParameterInfo[] parameters = m.GetParameters();
+                            return (parameters.Length == 1) &&
+                                   (parameters[0].ParameterType == (forwards ? type : destinationType));
+                        });
         }
 
         /// <summary>
@@ -676,7 +704,7 @@ namespace WebApplications.Utilities
         ///   to <paramref name="destinationType"/>; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public static bool ImplicitlyCastsTo([NotNull]this Type type, [NotNull]Type destinationType)
+        public static bool ImplicitlyCastsTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
             return (type == destinationType) ||
                    (destinationType.IsAssignableFrom(type)) ||
@@ -694,7 +722,7 @@ namespace WebApplications.Utilities
         ///   to <paramref name="destinationType"/>; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public static bool ExplicitlyCastsTo([NotNull]this Type type, [NotNull]Type destinationType)
+        public static bool ExplicitlyCastsTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
             return (type != destinationType) &&
                    ((GetCastMethod(type, destinationType, includeImplicit: false) != null) ||
@@ -711,7 +739,7 @@ namespace WebApplications.Utilities
         ///   to <paramref name="destinationType"/>; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public static bool CastsTo([NotNull]this Type type, [NotNull]Type destinationType)
+        public static bool CastsTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
             return (type == destinationType) ||
                    (destinationType.IsAssignableFrom(type)) ||
@@ -726,9 +754,9 @@ namespace WebApplications.Utilities
         /// <param name="destinationType">Type of the destination.</param>
         /// <returns><see langword="true" /> if this types can convert to the specified destination type; otherwise, <see langword="false" />.</returns>
         /// <remarks></remarks>
-        public static bool CanConvertTo([NotNull]this Type type, [NotNull]Type destinationType)
+        public static bool CanConvertTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
-            return ((ExtendedType)type).CanConvertTo(destinationType);
+            return ((ExtendedType) type).CanConvertTo(destinationType);
         }
 
         /// <summary>
@@ -790,18 +818,6 @@ namespace WebApplications.Utilities
         {
             return !type.IsValueType ? null : Activator.CreateInstance(type, true);
         }
-
-        /// <summary>
-        ///   <see cref="Regex"/> for matching generic types.
-        /// </summary>
-        private static readonly Regex _genericRegex =
-            new Regex(@"(?<FullName>\[(?<Name>\w[.+'\w]*?),\s*(?<Assembly>\w[.+\w]*?),.*?\])", RegexOptions.Compiled);
-
-        /// <summary>
-        ///   Cache the simplified type names, so that when requested they can be retrieved rather than recomputed.
-        /// </summary>
-        private static readonly ConcurrentDictionary<string, string> _simplifications =
-            new ConcurrentDictionary<string, string>();
 
         /// <summary>
         ///   Simplifies the full assembly qualified name for a type, excluding version and key information.
@@ -926,13 +942,16 @@ namespace WebApplications.Utilities
         /// <param name="isOutputType">if set to <see langword="true" /> then the type is an output so casts are performed to the search type, rather than from the search type..</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this Type type, TypeSearch typeSearch, bool allowCasts = true, bool allowTypeClosures = true, bool allowSignatureClosures = true, bool isOutputType = false)
+        public static bool Matches(this Type type, TypeSearch typeSearch, bool allowCasts = true,
+                                   bool allowTypeClosures = true, bool allowSignatureClosures = true,
+                                   bool isOutputType = false)
         {
             bool requiresCast;
             GenericArgumentLocation closureLocation;
             int closurePosition;
             Type closureType;
-            bool match = Matches(type, typeSearch, out requiresCast, out closureLocation, out closurePosition, out closureType, isOutputType);
+            bool match = Matches(type, typeSearch, out requiresCast, out closureLocation, out closurePosition,
+                                 out closureType, isOutputType);
             if (!match) return false;
             if (requiresCast) return allowCasts;
             switch (closureLocation)
@@ -957,7 +976,9 @@ namespace WebApplications.Utilities
         /// <param name="isOutputType">if set to <see langword="true" /> then the type is an output so casts are performed to the search type, rather than from the search type..</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static bool Matches(this Type type, TypeSearch typeSearch, out bool requiresCast, out GenericArgumentLocation closureLocation, out int closurePosition, out Type closureType, bool isOutputType = false)
+        public static bool Matches(this Type type, TypeSearch typeSearch, out bool requiresCast,
+                                   out GenericArgumentLocation closureLocation, out int closurePosition,
+                                   out Type closureType, bool isOutputType = false)
         {
             requiresCast = false;
             closureLocation = GenericArgumentLocation.None;
@@ -978,8 +999,8 @@ namespace WebApplications.Utilities
             // TODO Arguably, we need to be able to check whether the Expression.Convert works.
             if (typeSearch.Type != null &&
                 (isOutputType
-                        ? type.CanConvertTo(typeSearch.Type)
-                        : typeSearch.Type.CanConvertTo(type)))
+                     ? type.CanConvertTo(typeSearch.Type)
+                     : typeSearch.Type.CanConvertTo(type)))
             {
                 requiresCast = true;
                 return true;
@@ -1040,23 +1061,6 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// An empty type array.
-        /// </summary>
-        [NotNull]
-        public static readonly Type[] EmptyTypes = new Type[0];
-        /// <summary>
-        /// An empty type array.
-        /// </summary>
-        [NotNull]
-        public static readonly bool[] EmptyBools = new bool[0];
-
-        /// <summary>
-        /// An empty generic arguments array.
-        /// </summary>
-        [NotNull]
-        public static readonly GenericArgument[] EmptyGenericArguments = new GenericArgument[0];
-
-        /// <summary>
         /// Matches the specified signature.
         /// </summary>
         /// <param name="signature">The signature.</param>
@@ -1091,7 +1095,8 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this ISignature signature, bool allowCasts, bool allowTypeClosures, bool allowSignatureClosures, params TypeSearch[] types)
+        public static bool Matches(this ISignature signature, bool allowCasts, bool allowTypeClosures,
+                                   bool allowSignatureClosures, params TypeSearch[] types)
         {
             return Matches(signature, allowCasts, allowTypeClosures, allowSignatureClosures, 0, types);
         }
@@ -1107,12 +1112,14 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this ISignature signature, bool allowCasts, bool allowTypeClosures, bool allowSignatureClosures, int genericArguments, params TypeSearch[] types)
+        public static bool Matches(this ISignature signature, bool allowCasts, bool allowTypeClosures,
+                                   bool allowSignatureClosures, int genericArguments, params TypeSearch[] types)
         {
             bool[] castsRequired;
             Type[] typeClosures;
             Type[] methodClosures;
-            bool match = Matches(signature, out castsRequired, out typeClosures, out methodClosures, genericArguments, types);
+            bool match = Matches(signature, out castsRequired, out typeClosures, out methodClosures, genericArguments,
+                                 types);
             if (!match) return false;
             if (castsRequired.Length > 0) return allowCasts;
             if (typeClosures.Length > 0) return allowTypeClosures;
@@ -1130,7 +1137,9 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this ISignature signature, [NotNull]out bool[] castsRequired, [NotNull] out Type[] typeClosures, [NotNull] out Type[] signatureClosures, params TypeSearch[] types)
+        public static bool Matches(this ISignature signature, [NotNull] out bool[] castsRequired,
+                                   [NotNull] out Type[] typeClosures, [NotNull] out Type[] signatureClosures,
+                                   params TypeSearch[] types)
         {
             return Matches(signature, out castsRequired, out typeClosures, out signatureClosures, 0, types);
         }
@@ -1146,7 +1155,9 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this ISignature signature, [NotNull]out bool[] castsRequired, [NotNull] out Type[] typeClosures, [NotNull] out Type[] signatureClosures, int genericArguments, params TypeSearch[] types)
+        public static bool Matches(this ISignature signature, [NotNull] out bool[] castsRequired,
+                                   [NotNull] out Type[] typeClosures, [NotNull] out Type[] signatureClosures,
+                                   int genericArguments, params TypeSearch[] types)
         {
             castsRequired = EmptyBools;
             signatureClosures = typeClosures = EmptyTypes;
@@ -1170,7 +1181,10 @@ namespace WebApplications.Utilities
 
             // Grab signature generic arguments safely.
             IEnumerable<GenericArgument> sga = signature.SignatureGenericArguments;
-            GenericArgument[] signatureArguments = sga == null ? EmptyGenericArguments : sga.Where(g => g.Location == GenericArgumentLocation.Signature).ToArray();
+            GenericArgument[] signatureArguments = sga == null
+                                                       ? EmptyGenericArguments
+                                                       : sga.Where(g => g.Location == GenericArgumentLocation.Signature)
+                                                             .ToArray();
 
             // Check we have right number of generic arguments on the signature.
             if (signatureArguments.Length != genericArguments)
@@ -1178,7 +1192,9 @@ namespace WebApplications.Utilities
 
             // Grab type generic arguments safely.
             IEnumerable<GenericArgument> tga = signature.TypeGenericArguments;
-            GenericArgument[] typeArguments = tga == null ? EmptyGenericArguments : tga.Where(g => g.Location == GenericArgumentLocation.Type).ToArray();
+            GenericArgument[] typeArguments = tga == null
+                                                  ? EmptyGenericArguments
+                                                  : tga.Where(g => g.Location == GenericArgumentLocation.Type).ToArray();
 
             // Initialise output arrays
             castsRequired = new bool[parameters.Length + 1];
@@ -1186,7 +1202,7 @@ namespace WebApplications.Utilities
             signatureClosures = new Type[signatureArguments.Length];
 
             // Check return type
-            Type returnType = signature.ReturnType ?? typeof(void);
+            Type returnType = signature.ReturnType ?? typeof (void);
             TypeSearch returnTypeSearch = types.Last();
             Contract.Assert(returnTypeSearch != null);
             bool requiresCast;
@@ -1194,8 +1210,11 @@ namespace WebApplications.Utilities
             int closurePosition;
             Type closureType;
 
-            if (!returnType.Matches(returnTypeSearch, out requiresCast, out closureLocation, out closurePosition, out closureType, true) ||
-                !UpdateSearchContext(ref castsRequired[parameters.Length], typeClosures, signatureClosures, requiresCast, closureLocation, closurePosition, closureType))
+            if (
+                !returnType.Matches(returnTypeSearch, out requiresCast, out closureLocation, out closurePosition,
+                                    out closureType, true) ||
+                !UpdateSearchContext(ref castsRequired[parameters.Length], typeClosures, signatureClosures, requiresCast,
+                                     closureLocation, closurePosition, closureType))
                 return false;
 
             // If we have more than one search we need to check parameters.
@@ -1210,10 +1229,11 @@ namespace WebApplications.Utilities
                     te.MoveNext();
                     Contract.Assert(pe.Current != null);
                     Contract.Assert(te.Current != null);
-                    Type t = (Type)pe.Current;
-                    TypeSearch s = ((TypeSearch)te.Current);
+                    Type t = (Type) pe.Current;
+                    TypeSearch s = ((TypeSearch) te.Current);
                     if (!t.Matches(s, out requiresCast, out closureLocation, out closurePosition, out closureType) ||
-                        !UpdateSearchContext(ref castsRequired[parameter++], typeClosures, signatureClosures, requiresCast, closureLocation,
+                        !UpdateSearchContext(ref castsRequired[parameter++], typeClosures, signatureClosures,
+                                             requiresCast, closureLocation,
                                              closurePosition, closureType))
                     {
                         // Parameter failed to match.
@@ -1236,7 +1256,10 @@ namespace WebApplications.Utilities
         /// <param name="closureType">Type of the closure.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        private static bool UpdateSearchContext(ref bool castRequired, [NotNull]Type[] typeClosures, [NotNull]Type[] methodClosures, bool requiresCast, GenericArgumentLocation closureLocation, int closurePosition, Type closureType)
+        private static bool UpdateSearchContext(ref bool castRequired, [NotNull] Type[] typeClosures,
+                                                [NotNull] Type[] methodClosures, bool requiresCast,
+                                                GenericArgumentLocation closureLocation, int closurePosition,
+                                                Type closureType)
         {
             Contract.Assert(closureLocation != GenericArgumentLocation.Any);
 
@@ -1339,7 +1362,8 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments, params TypeSearch[] types)
+        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments,
+                                           params TypeSearch[] types)
         {
             bool[] castsRequired;
             return BestMatch(signatures, genericArguments, true, true, out castsRequired, types);
@@ -1354,7 +1378,8 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, bool allowClosure, bool allowCasts, params TypeSearch[] types)
+        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, bool allowClosure, bool allowCasts,
+                                           params TypeSearch[] types)
         {
             bool[] castsRequired;
             return BestMatch(signatures, 0, allowClosure, allowCasts, out castsRequired, types);
@@ -1370,7 +1395,8 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments, bool allowClosure, bool allowCasts, params TypeSearch[] types)
+        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments,
+                                           bool allowClosure, bool allowCasts, params TypeSearch[] types)
         {
             bool[] castsRequired;
             return BestMatch(signatures, genericArguments, allowClosure, allowCasts, out castsRequired, types);
@@ -1387,7 +1413,9 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments, bool allowClosure, bool allowCasts, out bool[] castsRequired, params TypeSearch[] types)
+        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments,
+                                           bool allowClosure, bool allowCasts, out bool[] castsRequired,
+                                           params TypeSearch[] types)
         {
             // Holds matches along with order.
             ISignature bestMatch = null;
@@ -1471,7 +1499,8 @@ namespace WebApplications.Utilities
         /// <param name="typeArguments">The type arguments.</param>
         /// <returns>Given a parameter type, will expand the type based on a set of signature and type arguments.</returns>
         /// <remarks></remarks>
-        internal static Type ExpandParameterType([NotNull]Type parameterType, [NotNull]Type[] signatureArguments, [NotNull]Type[] typeArguments)
+        internal static Type ExpandParameterType([NotNull] Type parameterType, [NotNull] Type[] signatureArguments,
+                                                 [NotNull] Type[] typeArguments)
         {
             // Deal with pointers/references.
             Type t = parameterType;
@@ -1485,8 +1514,8 @@ namespace WebApplications.Utilities
 
                 // Grab the relevant type.
                 Type nt = t.DeclaringMethod != null
-                            ? signatureArguments[position]
-                            : typeArguments[position];
+                              ? signatureArguments[position]
+                              : typeArguments[position];
                 Contract.Assert(nt != null);
                 if (parameterType.IsByRef)
                     parameterType = nt.MakeByRefType();
@@ -1505,7 +1534,7 @@ namespace WebApplications.Utilities
         /// <param name="baseType">Type of the base.</param> 
         /// <returns></returns> 
         /// <remarks></remarks> 
-        public static bool DescendsFrom([NotNull]this Type sourceType, [NotNull]Type baseType)
+        public static bool DescendsFrom([NotNull] this Type sourceType, [NotNull] Type baseType)
         {
             do
             {
@@ -1514,6 +1543,6 @@ namespace WebApplications.Utilities
                 sourceType = sourceType.BaseType;
             } while (sourceType != null);
             return false;
-        } 
+        }
     }
 }

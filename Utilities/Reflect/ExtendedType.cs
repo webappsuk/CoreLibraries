@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,19 +47,17 @@ namespace WebApplications.Utilities.Reflect
     public class ExtendedType
     {
         /// <summary>
-        /// Holds all known extended types.
-        /// </summary>
-        [NotNull]
-        private static readonly ConcurrentDictionary<Type, ExtendedType> _extendedTypes =
-            new ConcurrentDictionary<Type, ExtendedType>();
-
-        /// <summary>
         ///   Binding flags for returning all fields/properties from a type.
         /// </summary>
-        [UsedImplicitly]
-        public const BindingFlags AllMembersBindingFlags =
+        [UsedImplicitly] public const BindingFlags AllMembersBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.DeclaredOnly;
+
+        /// <summary>
+        /// Holds all known extended types.
+        /// </summary>
+        [NotNull] private static readonly ConcurrentDictionary<Type, ExtendedType> _extendedTypes =
+            new ConcurrentDictionary<Type, ExtendedType>();
 
         /// <summary>
         ///   The standard conversion methods implemented by <see cref="System.IConvertible"/>.
@@ -67,250 +92,66 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The underlying type.
         /// </summary>
-        [NotNull]
-        public readonly Type Type;
+        [NotNull] public readonly Type Type;
 
         /// <summary>
-        ///   Holds all fields.
+        /// Creates a cache for casts on demand.
         /// </summary>
-        [NotNull]
-        private readonly Dictionary<string, Field> _fields = new Dictionary<string, Field>();
-
-        /// <summary>
-        ///   Gets the fields.
-        /// </summary>
-        [NotNull]
-        public IEnumerable<Field> Fields
-        {
-            get
-            {
-                if (!_loaded) LoadMembers();
-                return _fields.Values;
-            }
-        }
-
-        /// <summary>
-        /// Holds all indexers.
-        /// </summary>
-        [NotNull]
-        private IEnumerable<Indexer> _indexers;
-        /// <summary>
-        /// Gets the indexers.
-        /// </summary>
-        /// <remarks></remarks>
-        [NotNull]
-        public IEnumerable<Indexer> Indexers
-        {
-            get
-            {
-                if (_loaded) LoadMembers();
-                return _indexers;
-            }
-        }
-
-        /// <summary>
-        /// Holds all properties.
-        /// </summary>
-        [NotNull]
-        private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
-
-        /// <summary>
-        ///   Gets the properties (doesn't include <see cref="Indexers"/>).
-        /// </summary>
-        [NotNull]
-        public IEnumerable<Property> Properties
-        {
-            get
-            {
-                if (!_loaded) LoadMembers();
-                return _properties.Values;
-            }
-        }
-
-        /// <summary>
-        ///   Holds all events.
-        /// </summary>
-        [NotNull]
-        private readonly Dictionary<string, Event> _events = new Dictionary<string, Event>();
-
-        /// <summary>
-        ///   Gets the events.
-        /// </summary>
-        [NotNull]
-        public IEnumerable<Event> Events
-        {
-            get
-            {
-                if (!_loaded) LoadMembers();
-                return _events.Values;
-            }
-        }
-
-        /// <summary>
-        ///   Holds all methods.
-        /// </summary>
-        [NotNull]
-        private readonly Dictionary<string, List<Method>> _methods = new Dictionary<string, List<Method>>();
-
-        /// <summary>
-        ///   Gets all the methods.
-        /// </summary>
-        [NotNull]
-        public IEnumerable<Method> Methods
-        {
-            get
-            {
-                if (!_loaded) LoadMembers();
-                return _methods.Values.SelectMany(m => m);
-            }
-        }
-
-        /// <summary>
-        /// Gets the static constructor, if any.
-        /// </summary>
-        /// <value>The static constructor if found; otherwise <see langword="null"/>.</value>
-        /// <remarks>The static constructor is a special case and does not appear directly in overloads.</remarks>
-        public Constructor StaticConstructor { get; private set; }
-
-        /// <summary>
-        /// Holds all constructors.
-        /// </summary>
-        private IEnumerable<Constructor> _constructors;
-
-        /// <summary>
-        ///   Gets the constructors.
-        /// </summary>
-        [NotNull]
-        public IEnumerable<Constructor> Constructors
-        {
-            get
-            {
-                if (!_loaded) LoadMembers();
-                return _constructors;
-            }
-        }
+        private readonly Lazy<ConcurrentDictionary<Type, bool>> _convertToCache =
+            new Lazy<ConcurrentDictionary<Type, bool>>(() => new ConcurrentDictionary<Type, bool>(),
+                                                       LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// Calculates custom attributes on demand.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [NotNull]
-        private readonly Lazy<IEnumerable<Attribute>> _customAttributes;
-
-        /// <summary>
-        ///   All the customer attributes on the type.
-        /// </summary>
-        [NotNull]
-        public IEnumerable<Attribute> CustomAttributes
-        {
-            get { return _customAttributes.Value ?? Enumerable.Empty<Attribute>(); }
-        }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)] [NotNull] private readonly Lazy<IEnumerable<Attribute>>
+            _customAttributes;
 
         /// <summary>
         /// Calculates default member on demand.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [NotNull]
-        private readonly Lazy<string> _defaultMember;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)] [NotNull] private readonly Lazy<string> _defaultMember;
 
         /// <summary>
-        ///   If this type has a default member (indexer), indicates its name.
+        ///   Holds all events.
         /// </summary>
-        [CanBeNull]
-        public string DefaultMember
-        {
-            get { return _defaultMember.Value; }
-        }
+        [NotNull] private readonly Dictionary<string, Event> _events = new Dictionary<string, Event>();
 
         /// <summary>
-        /// Creates a signature on demand.
+        ///   Holds all fields.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [NotNull]
-        private readonly Lazy<string> _signature;
-
-        /// <summary>
-        /// Gets the signature of the type.
-        /// </summary>
-        /// <remarks>This is modelled after the Type.SigToString internal method.</remarks>
-        [NotNull]
-        public string Signature
-        {
-            get { return _signature.Value ?? this.Type.FullName ?? this.Type.Name; }
-        }
-
-        /// <summary>
-        /// Creates a simple full name on demand.
-        /// </summary>
-        [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Lazy<string> _simpleFullName;
-
-        /// <summary>
-        /// Gets the simple full name for the type.
-        /// </summary>
-        /// <remarks></remarks>
-        public string SimpleFullName
-        {
-            get { return _simpleFullName.Value ?? this.Type.FullName ?? this.Type.Name; }
-        }
+        [NotNull] private readonly Dictionary<string, Field> _fields = new Dictionary<string, Field>();
 
         /// <summary>
         /// Creates array of generic arguments on demand.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        [NotNull]
-        private readonly Lazy<List<GenericArgument>> _genericArguments;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)] [NotNull] private readonly Lazy<List<GenericArgument>>
+            _genericArguments;
+
+        private readonly Lazy<Dictionary<string, Type>> _interfaces;
+        private readonly Lazy<bool> _isConvertible;
 
         /// <summary>
-        /// The generic arguments.
+        ///   Holds all methods.
         /// </summary>
-        [NotNull]
-        public IEnumerable<GenericArgument> GenericArguments
-        {
-            get { return _genericArguments.Value; }
-        }
+        [NotNull] private readonly Dictionary<string, List<Method>> _methods = new Dictionary<string, List<Method>>();
 
         private readonly Lazy<Type> _nonNullableType;
 
         /// <summary>
-        /// If this is a nullable type (i.e. <see cref="Nullable{T}"/>) then returns the underlying non-nullable type;
-        /// otherwise returns <see cref="Type"/>.
+        /// Holds all properties.
         /// </summary>
-        /// <value>The type of the non nullable type.</value>
-        /// <remarks></remarks>
-        public Type NonNullableType { get { return _nonNullableType.Value; } }
+        [NotNull] private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
 
         /// <summary>
-        /// Gets a value indicating whether this type is a nullable type (i.e. <see cref="Nullable{T}"/>).
+        /// Creates a signature on demand.
         /// </summary>
-        /// <value><see langword="true" /> if this type is nullable type; otherwise, <see langword="false" />.</value>
-        /// <remarks></remarks>
-        public bool IsNullableType { get { return Type != _nonNullableType.Value; } }
-
-        private readonly Lazy<bool> _isConvertible;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)] [NotNull] private readonly Lazy<string> _signature;
 
         /// <summary>
-        /// Gets a value indicating whether this type is convertible.
+        /// Creates a simple full name on demand.
         /// </summary>
-        /// <value><see langword="true" /> if this instance is convertible; otherwise, <see langword="false" />.</value>
-        /// <remarks></remarks>
-        public bool IsConvertible { get { return _isConvertible.Value; } }
-
-        private readonly Lazy<Dictionary<string, Type>> _interfaces;
-
-        /// <summary>
-        /// Gets the interfaces implemented by this type.
-        /// </summary>
-        /// <value>The interfaces.</value>
-        /// <remarks></remarks>
-        [NotNull]
-        public IEnumerable<Type> Interfaces { get { return _interfaces.Value.Values; } }
-
-        /// <summary>
-        /// Holds user defined methods that cast from this type to another type.
-        /// </summary>
-        private Dictionary<Type, CastMethod> _castsTo = new Dictionary<Type, CastMethod>();
+        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<string> _simpleFullName;
 
         /// <summary>
         /// Holds user defined methods that cast to this type from another type.
@@ -318,16 +159,37 @@ namespace WebApplications.Utilities.Reflect
         private Dictionary<Type, CastMethod> _castsFrom = new Dictionary<Type, CastMethod>();
 
         /// <summary>
-        /// Indicates whether members have been loaded.
+        /// Holds user defined methods that cast from this type to another type.
         /// </summary>
-        private bool _loaded;
+        private Dictionary<Type, CastMethod> _castsTo = new Dictionary<Type, CastMethod>();
+
+        /// <summary>
+        /// Caches closed types.
+        /// </summary>
+        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private
+            Lazy<ConcurrentDictionary<string, ExtendedType>> _closedTypes =
+                new Lazy<ConcurrentDictionary<string, ExtendedType>>(
+                    () => new ConcurrentDictionary<string, ExtendedType>(), LazyThreadSafetyMode.PublicationOnly);
+
+        /// <summary>
+        /// Holds all constructors.
+        /// </summary>
+        private IEnumerable<Constructor> _constructors;
+
+        /// <summary>
+        /// Holds all indexers.
+        /// </summary>
+        [NotNull] private IEnumerable<Indexer> _indexers;
 
         /// <summary>
         /// Spinlock for locking during member load.
         /// </summary>
         private SpinLock _loadLock = new SpinLock();
 
-        // ReSharper restore StaticFieldInGenericType
+        /// <summary>
+        /// Indicates whether members have been loaded.
+        /// </summary>
+        private bool _loaded;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExtendedType"/> class.
@@ -336,7 +198,7 @@ namespace WebApplications.Utilities.Reflect
         /// <remarks></remarks>
         public ExtendedType([NotNull] Type type)
         {
-            this.Type = type;
+            Type = type;
 
             // Create lazy initialisers.
             _customAttributes =
@@ -347,36 +209,36 @@ namespace WebApplications.Utilities.Reflect
             _defaultMember =
                 new Lazy<string>(
                     () =>
-                    {
-                        // Look for default member.
-                        DefaultMemberAttribute defaultMemberAttribute =
-                            Enumerable.OfType<DefaultMemberAttribute>(this.CustomAttributes).SingleOrDefault();
-                        return defaultMemberAttribute != null
-                                   ? defaultMemberAttribute.MemberName
-                                   : null;
-                    }, LazyThreadSafetyMode.PublicationOnly);
+                        {
+                            // Look for default member.
+                            DefaultMemberAttribute defaultMemberAttribute =
+                                CustomAttributes.OfType<DefaultMemberAttribute>().SingleOrDefault();
+                            return defaultMemberAttribute != null
+                                       ? defaultMemberAttribute.MemberName
+                                       : null;
+                        }, LazyThreadSafetyMode.PublicationOnly);
 
             _signature
                 = new Lazy<string>(
                     () =>
-                    {
-                        Type elementType = type;
+                        {
+                            Type elementType = type;
 
-                        while (elementType.HasElementType)
-                            elementType = elementType.GetElementType();
+                            while (elementType.HasElementType)
+                                elementType = elementType.GetElementType();
 
-                        if (elementType.IsNested)
-                            return type.Name;
+                            if (elementType.IsNested)
+                                return type.Name;
 
-                        string sigToString = type.ToString();
+                            string sigToString = type.ToString();
 
-                        if (elementType.IsPrimitive ||
-                            elementType == typeof(void) ||
-                            elementType == typeof(TypedReference))
-                            sigToString = sigToString.Substring(7);
+                            if (elementType.IsPrimitive ||
+                                elementType == typeof (void) ||
+                                elementType == typeof (TypedReference))
+                                sigToString = sigToString.Substring(7);
 
-                        return sigToString;
-                    }, LazyThreadSafetyMode.PublicationOnly);
+                            return sigToString;
+                        }, LazyThreadSafetyMode.PublicationOnly);
 
             _simpleFullName
                 = new Lazy<string>(
@@ -390,15 +252,15 @@ namespace WebApplications.Utilities.Reflect
                 LazyThreadSafetyMode.PublicationOnly);
 
             _nonNullableType =
-                    new Lazy<Type>(
-                            () =>
-                            (Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                                    ? Type.GetGenericArguments()[0]
-                                    : Type,
-                            LazyThreadSafetyMode.PublicationOnly);
+                new Lazy<Type>(
+                    () =>
+                    (Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>))
+                        ? Type.GetGenericArguments()[0]
+                        : Type,
+                    LazyThreadSafetyMode.PublicationOnly);
 
             _isConvertible = new Lazy<bool>(
-                    () =>
+                () =>
                     {
                         Type t = _nonNullableType.Value;
                         if (t.IsEnum)
@@ -422,9 +284,185 @@ namespace WebApplications.Utilities.Reflect
                                 return false;
                         }
                     },
-                    LazyThreadSafetyMode.PublicationOnly);
+                LazyThreadSafetyMode.PublicationOnly);
 
-            _interfaces = new Lazy<Dictionary<string, Type>>(() => Type.GetInterfaces().ToDictionary(t => t.FullName, t => t), LazyThreadSafetyMode.PublicationOnly);
+            _interfaces =
+                new Lazy<Dictionary<string, Type>>(() => Type.GetInterfaces().ToDictionary(t => t.FullName, t => t),
+                                                   LazyThreadSafetyMode.PublicationOnly);
+        }
+
+        /// <summary>
+        ///   Gets the fields.
+        /// </summary>
+        [NotNull]
+        public IEnumerable<Field> Fields
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _fields.Values;
+            }
+        }
+
+        /// <summary>
+        /// Gets the indexers.
+        /// </summary>
+        /// <remarks></remarks>
+        [NotNull]
+        public IEnumerable<Indexer> Indexers
+        {
+            get
+            {
+                if (_loaded) LoadMembers();
+                return _indexers;
+            }
+        }
+
+        /// <summary>
+        ///   Gets the properties (doesn't include <see cref="Indexers"/>).
+        /// </summary>
+        [NotNull]
+        public IEnumerable<Property> Properties
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _properties.Values;
+            }
+        }
+
+        /// <summary>
+        ///   Gets the events.
+        /// </summary>
+        [NotNull]
+        public IEnumerable<Event> Events
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _events.Values;
+            }
+        }
+
+        /// <summary>
+        ///   Gets all the methods.
+        /// </summary>
+        [NotNull]
+        public IEnumerable<Method> Methods
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _methods.Values.SelectMany(m => m);
+            }
+        }
+
+        /// <summary>
+        /// Gets the static constructor, if any.
+        /// </summary>
+        /// <value>The static constructor if found; otherwise <see langword="null"/>.</value>
+        /// <remarks>The static constructor is a special case and does not appear directly in overloads.</remarks>
+        public Constructor StaticConstructor { get; private set; }
+
+        /// <summary>
+        ///   Gets the constructors.
+        /// </summary>
+        [NotNull]
+        public IEnumerable<Constructor> Constructors
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                return _constructors;
+            }
+        }
+
+        /// <summary>
+        ///   All the customer attributes on the type.
+        /// </summary>
+        [NotNull]
+        public IEnumerable<Attribute> CustomAttributes
+        {
+            get { return _customAttributes.Value ?? Enumerable.Empty<Attribute>(); }
+        }
+
+        /// <summary>
+        ///   If this type has a default member (indexer), indicates its name.
+        /// </summary>
+        [CanBeNull]
+        public string DefaultMember
+        {
+            get { return _defaultMember.Value; }
+        }
+
+        /// <summary>
+        /// Gets the signature of the type.
+        /// </summary>
+        /// <remarks>This is modelled after the Type.SigToString internal method.</remarks>
+        [NotNull]
+        public string Signature
+        {
+            get { return _signature.Value ?? Type.FullName ?? Type.Name; }
+        }
+
+        /// <summary>
+        /// Gets the simple full name for the type.
+        /// </summary>
+        /// <remarks></remarks>
+        public string SimpleFullName
+        {
+            get { return _simpleFullName.Value ?? Type.FullName ?? Type.Name; }
+        }
+
+        /// <summary>
+        /// The generic arguments.
+        /// </summary>
+        [NotNull]
+        public IEnumerable<GenericArgument> GenericArguments
+        {
+            get { return _genericArguments.Value; }
+        }
+
+        /// <summary>
+        /// If this is a nullable type (i.e. <see cref="Nullable{T}"/>) then returns the underlying non-nullable type;
+        /// otherwise returns <see cref="Type"/>.
+        /// </summary>
+        /// <value>The type of the non nullable type.</value>
+        /// <remarks></remarks>
+        public Type NonNullableType
+        {
+            get { return _nonNullableType.Value; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this type is a nullable type (i.e. <see cref="Nullable{T}"/>).
+        /// </summary>
+        /// <value><see langword="true" /> if this type is nullable type; otherwise, <see langword="false" />.</value>
+        /// <remarks></remarks>
+        public bool IsNullableType
+        {
+            get { return Type != _nonNullableType.Value; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this type is convertible.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is convertible; otherwise, <see langword="false" />.</value>
+        /// <remarks></remarks>
+        public bool IsConvertible
+        {
+            get { return _isConvertible.Value; }
+        }
+
+        /// <summary>
+        /// Gets the interfaces implemented by this type.
+        /// </summary>
+        /// <value>The interfaces.</value>
+        /// <remarks></remarks>
+        [NotNull]
+        public IEnumerable<Type> Interfaces
+        {
+            get { return _interfaces.Value.Values; }
         }
 
         /// <summary>
@@ -455,7 +493,7 @@ namespace WebApplications.Utilities.Reflect
                 List<Indexer> indexers = null;
                 // Get all members in one go - this is significantly faster than getting individual calls later - at the cost of potentially
                 // loading members that are not requested.
-                foreach (MemberInfo memberInfo in this.Type.GetMembers(AllMembersBindingFlags))
+                foreach (MemberInfo memberInfo in Type.GetMembers(AllMembersBindingFlags))
                 {
                     // Store fields
                     FieldInfo f = memberInfo as FieldInfo;
@@ -588,7 +626,7 @@ namespace WebApplications.Utilities.Reflect
         /// <remarks></remarks>
         public bool ImplementsCastFrom([NotNull] Type fromType, bool implicitOnly = true)
         {
-            CastMethod cast = this.GetCastFromMethod(fromType);
+            CastMethod cast = GetCastFromMethod(fromType);
             return cast != null && (!implicitOnly || !cast.IsExplicit);
         }
 
@@ -615,7 +653,7 @@ namespace WebApplications.Utilities.Reflect
         /// <remarks></remarks>
         public bool ImplementsCastTo([NotNull] Type toType, bool implicitOnly = true)
         {
-            CastMethod cast = this.GetCastToMethod(toType);
+            CastMethod cast = GetCastToMethod(toType);
             return cast != null && (!implicitOnly || !cast.IsExplicit);
         }
 
@@ -705,7 +743,7 @@ namespace WebApplications.Utilities.Reflect
         public Indexer GetIndexer([NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
-            return this.GetIndexer(out castsRequired, types);
+            return GetIndexer(out castsRequired, types);
         }
 
         /// <summary>
@@ -755,7 +793,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="methodInfo">The method info.</param>
         /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
-        public Method GetMethod([NotNull]MethodInfo methodInfo)
+        public Method GetMethod([NotNull] MethodInfo methodInfo)
         {
             if (methodInfo.DeclaringType != Type)
                 return null;
@@ -804,7 +842,8 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="types">The parameter types and return type.</param>
         /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
         /// <remarks></remarks>
-        public Method GetMethod([NotNull] string name, int genericArguments, bool allowClosure, bool allowCasts, [NotNull] params TypeSearch[] types)
+        public Method GetMethod([NotNull] string name, int genericArguments, bool allowClosure, bool allowCasts,
+                                [NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
             return GetMethod(name, genericArguments, allowClosure, allowCasts, out castsRequired, types);
@@ -821,7 +860,8 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="types">The parameter types and return type.</param>
         /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
         /// <remarks></remarks>
-        public Method GetMethod([NotNull] string name, int genericArguments, bool allowClosure, bool allowCasts, out bool[] castsRequired, [NotNull] params TypeSearch[] types)
+        public Method GetMethod([NotNull] string name, int genericArguments, bool allowClosure, bool allowCasts,
+                                out bool[] castsRequired, [NotNull] params TypeSearch[] types)
         {
             if (!_loaded) LoadMembers();
             List<Method> methods;
@@ -833,7 +873,7 @@ namespace WebApplications.Utilities.Reflect
             Contract.Assert(methods != null);
             return methods.BestMatch(genericArguments, allowClosure, allowCasts, out castsRequired, types) as Method;
         }
-        
+
         /// <summary>
         /// Gets the constructor.
         /// </summary>
@@ -843,7 +883,7 @@ namespace WebApplications.Utilities.Reflect
         public Constructor GetConstructor([NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
-            return this.GetConstructor(out castsRequired, types);
+            return GetConstructor(out castsRequired, types);
         }
 
         /// <summary>
@@ -865,7 +905,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="constructorInfo">The constructor info.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        public Constructor GetConstructor([NotNull]ConstructorInfo constructorInfo)
+        public Constructor GetConstructor([NotNull] ConstructorInfo constructorInfo)
         {
             if (constructorInfo.DeclaringType != Type)
                 return null;
@@ -898,15 +938,6 @@ namespace WebApplications.Utilities.Reflect
             if (!_loaded) LoadMembers();
             return _events.Values.FirstOrDefault(e => e.Info == eventInfo);
         }
-
-        /// <summary>
-        /// Caches closed types.
-        /// </summary>
-        [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Lazy<ConcurrentDictionary<string, ExtendedType>> _closedTypes =
-            new Lazy<ConcurrentDictionary<string, ExtendedType>>(
-                () => new ConcurrentDictionary<string, ExtendedType>(), LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// Closes the type if it is generic and has generic parameters, or creates equivalent type.
@@ -952,16 +983,16 @@ namespace WebApplications.Utilities.Reflect
             return _closedTypes.Value.GetOrAdd(
                 key,
                 k =>
-                {
-                    try
                     {
-                        return Get(Type.MakeGenericType(gta));
-                    }
-                    catch (ArgumentException)
-                    {
-                        return null;
-                    }
-                });
+                        try
+                        {
+                            return Get(Type.MakeGenericType(gta));
+                        }
+                        catch (ArgumentException)
+                        {
+                            return null;
+                        }
+                    });
         }
 
         /// <summary>
@@ -987,12 +1018,6 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Creates a cache for casts on demand.
-        /// </summary>
-        private readonly Lazy<ConcurrentDictionary<Type, bool>> _convertToCache =
-            new Lazy<ConcurrentDictionary<Type, bool>>(() => new ConcurrentDictionary<Type, bool>(), LazyThreadSafetyMode.PublicationOnly);
-
-        /// <summary>
         /// Determines whether this instance can be converted to the specified type.  Unlike the built in cast system,
         /// this returns true if a cast is possible AND if IConvertible can be used.
         /// </summary>
@@ -1009,24 +1034,25 @@ namespace WebApplications.Utilities.Reflect
                 (type.ContainsGenericParameters))
                 return false;
 
-            return this._convertToCache.Value.GetOrAdd(
+            return _convertToCache.Value.GetOrAdd(
                 type,
                 t =>
-                {
-                    // Get extended type information for destination type.
-                    ExtendedType dest = type;
+                    {
+                        // Get extended type information for destination type.
+                        ExtendedType dest = type;
 
-                    // First we check to see if a cast is possible
-                    if ((NonNullableType == dest.NonNullableType) || (NonNullableType.IsEquivalentTo(NonNullableType)) ||
-                        (dest.NonNullableType != typeof(bool) && this.IsConvertible && dest.IsConvertible) ||
-                        (this.ImplementsCastTo(dest)) ||
-                        (dest.ImplementsCastFrom(this)) ||
-                        (this.Implements(typeof(IConvertible)) && _iConvertibleMethods.ContainsKey(type)))
-                        return true;
+                        // First we check to see if a cast is possible
+                        if ((NonNullableType == dest.NonNullableType) ||
+                            (NonNullableType.IsEquivalentTo(NonNullableType)) ||
+                            (dest.NonNullableType != typeof (bool) && IsConvertible && dest.IsConvertible) ||
+                            (ImplementsCastTo(dest)) ||
+                            (dest.ImplementsCastFrom(this)) ||
+                            (Implements(typeof (IConvertible)) && _iConvertibleMethods.ContainsKey(type)))
+                            return true;
 
-                    // TODO SUPPORT TYPE CONVERTERS
-                    return false;
-                });
+                        // TODO SUPPORT TYPE CONVERTERS
+                        return false;
+                    });
         }
 
         /// <summary>
@@ -1038,7 +1064,7 @@ namespace WebApplications.Utilities.Reflect
         /// <remarks>This version is more powerful than the Expression.Convert CLR method in that it supports
         /// ToString() conversion, IConvertible and TypeConverters. It also prevents exceptions being thrown.</remarks>
         [UsedImplicitly]
-        public bool TryConvert([NotNull]Expression expression, [NotNull]out Expression outputExpression)
+        public bool TryConvert([NotNull] Expression expression, [NotNull] out Expression outputExpression)
         {
             Type expressionType = expression.Type;
             // If the types are the same we don't need to convert.
@@ -1068,22 +1094,22 @@ namespace WebApplications.Utilities.Reflect
 
             // Look for IConvertible method
             string method;
-            if (et.Implements(typeof(IConvertible)))
+            if (et.Implements(typeof (IConvertible)))
             {
                 string methodName;
                 IEnumerable<Method> methods;
                 if ((_iConvertibleMethods.TryGetValue(Type, out methodName)) &&
-                    ((methods=et.GetMethods(methodName)) != null))
+                    ((methods = et.GetMethods(methodName)) != null))
                 {
                     Method cm =
-                            methods.FirstOrDefault(
-                                    m =>
-                                    m.ParameterTypes.Count() == 1 && m.ParameterTypes.First() == typeof(IFormatProvider));
+                        methods.FirstOrDefault(
+                            m =>
+                            m.ParameterTypes.Count() == 1 && m.ParameterTypes.First() == typeof (IFormatProvider));
                     if (cm != null)
                     {
                         // Call the IConvertible method on the object, passing in CultureInfo.CurrentCulture as the parameter.
                         outputExpression = Expression.Call(
-                                expression, cm.Info, Reflection.CurrentCultureExpression);
+                            expression, cm.Info, Reflection.CurrentCultureExpression);
                         return true;
                     }
                 }
@@ -1097,7 +1123,7 @@ namespace WebApplications.Utilities.Reflect
             // Look for TypeConverter on output type.
             bool useTo = false;
             TypeConverterAttribute typeConverterAttribute = Type
-                .GetCustomAttributes(typeof(TypeConverterAttribute), false)
+                .GetCustomAttributes(typeof (TypeConverterAttribute), false)
                 .OfType<TypeConverterAttribute>()
                 .FirstOrDefault();
 
@@ -1107,7 +1133,7 @@ namespace WebApplications.Utilities.Reflect
                 // Look for TypeConverter on expression type.
                 useTo = true;
                 typeConverterAttribute = expression.Type
-                    .GetCustomAttributes(typeof(TypeConverterAttribute), false)
+                    .GetCustomAttributes(typeof (TypeConverterAttribute), false)
                     .OfType<TypeConverterAttribute>()
                     .FirstOrDefault();
             }
@@ -1134,27 +1160,27 @@ namespace WebApplications.Utilities.Reflect
                                                     BindingFlags.Instance | BindingFlags.Public |
                                                     BindingFlags.FlattenHierarchy,
                                                     null,
-                                                    new[] { typeof(object), typeof(Type) },
+                                                    new[] {typeof (object), typeof (Type)},
                                                     null)
                                                 : typeConverterType.GetMethod(
                                                     "ConvertFrom",
                                                     BindingFlags.Instance | BindingFlags.Public |
                                                     BindingFlags.FlattenHierarchy,
                                                     null,
-                                                    new[] { typeof(object) },
+                                                    new[] {typeof (object)},
                                                     null);
                             if (mi != null)
                             {
                                 // The convert methods accepts the value as an object parameters, so we may need a cast.
-                                if (expression.Type != typeof(object))
-                                    expression = Expression.Convert(expression, typeof(object));
+                                if (expression.Type != typeof (object))
+                                    expression = Expression.Convert(expression, typeof (object));
 
                                 // Create an expression which creates a new instance of the type converter and passes in
                                 // the existing expression as the first parameter to ConvertTo or ConvertFrom.
                                 outputExpression = useTo
                                                        ? Expression.Call(Expression.New(typeConverterType), mi,
                                                                          expression,
-                                                                         Expression.Constant(Type, typeof(Type)))
+                                                                         Expression.Constant(Type, typeof (Type)))
                                                        : Expression.Call(Expression.New(typeConverterType), mi,
                                                                          expression);
 
@@ -1169,7 +1195,7 @@ namespace WebApplications.Utilities.Reflect
             }
 
             // Finally, if we want to output to string, call ToString() method.
-            if (Type == typeof(string))
+            if (Type == typeof (string))
             {
                 outputExpression = Expression.Call(expression, Reflection.ToStringMethodInfo);
                 return true;
@@ -1185,9 +1211,9 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="baseType">Type of the base.</param> 
         /// <returns></returns> 
         /// <remarks></remarks> 
-        public bool DescendsFrom([NotNull]Type baseType)
+        public bool DescendsFrom([NotNull] Type baseType)
         {
-            Type sourceType = this.Type;
+            Type sourceType = Type;
             do
             {
                 if (sourceType == baseType)
@@ -1195,6 +1221,6 @@ namespace WebApplications.Utilities.Reflect
                 sourceType = sourceType.BaseType;
             } while (sourceType != null);
             return false;
-        } 
+        }
     }
 }

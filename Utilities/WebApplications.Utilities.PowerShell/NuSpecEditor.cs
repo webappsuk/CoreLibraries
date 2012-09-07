@@ -1,9 +1,35 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using JetBrains.Annotations;
@@ -19,139 +45,48 @@ namespace WebApplications.Utilities.PowerShell
     [UsedImplicitly]
     public class NuSpecEditor
     {
-        /// <summary>
-        /// The nuget specification file path.
-        /// </summary>
-        [NotNull]
-        public readonly string Path;
-        
-        /// <summary>
-        /// The nuspec namespace.
-        /// </summary>
-        [NotNull]
-        public readonly XNamespace Namespace;
+        [NotNull] public readonly XName DependenciesXName;
+        [NotNull] public readonly XName DependencyXName;
 
         /// <summary>
         /// The raw XML Document.
         /// </summary>
-        [NotNull]
-        public readonly XDocument Document;
+        [NotNull] public readonly XDocument Document;
+
+        [NotNull] public readonly XName FileXName;
+        [NotNull] public readonly XName FilesXName;
+
+        [NotNull] public readonly XName MetadataXName;
+
+        /// <summary>
+        /// The nuspec namespace.
+        /// </summary>
+        [NotNull] public readonly XNamespace Namespace;
 
         /// <summary>
         /// The package element.
         /// </summary>
-        [NotNull]
-        public readonly XElement PacakgeElement;
-
-        [NotNull]
-        public readonly XName MetadataXName;
-
-        private XElement _metadataElement;
+        [NotNull] public readonly XElement PacakgeElement;
 
         /// <summary>
-        /// The metadata XML element.
+        /// The nuget specification file path.
         /// </summary>
-        [NotNull]
-        public XElement MetadataElement
-        {
-            get
-            {
-                if (_metadataElement == null)
-                {
-                    _metadataElement = new XElement(MetadataXName);
-                    PacakgeElement.AddFirst(_metadataElement);
-                    HasChanges = true;
-                }
-                return _metadataElement;
-            }
-        }
-        
-        [NotNull]
-        public readonly XName FilesXName;
-        [NotNull]
-        public readonly XName FileXName;
+        [NotNull] public readonly string Path;
+
+        [NotNull] public readonly XName ReferenceXName;
+        [NotNull] public readonly XName ReferencesXName;
+        private XElement _dependenciesElement;
         private XElement _filesElement;
 
-        /// <summary>
-        /// The files XML element.
-        /// </summary>
-        [NotNull]
-        public XElement FilesElement
-        {
-            get
-            {
-                if (_filesElement == null)
-                {
-                    _filesElement = new XElement(FilesXName);
-                    PacakgeElement.Add(_metadataElement);
-                    HasChanges = true;
-                } 
-                return _filesElement;
-            }
-        }
-        
-        [NotNull]
-        public readonly XName ReferencesXName;
-        [NotNull]
-        public readonly XName ReferenceXName;
+        private XElement _metadataElement;
         private XElement _referencesElement;
-
-        /// <summary>
-        /// Gets the references element.
-        /// </summary>
-        /// <remarks></remarks>
-        [NotNull]
-        public XElement ReferencesElement
-        {
-            get
-            {
-                if (_referencesElement == null)
-                {
-                    _referencesElement = new XElement(ReferencesXName);
-                    MetadataElement.Add(_referencesElement);
-                    HasChanges = true;
-                } 
-                return _referencesElement;
-            }
-        }
-        
-        [NotNull]
-        public readonly XName DependenciesXName;
-        [NotNull]
-        public readonly XName DependencyXName;
-        private XElement _dependenciesElement;
-
-        /// <summary>
-        /// The dependencies element.
-        /// </summary>
-        [NotNull]
-        public XElement DependenciesElement
-        {
-            get
-            {
-                if (_dependenciesElement == null)
-                {
-                    _dependenciesElement = new XElement(DependenciesXName);
-                    MetadataElement.Add(_dependenciesElement);
-                    HasChanges = true;
-                } 
-                return _dependenciesElement;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance has changes.
-        /// </summary>
-        /// <value><see langword="true"/> if this instance has changes; otherwise, <see langword="false"/>.</value>
-        /// <remarks></remarks>
-        public bool HasChanges { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NuSpecEditor"/> class.
         /// </summary>
         /// <param name="path">The nuget package specification file.</param>
         /// <remarks></remarks>
-        public NuSpecEditor([NotNull]string path)
+        public NuSpecEditor([NotNull] string path)
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException(String.Format(Resources.NuSpecEditor_SpecificationFileNotFound, path));
@@ -178,11 +113,11 @@ namespace WebApplications.Utilities.PowerShell
             // Create names and find key nodes if present.
             MetadataXName = Namespace + "metadata";
             _metadataElement = PacakgeElement.Elements(MetadataXName).SingleOrDefault();
-            
+
             FilesXName = Namespace + "files";
             _filesElement = PacakgeElement.Elements(FilesXName).SingleOrDefault();
             FileXName = Namespace + "file";
-            
+
             ReferencesXName = Namespace + "references";
             if (_metadataElement != null)
                 _referencesElement = _metadataElement.Elements(ReferencesXName).SingleOrDefault();
@@ -193,6 +128,86 @@ namespace WebApplications.Utilities.PowerShell
                 _dependenciesElement = _metadataElement.Elements(DependenciesXName).SingleOrDefault();
             DependencyXName = Namespace + "dependency";
         }
+
+        /// <summary>
+        /// The metadata XML element.
+        /// </summary>
+        [NotNull]
+        public XElement MetadataElement
+        {
+            get
+            {
+                if (_metadataElement == null)
+                {
+                    _metadataElement = new XElement(MetadataXName);
+                    PacakgeElement.AddFirst(_metadataElement);
+                    HasChanges = true;
+                }
+                return _metadataElement;
+            }
+        }
+
+        /// <summary>
+        /// The files XML element.
+        /// </summary>
+        [NotNull]
+        public XElement FilesElement
+        {
+            get
+            {
+                if (_filesElement == null)
+                {
+                    _filesElement = new XElement(FilesXName);
+                    PacakgeElement.Add(_metadataElement);
+                    HasChanges = true;
+                }
+                return _filesElement;
+            }
+        }
+
+        /// <summary>
+        /// Gets the references element.
+        /// </summary>
+        /// <remarks></remarks>
+        [NotNull]
+        public XElement ReferencesElement
+        {
+            get
+            {
+                if (_referencesElement == null)
+                {
+                    _referencesElement = new XElement(ReferencesXName);
+                    MetadataElement.Add(_referencesElement);
+                    HasChanges = true;
+                }
+                return _referencesElement;
+            }
+        }
+
+        /// <summary>
+        /// The dependencies element.
+        /// </summary>
+        [NotNull]
+        public XElement DependenciesElement
+        {
+            get
+            {
+                if (_dependenciesElement == null)
+                {
+                    _dependenciesElement = new XElement(DependenciesXName);
+                    MetadataElement.Add(_dependenciesElement);
+                    HasChanges = true;
+                }
+                return _dependenciesElement;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance has changes.
+        /// </summary>
+        /// <value><see langword="true"/> if this instance has changes; otherwise, <see langword="false"/>.</value>
+        /// <remarks></remarks>
+        public bool HasChanges { get; private set; }
 
         /// <summary>
         /// Gets or sets the ID.
@@ -314,45 +329,6 @@ namespace WebApplications.Utilities.PowerShell
         }
 
         /// <summary>
-        /// Sets the metadata property with the specified name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="value">The value.</param>
-        /// <remarks></remarks>
-        private void SetMetadata([NotNull]string name, [NotNull]string value)
-        {
-            XName dataName = Namespace + name;
-            XElement dataNode = MetadataElement.Elements(dataName).SingleOrDefault();
-            if (dataNode == null)
-            {
-                dataNode = new XElement(dataName, value);
-                MetadataElement.Add(dataNode);
-                HasChanges = true;
-                return;
-            }
-
-            if (dataNode.Value.Equals(value))
-                return;
-
-            dataNode.SetValue(value);
-            HasChanges = true;
-        }
-
-        /// <summary>
-        /// Gets the metadata with the specified name.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>The value if present; otherwise <see langword="null"/>.</returns>
-        /// <remarks></remarks>
-        [CanBeNull]
-        private string GetMetadata([NotNull]string name)
-        {
-            XName dataName = Namespace + name;
-            XElement dataNode = MetadataElement.Elements(dataName).SingleOrDefault();
-            return dataNode == null ? null : dataNode.Value;
-        }
-
-        /// <summary>
         /// Gets the dependencies.
         /// </summary>
         /// <remarks></remarks>
@@ -384,7 +360,46 @@ namespace WebApplications.Utilities.PowerShell
                                     return new NuSpecDependency(id, version);
                                 }).Where(d => d != default(NuSpecDependency)).ToList();
             }
-        } 
+        }
+
+        /// <summary>
+        /// Sets the metadata property with the specified name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="value">The value.</param>
+        /// <remarks></remarks>
+        private void SetMetadata([NotNull] string name, [NotNull] string value)
+        {
+            XName dataName = Namespace + name;
+            XElement dataNode = MetadataElement.Elements(dataName).SingleOrDefault();
+            if (dataNode == null)
+            {
+                dataNode = new XElement(dataName, value);
+                MetadataElement.Add(dataNode);
+                HasChanges = true;
+                return;
+            }
+
+            if (dataNode.Value.Equals(value))
+                return;
+
+            dataNode.SetValue(value);
+            HasChanges = true;
+        }
+
+        /// <summary>
+        /// Gets the metadata with the specified name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>The value if present; otherwise <see langword="null"/>.</returns>
+        /// <remarks></remarks>
+        [CanBeNull]
+        private string GetMetadata([NotNull] string name)
+        {
+            XName dataName = Namespace + name;
+            XElement dataNode = MetadataElement.Elements(dataName).SingleOrDefault();
+            return dataNode == null ? null : dataNode.Value;
+        }
 
         /// <summary>
         /// Ensures the dependency is added if not present.
@@ -404,10 +419,10 @@ namespace WebApplications.Utilities.PowerShell
         public void EnsureDependency(NuSpecDependency dependency)
         {
             XElement dependencyElement = DependenciesElement.Elements()
-                .FirstOrDefault(e => 
-                    e != null &&
-                    e.Name == DependencyXName &&
-                    e.Attributes("id").FirstOrDefault(
+                .FirstOrDefault(e =>
+                                e != null &&
+                                e.Name == DependencyXName &&
+                                e.Attributes("id").FirstOrDefault(
                                     a => a.Value.Equals(dependency.Id, StringComparison.OrdinalIgnoreCase)) != null);
 
 
@@ -423,7 +438,7 @@ namespace WebApplications.Utilities.PowerShell
                 HasChanges = true;
                 return;
             }
-            
+
             // We already have a matching dependency, check the version if necessary.
             if (dependency.Version == null) return;
 
@@ -454,8 +469,8 @@ namespace WebApplications.Utilities.PowerShell
 
             List<string> allIds =
                 ids.Split(new[] {',', ';', '|'}, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim())
-                .Where(i => !String.IsNullOrWhiteSpace(i))
-                .ToList();
+                    .Where(i => !String.IsNullOrWhiteSpace(i))
+                    .ToList();
             if (allIds.Count < 1)
                 return;
 
@@ -464,8 +479,9 @@ namespace WebApplications.Utilities.PowerShell
                 .Where(e =>
                        e != null &&
                        e.Name == DependencyXName &&
-                       e.Attributes("id").FirstOrDefault(a => allIds.Contains(a.Value, StringComparer.OrdinalIgnoreCase)) != null)
-                       .ToList())
+                       e.Attributes("id").FirstOrDefault(a => allIds.Contains(a.Value, StringComparer.OrdinalIgnoreCase)) !=
+                       null)
+                .ToList())
             {
                 match.Remove();
                 HasChanges = true;

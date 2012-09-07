@@ -1,3 +1,30 @@
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -20,46 +47,24 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The extended type.
         /// </summary>
-        [NotNull]
-        public readonly ExtendedType ExtendedType;
+        [NotNull] public readonly ExtendedType ExtendedType;
 
         /// <summary>
         ///   The property info object, which provides access to property metadata. 
         /// </summary>
-        [NotNull]
-        public readonly PropertyInfo Info;
+        [NotNull] public readonly PropertyInfo Info;
+
+        [NotNull] private readonly Lazy<Field> _automaticField;
 
         /// <summary>
         ///   Grabs the getter method lazily.
         /// </summary>
-        [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Lazy<MethodInfo> _getMethod;
-
-        /// <summary>
-        ///   Gets the getter method.
-        /// </summary>
-        [CanBeNull]
-        public MethodInfo GetMethod
-        {
-            get { return _getMethod.Value; }
-        }
+        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<MethodInfo> _getMethod;
 
         /// <summary>
         ///   Grabs the setter method lazily.
         /// </summary>
-        [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Lazy<MethodInfo> _setMethod;
-
-        /// <summary>
-        ///   Gets the setter method.
-        /// </summary>
-        [CanBeNull]
-        public MethodInfo SetMethod
-        {
-            get { return _setMethod.Value; }
-        }
+        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<MethodInfo> _setMethod;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="Property"/> class.
@@ -68,7 +73,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="info">
         ///   The <see cref="System.Reflection.PropertyInfo">property info</see>.
         /// </param>
-        internal Property([NotNull]ExtendedType extendedType, [NotNull] PropertyInfo info)
+        internal Property([NotNull] ExtendedType extendedType, [NotNull] PropertyInfo info)
         {
             ExtendedType = extendedType;
             Info = info;
@@ -102,7 +107,8 @@ namespace WebApplications.Utilities.Reflect
                             Type[] typeArguments = ExtendedType.GenericArguments.Select(g => g.Type).ToArray();
                             if (typeArguments.Length < 1)
                                 typeArguments = null;
-                            field = info.DeclaringType.Module.ResolveField(BitConverter.ToInt32(fieldToken, 0), typeArguments, null);
+                            field = info.DeclaringType.Module.ResolveField(BitConverter.ToInt32(fieldToken, 0),
+                                                                           typeArguments, null);
                         }
                         catch
                         {
@@ -115,6 +121,55 @@ namespace WebApplications.Utilities.Reflect
                                    ? field
                                    : null;
                     }, LazyThreadSafetyMode.PublicationOnly);
+        }
+
+        /// <summary>
+        ///   Gets the getter method.
+        /// </summary>
+        [CanBeNull]
+        public MethodInfo GetMethod
+        {
+            get { return _getMethod.Value; }
+        }
+
+        /// <summary>
+        ///   Gets the setter method.
+        /// </summary>
+        [CanBeNull]
+        public MethodInfo SetMethod
+        {
+            get { return _setMethod.Value; }
+        }
+
+        /// <summary>
+        /// Gets the field type.
+        /// </summary>
+        /// <value>The field type.</value>
+        /// <remarks></remarks>
+        public Type ReturnType
+        {
+            get { return Info.PropertyType; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this property is automatic.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is automatic; otherwise, <see langword="false" />.</value>
+        /// <remarks></remarks>
+        public bool IsAutomatic
+        {
+            get { return _automaticField.Value != null; }
+        }
+
+        /// <summary>
+        /// Gets the underlying automatic field (if any).
+        /// </summary>
+        /// <value>The automatic field.</value>
+        /// <remarks></remarks>
+        [CanBeNull]
+        public Field AutomaticField
+        {
+            get { return _automaticField.Value; }
         }
 
         /// <summary>
@@ -140,15 +195,6 @@ namespace WebApplications.Utilities.Reflect
                        ? null
                        : ((ExtendedType) propertyInfo.DeclaringType).GetProperty(propertyInfo);
         }
-        /// <summary>
-        /// Gets the field type.
-        /// </summary>
-        /// <value>The field type.</value>
-        /// <remarks></remarks>
-        public Type ReturnType
-        {
-            get { return Info.PropertyType; }
-        }
 
         /// <summary>
         /// Retrieves the lambda function equivalent of the specified static getter method.
@@ -170,7 +216,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type propertyType = Info.PropertyType;
-            Type returnType = typeof(TValue);
+            Type returnType = typeof (TValue);
             Type declaringType = ExtendedType.Type;
 
             // Check the return type can be assigned from the member type
@@ -215,14 +261,14 @@ namespace WebApplications.Utilities.Reflect
 
             Type propertyType = Info.PropertyType;
             Type declaringType = ExtendedType.Type;
-            Type parameterType = typeof(T);
+            Type parameterType = typeof (T);
 
             //  Check the parameter type can be assigned from the declaring type.
             if ((parameterType != declaringType) &&
                 (!parameterType.IsAssignableFrom(declaringType)))
                 return null;
 
-            Type returnType = typeof(TValue);
+            Type returnType = typeof (TValue);
 
             // Check the return type can be assigned from the member type
             if ((returnType != propertyType) &&
@@ -234,8 +280,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Cast parameter if necessary
             Expression expression = parameterType != declaringType
-                             ? parameterExpression.Convert(declaringType)
-                             : parameterExpression;
+                                        ? parameterExpression.Convert(declaringType)
+                                        : parameterExpression;
 
             // Get a member access expression
             expression = Expression.Property(expression, Info);
@@ -274,7 +320,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type propertyType = Info.PropertyType;
-            Type valueType = typeof(TValue);
+            Type valueType = typeof (TValue);
 
             // Check the value type can be assigned to the member type
             if ((valueType != propertyType) &&
@@ -288,8 +334,8 @@ namespace WebApplications.Utilities.Reflect
             ParameterExpression valueParameterExpression = Expression.Parameter(
                 valueType, "value");
             Expression valueExpression = valueType != propertyType
-                                          ? valueParameterExpression.Convert(propertyType)
-                                          : valueParameterExpression;
+                                             ? valueParameterExpression.Convert(propertyType)
+                                             : valueParameterExpression;
 
             Contract.Assert(expression != null);
             Contract.Assert(valueExpression != null);
@@ -324,7 +370,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type declaringType = ExtendedType.Type;
-            Type parameterType = typeof(T);
+            Type parameterType = typeof (T);
 
             //  Check the parameter type can be assigned from the declaring type.
             if ((parameterType != declaringType) &&
@@ -332,7 +378,7 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type propertyType = Info.PropertyType;
-            Type valueType = typeof(TValue);
+            Type valueType = typeof (TValue);
 
             // Check the value type can be assigned to the member type
             if ((valueType != propertyType) &&
@@ -345,8 +391,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Cast parameter if necessary
             Expression expression = parameterType != declaringType
-                             ? parameterExpression.Convert(declaringType)
-                             : parameterExpression;
+                                        ? parameterExpression.Convert(declaringType)
+                                        : parameterExpression;
 
             // Get a member access expression
             expression = Expression.Property(expression, Info);
@@ -355,8 +401,8 @@ namespace WebApplications.Utilities.Reflect
             ParameterExpression valueParameterExpression = Expression.Parameter(
                 valueType, "value");
             Expression valueExpression = valueType != propertyType
-                                          ? valueParameterExpression.Convert(propertyType)
-                                          : valueParameterExpression;
+                                             ? valueParameterExpression.Convert(propertyType)
+                                             : valueParameterExpression;
 
             Contract.Assert(expression != null);
             Contract.Assert(valueExpression != null);
@@ -371,23 +417,5 @@ namespace WebApplications.Utilities.Reflect
             return
                 Expression.Lambda<Action<T, TValue>>(expression, parameterExpression, valueParameterExpression).Compile();
         }
-
-        [NotNull]
-        private readonly Lazy<Field> _automaticField;
-
-        /// <summary>
-        /// Gets a value indicating whether this property is automatic.
-        /// </summary>
-        /// <value><see langword="true" /> if this instance is automatic; otherwise, <see langword="false" />.</value>
-        /// <remarks></remarks>
-        public bool IsAutomatic { get { return _automaticField.Value != null; } }
-
-        /// <summary>
-        /// Gets the underlying automatic field (if any).
-        /// </summary>
-        /// <value>The automatic field.</value>
-        /// <remarks></remarks>
-        [CanBeNull]
-        public Field AutomaticField { get { return _automaticField.Value; } }
     }
 }

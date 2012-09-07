@@ -1,3 +1,30 @@
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -17,14 +44,12 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The extended type.
         /// </summary>
-        [NotNull]
-        public readonly ExtendedType ExtendedType;
+        [NotNull] public readonly ExtendedType ExtendedType;
 
         /// <summary>
         /// The underlying <see cref="FieldInfo"/>.
         /// </summary>
-        [NotNull]
-        public readonly FieldInfo Info;
+        [NotNull] public readonly FieldInfo Info;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Field"/> class.
@@ -32,10 +57,20 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="extendedType">Type of the extended.</param>
         /// <param name="info">The info.</param>
         /// <remarks></remarks>
-        public Field([NotNull]ExtendedType extendedType, [NotNull]FieldInfo info)
+        public Field([NotNull] ExtendedType extendedType, [NotNull] FieldInfo info)
         {
             ExtendedType = extendedType;
             Info = info;
+        }
+
+        /// <summary>
+        /// Gets the field type.
+        /// </summary>
+        /// <value>The field type.</value>
+        /// <remarks></remarks>
+        public Type ReturnType
+        {
+            get { return Info.FieldType; }
         }
 
         /// <summary>
@@ -59,17 +94,7 @@ namespace WebApplications.Utilities.Reflect
         {
             return fieldInfo == null
                        ? null
-                       : ((ExtendedType)fieldInfo.DeclaringType).GetField(fieldInfo);
-        }
-
-        /// <summary>
-        /// Gets the field type.
-        /// </summary>
-        /// <value>The field type.</value>
-        /// <remarks></remarks>
-        public Type ReturnType
-        {
-            get { return Info.FieldType; }
+                       : ((ExtendedType) fieldInfo.DeclaringType).GetField(fieldInfo);
         }
 
         /// <summary>
@@ -82,14 +107,14 @@ namespace WebApplications.Utilities.Reflect
         [UsedImplicitly]
         [CanBeNull]
         public Func<TValue> Getter<TValue>(
-)
+            )
         {
             // Only valid for static fields.
             if (!Info.IsStatic)
                 return null;
 
             Type fieldType = Info.FieldType;
-            Type returnType = typeof(TValue);
+            Type returnType = typeof (TValue);
             Type declaringType = ExtendedType.Type;
 
             // Check the return type can be assigned from the member type
@@ -129,14 +154,14 @@ namespace WebApplications.Utilities.Reflect
 
             Type fieldType = Info.FieldType;
             Type declaringType = ExtendedType.Type;
-            Type parameterType = typeof(T);
+            Type parameterType = typeof (T);
 
             //  Check the parameter type can be assigned from the declaring type.
             if ((parameterType != declaringType) &&
                 (!parameterType.IsAssignableFrom(declaringType)))
                 return null;
 
-            Type returnType = typeof(TValue);
+            Type returnType = typeof (TValue);
 
             // Check the return type can be assigned from the member type
             if ((returnType != fieldType) &&
@@ -145,11 +170,11 @@ namespace WebApplications.Utilities.Reflect
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(parameterType, "target");
-            
+
             // Cast parameter if necessary
             Expression expression = parameterType != declaringType
-                             ? parameterExpression.Convert(declaringType)
-                             : parameterExpression;
+                                        ? parameterExpression.Convert(declaringType)
+                                        : parameterExpression;
 
             // Get a member access expression
             expression = Expression.Field(expression, Info);
@@ -183,15 +208,15 @@ namespace WebApplications.Utilities.Reflect
             if ((!Info.IsStatic) ||
                 (Info.IsInitOnly))
                 return null;
-            
+
             Type fieldType = Info.FieldType;
-            Type valueType = typeof(TValue);
+            Type valueType = typeof (TValue);
 
             // Check the value type can be assigned to the member type
             if ((valueType != fieldType) &&
                 (!fieldType.IsAssignableFrom(valueType)))
                 return null;
-            
+
             // Get a field access expression
             Expression expression = Expression.Field(null, Info);
 
@@ -199,8 +224,8 @@ namespace WebApplications.Utilities.Reflect
             ParameterExpression valueParameterExpression = Expression.Parameter(
                 valueType, "value");
             Expression valueExpression = valueType != fieldType
-                                          ? valueParameterExpression.Convert(fieldType)
-                                          : valueParameterExpression;
+                                             ? valueParameterExpression.Convert(fieldType)
+                                             : valueParameterExpression;
 
             Contract.Assert(expression != null);
             Contract.Assert(valueExpression != null);
@@ -232,15 +257,15 @@ namespace WebApplications.Utilities.Reflect
                 return null;
 
             Type declaringType = ExtendedType.Type;
-            Type parameterType = typeof(T);
+            Type parameterType = typeof (T);
 
             //  Check the parameter type can be assigned from the declaring type.
             if ((parameterType != declaringType) &&
                 (!parameterType.IsAssignableFrom(declaringType)))
                 return null;
-            
+
             Type fieldType = Info.FieldType;
-            Type valueType = typeof(TValue);
+            Type valueType = typeof (TValue);
 
             // Check the value type can be assigned to the member type
             if ((valueType != fieldType) &&
@@ -253,8 +278,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Cast parameter if necessary
             Expression expression = parameterType != declaringType
-                             ? parameterExpression.Convert(declaringType)
-                             : parameterExpression;
+                                        ? parameterExpression.Convert(declaringType)
+                                        : parameterExpression;
 
             // Get a member access expression
             expression = Expression.Field(expression, Info);
@@ -263,8 +288,8 @@ namespace WebApplications.Utilities.Reflect
             ParameterExpression valueParameterExpression = Expression.Parameter(
                 valueType, "value");
             Expression valueExpression = valueType != fieldType
-                                          ? valueParameterExpression.Convert(fieldType)
-                                          : valueParameterExpression;
+                                             ? valueParameterExpression.Convert(fieldType)
+                                             : valueParameterExpression;
 
             Contract.Assert(expression != null);
             Contract.Assert(valueExpression != null);

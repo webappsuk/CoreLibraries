@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -12,8 +39,8 @@ namespace WebApplications.Utilities.Test
     [TestClass]
     public class FinancialsTests : UtilitiesTestBase
     {
-        private readonly CurrencyInfo _gbp = CurrencyInfo.Get("GBP");
         private readonly decimal _amount = Random.RandomDecimal();
+        private readonly CurrencyInfo _gbp = CurrencyInfo.Get("GBP");
 
         [TestMethod]
         public void TestCanCreateInstance()
@@ -61,7 +88,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestAddOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
             Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
@@ -84,7 +111,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestSubtractOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
             Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
@@ -145,7 +172,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestLessThanOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
             Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
@@ -154,7 +181,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestMoreThanOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
             Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
@@ -191,7 +218,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestLessThanOrEqualToOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
             Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
@@ -200,7 +227,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestMoreThanOrEqualToOperatorThrowsExceptionIfTheCurrenciesAreDifferent()
         {
             Financial financialA = new Financial(CurrencyInfo.Get("GBP"), 0);
@@ -217,7 +244,7 @@ namespace WebApplications.Utilities.Test
             Financial financialA = new Financial(_gbp, amountA);
             Financial financialB = new Financial(_gbp, amountB);
 
-            Financial result = financialA * financialB;
+            Financial result = financialA*financialB;
             Assert.AreEqual(amountA*amountB, result.Amount);
         }
 
@@ -328,11 +355,11 @@ namespace WebApplications.Utilities.Test
             Financial financialB = new Financial(_gbp, 2036.54M);
             Financial financialC = new Financial(_gbp, -153);
 
-            Assert.AreEqual(1893.54M, Financial.Sum(new[] { financialA, financialB, financialC }).Amount);
+            Assert.AreEqual(1893.54M, Financial.Sum(new[] {financialA, financialB, financialC}).Amount);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestSumWithNoFinancialsInEnumerableThrowsNoFinancialsException()
         {
             Financial.Sum(Enumerable.Empty<Financial>());
@@ -345,11 +372,11 @@ namespace WebApplications.Utilities.Test
             Financial financialB = new Financial(_gbp, 2036.54M);
             Financial financialC = new Financial(_gbp, -153);
 
-            Assert.AreEqual(631.18M, Financial.Average(new[] { financialA, financialB, financialC }).Amount);
+            Assert.AreEqual(631.18M, Financial.Average(new[] {financialA, financialB, financialC}).Amount);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestAverageWithNoFinancialsInEnumerableThrowsNoFinancialsException()
         {
             Financial.Average(Enumerable.Empty<Financial>());
@@ -370,11 +397,16 @@ namespace WebApplications.Utilities.Test
         {
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB"); // No Euro in GB, but Ireland has and also at least speaks English (en).
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+                // No Euro in GB, but Ireland has and also at least speaks English (en).
             Financial financial = new Financial(currencyInfo, amount);
             String currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-            List<String> expectedFormats = currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == currentLanguage).Select(mc =>
-                String.Format(mc, "{0:C}", amount)).ToList();
+            List<String> expectedFormats =
+                currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == currentLanguage).Select(mc =>
+                                                                                                       String.Format(
+                                                                                                           mc, "{0:C}",
+                                                                                                           amount)).
+                    ToList();
             CollectionAssert.Contains(expectedFormats, financial.ToString());
         }
 
@@ -383,10 +415,11 @@ namespace WebApplications.Utilities.Test
         {
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de"); // No pound in Germany, nor any German speaking countries.
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de");
+                // No pound in Germany, nor any German speaking countries.
             Financial financial = new Financial(currencyInfo, amount);
             List<String> expectedFormats = currencyInfo.Cultures.Select(mc =>
-                String.Format(mc, "{0:C}", amount)).ToList();
+                                                                        String.Format(mc, "{0:C}", amount)).ToList();
             CollectionAssert.Contains(expectedFormats, financial.ToString());
         }
 
@@ -402,7 +435,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FormatException))]
+        [ExpectedException(typeof (FormatException))]
         public void TestFormatWithInvalidFormatThrowsFormatException()
         {
             Decimal amount = Random.RandomDecimal();
@@ -412,7 +445,7 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FormatException))]
+        [ExpectedException(typeof (FormatException))]
         public void TestFormatWithFormatProviderAndInvalidFormatThrowsFormatException()
         {
             Decimal amount = Random.RandomDecimal();
@@ -439,7 +472,7 @@ namespace WebApplications.Utilities.Test
             Financial financial = new Financial(currencyInfo, amount);
             IFormatProvider provider = new CultureInfo("fr-ca").NumberFormat;
             String expectedFormat = String.Format(provider, "{0} {1}", amount, currencyInfo.Code);
-            Assert.AreEqual(expectedFormat, String.Format(provider,"{0:I}", financial));
+            Assert.AreEqual(expectedFormat, String.Format(provider, "{0:I}", financial));
         }
 
         [TestMethod]
@@ -504,12 +537,18 @@ namespace WebApplications.Utilities.Test
         {
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-fr"); // Now if CurrentUICulture is used instead, we get French formatting.
-            CultureInfo provider = new CultureInfo("en-GB"); // No Euro in GB, but Ireland has and also at least speaks English (en).
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-fr");
+                // Now if CurrentUICulture is used instead, we get French formatting.
+            CultureInfo provider = new CultureInfo("en-GB");
+                // No Euro in GB, but Ireland has and also at least speaks English (en).
             Financial financial = new Financial(currencyInfo, amount);
             String correctLanguage = provider.TwoLetterISOLanguageName;
-            List<String> expectedFormats = currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == correctLanguage).Select(mc =>
-                String.Format(mc, "{0:C}", amount)).ToList();
+            List<String> expectedFormats =
+                currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == correctLanguage).Select(mc =>
+                                                                                                       String.Format(
+                                                                                                           mc, "{0:C}",
+                                                                                                           amount)).
+                    ToList();
             String actualFormat = String.Format(provider, "{0:C}", financial);
             CollectionAssert.Contains(expectedFormats, actualFormat);
         }
@@ -523,7 +562,7 @@ namespace WebApplications.Utilities.Test
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
             Financial financial = new Financial(currencyInfo, amount);
             List<String> expectedFormats = currencyInfo.Cultures.Select(mc =>
-                String.Format(mc, "{0:C}", amount)).ToList();
+                                                                        String.Format(mc, "{0:C}", amount)).ToList();
             String actualFormat = String.Format(provider, "{0:C}", financial);
             CollectionAssert.Contains(expectedFormats, actualFormat);
         }

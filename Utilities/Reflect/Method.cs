@@ -1,3 +1,30 @@
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,44 +45,67 @@ namespace WebApplications.Utilities.Reflect
     public class Method : ISignature
     {
         /// <summary>
-        /// Caches closed methods.
-        /// </summary>
-        [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private Lazy<ConcurrentDictionary<string, Method>> _closedMethods =
-            new Lazy<ConcurrentDictionary<string, Method>>(
-                () => new ConcurrentDictionary<string, Method>(), LazyThreadSafetyMode.PublicationOnly);
-
-        /// <summary>
         /// The extended type.
         /// </summary>
-        [NotNull]
-        public readonly ExtendedType ExtendedType;
-
-        /// <inheritdoc/>
-        public Type DeclaringType
-        {
-            get { return ExtendedType.Type; }
-        }
+        [NotNull] public readonly ExtendedType ExtendedType;
 
         /// <summary>
         ///   The method info.
         /// </summary>
-        [NotNull]
-        public readonly MethodInfo Info;
+        [NotNull] public readonly MethodInfo Info;
+
+        /// <summary>
+        /// Creates array of generic arguments on demand.
+        /// </summary>
+        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<List<GenericArgument>>
+            _genericArguments;
 
         /// <summary>
         /// Create enumeration of parameters on demand.
         /// </summary>
-        [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Lazy<ParameterInfo[]> _parameters;
+        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<ParameterInfo[]> _parameters;
+
+        /// <summary>
+        /// Caches closed methods.
+        /// </summary>
+        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private Lazy<ConcurrentDictionary<string, Method>>
+            _closedMethods =
+                new Lazy<ConcurrentDictionary<string, Method>>(
+                    () => new ConcurrentDictionary<string, Method>(), LazyThreadSafetyMode.PublicationOnly);
+
+        /// <summary>
+        /// Initializes the <see cref="Method"/> class.
+        /// </summary>
+        /// <param name="extendedType">Type of the extended.</param>
+        /// <param name="info">The info.</param>
+        /// <remarks></remarks>
+        internal Method([NotNull] ExtendedType extendedType, [NotNull] MethodInfo info)
+        {
+            ExtendedType = extendedType;
+            Info = info;
+            _genericArguments = new Lazy<List<GenericArgument>>(
+                () => info.GetGenericArguments()
+                          .Select((g, i) => new GenericArgument(GenericArgumentLocation.Signature, i, g))
+                          .ToList(),
+                LazyThreadSafetyMode.PublicationOnly);
+            _parameters = new Lazy<ParameterInfo[]>(info.GetParameters, LazyThreadSafetyMode.PublicationOnly);
+        }
 
         /// <summary>
         ///   The parameters.
         /// </summary>
         [NotNull]
-        public IEnumerable<ParameterInfo> Parameters { get { return _parameters.Value; } }
+        public IEnumerable<ParameterInfo> Parameters
+        {
+            get { return _parameters.Value; }
+        }
+
+        #region ISignature Members
+        /// <inheritdoc/>
+        public Type DeclaringType
+        {
+            get { return ExtendedType.Type; }
+        }
 
         /// <inheritdoc/>
         [NotNull]
@@ -69,14 +119,10 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <inheritdoc/>
-        public IEnumerable<GenericArgument> TypeGenericArguments { get { return ExtendedType.GenericArguments; } }
-
-        /// <summary>
-        /// Creates array of generic arguments on demand.
-        /// </summary>
-        [NotNull]
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly Lazy<List<GenericArgument>> _genericArguments;
+        public IEnumerable<GenericArgument> TypeGenericArguments
+        {
+            get { return ExtendedType.GenericArguments; }
+        }
 
         /// <inheritdoc/>
         public IEnumerable<GenericArgument> SignatureGenericArguments
@@ -85,25 +131,17 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <inheritdoc/>
-        public Type ReturnType { get { return Info.ReturnType; } }
-
-        /// <summary>
-        /// Initializes the <see cref="Method"/> class.
-        /// </summary>
-        /// <param name="extendedType">Type of the extended.</param>
-        /// <param name="info">The info.</param>
-        /// <remarks></remarks>
-        internal Method([NotNull]ExtendedType extendedType, [NotNull]MethodInfo info)
+        public Type ReturnType
         {
-            ExtendedType = extendedType;
-            Info = info;
-            _genericArguments = new Lazy<List<GenericArgument>>(
-                () => info.GetGenericArguments()
-                          .Select((g, i) => new GenericArgument(GenericArgumentLocation.Signature, i, g))
-                          .ToList(),
-                LazyThreadSafetyMode.PublicationOnly);
-            _parameters = new Lazy<ParameterInfo[]>(info.GetParameters, LazyThreadSafetyMode.PublicationOnly);
+            get { return Info.ReturnType; }
         }
+
+        /// <inheritdoc/>
+        ISignature ISignature.Close(Type[] typeClosures, Type[] signatureClosures)
+        {
+            return Close(typeClosures, signatureClosures);
+        }
+        #endregion
 
         /// <summary>
         /// Gets the closed version of a generic method.
@@ -112,7 +150,7 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>The closed <see cref="Method"/> if the generic types supplied are sufficient for closure; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
         [CanBeNull]
-        public Method Close([NotNull]params Type[] signatureClosures)
+        public Method Close([NotNull] params Type[] signatureClosures)
         {
             return Close(new Type[ExtendedType.GenericArguments.Count()], signatureClosures);
         }
@@ -125,7 +163,7 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>The closed <see cref="Method"/> if the generic types supplied are sufficient for closure; otherwise <see langword="null"/>.</returns>
         /// <remarks></remarks>
         [CanBeNull]
-        public Method Close([NotNull]Type[] typeClosures, [NotNull]Type[] signatureClosures)
+        public Method Close([NotNull] Type[] typeClosures, [NotNull] Type[] signatureClosures)
         {
             Contract.Assert(_genericArguments.Value != null);
 
@@ -179,22 +217,16 @@ namespace WebApplications.Utilities.Reflect
             return _closedMethods.Value.GetOrAdd(
                 key,
                 k =>
-                {
-                    try
                     {
-                        return new Method(ExtendedType, Info.MakeGenericMethod(gta));
-                    }
-                    catch (ArgumentException)
-                    {
-                        return null;
-                    }
-                });
-        }
-
-        /// <inheritdoc/>
-        ISignature ISignature.Close(Type[] typeClosures, Type[] signatureClosures)
-        {
-            return Close(typeClosures, signatureClosures);
+                        try
+                        {
+                            return new Method(ExtendedType, Info.MakeGenericMethod(gta));
+                        }
+                        catch (ArgumentException)
+                        {
+                            return null;
+                        }
+                    });
         }
 
         /// <summary>
@@ -318,16 +350,16 @@ namespace WebApplications.Utilities.Reflect
             // Create call expression, instance methods use the first parameter of the Func<> as the instance, static
             // methods do not supply an instance.
             Expression expression = isStatic
-                                            ? Expression.Call(Info, pExpressions)
-                                            : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
+                                        ? Expression.Call(Info, pExpressions)
+                                        : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
 
             // Check if we have a return type.
-            if (Info.ReturnType != typeof(void))
+            if (Info.ReturnType != typeof (void))
             {
                 // Discard result by wrapping in a block and 'returning' void.
                 LabelTarget returnTarget = Expression.Label();
                 expression = Expression.Block(
-                        expression, Expression.Return(returnTarget), Expression.Label(returnTarget));
+                    expression, Expression.Return(returnTarget), Expression.Label(returnTarget));
             }
 
             return Expression.Lambda(expression, parameterExpressions).Compile();
@@ -365,7 +397,7 @@ namespace WebApplications.Utilities.Reflect
         {
             // If the method is not closed or doesn't have return type, were' done.
             if ((Info.ContainsGenericParameters) ||
-                (Info.ReturnType == typeof(void)))
+                (Info.ReturnType == typeof (void)))
                 return null;
 
             bool isStatic = Info.IsStatic;
@@ -425,15 +457,15 @@ namespace WebApplications.Utilities.Reflect
                     pExpressions[i] = parameterExpressions[i];
                 }
             }
-            
+
             // Create call expression, instance methods use the first parameter of the Func<> as the instance, static
             // methods do not supply an instance.
             Expression expression = isStatic
-                                            ? Expression.Call(Info, pExpressions)
-                                            : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
+                                        ? Expression.Call(Info, pExpressions)
+                                        : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
 
             // Check if we need to do a cast to the func result type
-            if (funcTypes[tCount - 1] != this.Info.ReturnType &&
+            if (funcTypes[tCount - 1] != Info.ReturnType &&
                 !expression.TryConvert(funcTypes[tCount - 1], out expression))
                 return null;
 
