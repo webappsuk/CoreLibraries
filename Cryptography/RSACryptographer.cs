@@ -1,23 +1,28 @@
-#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities.Cryptography 
-// Project: WebApplications.Utilities.Cryptography
-// File: RSACryptographer.cs
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -26,10 +31,10 @@ using System.Configuration;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 using System.Web.Configuration;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Cryptography.Configuration;
-using System.Web;
 
 namespace WebApplications.Utilities.Cryptography
 {
@@ -82,6 +87,7 @@ namespace WebApplications.Utilities.Cryptography
             _rsaEncryptionKeys = _rsaEncryptionKeys.OrderByDescending(k => k.Expiry).ToList();
         }
 
+        #region IEncryptorDecryptor Members
         /// <summary>
         /// Decrypts the <see cref="string"/> specified.
         /// </summary>
@@ -152,7 +158,7 @@ namespace WebApplications.Utilities.Cryptography
                 {
                     string block = input.Substring(startPosition, endPosition - startPosition + 1);
 
-                    CspParameters keyContainer = new CspParameters { KeyContainerName = key.Value };
+                    CspParameters keyContainer = new CspParameters {KeyContainerName = key.Value};
                     RSACryptoServiceProvider provider = new RSACryptoServiceProvider(keyContainer);
 
                     byte[] byteArray;
@@ -160,12 +166,12 @@ namespace WebApplications.Utilities.Cryptography
                     {
                         byteArray = provider.Decrypt(Convert.FromBase64String(block), false);
                     }
-                    catch(CryptographicException)
+                    catch (CryptographicException)
                     {
                         endPosition = -1;
                         continue;
                     }
-                    
+
                     decrypted += Encoding.Unicode.GetString(byteArray);
                     startPosition = endPosition + 1;
 
@@ -173,7 +179,7 @@ namespace WebApplications.Utilities.Cryptography
                     endPosition = input.IndexOf("=", startPosition);
                 }
 
-                if(decrypted != string.Empty)
+                if (decrypted != string.Empty)
                 {
                     if (key.Value == _rsaEncryptionKeys.First().Value)
                         isLatestKey = true;
@@ -205,11 +211,11 @@ namespace WebApplications.Utilities.Cryptography
 
             const int blockSize = 32;
             string resultString = string.Empty;
-            int numberOfBlocks = (input.Length / blockSize) + 1;
+            int numberOfBlocks = (input.Length/blockSize) + 1;
 
             for (int i = 0; i < numberOfBlocks; i++)
             {
-                byte[] byteArray = new byte[blockSize * 2];
+                byte[] byteArray = new byte[blockSize*2];
 
                 // The amount of characters to read in for the current block.
                 int readSize;
@@ -217,7 +223,7 @@ namespace WebApplications.Utilities.Cryptography
                 if (i == numberOfBlocks - 1)
                 {
                     // Get the remaining characters for the final block.
-                    readSize = (input.Length % blockSize);
+                    readSize = (input.Length%blockSize);
                 }
                 else
                 {
@@ -225,7 +231,7 @@ namespace WebApplications.Utilities.Cryptography
                 }
 
                 // Get the bytes for the current block.
-                Encoding.Unicode.GetBytes(input, blockSize * i, readSize, byteArray, 0);
+                Encoding.Unicode.GetBytes(input, blockSize*i, readSize, byteArray, 0);
 
                 // Encrypt the current block.
                 byteArray = encryptionProvider.Encrypt(byteArray, false);
@@ -235,6 +241,7 @@ namespace WebApplications.Utilities.Cryptography
 
             return resultString;
         }
+        #endregion
 
         /// <summary>
         /// Initialises the crypto service provider.
@@ -256,7 +263,7 @@ namespace WebApplications.Utilities.Cryptography
                 {
                     Key key = _rsaEncryptionKeys.First();
 
-                    CspParameters keyContainer = new CspParameters { KeyContainerName = key.Value };
+                    CspParameters keyContainer = new CspParameters {KeyContainerName = key.Value};
                     encryptionProvider = new RSACryptoServiceProvider(keyContainer);
 
                     addNewKey = false;
@@ -273,12 +280,14 @@ namespace WebApplications.Utilities.Cryptography
                               {
                                   Value = keyContainerName,
                                   Expiry = DateTime.Now.Add(
-                                    TimeSpan.FromDays(_provider != null ? _provider.KeyLifeInDays : defaultKeyLifeInDays))
+                                      TimeSpan.FromDays(_provider != null
+                                                            ? _provider.KeyLifeInDays
+                                                            : defaultKeyLifeInDays))
                               };
 
                 WriteEncryptionKeyToConfiguration(key);
 
-                CspParameters keyContainer = new CspParameters { KeyContainerName = keyContainerName };
+                CspParameters keyContainer = new CspParameters {KeyContainerName = keyContainerName};
                 encryptionProvider = new RSACryptoServiceProvider(keyContainer);
             }
 
@@ -300,10 +309,10 @@ namespace WebApplications.Utilities.Cryptography
 
             // Create a key element to add to the provider element.
             KeyElement newKeyElement = new KeyElement
-            {
-                Value = newKey.Value,
-                Expiry = newKey.Expiry
-            };
+                                           {
+                                               Value = newKey.Value,
+                                               Expiry = newKey.Expiry
+                                           };
 
             _provider.Keys.Add(newKeyElement);
 
@@ -325,7 +334,8 @@ namespace WebApplications.Utilities.Cryptography
             else
             {
                 // Get the configuration object with the purpose of saving the new XML to the configuration file.
-                configurationObject = WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
+                configurationObject =
+                    WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
             }
 
             // Get the <cryptography> section and set the raw XML.

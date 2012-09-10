@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -60,7 +87,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void Encrypt_NullInput_EmptyStringResult()
         {
             _providerWrapper.Encrypt(null);
@@ -69,7 +96,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void Encrypt_EmptyString_ArgumentNullException()
         {
             _providerWrapper.Encrypt(string.Empty);
@@ -86,7 +113,8 @@ namespace WebApplications.Utilities.Cryptography.Test
             string encryptedResult2 = _providerWrapper.Encrypt(InputString);
             Trace.WriteLine(encryptedResult2);
 
-            Assert.IsFalse(encryptedResult1 == encryptedResult2, "The same string should result in a different encryption result");
+            Assert.IsFalse(encryptedResult1 == encryptedResult2,
+                           "The same string should result in a different encryption result");
         }
 
         [TestMethod]
@@ -100,7 +128,8 @@ namespace WebApplications.Utilities.Cryptography.Test
             string encryptedResult2 = _providerWrapper.Encrypt(input);
             Trace.WriteLine(encryptedResult2);
 
-            Assert.IsFalse(encryptedResult1 == encryptedResult2, "The same string should result in a different encryption result");
+            Assert.IsFalse(encryptedResult1 == encryptedResult2,
+                           "The same string should result in a different encryption result");
         }
 
         [TestMethod]
@@ -122,7 +151,8 @@ namespace WebApplications.Utilities.Cryptography.Test
             string decryptedResult2 = _providerWrapper.Decrypt(encryptedResult2, out isLatestKey);
             Trace.WriteLine("Decrypted B: " + decryptedResult2);
 
-            Assert.AreEqual(decryptedResult1, decryptedResult2, "The same input strings should result in the same decryption result");
+            Assert.AreEqual(decryptedResult1, decryptedResult2,
+                            "The same input strings should result in the same decryption result");
         }
 
         [TestMethod]
@@ -144,7 +174,8 @@ namespace WebApplications.Utilities.Cryptography.Test
             string decryptedResult2 = _providerWrapper.Decrypt(encryptedResult2, out isLatestKey);
             Trace.WriteLine("Decrypted B: " + decryptedResult2);
 
-            Assert.AreEqual(decryptedResult1, decryptedResult2, "The same input strings should result in the same decryption result");
+            Assert.AreEqual(decryptedResult1, decryptedResult2,
+                            "The same input strings should result in the same decryption result");
         }
 
         [TestMethod]
@@ -174,7 +205,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void Decrypt_NullInput_ArgumentNullException()
         {
             bool isLatestKey;
@@ -184,7 +215,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void Decrypt_EmptyString_ArgumentNullException()
         {
             bool isLatestKey;
@@ -194,7 +225,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void Decrypt_NullInput_LatestKeyIsFalse()
         {
             bool isLatestKey;
@@ -204,30 +235,34 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(CryptographicException))]
+        [ExpectedException(typeof (CryptographicException))]
         public void Decrypt_InputEncryptedWithKeyNotInConfig_CryptographicException()
         {
-            const string encryptedStringNotUsingKeyInConfiguration = "I0Qu6rZYA2OB1FXhhGB8J6+VyeEVVAvZkaYBKi8j4XY23ecgN1Zpprhzcrql7U6eUKZWtPaxfDwoEa9g6Bq0f1uE1pVMhrlxQDw3n6KFI5chvFLFpMA85APth08F2yzEh1yjXj6iynV9ZZlGyUQ/+lMJY0fjg45fNnv23C4aFbM=";
+            const string encryptedStringNotUsingKeyInConfiguration =
+                "I0Qu6rZYA2OB1FXhhGB8J6+VyeEVVAvZkaYBKi8j4XY23ecgN1Zpprhzcrql7U6eUKZWtPaxfDwoEa9g6Bq0f1uE1pVMhrlxQDw3n6KFI5chvFLFpMA85APth08F2yzEh1yjXj6iynV9ZZlGyUQ/+lMJY0fjg45fNnv23C4aFbM=";
 
             bool isLatestKey;
             string decrypted = _providerWrapper.Decrypt(encryptedStringNotUsingKeyInConfiguration, out isLatestKey);
 
             Trace.WriteLine("Result: " + decrypted);
 
-            Assert.Fail("CryptographicException was expected when using an encrypted string that does not exist within our configuration");
+            Assert.Fail(
+                "CryptographicException was expected when using an encrypted string that does not exist within our configuration");
         }
 
         // TODO This test is unstable, this needs looking into
         [TestMethod]
         public void TryDecrypt_ReturnValue_ReturnsFalseWhenKeyIsNotLatestKey()
         {
-            const string encryptedStringUsingExpiredKeyInConfiguration = "CkTj6c4LPWXjfAxHKpuITqXFaerCiZ9rfAzyf8FS/5qYWbQ1HMGsADO6rF7fuAljjvfCM5HoYvZe7zBAjxU2kVfuVmaHKGGYJyrtjwKvRURXwkXgUUO8HanpJtU4UjvO0AU3sBgJCc5NUXS/tU9oT4D/SbaHcvQUtFfThAiuT0w=";
+            const string encryptedStringUsingExpiredKeyInConfiguration =
+                "CkTj6c4LPWXjfAxHKpuITqXFaerCiZ9rfAzyf8FS/5qYWbQ1HMGsADO6rF7fuAljjvfCM5HoYvZe7zBAjxU2kVfuVmaHKGGYJyrtjwKvRURXwkXgUUO8HanpJtU4UjvO0AU3sBgJCc5NUXS/tU9oT4D/SbaHcvQUtFfThAiuT0w=";
 
             string decryptedString;
             bool? isLatestKey;
 
             _providerWrapper.Encrypt("a new key will be made now");
-            bool decrypted = _providerWrapper.TryDecrypt(encryptedStringUsingExpiredKeyInConfiguration, out decryptedString, out isLatestKey);
+            bool decrypted = _providerWrapper.TryDecrypt(encryptedStringUsingExpiredKeyInConfiguration,
+                                                         out decryptedString, out isLatestKey);
 
             Assert.IsTrue(decrypted, "'decrypted' should return true");
             Assert.IsFalse(isLatestKey.Value, "IsLatestKey should return false");

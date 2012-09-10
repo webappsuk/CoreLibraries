@@ -1,14 +1,41 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Web;
 using System.Web.Configuration;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Cryptography.Configuration;
-using System.Web;
 
 namespace WebApplications.Utilities.Cryptography
 {
@@ -61,6 +88,7 @@ namespace WebApplications.Utilities.Cryptography
             _aesEncryptionKeys = _aesEncryptionKeys.OrderByDescending(k => k.Expiry).ToList();
         }
 
+        #region IEncryptorDecryptor Members
         /// <summary>
         /// Encrypts the specified input into a Base32 <see cref="string"/>.
         /// </summary>
@@ -114,58 +142,6 @@ namespace WebApplications.Utilities.Cryptography
         }
 
         /// <summary>
-        /// Encrypts the provided input <see cref="string"/> to an array of <see cref="byte"/>s.
-        /// </summary>
-        /// <param name="input">The input string to encrypt.</param>
-        /// <param name="key">The key to use in the encryption.</param>
-        /// <param name="initializationVector">
-        /// The initialization vector, see <see cref="SymmetricAlgorithm.IV"/>.
-        /// </param>
-        /// <returns>The <see cref="string"/> encrypted into a <see cref="byte"/> array.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <para><paramref name="key"/> is <see langword="null"/>.</para>
-        /// <para>-or-</para>
-        /// <para><paramref name="initializationVector"/> is <see langword="null"/>.</para>
-        /// </exception>
-        private byte[] EncryptStringToBytes([NotNull] string input, [NotNull] byte[] key, [NotNull] byte[] initializationVector)
-        {
-            if (key == null || key.Length <= 0)
-                throw new ArgumentNullException("key");
-            if (initializationVector == null || initializationVector.Length <= 0)
-                throw new ArgumentNullException("initializationVector");
-
-            byte[] encrypted;
-
-            using (AesCryptoServiceProvider aesCryptoServiceProvider = new AesCryptoServiceProvider())
-            {
-                aesCryptoServiceProvider.Key = key;
-                aesCryptoServiceProvider.IV = initializationVector;
-
-                using (MemoryStream msEncrypt = new MemoryStream())
-                {
-                    // Write the IV to the beginning of the stream.
-                    msEncrypt.Write(aesCryptoServiceProvider.IV, 0, initializationVector.Length);
-
-                    using (ICryptoTransform encryptor = aesCryptoServiceProvider.CreateEncryptor(aesCryptoServiceProvider.Key, aesCryptoServiceProvider.IV))
-                    {
-                        using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                        {
-                            using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
-                            {
-                                // Write the data to the stream.
-                                swEncrypt.Write(input);
-                            }
-
-                            encrypted = msEncrypt.ToArray();
-                        }
-                    }
-                }
-            }
-
-            return encrypted;
-        }
-
-        /// <summary>
         /// Decrypts the specified base32 <see cref="string"/>.
         /// </summary>
         /// <param name="input">The base32 encoded string to decrypt.</param>
@@ -190,7 +166,7 @@ namespace WebApplications.Utilities.Cryptography
             byte[] initializationVector = new byte[16];
 
             // Note: Each symbol in a Base32 string is 5 bits.
-            byte[] buffer = new byte[input.Length * 5 / 8];
+            byte[] buffer = new byte[input.Length*5/8];
 
             if (Base32EncoderDecoder.TryBase32Decode(input, buffer))
             {
@@ -209,7 +185,8 @@ namespace WebApplications.Utilities.Cryptography
                 // Try to find the key used in the encryption.
                 foreach (Key key in _aesEncryptionKeys)
                 {
-                    if (TryDecryptStringFromBytes(cipherText, ConvertHexStringToByteArray(key.Value), initializationVector, out decryptedString))
+                    if (TryDecryptStringFromBytes(cipherText, ConvertHexStringToByteArray(key.Value),
+                                                  initializationVector, out decryptedString))
                     {
                         decryptionKeyFound = true;
 
@@ -227,57 +204,8 @@ namespace WebApplications.Utilities.Cryptography
             }
 
             // If we get here, decryption failed.
-            throw new CryptographicException(string.Format(Resources.AESCryptographer_Decrypt_DecryptFailed_InputNotBase32String, input));
-        }
-
-        /// <summary>
-        /// Decrypts the array of <see cref="byte"/>s into a <see cref="string"/>.
-        /// </summary>
-        /// <param name="cipherText">The cipher text.</param>
-        /// <param name="key">The key to use in the encryption.</param>
-        /// <param name="initializationVector">
-        /// The initialization vector, see <see cref="SymmetricAlgorithm.IV"/>.
-        /// </param>
-        /// <returns>The result of the decrypted <paramref name="cipherText"/>.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// <para><paramref name="key"/> was <see langword="null"/>.</para>
-        /// <para>-or-</para>
-        /// <para><paramref name="initializationVector"/> was <see langword="null"/>.</para>
-        /// </exception>
-        private string DecryptStringFromBytes([NotNull] byte[] cipherText, [NotNull] byte[] key, [NotNull] byte[] initializationVector)
-        {
-            if (key == null || key.Length <= 0)
-                throw new ArgumentNullException("key");
-            if (initializationVector == null || initializationVector.Length <= 0)
-                throw new ArgumentNullException("initializationVector");
-
-            string decryptedText;
-
-            using (AesCryptoServiceProvider aesCryptoServiceProvider = new AesCryptoServiceProvider())
-            {
-                // Use the specified key and IV.
-                aesCryptoServiceProvider.Key = key;
-                aesCryptoServiceProvider.IV = initializationVector;
-
-                // Create the streams used for decryption.
-                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
-                {
-                    // Create a decrytor to perform the stream transform.
-                    using (ICryptoTransform decryptor = aesCryptoServiceProvider.CreateDecryptor(aesCryptoServiceProvider.Key, aesCryptoServiceProvider.IV))
-                    {
-                        using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                        {
-                            using (StreamReader srDecrypt = new StreamReader(csDecrypt))
-                            {
-                                // Read the decrypted bytes from the decrypting stream.
-                                decryptedText = srDecrypt.ReadToEnd();
-                            }
-                        }
-                    }
-                }
-            }
-
-            return decryptedText;
+            throw new CryptographicException(
+                string.Format(Resources.AESCryptographer_Decrypt_DecryptFailed_InputNotBase32String, input));
         }
 
         /// <summary>
@@ -312,6 +240,117 @@ namespace WebApplications.Utilities.Cryptography
                 return false;
             }
         }
+        #endregion
+
+        /// <summary>
+        /// Encrypts the provided input <see cref="string"/> to an array of <see cref="byte"/>s.
+        /// </summary>
+        /// <param name="input">The input string to encrypt.</param>
+        /// <param name="key">The key to use in the encryption.</param>
+        /// <param name="initializationVector">
+        /// The initialization vector, see <see cref="SymmetricAlgorithm.IV"/>.
+        /// </param>
+        /// <returns>The <see cref="string"/> encrypted into a <see cref="byte"/> array.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <para><paramref name="key"/> is <see langword="null"/>.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="initializationVector"/> is <see langword="null"/>.</para>
+        /// </exception>
+        private byte[] EncryptStringToBytes([NotNull] string input, [NotNull] byte[] key,
+                                            [NotNull] byte[] initializationVector)
+        {
+            if (key == null || key.Length <= 0)
+                throw new ArgumentNullException("key");
+            if (initializationVector == null || initializationVector.Length <= 0)
+                throw new ArgumentNullException("initializationVector");
+
+            byte[] encrypted;
+
+            using (AesCryptoServiceProvider aesCryptoServiceProvider = new AesCryptoServiceProvider())
+            {
+                aesCryptoServiceProvider.Key = key;
+                aesCryptoServiceProvider.IV = initializationVector;
+
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    // Write the IV to the beginning of the stream.
+                    msEncrypt.Write(aesCryptoServiceProvider.IV, 0, initializationVector.Length);
+
+                    using (
+                        ICryptoTransform encryptor =
+                            aesCryptoServiceProvider.CreateEncryptor(aesCryptoServiceProvider.Key,
+                                                                     aesCryptoServiceProvider.IV))
+                    {
+                        using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                        {
+                            using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                            {
+                                // Write the data to the stream.
+                                swEncrypt.Write(input);
+                            }
+
+                            encrypted = msEncrypt.ToArray();
+                        }
+                    }
+                }
+            }
+
+            return encrypted;
+        }
+
+        /// <summary>
+        /// Decrypts the array of <see cref="byte"/>s into a <see cref="string"/>.
+        /// </summary>
+        /// <param name="cipherText">The cipher text.</param>
+        /// <param name="key">The key to use in the encryption.</param>
+        /// <param name="initializationVector">
+        /// The initialization vector, see <see cref="SymmetricAlgorithm.IV"/>.
+        /// </param>
+        /// <returns>The result of the decrypted <paramref name="cipherText"/>.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <para><paramref name="key"/> was <see langword="null"/>.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="initializationVector"/> was <see langword="null"/>.</para>
+        /// </exception>
+        private string DecryptStringFromBytes([NotNull] byte[] cipherText, [NotNull] byte[] key,
+                                              [NotNull] byte[] initializationVector)
+        {
+            if (key == null || key.Length <= 0)
+                throw new ArgumentNullException("key");
+            if (initializationVector == null || initializationVector.Length <= 0)
+                throw new ArgumentNullException("initializationVector");
+
+            string decryptedText;
+
+            using (AesCryptoServiceProvider aesCryptoServiceProvider = new AesCryptoServiceProvider())
+            {
+                // Use the specified key and IV.
+                aesCryptoServiceProvider.Key = key;
+                aesCryptoServiceProvider.IV = initializationVector;
+
+                // Create the streams used for decryption.
+                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
+                {
+                    // Create a decrytor to perform the stream transform.
+                    using (
+                        ICryptoTransform decryptor =
+                            aesCryptoServiceProvider.CreateDecryptor(aesCryptoServiceProvider.Key,
+                                                                     aesCryptoServiceProvider.IV))
+                    {
+                        using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                        {
+                            using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                            {
+                                // Read the decrypted bytes from the decrypting stream.
+                                decryptedText = srDecrypt.ReadToEnd();
+                            }
+                        }
+                    }
+                }
+            }
+
+            return decryptedText;
+        }
 
         /// <summary>
         /// Tries the decrypt the encrypted text with the key specified.
@@ -330,7 +369,8 @@ namespace WebApplications.Utilities.Cryptography
         /// <see langword="true"/> if the <paramref name="cipherText"/> was decrypted successfully with the <paramref name="key"/> provided;
         /// otherwise returns <see langword="false"/>.
         /// </returns>
-        private bool TryDecryptStringFromBytes(byte[] cipherText, byte[] key, byte[] initializationVector, out string decryptedString)
+        private bool TryDecryptStringFromBytes(byte[] cipherText, byte[] key, byte[] initializationVector,
+                                               out string decryptedString)
         {
             decryptedString = null;
 
@@ -361,10 +401,10 @@ namespace WebApplications.Utilities.Cryptography
 
             // Create a key element to add to the provider element.
             KeyElement newKeyElement = new KeyElement
-            {
-                Value = newKey.Value,
-                Expiry = newKey.Expiry
-            };
+                                           {
+                                               Value = newKey.Value,
+                                               Expiry = newKey.Expiry
+                                           };
 
             _provider.Keys.Add(newKeyElement);
 
@@ -386,7 +426,8 @@ namespace WebApplications.Utilities.Cryptography
             else
             {
                 // Get the configuration object with the purpose of saving the new XML to the configuration file.
-                configurationObject = WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
+                configurationObject =
+                    WebConfigurationManager.OpenWebConfiguration(HttpContext.Current.Request.ApplicationPath);
             }
 
             // Get the <cryptography> section and set the raw XML.
@@ -406,14 +447,14 @@ namespace WebApplications.Utilities.Cryptography
         /// </returns>
         private static byte[] ConvertHexStringToByteArray(string hexString)
         {
-            if (hexString == null || hexString.Length % 2 != 0)
+            if (hexString == null || hexString.Length%2 != 0)
                 return new byte[0];
 
-            byte[] hexAsBytes = new byte[hexString.Length / 2];
+            byte[] hexAsBytes = new byte[hexString.Length/2];
 
             for (int index = 0; index < hexAsBytes.Length; index++)
             {
-                string byteValue = hexString.Substring(index * 2, 2);
+                string byteValue = hexString.Substring(index*2, 2);
                 hexAsBytes[index] = byte.Parse(byteValue, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
             }
 

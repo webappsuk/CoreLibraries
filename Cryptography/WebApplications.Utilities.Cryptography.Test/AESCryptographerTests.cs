@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,11 +36,11 @@ namespace WebApplications.Utilities.Cryptography.Test
     [TestClass]
     public class AESCryptographerTests : SerializationTestBase
     {
-        const string InputString = "Password01";
+        private const string InputString = "Password01";
         private readonly CryptoProviderWrapper _providerWrapper = new CryptoProviderWrapper("2");
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void Encrypt_NullInput_ArgumentNullException()
         {
             _providerWrapper.Encrypt(null);
@@ -39,7 +66,8 @@ namespace WebApplications.Utilities.Cryptography.Test
             string encryptedResult2 = _providerWrapper.Encrypt(InputString);
             Trace.WriteLine(encryptedResult2);
 
-            Assert.IsFalse(encryptedResult1 == encryptedResult2, "The same string should result in a different encryption result");
+            Assert.IsFalse(encryptedResult1 == encryptedResult2,
+                           "The same string should result in a different encryption result");
         }
 
         [TestMethod]
@@ -53,11 +81,12 @@ namespace WebApplications.Utilities.Cryptography.Test
             string encryptedResult2 = _providerWrapper.Encrypt(input);
             Trace.WriteLine(encryptedResult2);
 
-            Assert.IsFalse(encryptedResult1 == encryptedResult2, "The same string should result in a different encryption result");
+            Assert.IsFalse(encryptedResult1 == encryptedResult2,
+                           "The same string should result in a different encryption result");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void Encrypt_EmptyString_ArgumentNullException()
         {
             _providerWrapper.Encrypt(string.Empty);
@@ -152,7 +181,8 @@ namespace WebApplications.Utilities.Cryptography.Test
             string decryptedResult2 = _providerWrapper.Decrypt(encryptedResult2, out isLatestKey);
             Trace.WriteLine("Decrypted B: " + decryptedResult2);
 
-            Assert.AreEqual(decryptedResult1, decryptedResult2, "The same input strings should result in the same decryption result");
+            Assert.AreEqual(decryptedResult1, decryptedResult2,
+                            "The same input strings should result in the same decryption result");
         }
 
         [TestMethod]
@@ -174,11 +204,12 @@ namespace WebApplications.Utilities.Cryptography.Test
             string decryptedResult2 = _providerWrapper.Decrypt(encryptedResult2, out isLatestKey);
             Trace.WriteLine("Decrypted B: " + decryptedResult2);
 
-            Assert.AreEqual(decryptedResult1, decryptedResult2, "The same input strings should result in the same decryption result");
+            Assert.AreEqual(decryptedResult1, decryptedResult2,
+                            "The same input strings should result in the same decryption result");
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void Decrypt_NullInput_ArgumentNullException()
         {
             bool isLatestKey;
@@ -188,7 +219,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         public void Decrypt_EmptyString_ArgumentNullException()
         {
             bool isLatestKey;
@@ -198,7 +229,7 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(CryptographicException))]
+        [ExpectedException(typeof (CryptographicException))]
         public void Decrypt_NonBase32EncodedString_CryptographicException()
         {
             bool isLatestKey;
@@ -208,13 +239,14 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(CryptographicException))]
+        [ExpectedException(typeof (CryptographicException))]
         public void Decrypt_StringInputNotUsingKeysInConfiguration_CryptographicException()
         {
             bool isLatestKey;
             _providerWrapper.Decrypt("FK5WAQDPSRYDRS2UB4S86FZ747M5JT7CF6CTDAHJMTXJSMP8PK52", out isLatestKey);
 
-            Assert.Fail("CryptographicException was expected when the input was encrypted using a key not found within the configuration");
+            Assert.Fail(
+                "CryptographicException was expected when the input was encrypted using a key not found within the configuration");
         }
 
         [TestMethod]
@@ -224,7 +256,8 @@ namespace WebApplications.Utilities.Cryptography.Test
             bool? isLatestKey;
 
             _providerWrapper.Encrypt("a new key will be made now");
-            bool decrypted = _providerWrapper.TryDecrypt("FJN58QU5ZX66NCRGT6UKQ9DDZYB4DA5WBEFEWUBX9PKHS587QNZ1", out decryptedString, out isLatestKey);
+            bool decrypted = _providerWrapper.TryDecrypt("FJN58QU5ZX66NCRGT6UKQ9DDZYB4DA5WBEFEWUBX9PKHS587QNZ1",
+                                                         out decryptedString, out isLatestKey);
 
             Assert.IsFalse(isLatestKey.Value, "IsLatestKey should return false");
         }
