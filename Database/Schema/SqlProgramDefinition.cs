@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: Utilities.Database 
-// Project: Utilities.Database
-// File: SqlProgramDefinition.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -43,8 +48,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   The schema name.
         /// </summary>
-        [UsedImplicitly]
-        public readonly string SchemaName;
+        [UsedImplicitly] public readonly string SchemaName;
 
         /// <summary>
         ///   The <see cref="SqlObjectType"/> of the program.
@@ -137,7 +141,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <exception cref="ArgumentNullException">
         ///   The type of <paramref name="obj"/> is a reference type and is <see langword="null"/>.
         /// </exception>
-        public int GetHashCode([NotNull]SqlProgramDefinition obj)
+        public int GetHashCode([NotNull] SqlProgramDefinition obj)
         {
             if (obj._hashCode == null)
             {
@@ -148,7 +152,7 @@ namespace WebApplications.Utilities.Database.Schema
                         (h, p) => h ^ p.GetHashCode());
 // ReSharper restore PossibleNullReferenceException
             }
-            return (int)obj._hashCode;
+            return (int) obj._hashCode;
         }
         #endregion
 
@@ -177,7 +181,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Adds the parameter specified to the parameters collection.
         /// </summary>
         /// <param name="parameter">The parameter to add.</param>
-        internal void AddParameter([NotNull]SqlProgramParameter parameter)
+        internal void AddParameter([NotNull] SqlProgramParameter parameter)
         {
             _parameters.Add(parameter.Name, parameter);
         }
@@ -194,7 +198,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="parameterName"/> is <see langword="null"/>
         /// </exception>
-        public bool TryGetParameter([NotNull]string parameterName, out SqlProgramParameter parameter)
+        public bool TryGetParameter([NotNull] string parameterName, out SqlProgramParameter parameter)
         {
             return _parameters.TryGetValue(parameterName.ToLower(), out parameter);
         }
@@ -213,7 +217,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// <exception cref="LoggingException">Parameter counts not equal.</exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(bool validateOrder, [NotNull]params string[] parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters(bool validateOrder,
+                                                                   [NotNull] params string[] parameters)
         {
             return ValidateParameters(parameters.Select(p => new KeyValuePair<string, Type>(p, null)), validateOrder);
         }
@@ -232,7 +237,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <exception cref="LoggingException">Parameter counts not equal.</exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull]IEnumerable<string> parameters,
+        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<string> parameters,
                                                                    bool validateOrder = false)
         {
             return ValidateParameters(parameters.Select(p => new KeyValuePair<string, Type>(p, null)), validateOrder);
@@ -251,7 +256,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull]params Type[] parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] params Type[] parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, Type>(null, t)), true);
         }
@@ -269,7 +274,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull]IEnumerable<Type> parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<Type> parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, Type>(null, t)), true);
         }
@@ -334,7 +339,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull]IEnumerable<string> names, [NotNull]params Type[] types)
+        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<string> names,
+                                                                   [NotNull] params Type[] types)
         {
             // Validate the parameters
             return ValidateParameters(ToKVP(names, types));
@@ -364,8 +370,9 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull]IEnumerable<KeyValuePair<string, Type>> parameters,
-                                                                   bool validateOrder = false)
+        public IEnumerable<SqlProgramParameter> ValidateParameters(
+            [NotNull] IEnumerable<KeyValuePair<string, Type>> parameters,
+            bool validateOrder = false)
         {
             int sCount;
 
@@ -490,7 +497,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </returns>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull]params SqlDbType[] parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] params SqlDbType[] parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, SqlDbType>(null, t)), true);
         }
@@ -504,7 +511,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>The parameters that were validated (in the order specified).</returns>
         [NotNull]
         [UsedImplicitly]
-        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull]IEnumerable<SqlDbType> parameters)
+        public IEnumerable<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<SqlDbType> parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, SqlDbType>(null, t)), true);
         }
@@ -535,7 +542,7 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         [UsedImplicitly]
         public IEnumerable<SqlProgramParameter> ValidateParameters(
-            [NotNull]IEnumerable<KeyValuePair<string, SqlDbType>> parameters,
+            [NotNull] IEnumerable<KeyValuePair<string, SqlDbType>> parameters,
             bool validateOrder = false)
         {
             int sCount;

@@ -1,3 +1,30 @@
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -5,13 +32,14 @@ using System.Linq;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
+using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
 namespace WebApplications.Utilities.Database.Configuration
 {
     /// <summary>
     ///   An element that represents a database.
     /// </summary>
-    public partial class DatabaseElement : Utilities.Configuration.ConfigurationElement
+    public partial class DatabaseElement : ConfigurationElement
     {
         /// <summary>
         ///   Gets or sets the identifier for a database.
@@ -19,7 +47,7 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <value>
         ///   The identifier for this database.
         /// </value>
-        /// <exception cref="ConfigurationErrorsException">
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("id", IsRequired = true, IsKey = true)]
@@ -36,7 +64,7 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <value>
         ///   <see langword="true"/> if the database is enabled; otherwise <see langword="false"/>.
         /// </value>
-        /// <exception cref="ConfigurationErrorsException">
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("enabled", DefaultValue = true, IsRequired = false)]
@@ -50,11 +78,11 @@ namespace WebApplications.Utilities.Database.Configuration
         ///   Gets or sets the connections for this database.
         /// </summary>
         /// <value>The connections.</value>
-        /// <exception cref="ConfigurationErrorsException">
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("connections", IsRequired = true, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof(LoadBalancedConnectionCollection))]
+        [ConfigurationCollection(typeof (LoadBalancedConnectionCollection))]
         [NotNull]
         public LoadBalancedConnectionCollection Connections
         {
@@ -68,11 +96,12 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <value>
         ///   The stored procedures and functions for this database.
         /// </value>
-        /// <exception cref="ConfigurationErrorsException">
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
         [ConfigurationProperty("programs", IsRequired = false, IsDefaultCollection = false)]
-        [ConfigurationCollection(typeof(ProgramCollection), CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
+        [ConfigurationCollection(typeof (ProgramCollection),
+            CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
         [NotNull]
         public ProgramCollection Programs
         {
@@ -81,7 +110,7 @@ namespace WebApplications.Utilities.Database.Configuration
         }
 
         /// <summary>
-        ///   Used to initialize a default set of values for the <see cref="ConfigurationElement"/> object.
+        ///   Used to initialize a default set of values for the <see cref="System.Configuration.ConfigurationElement"/> object.
         /// </summary>
         /// <remarks>
         ///   Called to set the internal state to appropriate default values.
@@ -132,15 +161,15 @@ namespace WebApplications.Utilities.Database.Configuration
             TypeConstraintMode? constraintMode = null)
         {
             // Grab the default load balanced connection for the database.
-            LoadBalancedConnectionElement connection = this.Connections.FirstOrDefault(c => c.Enabled);
+            LoadBalancedConnectionElement connection = Connections.FirstOrDefault(c => c.Enabled);
 
             if (connection == null)
                 throw new LoggingException(
                     Resources.DatabaseElement_GetSqlProgram_DefaultLoadBalanceConnectionNotFound,
                     LogLevel.Error, Id);
-            
+
             // Look for program mapping information
-            ProgramElement prog = this.Programs[name];
+            ProgramElement prog = Programs[name];
             if (prog != null)
             {
                 // Check for name mapping
@@ -155,7 +184,7 @@ namespace WebApplications.Utilities.Database.Configuration
 
                 if (!String.IsNullOrEmpty(prog.Connection))
                 {
-                    connection = this.Connections[prog.Connection];
+                    connection = Connections[prog.Connection];
                     if ((connection == null) ||
                         (!connection.Enabled))
                         throw new LoggingException(
@@ -169,16 +198,16 @@ namespace WebApplications.Utilities.Database.Configuration
                 {
                     parameters = parameters
                         .Select(kvp =>
-                        {
-                            ParameterElement param = prog.Parameters[kvp.Key];
-                            if (param == null) return kvp;
-                            if (String.IsNullOrWhiteSpace(param.MapTo))
-                                throw new LoggingException(
-                                    Resources.DatabaseElement_GetSqlProgram_MappingNotSpecified,
-                                    LogLevel.Error, kvp.Key, prog.Name);
+                                    {
+                                        ParameterElement param = prog.Parameters[kvp.Key];
+                                        if (param == null) return kvp;
+                                        if (String.IsNullOrWhiteSpace(param.MapTo))
+                                            throw new LoggingException(
+                                                Resources.DatabaseElement_GetSqlProgram_MappingNotSpecified,
+                                                LogLevel.Error, kvp.Key, prog.Name);
 
-                            return new KeyValuePair<string, Type>(param.MapTo, kvp.Value);
-                        }).ToList();
+                                        return new KeyValuePair<string, Type>(param.MapTo, kvp.Value);
+                                    }).ToList();
                 }
             }
 

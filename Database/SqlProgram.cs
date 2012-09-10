@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: Utilities.Database 
-// Project: Utilities.Database
-// File: SqlProgram.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -41,35 +46,30 @@ namespace WebApplications.Utilities.Database
     public class SqlProgram
     {
         /// <summary>
-        ///   The name of the stored procedure or function.
-        /// </summary>
-        [NotNull]
-        public readonly string Name;
-
-        /// <summary>
-        ///   The parameters required by this <see cref="SqlProgram"/> (if specified).
-        /// </summary>
-        [UsedImplicitly]
-        [NotNull]
-        public readonly IEnumerable<KeyValuePair<string, Type>> Parameters;
-
-        /// <summary>
         ///   The <see cref="TypeConstraintMode">type constraint mode</see>,
         ///   determines what happens if truncation or loss of precision occurs.
         /// </summary>
         public readonly TypeConstraintMode ConstraintMode;
 
         /// <summary>
+        ///   The name of the stored procedure or function.
+        /// </summary>
+        [NotNull] public readonly string Name;
+
+        /// <summary>
+        ///   The parameters required by this <see cref="SqlProgram"/> (if specified).
+        /// </summary>
+        [UsedImplicitly] [NotNull] public readonly IEnumerable<KeyValuePair<string, Type>> Parameters;
+
+        /// <summary>
         ///   The <see cref="LoadBalancedConnection">load balanced connection</see>.
         /// </summary>
-        [NotNull]
-        private readonly LoadBalancedConnection _connection;
+        [NotNull] private readonly LoadBalancedConnection _connection;
 
         /// <summary>
         ///  A lock object to prevent multiple validations at the same time.
         /// </summary>
-        [NotNull]
-        private readonly object _validationLock = new object();
+        [NotNull] private readonly object _validationLock = new object();
 
         /// <summary>
         ///   The default command timeout to use.
@@ -95,10 +95,31 @@ namespace WebApplications.Utilities.Database
                 if (_defaultCommandTimeout == value)
                     return;
                 _defaultCommandTimeout = value < TimeSpan.Zero
-                                        ? TimeSpan.FromSeconds(30)
-                                        : value;
+                                             ? TimeSpan.FromSeconds(30)
+                                             : value;
             }
         }
+
+        /// <summary>
+        ///   Holds the <see cref="SqlProgramParameter">parameter definitions</see> that are used by this <see cref="SqlProgram"/>
+        /// </summary>
+        [UsedImplicitly]
+        [NotNull]
+        protected IEnumerable<SqlProgramParameter> ProgramParameters { get; private set; }
+
+        /// <summary>
+        ///   The underlying <see cref="SqlProgramDefinition">program definition</see>.
+        /// </summary>
+        [NotNull]
+        public SqlProgramDefinition Definition { get; private set; }
+
+        /// <summary>
+        ///   Gets the validation error (if any).
+        /// </summary>
+        /// <value>
+        ///   Any errors that occurred during program <see cref="Validate">validation</see>.
+        /// </value>
+        public LoggingException ValidationError { get; private set; }
 
         #region Constructors
         /// <summary>
@@ -144,7 +165,9 @@ namespace WebApplications.Utilities.Database
             bool checkOrder = false,
             TimeSpan? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
-            : this(new LoadBalancedConnection(connectionString), name, parameters, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode)
+            : this(
+                new LoadBalancedConnection(connectionString), name, parameters, ignoreValidationErrors, checkOrder,
+                defaultCommandTimeout, constraintMode)
         {
             Contract.Requires(connectionString != null, Resources.SqlProgram_ConnectionStringCanNotBeNull);
             Contract.Requires(name != null, Resources.SqlProgram_NameCanNotBeNull);
@@ -206,7 +229,7 @@ namespace WebApplications.Utilities.Database
 
             DefaultCommandTimeout = (defaultCommandTimeout == null || defaultCommandTimeout < TimeSpan.Zero)
                                         ? TimeSpan.FromSeconds(30)
-                                        : (TimeSpan)defaultCommandTimeout;
+                                        : (TimeSpan) defaultCommandTimeout;
 
             ConstraintMode = constraintMode;
 
@@ -255,7 +278,7 @@ namespace WebApplications.Utilities.Database
                 true,
                 defaultCommandTimeout,
                 constraintMode
-            )
+                )
         {
         }
 
@@ -334,7 +357,7 @@ namespace WebApplications.Utilities.Database
             if (defaultCommandTimeout == null)
                 DefaultCommandTimeout = program.DefaultCommandTimeout;
             else
-                DefaultCommandTimeout = (TimeSpan)defaultCommandTimeout;
+                DefaultCommandTimeout = (TimeSpan) defaultCommandTimeout;
             ConstraintMode = constraintMode;
             Parameters = parameters;
             LoggingException error = Validate(checkOrder);
@@ -383,7 +406,8 @@ namespace WebApplications.Utilities.Database
             [NotNull] params Type[] parameterTypes)
             : this(
                 connection, name,
-                parameterTypes.Select(t => new KeyValuePair<string, Type>(null, t)), ignoreValidationErrors, true, defaultCommandTimeout, constraintMode)
+                parameterTypes.Select(t => new KeyValuePair<string, Type>(null, t)), ignoreValidationErrors, true,
+                defaultCommandTimeout, constraintMode)
         {
         }
 
@@ -431,31 +455,12 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode constraintMode,
             [NotNull] IEnumerable<string> parameterNames,
             [NotNull] params Type[] parameterTypes)
-            : this(connection, name, SqlProgramDefinition.ToKVP(parameterNames, parameterTypes), ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode)
+            : this(
+                connection, name, SqlProgramDefinition.ToKVP(parameterNames, parameterTypes), ignoreValidationErrors,
+                checkOrder, defaultCommandTimeout, constraintMode)
         {
         }
         #endregion
-
-        /// <summary>
-        ///   Holds the <see cref="SqlProgramParameter">parameter definitions</see> that are used by this <see cref="SqlProgram"/>
-        /// </summary>
-        [UsedImplicitly]
-        [NotNull]
-        protected IEnumerable<SqlProgramParameter> ProgramParameters { get; private set; }
-
-        /// <summary>
-        ///   The underlying <see cref="SqlProgramDefinition">program definition</see>.
-        /// </summary>
-        [NotNull]
-        public SqlProgramDefinition Definition { get; private set; }
-
-        /// <summary>
-        ///   Gets the validation error (if any).
-        /// </summary>
-        /// <value>
-        ///   Any errors that occurred during program <see cref="Validate">validation</see>.
-        /// </value>
-        public LoggingException ValidationError { get; private set; }
 
         /// <summary>
         ///   Re-validates the <see cref="SqlProgram">SQL Program</see>.
@@ -568,7 +573,7 @@ namespace WebApplications.Utilities.Database
             return new SqlProgramCommand(this, _connection.CreateConnection(),
                                          (timeout == null || timeout < TimeSpan.Zero)
                                              ? DefaultCommandTimeout
-                                             : (TimeSpan)timeout);
+                                             : (TimeSpan) timeout);
         }
 
         /// <summary>
@@ -597,15 +602,15 @@ namespace WebApplications.Utilities.Database
         {
             TimeSpan t = (timeout == null || timeout < TimeSpan.Zero)
                              ? DefaultCommandTimeout
-                             : (TimeSpan)timeout;
+                             : (TimeSpan) timeout;
             return
                 _connection.Select(
                     connectionString =>
-                    {
-                        SqlConnection connection = new SqlConnection(connectionString);
-                        connection.Open();
-                        return new SqlProgramCommand(this, connection, t);
-                    }).ToList
+                        {
+                            SqlConnection connection = new SqlConnection(connectionString);
+                            connection.Open();
+                            return new SqlProgramCommand(this, connection, t);
+                        }).ToList
                     ();
         }
 
@@ -782,51 +787,52 @@ namespace WebApplications.Utilities.Database
             [NotNull] Func<TTaskResult, TResult> function,
             [CanBeNull] object state)
         {
-            TaskCompletionSource<IEnumerable<TResult>> taskCompletion = new TaskCompletionSource<IEnumerable<TResult>>(state);
+            TaskCompletionSource<IEnumerable<TResult>> taskCompletion =
+                new TaskCompletionSource<IEnumerable<TResult>>(state);
             // Create tasks.
             return await Task<IEnumerable<TResult>>.Factory.ContinueWhenAll(
                 _connection.Select(
                     connectionString =>
-                    {
-                        // Create and open a connection
-                        SqlConnection connection = new SqlConnection(connectionString);
-                        connection.Open();
-
-                        SqlProgramCommand command = new SqlProgramCommand(this, connection, DefaultCommandTimeout);
-                        try
                         {
-                            if (setParameters != null)
-                                setParameters(command);
-                        }
-                        catch (Exception exception)
-                        {
-                            throw new SqlProgramExecutionException(this, exception);
-                        }
-                        return taskCreator(command)
-                            .ContinueWith(t =>
-                                              {
-                                                  if (!t.IsCompleted)
-                                                      return default(TResult);
+                            // Create and open a connection
+                            SqlConnection connection = new SqlConnection(connectionString);
+                            connection.Open();
 
-                                                  try
+                            SqlProgramCommand command = new SqlProgramCommand(this, connection, DefaultCommandTimeout);
+                            try
+                            {
+                                if (setParameters != null)
+                                    setParameters(command);
+                            }
+                            catch (Exception exception)
+                            {
+                                throw new SqlProgramExecutionException(this, exception);
+                            }
+                            return taskCreator(command)
+                                .ContinueWith(t =>
                                                   {
-                                                      return function(t.Result);
-                                                  }
-                                                  finally
-                                                  {
-                                                      // This will also dispose of the connection
-                                                      command.Dispose();
-                                                  }
-                                              },
-                                          TaskContinuationOptions.ExecuteSynchronously);
-                    }).ToArray(),
+                                                      if (!t.IsCompleted)
+                                                          return default(TResult);
+
+                                                      try
+                                                      {
+                                                          return function(t.Result);
+                                                      }
+                                                      finally
+                                                      {
+                                                          // This will also dispose of the connection
+                                                          command.Dispose();
+                                                      }
+                                                  },
+                                              TaskContinuationOptions.ExecuteSynchronously);
+                        }).ToArray(),
                 tasks =>
-                {
-                    // Propagate all exceptions and mark all faulted tasks as observed.
-                    Task.WaitAll(tasks);
+                    {
+                        // Propagate all exceptions and mark all faulted tasks as observed.
+                        Task.WaitAll(tasks);
 
-                    return tasks.Select(t => t.Result);
-                });
+                        return tasks.Select(t => t.Result);
+                    });
         }
 
         #region ExecuteScalar and ExecuteScalarAll overloads
@@ -850,7 +856,7 @@ namespace WebApplications.Utilities.Database
         [CanBeNull]
         public T ExecuteScalar<T>()
         {
-            return ExecuteScalar<T>((Action<SqlProgramCommand>)null);
+            return ExecuteScalar<T>(null);
         }
 
         /// <summary>
@@ -882,7 +888,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<T> ExecuteScalarAll<T>()
         {
-            return ExecuteScalarAll<T>((Action<SqlProgramCommand>)null);
+            return ExecuteScalarAll<T>(null);
         }
 
         /// <summary>
@@ -1015,7 +1021,7 @@ namespace WebApplications.Utilities.Database
         [CanBeNull]
         public async Task<T> ExecuteScalarAsync<T>(object state = null)
         {
-            return await ExecuteScalarAsync<T>((Action<SqlProgramCommand>)null, state);
+            return await ExecuteScalarAsync<T>(null, state);
         }
 
         /// <summary>
@@ -1044,7 +1050,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public async Task<IEnumerable<T>> ExecuteScalarAllAsync<T>(object state = null)
         {
-            return await ExecuteScalarAllAsync<T>((Action<SqlProgramCommand>)null, state);
+            return await ExecuteScalarAllAsync<T>(null, state);
         }
 
         /// <summary>
@@ -1079,12 +1085,14 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         [CanBeNull]
-        public async Task<T> ExecuteScalarAsync<T>([CanBeNull] Action<SqlProgramCommand> setParameters, object state = null)
+        public async Task<T> ExecuteScalarAsync<T>([CanBeNull] Action<SqlProgramCommand> setParameters,
+                                                   object state = null)
         {
-            return await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
-                                setParameters,
-                                c => c.ExecuteScalarAsync<T>(state),
-                                state);
+            return
+                await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
+                                   setParameters,
+                                   c => c.ExecuteScalarAsync<T>(state),
+                                   state);
         }
 
         /// <summary>
@@ -1118,7 +1126,8 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         [NotNull]
-        public async Task<IEnumerable<T>> ExecuteScalarAllAsync<T>([CanBeNull] Action<SqlProgramCommand> setParameters, object state = null)
+        public async Task<IEnumerable<T>> ExecuteScalarAllAsync<T>([CanBeNull] Action<SqlProgramCommand> setParameters,
+                                                                   object state = null)
         {
             return await ExecuteAllAsync(setParameters, c => c.ExecuteScalarAsync<T>(state), state);
         }
@@ -1142,7 +1151,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public int ExecuteNonQuery()
         {
-            return ExecuteNonQuery((Action<SqlProgramCommand>)null);
+            return ExecuteNonQuery(null);
         }
 
         /// <summary>
@@ -1163,7 +1172,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<int> ExecuteNonQueryAll()
         {
-            return ExecuteNonQueryAll((Action<SqlProgramCommand>)null);
+            return ExecuteNonQueryAll(null);
         }
 
         /// <summary>
@@ -1273,7 +1282,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public async Task<int> ExecuteNonQueryAsync(object state = null)
         {
-            return await ExecuteNonQueryAsync((Action<SqlProgramCommand>)null, state);
+            return await ExecuteNonQueryAsync(null, state);
         }
 
         /// <summary>
@@ -1298,7 +1307,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public async Task<IEnumerable<int>> ExecuteNonQueryAllAsync(object state = null)
         {
-            return await ExecuteNonQueryAllAsync((Action<SqlProgramCommand>)null, state);
+            return await ExecuteNonQueryAllAsync(null, state);
         }
 
         /// <summary>
@@ -1333,11 +1342,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
         [UsedImplicitly]
-        public async Task<int> ExecuteNonQueryAsync([CanBeNull] Action<SqlProgramCommand> setParameters, object state = null)
+        public async Task<int> ExecuteNonQueryAsync([CanBeNull] Action<SqlProgramCommand> setParameters,
+                                                    object state = null)
         {
-            return await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
-                                setParameters,
-                                c => c.ExecuteNonQueryAsync(state), state);
+            return
+                await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
+                                   setParameters,
+                                   c => c.ExecuteNonQueryAsync(state), state);
         }
 
         /// <summary>
@@ -1364,7 +1375,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         [NotNull]
         public async Task<IEnumerable<int>> ExecuteNonQueryAllAsync([CanBeNull] Action<SqlProgramCommand> setParameters,
-                                                              object state = null)
+                                                                    object state = null)
         {
             return await ExecuteAllAsync(setParameters, c => c.ExecuteNonQueryAsync(state), state);
         }
@@ -1387,7 +1398,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public void ExecuteReader()
         {
-            ExecuteNonQuery((Action<SqlProgramCommand>)null);
+            ExecuteNonQuery(null);
         }
 
         /// <summary>
@@ -1406,7 +1417,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public void ExecuteReaderAll()
         {
-            ExecuteNonQueryAll((Action<SqlProgramCommand>)null);
+            ExecuteNonQueryAll(null);
         }
 
         /// <summary>
@@ -1428,7 +1439,7 @@ namespace WebApplications.Utilities.Database
         [CanBeNull]
         public T ExecuteReader<T>()
         {
-            return ExecuteScalar<T>((Action<SqlProgramCommand>)null);
+            return ExecuteScalar<T>(null);
         }
 
         /// <summary>
@@ -1452,7 +1463,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<T> ExecuteReaderAll<T>()
         {
-            return ExecuteScalarAll<T>((Action<SqlProgramCommand>)null);
+            return ExecuteScalarAll<T>(null);
         }
 
         /// <summary>
@@ -1504,7 +1515,7 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         public void ExecuteReaderAll([NotNull] Action<SqlDataReader> resultAction,
-                                  CommandBehavior behavior = CommandBehavior.Default)
+                                     CommandBehavior behavior = CommandBehavior.Default)
         {
             ExecuteReaderAll(null, resultAction, behavior);
         }
@@ -1571,7 +1582,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         [CanBeNull]
         public IEnumerable<T> ExecuteReaderAll<T>([NotNull] Func<SqlDataReader, T> resultFunc,
-                                  CommandBehavior behavior = CommandBehavior.Default)
+                                                  CommandBehavior behavior = CommandBehavior.Default)
         {
             return ExecuteReaderAll(null, resultFunc, behavior);
         }
@@ -1852,7 +1863,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public async Task ExecuteReaderAsync(object state = null)
         {
-            await ExecuteNonQueryAsync((Action<SqlProgramCommand>)null, state);
+            await ExecuteNonQueryAsync(null, state);
         }
 
         /// <summary>
@@ -1871,7 +1882,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public async Task ExecuteReaderAllAsync(object state = null)
         {
-            await ExecuteNonQueryAllAsync((Action<SqlProgramCommand>)null, state);
+            await ExecuteNonQueryAllAsync(null, state);
         }
 
         /// <summary>
@@ -1893,7 +1904,7 @@ namespace WebApplications.Utilities.Database
         [CanBeNull]
         public async Task<T> ExecuteReaderAsync<T>(object state = null)
         {
-            return await ExecuteScalarAsync<T>((Action<SqlProgramCommand>)null, state);
+            return await ExecuteScalarAsync<T>(null, state);
         }
 
         /// <summary>
@@ -1915,7 +1926,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public async Task<IEnumerable<T>> ExecuteReaderAllAsync<T>(object state = null)
         {
-            return await ExecuteScalarAllAsync<T>((Action<SqlProgramCommand>)null, state);
+            return await ExecuteScalarAllAsync<T>(null, state);
         }
 
         /// <summary>
@@ -1936,8 +1947,8 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         public async Task ExecuteReaderAsync([NotNull] Action<SqlDataReader> resultAction,
-                                  CommandBehavior behavior = CommandBehavior.Default,
-                                       object state = null)
+                                             CommandBehavior behavior = CommandBehavior.Default,
+                                             object state = null)
         {
             await ExecuteReaderAsync(null, resultAction, behavior, state);
         }
@@ -1960,8 +1971,8 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         public async Task ExecuteReaderAllAsync([NotNull] Action<SqlDataReader> resultAction,
-                                  CommandBehavior behavior = CommandBehavior.Default,
-                                       object state = null)
+                                                CommandBehavior behavior = CommandBehavior.Default,
+                                                object state = null)
         {
             await ExecuteReaderAllAsync(null, resultAction, behavior, state);
         }
@@ -1987,8 +1998,8 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         [CanBeNull]
         public async Task<T> ExecuteReaderAsync<T>([NotNull] Func<SqlDataReader, T> resultFunc,
-                                  CommandBehavior behavior = CommandBehavior.Default,
-                                       object state = null)
+                                                   CommandBehavior behavior = CommandBehavior.Default,
+                                                   object state = null)
         {
             return await ExecuteReaderAsync(null, resultFunc, behavior, state);
         }
@@ -2014,8 +2025,8 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         [CanBeNull]
         public async Task<IEnumerable<T>> ExecuteReaderAllAsync<T>([NotNull] Func<SqlDataReader, T> resultFunc,
-                                  CommandBehavior behavior = CommandBehavior.Default,
-                                       object state = null)
+                                                                   CommandBehavior behavior = CommandBehavior.Default,
+                                                                   object state = null)
         {
             return await ExecuteReaderAllAsync(null, resultFunc, behavior, state);
         }
@@ -2039,29 +2050,29 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         public async Task ExecuteReaderAsync([CanBeNull] Action<SqlProgramCommand> setParameters,
-                                       [CanBeNull] Action<SqlDataReader> resultAction = null,
-                                       CommandBehavior behavior = CommandBehavior.Default,
-                                       object state = null)
+                                             [CanBeNull] Action<SqlDataReader> resultAction = null,
+                                             CommandBehavior behavior = CommandBehavior.Default,
+                                             object state = null)
         {
             // If there's no action, we can execute non query!
             if (resultAction == null)
                 await ExecuteNonQueryAsync(setParameters, state);
             else
                 await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
-                                setParameters,
-                                c => c.ExecuteReaderAsync(behavior, state),
-                                r =>
-                                {
-                                    try
-                                    {
-                                        resultAction(r);
-                                        return true;
-                                    }
-                                    finally
-                                    {
-                                        r.Dispose();
-                                    }
-                                }, state);
+                                   setParameters,
+                                   c => c.ExecuteReaderAsync(behavior, state),
+                                   r =>
+                                       {
+                                           try
+                                           {
+                                               resultAction(r);
+                                               return true;
+                                           }
+                                           finally
+                                           {
+                                               r.Dispose();
+                                           }
+                                       }, state);
         }
 
         /// <summary>
@@ -2083,28 +2094,28 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         public async Task ExecuteReaderAllAsync([CanBeNull] Action<SqlProgramCommand> setParameters,
-                                          [CanBeNull] Action<SqlDataReader> resultAction = null,
-                                          CommandBehavior behavior = CommandBehavior.Default,
-                                          object state = null)
+                                                [CanBeNull] Action<SqlDataReader> resultAction = null,
+                                                CommandBehavior behavior = CommandBehavior.Default,
+                                                object state = null)
         {
             // If there's no action, we can execute non query!
             if (resultAction == null)
                 await ExecuteNonQueryAllAsync(setParameters, state);
             else
                 await ExecuteAllAsync(setParameters,
-                                   c => c.ExecuteReaderAsync(behavior, state),
-                                   r =>
-                                   {
-                                       try
-                                       {
-                                           resultAction(r);
-                                           return true;
-                                       }
-                                       finally
-                                       {
-                                           r.Dispose();
-                                       }
-                                   }, state);
+                                      c => c.ExecuteReaderAsync(behavior, state),
+                                      r =>
+                                          {
+                                              try
+                                              {
+                                                  resultAction(r);
+                                                  return true;
+                                              }
+                                              finally
+                                              {
+                                                  r.Dispose();
+                                              }
+                                          }, state);
         }
 
         /// <summary>
@@ -2129,28 +2140,29 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         [CanBeNull]
         public async Task<T> ExecuteReaderAsync<T>([CanBeNull] Action<SqlProgramCommand> setParameters,
-                                             [CanBeNull] Func<SqlDataReader, T> resultFunc = null,
-                                             CommandBehavior behavior = CommandBehavior.Default,
-                                             object state = null)
+                                                   [CanBeNull] Func<SqlDataReader, T> resultFunc = null,
+                                                   CommandBehavior behavior = CommandBehavior.Default,
+                                                   object state = null)
         {
             // If there's no function, execute scalar.
             if (resultFunc == null)
                 return await ExecuteScalarAsync<T>(setParameters, state);
 
-            return await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
-                                setParameters,
-                                c => c.ExecuteReaderAsync(behavior, state),
-                                r =>
-                                {
-                                    try
-                                    {
-                                        return resultFunc(r);
-                                    }
-                                    finally
-                                    {
-                                        r.Dispose();
-                                    }
-                                }, state);
+            return
+                await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
+                                   setParameters,
+                                   c => c.ExecuteReaderAsync(behavior, state),
+                                   r =>
+                                       {
+                                           try
+                                           {
+                                               return resultFunc(r);
+                                           }
+                                           finally
+                                           {
+                                               r.Dispose();
+                                           }
+                                       }, state);
         }
 
         /// <summary>
@@ -2175,27 +2187,27 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         [NotNull]
         public async Task<IEnumerable<T>> ExecuteReaderAllAsync<T>([CanBeNull] Action<SqlProgramCommand> setParameters,
-                                                             [CanBeNull] Func<SqlDataReader, T> resultFunc = null,
-                                                             CommandBehavior behavior = CommandBehavior.Default,
-                                                             object state = null)
+                                                                   [CanBeNull] Func<SqlDataReader, T> resultFunc = null,
+                                                                   CommandBehavior behavior = CommandBehavior.Default,
+                                                                   object state = null)
         {
             // If there's no function, execute scalar.
             if (resultFunc == null)
                 return await ExecuteScalarAllAsync<T>(setParameters, state);
 
             return await ExecuteAllAsync(setParameters,
-                                   c => c.ExecuteReaderAsync(behavior, state),
-                                   r =>
-                                   {
-                                       try
-                                       {
-                                           return resultFunc(r);
-                                       }
-                                       finally
-                                       {
-                                           r.Dispose();
-                                       }
-                                   }, state);
+                                         c => c.ExecuteReaderAsync(behavior, state),
+                                         r =>
+                                             {
+                                                 try
+                                                 {
+                                                     return resultFunc(r);
+                                                 }
+                                                 finally
+                                                 {
+                                                     r.Dispose();
+                                                 }
+                                             }, state);
         }
         #endregion
 
@@ -2216,7 +2228,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public void ExecuteXmlReader()
         {
-            ExecuteNonQuery((Action<SqlProgramCommand>)null);
+            ExecuteNonQuery(null);
         }
 
         /// <summary>
@@ -2235,7 +2247,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public void ExecuteXmlReaderAll()
         {
-            ExecuteNonQueryAll((Action<SqlProgramCommand>)null);
+            ExecuteNonQueryAll(null);
         }
 
         /// <summary>
@@ -2257,7 +2269,7 @@ namespace WebApplications.Utilities.Database
         [CanBeNull]
         public T ExecuteXmlReader<T>()
         {
-            return ExecuteScalar<T>((Action<SqlProgramCommand>)null);
+            return ExecuteScalar<T>(null);
         }
 
         /// <summary>
@@ -2279,7 +2291,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<T> ExecuteXmlReaderAll<T>()
         {
-            return ExecuteScalarAll<T>((Action<SqlProgramCommand>)null);
+            return ExecuteScalarAll<T>(null);
         }
 
         /// <summary>
@@ -2599,7 +2611,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public async Task ExecuteXmlReaderAsync(object state = null)
         {
-            await ExecuteNonQueryAsync((Action<SqlProgramCommand>)null, state);
+            await ExecuteNonQueryAsync(null, state);
         }
 
         /// <summary>
@@ -2619,7 +2631,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         public async Task ExecuteXmlReaderAllAsync(object state = null)
         {
-            await ExecuteNonQueryAllAsync((Action<SqlProgramCommand>)null, state);
+            await ExecuteNonQueryAllAsync(null, state);
         }
 
         /// <summary>
@@ -2642,7 +2654,7 @@ namespace WebApplications.Utilities.Database
         [CanBeNull]
         public async Task<T> ExecuteXmlReaderAsync<T>(object state = null)
         {
-            return await ExecuteScalarAsync<T>((Action<SqlProgramCommand>)null, state);
+            return await ExecuteScalarAsync<T>(null, state);
         }
 
         /// <summary>
@@ -2664,7 +2676,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public async Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(object state = null)
         {
-            return await ExecuteScalarAllAsync<T>((Action<SqlProgramCommand>)null, state);
+            return await ExecuteScalarAllAsync<T>(null, state);
         }
 
         /// <summary>
@@ -2684,7 +2696,7 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         public async Task ExecuteXmlReaderAsync([NotNull] Action<XmlReader> resultAction,
-                                       object state = null)
+                                                object state = null)
         {
             await ExecuteXmlReaderAsync(null, resultAction, state);
         }
@@ -2706,7 +2718,7 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         public async Task ExecuteXmlReaderAllAsync([NotNull] Action<XmlReader> resultAction,
-                                       object state = null)
+                                                   object state = null)
         {
             await ExecuteXmlReaderAllAsync(null, resultAction, state);
         }
@@ -2731,7 +2743,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         [CanBeNull]
         public async Task<T> ExecuteXmlReaderAsync<T>([NotNull] Func<XmlReader, T> resultFunc,
-                                       object state = null)
+                                                      object state = null)
         {
             return await ExecuteXmlReaderAsync(null, resultFunc, state);
         }
@@ -2756,7 +2768,7 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         [CanBeNull]
         public async Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>([NotNull] Func<XmlReader, T> resultFunc,
-                                       object state = null)
+                                                                      object state = null)
         {
             return await ExecuteXmlReaderAllAsync(null, resultFunc, state);
         }
@@ -2779,27 +2791,27 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         public async Task ExecuteXmlReaderAsync([CanBeNull] Action<SqlProgramCommand> setParameters,
-                                          [CanBeNull] Action<XmlReader> resultAction = null, object state = null)
+                                                [CanBeNull] Action<XmlReader> resultAction = null, object state = null)
         {
             // If there's no action, we can execute non query!
             if (resultAction == null)
                 await ExecuteNonQueryAsync(setParameters, state);
             else
                 await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
-                                    setParameters,
-                                    c => c.ExecuteXmlReaderAsync(state),
-                                    r =>
-                                    {
-                                        try
-                                        {
-                                            resultAction(r);
-                                            return true;
-                                        }
-                                        finally
-                                        {
-                                            r.Close();
-                                        }
-                                    }, state);
+                                   setParameters,
+                                   c => c.ExecuteXmlReaderAsync(state),
+                                   r =>
+                                       {
+                                           try
+                                           {
+                                               resultAction(r);
+                                               return true;
+                                           }
+                                           finally
+                                           {
+                                               r.Close();
+                                           }
+                                       }, state);
         }
 
         /// <summary>
@@ -2820,25 +2832,26 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         public async Task ExecuteXmlReaderAllAsync([CanBeNull] Action<SqlProgramCommand> setParameters,
-                                             [CanBeNull] Action<XmlReader> resultAction = null, object state = null)
+                                                   [CanBeNull] Action<XmlReader> resultAction = null,
+                                                   object state = null)
         {
             // If there's no action, we can execute non query!
             if (resultAction == null)
                 await ExecuteNonQueryAllAsync(setParameters, state);
             else
                 await ExecuteAllAsync(setParameters, c => c.ExecuteXmlReaderAsync(state),
-                                   r =>
-                                   {
-                                       try
-                                       {
-                                           resultAction(r);
-                                           return true;
-                                       }
-                                       finally
-                                       {
-                                           r.Close();
-                                       }
-                                   }, state);
+                                      r =>
+                                          {
+                                              try
+                                              {
+                                                  resultAction(r);
+                                                  return true;
+                                              }
+                                              finally
+                                              {
+                                                  r.Close();
+                                              }
+                                          }, state);
         }
 
         /// <summary>
@@ -2862,27 +2875,28 @@ namespace WebApplications.Utilities.Database
         [UsedImplicitly]
         [CanBeNull]
         public async Task<T> ExecuteXmlReaderAsync<T>([CanBeNull] Action<SqlProgramCommand> setParameters,
-                                                [CanBeNull] Func<XmlReader, T> resultFunc = null,
-                                                object state = null)
+                                                      [CanBeNull] Func<XmlReader, T> resultFunc = null,
+                                                      object state = null)
         {
             // If there's no function, execute scalar.
             if (resultFunc == null)
                 return await ExecuteScalarAsync<T>(setParameters, state);
 
-            return await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
-                                setParameters,
-                                c => c.ExecuteXmlReaderAsync(state),
-                                r =>
-                                {
-                                    try
-                                    {
-                                        return resultFunc(r);
-                                    }
-                                    finally
-                                    {
-                                        r.Close();
-                                    }
-                                }, state);
+            return
+                await ExecuteAsync(new SqlProgramCommand(this, _connection.CreateConnection(), DefaultCommandTimeout),
+                                   setParameters,
+                                   c => c.ExecuteXmlReaderAsync(state),
+                                   r =>
+                                       {
+                                           try
+                                           {
+                                               return resultFunc(r);
+                                           }
+                                           finally
+                                           {
+                                               r.Close();
+                                           }
+                                       }, state);
         }
 
         /// <summary>
@@ -2905,27 +2919,28 @@ namespace WebApplications.Utilities.Database
         /// </PermissionSet>
         [UsedImplicitly]
         [NotNull]
-        public async Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>([CanBeNull] Action<SqlProgramCommand> setParameters,
-                                                                [CanBeNull] Func<XmlReader, T> resultFunc = null,
-                                                                object state = null)
+        public async Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(
+            [CanBeNull] Action<SqlProgramCommand> setParameters,
+            [CanBeNull] Func<XmlReader, T> resultFunc = null,
+            object state = null)
         {
             // If there's no function, execute scalar.
             if (resultFunc == null)
                 return await ExecuteScalarAllAsync<T>(setParameters, state);
 
             return await ExecuteAllAsync(setParameters,
-                                   c => c.ExecuteXmlReaderAsync(state),
-                                   r =>
-                                   {
-                                       try
-                                       {
-                                           return resultFunc(r);
-                                       }
-                                       finally
-                                       {
-                                           r.Close();
-                                       }
-                                   }, state);
+                                         c => c.ExecuteXmlReaderAsync(state),
+                                         r =>
+                                             {
+                                                 try
+                                                 {
+                                                     return resultFunc(r);
+                                                 }
+                                                 finally
+                                                 {
+                                                     r.Close();
+                                                 }
+                                             }, state);
         }
         #endregion
     }

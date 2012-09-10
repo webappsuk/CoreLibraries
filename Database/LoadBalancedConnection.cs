@@ -1,28 +1,32 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: Utilities.Database 
-// Project: Utilities.Database
-// File: LoadBalancedConnection.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
@@ -42,14 +46,12 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         ///   The random number generator, used for choosing the connection.
         /// </summary>
-        [NotNull]
-        private static readonly Random _random = new Random();
-        
+        [NotNull] private static readonly Random _random = new Random();
+
         /// <summary>
         ///   Holds <see cref="Connection"/>s and their <see cref="Connection.Weight">weighting</see>.
         /// </summary>
-        [NotNull]
-        private readonly List<Connection> _connections =
+        [NotNull] private readonly List<Connection> _connections =
             new List<Connection>();
 
         /// <summary>
@@ -83,8 +85,8 @@ namespace WebApplications.Utilities.Database
         /// </exception>
         [UsedImplicitly]
         public LoadBalancedConnection([NotNull] string connectionString, bool ensureSchemasIdentical = false)
-            : this(new List<KeyValuePair<string, double>> { new KeyValuePair<string, double>(connectionString, 1.0D) },
-                ensureSchemasIdentical)
+            : this(new List<KeyValuePair<string, double>> {new KeyValuePair<string, double>(connectionString, 1.0D)},
+                   ensureSchemasIdentical)
         {
             Contract.Requires(connectionString != null, Resources.LoadBalancedConnection_ConnectionStringCanNotBeNull);
         }
@@ -217,7 +219,6 @@ namespace WebApplications.Utilities.Database
                 (!IdenticalSchemas))
                 throw new LoggingException(
                     Resources.LoadBalancedConnection_SchemasNotIdentical, LogLevel.Error);
-
         }
 
         /// <summary>
@@ -254,7 +255,7 @@ namespace WebApplications.Utilities.Database
                     }
                 }
 
-                return (bool)_identicalSchemas;
+                return (bool) _identicalSchemas;
             }
         }
 
@@ -312,7 +313,7 @@ namespace WebApplications.Utilities.Database
         public SqlConnection CreateConnection(bool open = true)
         {
             // Calculate a random value between 0 and the total weight.
-            double next = _random.NextDouble() * _totalWeight;
+            double next = _random.NextDouble()*_totalWeight;
 
             // Pick a connection string
             string connectionString = null;
@@ -395,39 +396,16 @@ namespace WebApplications.Utilities.Database
             return String.Format(Resources.LoadBalancedConnection_ToString, _connections.Count);
         }
 
+        #region Nested type: Connection
         /// <summary>
         ///   Holds information about a connection.
         /// </summary>
         private class Connection
         {
             /// <summary>
-            ///   Gets the connection <see cref="string"/>.
-            /// </summary>
-            [NotNull]
-            public string ConnectionString { get { return _connectionStringBuilder.ConnectionString; } }
-
-            /// <summary>
-            ///   Gets a <see cref="bool"/> value that indicates whether asynchronous processing is allowed by the connection.
-            /// </summary>
-            /// <value>
-            ///   <see langword="true"/> if asynchronous programming is allowed; otherwise <see langword="false"/>.
-            /// </value>
-            public bool AsynchronousProcessing { get { return _connectionStringBuilder.AsynchronousProcessing; } }
-
-            /// <summary>
             ///   The <see cref="SqlConnectionStringBuilder">connection string builder</see>.
             /// </summary>
-            [NotNull]
-            private readonly SqlConnectionStringBuilder _connectionStringBuilder;
-
-            /// <summary>
-            ///   Gets a <see cref="double"/> indicating the relative weight of the <see cref="Connection"/>.
-            /// </summary>
-            /// <value>
-            ///   <para>The weight of the connection.</para>
-            ///   <para>The default weighting is 1.0.</para>
-            /// </value>
-            public double Weight { get; internal set; }
+            [NotNull] private readonly SqlConnectionStringBuilder _connectionStringBuilder;
 
             /// <summary>
             ///   Initializes a new instance of the <see cref="Connection"/> class.
@@ -447,6 +425,35 @@ namespace WebApplications.Utilities.Database
             }
 
             /// <summary>
+            ///   Gets the connection <see cref="string"/>.
+            /// </summary>
+            [NotNull]
+            public string ConnectionString
+            {
+                get { return _connectionStringBuilder.ConnectionString; }
+            }
+
+            /// <summary>
+            ///   Gets a <see cref="bool"/> value that indicates whether asynchronous processing is allowed by the connection.
+            /// </summary>
+            /// <value>
+            ///   <see langword="true"/> if asynchronous programming is allowed; otherwise <see langword="false"/>.
+            /// </value>
+            public bool AsynchronousProcessing
+            {
+                get { return _connectionStringBuilder.AsynchronousProcessing; }
+            }
+
+            /// <summary>
+            ///   Gets a <see cref="double"/> indicating the relative weight of the <see cref="Connection"/>.
+            /// </summary>
+            /// <value>
+            ///   <para>The weight of the connection.</para>
+            ///   <para>The default weighting is 1.0.</para>
+            /// </value>
+            public double Weight { get; internal set; }
+
+            /// <summary>
             ///   Indicates whether the current instance is equal or equi to another <see cref="Connection"/>.
             /// </summary>
             /// <param name="other">An object to compare with this object.</param>
@@ -459,5 +466,6 @@ namespace WebApplications.Utilities.Database
                 return other != null && (_connectionStringBuilder.EquivalentTo(other._connectionStringBuilder));
             }
         }
+        #endregion
     }
 }

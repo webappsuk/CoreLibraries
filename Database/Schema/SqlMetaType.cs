@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -19,469 +46,565 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   The meta data for the <c>bigint</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaBigInt = new SqlMetaType(19, byte.MaxValue, 8, true, false, false,
-                                                                   127, 38, "bigint", typeof(long),
-                                                                   typeof(SqlInt64), SqlDbType.BigInt, DbType.Int64,
-                                                                   0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaBigInt = new SqlMetaType(19, byte.MaxValue, 8,
+                                                                                                   true, false, false,
+                                                                                                   127, 38, "bigint",
+                                                                                                   typeof (long),
+                                                                                                   typeof (SqlInt64),
+                                                                                                   SqlDbType.BigInt,
+                                                                                                   DbType.Int64,
+                                                                                                   0);
 
         /// <summary>
         ///   The meta data for the <c>float</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaFloat = new SqlMetaType(15, byte.MaxValue, 8, true, false, false,
-                                                                  62, 109, "float", typeof(double),
-                                                                  typeof(SqlDouble), SqlDbType.Float, DbType.Double,
-                                                                  0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaFloat = new SqlMetaType(15, byte.MaxValue, 8,
+                                                                                                  true, false, false,
+                                                                                                  62, 109, "float",
+                                                                                                  typeof (double),
+                                                                                                  typeof (SqlDouble),
+                                                                                                  SqlDbType.Float,
+                                                                                                  DbType.Double,
+                                                                                                  0);
 
         /// <summary>
         ///   The meta data for the <c>real</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaReal = new SqlMetaType(7, byte.MaxValue, 4, true, false, false,
-                                                                 59, 109, "real", typeof(float),
-                                                                 typeof(SqlSingle), SqlDbType.Real, DbType.Single,
-                                                                 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaReal = new SqlMetaType(7, byte.MaxValue, 4,
+                                                                                                 true, false, false,
+                                                                                                 59, 109, "real",
+                                                                                                 typeof (float),
+                                                                                                 typeof (SqlSingle),
+                                                                                                 SqlDbType.Real,
+                                                                                                 DbType.Single,
+                                                                                                 0);
 
         /// <summary>
         ///   The meta data for the <c>binary</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaBinary = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false, false,
-                                                                   173, 173, "binary", typeof(byte[]),
-                                                                   typeof(SqlBinary), SqlDbType.Binary, DbType.Binary,
-                                                                   2);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaBinary = new SqlMetaType(byte.MaxValue,
+                                                                                                   byte.MaxValue, -1,
+                                                                                                   false, false, false,
+                                                                                                   173, 173, "binary",
+                                                                                                   typeof (byte[]),
+                                                                                                   typeof (SqlBinary),
+                                                                                                   SqlDbType.Binary,
+                                                                                                   DbType.Binary,
+                                                                                                   2);
 
         /// <summary>
         ///   The meta data for the <c>timestamp</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaTimestamp = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
-                                                                      false, 173, 173, "timestamp",
-                                                                      typeof(byte[]), typeof(SqlBinary),
-                                                                      SqlDbType.Timestamp, DbType.Binary, 2);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaTimestamp = new SqlMetaType(byte.MaxValue,
+                                                                                                      byte.MaxValue, -1,
+                                                                                                      false, false,
+                                                                                                      false, 173, 173,
+                                                                                                      "timestamp",
+                                                                                                      typeof (byte[]),
+                                                                                                      typeof (SqlBinary),
+                                                                                                      SqlDbType.
+                                                                                                          Timestamp,
+                                                                                                      DbType.Binary, 2);
 
         /// <summary>
         ///   The meta data for the <c>varbinary</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaVarBinary = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
-                                                                       false, 165, 165, "varbinary",
-                                                                       typeof(byte[]), typeof(SqlBinary),
-                                                                       SqlDbType.VarBinary, DbType.Binary, 2);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaVarBinary = new SqlMetaType(byte.MaxValue,
+                                                                                                      byte.MaxValue, -1,
+                                                                                                      false, false,
+                                                                                                      false, 165, 165,
+                                                                                                      "varbinary",
+                                                                                                      typeof (byte[]),
+                                                                                                      typeof (SqlBinary),
+                                                                                                      SqlDbType.
+                                                                                                          VarBinary,
+                                                                                                      DbType.Binary, 2);
 
         /// <summary>
         ///   The meta data for the <c>varbinary(max)</c> data type (a large value data type).
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaMaxVarBinary = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
-                                                                          true, 165, 165, "varbinary",
-                                                                          typeof(byte[]), typeof(SqlBinary),
-                                                                          SqlDbType.VarBinary, DbType.Binary, 2);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaMaxVarBinary = new SqlMetaType(byte.MaxValue,
+                                                                                                         byte.MaxValue,
+                                                                                                         -1, false, true,
+                                                                                                         true, 165, 165,
+                                                                                                         "varbinary",
+                                                                                                         typeof (byte[]),
+                                                                                                         typeof (
+                                                                                                             SqlBinary),
+                                                                                                         SqlDbType.
+                                                                                                             VarBinary,
+                                                                                                         DbType.Binary,
+                                                                                                         2);
 
         /// <summary>
         ///   The meta data for a small <c>varbinary</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaSmallVarBinary = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false,
-                                                                           false, false, 37, 173,
-                                                                           string.Empty, typeof(byte[]),
-                                                                           typeof(SqlBinary), (SqlDbType)24,
-                                                                           DbType.Binary, 2);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaSmallVarBinary = new SqlMetaType(
+            byte.MaxValue, byte.MaxValue, -1, false,
+            false, false, 37, 173,
+            string.Empty, typeof (byte[]),
+            typeof (SqlBinary), (SqlDbType) 24,
+            DbType.Binary, 2);
 
         /// <summary>
         ///   The meta data for the <c>image</c> data type (a large object data type).
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaImage = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, true, false,
-                                                                   34, 34, "image", typeof(byte[]),
-                                                                   typeof(SqlBinary), SqlDbType.Image, DbType.Binary,
-                                                                   0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaImage = new SqlMetaType(byte.MaxValue,
+                                                                                                  byte.MaxValue, -1,
+                                                                                                  false, true, false,
+                                                                                                  34, 34, "image",
+                                                                                                  typeof (byte[]),
+                                                                                                  typeof (SqlBinary),
+                                                                                                  SqlDbType.Image,
+                                                                                                  DbType.Binary,
+                                                                                                  0);
 
         /// <summary>
         ///   The meta data for the <c>bit</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaBit = new SqlMetaType(byte.MaxValue, byte.MaxValue, 1, true, false, false,
-                                                                50, 104, "bit", typeof(bool),
-                                                                typeof(SqlBoolean), SqlDbType.Bit, DbType.Boolean,
-                                                                0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaBit = new SqlMetaType(byte.MaxValue,
+                                                                                                byte.MaxValue, 1, true,
+                                                                                                false, false,
+                                                                                                50, 104, "bit",
+                                                                                                typeof (bool),
+                                                                                                typeof (SqlBoolean),
+                                                                                                SqlDbType.Bit,
+                                                                                                DbType.Boolean,
+                                                                                                0);
 
         /// <summary>
         ///   The meta data for the <c>tinyint</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaTinyInt = new SqlMetaType(3, byte.MaxValue, 1, true, false, false,
-                                                                    48, 38, "tinyint", typeof(byte),
-                                                                    typeof(SqlByte), SqlDbType.TinyInt, DbType.Byte,
-                                                                    0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaTinyInt = new SqlMetaType(3, byte.MaxValue, 1,
+                                                                                                    true, false, false,
+                                                                                                    48, 38, "tinyint",
+                                                                                                    typeof (byte),
+                                                                                                    typeof (SqlByte),
+                                                                                                    SqlDbType.TinyInt,
+                                                                                                    DbType.Byte,
+                                                                                                    0);
 
         /// <summary>
         ///   The meta data for the <c>smallint</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaSmallInt = new SqlMetaType(5, byte.MaxValue, 2, true, false, false,
-                                                                     52, 38, "smallint", typeof(short),
-                                                                     typeof(SqlInt16), SqlDbType.SmallInt, DbType.Int16,
-                                                                     0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaSmallInt = new SqlMetaType(5, byte.MaxValue, 2,
+                                                                                                     true, false, false,
+                                                                                                     52, 38, "smallint",
+                                                                                                     typeof (short),
+                                                                                                     typeof (SqlInt16),
+                                                                                                     SqlDbType.SmallInt,
+                                                                                                     DbType.Int16,
+                                                                                                     0);
 
         /// <summary>
         ///   The meta data for the <c>int</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaInt = new SqlMetaType(10, byte.MaxValue, 4, true, false, false,
-                                                                56, 38, "int", typeof(int),
-                                                                typeof(SqlInt32), SqlDbType.Int, DbType.Int32, 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaInt = new SqlMetaType(10, byte.MaxValue, 4,
+                                                                                                true, false, false,
+                                                                                                56, 38, "int",
+                                                                                                typeof (int),
+                                                                                                typeof (SqlInt32),
+                                                                                                SqlDbType.Int,
+                                                                                                DbType.Int32, 0);
 
         /// <summary>
         ///   The meta data for the <c>char</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaChar = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false, false,
-                                                                 175, 175, "char", typeof(string),
-                                                                 typeof(SqlString), SqlDbType.Char,
-                                                                 DbType.AnsiStringFixedLength, 7);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaChar = new SqlMetaType(byte.MaxValue,
+                                                                                                 byte.MaxValue, -1,
+                                                                                                 false, false, false,
+                                                                                                 175, 175, "char",
+                                                                                                 typeof (string),
+                                                                                                 typeof (SqlString),
+                                                                                                 SqlDbType.Char,
+                                                                                                 DbType.
+                                                                                                     AnsiStringFixedLength,
+                                                                                                 7);
 
         /// <summary>
         ///   The meta data for the <c>varchar</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaVarChar = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
-                                                                    false, 167, 167, "varchar",
-                                                                    typeof(string), typeof(SqlString),
-                                                                    SqlDbType.VarChar, DbType.AnsiString, 7);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaVarChar = new SqlMetaType(byte.MaxValue,
+                                                                                                    byte.MaxValue, -1,
+                                                                                                    false, false,
+                                                                                                    false, 167, 167,
+                                                                                                    "varchar",
+                                                                                                    typeof (string),
+                                                                                                    typeof (SqlString),
+                                                                                                    SqlDbType.VarChar,
+                                                                                                    DbType.AnsiString, 7);
 
         /// <summary>
         ///   The meta data for the <c>varchar(max)</c> data type (a large value data type).
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaMaxVarChar = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
-                                                                        true, 167, 167, "varchar",
-                                                                        typeof(string), typeof(SqlString),
-                                                                        SqlDbType.VarChar, DbType.AnsiString, 7);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaMaxVarChar = new SqlMetaType(byte.MaxValue,
+                                                                                                       byte.MaxValue, -1,
+                                                                                                       false, true,
+                                                                                                       true, 167, 167,
+                                                                                                       "varchar",
+                                                                                                       typeof (string),
+                                                                                                       typeof (SqlString
+                                                                                                           ),
+                                                                                                       SqlDbType.VarChar,
+                                                                                                       DbType.AnsiString,
+                                                                                                       7);
 
         /// <summary>
         ///   The meta data for the <c>text</c> data type (a large object data type).
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaText = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, true, false,
-                                                                  35, 35, "text", typeof(string),
-                                                                  typeof(SqlString), SqlDbType.Text, DbType.AnsiString,
-                                                                  0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaText = new SqlMetaType(byte.MaxValue,
+                                                                                                 byte.MaxValue, -1,
+                                                                                                 false, true, false,
+                                                                                                 35, 35, "text",
+                                                                                                 typeof (string),
+                                                                                                 typeof (SqlString),
+                                                                                                 SqlDbType.Text,
+                                                                                                 DbType.AnsiString,
+                                                                                                 0);
 
         /// <summary>
         ///   The meta data for the <c>nchar</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaNChar = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false, false,
-                                                                  239, 239, "nchar", typeof(string),
-                                                                  typeof(SqlString), SqlDbType.NChar,
-                                                                  DbType.StringFixedLength, 7);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaNChar = new SqlMetaType(byte.MaxValue,
+                                                                                                  byte.MaxValue, -1,
+                                                                                                  false, false, false,
+                                                                                                  239, 239, "nchar",
+                                                                                                  typeof (string),
+                                                                                                  typeof (SqlString),
+                                                                                                  SqlDbType.NChar,
+                                                                                                  DbType.
+                                                                                                      StringFixedLength,
+                                                                                                  7);
 
         /// <summary>
         ///   The meta data for the <c>nvarchar</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaNVarChar = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false,
-                                                                      false, 231, 231, "nvarchar",
-                                                                      typeof(string), typeof(SqlString),
-                                                                      SqlDbType.NVarChar, DbType.String, 7);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaNVarChar = new SqlMetaType(byte.MaxValue,
+                                                                                                     byte.MaxValue, -1,
+                                                                                                     false, false,
+                                                                                                     false, 231, 231,
+                                                                                                     "nvarchar",
+                                                                                                     typeof (string),
+                                                                                                     typeof (SqlString),
+                                                                                                     SqlDbType.NVarChar,
+                                                                                                     DbType.String, 7);
 
         /// <summary>
         ///   The meta data for the <c>nvarchar(max)</c> data type (a large value data type).
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaMaxNVarChar = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, true,
-                                                                         true, 231, 231, "nvarchar",
-                                                                         typeof(string), typeof(SqlString),
-                                                                         SqlDbType.NVarChar, DbType.String, 7);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaMaxNVarChar = new SqlMetaType(byte.MaxValue,
+                                                                                                        byte.MaxValue,
+                                                                                                        -1, false, true,
+                                                                                                        true, 231, 231,
+                                                                                                        "nvarchar",
+                                                                                                        typeof (string),
+                                                                                                        typeof (
+                                                                                                            SqlString),
+                                                                                                        SqlDbType.
+                                                                                                            NVarChar,
+                                                                                                        DbType.String, 7);
 
         /// <summary>
         ///   The meta data for the <c>ntext</c> data type (a large object data type).
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaNText = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, true, false,
-                                                                   99, 99, "ntext", typeof(string),
-                                                                   typeof(SqlString), SqlDbType.NText, DbType.String,
-                                                                   7);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaNText = new SqlMetaType(byte.MaxValue,
+                                                                                                  byte.MaxValue, -1,
+                                                                                                  false, true, false,
+                                                                                                  99, 99, "ntext",
+                                                                                                  typeof (string),
+                                                                                                  typeof (SqlString),
+                                                                                                  SqlDbType.NText,
+                                                                                                  DbType.String,
+                                                                                                  7);
 
         /// <summary>
         ///   The meta data for the <c>decimal</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaDecimal = new SqlMetaType(38, 4, 17, true, false, false,
-                                                                     108, 108, "decimal", typeof(Decimal),
-                                                                     typeof(SqlDecimal), SqlDbType.Decimal,
-                                                                     DbType.Decimal, 2);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaDecimal = new SqlMetaType(38, 4, 17, true,
+                                                                                                    false, false,
+                                                                                                    108, 108, "decimal",
+                                                                                                    typeof (Decimal),
+                                                                                                    typeof (SqlDecimal),
+                                                                                                    SqlDbType.Decimal,
+                                                                                                    DbType.Decimal, 2);
 
         /// <summary>
         ///   The meta data for the <c>xml</c> data type (a large object data type).
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaXml = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, true, true,
-                                                                 241, 241, "xml", typeof(string),
-                                                                 typeof(SqlXml), SqlDbType.Xml, DbType.Xml, 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaXml = new SqlMetaType(byte.MaxValue,
+                                                                                                byte.MaxValue, -1, false,
+                                                                                                true, true,
+                                                                                                241, 241, "xml",
+                                                                                                typeof (string),
+                                                                                                typeof (SqlXml),
+                                                                                                SqlDbType.Xml,
+                                                                                                DbType.Xml, 0);
 
         /// <summary>
         ///   The meta data for the <c>datetime</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaDateTime = new SqlMetaType(23, 3, 8, true, false, false,
-                                                                     61, 111, "datetime",
-                                                                     typeof(DateTime), typeof(SqlDateTime),
-                                                                     SqlDbType.DateTime, DbType.DateTime, 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaDateTime = new SqlMetaType(23, 3, 8, true,
+                                                                                                     false, false,
+                                                                                                     61, 111, "datetime",
+                                                                                                     typeof (DateTime),
+                                                                                                     typeof (SqlDateTime
+                                                                                                         ),
+                                                                                                     SqlDbType.DateTime,
+                                                                                                     DbType.DateTime, 0);
 
         /// <summary>
         ///   The meta data for the <c>smalldatetime</c> type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaSmallDateTime = new SqlMetaType(16, 0, 4, true, false, false,
-                                                                          58, 111, "smalldatetime",
-                                                                          typeof(DateTime), typeof(SqlDateTime),
-                                                                          SqlDbType.SmallDateTime, DbType.DateTime,
-                                                                          0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaSmallDateTime = new SqlMetaType(16, 0, 4, true,
+                                                                                                          false, false,
+                                                                                                          58, 111,
+                                                                                                          "smalldatetime",
+                                                                                                          typeof (
+                                                                                                              DateTime),
+                                                                                                          typeof (
+                                                                                                              SqlDateTime
+                                                                                                              ),
+                                                                                                          SqlDbType.
+                                                                                                              SmallDateTime,
+                                                                                                          DbType.
+                                                                                                              DateTime,
+                                                                                                          0);
 
         /// <summary>
         ///   The meta data for the <c>money</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaMoney = new SqlMetaType(19, byte.MaxValue, 8, true, false, false,
-                                                                  60, 110, "money", typeof(Decimal),
-                                                                  typeof(SqlMoney), SqlDbType.Money, DbType.Currency,
-                                                                  0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaMoney = new SqlMetaType(19, byte.MaxValue, 8,
+                                                                                                  true, false, false,
+                                                                                                  60, 110, "money",
+                                                                                                  typeof (Decimal),
+                                                                                                  typeof (SqlMoney),
+                                                                                                  SqlDbType.Money,
+                                                                                                  DbType.Currency,
+                                                                                                  0);
 
         /// <summary>
         ///   The meta data for the <c>smallmoney</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaSmallMoney = new SqlMetaType(10, byte.MaxValue, 4, true, false, false,
-                                                                       122, 110, "smallmoney",
-                                                                       typeof(Decimal), typeof(SqlMoney),
-                                                                       SqlDbType.SmallMoney, DbType.Currency, 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaSmallMoney = new SqlMetaType(10, byte.MaxValue,
+                                                                                                       4, true, false,
+                                                                                                       false,
+                                                                                                       122, 110,
+                                                                                                       "smallmoney",
+                                                                                                       typeof (Decimal),
+                                                                                                       typeof (SqlMoney),
+                                                                                                       SqlDbType.
+                                                                                                           SmallMoney,
+                                                                                                       DbType.Currency,
+                                                                                                       0);
 
         /// <summary>
         ///   The meta data for the <c>uniqueidentifier</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaUniqueId = new SqlMetaType(byte.MaxValue, byte.MaxValue, 16, true, false,
-                                                                     false, 36, 36, "uniqueidentifier",
-                                                                     typeof(Guid), typeof(SqlGuid),
-                                                                     SqlDbType.UniqueIdentifier, DbType.Guid, 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaUniqueId = new SqlMetaType(byte.MaxValue,
+                                                                                                     byte.MaxValue, 16,
+                                                                                                     true, false,
+                                                                                                     false, 36, 36,
+                                                                                                     "uniqueidentifier",
+                                                                                                     typeof (Guid),
+                                                                                                     typeof (SqlGuid),
+                                                                                                     SqlDbType.
+                                                                                                         UniqueIdentifier,
+                                                                                                     DbType.Guid, 0);
 
         /// <summary>
         ///   The meta data for the <c>sql_variant</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaVariant = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, true, false, false,
-                                                                    98, 98, "sql_variant", typeof(object),
-                                                                    typeof(object), SqlDbType.Variant, DbType.Object,
-                                                                    0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaVariant = new SqlMetaType(byte.MaxValue,
+                                                                                                    byte.MaxValue, -1,
+                                                                                                    true, false, false,
+                                                                                                    98, 98,
+                                                                                                    "sql_variant",
+                                                                                                    typeof (object),
+                                                                                                    typeof (object),
+                                                                                                    SqlDbType.Variant,
+                                                                                                    DbType.Object,
+                                                                                                    0);
 
         /// <summary>
         ///   The meta data for user-defined data types.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaUdt = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false, true,
-                                                                 240, 240, "udt", typeof(object),
-                                                                 typeof(object), SqlDbType.Udt, DbType.Object, 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaUdt = new SqlMetaType(byte.MaxValue,
+                                                                                                byte.MaxValue, -1, false,
+                                                                                                false, true,
+                                                                                                240, 240, "udt",
+                                                                                                typeof (object),
+                                                                                                typeof (object),
+                                                                                                SqlDbType.Udt,
+                                                                                                DbType.Object, 0);
 
         /// <summary>
         ///   The meta data for user-defined data types.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaMaxUdt = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, true, true,
-                                                                   240, 240, "udt", typeof(object),
-                                                                   typeof(object), SqlDbType.Udt, DbType.Object,
-                                                                   0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaMaxUdt = new SqlMetaType(byte.MaxValue,
+                                                                                                   byte.MaxValue, -1,
+                                                                                                   false, true, true,
+                                                                                                   240, 240, "udt",
+                                                                                                   typeof (object),
+                                                                                                   typeof (object),
+                                                                                                   SqlDbType.Udt,
+                                                                                                   DbType.Object,
+                                                                                                   0);
 
         /// <summary>
         ///   The meta data for the <c>table</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaTable = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false, false,
-                                                                  243, 243, "table",
-                                                                  typeof(IEnumerable<DbDataRecord>),
-                                                                  typeof(IEnumerable<DbDataRecord>),
-                                                                  SqlDbType.Structured, DbType.Object, 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaTable = new SqlMetaType(byte.MaxValue,
+                                                                                                  byte.MaxValue, -1,
+                                                                                                  false, false, false,
+                                                                                                  243, 243, "table",
+                                                                                                  typeof (
+                                                                                                      IEnumerable
+                                                                                                      <DbDataRecord>),
+                                                                                                  typeof (
+                                                                                                      IEnumerable
+                                                                                                      <DbDataRecord>),
+                                                                                                  SqlDbType.Structured,
+                                                                                                  DbType.Object, 0);
 
         /// <summary>
         ///   TODO small udt?
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaSUDT = new SqlMetaType(byte.MaxValue, byte.MaxValue, -1, false, false, false,
-                                                                 31, 31, "", typeof(SqlDataRecord),
-                                                                 typeof(SqlDataRecord), SqlDbType.Structured,
-                                                                 DbType.Object, 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaSUDT = new SqlMetaType(byte.MaxValue,
+                                                                                                 byte.MaxValue, -1,
+                                                                                                 false, false, false,
+                                                                                                 31, 31, "",
+                                                                                                 typeof (SqlDataRecord),
+                                                                                                 typeof (SqlDataRecord),
+                                                                                                 SqlDbType.Structured,
+                                                                                                 DbType.Object, 0);
 
         /// <summary>
         ///   The meta data for the <c>date</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaDate = new SqlMetaType(byte.MaxValue, byte.MaxValue, 3, true, false, false,
-                                                                 40, 40, "date", typeof(DateTime),
-                                                                 typeof(DateTime), SqlDbType.Date, DbType.Date,
-                                                                 0);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaDate = new SqlMetaType(byte.MaxValue,
+                                                                                                 byte.MaxValue, 3, true,
+                                                                                                 false, false,
+                                                                                                 40, 40, "date",
+                                                                                                 typeof (DateTime),
+                                                                                                 typeof (DateTime),
+                                                                                                 SqlDbType.Date,
+                                                                                                 DbType.Date,
+                                                                                                 0);
 
         /// <summary>
         ///   The meta data for the <c>time</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaTime = new SqlMetaType(byte.MaxValue, 7, -1, false, false, false,
-                                                                  41, 41, "time", typeof(TimeSpan),
-                                                                  typeof(TimeSpan), SqlDbType.Time, DbType.Time,
-                                                                  1);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaTime = new SqlMetaType(byte.MaxValue, 7, -1,
+                                                                                                 false, false, false,
+                                                                                                 41, 41, "time",
+                                                                                                 typeof (TimeSpan),
+                                                                                                 typeof (TimeSpan),
+                                                                                                 SqlDbType.Time,
+                                                                                                 DbType.Time,
+                                                                                                 1);
 
         /// <summary>
         ///   The meta data for the <c>datetime2</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaDateTime2 = new SqlMetaType(byte.MaxValue, 7, -1, false, false, false,
-                                                                      42, 42, "datetime2",
-                                                                      typeof(DateTime), typeof(DateTime),
-                                                                      SqlDbType.DateTime2, DbType.DateTime2, 1);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaDateTime2 = new SqlMetaType(byte.MaxValue, 7,
+                                                                                                      -1, false, false,
+                                                                                                      false,
+                                                                                                      42, 42,
+                                                                                                      "datetime2",
+                                                                                                      typeof (DateTime),
+                                                                                                      typeof (DateTime),
+                                                                                                      SqlDbType.
+                                                                                                          DateTime2,
+                                                                                                      DbType.DateTime2,
+                                                                                                      1);
 
         /// <summary>
         ///   The meta data for the <c>datetimeoffset</c> data type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public static readonly SqlMetaType MetaDateTimeOffset = new SqlMetaType(byte.MaxValue, 7, -1, false, false,
-                                                                            false, 43, 43,
-                                                                            "datetimeoffset", typeof(DateTimeOffset),
-                                                                            typeof(DateTimeOffset),
-                                                                            SqlDbType.DateTimeOffset,
-                                                                            DbType.DateTimeOffset, 1);
+        [NotNull] [UsedImplicitly] public static readonly SqlMetaType MetaDateTimeOffset = new SqlMetaType(
+            byte.MaxValue, 7, -1, false, false,
+            false, 43, 43,
+            "datetimeoffset", typeof (DateTimeOffset),
+            typeof (DateTimeOffset),
+            SqlDbType.DateTimeOffset,
+            DbType.DateTimeOffset, 1);
         #endregion
 
         /// <summary>
         ///   The class type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public readonly Type ClassType;
+        [NotNull] [UsedImplicitly] public readonly Type ClassType;
 
         /// <summary>
         ///   The SQL type.
         /// </summary>
-        [NotNull]
-        [UsedImplicitly]
-        public readonly Type SqlType;
+        [NotNull] [UsedImplicitly] public readonly Type SqlType;
 
         /// <summary>
         ///   The number of bytes the type is stored in.
         ///   If this is -1 then the data type is variable-length.
         /// </summary>
-        [UsedImplicitly]
-        public readonly int FixedLength;
+        [UsedImplicitly] public readonly int FixedLength;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether the data type is fixed-length.
         /// </summary>
-        [UsedImplicitly]
-        public readonly bool IsFixed;
+        [UsedImplicitly] public readonly bool IsFixed;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether the data type is a large object/value.
         /// </summary>
-        [UsedImplicitly]
-        public readonly bool IsLong;
+        [UsedImplicitly] public readonly bool IsLong;
 
         /// <summary>
         ///   PLP.
         /// </summary>
-        [UsedImplicitly]
-        public readonly bool IsPlp;
+        [UsedImplicitly] public readonly bool IsPlp;
 
         /// <summary>
         ///   The precision, which is the number of digits in a numerical data type.
         /// </summary>
-        [UsedImplicitly]
-        public readonly byte Precision;
+        [UsedImplicitly] public readonly byte Precision;
 
         /// <summary>
         ///   The scale, which is the number of digits to the right of the decimal point.
         /// </summary>
-        [UsedImplicitly]
-        public readonly byte Scale;
+        [UsedImplicitly] public readonly byte Scale;
 
         /// <summary>
         ///   TDS value.
         /// </summary>
-        [UsedImplicitly]
-        public readonly byte TDSType;
+        [UsedImplicitly] public readonly byte TDSType;
 
         /// <summary>
         ///   Nullable TDS value.
         /// </summary>
-        [UsedImplicitly]
-        public readonly byte NullableType;
+        [UsedImplicitly] public readonly byte NullableType;
 
         /// <summary>
         ///   The name of the type.
         /// </summary>
-        [UsedImplicitly]
-        [NotNull]
-        public readonly string TypeName;
+        [UsedImplicitly] [NotNull] public readonly string TypeName;
 
         /// <summary>
         ///   The equivalent <see cref="SqlDbType"/>
         /// </summary>
-        [UsedImplicitly]
-        public readonly SqlDbType SqlDbType;
+        [UsedImplicitly] public readonly SqlDbType SqlDbType;
 
         /// <summary>
         ///   The equivalent <see cref="DbType"/>
         /// </summary>
-        [UsedImplicitly]
-        public readonly DbType DbType;
+        [UsedImplicitly] public readonly DbType DbType;
 
         /// <summary>
         ///   Propbytes.
         /// </summary>
-        [UsedImplicitly]
-        public readonly byte PropBytes;
+        [UsedImplicitly] public readonly byte PropBytes;
 
         /// <summary>
         ///   Type id.
         /// </summary>
-        [UsedImplicitly]
-        public const int TypeId = 0;
+        [UsedImplicitly] public const int TypeId = 0;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="SqlMetaType"/> class.
@@ -511,24 +634,26 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="sqldbType">The SQL server specific data type.</param>
         /// <param name="dbType">The data type of a .net data provider.</param>
         /// <param name="propBytes">The prop bytes.</param>
-        private SqlMetaType(byte precision, byte scale, int fixedLength, bool isFixed, bool isLong, bool isPlp, byte tdsType,
-                        byte nullableTdsType, [NotNull]string typeName, [NotNull]Type classType, [NotNull]Type sqlType, SqlDbType sqldbType,
-                        DbType dbType, byte propBytes)
+        private SqlMetaType(byte precision, byte scale, int fixedLength, bool isFixed, bool isLong, bool isPlp,
+                            byte tdsType,
+                            byte nullableTdsType, [NotNull] string typeName, [NotNull] Type classType,
+                            [NotNull] Type sqlType, SqlDbType sqldbType,
+                            DbType dbType, byte propBytes)
         {
-            this.Precision = precision;
-            this.Scale = scale;
-            this.FixedLength = fixedLength;
-            this.IsFixed = isFixed;
-            this.IsLong = isLong;
-            this.IsPlp = isPlp;
-            this.TDSType = tdsType;
-            this.NullableType = nullableTdsType;
-            this.TypeName = typeName;
-            this.SqlDbType = sqldbType;
-            this.DbType = dbType;
-            this.ClassType = classType;
-            this.SqlType = sqlType;
-            this.PropBytes = propBytes;
+            Precision = precision;
+            Scale = scale;
+            FixedLength = fixedLength;
+            IsFixed = isFixed;
+            IsLong = isLong;
+            IsPlp = isPlp;
+            TDSType = tdsType;
+            NullableType = nullableTdsType;
+            TypeName = typeName;
+            SqlDbType = sqldbType;
+            DbType = dbType;
+            ClassType = classType;
+            SqlType = sqlType;
+            PropBytes = propBytes;
         }
 
         /// <summary>
@@ -605,7 +730,7 @@ namespace WebApplications.Utilities.Database.Schema
         {
             if (type != SqlDbType.Image && type != SqlDbType.Binary &&
                 (type != SqlDbType.VarBinary && type != SqlDbType.Timestamp) && type != SqlDbType.Udt)
-                return type == (SqlDbType)24;
+                return type == (SqlDbType) 24;
             return true;
         }
 
@@ -766,7 +891,7 @@ namespace WebApplications.Utilities.Database.Schema
                     return MetaVarChar;
                 case SqlDbType.Variant:
                     return MetaVariant;
-                case (SqlDbType)24:
+                case (SqlDbType) 24:
                     return MetaSmallVarBinary;
                 case SqlDbType.Xml:
                     return MetaXml;
@@ -783,17 +908,18 @@ namespace WebApplications.Utilities.Database.Schema
                 case SqlDbType.DateTimeOffset:
                     return MetaDateTimeOffset;
                 default:
-                    throw new DatabaseSchemaException(Resources.SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType, LogLevel.Error, target);
+                    throw new DatabaseSchemaException(Resources.SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType,
+                                                      LogLevel.Error, target);
             }
         }
 
 #if false
 
-        /// <summary>
-        /// Gets the <see cref="SqlMetaType"/> equivalent of the <see cref="DbType"/>.
-        /// </summary>
-        /// <param name="target">The target.</param>
-        /// <returns></returns>
+    /// <summary>
+    /// Gets the <see cref="SqlMetaType"/> equivalent of the <see cref="DbType"/>.
+    /// </summary>
+    /// <param name="target">The target.</param>
+    /// <returns></returns>
         [NotNull]
         [UsedImplicitly]
         public static SqlMetaType GetMetaTypeFromDbType(DbType target)

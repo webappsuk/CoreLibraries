@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: Utilities.Database 
-// Project: Utilities.Database
-// File: DatabaseSchema.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -38,18 +43,18 @@ namespace WebApplications.Utilities.Database.Schema
     /// </summary>
     public class DatabaseSchema : IEqualityComparer<DatabaseSchema>, IEquatable<DatabaseSchema>
     {
-
         /// <summary>
         ///   Holds schemas against connections strings.
         /// </summary>
         private static readonly ConcurrentDictionary<string, DatabaseSchema> _schemas =
             new ConcurrentDictionary<string, DatabaseSchema>();
 
+        private static int _tempCounter = 1;
+
         /// <summary>
         ///   The connection string which was used to generate schema initially.
         /// </summary>
-        [NotNull]
-        private readonly string _connectionString;
+        [NotNull] private readonly string _connectionString;
 
         /// <summary>
         ///   A lock object, ensures only one thread loads the schema.
@@ -256,12 +261,12 @@ namespace WebApplications.Utilities.Database.Schema
                     connectionString,
                     cs => duplicate,
                     (cs, ds) =>
-                    {
-                        // ReSharper disable PossibleNullReferenceException
-                        hc = !ds.Equals(duplicate);
-                        // ReSharper restore PossibleNullReferenceException
-                        return duplicate;
-                    });
+                        {
+                            // ReSharper disable PossibleNullReferenceException
+                            hc = !ds.Equals(duplicate);
+                            // ReSharper restore PossibleNullReferenceException
+                            return duplicate;
+                        });
                 hasChanged = hc;
             }
             else
@@ -338,16 +343,18 @@ namespace WebApplications.Utilities.Database.Schema
                         sqlConnection.Open();
                         Version version;
                         if (!Version.TryParse(sqlConnection.ServerVersion, out version))
-                            throw new DatabaseSchemaException(Resources.DatabaseSchema_Load_CouldNotParseVersionInformation, LogLevel.Error);
+                            throw new DatabaseSchemaException(
+                                Resources.DatabaseSchema_Load_CouldNotParseVersionInformation, LogLevel.Error);
 
                         if (version.Major < 9)
-                            throw new DatabaseSchemaException(Resources.DatabaseSchema_Load_VersionNotSupported, LogLevel.Error, version);
+                            throw new DatabaseSchemaException(Resources.DatabaseSchema_Load_VersionNotSupported,
+                                                              LogLevel.Error, version);
 
                         string sql = version.Major == 9 ? SQLResources.RetrieveSchema9 : SQLResources.RetrieveSchema10;
 
                         // Create the command first, as we will reuse on each connection.
                         using (
-                            SqlCommand command = new SqlCommand(sql, sqlConnection) { CommandType = CommandType.Text })
+                            SqlCommand command = new SqlCommand(sql, sqlConnection) {CommandType = CommandType.Text})
                         {
                             // Execute command
                             using (SqlDataReader reader = command.ExecuteReader())
@@ -656,7 +663,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                     _loaded = true;
                 }
-                // In the event of an error we don't set the loaded flag - this allows retries.
+                    // In the event of an error we don't set the loaded flag - this allows retries.
                 catch (DatabaseSchemaException databaseSchemaException)
                 {
                     _error = databaseSchemaException;
@@ -692,12 +699,10 @@ namespace WebApplications.Utilities.Database.Schema
                 return
                     _schemas.Values.FirstOrDefault(
                         schema =>
-                        (schema._connectionString != _connectionString) && (this.Equals(schema)));
+                        (schema._connectionString != _connectionString) && (Equals(schema)));
                 // ReSharper restore PossibleNullReferenceException
             }
         }
-
-        private static int _tempCounter = 1;
 
         /// <summary>
         ///   Tries to get the <see cref="SqlType"/> with the type's <see cref="SqlType.FullName">full name</see>.
