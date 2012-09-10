@@ -175,6 +175,9 @@ namespace WebApplications.Utilities.Cryptography
 
                 if(decrypted != string.Empty)
                 {
+                    if (key.Value == _rsaEncryptionKeys.First().Value)
+                        isLatestKey = true;
+
                     return decrypted.TrimEnd('\0');
                 }
             }
