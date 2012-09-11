@@ -21,7 +21,6 @@ namespace WebApplications.Utilities.Test.Configuration
         /// </summary>
         private class UniqueIdentifierForStaticMethods
         {
-            
         }
 
         private class UniqueIdentifierForStaticMethods1 : UniqueIdentifierForStaticMethods
@@ -175,12 +174,6 @@ namespace WebApplications.Utilities.Test.Configuration
                             ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods3>.Active.PropertyWithDefaultValue,
                             "If the section in question has not been specified in the config file, then the active configuration (Active) property" +
                             " should return a default instance with all properties taking their default values if it is previously set to null. ");
-        }
-
-        [TestMethod]
-        public void IsActive_ForActiveConfiguration_ReturnsTrue()
-        {
-            Assert.IsTrue(ConfigurationSectionTestClass.Active.IsActive, "The IsActive property should be true for the active configuration section (obtained from the Active property).");
         }
 
         [TestMethod]

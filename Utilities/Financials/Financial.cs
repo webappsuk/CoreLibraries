@@ -334,6 +334,7 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// A <see cref="System.String"/> that represents this instance.
         /// </returns>
+        /// <exception cref="FormatException">The format string is not supported.</exception>
         public string ToString(string format, IFormatProvider provider)
         {
             if (String.IsNullOrEmpty(format)) format = "I";
@@ -345,12 +346,16 @@ namespace WebApplications.Utilities.Financials
                     CultureInfo culture;
                     try
                     {
-                        culture = (CultureInfo)provider;
+                        // Ensure that the format provider passed in contains culture information 
+                        culture = (CultureInfo) provider;
                     }
                     catch (InvalidCastException)
                     {
                         culture = CultureInfo.CurrentUICulture;
                     }
+
+                    if (culture == null) culture = CultureInfo.CurrentUICulture;
+
                     return FormatCurrency(culture);
                 default:
                     throw new FormatException(String.Format("The {0} format string is not supported.", format));

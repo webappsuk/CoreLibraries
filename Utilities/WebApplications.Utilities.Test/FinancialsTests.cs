@@ -6,6 +6,7 @@ using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Financials;
+using System.Diagnostics;
 
 namespace WebApplications.Utilities.Test
 {
@@ -43,7 +44,8 @@ namespace WebApplications.Utilities.Test
         {
             Financial financial = new Financial(_gbp, _amount);
             Assert.IsNotNull(financial.Currency);
-            Assert.AreEqual(string.Format("Financial {0}{1}", _amount, _gbp.Code), financial.ToString());
+            string expectedFormat = String.Format("{0:C}", _amount);
+            Assert.AreEqual(expectedFormat, financial.ToString());
         }
 
         [TestMethod]
@@ -427,7 +429,8 @@ namespace WebApplications.Utilities.Test
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
             Financial financial = new Financial(currencyInfo, amount);
-            String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "{0} {1}", amount, currencyInfo.Code);
+            Trace.WriteLine(CultureInfo.CurrentUICulture);
+            String expectedFormat = String.Format("{0} {1}", amount, currencyInfo.Code);
             Assert.AreEqual(expectedFormat, String.Format("{0:I}", financial));
         }
 
@@ -452,6 +455,7 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual(expectedFormat, String.Format("{0}", financial));
         }
 
+        // todo this test fails
         [TestMethod]
         public void TestFormatWithFormatCReturnsSameAsToString()
         {
