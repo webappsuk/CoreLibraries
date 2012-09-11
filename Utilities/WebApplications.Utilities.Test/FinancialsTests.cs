@@ -455,7 +455,6 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual(expectedFormat, String.Format("{0}", financial));
         }
 
-        // todo this test fails
         [TestMethod]
         public void TestFormatWithFormatCReturnsSameAsToString()
         {
