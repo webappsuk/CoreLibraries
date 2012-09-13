@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities
-// File: Extensions.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -57,7 +62,16 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Characters to escape for JSON (and their new value).
         /// </summary>
-        private static readonly Dictionary<char, string> _jsonEscapedCharacters = new Dictionary<char, string> { { '\\', @"\\" }, { '\"', @"\""" }, { '\b', @"\b" }, { '\f', @"\f" }, { '\n', @"\n" }, { '\r', @"\r" }, { '\t', @"\t" } };
+        private static readonly Dictionary<char, string> _jsonEscapedCharacters = new Dictionary<char, string>
+                                                                                      {
+                                                                                          {'\\', @"\\"},
+                                                                                          {'\"', @"\"""},
+                                                                                          {'\b', @"\b"},
+                                                                                          {'\f', @"\f"},
+                                                                                          {'\n', @"\n"},
+                                                                                          {'\r', @"\r"},
+                                                                                          {'\t', @"\t"}
+                                                                                      };
 
         /// <summary>
         ///   The Epoch date time (used by JavaScript).
@@ -74,21 +88,27 @@ namespace WebApplications.Utilities
 
         private static readonly string[] _tensMapping = new[]
                                                             {
-                                                                "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy",
+                                                                "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy"
+                                                                ,
                                                                 "Eighty", "Ninety"
                                                             };
 
         private static readonly string[] _groupMapping = new[]
                                                              {
-                                                                 "Hundred", "Thousand", "Million", "Billion", "Trillion",
-                                                                 "Quadrillion", "Quintillion", "Sextillian", "Septillion",
+                                                                 "Hundred", "Thousand", "Million", "Billion", "Trillion"
+                                                                 ,
+                                                                 "Quadrillion", "Quintillion", "Sextillian",
+                                                                 "Septillion",
                                                                  "Octillion", "Nonillion", "Decillion", "Undecillion",
                                                                  "Duodecillion", "Tredecillion", "Quattuordecillion",
                                                                  "Quindecillion", "Sexdecillion", "Septendecillion",
                                                                  "Octodecillion", "Novemdecillion", "Vigintillion",
-                                                                 "Unvigintillion", "Duovigintillion", "Tresvigintillion",
-                                                                 "Quattuorvigintillion", "Quinquavigintillion", "Sesvigintillion",
-                                                                 "Septemvigintillion", "Octovigintillion", "Vigintinonillion",
+                                                                 "Unvigintillion", "Duovigintillion", "Tresvigintillion"
+                                                                 ,
+                                                                 "Quattuorvigintillion", "Quinquavigintillion",
+                                                                 "Sesvigintillion",
+                                                                 "Septemvigintillion", "Octovigintillion",
+                                                                 "Vigintinonillion",
                                                                  "Trigintillion", "Untrigintillion", "Duotrigintillion",
                                                                  "Trestrigintillion"
                                                              };
@@ -96,11 +116,20 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   The default split characters for splitting strings.
         /// </summary>
-        public static readonly char[] DefaultSplitChars = new[] { ' ', ',', '\t', '\r', '\n', '|' };
+        public static readonly char[] DefaultSplitChars = new[] {' ', ',', '\t', '\r', '\n', '|'};
 
         private static readonly Regex _htmlRegex = new Regex(@"<[^<>]*>",
                                                              RegexOptions.Compiled | RegexOptions.IgnoreCase |
                                                              RegexOptions.Multiline);
+
+        /// <summary>
+        ///   Use reflection to gain access to the InternalPreserveStackTrace method.
+        /// </summary>
+        [NotNull] private static readonly Action<Exception> _preserveStackTrace =
+            typeof (Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.NonPublic | BindingFlags.Instance).
+                Action<Exception>();
+
+        [NotNull] private static readonly Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
 
         /// <summary>
         ///   Gets the ordinal representation of an <see cref="int">integer</see> ('1st', '2nd', etc.) as a <see cref="string"/>.
@@ -110,9 +139,9 @@ namespace WebApplications.Utilities
         public static string ToOrdinal(this int number)
         {
             string suf = "th";
-            if (((number % 100) / 10) != 1)
+            if (((number%100)/10) != 1)
             {
-                switch (number % 10)
+                switch (number%10)
                 {
                     case 1:
                         suf = "st";
@@ -136,9 +165,9 @@ namespace WebApplications.Utilities
         public static string GetOrdinal(this int number)
         {
             string suf = "th";
-            if (((number % 100) / 10) != 1)
+            if (((number%100)/10) != 1)
             {
-                switch (number % 10)
+                switch (number%10)
                 {
                     case 1:
                         suf = "st";
@@ -190,10 +219,9 @@ namespace WebApplications.Utilities
         /// </returns>
         public static string ToEnglish(this double number)
         {
+            string integerString = ToEnglishProcessInteger((long) number);
 
-            string integerString = ToEnglishProcessInteger((long)number);
-
-            number = Math.Abs(number) % 1;
+            number = Math.Abs(number)%1;
 
             int decimalDigits = 0;
 
@@ -210,7 +238,7 @@ namespace WebApplications.Utilities
             string decimalString = null;
             while (decimalDigits-- > 0)
             {
-                int digit = (int)(number % 10);
+                int digit = (int) (number%10);
                 number /= 10;
                 decimalString = _onesMapping[digit] + " " + decimalString;
             }
@@ -240,8 +268,8 @@ namespace WebApplications.Utilities
             {
                 while (number >= 1)
                 {
-                    int numberToProcess = (number >= 1e16) ? 0 : (int)(number % 1000);
-                    number = number / 1000;
+                    int numberToProcess = (number >= 1e16) ? 0 : (int) (number%1000);
+                    number = number/1000;
 
                     string groupDescription = ToEnglishProcessGroup(numberToProcess);
                     if (groupDescription != null)
@@ -265,8 +293,8 @@ namespace WebApplications.Utilities
 
         private static string ToEnglishProcessGroup(int number)
         {
-            int tens = number % 100;
-            int hundreds = number / 100;
+            int tens = number%100;
+            int hundreds = number/100;
 
             string retVal = null;
             if (hundreds > 0)
@@ -279,8 +307,8 @@ namespace WebApplications.Utilities
                     retVal += ((retVal != null) ? " " : "") + _onesMapping[tens];
                 else
                 {
-                    int ones = tens % 10;
-                    tens = (tens / 10) - 2; // 20's offset
+                    int ones = tens%10;
+                    tens = (tens/10) - 2; // 20's offset
 
                     retVal += ((retVal != null) ? " " : "") + _tensMapping[tens];
 
@@ -332,27 +360,27 @@ namespace WebApplications.Utilities
             return _equalityFunctions.GetOrAdd(
                 type,
                 t =>
-                {
-                    ParameterInfo[] plist;
-                    int pCount = 0;
-                    // Grab the most relevant equals method
-                    MethodInfo equalsMethod =
-                        (t.GetMethods(
-                            BindingFlags.FlattenHierarchy | BindingFlags.Public |
-                            BindingFlags.InvokeMethod | BindingFlags.Instance |
-                            BindingFlags.Static)
-                            .Where(
-                                mi => (mi.Name == "Equals") &&
-                                      ((pCount = (plist = mi.GetParameters()).Count()) < 3) &&
-                                      (pCount > 0) && plist[0].ParameterType.IsAssignableFrom(t) &&
-                                      (mi.IsStatic
-                                           ? (pCount == 2) &&
-                                             plist[1].ParameterType.IsAssignableFrom(t)
-                                           : (pCount == 1))))
-                            .First();
+                    {
+                        ParameterInfo[] plist;
+                        int pCount = 0;
+                        // Grab the most relevant equals method
+                        MethodInfo equalsMethod =
+                            (t.GetMethods(
+                                BindingFlags.FlattenHierarchy | BindingFlags.Public |
+                                BindingFlags.InvokeMethod | BindingFlags.Instance |
+                                BindingFlags.Static)
+                                .Where(
+                                    mi => (mi.Name == "Equals") &&
+                                          ((pCount = (plist = mi.GetParameters()).Count()) < 3) &&
+                                          (pCount > 0) && plist[0].ParameterType.IsAssignableFrom(t) &&
+                                          (mi.IsStatic
+                                               ? (pCount == 2) &&
+                                                 plist[1].ParameterType.IsAssignableFrom(t)
+                                               : (pCount == 1))))
+                                .First();
 
-                    return equalsMethod.Func<object, object, bool>(false);
-                });
+                        return equalsMethod.Func<object, object, bool>(false);
+                    });
         }
 
 
@@ -487,9 +515,10 @@ namespace WebApplications.Utilities
         {
             return enumerableA == null
                        ? enumerableB == null
-                       : enumerableB == null ? false
-                       : enumerableA.Count() == enumerableB.Count() &&
-                         enumerableA.All(i => enumerableB.Contains(i));
+                       : enumerableB == null
+                             ? false
+                             : enumerableA.Count() == enumerableB.Count() &&
+                               enumerableA.All(i => enumerableB.Contains(i));
         }
 
         /// <summary>
@@ -513,9 +542,10 @@ namespace WebApplications.Utilities
         {
             return enumerableA == null
                        ? enumerableB == null
-                       : enumerableB == null ? false
-                       : (enumerableA.Count() == enumerableB.Count() &&
-                         enumerableA.All(i => enumerableB.Contains(i, comparer)));
+                       : enumerableB == null
+                             ? false
+                             : (enumerableA.Count() == enumerableB.Count() &&
+                                enumerableA.All(i => enumerableB.Contains(i, comparer)));
         }
 
         /// <summary>
@@ -544,7 +574,7 @@ namespace WebApplications.Utilities
             if (input == null)
                 return "null";
             // TODO establish approx. increase in length of JSON encoding.
-            StringBuilder stringBuilder = new StringBuilder((int)(input.Length * 1.3) + 2);
+            StringBuilder stringBuilder = new StringBuilder((int) (input.Length*1.3) + 2);
             stringBuilder.AppendJSON(input);
             return stringBuilder.ToString();
         }
@@ -562,7 +592,7 @@ namespace WebApplications.Utilities
                 stringBuilder.Append("null");
                 return stringBuilder;
             }
-            
+
             stringBuilder.Append("\"");
             foreach (char c in input)
             {
@@ -631,13 +661,13 @@ namespace WebApplications.Utilities
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
-                    {
-                        int id;
-                        return Int32.TryParse(s, out id) ? (int?)id : null;
-                    }).Where(id => id.HasValue)
+                        {
+                            int id;
+                            return Int32.TryParse(s, out id) ? (int?) id : null;
+                        }).Where(id => id.HasValue)
                     .Distinct()
                     .Select(id => getObject(id.Value));
-            if (!typeof(T).IsValueType)
+            if (!typeof (T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -671,13 +701,13 @@ namespace WebApplications.Utilities
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
-                    {
-                        Int16 id;
-                        return Int16.TryParse(s, out id) ? (Int16?)id : null;
-                    }).Where(id => id.HasValue)
+                        {
+                            Int16 id;
+                            return Int16.TryParse(s, out id) ? (Int16?) id : null;
+                        }).Where(id => id.HasValue)
                     .Distinct()
                     .Select(id => getObject(id.Value));
-            if (!typeof(T).IsValueType)
+            if (!typeof (T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -711,13 +741,13 @@ namespace WebApplications.Utilities
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
-                    {
-                        Int64 id;
-                        return Int64.TryParse(s, out id) ? (Int64?)id : null;
-                    }).Where(id => id.HasValue)
+                        {
+                            Int64 id;
+                            return Int64.TryParse(s, out id) ? (Int64?) id : null;
+                        }).Where(id => id.HasValue)
                     .Distinct()
                     .Select(id => getObject(id.Value));
-            if (!typeof(T).IsValueType)
+            if (!typeof (T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -744,7 +774,7 @@ namespace WebApplications.Utilities
                                             c => (0x1 <= c && c <= 0xD7FF) || (0xE000 <= c && c <= 0xFFFD)).
                                             Where(
                                                 c =>
-                                                !(0x1 <= c && c <= 0x8) && !new[] { 0xB, 0xC }.Contains(c) &&
+                                                !(0x1 <= c && c <= 0x8) && !new[] {0xB, 0xC}.Contains(c) &&
                                                 !(0xE <= c && c <= 0x1F) && !(0x7F <= c && c <= 0x84) &&
                                                 !(0x86 <= c && c <= 9F)).ToArray());
             return SecurityElement.Escape(stripped);
@@ -880,7 +910,7 @@ namespace WebApplications.Utilities
         /// </remarks>
         public static Int64 GetEpochTime(this DateTime dateTime)
         {
-            return (Int64)(dateTime - EpochStart).TotalMilliseconds;
+            return (Int64) (dateTime - EpochStart).TotalMilliseconds;
         }
 
         /// <summary>
@@ -911,19 +941,22 @@ namespace WebApplications.Utilities
         ///   <paramref name="input"/> was <see langword="null"/>.
         /// </exception>
         public static string StripHTML(this string input)
-        { // TODO: a) make more efficient b) question purpose/usage
+        {
+            // TODO: a) make more efficient b) question purpose/usage
             int depthCounter = 0;
             StringBuilder builder = new StringBuilder(input.Length);
             foreach (char c in input)
             {
-                if(c=='<')
+                if (c == '<')
                 {
                     depthCounter++;
-                } else if (depthCounter > 0)
+                }
+                else if (depthCounter > 0)
                 {
                     if (c == '>')
                         depthCounter--;
-                } else
+                }
+                else
                 {
                     builder.Append(c);
                 }
@@ -1000,7 +1033,7 @@ namespace WebApplications.Utilities
         /// <returns>The value (<paramref name="d"/>) in radians.</returns>
         public static double ToRadians(this double d)
         {
-            return (Math.PI / 180) * d;
+            return (Math.PI/180)*d;
         }
 
         /// <summary>
@@ -1010,7 +1043,7 @@ namespace WebApplications.Utilities
         /// <returns>The value (<paramref name="r"/>) in degrees.</returns>
         public static double ToDegrees(this double r)
         {
-            return r * (180.0 / Math.PI);
+            return r*(180.0/Math.PI);
         }
 
         /// <summary>
@@ -1172,32 +1205,6 @@ namespace WebApplications.Utilities
                 throw new InvalidOperationException(Resources.Extensions_TopologicalSortEdges_DependencyCyclesFound);
         }
 
-        #region Nested type: TypeCounter
-        /// <summary>
-        ///   <para>A utility class to simplify the DeepEquals code.</para>
-        ///   <para>Used for counting the enumerable object's types.</para>
-        /// </summary>
-        private class TypeCounter
-        {
-            public TypeCounter()
-            {
-                Count = 1;
-            }
-
-            public int Count { get; private set; }
-
-            public void Increment()
-            {
-                Count++;
-            }
-
-            public void Decrement()
-            {
-                Count--;
-            }
-        }
-        #endregion
-
         /// <summary>
         ///   Wraps the specified <see cref="IAsyncResult"/> as an
         ///   <see cref="WebApplications.Utilities.Threading.ApmWrap&lt;T&gt;"/> object, allowing associated data to be attached.
@@ -1248,7 +1255,8 @@ namespace WebApplications.Utilities
         /// <returns>The wrapped result.</returns>
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
         [NotNull]
-        public static AsyncCallback WrapCallback<T>([NotNull] this AsyncCallback callback, T data, SynchronizationContext syncContext = null)
+        public static AsyncCallback WrapCallback<T>([NotNull] this AsyncCallback callback, T data,
+                                                    SynchronizationContext syncContext = null)
         {
             return ApmWrap<T>.WrapCallback(callback, data, syncContext);
         }
@@ -1262,9 +1270,9 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static short Mod(this short value, short modulus)
         {
-            int mod = value % modulus;
+            int mod = value%modulus;
             if (mod < 0) mod += modulus;
-            return (short)mod;
+            return (short) mod;
         }
 
         /// <summary>
@@ -1276,7 +1284,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ushort Mod(this ushort value, ushort modulus)
         {
-            return (ushort) (value % modulus);
+            return (ushort) (value%modulus);
         }
 
         /// <summary>
@@ -1288,7 +1296,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static int Mod(this int value, int modulus)
         {
-            int mod = value % modulus;
+            int mod = value%modulus;
             if (mod < 0) mod += modulus;
             return mod;
         }
@@ -1302,7 +1310,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static uint Mod(this uint value, uint modulus)
         {
-            return value % modulus;
+            return value%modulus;
         }
 
         /// <summary>
@@ -1314,7 +1322,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static long Mod(this long value, long modulus)
         {
-            long mod = value % modulus;
+            long mod = value%modulus;
             if (mod < 0) mod += modulus;
             return mod;
         }
@@ -1328,7 +1336,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ulong Mod(this ulong value, ulong modulus)
         {
-            return value % modulus;
+            return value%modulus;
         }
 
         /// <summary>
@@ -1340,10 +1348,10 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <remarks></remarks>
         [NotNull]
-        public static T[][] Split<T>([NotNull]this T[] array, [NotNull] params int[] indices)
+        public static T[][] Split<T>([NotNull] this T[] array, [NotNull] params int[] indices)
         {
             int length = array.Length;
-            
+
             // Sort indices, removing any out of bounds and adding an end value of length.
             int[] orderedIndices = indices
                 .Where(i => i < length && i > -1)
@@ -1379,14 +1387,6 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        ///   Use reflection to gain access to the InternalPreserveStackTrace method.
-        /// </summary>
-        [NotNull]
-        private static readonly Action<Exception> _preserveStackTrace =
-            typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.NonPublic | BindingFlags.Instance).
-                Action<Exception>();
-
-        /// <summary>
         ///   Preserves the stack trace during exception re-throws.
         /// </summary>
         /// <param name="exception">The exception thrown.</param>
@@ -1405,7 +1405,7 @@ namespace WebApplications.Utilities
             {
             }
         }
-        
+
         /// <summary>
         /// Determines whether the specified value is null (includes <see cref="DBNull.Value"/> and <see cref="INullable"/> support).
         /// </summary>
@@ -1425,7 +1425,7 @@ namespace WebApplications.Utilities
         /// <param name="input">The input.</param>
         /// <returns></returns>
         [NotNull]
-        public static IEnumerable<string> SplitLines([NotNull]this string input)
+        public static IEnumerable<string> SplitLines([NotNull] this string input)
         {
             return _lineSplitter.Split(input);
         }
@@ -1436,13 +1436,10 @@ namespace WebApplications.Utilities
         /// <param name="input">The input.</param>
         /// <returns></returns>
         [NotNull]
-        public static string LowerCaseFirstLetter([NotNull]this string input)
+        public static string LowerCaseFirstLetter([NotNull] this string input)
         {
             return input.Substring(0, 1).ToLower() + input.Substring(1);
         }
-
-        [NotNull]
-        private readonly static Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
 
         /// <summary>
         /// Increase number by a percentage.
@@ -1452,7 +1449,33 @@ namespace WebApplications.Utilities
         /// <returns>The number increased by given percentage.</returns>
         public static double AddPercentage(this double number, double increaseByPercent)
         {
-            return number + (number * increaseByPercent) / 100;
+            return number + (number*increaseByPercent)/100;
         }
+
+        #region Nested type: TypeCounter
+        /// <summary>
+        ///   <para>A utility class to simplify the DeepEquals code.</para>
+        ///   <para>Used for counting the enumerable object's types.</para>
+        /// </summary>
+        private class TypeCounter
+        {
+            public TypeCounter()
+            {
+                Count = 1;
+            }
+
+            public int Count { get; private set; }
+
+            public void Increment()
+            {
+                Count++;
+            }
+
+            public void Decrement()
+            {
+                Count--;
+            }
+        }
+        #endregion
     }
 }

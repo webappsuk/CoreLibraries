@@ -1,3 +1,30 @@
+#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,8 +46,7 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Creates index parameters on demand.
         /// </summary>
-        [NotNull]
-        private readonly Lazy<ParameterInfo[]>  _indexParameters;
+        [NotNull] private readonly Lazy<ParameterInfo[]> _indexParameters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Property"/> class.
@@ -39,7 +65,53 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <remarks></remarks>
         [NotNull]
-        public IEnumerable<ParameterInfo> IndexParameters { get { return _indexParameters.Value; } }
+        public IEnumerable<ParameterInfo> IndexParameters
+        {
+            get { return _indexParameters.Value; }
+        }
+
+        #region ISignature Members
+        /// <inheritdoc/>
+        public Type DeclaringType
+        {
+            get { return ExtendedType.Type; }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<GenericArgument> TypeGenericArguments
+        {
+            get { return ExtendedType.GenericArguments; }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<GenericArgument> SignatureGenericArguments
+        {
+            get { return Enumerable.Empty<GenericArgument>(); }
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<Type> ParameterTypes
+        {
+            get
+            {
+                Contract.Assert(_indexParameters.Value != null);
+                return _indexParameters.Value.Select(p => p.ParameterType);
+            }
+        }
+
+        /// <inheritdoc/>
+        public Type ReturnType
+        {
+            get { return Info.PropertyType; }
+        }
+
+        /// <inheritdoc/>
+        ISignature ISignature.Close(Type[] typeClosures, Type[] signatureClosures)
+        {
+            // Indexers don't support signature closures.
+            return signatureClosures.Length != 0 ? null : Close(typeClosures);
+        }
+        #endregion
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Property"/> to <see cref="System.Reflection.PropertyInfo"/>.
@@ -62,39 +134,9 @@ namespace WebApplications.Utilities.Reflect
         {
             return propertyInfo == null
                        ? null
-                       : ((ExtendedType)propertyInfo.DeclaringType).GetIndexer(propertyInfo);
+                       : ((ExtendedType) propertyInfo.DeclaringType).GetIndexer(propertyInfo);
         }
 
-        /// <inheritdoc/>
-        public Type DeclaringType
-        {
-            get { return ExtendedType.Type; }
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<GenericArgument> TypeGenericArguments { get { return ExtendedType.GenericArguments; } }
-
-        /// <inheritdoc/>
-        public IEnumerable<GenericArgument> SignatureGenericArguments
-        {
-            get { return Enumerable.Empty<GenericArgument>(); }
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<Type> ParameterTypes
-        {
-            get
-            {
-                Contract.Assert(_indexParameters.Value != null); 
-                return _indexParameters.Value.Select(p => p.ParameterType);
-            }
-        }
-
-        /// <inheritdoc/>
-        public Type ReturnType
-        {
-            get { return Info.PropertyType; }
-        }
         /// <summary>
         /// Closes the constructor with the specified concrete generic types.
         /// </summary>
@@ -104,7 +146,7 @@ namespace WebApplications.Utilities.Reflect
         /// <para>The closure arrays are ordered and contain the same number of elements as their corresponding
         /// generic arguments.  Where elements are <see langword="null"/> a closure is not required.</para></remarks>
         [CanBeNull]
-        public Indexer Close([NotNull]Type[] typeClosures)
+        public Indexer Close([NotNull] Type[] typeClosures)
         {
             // Check input arrays are valid.
             if (typeClosures.Length != ExtendedType.GenericArguments.Count())
@@ -116,7 +158,7 @@ namespace WebApplications.Utilities.Reflect
 
             // Close type
             ExtendedType et = ExtendedType.CloseType(typeClosures);
-            
+
             // Check closure succeeded.
             if (et == null)
                 return null;
@@ -137,17 +179,11 @@ namespace WebApplications.Utilities.Reflect
             }
 
             // Add return type
-            searchTypes[pCount] = Reflection.ExpandParameterType(Info.PropertyType, Reflection.EmptyTypes, typeGenericArguments);
+            searchTypes[pCount] = Reflection.ExpandParameterType(Info.PropertyType, Reflection.EmptyTypes,
+                                                                 typeGenericArguments);
 
             // Search for indexer on new type.
             return et.GetIndexer(searchTypes);
-        }
-
-        /// <inheritdoc/>
-        ISignature ISignature.Close(Type[] typeClosures, Type[] signatureClosures)
-        {
-            // Indexers don't support signature closures.
-            return signatureClosures.Length != 0 ? null : Close(typeClosures);
         }
     }
 }

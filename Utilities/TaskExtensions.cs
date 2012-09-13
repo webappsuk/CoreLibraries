@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities
-// File: TaskExtensions.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -303,31 +308,31 @@ namespace WebApplications.Utilities
             // Create a continuation.
             return task.ContinueWith(
                 t =>
-                {
-                    if (t == null)
-                        return continuation(null);
-
-                    if (t.Exception != null)
-                        throw t.Exception;
-
-                    if (t.IsCanceled)
-                        throw new TaskCanceledException(Resources.TaskExtensions_After_AntecedentTaskCancelled);
-
-                    switch (t.Status)
                     {
-                        case TaskStatus.RanToCompletion:
-                            // We're OK to continue
-                            return continuation(t);
-                        case TaskStatus.Canceled:
+                        if (t == null)
+                            return continuation(null);
+
+                        if (t.Exception != null)
+                            throw t.Exception;
+
+                        if (t.IsCanceled)
                             throw new TaskCanceledException(Resources.TaskExtensions_After_AntecedentTaskCancelled);
-                        case TaskStatus.Faulted:
-                            throw new InvalidOperationException(
-                                Resources.TaskExtensions_After_AntecedentTaskInFaultedState);
-                        default:
-                            throw new InvalidOperationException(
-                                Resources.TaskExtensions_After_AntecedentTaskInvalidState);
-                    }
-                }, creationOptions.GetEquivalentContinuationOptions());
+
+                        switch (t.Status)
+                        {
+                            case TaskStatus.RanToCompletion:
+                                // We're OK to continue
+                                return continuation(t);
+                            case TaskStatus.Canceled:
+                                throw new TaskCanceledException(Resources.TaskExtensions_After_AntecedentTaskCancelled);
+                            case TaskStatus.Faulted:
+                                throw new InvalidOperationException(
+                                    Resources.TaskExtensions_After_AntecedentTaskInFaultedState);
+                            default:
+                                throw new InvalidOperationException(
+                                    Resources.TaskExtensions_After_AntecedentTaskInvalidState);
+                        }
+                    }, creationOptions.GetEquivalentContinuationOptions());
         }
 
         /// <summary>
@@ -364,54 +369,57 @@ namespace WebApplications.Utilities
             return Task<TNewResult>.Factory.ContinueWhenAll(
                 taskArray,
                 antecedents =>
-                {
-                    if ((antecedents == null) || (antecedents.Length < 1))
-                        return continuation(null);
-
-                    List<Task<TResult>> taskList = new List<Task<TResult>>();
-                    List<Exception> exceptions = new List<Exception>();
-                    foreach (Task<TResult> antecedent in antecedents)
                     {
-                        if (antecedent == null)
-                            continue;
+                        if ((antecedents == null) || (antecedents.Length < 1))
+                            return continuation(null);
 
-                        if (antecedent.Exception != null)
+                        List<Task<TResult>> taskList = new List<Task<TResult>>();
+                        List<Exception> exceptions = new List<Exception>();
+                        foreach (Task<TResult> antecedent in antecedents)
                         {
-                            if (antecedent.Exception.InnerExceptions != null)
-                                exceptions.AddRange(antecedent.Exception.InnerExceptions);
-                            else
-                                exceptions.Add(antecedent.Exception);
-                            continue;
+                            if (antecedent == null)
+                                continue;
+
+                            if (antecedent.Exception != null)
+                            {
+                                if (antecedent.Exception.InnerExceptions != null)
+                                    exceptions.AddRange(antecedent.Exception.InnerExceptions);
+                                else
+                                    exceptions.Add(antecedent.Exception);
+                                continue;
+                            }
+
+                            if (antecedent.IsCanceled)
+                                throw new TaskCanceledException(
+                                    Resources.TaskExtensions_AfterAll_AntecedentTaskCancelled);
+
+                            switch (antecedent.Status)
+                            {
+                                case TaskStatus.RanToCompletion:
+                                    // We're OK to continue
+                                    taskList.Add(antecedent);
+                                    break;
+                                case TaskStatus.Canceled:
+                                    throw new TaskCanceledException(
+                                        Resources.TaskExtensions_AfterAll_AntecedentTaskCancelled);
+                                case TaskStatus.Faulted:
+                                    exceptions.Add(
+                                        new InvalidOperationException(
+                                            Resources.TaskExtensions_AfterAll_AntecedentTaskInFaultedState));
+                                    break;
+                                default:
+                                    exceptions.Add(
+                                        new InvalidOperationException(
+                                            Resources.TaskExtensions_AfterAll_AntecedentTaskInvalidState));
+                                    break;
+                            }
                         }
+                        if (exceptions.Count > 0)
+                            throw new AggregateException(exceptions);
 
-                        if (antecedent.IsCanceled)
-                            throw new TaskCanceledException(Resources.TaskExtensions_AfterAll_AntecedentTaskCancelled);
-
-                        switch (antecedent.Status)
-                        {
-                            case TaskStatus.RanToCompletion:
-                                // We're OK to continue
-                                taskList.Add(antecedent);
-                                break;
-                            case TaskStatus.Canceled:
-                                throw new TaskCanceledException(Resources.TaskExtensions_AfterAll_AntecedentTaskCancelled);
-                            case TaskStatus.Faulted:
-                                exceptions.Add(
-                                    new InvalidOperationException(
-                                        Resources.TaskExtensions_AfterAll_AntecedentTaskInFaultedState));
-                                break;
-                            default:
-                                exceptions.Add(
-                                    new InvalidOperationException(Resources.TaskExtensions_AfterAll_AntecedentTaskInvalidState));
-                                break;
-                        }
-                    }
-                    if (exceptions.Count > 0)
-                        throw new AggregateException(exceptions);
-
-                    // No exceptions or cancellations
-                    return continuation(taskList);
-                }, creationOptions.GetEquivalentContinuationOptions());
+                        // No exceptions or cancellations
+                        return continuation(taskList);
+                    }, creationOptions.GetEquivalentContinuationOptions());
         }
 
         /// <summary>
@@ -432,7 +440,7 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static TaskContinuationOptions GetEquivalentContinuationOptions(this TaskCreationOptions creationOptions)
         {
-            return (TaskContinuationOptions)creationOptions;
+            return (TaskContinuationOptions) creationOptions;
         }
 
         /// <summary>
@@ -448,7 +456,7 @@ namespace WebApplications.Utilities
         ///   The caller does not have the required permission.
         /// </exception>
         [UsedImplicitly]
-        public static WaitHandle WaitAny([NotNull]this WaitHandle handle, [NotNull]params WaitHandle[] handles)
+        public static WaitHandle WaitAny([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
             ManualResetEvent newHandle = new ManualResetEvent(false);
             int handleCount = handles.Length;
@@ -462,23 +470,23 @@ namespace WebApplications.Utilities
                     .UnsafeRegisterWaitForSingleObject(
                         currentHandle,
                         delegate
-                        {
-                            // Signal the manual reset event.
-                            newHandle.Set();
-                        },
+                            {
+                                // Signal the manual reset event.
+                                newHandle.Set();
+                            },
                         null, -1, true);
             }
 
             // Cancel all waits when we finally get the signal.
             ThreadPool
-                    .UnsafeRegisterWaitForSingleObject(
-                        newHandle,
-                        delegate
+                .UnsafeRegisterWaitForSingleObject(
+                    newHandle,
+                    delegate
                         {
                             foreach (RegisteredWaitHandle waiter in waitHandles)
                                 waiter.Unregister(null);
                         },
-                        null, -1, true);
+                    null, -1, true);
 
             return newHandle;
         }
@@ -496,7 +504,7 @@ namespace WebApplications.Utilities
         ///   The caller does not have the required permission.
         /// </exception>
         [UsedImplicitly]
-        public static WaitHandle WaitAll([NotNull]this WaitHandle handle, [NotNull]params WaitHandle[] handles)
+        public static WaitHandle WaitAll([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
             ManualResetEvent newHandle = new ManualResetEvent(false);
 
@@ -504,10 +512,10 @@ namespace WebApplications.Utilities
             Queue<WaitHandle> handleQueue = new Queue<WaitHandle>(handles);
             // Register initial wait.
             ThreadPool
-                    .UnsafeRegisterWaitForSingleObject(
-                        handle,
-                        (s, t) => WaitAllCallback(newHandle, handleQueue),
-                        null, -1, true);
+                .UnsafeRegisterWaitForSingleObject(
+                    handle,
+                    (s, t) => WaitAllCallback(newHandle, handleQueue),
+                    null, -1, true);
 
             // Return the new handle.
             return newHandle;
@@ -521,7 +529,8 @@ namespace WebApplications.Utilities
         /// <exception cref="System.Security.SecurityException">
         ///   The caller does not have the required permission.
         /// </exception>
-        private static void WaitAllCallback([NotNull]ManualResetEvent newHandle, [NotNull]Queue<WaitHandle> handleQueue)
+        private static void WaitAllCallback([NotNull] ManualResetEvent newHandle,
+                                            [NotNull] Queue<WaitHandle> handleQueue)
         {
             // If the queue is empty we're done.
             if (handleQueue.Count < 1)
@@ -557,12 +566,12 @@ namespace WebApplications.Utilities
         ///   <see cref="System.Threading.Tasks.TaskCompletionSource&lt;TResult&gt;">TaskCompletionSource&lt;TResult&gt;</see>.
         /// </returns>
         [UsedImplicitly]
-        public static Task<TResult> FromAsync<TResult>([NotNull]this IAsyncResult asyncResult,
-            [NotNull]Func<IAsyncResult, TResult> endMethod,
-            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
-            TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull]TaskScheduler scheduler = null,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<TResult> FromAsync<TResult>([NotNull] this IAsyncResult asyncResult,
+                                                       [NotNull] Func<IAsyncResult, TResult> endMethod,
+                                                       [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+                                                       TaskCreationOptions creationOptions = TaskCreationOptions.None,
+                                                       [CanBeNull] TaskScheduler scheduler = null,
+                                                       CancellationToken cancellationToken = default(CancellationToken))
         {
             bool cancellable = cancellationToken != CancellationToken.None;
 
