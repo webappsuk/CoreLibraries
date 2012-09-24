@@ -73,8 +73,9 @@
     <AssemblyOriginatorKeyFile>Web Applications UK - Core.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations, Version=5.1.3000.12, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>packages\JetBrains.Annotations.5.1.3000.12\lib\JetBrains.Annotations.dll</HintPath>
+    <Reference Include="JetBrains.Annotations, Version=6.1.0.0, Culture=neutral, PublicKeyToken=3f033448d4bb5376, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\JetBrains.Annotations.7.0\lib\net40\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="Nito.AsyncEx">
       <HintPath>packages\Nito.AsyncEx.0.8.0\lib\net40-client\Nito.AsyncEx.dll</HintPath>
