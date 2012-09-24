@@ -50,7 +50,7 @@ namespace WebApplications.Utilities
     /// <summary>
     ///   Useful extension methods
     /// </summary>
-    public static class Extensions
+    public static class UtilityExtensions
     {
         /// <summary>
         ///   A dictionary of equality operators by their runtime type.

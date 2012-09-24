@@ -31,7 +31,7 @@ namespace WebApplications.Utilities.Enumerations
 {
     /// <summary>
     ///   These flags are used to control how a string is truncated in the
-    ///   <see cref="WebApplications.Utilities.Extensions.Truncate">Truncate</see> extension method.
+    ///   <see cref="UtilityExtensions.Truncate">Truncate</see> extension method.
     /// </summary>
     [Flags]
     public enum TruncateOptions
