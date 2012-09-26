@@ -57,7 +57,7 @@
       <HintPath>..\packages\WebApplications.Testing.2.0.4639.30097\lib\net45\WebApplications.Testing.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.2.0.4650.25306\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.2.0.4652.22330\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
