@@ -235,8 +235,8 @@ namespace WebApplications.Utilities.Database
 
             if (parameters == null)
             {
-                Parameters = new List<KeyValuePair<string, Type>>(0);
-                ProgramParameters = new List<SqlProgramParameter>(0);
+                Parameters = Enumerable.Empty<KeyValuePair<string, Type>>();
+                ProgramParameters = Enumerable.Empty<SqlProgramParameter>();
             }
             else
             {
