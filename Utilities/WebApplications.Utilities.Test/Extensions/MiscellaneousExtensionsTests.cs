@@ -1,29 +1,34 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities.Test
-// File: MiscellaneousExtensionsTests.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -39,17 +44,21 @@ namespace WebApplications.Utilities.Test.Extensions
         [TestMethod]
         public void EpochStart_Value_IsUnixEpoch()
         {
-            Assert.AreEqual(new DateTime(1970, 1, 1), Utilities.Extensions.EpochStart, "The value of EpochStart should be the UNIX epoch: 1st Jan 1970.");
+            Assert.AreEqual(new DateTime(1970, 1, 1), Utilities.UtilityExtensions.EpochStart,
+                            "The value of EpochStart should be the UNIX epoch: 1st Jan 1970.");
         }
 
         [TestMethod]
         public void DefaultSplitCharacters_Value_AreAsGivenHere()
         {
-            var expectedValue = new[] { ' ', ',', '\t', '\r', '\n', '|' };
-            Assert.AreEqual(expectedValue.Length, Utilities.Extensions.DefaultSplitChars.Length, "The value of the DefaultSplitChars array should be space, comma, tab, carriage return, newline, and pipe.");
+            char[] expectedValue = new[] {' ', ',', '\t', '\r', '\n', '|'};
+            Assert.AreEqual(expectedValue.Length, UtilityExtensions.DefaultSplitChars.Length,
+                            "The value of the DefaultSplitChars array should be space, comma, tab, carriage return, newline, and pipe.");
             foreach (Char value in expectedValue)
             {
-                Assert.IsTrue(Utilities.Extensions.DefaultSplitChars.Contains(value), String.Format("The character '{0}' should be included in the DefaultSplitChars array", value));
+                Assert.IsTrue(UtilityExtensions.DefaultSplitChars.Contains(value),
+                              String.Format("The character '{0}' should be included in the DefaultSplitChars array",
+                                            value));
             }
         }
 
@@ -57,7 +66,8 @@ namespace WebApplications.Utilities.Test.Extensions
         public void ToOrdinal_Int_SameAsGetOrdinalWithValuePrepended()
         {
             int value = Random.Next();
-            Assert.AreEqual(String.Format("{0}{1}",value.ToString(),value.GetOrdinal() ), value.ToOrdinal(), "The result of int.ToOrdinal should be the same as prepending the value to the result of int.GetOrdinal.");
+            Assert.AreEqual(String.Format("{0}{1}", value.ToString(), value.GetOrdinal()), value.ToOrdinal(),
+                            "The result of int.ToOrdinal should be the same as prepending the value to the result of int.GetOrdinal.");
         }
 
         [TestMethod]
@@ -66,8 +76,9 @@ namespace WebApplications.Utilities.Test.Extensions
             int hundreds = Random.Next(0, 1000);
             int tens = 1;
             int units = Random.Next(0, 10);
-            int value = hundreds * 100 + tens * 10 + units;
-            Assert.AreEqual("th", value.GetOrdinal(), "The ordinal of any number where the next to last digit is 1 (e.g. 3219 and 12) is 'th'.");
+            int value = hundreds*100 + tens*10 + units;
+            Assert.AreEqual("th", value.GetOrdinal(),
+                            "The ordinal of any number where the next to last digit is 1 (e.g. 3219 and 12) is 'th'.");
         }
 
         [TestMethod]
@@ -81,7 +92,7 @@ namespace WebApplications.Utilities.Test.Extensions
                 tens = Random.Next(0, 10);
             } while (tens == 1);
             int units = 1;
-            int value = hundreds * 100 + tens * 10 + units;
+            int value = hundreds*100 + tens*10 + units;
             Assert.AreEqual("st", value.GetOrdinal(), "The ordinal of any number ending in a 1 (e.g. 21) is 'st'.");
         }
 
@@ -96,7 +107,7 @@ namespace WebApplications.Utilities.Test.Extensions
                 tens = Random.Next(0, 10);
             } while (tens == 1);
             int units = 2;
-            int value = hundreds * 100 + tens * 10 + units;
+            int value = hundreds*100 + tens*10 + units;
             Assert.AreEqual("nd", value.GetOrdinal(), "The ordinal of any number ending in a 2 (e.g. 32) is 'nd'.");
         }
 
@@ -111,7 +122,7 @@ namespace WebApplications.Utilities.Test.Extensions
                 tens = Random.Next(0, 10);
             } while (tens == 1);
             int units = 3;
-            int value = hundreds * 100 + tens * 10 + units;
+            int value = hundreds*100 + tens*10 + units;
             Assert.AreEqual("rd", value.GetOrdinal(), "The ordinal of any number ending in a 1 (e.g. 453) is 'rd'.");
         }
 
@@ -126,50 +137,57 @@ namespace WebApplications.Utilities.Test.Extensions
                 tens = Random.Next(0, 10);
             } while (tens == 1);
             int units = Random.Next(4, 10);
-            int value = hundreds * 100 + tens * 10 + units;
-            Assert.AreEqual("th", value.GetOrdinal(), "The ordinal of any number ending in a 4 or greater (e.g. 454 or 929) is 'th'.");
+            int value = hundreds*100 + tens*10 + units;
+            Assert.AreEqual("th", value.GetOrdinal(),
+                            "The ordinal of any number ending in a 4 or greater (e.g. 454 or 929) is 'th'.");
         }
 
         [TestMethod]
         public void ToEnglish_Int_SameResultAsForDouble()
         {
             int value = Random.Next();
-            Assert.AreEqual(((double)value).ToEnglish(), value.ToEnglish(), "The result of int.ToEnglish should be the same as with double.ToEnglish.");
+            Assert.AreEqual(((double) value).ToEnglish(), value.ToEnglish(),
+                            "The result of int.ToEnglish should be the same as with double.ToEnglish.");
         }
 
         [TestMethod]
         public void ToEnglish_Long_SameResultAsForDouble()
         {
             int value = Random.Next();
-            Assert.AreEqual(((double)value).ToEnglish(), value.ToEnglish(), "The result of long.ToEnglish should be the same as with double.ToEnglish.");
+            Assert.AreEqual(((double) value).ToEnglish(), value.ToEnglish(),
+                            "The result of long.ToEnglish should be the same as with double.ToEnglish.");
         }
 
         [TestMethod]
         public void ToEnglish_NegativeNumber_PrefixedByNegative()
         {
             long value = -Random.Next();
-            Assert.IsTrue(value.ToEnglish().StartsWith("Negative "), "For values less than zero, the result of ToEnglish should begin with 'Negative '.");
+            Assert.IsTrue(value.ToEnglish().StartsWith("Negative "),
+                          "For values less than zero, the result of ToEnglish should begin with 'Negative '.");
         }
 
         [TestMethod]
         public void ToEnglish_NegativeNumber_SameAsPositivePrefixedByWordNegative()
         {
             long value = Random.Next();
-            Assert.AreEqual(String.Format("Negative {0}", value.ToEnglish()), (-value).ToEnglish(), "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
+            Assert.AreEqual(String.Format("Negative {0}", value.ToEnglish()), (-value).ToEnglish(),
+                            "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
         }
 
         [TestMethod]
         public void ToEnglish_NegativeFloatingPointNumber_PrefixedByNegative()
         {
             double value = -Random.Next() + Random.NextDouble();
-            Assert.IsTrue(value.ToEnglish().StartsWith("Negative "), "For values less than zero, the result of ToEnglish should begin with 'Negative '.");
+            Assert.IsTrue(value.ToEnglish().StartsWith("Negative "),
+                          "For values less than zero, the result of ToEnglish should begin with 'Negative '.");
         }
 
         [TestMethod]
         public void ToEnglish_NegativeFloatingPointNumber_SameAsPositivePrefixedByWordNegative()
         {
             double value = Random.Next() + Random.NextDouble();
-            Assert.AreEqual(String.Format("Negative {0}", value.ToEnglish()), (-value).ToEnglish(), "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
+            Assert.AreEqual(String.Format("Negative {0}", value.ToEnglish()), (-value).ToEnglish(),
+                            "The result of ToEnglish for a negative number should be the same as its positive equivilant plus a prefix of 'Negative '.");
         }
 
         [TestMethod]
@@ -188,7 +206,8 @@ namespace WebApplications.Utilities.Test.Extensions
         public void ToEnglish_ValueBetweenOneAndTwoHundred_ProvidesWordAndAfterHundred()
         {
             int value = Random.Next(1, 100);
-            Assert.AreEqual(String.Format("One Hundred And {0}", value.ToEnglish()), (100 + value).ToEnglish(), "The result of ToEnglish for a number between 101 and 199 should start with 'One Hundred And'.");
+            Assert.AreEqual(String.Format("One Hundred And {0}", value.ToEnglish()), (100 + value).ToEnglish(),
+                            "The result of ToEnglish for a number between 101 and 199 should start with 'One Hundred And'.");
         }
 
         [TestMethod]
@@ -200,8 +219,9 @@ namespace WebApplications.Utilities.Test.Extensions
         [TestMethod]
         public void ToEnglish_FractionalValue_ContainsPoint()
         {
-            double value = Random.Next() * Math.Pow(10, -Random.Next(1, 10));
-            Assert.IsTrue(value.ToEnglish().Contains(" Point "), "Where values contain a fractional component, the result of ToEnglish should contain ' Point '.");
+            double value = Random.Next()*Math.Pow(10, -Random.Next(1, 10));
+            Assert.IsTrue(value.ToEnglish().Contains(" Point "),
+                          "Where values contain a fractional component, the result of ToEnglish should contain ' Point '.");
         }
 
         [Ignore] // TODO: finish this test
@@ -209,54 +229,64 @@ namespace WebApplications.Utilities.Test.Extensions
         public void ToEnglish_FractionalValue_WordsAfterPointMatchesNumberOfDecimalPlaces()
         {
             int numPlaces = Random.Next(1, 20);
-            double value = Random.Next() * Math.Pow(10, -numPlaces);
-            Assert.AreEqual(numPlaces, value.ToEnglish().Split(new string[]{" Point "},StringSplitOptions.None)[1].Split(new string[]{" "},StringSplitOptions.None).Length, 
-                "Where values contain a fractional component, the number of words after the word Point should be equal to the number of decimal places.");
+            double value = Random.Next()*Math.Pow(10, -numPlaces);
+            Assert.AreEqual(numPlaces,
+                            value.ToEnglish().Split(new[] {" Point "}, StringSplitOptions.None)[1].Split(new[] {" "},
+                                                                                                         StringSplitOptions
+                                                                                                             .None).
+                                Length,
+                            "Where values contain a fractional component, the number of words after the word Point should be equal to the number of decimal places.");
         }
 
         [TestMethod]
         public void EqualsByRuntimeType_BothInputsNull_ReturnsTrue()
         {
-            Assert.IsTrue(((object) null).EqualsByRuntimeType(null), "Using EqualsByRuntimeType to compare two nulls should return true.");
+            Assert.IsTrue(((object) null).EqualsByRuntimeType(null),
+                          "Using EqualsByRuntimeType to compare two nulls should return true.");
         }
 
         [TestMethod]
         public void EqualsByRuntimeType_FirstInputOnlyNull_ReturnsFalse()
         {
-            Assert.IsFalse(((object)null).EqualsByRuntimeType(Random.Next()), "Using EqualsByRuntimeType to compare a null with anything not null should return false.");
+            Assert.IsFalse(((object) null).EqualsByRuntimeType(Random.Next()),
+                           "Using EqualsByRuntimeType to compare a null with anything not null should return false.");
         }
 
         [TestMethod]
         public void EqualsByRuntimeType_SecondInputOnlyNull_ReturnsFalse()
         {
-            Assert.IsFalse(Random.Next().EqualsByRuntimeType(null), "Using EqualsByRuntimeType to compare a null with anything not null should return false.");
+            Assert.IsFalse(Random.Next().EqualsByRuntimeType(null),
+                           "Using EqualsByRuntimeType to compare a null with anything not null should return false.");
         }
 
         [TestMethod]
         public void EqualsByRuntimeType_InputsOfDifferentTypes_ReturnsFalse()
         {
             int value = Random.Next();
-            Assert.IsFalse(value.EqualsByRuntimeType((long)value), "Using EqualsByRuntimeType to compare values of different types should return false.");
+            Assert.IsFalse(value.EqualsByRuntimeType((long) value),
+                           "Using EqualsByRuntimeType to compare values of different types should return false.");
         }
 
         [TestMethod]
         public void EqualsByRuntimeType_InputsOfSameTypesButNotEqual_ReturnsFalse()
         {
             int value = Random.Next();
-            Assert.IsFalse(value.EqualsByRuntimeType(value - Random.Next(1, 20)), "Using EqualsByRuntimeType to compare different values of the same type should return false.");
+            Assert.IsFalse(value.EqualsByRuntimeType(value - Random.Next(1, 20)),
+                           "Using EqualsByRuntimeType to compare different values of the same type should return false.");
         }
 
         [TestMethod]
         public void EqualsByRuntimeType_InputsOfSameTypesAndEqual_ReturnsTrue()
         {
             int value = Random.Next();
-            Assert.IsTrue(value.EqualsByRuntimeType(value), "Using EqualsByRuntimeType to compare equal values of the same type should return true.");
+            Assert.IsTrue(value.EqualsByRuntimeType(value),
+                          "Using EqualsByRuntimeType to compare equal values of the same type should return true.");
         }
 
         [TestMethod]
         public void DeepEquals_IdenticalLists_ReturnsTrue()
         {
-            List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6 };
+            List<int> list = new List<int> {1, 2, 3, 4, 5, 6};
             Assert.IsTrue(list.DeepEquals(list), "DeepEquals should be true for identical lists.");
         }
 
@@ -264,115 +294,128 @@ namespace WebApplications.Utilities.Test.Extensions
         public void DeepEquals_BothNull_ReturnsTrue()
         {
             List<int> list = null;
-            Assert.IsTrue(list.DeepEquals(null), "DeepEquals should be true for identical lists, even if they are both null.");
+            Assert.IsTrue(list.DeepEquals(null),
+                          "DeepEquals should be true for identical lists, even if they are both null.");
         }
 
         [TestMethod]
         public void DeepEquals_OneNull_ReturnsFalse()
         {
-            List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6 };
+            List<int> list = new List<int> {1, 2, 3, 4, 5, 6};
             Assert.IsFalse(list.DeepEquals(null), "DeepEquals should be false if only one list is null.");
-            Assert.IsFalse(((List<int>)null).DeepEquals(list), "DeepEquals should be false if only one list is null.");
+            Assert.IsFalse(((List<int>) null).DeepEquals(list), "DeepEquals should be false if only one list is null.");
         }
 
         [TestMethod]
         public void DeepEquals_ListsOfSameSizeButOneDifferentValue_ReturnsFalse()
         {
-            List<int> listA = new List<int>() { 1, 2, 3, 4, 5, 6 };
-            List<int> listB = new List<int>() { 1, 2, 3, 99, 5, 6 };
-            Assert.IsFalse(listA.DeepEquals(listB), "DeepEquals should be false for lists of identical length but with different values.");
+            List<int> listA = new List<int> {1, 2, 3, 4, 5, 6};
+            List<int> listB = new List<int> {1, 2, 3, 99, 5, 6};
+            Assert.IsFalse(listA.DeepEquals(listB),
+                           "DeepEquals should be false for lists of identical length but with different values.");
         }
 
         [TestMethod]
         public void DeepEquals_EquivilantListsWithDuplicatedValues_ReturnsTrue()
         {
-            List<int> listA = new List<int>() { 1, 2, 3, 4, 3, 6 };
-            List<int> listB = new List<int>() { 1, 4, 3, 3, 2, 6 };
-            Assert.IsTrue(listA.DeepEquals(listB), "DeepEquals should be true for lists whose contents contains duplicates, but the same number of each .");
+            List<int> listA = new List<int> {1, 2, 3, 4, 3, 6};
+            List<int> listB = new List<int> {1, 4, 3, 3, 2, 6};
+            Assert.IsTrue(listA.DeepEquals(listB),
+                          "DeepEquals should be true for lists whose contents contains duplicates, but the same number of each .");
         }
 
         [TestMethod]
         public void DeepEquals_ListsWithVaryingNumberOfDuplicatedValues_ReturnsFalse()
         {
-            List<int> listA = new List<int>() { 1, 2, 3, 3, 5, 6 };
-            List<int> listB = new List<int>() { 1, 2, 3, 5, 5, 6 };
-            Assert.IsFalse(listA.DeepEquals(listB), "DeepEquals should be false for lists containing the same values, but with different amounts of each duplicated.");
+            List<int> listA = new List<int> {1, 2, 3, 3, 5, 6};
+            List<int> listB = new List<int> {1, 2, 3, 5, 5, 6};
+            Assert.IsFalse(listA.DeepEquals(listB),
+                           "DeepEquals should be false for lists containing the same values, but with different amounts of each duplicated.");
         }
 
         [TestMethod]
         public void DeepEquals_ListsOfDifferentSize_ReturnsFalse()
         {
-            List<int> listA = new List<int>() { 1, 2, 3, 4, 5, 6 };
-            List<int> listB = new List<int>() { 1, 2, 3, 5, 6 };
+            List<int> listA = new List<int> {1, 2, 3, 4, 5, 6};
+            List<int> listB = new List<int> {1, 2, 3, 5, 6};
             Assert.IsFalse(listA.DeepEquals(listB), "DeepEquals should be false for lists of different length.");
         }
 
         [TestMethod]
         public void DeepEquals_WithComparerIdenticalLists_ReturnsTrue()
         {
-            List<string> list = new List<string>() { "a", "b", "c", "d", "e" };
-            Assert.IsTrue(list.DeepEquals(list, StringComparer.OrdinalIgnoreCase), "DeepEquals should be true for identical lists.");
+            List<string> list = new List<string> {"a", "b", "c", "d", "e"};
+            Assert.IsTrue(list.DeepEquals(list, StringComparer.OrdinalIgnoreCase),
+                          "DeepEquals should be true for identical lists.");
         }
 
         [TestMethod]
         public void DeepEquals_WithComparerEquivilantLists_ReturnsTrue()
         {
-            List<string> list1 = new List<string>() { "a", "b", "C", "D", "e" };
-            List<string> list2 = new List<string>() { "a", "B", "c", "d", "e" };
-            Assert.IsTrue(list1.DeepEquals(list2, StringComparer.OrdinalIgnoreCase), "DeepEquals should be true for list where all items are deemed equivilant by the comparer supplied.");
+            List<string> list1 = new List<string> {"a", "b", "C", "D", "e"};
+            List<string> list2 = new List<string> {"a", "B", "c", "d", "e"};
+            Assert.IsTrue(list1.DeepEquals(list2, StringComparer.OrdinalIgnoreCase),
+                          "DeepEquals should be true for list where all items are deemed equivilant by the comparer supplied.");
         }
 
         [TestMethod]
         public void DeepEquals_WithComparerBothNull_ReturnsTrue()
         {
             List<string> list = null;
-            Assert.IsTrue(list.DeepEquals(null, StringComparer.OrdinalIgnoreCase), "DeepEquals should be true for identical lists, even if they are both null.");
+            Assert.IsTrue(list.DeepEquals(null, StringComparer.OrdinalIgnoreCase),
+                          "DeepEquals should be true for identical lists, even if they are both null.");
         }
 
         [TestMethod]
         public void DeepEquals_WithComparerOneNull_ReturnsFalse()
         {
-            List<string> list = new List<string>() { "a", "b", "c", "d", "e" };
-            Assert.IsFalse(list.DeepEquals(null, StringComparer.OrdinalIgnoreCase), "DeepEquals should be false if only one list is null.");
-            Assert.IsFalse(((List<string>)null).DeepEquals(list, StringComparer.OrdinalIgnoreCase), "DeepEquals should be false if only one list is null.");
+            List<string> list = new List<string> {"a", "b", "c", "d", "e"};
+            Assert.IsFalse(list.DeepEquals(null, StringComparer.OrdinalIgnoreCase),
+                           "DeepEquals should be false if only one list is null.");
+            Assert.IsFalse(((List<string>) null).DeepEquals(list, StringComparer.OrdinalIgnoreCase),
+                           "DeepEquals should be false if only one list is null.");
         }
 
         [TestMethod]
         public void DeepEquals_WithComparerListsOfSameSizeButOneDifferentValue_ReturnsFalse()
         {
-            List<string> listA = new List<string>() { "a", "b", "c", "d", "e" };
-            List<string> listB = new List<string>() { "a", "b", "c", "z", "e" };
-            Assert.IsFalse(listA.DeepEquals(listB, StringComparer.OrdinalIgnoreCase), "DeepEquals should be false for lists of identical length but with different values.");
+            List<string> listA = new List<string> {"a", "b", "c", "d", "e"};
+            List<string> listB = new List<string> {"a", "b", "c", "z", "e"};
+            Assert.IsFalse(listA.DeepEquals(listB, StringComparer.OrdinalIgnoreCase),
+                           "DeepEquals should be false for lists of identical length but with different values.");
         }
 
         [TestMethod]
         public void DeepEquals_WithComparerEquivilantListsWithDuplicatedValues_ReturnsTrue()
         {
-            List<string> listA = new List<string>() { "a", "b", "B", "d", "e" };
-            List<string> listB = new List<string>() { "a", "B", "d", "B", "e" };
-            Assert.IsTrue(listA.DeepEquals(listB, StringComparer.OrdinalIgnoreCase), "DeepEquals should be true for lists whose contents contains duplicates, but the same number of each .");
+            List<string> listA = new List<string> {"a", "b", "B", "d", "e"};
+            List<string> listB = new List<string> {"a", "B", "d", "B", "e"};
+            Assert.IsTrue(listA.DeepEquals(listB, StringComparer.OrdinalIgnoreCase),
+                          "DeepEquals should be true for lists whose contents contains duplicates, but the same number of each .");
         }
 
         [TestMethod]
         public void DeepEquals_WithComparerListsWithVaryingNumberOfDuplicatedValues_ReturnsFalse()
         {
-            List<string> listA = new List<string>() { "a", "b", "d", "d", "e" };
-            List<string> listB = new List<string>() { "a", "b", "b", "d", "e" };
-            Assert.IsFalse(listA.DeepEquals(listB, StringComparer.OrdinalIgnoreCase), "DeepEquals should be false for lists containing the same values, but with different amounts of each duplicated.");
+            List<string> listA = new List<string> {"a", "b", "d", "d", "e"};
+            List<string> listB = new List<string> {"a", "b", "b", "d", "e"};
+            Assert.IsFalse(listA.DeepEquals(listB, StringComparer.OrdinalIgnoreCase),
+                           "DeepEquals should be false for lists containing the same values, but with different amounts of each duplicated.");
         }
 
         [TestMethod]
         public void DeepEquals_WithComparerListsOfDifferentSize_ReturnsFalse()
         {
-            List<string> listA = new List<string>() { "a", "b", "c", "d", "e" };
-            List<string> listB = new List<string>() { "a", "b", "c", "d", "e", "f" };
-            Assert.IsFalse(listA.DeepEquals(listB, StringComparer.OrdinalIgnoreCase), "DeepEquals should be false for lists of different length.");
+            List<string> listA = new List<string> {"a", "b", "c", "d", "e"};
+            List<string> listB = new List<string> {"a", "b", "c", "d", "e", "f"};
+            Assert.IsFalse(listA.DeepEquals(listB, StringComparer.OrdinalIgnoreCase),
+                           "DeepEquals should be false for lists of different length.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_IdenticalLists_ReturnsTrue()
         {
-            List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6 };
+            List<int> list = new List<int> {1, 2, 3, 4, 5, 6};
             Assert.IsTrue(list.DeepEqualsSimple(list), "DeepEqualsSimple should be true for identical lists.");
         }
 
@@ -380,85 +423,97 @@ namespace WebApplications.Utilities.Test.Extensions
         public void DeepEqualsSimple_BothNull_ReturnsTrue()
         {
             List<int> list = null;
-            Assert.IsTrue(list.DeepEqualsSimple(null), "DeepEqualsSimple should be true for identical lists, even if they are both null.");
+            Assert.IsTrue(list.DeepEqualsSimple(null),
+                          "DeepEqualsSimple should be true for identical lists, even if they are both null.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_OneNull_ReturnsFalse()
         {
-            List<int> list = new List<int>() { 1, 2, 3, 4, 5, 6 };
+            List<int> list = new List<int> {1, 2, 3, 4, 5, 6};
             Assert.IsFalse(list.DeepEqualsSimple(null), "DeepEqualsSimple should be false if only one list is null.");
-            Assert.IsFalse(((List<int>)null).DeepEqualsSimple(list), "DeepEqualsSimple should be false if only one list is null.");
+            Assert.IsFalse(((List<int>) null).DeepEqualsSimple(list),
+                           "DeepEqualsSimple should be false if only one list is null.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_ListsIdenticalValuesInDifferentOrder_ReturnsTrue()
         {
-            List<int> listA = new List<int>() { 1, 2, 3, 4, 5, 6 };
-            List<int> listB = new List<int>() { 2, 3, 1, 6, 5, 4 };
-            Assert.IsTrue(listA.DeepEqualsSimple(listB), "DeepEqualsSimple should be true for lists of identical content but with different orders.");
+            List<int> listA = new List<int> {1, 2, 3, 4, 5, 6};
+            List<int> listB = new List<int> {2, 3, 1, 6, 5, 4};
+            Assert.IsTrue(listA.DeepEqualsSimple(listB),
+                          "DeepEqualsSimple should be true for lists of identical content but with different orders.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_ListsOfSameSizeButOneDifferentValue_ReturnsFalse()
         {
-            List<int> listA = new List<int>() { 1, 2, 3, 4, 5, 6 };
-            List<int> listB = new List<int>() { 1, 2, 3, 99, 5, 6 };
-            Assert.IsFalse(listA.DeepEqualsSimple(listB), "DeepEqualsSimple should be false for lists of identical length but with different values.");
+            List<int> listA = new List<int> {1, 2, 3, 4, 5, 6};
+            List<int> listB = new List<int> {1, 2, 3, 99, 5, 6};
+            Assert.IsFalse(listA.DeepEqualsSimple(listB),
+                           "DeepEqualsSimple should be false for lists of identical length but with different values.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_ListsOfDifferentSize_ReturnsFalse()
         {
-            List<int> listA = new List<int>() { 1, 2, 3, 4, 5, 6 };
-            List<int> listB = new List<int>() { 1, 2, 3, 5, 6 };
-            Assert.IsFalse(listA.DeepEqualsSimple(listB), "DeepEqualsSimple should be false for lists of different length.");
+            List<int> listA = new List<int> {1, 2, 3, 4, 5, 6};
+            List<int> listB = new List<int> {1, 2, 3, 5, 6};
+            Assert.IsFalse(listA.DeepEqualsSimple(listB),
+                           "DeepEqualsSimple should be false for lists of different length.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_WithComparerIdenticalLists_ReturnsTrue()
         {
-            List<string> list = new List<string>() { "a", "b", "c", "d", "e" };
-            Assert.IsTrue(list.DeepEqualsSimple(list, StringComparer.OrdinalIgnoreCase), "DeepEqualsSimple should be true for identical lists.");
+            List<string> list = new List<string> {"a", "b", "c", "d", "e"};
+            Assert.IsTrue(list.DeepEqualsSimple(list, StringComparer.OrdinalIgnoreCase),
+                          "DeepEqualsSimple should be true for identical lists.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_WithComparerEquivilantLists_ReturnsTrue()
         {
-            List<string> list1 = new List<string>() { "a", "b", "C", "D", "e" };
-            List<string> list2 = new List<string>() { "a", "B", "c", "d", "e" };
-            Assert.IsTrue(list1.DeepEqualsSimple(list2, StringComparer.OrdinalIgnoreCase), "DeepEqualsSimple should be true for list where all items are deemed equivilant by the comparer supplied.");
+            List<string> list1 = new List<string> {"a", "b", "C", "D", "e"};
+            List<string> list2 = new List<string> {"a", "B", "c", "d", "e"};
+            Assert.IsTrue(list1.DeepEqualsSimple(list2, StringComparer.OrdinalIgnoreCase),
+                          "DeepEqualsSimple should be true for list where all items are deemed equivilant by the comparer supplied.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_WithComparerBothNull_ReturnsTrue()
         {
             List<string> list = null;
-            Assert.IsTrue(list.DeepEqualsSimple(null, StringComparer.OrdinalIgnoreCase), "DeepEqualsSimple should be true for identical lists, even if they are both null.");
+            Assert.IsTrue(list.DeepEqualsSimple(null, StringComparer.OrdinalIgnoreCase),
+                          "DeepEqualsSimple should be true for identical lists, even if they are both null.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_WithComparerOneNull_ReturnsFalse()
         {
-            List<string> list = new List<string>() { "a", "b", "c", "d", "e" };
-            Assert.IsFalse(list.DeepEqualsSimple(null, StringComparer.OrdinalIgnoreCase), "DeepEqualsSimple should be false if only one list is null.");
-            Assert.IsFalse(((List<string>)null).DeepEqualsSimple(list, StringComparer.OrdinalIgnoreCase), "DeepEqualsSimple should be false if only one list is null.");
+            List<string> list = new List<string> {"a", "b", "c", "d", "e"};
+            Assert.IsFalse(list.DeepEqualsSimple(null, StringComparer.OrdinalIgnoreCase),
+                           "DeepEqualsSimple should be false if only one list is null.");
+            Assert.IsFalse(((List<string>) null).DeepEqualsSimple(list, StringComparer.OrdinalIgnoreCase),
+                           "DeepEqualsSimple should be false if only one list is null.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_WithComparerListsOfSameSizeButOneDifferentValue_ReturnsFalse()
         {
-            List<string> listA = new List<string>() { "a", "b", "c", "d", "e" };
-            List<string> listB = new List<string>() { "a", "b", "c", "z", "e" };
-            Assert.IsFalse(listA.DeepEqualsSimple(listB, StringComparer.OrdinalIgnoreCase), "DeepEqualsSimple should be false for lists of identical length but with different values.");
+            List<string> listA = new List<string> {"a", "b", "c", "d", "e"};
+            List<string> listB = new List<string> {"a", "b", "c", "z", "e"};
+            Assert.IsFalse(listA.DeepEqualsSimple(listB, StringComparer.OrdinalIgnoreCase),
+                           "DeepEqualsSimple should be false for lists of identical length but with different values.");
         }
 
         [TestMethod]
         public void DeepEqualsSimple_WithComparerListsOfDifferentSize_ReturnsFalse()
         {
-            List<string> listA = new List<string>() { "a", "b", "c", "d", "e" };
-            List<string> listB = new List<string>() { "a", "b", "c", "d", "e", "f" };
-            Assert.IsFalse(listA.DeepEqualsSimple(listB, StringComparer.OrdinalIgnoreCase), "DeepEqualsSimple should be false for lists of different length.");
+            List<string> listA = new List<string> {"a", "b", "c", "d", "e"};
+            List<string> listB = new List<string> {"a", "b", "c", "d", "e", "f"};
+            Assert.IsFalse(listA.DeepEqualsSimple(listB, StringComparer.OrdinalIgnoreCase),
+                           "DeepEqualsSimple should be false for lists of different length.");
         }
 
         [TestMethod]
@@ -466,7 +521,8 @@ namespace WebApplications.Utilities.Test.Extensions
         {
             NameValueCollection nameValueCollection = new NameValueCollection();
             Dictionary<string, string> dict = nameValueCollection.ToDictionary();
-            Assert.AreEqual(0, dict.Count, "Converting an empty nameValueCollection with ToDictionary should result in an empty dictionary");
+            Assert.AreEqual(0, dict.Count,
+                            "Converting an empty nameValueCollection with ToDictionary should result in an empty dictionary");
         }
 
         [TestMethod]
@@ -476,10 +532,12 @@ namespace WebApplications.Utilities.Test.Extensions
             int count = Random.Next(1, 20);
             for (int i = 0; i < count; i++)
             {
-                nameValueCollection.Set(String.Format("{1} {0}", i, Random.Next()), Random.Next().ToString(CultureInfo.InvariantCulture));
+                nameValueCollection.Set(String.Format("{1} {0}", i, Random.Next()),
+                                        Random.Next().ToString(CultureInfo.InvariantCulture));
             }
             Dictionary<string, string> dict = nameValueCollection.ToDictionary();
-            Assert.AreEqual(nameValueCollection.Count, dict.Count, "Converting a nameValueCollection with ToDictionary should preserve item count");
+            Assert.AreEqual(nameValueCollection.Count, dict.Count,
+                            "Converting a nameValueCollection with ToDictionary should preserve item count");
         }
 
         [TestMethod]
@@ -489,12 +547,14 @@ namespace WebApplications.Utilities.Test.Extensions
             int count = Random.Next(5, 10);
             for (int i = 0; i < count; i++)
             {
-                nameValueCollection.Set(String.Format("{1} {0}", i, Random.Next()), Random.Next().ToString(CultureInfo.InvariantCulture));
+                nameValueCollection.Set(String.Format("{1} {0}", i, Random.Next()),
+                                        Random.Next().ToString(CultureInfo.InvariantCulture));
             }
             Dictionary<string, string> dict = nameValueCollection.ToDictionary();
             foreach (string key in nameValueCollection)
             {
-                Assert.AreEqual(nameValueCollection.Get(key), dict[key], "After converting a nameValueCollection with ToDictionary, the values of each key should be preserved.");
+                Assert.AreEqual(nameValueCollection.Get(key), dict[key],
+                                "After converting a nameValueCollection with ToDictionary, the values of each key should be preserved.");
             }
         }
 
@@ -506,10 +566,14 @@ namespace WebApplications.Utilities.Test.Extensions
             nameValueCollection.Set("Keyname", Random.Next().ToString(CultureInfo.InvariantCulture));
             nameValueCollection.Set("KEYNAME", Random.Next().ToString(CultureInfo.InvariantCulture));
             Dictionary<string, string> dict = nameValueCollection.ToDictionary();
-            Assert.IsTrue(dict.ContainsKey("keyname"), "After converting a NameValueCollection with ToDictionary, the keys should be case insensitive.");
-            Assert.AreEqual(nameValueCollection.Get("keyname"), dict["keyname"], "After converting a nameValueCollection with ToDictionary, the keys should be case insensitive.");
-            Assert.IsTrue(dict.ContainsKey("Keyname"), "After converting a NameValueCollection with ToDictionary, the keys should be case insensitive.");
-            Assert.IsTrue(dict.ContainsKey("KEYNAME"), "After converting a NameValueCollection with ToDictionary, the keys should be case insensitive.");
+            Assert.IsTrue(dict.ContainsKey("keyname"),
+                          "After converting a NameValueCollection with ToDictionary, the keys should be case insensitive.");
+            Assert.AreEqual(nameValueCollection.Get("keyname"), dict["keyname"],
+                            "After converting a nameValueCollection with ToDictionary, the keys should be case insensitive.");
+            Assert.IsTrue(dict.ContainsKey("Keyname"),
+                          "After converting a NameValueCollection with ToDictionary, the keys should be case insensitive.");
+            Assert.IsTrue(dict.ContainsKey("KEYNAME"),
+                          "After converting a NameValueCollection with ToDictionary, the keys should be case insensitive.");
         }
 
         [TestMethod]
@@ -520,16 +584,16 @@ namespace WebApplications.Utilities.Test.Extensions
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
+        [ExpectedException(typeof (NullReferenceException))]
         public void XmlEscape_NullObject_ThrowsNullReferenceException()
         {
-            Assert.IsNull(((object)null).XmlEscape());
+            Assert.IsNull(((object) null).XmlEscape());
         }
 
         [TestMethod]
         public void XmlEscape_NullString_ReturnsNull()
         {
-            Assert.IsNull(((String)null).XmlEscape());
+            Assert.IsNull(((String) null).XmlEscape());
         }
 
         [TestMethod]
@@ -552,11 +616,11 @@ namespace WebApplications.Utilities.Test.Extensions
         {
             const String input = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
             String output = input.XmlEscape();
-            Assert.AreEqual(input,output);
+            Assert.AreEqual(input, output);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void GetEmbeddedXml_NullAssembly_ThrowsInvalidoperationException()
         {
             Assembly assembly = null;
@@ -566,7 +630,7 @@ namespace WebApplications.Utilities.Test.Extensions
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void GetEmbeddedXml_NullFilename_ThrowsInvalidoperationException()
         {
             Assembly assembly = Assembly.GetCallingAssembly();
@@ -574,7 +638,7 @@ namespace WebApplications.Utilities.Test.Extensions
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void GetEmbeddedXml_WhitespaceFilename_ThrowsInvalidoperationException()
         {
             Assembly assembly = Assembly.GetCallingAssembly();
@@ -582,7 +646,7 @@ namespace WebApplications.Utilities.Test.Extensions
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void GetEmbeddedXml_FilenameNotMatchingAnyManifest_ThrowsInvalidoperationException()
         {
             Assembly assembly = Assembly.GetCallingAssembly();
@@ -599,9 +663,10 @@ namespace WebApplications.Utilities.Test.Extensions
         [TestMethod]
         public void GetEpochTime_UnixEpochPlusSomeHours_ReturnsNumberOfHoursMultipliedBy3600000()
         {
-            int hours = Random.Next(1,100);
+            int hours = Random.Next(1, 100);
             DateTime dateTime = new DateTime(1970, 1, 1).AddHours(hours);
-            Assert.AreEqual(hours*3600000, dateTime.GetEpochTime(), "Performing GetEpochTime on (1st Jan 1970 + x hours) should return x*3600000.");
+            Assert.AreEqual(hours*3600000, dateTime.GetEpochTime(),
+                            "Performing GetEpochTime on (1st Jan 1970 + x hours) should return x*3600000.");
         }
 
         [TestMethod]
@@ -614,7 +679,8 @@ namespace WebApplications.Utilities.Test.Extensions
                 seconds = Random.Next();
                 dateTime = DateTime.SpecifyKind(new DateTime(1970, 1, 1), DateTimeKind.Local).AddSeconds(seconds);
             } while (dateTime.IsDaylightSavingTime());
-            Assert.AreEqual(seconds * 1000, dateTime.GetEpochTime(), "Performing GetEpochTime outside of daylight saving time should return the number of milliseconds past the unix epoch.");
+            Assert.AreEqual(seconds*1000, dateTime.GetEpochTime(),
+                            "Performing GetEpochTime outside of daylight saving time should return the number of milliseconds past the unix epoch.");
         }
 
         [TestMethod]
@@ -627,7 +693,8 @@ namespace WebApplications.Utilities.Test.Extensions
                 seconds = Random.Next();
                 dateTime = DateTime.SpecifyKind(new DateTime(1970, 1, 1), DateTimeKind.Local).AddSeconds(seconds);
             } while (!dateTime.IsDaylightSavingTime());
-            Assert.AreEqual(seconds * 1000, dateTime.GetEpochTime(), "Performing GetEpochTime in daylight saving time should return the number of milliseconds past the unix epoch.");
+            Assert.AreEqual(seconds*1000, dateTime.GetEpochTime(),
+                            "Performing GetEpochTime in daylight saving time should return the number of milliseconds past the unix epoch.");
         }
 
         [TestMethod]
@@ -635,66 +702,75 @@ namespace WebApplications.Utilities.Test.Extensions
         {
             long seconds = Random.Next();
             DateTime dateTime = DateTime.SpecifyKind(new DateTime(1970, 1, 1), DateTimeKind.Utc).AddSeconds(seconds);
-            Assert.AreEqual(seconds * 1000, dateTime.GetEpochTime(), "Performing GetEpochTime should return the number of milliseconds past the unix epoch.");
+            Assert.AreEqual(seconds*1000, dateTime.GetEpochTime(),
+                            "Performing GetEpochTime should return the number of milliseconds past the unix epoch.");
         }
 
         [TestMethod]
         public void GetDateTime_ResultFromGetEpochTime_ReturnsOriginalDateTimeToWithinMillisecond()
-        {   
+        {
             DateTime dateTime = DateTime.Now.AddTicks(Random.Next()).AddSeconds(-Random.Next());
-            Assert.AreEqual(0, (dateTime - Utilities.Extensions.GetDateTime(dateTime.GetEpochTime())).TotalMilliseconds, 1.0);
+            Assert.AreEqual(0, (dateTime - Utilities.UtilityExtensions.GetDateTime(dateTime.GetEpochTime())).TotalMilliseconds,
+                            1.0);
         }
 
         [TestMethod]
         public void StripHTML_Tag_StripsTag()
         {
             const string testString = "Surrounding <htmltag> Text";
-            Assert.IsFalse(testString.StripHTML().Contains("htmltag"), "StripHTML should remove all HTML tags from '{0}'.", testString);
+            Assert.IsFalse(testString.StripHTML().Contains("htmltag"),
+                           "StripHTML should remove all HTML tags from '{0}'.", testString);
         }
 
         [TestMethod]
         public void StripHTML_TagWithAttributes_StripsTag()
         {
             const string testString = "Surrounding <htmltag attribute=\"value\"> Text";
-            Assert.IsFalse(testString.StripHTML().Contains("htmltag"), "StripHTML should remove all HTML tags from '{0}'.", testString);
+            Assert.IsFalse(testString.StripHTML().Contains("htmltag"),
+                           "StripHTML should remove all HTML tags from '{0}'.", testString);
         }
 
         [TestMethod]
         public void StripHTML_TagSplitAcrossTwoLines_StripsTag()
         {
             const string testString = "Surrounding <htmltag\n> Text";
-            Assert.IsFalse(testString.StripHTML().Contains("htmltag"), "StripHTML should remove all HTML tags from '{0}'.", testString);
+            Assert.IsFalse(testString.StripHTML().Contains("htmltag"),
+                           "StripHTML should remove all HTML tags from '{0}'.", testString);
         }
 
         [TestMethod]
         public void StripHTML_TagsWithBracketsWithin_StripsEntireTag()
         {
             const string testString = "Surrounding <htmltag<>> Text";
-            Assert.IsFalse(testString.StripHTML().Contains("htmltag"), "StripHTML should remove all HTML tags from '{0}'.", testString);
+            Assert.IsFalse(testString.StripHTML().Contains("htmltag"),
+                           "StripHTML should remove all HTML tags from '{0}'.", testString);
         }
 
         [TestMethod]
         public void StripHTML_EntityEncodedTags_TagsIgnored()
         {
             const string testString = "Surrounding &lt;htmltag&gt; Text";
-            Assert.IsTrue(testString.StripHTML().Contains("htmltag"), "StripHTML should not remove the entity encoded (and thus safe) tags from '{0}'.", testString);
+            Assert.IsTrue(testString.StripHTML().Contains("htmltag"),
+                          "StripHTML should not remove the entity encoded (and thus safe) tags from '{0}'.", testString);
         }
 
         [TestMethod]
         public void ToRadians_ValuesInRangeZeroToThreeSixty__ConvertsFromDegreesToRadians()
         {
-            double degrees = Random.NextDouble() * 360;
-            Assert.AreEqual((degrees * Math.PI) / 180, degrees.ToRadians(), 1e-10, "ToRadians should convert a value in degrees to the value in radians (i.e. multiply by pi/180)");
+            double degrees = Random.NextDouble()*360;
+            Assert.AreEqual((degrees*Math.PI)/180, degrees.ToRadians(), 1e-10,
+                            "ToRadians should convert a value in degrees to the value in radians (i.e. multiply by pi/180)");
         }
 
         [TestMethod]
         public void ToDegrees_ValuesInRangeZeroToTwoPi__ConvertsFromRadiansToDegrees()
         {
-            double radians = Random.NextDouble() * Math.PI*2;
-            Assert.AreEqual((radians * 180) / Math.PI, radians.ToDegrees(), 1e-10, "ToDegrees should convert a value in radians to the value in degrees (i.e. divide by pi/180)");
+            double radians = Random.NextDouble()*Math.PI*2;
+            Assert.AreEqual((radians*180)/Math.PI, radians.ToDegrees(), 1e-10,
+                            "ToDegrees should convert a value in radians to the value in degrees (i.e. divide by pi/180)");
         }
 
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof (ArgumentNullException))]
         [TestMethod]
         public void SafeFormat_NullString_ThrowsArgumentNullException()
         {
@@ -713,7 +789,8 @@ namespace WebApplications.Utilities.Test.Extensions
             int a = Random.Next();
             int b = Random.Next(0, 256);
             const string formatString = "Test string to format with two parameters: {1:X2} and {0}";
-            Assert.AreEqual(String.Format(formatString, a, b), formatString.SafeFormat(a, b), "SafeFormat should use the string as a format string and format using the parameters supplied as values.");
+            Assert.AreEqual(String.Format(formatString, a, b), formatString.SafeFormat(a, b),
+                            "SafeFormat should use the string as a format string and format using the parameters supplied as values.");
         }
 
         [TestMethod]
@@ -721,8 +798,10 @@ namespace WebApplications.Utilities.Test.Extensions
         {
             int a = Random.Next();
             int b = Random.Next(0, 256);
-            const string formatString = "Test string containing tabs\t to format with two parameters: \t {1:X2} and \t {0}";
-            Assert.AreEqual(String.Format(formatString, a, b), formatString.SafeFormat(a, b), "SafeFormat should use the string as a format string and format using the parameters supplied as values.");
+            const string formatString =
+                "Test string containing tabs\t to format with two parameters: \t {1:X2} and \t {0}";
+            Assert.AreEqual(String.Format(formatString, a, b), formatString.SafeFormat(a, b),
+                            "SafeFormat should use the string as a format string and format using the parameters supplied as values.");
         }
 
         [TestMethod]
@@ -731,7 +810,8 @@ namespace WebApplications.Utilities.Test.Extensions
             int a = Random.Next();
             int b = Random.Next(0, 256);
             const string formatString = "Test string to format with too many parameters: {3} {1:X2} and {0}";
-            Assert.AreEqual(formatString, formatString.SafeFormat(a, b), "SafeFormat should silently return the string if the string is not a valid format string for the parameters supplied.");
+            Assert.AreEqual(formatString, formatString.SafeFormat(a, b),
+                            "SafeFormat should silently return the string if the string is not a valid format string for the parameters supplied.");
         }
 
         [TestMethod]
@@ -790,9 +870,11 @@ namespace WebApplications.Utilities.Test.Extensions
             Assert.AreEqual(wrappedObject, wrapped.Unwrap<string>());
         }
 
-        [ExpectedException(typeof(InvalidCastException))]
+        [ExpectedException(typeof (InvalidCastException))]
         [TestMethod]
-        public void UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputtedThenUnwrappingOutput_ThrowsInvalidCastException()
+        public void
+            UnWrap_AfterPerformingWrapThenUnwrappedWithIAsyncResultOutputtedThenUnwrappingOutput_ThrowsInvalidCastException
+            ()
         {
             string wrappedObject = Random.RandomString(10);
             IAsyncResult initial = new Mock<IAsyncResult>().Object;
@@ -803,40 +885,12 @@ namespace WebApplications.Utilities.Test.Extensions
         }
 
         [TestMethod]
-        public void PreserveStackTrace_NullException()
-        {
-            // Ensure this doesn't error
-            ((Exception) null).PreserveStackTrace();
-        }
-
-        [TestMethod]
-        public void PreserveStackTrace_ExceptionLaterReThrown_StackTraceIsPreserved()
-        {
-            try
-            {
-                try
-                {
-                    throw new Exception("Exception to preserve the stack trace of");
-                }
-                catch (Exception exception)
-                {
-                    exception.PreserveStackTrace();
-                    throw;
-                }
-            }
-            catch(Exception exception)
-            {
-                Assert.AreEqual(2,exception.StackTrace.Split('\n').Count());
-            }
-        }
-
-        [TestMethod]
         public void Mod_PositiveInt_ReturnsModulus()
         {
             int number = Random.Next();
             int mod = Random.Next(2, 100);
             int result = number.Mod(mod);
-            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+            Assert.AreEqual(number%mod, result, "Expected result is {0}%{1}", number, mod);
         }
 
         [TestMethod]
@@ -845,14 +899,14 @@ namespace WebApplications.Utilities.Test.Extensions
             int number = -Random.Next();
             int mod = Random.Next(2, 100);
             int result = number.Mod(mod);
-            Assert.AreEqual(((number % mod) + mod) % mod, result, "Expected result is {0}%{1}", number, mod);
+            Assert.AreEqual(((number%mod) + mod)%mod, result, "Expected result is {0}%{1}", number, mod);
         }
 
         [TestMethod]
         public void Mod_PositiveIntWithExactMultiple_ReturnsZero()
         {
             int mod = Random.Next(2, 100);
-            int number = Random.Next(1,int.MaxValue/mod) * mod;
+            int number = Random.Next(1, int.MaxValue/mod)*mod;
             int result = number.Mod(mod);
             Assert.AreEqual(0, result, "Expected result is {0}%{1}", number, mod);
         }
@@ -861,7 +915,7 @@ namespace WebApplications.Utilities.Test.Extensions
         public void Mod_NegativeIntWithExactMultiple_ReturnsZero()
         {
             int mod = Random.Next(2, 100);
-            int number = -Random.Next(1, int.MaxValue / mod) * mod;
+            int number = -Random.Next(1, int.MaxValue/mod)*mod;
             int result = number.Mod(mod);
             Assert.AreEqual(0, result, "Expected result is {0}%{1}", number, mod);
         }
@@ -869,10 +923,10 @@ namespace WebApplications.Utilities.Test.Extensions
         [TestMethod]
         public void Mod_PositiveUInt_ReturnsModulus()
         {
-            uint number = (uint)Random.Next();
-            uint mod = (uint)Random.Next(2, 100);
+            uint number = (uint) Random.Next();
+            uint mod = (uint) Random.Next(2, 100);
             uint result = number.Mod(mod);
-            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+            Assert.AreEqual(number%mod, result, "Expected result is {0}%{1}", number, mod);
         }
 
         [TestMethod]
@@ -881,7 +935,7 @@ namespace WebApplications.Utilities.Test.Extensions
             long number = Random.Next();
             long mod = Random.Next(2, 100);
             long result = number.Mod(mod);
-            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+            Assert.AreEqual(number%mod, result, "Expected result is {0}%{1}", number, mod);
         }
 
         [TestMethod]
@@ -890,43 +944,43 @@ namespace WebApplications.Utilities.Test.Extensions
             long number = -Random.Next();
             long mod = Random.Next(2, 100);
             long result = number.Mod(mod);
-            Assert.AreEqual(((number % mod) + mod) % mod, result, "Expected result is {0}%{1}", number, mod);
+            Assert.AreEqual(((number%mod) + mod)%mod, result, "Expected result is {0}%{1}", number, mod);
         }
 
         [TestMethod]
         public void Mod_PositiveULong_ReturnsModulus()
         {
-            ulong number = (ulong)Random.Next();
-            ulong mod = (ulong)Random.Next(2, 100);
+            ulong number = (ulong) Random.Next();
+            ulong mod = (ulong) Random.Next(2, 100);
             ulong result = number.Mod(mod);
-            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+            Assert.AreEqual(number%mod, result, "Expected result is {0}%{1}", number, mod);
         }
 
         [TestMethod]
         public void Mod_PositiveShort_ReturnsModulus()
         {
-            short number = (short)Random.Next(0,short.MaxValue);
-            short mod = (short)Random.Next(2, 100);
+            short number = (short) Random.Next(0, short.MaxValue);
+            short mod = (short) Random.Next(2, 100);
             long result = number.Mod(mod);
-            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+            Assert.AreEqual(number%mod, result, "Expected result is {0}%{1}", number, mod);
         }
 
         [TestMethod]
         public void Mod_NegativeShort_ReturnsPositiveModulus()
         {
-            short number = (short)-Random.Next(0, short.MaxValue);
-            short mod = (short)Random.Next(2, 100);
+            short number = (short) -Random.Next(0, short.MaxValue);
+            short mod = (short) Random.Next(2, 100);
             short result = number.Mod(mod);
-            Assert.AreEqual(((number % mod) + mod) % mod, result,"Expected result is {0}%{1}",number,mod);
+            Assert.AreEqual(((number%mod) + mod)%mod, result, "Expected result is {0}%{1}", number, mod);
         }
 
         [TestMethod]
         public void Mod_PositiveUShort_ReturnsModulus()
         {
-            ushort number = (ushort)Random.Next(0, ushort.MaxValue);
-            ushort mod = (ushort)Random.Next(2, 100);
+            ushort number = (ushort) Random.Next(0, ushort.MaxValue);
+            ushort mod = (ushort) Random.Next(2, 100);
             long result = number.Mod(mod);
-            Assert.AreEqual(number % mod, result, "Expected result is {0}%{1}", number, mod);
+            Assert.AreEqual(number%mod, result, "Expected result is {0}%{1}", number, mod);
         }
 
         [TestMethod]
@@ -953,7 +1007,7 @@ namespace WebApplications.Utilities.Test.Extensions
         [TestMethod]
         public void IsNull_Null_ReturnsTrue()
         {
-            Assert.IsTrue(((object)null).IsNull());
+            Assert.IsTrue(((object) null).IsNull());
         }
 
         [TestMethod]

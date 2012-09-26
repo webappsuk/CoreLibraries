@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities
-// File: CachingQueue.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -40,28 +45,34 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   The time that an element remains in the queue.
         /// </summary>
-        [UsedImplicitly]
-        public readonly TimeSpan CacheExpiry;
+        [UsedImplicitly] public readonly TimeSpan CacheExpiry;
 
         /// <summary>
         ///   If the queue isn't used for this period of time then expired items are cleaned out automatically.
         ///   Normally a queue is only cleaned as it's used.
         ///   <see cref="TimeSpan.Zero"/> indicates the queue is never cleaned out automatically.
         /// </summary>
-        [UsedImplicitly]
-        public readonly TimeSpan CleanAfter;
+        [UsedImplicitly] public readonly TimeSpan CleanAfter;
 
         /// <summary>
         ///   The maximum length of the queue.
         /// </summary>
-        [UsedImplicitly]
-        public readonly int MaximumEntries;
+        [UsedImplicitly] public readonly int MaximumEntries;
+
+        /// <summary>
+        ///   A lock <see cref="object"/> to ensure that clean is not re-entrant.
+        /// </summary>
+        private readonly object _cleanLock = new object();
+
+        /// <summary>
+        ///   The <see cref="System.Threading.Timer"/> used for cleaning the queue automatically
+        /// </summary>
+        private readonly Timer _cleanTimer;
 
         /// <summary>
         ///   Holds the underlying queue.
         /// </summary>
-        [NotNull]
-        private readonly ConcurrentQueue<Wrapper> _queue = new ConcurrentQueue<Wrapper>();
+        [NotNull] private readonly ConcurrentQueue<Wrapper> _queue = new ConcurrentQueue<Wrapper>();
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="CachingQueue&lt;T&gt;"/> class.
@@ -77,7 +88,8 @@ namespace WebApplications.Utilities.Caching
         ///   <para>-or-</para>
         ///   <paramref name="maximumEntries"/> must be at least 1.
         /// </exception>
-        public CachingQueue(TimeSpan cacheExpiry = default(TimeSpan), int maximumEntries = int.MaxValue, TimeSpan cleanAfter = default(TimeSpan))
+        public CachingQueue(TimeSpan cacheExpiry = default(TimeSpan), int maximumEntries = int.MaxValue,
+                            TimeSpan cleanAfter = default(TimeSpan))
         {
             if (cacheExpiry == default(TimeSpan))
                 cacheExpiry = TimeSpan.FromDays(1);
@@ -87,7 +99,7 @@ namespace WebApplications.Utilities.Caching
             if (cleanAfter > TimeSpan.Zero)
             {
                 // Create timer.
-                _cleanTimer = new Timer(s => Clean(), null, (long)CleanAfter.TotalMilliseconds, -1);
+                _cleanTimer = new Timer(s => Clean(), null, (long) CleanAfter.TotalMilliseconds, -1);
                 CleanAfter = cleanAfter;
             }
             else
@@ -155,7 +167,7 @@ namespace WebApplications.Utilities.Caching
         {
             if (array == null)
                 throw new ArgumentNullException("array");
-            ((ICollection)this.ToList()).CopyTo(array, index);
+            ((ICollection) this.ToList()).CopyTo(array, index);
         }
 
         /// <summary>
@@ -338,16 +350,6 @@ namespace WebApplications.Utilities.Caching
             result = default(T);
             return false;
         }
-
-        /// <summary>
-        ///   The <see cref="System.Threading.Timer"/> used for cleaning the queue automatically
-        /// </summary>
-        private readonly Timer _cleanTimer;
-
-        /// <summary>
-        ///   A lock <see cref="object"/> to ensure that clean is not re-entrant.
-        /// </summary>
-        private readonly object _cleanLock = new object();
 
         /// <summary>
         ///   Cleans expired entries out of the queue.

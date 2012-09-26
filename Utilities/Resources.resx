@@ -405,4 +405,7 @@
   <data name="Financial_Sum_EmptyEnumeration" xml:space="preserve">
     <value>The financials argument contains no elements.</value>
   </data>
+  <data name="AsyncResult_SetAsCompleted_CanOnlySetResultOnce" xml:space="preserve">
+    <value>You can set a result only once</value>
+  </data>
 </root>

@@ -1,9 +1,35 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Text;
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebApplications.Utilities.PowerShell.Test
@@ -15,13 +41,13 @@ namespace WebApplications.Utilities.PowerShell.Test
 
         public static string NuSpecPath;
 
-        [AssemblyInitialize()]
+        [AssemblyInitialize]
         public static void AssemblyInit(TestContext context)
         {
             /*
              * Copies the embedded resource to a temporary file.
              */
-            Type testType = typeof(NuSpecEditorTest);
+            Type testType = typeof (NuSpecEditorTest);
             Assembly testAssembly = testType.Assembly;
             string resourceName = testType.Namespace + "." + TestSpec;
 
@@ -37,7 +63,7 @@ namespace WebApplications.Utilities.PowerShell.Test
                     while (bytesLeft > 0)
                     {
                         // 65535L is < Int32.MaxValue, so no need to test for overflow
-                        byte[] chunk = reader.ReadBytes((int)Math.Min(bytesLeft, 65536L));
+                        byte[] chunk = reader.ReadBytes((int) Math.Min(bytesLeft, 65536L));
                         writer.Write(chunk);
 
                         bytesLeft -= chunk.Length;
@@ -48,7 +74,7 @@ namespace WebApplications.Utilities.PowerShell.Test
             Assert.IsTrue(File.Exists(NuSpecPath), "Could not find test spec '{0}'.", NuSpecPath);
         }
 
-        [AssemblyCleanup()]
+        [AssemblyCleanup]
         public static void AssemblyCleanup()
         {
             File.Delete(NuSpecPath);
@@ -121,7 +147,7 @@ namespace WebApplications.Utilities.PowerShell.Test
                 d => d.Id.Equals(existingDependency.Id, StringComparison.OrdinalIgnoreCase) &&
                      (d.Version != null) &&
                      d.Version.Equals(existingDependency.Version, StringComparison.OrdinalIgnoreCase)),
-                             "The existing dependency '{0}' disappeared!", existingDependency);
+                               "The existing dependency '{0}' disappeared!", existingDependency);
 
             Assert.IsFalse(editor.HasChanges, "Editor should not have registered any changes yet.");
 
@@ -133,10 +159,11 @@ namespace WebApplications.Utilities.PowerShell.Test
                 d => d.Id.Equals(newDepId, StringComparison.OrdinalIgnoreCase) &&
                      (d.Version != null) &&
                      d.Version.Equals(newDepVers, StringComparison.OrdinalIgnoreCase)),
-                             "The '{0}, {1}' dependency was not added.", newDepId, newDepVers);
+                               "The '{0}, {1}' dependency was not added.", newDepId, newDepVers);
             Assert.IsTrue(editor.HasChanges, "Editor should have registered a change.");
 
-            Assert.AreEqual(dcount + 1, editor.Dependencies.Count(), "The number of dependencies should have increased by one!");
+            Assert.AreEqual(dcount + 1, editor.Dependencies.Count(),
+                            "The number of dependencies should have increased by one!");
         }
 
         [TestMethod]
@@ -168,7 +195,8 @@ namespace WebApplications.Utilities.PowerShell.Test
 
             // Check dependencies added
             Assert.IsTrue(editor.HasChanges, "Editor should have registered a change.");
-            Assert.AreEqual(dcount + addCount, editor.Dependencies.Count(), "The number of dependencies should have increased by one!");
+            Assert.AreEqual(dcount + addCount, editor.Dependencies.Count(),
+                            "The number of dependencies should have increased by one!");
             foreach (NuSpecDependency dependency in dependencies)
             {
                 Assert.AreNotEqual(default(NuSpecDependency), editor.Dependencies.SingleOrDefault(
@@ -183,7 +211,8 @@ namespace WebApplications.Utilities.PowerShell.Test
             editor.RemoveDependencies(String.Join(";", dependencies));
 
             // Check dependencies were removed
-            Assert.AreEqual(dcount, editor.Dependencies.Count(), "The number of dependencies should have been restored after removal!");
+            Assert.AreEqual(dcount, editor.Dependencies.Count(),
+                            "The number of dependencies should have been restored after removal!");
             foreach (NuSpecDependency dependency in dependencies)
             {
                 Assert.AreEqual(default(NuSpecDependency), editor.Dependencies.SingleOrDefault(

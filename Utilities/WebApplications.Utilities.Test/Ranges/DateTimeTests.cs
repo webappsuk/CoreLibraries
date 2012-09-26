@@ -1,23 +1,28 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities.Test
-// File: DateTimeRangeTests.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and longellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other longellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -44,7 +49,7 @@ namespace WebApplications.Utilities.Test.Ranges
         /// </returns>
         private static DateTime RandomDate(DateTime minimum, DateTime maximum)
         {
-            return minimum + TimeSpan.FromTicks((long) ((maximum - minimum).Ticks * Random.NextDouble()));
+            return minimum + TimeSpan.FromTicks((long) ((maximum - minimum).Ticks*Random.NextDouble()));
         }
 
         /// <summary>
@@ -57,7 +62,7 @@ namespace WebApplications.Utilities.Test.Ranges
         /// </returns>
         private static TimeSpan RandomDuration(TimeSpan minimum, TimeSpan maximum)
         {
-            return minimum + TimeSpan.FromTicks((long)((maximum - minimum).Ticks * Random.NextDouble()));
+            return minimum + TimeSpan.FromTicks((long) ((maximum - minimum).Ticks*Random.NextDouble()));
         }
 
         /// <summary>
@@ -68,7 +73,7 @@ namespace WebApplications.Utilities.Test.Ranges
         /// </returns>
         private static TimeSpan RandomTimeOffset()
         {
-            return TimeSpan.FromHours(Random.NextDouble() * 11 + 0.5);
+            return TimeSpan.FromHours(Random.NextDouble()*11 + 0.5);
         }
 
         [TestMethod]
@@ -79,7 +84,7 @@ namespace WebApplications.Utilities.Test.Ranges
             DateTime end = start + length;
             TimeSpan step = RandomDuration(MinSpan, length - MinSpan);
 
-            var dateRange = new DateTimeRange(start, end, step);
+            DateTimeRange dateRange = new DateTimeRange(start, end, step);
 
             Assert.AreNotEqual("", dateRange.ToString(), "String representation of range must not be an empty string");
         }
@@ -92,10 +97,12 @@ namespace WebApplications.Utilities.Test.Ranges
             DateTime end = start + length;
             TimeSpan step = RandomDuration(MinSpan, length - MinSpan);
 
-            var dateRange = new DateTimeRange(start, end, step);
-            var dateRangeWithTime = new DateTimeRange(start + RandomTimeOffset(), end + RandomTimeOffset(), step);
+            DateTimeRange dateRange = new DateTimeRange(start, end, step);
+            DateTimeRange dateRangeWithTime = new DateTimeRange(start + RandomTimeOffset(), end + RandomTimeOffset(),
+                                                                step);
 
-            Assert.AreNotEqual(dateRange.ToString(), dateRangeWithTime.ToString(), "String representation of range should depend on the time components");
+            Assert.AreNotEqual(dateRange.ToString(), dateRangeWithTime.ToString(),
+                               "String representation of range should depend on the time components");
         }
 
         [TestMethod]
@@ -106,14 +113,16 @@ namespace WebApplications.Utilities.Test.Ranges
             DateTime end = start + length;
             TimeSpan step = RandomDuration(MinSpan, length - MinSpan);
 
-            var dateRange = new DateTimeRange(start, end, step);
+            DateTimeRange dateRange = new DateTimeRange(start, end, step);
 
             Regex formatTest = new Regex(@"^\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2} - \d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}$");
 
-            Assert.IsTrue(formatTest.IsMatch(dateRange.ToString()), "String representation of range should be of format dd/mm/yyyy - dd/mm/yyyy");
+            Assert.IsTrue(formatTest.IsMatch(dateRange.ToString()),
+                          "String representation of range should be of format dd/mm/yyyy - dd/mm/yyyy");
         }
 
-        private static DateTimeRange GenerateDateTimeRangeWithStepSmallerThanRange(out DateTime start, out DateTime end, out TimeSpan step)
+        private static DateTimeRange GenerateDateTimeRangeWithStepSmallerThanRange(out DateTime start, out DateTime end,
+                                                                                   out TimeSpan step)
         {
             TimeSpan length = RandomDuration(MinSpan + MinSpan, MaxSpan);
             start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
@@ -153,7 +162,8 @@ namespace WebApplications.Utilities.Test.Ranges
             Assert.AreEqual(step, dateTimeRange.Step, "Step amount field must match the value supplied.");
         }
 
-        private static DateTimeRange GenerateDateRangeWithStepLargerThanRange(out DateTime start, out DateTime end, out TimeSpan step)
+        private static DateTimeRange GenerateDateRangeWithStepLargerThanRange(out DateTime start, out DateTime end,
+                                                                              out TimeSpan step)
         {
             // subtracting MinSpan twice from max length to give space for oversized step without converting type to perform the calculation to do so
             TimeSpan length = RandomDuration(MinSpan, MaxSpan - MinSpan - MinSpan);
@@ -195,14 +205,14 @@ namespace WebApplications.Utilities.Test.Ranges
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        [ExpectedException(typeof (ArgumentOutOfRangeException))]
         public void Constructor_EndBeforeStart_ThrowsArgumentOutOfRangeException()
         {
             TimeSpan length = RandomDuration(MinSpan, MaxSpan);
             DateTime start = RandomDate(DateTime.MinValue + length, DateTime.MaxValue);
             DateTime end = start - length;
 
-            var dateRange = new DateTimeRange(start, end);
+            DateTimeRange dateRange = new DateTimeRange(start, end);
         }
 
         [TestMethod]
@@ -212,7 +222,7 @@ namespace WebApplications.Utilities.Test.Ranges
             DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
             DateTime end = start + length;
 
-            var dateRange = new DateTimeRange(start, end);
+            DateTimeRange dateRange = new DateTimeRange(start, end);
 
             Assert.AreEqual(start, dateRange.Start, "Starting point field must match the value supplied");
             Assert.AreEqual(end, dateRange.End, "End point field must match the value supplied");
@@ -226,9 +236,9 @@ namespace WebApplications.Utilities.Test.Ranges
             DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
             DateTime end = start + length;
             // note that the number of steps is limited to 100 or fewer
-            TimeSpan step = TimeSpan.FromTicks(length.Ticks / Random.Next(4, 100));
+            TimeSpan step = TimeSpan.FromTicks(length.Ticks/Random.Next(4, 100));
 
-            var dateRange = new DateTimeRange(start, end, step);
+            DateTimeRange dateRange = new DateTimeRange(start, end, step);
 
             foreach (DateTime d in dateRange)
             {
@@ -244,15 +254,16 @@ namespace WebApplications.Utilities.Test.Ranges
             DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
             DateTime end = start + length;
             // note that the number of steps is limited to 1000 or fewer
-            TimeSpan step = TimeSpan.FromTicks(length.Ticks / Random.Next(4, 1000));
+            TimeSpan step = TimeSpan.FromTicks(length.Ticks/Random.Next(4, 1000));
 
             //ensure that step size is a factor of the length of the range
-            start += TimeSpan.FromTicks(length.Ticks % step.Ticks);
+            start += TimeSpan.FromTicks(length.Ticks%step.Ticks);
 
-            var dateRange = new DateTimeRange(start, end, step);
+            DateTimeRange dateRange = new DateTimeRange(start, end, step);
 
             // Range endpoint is inclusive, so must take longo account this extra iteration
-            Assert.AreEqual(length.Ticks / step.Ticks + 1, dateRange.Count(), "Iteration count should be (end-start)/step + 1 where endpoint is included");
+            Assert.AreEqual(length.Ticks/step.Ticks + 1, dateRange.Count(),
+                            "Iteration count should be (end-start)/step + 1 where endpoint is included");
         }
 
         [TestMethod]
@@ -262,18 +273,19 @@ namespace WebApplications.Utilities.Test.Ranges
             DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
             DateTime end = start + length;
             // note that the number of steps is limited to 1000 or fewer
-            TimeSpan step = TimeSpan.FromTicks(length.Ticks / Random.Next(4, 1000));
+            TimeSpan step = TimeSpan.FromTicks(length.Ticks/Random.Next(4, 1000));
 
             //ensure that step size is not a factor of the length of the range
-            if (length.Ticks % step.Ticks == 0)
+            if (length.Ticks%step.Ticks == 0)
             {
                 start += RandomDuration(MinSpan, step - MinSpan);
                 length = end - start;
             }
 
-            var dateRange = new DateTimeRange(start, end, step);
+            DateTimeRange dateRange = new DateTimeRange(start, end, step);
 
-            Assert.AreEqual(length.Ticks / step.Ticks + 1, dateRange.Count(), "Iteration count should be (start-end)/step +1");
+            Assert.AreEqual(length.Ticks/step.Ticks + 1, dateRange.Count(),
+                            "Iteration count should be (start-end)/step +1");
         }
 
         [TestMethod]
@@ -283,16 +295,17 @@ namespace WebApplications.Utilities.Test.Ranges
             DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
             DateTime end = start + length;
             // note that the number of steps is limited to 100 or fewer
-            TimeSpan step = TimeSpan.FromTicks(length.Ticks / Random.Next(4, 100));
+            TimeSpan step = TimeSpan.FromTicks(length.Ticks/Random.Next(4, 100));
 
-            var dateRange = new DateTimeRange(start, end, step);
+            DateTimeRange dateRange = new DateTimeRange(start, end, step);
 
             DateTime? previous = null;
             foreach (DateTime d in dateRange)
             {
                 if (previous.HasValue)
                 {
-                    Assert.AreEqual(d - previous, step, "Difference between iteration values should match the step value supplied");
+                    Assert.AreEqual(d - previous, step,
+                                    "Difference between iteration values should match the step value supplied");
                 }
                 previous = d;
             }
@@ -302,7 +315,8 @@ namespace WebApplications.Utilities.Test.Ranges
         public void GetEnumerator_UsingLargestPossibleParameters_IteratesSuccessfully()
         {
             // Step chosen to avoid an unfeasible number of iterations
-            var dateRange = new DateTimeRange(DateTime.MinValue, DateTime.MaxValue, TimeSpan.FromTicks(MaxSpan.Ticks / 16));
+            DateTimeRange dateRange = new DateTimeRange(DateTime.MinValue, DateTime.MaxValue,
+                                                        TimeSpan.FromTicks(MaxSpan.Ticks/16));
 
             bool iterated = false;
             foreach (DateTime d in dateRange)
@@ -316,34 +330,37 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void Bind_NumberBelowRange_ReturnsStart()
         {
-            DateTime start = RandomDate(DateTime.MinValue + TimeSpan.FromDays(10), DateTime.MaxValue - TimeSpan.FromDays(10));
+            DateTime start = RandomDate(DateTime.MinValue + TimeSpan.FromDays(10),
+                                        DateTime.MaxValue - TimeSpan.FromDays(10));
             DateTime end = RandomDate(start, DateTime.MaxValue - TimeSpan.FromDays(10));
             DateTime testValue = RandomDate(DateTime.MinValue, start);
 
             Assert.AreEqual(start, (new DateTimeRange(start, end)).Bind(testValue),
-                   "Bind should return the lower bound of the range if the input is below the range");
+                            "Bind should return the lower bound of the range if the input is below the range");
         }
 
         [TestMethod]
         public void Bind_NumberAboveRange_ReturnsEnd()
         {
-            DateTime start = RandomDate(DateTime.MinValue + TimeSpan.FromDays(10), DateTime.MaxValue - TimeSpan.FromDays(10));
+            DateTime start = RandomDate(DateTime.MinValue + TimeSpan.FromDays(10),
+                                        DateTime.MaxValue - TimeSpan.FromDays(10));
             DateTime end = RandomDate(start, DateTime.MaxValue - TimeSpan.FromDays(10));
             DateTime testValue = RandomDate(end, DateTime.MaxValue);
 
             Assert.AreEqual(end, (new DateTimeRange(start, end)).Bind(testValue),
-                   "Bind should return the upper bound of the range if the input is above the range");
+                            "Bind should return the upper bound of the range if the input is above the range");
         }
 
         [TestMethod]
         public void Bind_NumberWithinRange_ReturnsInput()
         {
-            DateTime start = RandomDate(DateTime.MinValue + TimeSpan.FromDays(10), DateTime.MaxValue - TimeSpan.FromDays(10));
+            DateTime start = RandomDate(DateTime.MinValue + TimeSpan.FromDays(10),
+                                        DateTime.MaxValue - TimeSpan.FromDays(10));
             DateTime end = RandomDate(start, DateTime.MaxValue - TimeSpan.FromDays(10));
             DateTime testValue = RandomDate(start, end);
 
             Assert.AreEqual(testValue, (new DateTimeRange(start, end)).Bind(testValue),
-                   "Bind should return the input if it is within the range");
+                            "Bind should return the input if it is within the range");
         }
     }
 }

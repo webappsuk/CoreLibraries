@@ -1,30 +1,33 @@
 ﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities
-// File: BigArray.cs
+// Copyright (c) 2012, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Security;
 using JetBrains.Annotations;
 
@@ -50,14 +53,14 @@ namespace WebApplications.Utilities
         /// standard arrays.
         /// </summary>
         public const int BlockSize = 262144;
+
         private const int BlockSizeLog2 = 18;
 
         // Don't use a multi-dimensional array here because then we can't right size the last
         // block and we have to do range checking on our own and since there will then be 
         // exception throwing in our code there is a good chance that the JIT won't inline.
         // maximum BigArray size = BLOCK_SIZE * Int.MaxValue
-        [NotNull]
-        private readonly T[][] _elements;
+        [NotNull] private readonly T[][] _elements;
         private readonly ulong _length;
 
 
@@ -67,7 +70,7 @@ namespace WebApplications.Utilities
         /// <param name="size">The size.</param>
         /// <remarks></remarks>
         public BigArray(int size)
-            : this((ulong)size)
+            : this((ulong) size)
         {
         }
 
@@ -78,7 +81,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public BigArray(ulong size)
         {
-            int numBlocks = (int)Math.Ceiling((double)size / BlockSize);
+            int numBlocks = (int) Math.Ceiling((double) size/BlockSize);
 
             _length = size;
             _elements = new T[numBlocks][];
@@ -116,14 +119,14 @@ namespace WebApplications.Utilities
         {
             get
             {
-                int blockNum = (int)(index >> BlockSizeLog2);
-                int elementNumberInBlock = (int)(index & (BlockSize - 1));
+                int blockNum = (int) (index >> BlockSizeLog2);
+                int elementNumberInBlock = (int) (index & (BlockSize - 1));
                 return _elements[blockNum][elementNumberInBlock];
             }
             set
             {
-                int blockNum = (int)(index >> BlockSizeLog2);
-                int elementNumberInBlock = (int)(index & (BlockSize - 1));
+                int blockNum = (int) (index >> BlockSizeLog2);
+                int elementNumberInBlock = (int) (index & (BlockSize - 1));
                 _elements[blockNum][elementNumberInBlock] = value;
             }
         }
@@ -154,13 +157,16 @@ namespace WebApplications.Utilities
             }
         }
 
+        #region ICloneable Members
         /// <inheritdoc/>
         [SecuritySafeCritical]
         public object Clone()
         {
-            return MemberwiseClone(); 
+            return MemberwiseClone();
         }
+        #endregion
 
+        #region IList Members
         /// <inheritdoc/>
         public IEnumerator GetEnumerator()
         {
@@ -180,8 +186,9 @@ namespace WebApplications.Utilities
             get
             {
                 if (_length > int.MaxValue)
-                    throw new InvalidOperationException(String.Format("Count '{0}' is too big to be expressed as an interger.", _length));
-                return (int)_length;
+                    throw new InvalidOperationException(
+                        String.Format("Count '{0}' is too big to be expressed as an interger.", _length));
+                return (int) _length;
             }
         }
 
@@ -208,7 +215,7 @@ namespace WebApplications.Utilities
         {
             if (!(value is T))
                 return false;
-            return LongIndexOf((T)value) != ulong.MaxValue;
+            return LongIndexOf((T) value) != ulong.MaxValue;
         }
 
         /// <inheritdoc/>
@@ -221,38 +228,19 @@ namespace WebApplications.Utilities
             }
         }
 
-        /// <summary>
-        /// Get the long index of the value; otherwise <see cref="ulong.MaxValue"/>.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The long index of the value; otherwise <see cref="ulong.MaxValue"/>.</returns>
-        /// <remarks></remarks>
-        public ulong LongIndexOf(T value)
-        {
-            ulong offset = 0UL;
-            foreach (T[] array in _elements)
-            {
-                Contract.Assert(array != null);
-                int index = Array.IndexOf(array, value);
-                if (index >= 0)
-                    return (ulong) index + offset;
-                offset += BlockSize;
-            }
-            return ulong.MaxValue;
-        }
-
         /// <inheritdoc/>
         public int IndexOf(object value)
         {
             if (!(value is T))
                 return -1;
 
-            ulong index = LongIndexOf((T)value);
+            ulong index = LongIndexOf((T) value);
             if (index == ulong.MaxValue)
                 return -1;
             if (index > int.MaxValue)
-                throw new InvalidOperationException(String.Format("Index '{0}' is too big to be expressed as an interger.", index));
-            return (int)index;
+                throw new InvalidOperationException(
+                    String.Format("Index '{0}' is too big to be expressed as an interger.", index));
+            return (int) index;
         }
 
         /// <inheritdoc/>
@@ -276,7 +264,7 @@ namespace WebApplications.Utilities
         /// <inheritdoc/>
         object IList.this[int index]
         {
-            get { return this[(ulong)index]; }
+            get { return this[(ulong) index]; }
             set { this[(ulong) index] = (T) value; }
         }
 
@@ -291,9 +279,11 @@ namespace WebApplications.Utilities
         {
             get { return true; }
         }
+        #endregion
 
+        #region IStructuralComparable Members
         /// <inheritdoc/>
-        public int CompareTo(object other, [NotNull]IComparer comparer)
+        public int CompareTo(object other, [NotNull] IComparer comparer)
         {
             if (other == null)
             {
@@ -302,7 +292,7 @@ namespace WebApplications.Utilities
 
             BigArray<T> o = other as BigArray<T>;
 
-            if (o == null || this._length != o._length)
+            if (o == null || _length != o._length)
             {
                 throw new ArgumentException(String.Format("The other must be a BigArray of type '{0}'.", typeof (T)),
                                             "other");
@@ -322,9 +312,11 @@ namespace WebApplications.Utilities
 
             return c;
         }
+        #endregion
 
+        #region IStructuralEquatable Members
         /// <inheritdoc/>
-        public bool Equals(object other, [NotNull]IEqualityComparer comparer)
+        public bool Equals(object other, [NotNull] IEqualityComparer comparer)
         {
             if (other == null)
                 return false;
@@ -334,7 +326,7 @@ namespace WebApplications.Utilities
 
             BigArray<T> o = other as BigArray<T>;
 
-            if (o == null || o.Length != this.Length)
+            if (o == null || o.Length != Length)
                 return false;
 
             ulong i = 0;
@@ -360,10 +352,31 @@ namespace WebApplications.Utilities
 
             int ret = 0;
 
-            for (ulong i = (this._length >= 8 ? this._length - 8 : 0); i < this._length; i++)
+            for (ulong i = (_length >= 8 ? _length - 8 : 0); i < _length; i++)
                 ret = (((ret << 5) + ret) ^ comparer.GetHashCode(this[i]));
 
-            return ret; 
+            return ret;
+        }
+        #endregion
+
+        /// <summary>
+        /// Get the long index of the value; otherwise <see cref="ulong.MaxValue"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The long index of the value; otherwise <see cref="ulong.MaxValue"/>.</returns>
+        /// <remarks></remarks>
+        public ulong LongIndexOf(T value)
+        {
+            ulong offset = 0UL;
+            foreach (T[] array in _elements)
+            {
+                Contract.Assert(array != null);
+                int index = Array.IndexOf(array, value);
+                if (index >= 0)
+                    return (ulong) index + offset;
+                offset += BlockSize;
+            }
+            return ulong.MaxValue;
         }
     }
 }
