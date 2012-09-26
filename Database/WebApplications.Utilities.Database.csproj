@@ -61,13 +61,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WebApplications.Utilities">
-      <HintPath>packages\WebApplications.Utilities.2.0.4650.25306\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.2.0.4652.22330\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Logging">
-      <HintPath>packages\WebApplications.Utilities.Logging.2.0.4650.26149\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.Logging.2.0.4652.22296\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Serialization">
-      <HintPath>packages\WebApplications.Utilities.Serialization.2.0.4650.26394\lib\net45\WebApplications.Utilities.Serialization.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.Serialization.2.0.4652.22312\lib\net45\WebApplications.Utilities.Serialization.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
