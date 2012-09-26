@@ -61,6 +61,16 @@
   <ItemGroup>
     <Compile Include="Data\ColumnDefinition.cs" />
     <Compile Include="Data\ExceptionRecord.cs" />
+    <Compile Include="Data\Exceptions\SqlConversionException.cs" />
+    <Compile Include="Data\Exceptions\SqlNullException.cs" />
+    <Compile Include="Data\Exceptions\SqlDatabaseException.cs" />
+    <Compile Include="Data\Exceptions\SqlIdentityColumnValueException.cs" />
+    <Compile Include="Data\Exceptions\SqlInvalidObjectException.cs" />
+    <Compile Include="Data\Exceptions\SqlInvalidColumnException.cs" />
+    <Compile Include="Data\Exceptions\SqlInvalidSyntaxException.cs" />
+    <Compile Include="Data\Exceptions\SqlEventSessionStoppedException.cs" />
+    <Compile Include="Data\Exceptions\SqlInvalidConnectionException.cs" />
+    <Compile Include="Data\Exceptions\InvalidUserOrDatabaseException.cs" />
     <Compile Include="Data\IObjectRecord.cs" />
     <Compile Include="Data\IObjectSet.cs" />
     <Compile Include="Data\ObjectRecord.cs" />
@@ -88,6 +98,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

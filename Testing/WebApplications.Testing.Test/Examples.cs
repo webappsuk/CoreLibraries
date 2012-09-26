@@ -111,5 +111,78 @@ namespace WebApplications.Testing.Test
                 } while (dataReader.NextResult());
             }
         }
+
+        [TestMethod]
+        public void RobsExample()
+        {
+            IObjectRecord exceptionRecord = new ExceptionRecord(new Data.Exceptions.SqlInvalidConnectionException());
+
+        }
+
+        [TestMethod]
+        public void TestCustomException()
+        {
+            // To create a record that implement IDataRecord we start with a record set definition.
+            RecordSetDefinition recordSetDefinition = new RecordSetDefinition(
+                new ColumnDefinition("ID", SqlDbType.Int),
+                new ColumnDefinition("Name", SqlDbType.Char, 50),
+                new ColumnDefinition("Description", SqlDbType.NVarChar),
+                // This column is not nullable so defaults to true
+                new ColumnDefinition("Active", SqlDbType.Bit, isNullable: false, defaultValue: true)
+                );
+
+            // Now we can create a record
+            IObjectRecord dataRecord = new ObjectRecord(recordSetDefinition, 1, "Test", "This is my test record");
+
+            // To create a record that throws an exception we first create an ExceptionRecord
+            IObjectRecord exceptionRecord = new ExceptionRecord(new Data.Exceptions.SqlInvalidSyntaxException());
+
+            // We can stick these records into a recordset
+            // Note the records must have the same RecordSetDefinition (unless it's an exception record)
+            // The final record will through an exception when reached!
+            ObjectSet recordSet = new ObjectSet(recordSetDefinition)
+                                      {
+                                          dataRecord,
+                                          exceptionRecord
+                                      };
+
+            // We can add recordsets to an ObjectReader
+            ObjectReader reader = new ObjectReader
+                                      {
+                                          recordSet
+                                      };
+
+            // Now that we have a reader we can use it like a normal reader - it even simulates disposal.
+            ReadFromRecordSet(reader);
+        }
+
+        private static void ReadFromRecordSet(ObjectReader reader)
+        {
+            try
+            {
+                using (IDataReader dataReader = reader)
+                {
+                    int recordset = 1;
+                    do
+                    {
+                        Trace.Write("Recordset #" + recordset + " - ");
+                        int rows = 0;
+                        do
+                        {
+                            rows++;
+                            Trace.WriteLine("Value : "+dataReader.GetInt32(0)+"\n");
+                        } while (dataReader.Read());
+
+                        Trace.WriteLine(rows + " rows.");
+                        recordset++;
+                    } while (dataReader.NextResult());
+                }
+            }
+            catch (SqlException sqlE)
+            {
+                //Custom exception message is thrown rather than the general SqlException message. 
+                Trace.WriteLine(String.Format(sqlE.Message,"from"));
+            }
+        }
     }
 }
