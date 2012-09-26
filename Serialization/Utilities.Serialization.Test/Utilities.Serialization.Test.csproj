@@ -52,8 +52,9 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing">
-      <HintPath>..\packages\WebApplications.Testing.2.0.4639.30097\lib\net45\WebApplications.Testing.dll</HintPath>
+    <Reference Include="WebApplications.Testing, Version=2.0.4652.15329, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Testing.2.0.4652.15329\lib\net45\WebApplications.Testing.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
