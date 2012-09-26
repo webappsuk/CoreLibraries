@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Test.Extensions
         [TestMethod]
         public void EpochStart_Value_IsUnixEpoch()
         {
-            Assert.AreEqual(new DateTime(1970, 1, 1), Utilities.UtilityExtensions.EpochStart,
+            Assert.AreEqual(new DateTime(1970, 1, 1), Utilities.Extensions.EpochStart,
                             "The value of EpochStart should be the UNIX epoch: 1st Jan 1970.");
         }
 
@@ -52,11 +52,11 @@ namespace WebApplications.Utilities.Test.Extensions
         public void DefaultSplitCharacters_Value_AreAsGivenHere()
         {
             char[] expectedValue = new[] {' ', ',', '\t', '\r', '\n', '|'};
-            Assert.AreEqual(expectedValue.Length, UtilityExtensions.DefaultSplitChars.Length,
+            Assert.AreEqual(expectedValue.Length, Utilities.Extensions.DefaultSplitChars.Length,
                             "The value of the DefaultSplitChars array should be space, comma, tab, carriage return, newline, and pipe.");
             foreach (Char value in expectedValue)
             {
-                Assert.IsTrue(UtilityExtensions.DefaultSplitChars.Contains(value),
+                Assert.IsTrue(Utilities.Extensions.DefaultSplitChars.Contains(value),
                               String.Format("The character '{0}' should be included in the DefaultSplitChars array",
                                             value));
             }
@@ -710,7 +710,7 @@ namespace WebApplications.Utilities.Test.Extensions
         public void GetDateTime_ResultFromGetEpochTime_ReturnsOriginalDateTimeToWithinMillisecond()
         {
             DateTime dateTime = DateTime.Now.AddTicks(Random.Next()).AddSeconds(-Random.Next());
-            Assert.AreEqual(0, (dateTime - Utilities.UtilityExtensions.GetDateTime(dateTime.GetEpochTime())).TotalMilliseconds,
+            Assert.AreEqual(0, (dateTime - Utilities.Extensions.GetDateTime(dateTime.GetEpochTime())).TotalMilliseconds,
                             1.0);
         }
 
@@ -882,6 +882,34 @@ namespace WebApplications.Utilities.Test.Extensions
             IAsyncResult unwrapped;
             string unwrappedObject = wrapped.Unwrap<string>(out unwrapped);
             unwrapped.Unwrap<string>();
+        }
+
+        [TestMethod]
+        public void PreserveStackTrace_NullException()
+        {
+            // Ensure this doesn't error
+            ((Exception) null).PreserveStackTrace();
+        }
+
+        [TestMethod]
+        public void PreserveStackTrace_ExceptionLaterReThrown_StackTraceIsPreserved()
+        {
+            try
+            {
+                try
+                {
+                    throw new Exception("Exception to preserve the stack trace of");
+                }
+                catch (Exception exception)
+                {
+                    exception.PreserveStackTrace();
+                    throw;
+                }
+            }
+            catch (Exception exception)
+            {
+                Assert.AreEqual(2, exception.StackTrace.Split('\n').Count());
+            }
         }
 
         [TestMethod]

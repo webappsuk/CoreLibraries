@@ -63,8 +63,9 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing">
-      <HintPath>..\packages\WebApplications.Testing.2.0.4639.30097\lib\net45\WebApplications.Testing.dll</HintPath>
+    <Reference Include="WebApplications.Testing, Version=1.1.4627.22918, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Testing.1.1.4627.22918\lib\net40\WebApplications.Testing.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

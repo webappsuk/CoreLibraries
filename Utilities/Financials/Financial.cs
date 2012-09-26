@@ -43,7 +43,7 @@ namespace WebApplications.Utilities.Financials
         /// Initializes a new instance of the <see cref="Financial"/> class.
         /// </summary>
         /// <param name="currency">The currency.</param>
-        /// <param name="amount"> </param>
+        /// <param name="amount">The amount.</param>
         public Financial([NotNull] CurrencyInfo currency, decimal amount)
         {
             Contract.Requires(currency != null, "Parameter 'currency' can not be null");
@@ -55,9 +55,6 @@ namespace WebApplications.Utilities.Financials
         /// <summary>
         /// Gets or sets the currency.
         /// </summary>
-        /// <value>
-        /// The currency.
-        /// </value>
         [NotNull]
         [UsedImplicitly]
         public CurrencyInfo Currency { get; private set; }
@@ -65,9 +62,6 @@ namespace WebApplications.Utilities.Financials
         /// <summary>
         /// Gets or sets the amount.
         /// </summary>
-        /// <value>
-        /// The amount.
-        /// </value>
         [UsedImplicitly]
         public decimal Amount { get; private set; }
 
@@ -77,7 +71,7 @@ namespace WebApplications.Utilities.Financials
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
-        /// true if the current object is equal to the other parameter; otherwise, false.
+        /// <see langword="true"/> if the current object is equal to the other parameter; otherwise, <see langword="false"/>.
         /// </returns>
         public bool Equals(Financial other)
         {
@@ -94,6 +88,7 @@ namespace WebApplications.Utilities.Financials
         /// <returns>
         /// A <see cref="System.String"/> that represents this instance.
         /// </returns>
+        /// <exception cref="FormatException">The format string is not supported.</exception>
         public string ToString(string format, IFormatProvider provider)
         {
             if (String.IsNullOrEmpty(format)) format = "I";
@@ -105,12 +100,16 @@ namespace WebApplications.Utilities.Financials
                     CultureInfo culture;
                     try
                     {
+                        // Ensure that the format provider passed in contains culture information 
                         culture = (CultureInfo) provider;
                     }
                     catch (InvalidCastException)
                     {
                         culture = CultureInfo.CurrentUICulture;
                     }
+
+                    if (culture == null) culture = CultureInfo.CurrentUICulture;
+
                     return FormatCurrency(culture);
                 default:
                     throw new FormatException(String.Format("The {0} format string is not supported.", format));

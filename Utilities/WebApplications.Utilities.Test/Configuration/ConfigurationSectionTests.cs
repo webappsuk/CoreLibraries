@@ -159,13 +159,6 @@ namespace WebApplications.Utilities.Test.Configuration
         }
 
         [TestMethod]
-        public void IsActive_ForActiveConfiguration_ReturnsTrue()
-        {
-            Assert.IsTrue(ConfigurationSectionTestClass.Active.IsActive,
-                          "The IsActive property should be true for the active configuration section (obtained from the Active property).");
-        }
-
-        [TestMethod]
         public void IsActive_ForNewConfiguration_ReturnsFalse()
         {
             ConfigurationSectionTestClass configurationSection = GenerateBlankConfigurationSectionTestClass();

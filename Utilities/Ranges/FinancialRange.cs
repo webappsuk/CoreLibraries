@@ -34,18 +34,16 @@ namespace WebApplications.Utilities.Ranges
     /// <summary>
     /// A range of <see cref="Financial"/> financial.
     /// </summary>
-    /// <remarks></remarks>
     public class FinancialRange : Range<Financial, decimal>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Range&lt;T&gt;" /> class.
+        /// Initializes a new instance of the <see cref="Range&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="start">The start value (inclusive).</param>
         /// <param name="end">The end value (inclusive).</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The <paramref name="start" /> value was greater than the <paramref name="end" /> value.
-        ///   </exception>
-        /// <remarks></remarks>
+        /// The <paramref name="start"/> value was greater than the <paramref name="end"/> value.
+        /// </exception>
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end)
             : base(start, end)
         {
@@ -53,15 +51,14 @@ namespace WebApplications.Utilities.Ranges
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Range&lt;T&gt;" /> class.
+        /// Initializes a new instance of the <see cref="Range&lt;T&gt;"/> class.
         /// </summary>
         /// <param name="start">The start value.</param>
         /// <param name="end">The end value (inclusive).</param>
         /// <param name="step">The range step (inclusive).</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The <paramref name="start" /> value was greater than the <paramref name="end" /> value.
-        ///   </exception>
-        /// <remarks></remarks>
+        /// The <paramref name="start"/> value was greater than the <paramref name="end"/> value.
+        /// </exception>
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end, decimal step)
             : base(start, end, step)
         {
@@ -69,28 +66,61 @@ namespace WebApplications.Utilities.Ranges
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Range&lt;T,S&gt;" /> class.
+        /// Initializes a new instance of the <see cref="Range&lt;T,S&gt;"/> class.
         /// </summary>
         /// <param name="start">The start value (inclusive).</param>
         /// <param name="end">The end value (inclusive).</param>
         /// <param name="step">The range step.</param>
         /// <exception cref="System.ArgumentOutOfRangeException">
-        /// The <paramref name="start" /> value was greater than the <paramref name="end" /> value.
-        ///   </exception>
-        /// <remarks></remarks>
+        ///   The <paramref name="start"/> value was greater than the <paramref name="end"/> value.
+        /// </exception>
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end, [NotNull] Financial step)
             : base(start, end, step.Amount)
         {
             Contract.Requires(start.Currency == end.Currency, "The currencies in the financial parameters must match.");
             Contract.Requires(step.Currency == start.Currency, "The currencies in the financial parameters must match.");
-            Contract.Requires(step.Currency == start.Currency, "The currencies in the financial parameters must match.");
+            Contract.Requires(step.Currency == end.Currency, "The currencies in the financial parameters must match.");
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Range&lt;T,S&gt;"/> class.
+        /// </summary>
+        /// <param name="currency">The currency information.</param>
+        /// <param name="start">The start value (inclusive).</param>
+        /// <param name="end">The end value (inclusive).</param>
+        public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end)
+            : base(new Financial(currency, start), new Financial(currency, end))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Range&lt;T,S&gt;"/> class.
+        /// </summary>
+        /// <param name="currency">The currency information.</param>
+        /// <param name="start">The start value (inclusive).</param>
+        /// <param name="end">The end value (inclusive).</param>
+        /// <param name="step">The range step.</param>
+        public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end, decimal step)
+            : base(new Financial(currency, start), new Financial(currency, end), step)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Range&lt;T,S&gt;"/> class.
+        /// </summary>
+        /// <param name="currency">The currency information.</param>
+        /// <param name="start">The start value (inclusive).</param>
+        /// <param name="end">The end value (inclusive).</param>
+        /// <param name="step">The range step.</param>
+        public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end, [NotNull] Financial step)
+            : base(new Financial(currency, start), new Financial(currency, end), step.Amount)
+        {
+            Contract.Requires(step.Currency == currency, "The currencies in the financial parameters must match.");
         }
 
         /// <summary>
         /// Gets the currency.
         /// </summary>
-        /// <value>The currency.</value>
-        /// <remarks></remarks>
         public CurrencyInfo Currency
         {
             get { return Start.Currency; }

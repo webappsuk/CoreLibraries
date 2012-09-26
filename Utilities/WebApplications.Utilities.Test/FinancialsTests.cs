@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -70,7 +71,8 @@ namespace WebApplications.Utilities.Test
         {
             Financial financial = new Financial(_gbp, _amount);
             Assert.IsNotNull(financial.Currency);
-            Assert.AreEqual(string.Format("Financial {0}{1}", _amount, _gbp.Code), financial.ToString());
+            string expectedFormat = String.Format("{0:C}", _amount);
+            Assert.AreEqual(expectedFormat, financial.ToString());
         }
 
         [TestMethod]
@@ -460,7 +462,8 @@ namespace WebApplications.Utilities.Test
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
             Financial financial = new Financial(currencyInfo, amount);
-            String expectedFormat = String.Format(CultureInfo.CurrentUICulture, "{0} {1}", amount, currencyInfo.Code);
+            Trace.WriteLine(CultureInfo.CurrentUICulture);
+            String expectedFormat = String.Format("{0} {1}", amount, currencyInfo.Code);
             Assert.AreEqual(expectedFormat, String.Format("{0:I}", financial));
         }
 
