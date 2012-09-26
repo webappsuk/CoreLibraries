@@ -40,7 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Annotations">
-      <HintPath>..\packages\JetBrains.Annotations.5.1.3000.12\lib\JetBrains.Annotations.dll</HintPath>
+      <HintPath>..\packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.SqlServer.Types, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
@@ -63,13 +63,13 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WebApplications.Testing">
-      <HintPath>..\packages\WebApplications.Testing.2.0.4633.28154\lib\net45\WebApplications.Testing.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Testing.2.0.4639.30097\lib\net45\WebApplications.Testing.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.2.0.4633.27546\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.2.0.4650.25306\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Logging">
-      <HintPath>..\packages\WebApplications.Utilities.Logging.2.0.4633.30087\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.2.0.4650.26149\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
