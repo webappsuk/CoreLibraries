@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Enumerations;
@@ -220,7 +221,7 @@ namespace WebApplications.Utilities.Test.Enumerations
         public void TriState_CastFromOutOfRangeByte_ThrowsInvalidCastException()
         {
             byte value = (byte) Random.Next(3, 254);
-            TriState testTriState = value;
+            TriState testTriState = (TriState) value;
         }
 
         [TestMethod]

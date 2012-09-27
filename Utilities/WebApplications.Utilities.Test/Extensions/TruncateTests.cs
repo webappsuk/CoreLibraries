@@ -110,7 +110,6 @@ namespace WebApplications.Utilities.Test.Extensions
         #endregion
 
         #region Internal tests
-        [Ignore]
         [TestMethod]
         public void InternalTest_RandomSentence_LengthAsGiven()
         {
@@ -122,7 +121,6 @@ namespace WebApplications.Utilities.Test.Extensions
             }
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_RandomSentence_WordsNoLessThanThreeCharacters()
         {
@@ -137,21 +135,18 @@ namespace WebApplications.Utilities.Test.Extensions
             }
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_ShortTestStrings_FourExist()
         {
             Assert.AreEqual(4, _shortTestStrings.Count, "There should be four short test strings in this test class.");
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_LongTestStrings_FiveExist()
         {
             Assert.AreEqual(5, _longTestStrings.Count, "There should be five long test strings in this test class.");
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_FirstTwoShortTestStrings_ShorterThanMaxLength()
         {
@@ -162,7 +157,6 @@ namespace WebApplications.Utilities.Test.Extensions
             }
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_SecondTwoShortTestStrings_EqualToMaxLength()
         {
@@ -173,7 +167,6 @@ namespace WebApplications.Utilities.Test.Extensions
             }
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_LongTestStrings_GreaterThanMaxLength()
         {
@@ -184,7 +177,6 @@ namespace WebApplications.Utilities.Test.Extensions
             }
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_FirstLongTestString_ContainsNoSpaces()
         {
@@ -192,7 +184,6 @@ namespace WebApplications.Utilities.Test.Extensions
             Assert.IsFalse(testString.Value.Contains(" "), "The {0} should not contain spaces", testString.Key);
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_AllExceptFirstLongTestString_ContainSpaces()
         {
@@ -202,7 +193,6 @@ namespace WebApplications.Utilities.Test.Extensions
             }
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_SecondLongTestString_HasNoSpaceEitherSideOfBreakPoint()
         {
@@ -213,7 +203,6 @@ namespace WebApplications.Utilities.Test.Extensions
                            "The {0} should not contain spaces just before the break-point", testString.Key);
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_ThirdLongTestString_HasNoSpaceUntilAfterBreakPoint()
         {
@@ -222,7 +211,6 @@ namespace WebApplications.Utilities.Test.Extensions
                           "The {0} should not contain spaces until after the break-point", testString.Key);
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_FourthLongTestString_HasSpaceBeforeBreakPoint()
         {
@@ -233,7 +221,6 @@ namespace WebApplications.Utilities.Test.Extensions
                            "The {0} should not contain spaces just before the break-point", testString.Key);
         }
 
-        [Ignore]
         [TestMethod]
         public void InternalTest_FourthLongTestString_HasSpaceAfterBreakPoint()
         {

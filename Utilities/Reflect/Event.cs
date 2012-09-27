@@ -95,7 +95,7 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Event"/> to <see cref="System.Reflection.EventInfo"/>.
+        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Reflect.Event"/> to <see cref="System.Reflection.EventInfo"/>.
         /// </summary>
         /// <param name="event">The event.</param>
         /// <returns>The result of the conversion.</returns>
@@ -106,7 +106,7 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Reflection.EventInfo"/> to <see cref="WebApplications.Utilities.Relection.Event"/>.
+        /// Performs an implicit conversion from <see cref="System.Reflection.EventInfo"/> to <see cref="WebApplications.Utilities.Reflect.Event"/>.
         /// </summary>
         /// <param name="eventInfo">The event info.</param>
         /// <returns>The result of the conversion.</returns>

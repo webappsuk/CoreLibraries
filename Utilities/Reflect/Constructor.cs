@@ -134,7 +134,7 @@ namespace WebApplications.Utilities.Reflect
         #endregion
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Constructor"/> to <see cref="System.Reflection.ConstructorInfo"/>.
+        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Reflect.Constructor"/> to <see cref="System.Reflection.ConstructorInfo"/>.
         /// </summary>
         /// <param name="constructor">The constructor.</param>
         /// <returns>The result of the conversion.</returns>
@@ -145,7 +145,7 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Reflection.ConstructorInfo"/> to <see cref="WebApplications.Utilities.Relection.Constructor"/>.
+        /// Performs an implicit conversion from <see cref="System.Reflection.ConstructorInfo"/> to <see cref="WebApplications.Utilities.Reflect.Constructor"/>.
         /// </summary>
         /// <param name="constructorInfo">The constructor info.</param>
         /// <returns>The result of the conversion.</returns>
@@ -212,10 +212,7 @@ namespace WebApplications.Utilities.Reflect
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.InvalidOperationException"></exception>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="methodBase" /> is a <see langword="null" />.
-        ///   </exception>
-        ///   <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///   <para>The method specified is a static constructor.</para>
         ///   <para>-or-</para>
         ///   <para>No parameter/return types specified.</para>

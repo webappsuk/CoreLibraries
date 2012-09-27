@@ -395,7 +395,5 @@ namespace WebApplications.Utilities.Test.Caching
             concurrentLookup.Remove(newKey, newValue);
             CollectionAssert.AreEqual(new List<String> {newValue}, concurrentLookup[newKey].ToList());
         }
-
-        // TODO: test: Concurrency, updating keys??, choosing the equality things, GUID clashes on value add (lol)
     }
 }

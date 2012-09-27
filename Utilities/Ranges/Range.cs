@@ -190,6 +190,7 @@ namespace WebApplications.Utilities.Ranges
         #endregion
 
         #region IEquatable<Range<TValue,TStep>> Members
+        /// <inheritDoc />
         public bool Equals(Range<TValue, TStep> other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -245,6 +246,7 @@ namespace WebApplications.Utilities.Ranges
             }
         }
 
+        /// <inheritDoc />
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -256,6 +258,7 @@ namespace WebApplications.Utilities.Ranges
                    EqualityComparer<TStep>.Default.Equals(Step, range.Step);
         }
 
+        /// <inheritDoc />
         public override int GetHashCode()
         {
             unchecked

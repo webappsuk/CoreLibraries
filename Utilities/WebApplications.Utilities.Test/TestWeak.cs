@@ -214,65 +214,6 @@ namespace WebApplications.Utilities.Test
             Trace.WriteLine(stopwatch.ToString("Checking '{0}' elements", weakCount));
         }
 
-        [Ignore] // Not a test. Also, takes too long.
-        [TestMethod]
-        public void TestConcurrencySpeeds()
-        {
-            const int loops = 1000000;
-            Stopwatch stopwatch = new Stopwatch();
-            ConcurrentDictionary<int, TestClass> intKey = new ConcurrentDictionary<int, TestClass>();
-            ConcurrentDictionary<int, TestClass> intKeyFast = new ConcurrentDictionary<int, TestClass>();
-            ConcurrentDictionary<Guid, TestClass> guidKey = new ConcurrentDictionary<Guid, TestClass>();
-            WeakConcurrentDictionary<int, TestClass> weakIntKey = new WeakConcurrentDictionary<int, TestClass>();
-            WeakConcurrentDictionary<int, ObservableTestClass> weakIntKeyObservable =
-                new WeakConcurrentDictionary<int, ObservableTestClass>();
-            stopwatch.Start();
-            Parallel.For(0, loops,
-                         l =>
-                             {
-                                 Guid guid = Guid.NewGuid();
-                                 intKey.AddOrUpdate(l, new TestClass(l), (k, v) => new TestClass(l));
-                             });
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("Int key added '{0}' elements", loops));
-
-            stopwatch.Restart();
-            Parallel.For(0, loops, l => intKeyFast.AddOrUpdate(l, new TestClass(l), (k, v) => new TestClass(l)));
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("Int key added '{0}' elements (without GUID generation)", loops));
-
-            stopwatch.Restart();
-            Parallel.For(0, loops,
-                         l =>
-                             {
-                                 Guid guid = Guid.NewGuid();
-                                 guidKey.AddOrUpdate(guid, new TestClass(l), (k, v) => new TestClass(l));
-                             });
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("Guid key added '{0}' elements", loops));
-
-            stopwatch.Restart();
-            Parallel.For(0, loops,
-                         l =>
-                             {
-                                 Guid guid = Guid.NewGuid();
-                                 weakIntKey.AddOrUpdate(l, new TestClass(l), (k, v) => new TestClass(l));
-                             });
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("Weak added '{0}' elements", loops));
-
-            stopwatch.Restart();
-            Parallel.For(0, loops,
-                         l =>
-                             {
-                                 Guid guid = Guid.NewGuid();
-                                 weakIntKeyObservable.AddOrUpdate(l, new ObservableTestClass(l),
-                                                                  (k, v) => new ObservableTestClass(l));
-                             });
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("Weak observable added '{0}' elements", loops));
-        }
-
         #region Nested type: ObservableTestClass
         /// <summary>
         /// A test class for placing in a weak dictionary.

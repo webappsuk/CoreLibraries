@@ -45,15 +45,6 @@ namespace WebApplications.Utilities.Test
                             "Where a null format string is provided for the stopwatch name, the name should default to 'Stopwatch'.");
         }
 
-        [Ignore] // TODO: Determine if this test is meant to be failing by checking specification
-        [TestMethod]
-        public void StopwatchToString_NoFormatString_NameDefaultsToStopwatch()
-        {
-            Stopwatch testStopwatch = new Stopwatch();
-            Assert.AreEqual("Stopwatch completed in 0ms.", testStopwatch.ToString(),
-                            "Where no format string is provided for the stopwatch name, the name should default to 'Stopwatch'.");
-        }
-
         [TestMethod]
         public void StopwatchToString_FormatStringWithNoParameters_StopwatchReferreredToUsingFormatString()
         {
@@ -84,8 +75,9 @@ namespace WebApplications.Utilities.Test
             testStopwatch.Stop();
             Assert.AreEqual(testStopwatch.ElapsedMilliseconds,
                             int.Parse(
-                                Regex.Match(testStopwatch.ToString(null), "completed in ([0-9]+).?[0-9]*ms.",
-                                            RegexOptions.None).Groups[1].ToString()),
+                                Regex.Match(testStopwatch.ToString(null), "completed in ([0-9]+).?[0-9]*ms.", RegexOptions.None)
+                                .Groups[1]
+                                .ToString()),
                             "The number of milliseconds elapsed should be stated in the ToString result.");
         }
     }

@@ -173,7 +173,7 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Property"/> to <see cref="System.Reflection.PropertyInfo"/>.
+        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Reflect.Property"/> to <see cref="System.Reflection.PropertyInfo"/>.
         /// </summary>
         /// <param name="property">The property.</param>
         /// <returns>The result of the conversion.</returns>
@@ -184,7 +184,7 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Reflection.PropertyInfo"/> to <see cref="WebApplications.Utilities.Relection.Property"/>.
+        /// Performs an implicit conversion from <see cref="System.Reflection.PropertyInfo"/> to <see cref="WebApplications.Utilities.Reflect.Property"/>.
         /// </summary>
         /// <param name="propertyInfo">The property info.</param>
         /// <returns>The result of the conversion.</returns>
@@ -303,7 +303,6 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Retrieves the lambda action equivalent of the specified static setter method.
         /// </summary>
-        /// <typeparam name="T">The type of the parameter the function encapsulates.</typeparam>	
         /// <typeparam name="TValue">The type of the value returned.</typeparam>	
         /// <returns>An action that sets the value of the relevant static field.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>

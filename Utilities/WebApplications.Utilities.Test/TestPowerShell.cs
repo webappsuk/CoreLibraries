@@ -37,11 +37,10 @@ namespace WebApplications.Utilities.Test
     [TestClass]
     public class TestPowerShell
     {
-        [Ignore]
         [TestMethod]
-        public void TestMethod1()
+        public void TestSolutionGetAll()
         {
-            const string root = @"C:\Sandboxes\Tools\trunk\Core";
+            const string root = @"../";
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             IEnumerable<Solution> solutions = Solution.GetAll(root, true);

@@ -263,10 +263,7 @@ namespace WebApplications.Utilities.Reflect
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.InvalidOperationException"></exception>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="methodBase" /> is a <see langword="null" />.
-        ///   </exception>
-        ///   <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///   <para>The method specified is a static constructor.</para>
         ///   <para>-or-</para>
         ///   <para>No parameter/return types specified.</para>
@@ -373,10 +370,7 @@ namespace WebApplications.Utilities.Reflect
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.InvalidOperationException"></exception>
-        /// <exception cref="ArgumentNullException">
-        ///   <paramref name="methodBase" /> is a <see langword="null" />.
-        ///   </exception>
-        ///   <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         ///   <para>The method specified is a static constructor.</para>
         ///   <para>-or-</para>
         ///   <para>No parameter/return types specified.</para>

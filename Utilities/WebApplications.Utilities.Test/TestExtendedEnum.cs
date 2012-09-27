@@ -27,11 +27,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebApplications.Testing;
 using WebApplications.Utilities.Enumerations;
 
 namespace WebApplications.Utilities.Test
@@ -39,9 +36,8 @@ namespace WebApplications.Utilities.Test
     [TestClass]
     public class TestExtendedEnum
     {
-        #region Colours enum
         [Flags]
-        public enum Colours
+        private enum Colours
         {
             [System.ComponentModel.Description("Descriptions are retrieved.")] None = 0,
             [System.ComponentModel.Description("And concatenated.")] DuplicateNoneName = 0,
@@ -53,108 +49,13 @@ namespace WebApplications.Utilities.Test
             Cyan = Green | Blue,
             Mauve = Blue | 32
         }
-        #endregion
 
-        #region NotAFlag enum
-        public enum NotAFlag
+        private enum NotAFlag
         {
             A,
             B,
             C,
             D
-        }
-        #endregion
-
-        public const int Loops = 1000000;
-
-        [TestMethod]
-        [Ignore] // TODO: Create tests
-        public void TestLookupPerformance()
-        {
-            // Load enum info.
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            ExtendedEnum<Colours>.Check(true);
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("ExtendedEnum<Colours> initialization.", Loops));
-
-            Random random = new Random();
-
-            /*
-             * Compare performance of casting
-             */
-            stopwatch.Restart();
-            Parallel.For(0, Loops,
-                         i =>
-                             {
-                                 long r = random.Next(6);
-                                 Colours c = (Colours) r;
-                                 long cl = (long) c;
-                                 Assert.AreEqual(r, cl);
-                             });
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("{0} loops of casts.", Loops));
-
-            // With generics we don't know the type and have to use Enum.ToObject & Convert.ToInt64
-            stopwatch.Restart();
-            Parallel.For(0, Loops,
-                         i =>
-                             {
-                                 long r = random.Next(6);
-                                 Colours c = (Colours) Enum.ToObject(typeof (Colours), r);
-                                 long cl = Convert.ToInt64(c);
-                                 Assert.AreEqual(r, cl);
-                             });
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("{0} loops of Enum.ToObject & Convert.ToInt64.", Loops));
-
-            // New method
-            stopwatch.Restart();
-            Parallel.For(0, Loops,
-                         i =>
-                             {
-                                 long r = random.Next(6);
-                                 Colours c;
-                                 Assert.IsTrue(ExtendedEnum<Colours>.TryGetValue(r, out c));
-                                 long cl;
-                                 Assert.IsTrue(ExtendedEnum<Colours>.TryGetLong(c, out cl));
-                                 Assert.AreEqual(r, cl);
-                             });
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("{0} loops of ExtendedEnum<Colours> methods.", Loops));
-
-            /*
-             * Compare name lookup
-             */
-
-            stopwatch.Restart();
-            Parallel.For(0, Loops,
-                         i =>
-                             {
-                                 // Get colour consistently
-                                 long r = random.Next(6);
-                                 Colours c;
-                                 Assert.IsTrue(ExtendedEnum<Colours>.TryGetValue(r, out c));
-
-                                 Assert.IsNotNull(Enum.GetName(typeof (Colours), c), "Failed to get name");
-                             });
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("{0} loops of Enum.GetName.", Loops));
-
-            stopwatch.Restart();
-            Parallel.For(0, Loops,
-                         i =>
-                             {
-                                 // Get colour consistently
-                                 long r = random.Next(6);
-                                 Colours c;
-                                 Assert.IsTrue(ExtendedEnum<Colours>.TryGetValue(r, out c));
-
-                                 string name;
-                                 Assert.IsTrue(ExtendedEnum<Colours>.TryGetName(c, out name));
-                             });
-            stopwatch.Stop();
-            Trace.WriteLine(stopwatch.ToString("{0} loops of ExtendedEnum<Colours>.TryGetName.", Loops));
         }
 
         [TestMethod]

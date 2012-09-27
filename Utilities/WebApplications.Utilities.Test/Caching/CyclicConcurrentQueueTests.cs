@@ -38,10 +38,7 @@ namespace WebApplications.Utilities.Test.Caching
     [TestClass]
     public class CyclicConcurrentQueueTests : UtilitiesTestBase
     {
-        // Fix the maximum capacity under test as overwise OutOfMemoryExceptions are thrown
-        public const int MaxCapacity = 2684354; //56; Made value EVEN SMALLER
-        public const long MinCapacityForBytes = 2147483648;
-        public const long MaxCapacityForBytes = 3221225472;
+        private const int MaxCapacity = 2684354;
 
         private CyclicConcurrentQueue<T> CreateCyclicConcurrentQueue<T>(long capacity)
         {
@@ -67,16 +64,6 @@ namespace WebApplications.Utilities.Test.Caching
                 Assert.Inconclusive("Ran out of memory trying to create test object.");
                 return null;
             }
-        }
-
-        [Ignore] // TODO: Fix memory issues
-        [TestMethod]
-        public void Constructor_CapacityInRange_DoesNotReturnNull()
-        {
-            long validCapacity = MinCapacityForBytes +
-                                 (long) (Random.NextDouble()*(MaxCapacityForBytes - MinCapacityForBytes));
-            CyclicConcurrentQueue<byte> cyclicConcurrentQueue = CreateCyclicConcurrentQueue<byte>(validCapacity);
-            Assert.IsNotNull(cyclicConcurrentQueue);
         }
 
         [TestMethod]

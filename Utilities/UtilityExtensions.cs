@@ -213,8 +213,14 @@ namespace WebApplications.Utilities
         public static string ToEnglish(this double number)
         {
             string integerString = ToEnglishProcessInteger((long) number);
+            int precision = 0;
+            
+            if(number.ToString().Contains('.'))
+            {
+                precision = number.ToString().Split('.')[1].Length;
+            }
 
-            number = Math.Abs(number)%1;
+            number = Math.Round(Math.Abs(number), precision) % 1;
 
             int decimalDigits = 0;
 

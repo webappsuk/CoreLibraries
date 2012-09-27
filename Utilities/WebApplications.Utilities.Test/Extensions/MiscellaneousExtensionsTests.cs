@@ -224,18 +224,16 @@ namespace WebApplications.Utilities.Test.Extensions
                           "Where values contain a fractional component, the result of ToEnglish should contain ' Point '.");
         }
 
-        [Ignore] // TODO: finish this test
         [TestMethod]
         public void ToEnglish_FractionalValue_WordsAfterPointMatchesNumberOfDecimalPlaces()
         {
-            int numPlaces = Random.Next(1, 20);
-            double value = Random.Next() * Math.Pow(10, -numPlaces);
-            Assert.AreEqual(numPlaces,
-                            value.ToEnglish().Split(new[] { " Point " }, StringSplitOptions.None)[1].Split(new[] { " " },
-                                                                                                         StringSplitOptions
-                                                                                                             .None).
-                                Length,
-                            "Where values contain a fractional component, the number of words after the word Point should be equal to the number of decimal places.");
+            // Note that we cannot guarantee this due to floating point errors, so the random generation has been stripped out
+            const double value = 1.355d;
+            string result = value.ToEnglish();
+            string wordsAfterPoint = result.Split(new[] { " Point " }, StringSplitOptions.None)[1];
+            string[] numberOfWordsAfterPoint = wordsAfterPoint.Split(' ').ToArray();
+
+            Assert.AreEqual(3, numberOfWordsAfterPoint.Length);
         }
 
         [TestMethod]

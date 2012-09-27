@@ -31,6 +31,9 @@ using WebApplications.Utilities.Ranges;
 
 namespace WebApplications.Utilities
 {
+    /// <summary>
+    /// An extension to the interlocked funcionality in .NET for ranges
+    /// </summary>
     public static class ExtendedInterlocked
     {
         /// <summary>
@@ -38,8 +41,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="range">The range.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
+        /// <returns>The incremented result.</returns>
         public static int Increment(ref int value, [NotNull] IntRange range)
         {
             return Increment(ref value, range.Start, range.End);
@@ -51,8 +53,7 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <param name="start">The start of the range (inclusive).</param>
         /// <param name="end">The end of the range (inclusive).</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
+        /// <returns>The incremented result.</returns>
         public static int Increment(ref int value, int start, int end)
         {
             SpinWait spinWait = new SpinWait();
@@ -71,8 +72,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="range">The range.</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
+        /// <returns>The decremented result.</returns>
         public static int Decrement(ref int value, [NotNull] IntRange range)
         {
             return Decrement(ref value, range.Start, range.End);
@@ -84,8 +84,7 @@ namespace WebApplications.Utilities
         /// <param name="value">The value.</param>
         /// <param name="start">The start of the range (inclusive).</param>
         /// <param name="end">The end of the range (inclusive).</param>
-        /// <returns></returns>
-        /// <remarks></remarks>
+        /// <returns>The decremented result.</returns>
         public static int Decrement(ref int value, int start, int end)
         {
             SpinWait spinWait = new SpinWait();

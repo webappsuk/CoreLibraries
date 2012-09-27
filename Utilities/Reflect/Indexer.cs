@@ -114,7 +114,7 @@ namespace WebApplications.Utilities.Reflect
         #endregion
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Relection.Property"/> to <see cref="System.Reflection.PropertyInfo"/>.
+        /// Performs an implicit conversion from <see cref="WebApplications.Utilities.Reflect.Property"/> to <see cref="System.Reflection.PropertyInfo"/>.
         /// </summary>
         /// <param name="indexer">The indexer.</param>
         /// <returns>The result of the conversion.</returns>
@@ -125,7 +125,7 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Reflection.PropertyInfo"/> to <see cref="WebApplications.Utilities.Relection.Property"/>.
+        /// Performs an implicit conversion from <see cref="System.Reflection.PropertyInfo"/> to <see cref="WebApplications.Utilities.Reflect.Property"/>.
         /// </summary>
         /// <param name="propertyInfo">The property info.</param>
         /// <returns>The result of the conversion.</returns>

@@ -377,8 +377,8 @@ namespace WebApplications.Utilities.Test.Reflect
         /// <summary>
         /// A class with complicated overloads illustrating classic failure cases.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <remarks></remarks>
+        /// <typeparam name="T">The type parameter.</typeparam>
+        /// <remarks>Resharper will flag some of these as redundant but they're needed for tests</remarks>
         private class ComplexOverloads<T>
         {
             public static int StaticCounter;
@@ -387,6 +387,10 @@ namespace WebApplications.Utilities.Test.Reflect
             public string Value2;
 
             public ComplexOverloads()
+            {
+            }
+
+            static ComplexOverloads()
             {
             }
 

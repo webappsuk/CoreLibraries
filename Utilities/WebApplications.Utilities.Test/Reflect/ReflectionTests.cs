@@ -26,13 +26,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Reflect;
@@ -45,13 +43,11 @@ namespace WebApplications.Utilities.Test.Reflect
         /// <summary>
         /// Tests reflection of events.
         /// </summary>
-        /// <remarks></remarks>
         public event EventHandler TestEvent;
 
         /// <summary>
         /// Tests the reflector constructor.
         /// </summary>
-        /// <remarks></remarks>
         [TestMethod]
         public void Test_ReflectorStaticConstructor()
         {
@@ -103,55 +99,6 @@ namespace WebApplications.Utilities.Test.Reflect
                     "Reflecting '{0}' of '{1}' types in '{2}' assemblies [{3} type load errors, {4} argument exceptions, {5} not supported] - {6} methods found.",
                     rCount, tCount, aCount, tlCount, aeCount, nsCount, mCount));
         }
-
-        [TestMethod]
-        [Ignore]
-        public void Comparative_Performance()
-        {
-            const int loops = 100000;
-            Type t = typeof (ReflectionTests);
-            ILookup<string, MemberInfo> members = t
-                .GetMembers(ExtendedType.AllMembersBindingFlags)
-                .ToLookup(mi => mi.Name);
-
-
-            MemberInfo m;
-            int index = Random.Next(0, members.Count - 1);
-            string key = members.ElementAt(index).Key;
-
-            Stopwatch s = new Stopwatch();
-            s.Start();
-            Parallel.For(0, loops, i => { });
-            s.Stop();
-
-            s.Restart();
-            Parallel.For(0, loops, i => { m = members[key].FirstOrDefault(); });
-            s.Stop();
-            Trace.WriteLine(s.ToString("{0} calls to lookup", loops));
-
-            s.Restart();
-            Parallel.For(0, loops, i => { m = t.GetMember(key).FirstOrDefault(); });
-            s.Stop();
-            Trace.WriteLine(s.ToString("{0} calls to GetMember", loops));
-
-            List<MethodInfo> methods = members.SelectMany(g => g.ToList()).OfType<MethodInfo>().ToList();
-            index = Random.Next(0, methods.Count);
-            MethodInfo methodInfo = methods[index];
-            List<ParameterInfo> parameters = methodInfo.GetParameters().ToList();
-
-            ParameterInfo p;
-            s.Restart();
-            Parallel.For(0, loops, i => { p = parameters.FirstOrDefault(); });
-            s.Stop();
-            Trace.WriteLine(s.ToString("{0} calls to parameters", loops));
-
-            s.Restart();
-            Parallel.For(0, loops, i => { p = methodInfo.GetParameters().FirstOrDefault(); });
-            s.Stop();
-            Trace.WriteLine(s.ToString("{0} calls to GetParameters", loops));
-        }
-
-        // <summary>Class used as test case for reflection tests</summary>
 
         [TestMethod]
         public void GetMethod_InstanceFunction_ReturnsLambdaForRequestedFunction()
@@ -314,19 +261,6 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.IsNull(setLast);
         }
 
-        [Ignore]
-        [TestMethod]
-        public void TestRawDefaultValueSafe()
-        {
-            MethodInfo methodInfo = GetType().GetMethod("TestMethod");
-            foreach (ParameterInfo pi in methodInfo.GetParameters())
-            {
-                Trace.WriteLine(string.Format(
-                    "{1} {0} = {2}",
-                    pi.Name, pi.ParameterType, pi.RawDefaultValueSafe()));
-            }
-        }
-
         [TestMethod]
         public void TestConversions()
         {
@@ -373,11 +307,6 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.AreEqual(c, func8(new ConvertibleTest(c)));
 
             Assert.IsNull(Reflection.GetConversion<string, int>());
-        }
-
-        public void TestMethod(int noDefault, int a = 1, int b = default(int), DateTime c = default(DateTime),
-                               TimeSpan d = default(TimeSpan))
-        {
         }
 
         #region Nested type: ConvertibleTest
@@ -479,13 +408,6 @@ namespace WebApplications.Utilities.Test.Reflect
         }
         #endregion
 
-        #region Nested type: IMyTd
-        public interface IMyTd<T>
-        {
-            int Sum(int a, int b);
-        }
-        #endregion
-
         #region Nested type: ReflectionTestClass
         public class ReflectionTestClass<T>
         {
@@ -575,7 +497,6 @@ namespace WebApplications.Utilities.Test.Reflect
             /// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
             /// <param name="sourceType">A <see cref="T:System.Type"/> that represents the type you want to convert from.</param>
             /// <returns>true if this converter can perform the conversion; otherwise, false.</returns>
-            /// <remarks></remarks>
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
             {
                 return sourceType == typeof (int) || base.CanConvertFrom(context, sourceType);
@@ -587,7 +508,6 @@ namespace WebApplications.Utilities.Test.Reflect
             /// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that provides a format context.</param>
             /// <param name="destinationType">A <see cref="T:System.Type"/> that represents the type you want to convert to.</param>
             /// <returns>true if this converter can perform the conversion; otherwise, false.</returns>
-            /// <remarks></remarks>
             public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
             {
                 return destinationType == typeof (int) || base.CanConvertTo(context, destinationType);
@@ -601,7 +521,6 @@ namespace WebApplications.Utilities.Test.Reflect
             /// <param name="value">The <see cref="T:System.Object"/> to convert.</param>
             /// <returns>An <see cref="T:System.Object"/> that represents the converted value.</returns>
             /// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
-            /// <remarks></remarks>
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             {
                 return value is int ? new TypeConverterTest((int) value) : base.ConvertFrom(context, culture, value);
@@ -616,9 +535,7 @@ namespace WebApplications.Utilities.Test.Reflect
             /// <param name="destinationType">The <see cref="T:System.Type"/> to convert the <paramref name="value"/> parameter to.</param>
             /// <returns>An <see cref="T:System.Object"/> that represents the converted value.</returns>
             /// <exception cref="T:System.ArgumentNullException">The <paramref name="destinationType"/> parameter is null. </exception>
-            ///   
             /// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
-            /// <remarks></remarks>
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
                                              Type destinationType)
             {
@@ -633,7 +550,6 @@ namespace WebApplications.Utilities.Test.Reflect
         /// <summary>
         /// Test class that has an associated type converter.
         /// </summary>
-        /// <remarks></remarks>
         [TypeConverter(typeof (TestConverter))]
         public class TypeConverterTest
         {
@@ -644,11 +560,6 @@ namespace WebApplications.Utilities.Test.Reflect
                 Value = value;
             }
 
-            /// <summary>
-            /// Returns a <see cref="System.String"/> that represents this instance.
-            /// </summary>
-            /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-            /// <remarks></remarks>
             public override string ToString()
             {
                 return "TEST" + Value.ToString(CultureInfo.InvariantCulture);
