@@ -235,7 +235,7 @@ namespace WebApplications.Utilities.Logging
                     // If we don't have a logging thread create it.
                     if (_loggerThread == null)
                     {
-                        _loggerThread = new Thread(LoggerThread) {Priority = ThreadPriority.BelowNormal};
+                        _loggerThread = new Thread(LoggerThread) {Priority = ThreadPriority.BelowNormal, IsBackground = true};
                         _loggerThread.Start();
                     }
                 }
