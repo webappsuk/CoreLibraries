@@ -35,7 +35,7 @@ namespace WebApplications.Utilities.Logging.Performance
     /// <summary>
     ///   Performance counters used for operations.
     /// </summary>
-    internal class PerformanceCounterHelper
+    public class PerformanceCounterHelper
     {
         /// <summary>
         ///   A lookup containing the performance counters.
