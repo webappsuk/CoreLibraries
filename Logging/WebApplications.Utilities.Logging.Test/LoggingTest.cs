@@ -50,10 +50,9 @@ namespace Utilities.Logging.Test
         {
             DateTime startDate = DateTime.Now;
             string message = "Test message " + Guid.NewGuid();
-            Thread.Sleep(10);
             Log.Add(message);
             Log.Flush();
-            IEnumerable<Log> logs = Log.Get(DateTime.Now, startDate);
+            List<Log> logs = Log.Get(DateTime.Now, startDate.AddMinutes(-5)).ToList();
             Assert.IsNotNull(logs);
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
