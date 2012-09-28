@@ -51,45 +51,4 @@ namespace WebApplications.Testing.Test
                 s.ToString("Test stopwatch {0}", randomString));
         }
     }
-
-    [TestClass]
-    public class Base64Tests
-    {
-        [TestMethod]
-        public void TestDecode()
-        {
-            string encodedString = "1YHQKTSVD7EKN2FRRA2AU4CR94";
-            string decodedString = Base64Encoder.Decode(encodedString);
-            Trace.WriteLine(decodedString);
-        }
-    }
-
-    public class Base64Encoder
-    {
-        public static string Encode(params object[] input)
-        {
-            try
-            {
-                byte[] encodedKeyByte = Encoding.UTF8.GetBytes(input.ToString());
-                string encodedKey = Convert.ToBase64String(encodedKeyByte);
-                return encodedKey;
-            }
-            catch
-            {
-                throw new Exception("Unable to encode");
-            }
-        }
-
-        public static string Decode(string input)
-        {
-            UTF8Encoding encoder = new UTF8Encoding();
-            Decoder utf8Decode = encoder.GetDecoder();
-
-            byte[] toDecodeByte = Convert.FromBase64String(input);
-            int charCount = utf8Decode.GetCharCount(toDecodeByte, 0, toDecodeByte.Length);
-            char[] decodedChar = new char[charCount];
-            utf8Decode.GetChars(toDecodeByte, 0, toDecodeByte.Length, decodedChar, 0);
-            return new string(decodedChar);
-        }
-    }
 }
