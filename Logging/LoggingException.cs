@@ -267,7 +267,12 @@ namespace WebApplications.Utilities.Logging
                 LogGroup = Guid.Empty;
                 Level = level;
                 Context = new LogContext(context, parameters);
-                _parameters = parameters.Select(o => o == null ? null : o.ToString()).ToArray();
+                _parameters = parameters
+                    .Select(o =>
+                        o == null
+                            ? null
+                            : o.ToString())
+                    .ToArray();
 
                 // Create an inner exception stack of all inner exceptions until the last logging exception
                 Stack<Exception> innerExceptions = new Stack<Exception>();
@@ -310,8 +315,7 @@ namespace WebApplications.Utilities.Logging
                 }
 
                 // If we haven't got a logGroup create a new one
-                if (LogGroup ==
-                    Guid.Empty)
+                if (LogGroup == Guid.Empty)
                     LogGroup = Guid.NewGuid();
 
                 // We now take items back off stack (starting with deepest first, hence maintaining
@@ -339,8 +343,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
         /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
         /// <exception cref="ArgumentNullException"><paramref name="info"/> is a <see langword="null"/>.</exception>
-        private LoggingException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
+        private LoggingException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
             if (info == null)
                 throw new ArgumentNullException("info");
@@ -452,8 +455,7 @@ namespace WebApplications.Utilities.Logging
                 return "No stack trace available.";
 
             StackFrame[] frames = trace.GetFrames();
-            if ((frames == null) ||
-                (frames.Length < 1))
+            if ((frames == null) || (frames.Length < 1))
                 return "No stack trace frames available.";
 
             bool checkSkip = true;
@@ -585,8 +587,7 @@ namespace WebApplications.Utilities.Logging
 
                 // tack on e.g. " in c:\tmp\MyFile.cs:line 5" 
                 sb.Append(' ');
-                sb.AppendFormat(CultureInfo.InvariantCulture, inFileLineNum, fileName,
-                                sf.GetFileLineNumber());
+                sb.AppendFormat(CultureInfo.InvariantCulture, inFileLineNum, fileName, sf.GetFileLineNumber());
             }
             return sb.ToString();
         }

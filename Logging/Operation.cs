@@ -186,18 +186,18 @@ namespace WebApplications.Utilities.Logging
             bool logUnhandledExceptions = true)
         {
             Wrap(o =>
-                     {
-                         action();
-                         return 0;
-                     },
-                 name,
-                 categoryName,
-                 methodName,
-                 instance,
-                 arguments,
-                 warningDuration,
-                 criticalDuration,
-                 logUnhandledExceptions);
+                {
+                    action();
+                    return 0;
+                },
+                name,
+                categoryName,
+                methodName,
+                instance,
+                arguments,
+                warningDuration,
+                criticalDuration,
+                logUnhandledExceptions);
         }
 
         /// <summary>
@@ -240,18 +240,18 @@ namespace WebApplications.Utilities.Logging
             bool logUnhandledExceptions = true)
         {
             Wrap(o =>
-                     {
-                         action(o);
-                         return 0;
-                     },
-                 name,
-                 categoryName,
-                 methodName,
-                 instance,
-                 arguments,
-                 warningDuration,
-                 criticalDuration,
-                 logUnhandledExceptions);
+                {
+                    action(o);
+                    return 0;
+                },
+                name,
+                categoryName,
+                methodName,
+                instance,
+                arguments,
+                warningDuration,
+                criticalDuration,
+                logUnhandledExceptions);
         }
 
         /// <summary>
@@ -296,14 +296,14 @@ namespace WebApplications.Utilities.Logging
             bool logUnhandledExceptions = true)
         {
             return Wrap(o => function(),
-                        name,
-                        categoryName,
-                        methodName,
-                        instance,
-                        arguments,
-                        warningDuration,
-                        criticalDuration,
-                        logUnhandledExceptions);
+                name,
+                categoryName,
+                methodName,
+                instance,
+                arguments,
+                warningDuration,
+                criticalDuration,
+                logUnhandledExceptions);
         }
 
         /// <summary>
@@ -371,11 +371,8 @@ namespace WebApplications.Utilities.Logging
                 catch (Exception e)
                 {
                     // Wrap the exception in a logging exception.
-                    throw new LoggingException(
-                        e,
-                        Resources.Operation_Wrap_UnhandledExceptionOccurred,
-                        LogLevel.Error,
-                        e.Message);
+                    throw new LoggingException(e, Resources.Operation_Wrap_UnhandledExceptionOccurred,
+                        LogLevel.Error, e.Message);
                 }
                 finally
                 {
@@ -428,19 +425,22 @@ namespace WebApplications.Utilities.Logging
             Parent = _contextStack.Current;
             ThreadId = Thread.CurrentThread.ManagedThreadId;
             ThreadName = String.IsNullOrWhiteSpace(Thread.CurrentThread.Name)
-                             ? ThreadId.ToString()
-                             : Thread.CurrentThread.Name;
+                ? ThreadId.ToString()
+                : Thread.CurrentThread.Name;
             Name = name;
             CategoryName = categoryName ?? name;
             Method = methodName ?? name;
-            InstanceHash = instance == null ? null : (int?) instance.GetHashCode();
+            InstanceHash = instance == null
+                ? null
+                : (int?) instance.GetHashCode();
             _arguments = arguments == null
-                             ? new List<KeyValuePair<string, string>>(0)
-                             : arguments.Select(
-                                 kvp =>
-                                 new KeyValuePair<string, string>(kvp.Key ?? string.Empty,
-                                                                  kvp.Value == null ? null : kvp.Value.ToString())).
-                                   ToList();
+                ? new List<KeyValuePair<string, string>>(0)
+                : arguments
+                    .Select(kvp => new KeyValuePair<string, string>(kvp.Key ?? string.Empty,
+                         kvp.Value == null
+                             ? null
+                             : kvp.Value.ToString()))
+                    .ToList();
 
             // Add this operation onto the context stack.
             _disposer = _contextStack.Region(this);
@@ -522,9 +522,7 @@ namespace WebApplications.Utilities.Logging
                 if ((_parent == null) && (_parentGuid != CombGuid.Empty))
                 {
                     if (!_operations.TryGetValue(_parentGuid, out _parent))
-                        throw new LoggingException(Resources.Operation_Parent_CannotRecoverParent,
-                                                   LogLevel.Error,
-                                                   _parentGuid);
+                        throw new LoggingException(Resources.Operation_Parent_CannotRecoverParent, LogLevel.Error, _parentGuid);
                 }
                 return _parent;
             }
@@ -549,10 +547,11 @@ namespace WebApplications.Utilities.Logging
                     _xml = new XElement(
                         NodeOperation,
                         new XAttribute(AttributeGuid, Guid.Guid),
-                        new XAttribute(AttributeName, Name == null ? string.Empty : Name.XmlEscape() ?? string.Empty),
+                        new XAttribute(AttributeName, Name == null
+                            ? string.Empty
+                            : Name.XmlEscape() ?? string.Empty),
                         new XAttribute(AttributeType, GetType()),
-                        new XElement(
-                            NodeThread, new XAttribute(AttributeId, ThreadId), ThreadName.XmlEscape()),
+                        new XElement(NodeThread, new XAttribute(AttributeId, ThreadId), ThreadName.XmlEscape()),
                         new XElement(NodeMethod, Method.XmlEscape()));
 
                     if (_parentGuid != CombGuid.Empty)
@@ -661,31 +660,34 @@ namespace WebApplications.Utilities.Logging
             {
                 // Generate context string
                 string arguments = !_arguments.Any()
-                                       ? "None"
-                                       : String.Format(
-                                           "{0}\t\t\t{1}",
-                                           Environment.NewLine,
-                                           String.Join(
-                                               String.Format(",{0}\t\t\t", Environment.NewLine),
-                                               _arguments.Select(
-                                                   kvp =>
-                                                   string.Format("{0} = {1}", kvp.Key ?? string.Empty,
-                                                                 kvp.Value == null
-                                                                     ? "null"
-                                                                     : string.Format("'{0}'", kvp.Value)))));
-
-                _string =
-                    String.Format(
-                        Resources.Operation_ToString,
+                    ? "None"
+                    : String.Format(
+                        "{0}\t\t\t{1}",
                         Environment.NewLine,
-                        Name,
-                        Method,
-                        InstanceHash == null ? "No Instance" : InstanceHash.ToString(),
-                        ThreadId,
-                        ThreadName,
-                        Guid,
-                        _parentGuid == CombGuid.Empty ? "None" : _parentGuid.ToString(),
-                        arguments);
+                        String.Join(
+                            String.Format(",{0}\t\t\t", Environment.NewLine),
+                            _arguments.Select(
+                                kvp =>
+                                string.Format("{0} = {1}", kvp.Key ?? string.Empty,
+                                    kvp.Value == null
+                                        ? "null"
+                                        : string.Format("'{0}'", kvp.Value)))));
+
+                _string = String.Format(
+                    Resources.Operation_ToString,
+                    Environment.NewLine,
+                    Name,
+                    Method,
+                    InstanceHash == null
+                        ? "No Instance"
+                        : InstanceHash.ToString(),
+                    ThreadId,
+                    ThreadName,
+                    Guid,
+                    _parentGuid == CombGuid.Empty
+                        ? "None"
+                        : _parentGuid.ToString(),
+                    arguments);
             }
 
             return _string;

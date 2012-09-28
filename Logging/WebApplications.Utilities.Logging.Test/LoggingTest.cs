@@ -37,9 +37,6 @@ namespace Utilities.Logging.Test
     [TestClass]
     public class LoggingTests : TestBase
     {
-        private const int Loops = 10000;
-        private const int ChangeConfigAt = -500;
-
         [TestMethod]
         public void TestMemoryCache()
         {

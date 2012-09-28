@@ -83,8 +83,8 @@ namespace WebApplications.Utilities.Logging
 
             // Either create a new blank dictionary or a copy.
             _context = current == null
-                           ? new Dictionary<string, string>()
-                           : new Dictionary<string, string>(current._context);
+                ? new Dictionary<string, string>()
+                : new Dictionary<string, string>(current._context);
         }
 
         /// <summary>
@@ -218,14 +218,12 @@ namespace WebApplications.Utilities.Logging
                 {
                     // Create XML for context.
                     _xml = new XElement(NodeContexts,
-                                        _context
-                                            .Select(kvp =>
-                                                    new XElement(NodeContext,
-                                                                 new XAttribute(AttributeKey,
-                                                                                kvp.Key ?? "xs:null"),
-                                                                 new XAttribute(AttributeValue,
-                                                                                kvp.Value ?? "xs:null")))
-                                            .ToArray());
+                        _context
+                            .Select(kvp =>
+                                new XElement(NodeContext,
+                                    new XAttribute(AttributeKey, kvp.Key ?? "xs:null"),
+                                    new XAttribute(AttributeValue, kvp.Value ?? "xs:null")))
+                            .ToArray());
                 }
 
                 // Return copy of cached XElement
@@ -280,7 +278,9 @@ namespace WebApplications.Utilities.Logging
             while (i < keyValuePairs.Length)
             {
                 string k = keyValuePairs[i];
-                string v = i + 1 < l ? keyValuePairs[i + 1] : null;
+                string v = i + 1 < l
+                    ? keyValuePairs[i + 1]
+                    : null;
                 if (k != null)
                     list.Add(new KeyValuePair<string, string>(k, v));
                 i += 2;
@@ -297,8 +297,7 @@ namespace WebApplications.Utilities.Logging
         ///   In doing so it automatically prepends the existing context from the thread stack.
         /// </remarks>
         [UsedImplicitly]
-        public static IDisposable CreateRegion([NotNull] string key, [CanBeNull] string value,
-                                               [NotNull] string[] keyValuePairs)
+        public static IDisposable CreateRegion([NotNull] string key, [CanBeNull] string value, [NotNull] string[] keyValuePairs)
         {
             return _contextStack.Region(new LogContext(key, value, keyValuePairs));
         }
@@ -336,7 +335,9 @@ namespace WebApplications.Utilities.Logging
             {
                 StringBuilder stringBuilder =
                     new StringBuilder(String.Format(Resources.LogContext_ToString, _context.Count,
-                                                    _context.Count == 1 ? "y" : "ies"));
+                        _context.Count == 1
+                            ? "y"
+                            : "ies"));
                 foreach (KeyValuePair<string, string> kvp in _context)
                 {
                     stringBuilder.Append(Environment.NewLine);

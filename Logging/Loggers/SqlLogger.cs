@@ -85,35 +85,35 @@ namespace WebApplications.Utilities.Logging.Loggers
         static SqlLogger()
         {
             _tblLogEntry = new[]
-                               {
-                                   new SqlMetaData("Guid", SqlDbType.UniqueIdentifier),
-                                   new SqlMetaData("Group", SqlDbType.UniqueIdentifier),
-                                   new SqlMetaData("Level", SqlDbType.Int),
-                                   new SqlMetaData("Message", SqlDbType.NVarChar, -1),
-                                   new SqlMetaData("ThreadId", SqlDbType.Int),
-                                   new SqlMetaData("ThreadName", SqlDbType.NVarChar, -1),
-                                   new SqlMetaData("Expiry", SqlDbType.SmallDateTime),
-                                   new SqlMetaData("OperationGuid", SqlDbType.UniqueIdentifier),
-                                   new SqlMetaData("ExceptionType", SqlDbType.NVarChar, -1),
-                                   new SqlMetaData("StackTrace", SqlDbType.NVarChar, -1)
-                               };
+                {
+                    new SqlMetaData("Guid", SqlDbType.UniqueIdentifier),
+                    new SqlMetaData("Group", SqlDbType.UniqueIdentifier),
+                    new SqlMetaData("Level", SqlDbType.Int),
+                    new SqlMetaData("Message", SqlDbType.NVarChar, -1),
+                    new SqlMetaData("ThreadId", SqlDbType.Int),
+                    new SqlMetaData("ThreadName", SqlDbType.NVarChar, -1),
+                    new SqlMetaData("Expiry", SqlDbType.SmallDateTime),
+                    new SqlMetaData("OperationGuid", SqlDbType.UniqueIdentifier),
+                    new SqlMetaData("ExceptionType", SqlDbType.NVarChar, -1),
+                    new SqlMetaData("StackTrace", SqlDbType.NVarChar, -1)
+                };
             _tblOperation = new[]
-                                {
-                                    new SqlMetaData("GUID", SqlDbType.UniqueIdentifier),
-                                    new SqlMetaData("ParentGUID", SqlDbType.UniqueIdentifier),
-                                    new SqlMetaData("CategoryName", SqlDbType.NVarChar, -1),
-                                    new SqlMetaData("Name", SqlDbType.NVarChar, -1),
-                                    new SqlMetaData("InstanceHash", SqlDbType.Int),
-                                    new SqlMetaData("Method", SqlDbType.NVarChar, -1),
-                                    new SqlMetaData("ThreadId", SqlDbType.Int),
-                                    new SqlMetaData("ThreadName", SqlDbType.NVarChar, -1),
-                                };
+                {
+                    new SqlMetaData("GUID", SqlDbType.UniqueIdentifier),
+                    new SqlMetaData("ParentGUID", SqlDbType.UniqueIdentifier),
+                    new SqlMetaData("CategoryName", SqlDbType.NVarChar, -1),
+                    new SqlMetaData("Name", SqlDbType.NVarChar, -1),
+                    new SqlMetaData("InstanceHash", SqlDbType.Int),
+                    new SqlMetaData("Method", SqlDbType.NVarChar, -1),
+                    new SqlMetaData("ThreadId", SqlDbType.Int),
+                    new SqlMetaData("ThreadName", SqlDbType.NVarChar, -1),
+                };
             _tblDictionary = new[]
-                                 {
-                                     new SqlMetaData("GUID", SqlDbType.UniqueIdentifier),
-                                     new SqlMetaData("Name", SqlDbType.NVarChar, 200),
-                                     new SqlMetaData("Value", SqlDbType.NVarChar, -1)
-                                 };
+                {
+                    new SqlMetaData("GUID", SqlDbType.UniqueIdentifier),
+                    new SqlMetaData("Name", SqlDbType.NVarChar, 200),
+                    new SqlMetaData("Value", SqlDbType.NVarChar, -1)
+                };
         }
 
 
@@ -153,8 +153,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                throw new LoggingException(Resources.SqlLogger_NoConnectionStringProvided,
-                                           LogLevel.Critical);
+                throw new LoggingException(Resources.SqlLogger_NoConnectionStringProvided, LogLevel.Critical);
             }
 
             _applicationGuid = LoggingConfiguration.Active.ApplicationGuid;
@@ -167,8 +166,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 _sqlTimeout = (int) Math.Ceiling(sqlTimeout.TotalSeconds);
                 if (_sqlTimeout < 1)
-                    throw new LoggingException(Resources.Sqllogger_TimeoutLessThanOneSecond,
-                                               LogLevel.Critical, sqlTimeout);
+                    throw new LoggingException(Resources.Sqllogger_TimeoutLessThanOneSecond, LogLevel.Critical, sqlTimeout);
             }
 
             if (expireAfter == default(TimeSpan))
@@ -177,8 +175,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 _expireAfter = expireAfter;
                 if (_expireAfter < TimeSpan.FromSeconds(1))
-                    throw new LoggingException(Resources.Sqllogger_LogExpiryLessThanOneSecond,
-                                               LogLevel.Critical);
+                    throw new LoggingException(Resources.Sqllogger_LogExpiryLessThanOneSecond, LogLevel.Critical);
             }
 
             // Register service & Check connection at this point
@@ -190,10 +187,10 @@ namespace WebApplications.Utilities.Logging.Loggers
 
                     using (
                         SqlCommand command = new SqlCommand("spRegisterApplication", connection)
-                                                 {
-                                                     CommandType = CommandType.StoredProcedure,
-                                                     CommandTimeout = _sqlTimeout
-                                                 })
+                            {
+                                CommandType = CommandType.StoredProcedure,
+                                CommandTimeout = _sqlTimeout
+                            })
                     {
                         command.Parameters.AddWithValue("@ApplicationGuid", _applicationGuid);
                         command.Parameters.AddWithValue("@ApplicationName", applicationName);
@@ -250,8 +247,8 @@ namespace WebApplications.Utilities.Logging.Loggers
                     operations.Add(operation);
 
                     arguments.AddRange(
-                        operation.Arguments.Select(
-                            kvp => new Tuple<CombGuid, string, string>(operation.Guid, kvp.Key, kvp.Value)));
+                        operation.Arguments
+                            .Select(kvp => new Tuple<CombGuid, string, string>(operation.Guid, kvp.Key, kvp.Value)));
 
                     // If we're a newer operation than previously seen, update our latest operation
                     if (operation.Created >
@@ -269,7 +266,7 @@ namespace WebApplications.Utilities.Logging.Loggers
 
                 using (
                     SqlCommand command = new SqlCommand("spLog", connection)
-                                             {CommandType = CommandType.StoredProcedure, CommandTimeout = _sqlTimeout})
+                        {CommandType = CommandType.StoredProcedure, CommandTimeout = _sqlTimeout})
                 {
                     command.Parameters.AddWithValue("@ApplicationGuid", _applicationGuid);
 
@@ -309,9 +306,9 @@ namespace WebApplications.Utilities.Logging.Loggers
             sqlDataRecord.SetString(5, log.ThreadName);
             sqlDataRecord.SetDateTime(6, log.TimeStamp + _expireAfter);
             sqlDataRecord.Set(7,
-                              log.Operation != null && log.Operation.Guid != CombGuid.Empty
-                                  ? log.Operation.Guid.Guid
-                                  : (Guid?) null);
+                log.Operation != null && log.Operation.Guid != CombGuid.Empty
+                    ? log.Operation.Guid.Guid
+                    : (Guid?) null);
             sqlDataRecord.Set(8, log.ExceptionType);
             sqlDataRecord.Set(9, log.StackTrace);
             return sqlDataRecord;
@@ -353,9 +350,9 @@ namespace WebApplications.Utilities.Logging.Loggers
             SqlDataRecord sqlDataRecord = new SqlDataRecord(_tblDictionary);
             sqlDataRecord.SetGuid(0, tuple.Item1.Guid);
             sqlDataRecord.SetString(1,
-                                    tuple.Item2 == null
-                                        ? string.Empty
-                                        : tuple.Item2.Length < 200 ? tuple.Item2 : tuple.Item2.Substring(0, 200));
+                tuple.Item2 == null
+                    ? string.Empty
+                    : tuple.Item2.Length < 200 ? tuple.Item2 : tuple.Item2.Substring(0, 200));
             sqlDataRecord.Set(2, tuple.Item3);
             return sqlDataRecord;
         }

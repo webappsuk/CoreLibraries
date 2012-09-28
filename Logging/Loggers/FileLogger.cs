@@ -136,15 +136,12 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             if (maxLog < 10)
                 throw new LoggingException(
-                    Resources.FileLogger_MaximumLogsLessThanTen,
-                    LogLevel.Critical, maxLog);
+                    Resources.FileLogger_MaximumLogsLessThanTen, LogLevel.Critical, maxLog);
 
             if (maxDuration == default(TimeSpan))
                 maxDuration = TimeSpan.FromDays(1);
             else if (maxDuration < TimeSpan.FromSeconds(10))
-                throw new LoggingException(
-                    Resources.FileLogger_FileDurationLessThanTenSeconds,
-                    LogLevel.Critical, maxLog);
+                throw new LoggingException(Resources.FileLogger_FileDurationLessThanTenSeconds, LogLevel.Critical, maxLog);
 
             MaxLog = maxLog;
             MaxDuration = maxDuration;
@@ -162,14 +159,12 @@ namespace WebApplications.Utilities.Logging.Loggers
             }
             catch (Exception e)
             {
-                throw new LoggingException(e,
-                                           Resources.FileLogger_DirectoryAccessOrCreationError,
-                                           LogLevel.Critical, directory, e.Message);
+                throw new LoggingException(e, Resources.FileLogger_DirectoryAccessOrCreationError,
+                    LogLevel.Critical, directory, e.Message);
             }
 
             if (string.IsNullOrWhiteSpace(format))
-                throw new LoggingException(Resources.FileLogger_FileNameFormatNotSpecified,
-                                           LogLevel.Critical);
+                throw new LoggingException(Resources.FileLogger_FileNameFormatNotSpecified, LogLevel.Critical);
 
 
             if (string.IsNullOrWhiteSpace(extension))
@@ -181,23 +176,21 @@ namespace WebApplications.Utilities.Logging.Loggers
                 extension = extension.Trim();
                 if (extension.Length > 5)
                     throw new LoggingException(
-                        Resources.FileLogger_ExtensionLongerThanFiveCharacters, LogLevel.Critical,
-                        extension);
+                        Resources.FileLogger_ExtensionLongerThanFiveCharacters, LogLevel.Critical, extension);
                 extension = "." + extension;
             }
 
             _format = Directory + @"\" +
-                      format.Replace("DateTime", "0").Replace("ApplicationName", "2").Replace("ApplicationGuid", "3") +
-                      "{1}" + extension;
+                        format.Replace("DateTime", "0")
+                            .Replace("ApplicationName", "2")
+                                .Replace("ApplicationGuid", "3")
+                        + "{1}" + extension;
 
             // Test the format string
             LoggingConfiguration configuration = LoggingConfiguration.Active;
-            string testFormat = string.Format(_format, DateTime.Now, Int32.MaxValue, configuration.ApplicationName,
-                                              configuration.ApplicationGuid);
+            string testFormat = string.Format(_format, DateTime.Now, Int32.MaxValue, configuration.ApplicationName, configuration.ApplicationGuid);
             if (testFormat.IndexOfAny(Path.GetInvalidPathChars()) > -1)
-                throw new LoggingException(
-                    Resources.FileLogger_FileNameFormatInvalid,
-                    LogLevel.Critical, format);
+                throw new LoggingException(Resources.FileLogger_FileNameFormatInvalid, LogLevel.Critical, format);
 
             try
             {
@@ -205,15 +198,11 @@ namespace WebApplications.Utilities.Logging.Loggers
             }
             catch (Exception e)
             {
-                throw new LoggingException(e,
-                                           Resources.FileLogger_InvalidPathCreation,
-                                           LogLevel.Critical, format, e.Message);
+                throw new LoggingException(e, Resources.FileLogger_InvalidPathCreation, LogLevel.Critical, format, e.Message);
             }
 
             if (!testFormat.StartsWith(directory))
-                throw new LoggingException(
-                    Resources.FileLogger_PathCreatedOutsideDirectory,
-                    LogLevel.Critical, format);
+                throw new LoggingException(Resources.FileLogger_PathCreatedOutsideDirectory, LogLevel.Critical, format);
         }
 
         /// <summary>
@@ -283,9 +272,11 @@ namespace WebApplications.Utilities.Logging.Loggers
             do
             {
                 _logFileName = string.Format(_format, DateTime.Now,
-                                             dedupe > 1 ? string.Format(" ({0})", dedupe) : string.Empty,
-                                             configuration.ApplicationName,
-                                             configuration.ApplicationGuid);
+                    dedupe > 1
+                        ? string.Format(" ({0})", dedupe)
+                        : string.Empty,
+                    configuration.ApplicationName,
+                    configuration.ApplicationGuid);
                 dedupe++;
             } while (File.Exists(_logFileName));
             _logFile = new StreamWriter(_logFileName, true);

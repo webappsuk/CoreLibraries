@@ -124,10 +124,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             if (CanRetrieve)
             {
-                throw new LoggingException(
-                    Resources.LoggerBase_GetEndDateLimit_NotImplemented,
-                    LogLevel.Critical,
-                    Name);
+                throw new LoggingException(Resources.LoggerBase_GetEndDateLimit_NotImplemented, LogLevel.Critical, Name);
             }
             throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval, LogLevel.Critical, Name);
         }
@@ -151,10 +148,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             if (CanRetrieve)
             {
-                throw new LoggingException(
-                    Resources.LoggerBase_GetEndDateStartDate_NotImplemented,
-                    LogLevel.Critical,
-                    Name);
+                throw new LoggingException(Resources.LoggerBase_GetEndDateStartDate_NotImplemented,
+                    LogLevel.Critical, Name);
             }
             throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval, LogLevel.Critical, Name);
         }
@@ -177,10 +172,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             if (CanRetrieve)
             {
-                throw new LoggingException(
-                    Resources.LoggerBase_GetForwardStartDateLimit_NotImplemented,
-                    LogLevel.Critical,
-                    Name);
+                throw new LoggingException(Resources.LoggerBase_GetForwardStartDateLimit_NotImplemented,
+                    LogLevel.Critical, Name);
             }
             throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval, LogLevel.Critical, Name);
         }
@@ -204,8 +197,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         public virtual IEnumerable<Log> GetForward(DateTime startDate, DateTime endDate)
         {
             if (!CanRetrieve)
-                throw new LoggingException(
-                    Resources.LoggerBase_DoesNotSupportRetrieval, LogLevel.Critical, Name);
+                throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval,
+                    LogLevel.Critical, Name);
 
             return Get(endDate, startDate).Reverse();
         }

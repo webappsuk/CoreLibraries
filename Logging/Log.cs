@@ -187,7 +187,9 @@ namespace WebApplications.Utilities.Logging
 
                     // Logging exception has a more robust stack trace retrieval algorithm
                     LoggingException loggingException = exception as LoggingException;
-                    StackTrace = (loggingException != null ? loggingException.StackTrace : exception.StackTrace);
+                    StackTrace = loggingException != null
+                        ? loggingException.StackTrace
+                        : exception.StackTrace;
 
                     if (String.IsNullOrWhiteSpace(StackTrace))
                         StackTrace = "No stack trace found.";
@@ -218,11 +220,13 @@ namespace WebApplications.Utilities.Logging
                 // Get the current thread information
                 ThreadId = Thread.CurrentThread.ManagedThreadId;
                 ThreadName = string.IsNullOrWhiteSpace(Thread.CurrentThread.Name)
-                                 ? ThreadId.ToString()
-                                 : Thread.CurrentThread.Name;
+                    ? ThreadId.ToString()
+                    : Thread.CurrentThread.Name;
 
                 // Set provided properties
-                Group = logGroup.Equals(System.Guid.Empty) ? CombGuid.NewCombGuid(TimeStamp) : (CombGuid) logGroup;
+                Group = logGroup.Equals(System.Guid.Empty)
+                    ? CombGuid.NewCombGuid(TimeStamp)
+                    : (CombGuid) logGroup;
 
                 // Attempt to format string safely.
                 // ReSharper disable ConditionIsAlwaysTrueOrFalse
@@ -285,8 +289,7 @@ namespace WebApplications.Utilities.Logging
                         new XAttribute(AttributeId, Guid.Guid),
                         new XAttribute(AttributeTimestamp, TimeStamp),
                         new XAttribute(AttributeLoggroup, Group),
-                        new XElement(
-                            NodeThread, new XAttribute(AttributeId, ThreadId), ThreadName.XmlEscape()),
+                        new XElement(NodeThread, new XAttribute(AttributeId, ThreadId), ThreadName.XmlEscape()),
                         new XElement(NodeLevel, Level),
                         new XElement(NodeMessage, Message.XmlEscape()));
 
@@ -343,13 +346,13 @@ namespace WebApplications.Utilities.Logging
             if (_string == null)
             {
                 string exception = IsException
-                                       ? string.Format(
-                                           Resources.Log_ToString_LogException,
-                                           Environment.NewLine,
-                                           '\t',
-                                           ExceptionType,
-                                           StackTrace)
-                                       : string.Empty;
+                    ? string.Format(
+                        Resources.Log_ToString_LogException,
+                        Environment.NewLine,
+                        '\t',
+                        ExceptionType,
+                        StackTrace)
+                    : string.Empty;
 
                 _string =
                     string.Format(

@@ -88,16 +88,14 @@ namespace WebApplications.Utilities.Logging.Loggers
             : base(name, true, validLevels)
         {
             if (maximumLogEntries <= 1)
-                throw new LoggingException(
-                    Resources.MemoryLogger_MaximumLogsLessThanOne, LogLevel.Critical,
-                    maximumLogEntries);
+                throw new LoggingException(Resources.MemoryLogger_MaximumLogsLessThanOne,
+                    LogLevel.Critical, maximumLogEntries);
 
             if (cacheExpiry == default(TimeSpan))
                 cacheExpiry = TimeSpan.FromMinutes(10);
             else if (cacheExpiry < TimeSpan.FromSeconds(10))
-                throw new LoggingException(
-                    Resources.MemoryLogger_CacheExpiryLessThanTenSeconds, LogLevel.Critical,
-                    cacheExpiry);
+                throw new LoggingException(Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
+                    LogLevel.Critical, cacheExpiry);
 
             MaximumLogEntries = maximumLogEntries;
             CacheExpiry = cacheExpiry;
@@ -135,16 +133,14 @@ namespace WebApplications.Utilities.Logging.Loggers
             : base(name, true, validLevels)
         {
             if (maximumLogEntries <= 1)
-                throw new LoggingException(
-                    Resources.MemoryLogger_MaximumLogsLessThanOne, LogLevel.Critical,
-                    maximumLogEntries);
+                throw new LoggingException(Resources.MemoryLogger_MaximumLogsLessThanOne,
+                    LogLevel.Critical, maximumLogEntries);
 
             if (cacheExpiry == default(TimeSpan))
                 cacheExpiry = TimeSpan.FromMinutes(10);
             else if (cacheExpiry < TimeSpan.FromSeconds(10))
-                throw new LoggingException(
-                    Resources.MemoryLogger_CacheExpiryLessThanTenSeconds, LogLevel.Critical,
-                    cacheExpiry);
+                throw new LoggingException(Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
+                    LogLevel.Critical,cacheExpiry);
 
             MaximumLogEntries = maximumLogEntries;
             CacheExpiry = cacheExpiry;
@@ -184,7 +180,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             return (from l in _logs
                     where l.TimeStamp < endDate && l.TimeStamp > e
                     orderby l.TimeStamp descending
-                    select l).Take(limit);
+                    select l)
+                .Take(limit);
         }
 
         /// <summary>

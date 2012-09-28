@@ -170,12 +170,12 @@ namespace WebApplications.Utilities.Logging.Configuration
 
             // Add a trace logger.
             Loggers.Add(new LoggerElement
-                            {
-                                Name = "Trace Logger",
-                                Type = typeof (TraceLogger),
-                                Enabled = true,
-                                ValidLevels = LogLevels.All
-                            });
+                {
+                    Name = "Trace Logger",
+                    Type = typeof (TraceLogger),
+                    Enabled = true,
+                    ValidLevels = LogLevels.All
+                });
 
             ApplicationGuid = Guid.NewGuid();
             base.InitializeDefault();
