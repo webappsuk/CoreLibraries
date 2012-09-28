@@ -192,34 +192,6 @@ namespace WebApplications.Utilities.Test.Ranges
             }
         }
 
-        [Ignore] // Todo: Add test back in after fixing imprecision of floating point arithmatic
-        [TestMethod]
-        public void DoubleRange_LengthDivisibleByStep_IterationCountMatchesCalculated()
-        {
-            Random rand = new Random();
-
-            Tuple<double, double> rangeParams = RestrictedRandomRange();
-            double start = rangeParams.Item1;
-            double length = rangeParams.Item2;
-            double end = start + length;
-            // pick a power of two for the number of steps as floating points can store binary fractions more accurately
-            double step = length/Math.Pow(2, rand.Next(2, 5));
-
-            //ensure that step size is a factor of the length of the range
-            start += length%step;
-            length += length%step;
-
-            // Test that the attempt to create the correct scenario actually worked, as with floating point values this cannot be certain
-            Assert.AreEqual(0, length%step,
-                            "This test should be using a range length which is an exact multiple of the step size");
-
-            DoubleRange doubleRange = new DoubleRange(start, end, step);
-
-            // Range endpoint is inclusive, so must take into account this extra iteration
-            Assert.AreEqual(length/step + 1, doubleRange.Count(),
-                            "Iteration count should be (end-start)/step + 1 where endpoint is included");
-        }
-
         [TestMethod]
         public void DoubleRange_LengthNotDivisibleByStep_IterationCountMatchesCalculated()
         {
