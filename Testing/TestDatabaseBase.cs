@@ -41,7 +41,6 @@ namespace WebApplications.Testing
         /// Static constructor of the <see cref="T:System.Object" /> class, used to initialize the locatoin of the data directory for all tests.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">Thrown if the data directory cannot be found.</exception>
-        /// <remarks></remarks>
         [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         static TestDatabaseBase()
         {
@@ -52,8 +51,10 @@ namespace WebApplications.Testing
             do
             {
                 // Look recursively for directory called Data containing mdf files.
-                dataDirectory = Directory.GetDirectories(path, "Data", SearchOption.AllDirectories)
-                    .SingleOrDefault(d => Directory.GetFiles(d, "*.mdf", SearchOption.TopDirectoryOnly).Any());
+                dataDirectory = Directory
+                    .GetDirectories(path, "Data", SearchOption.AllDirectories)
+                    .SingleOrDefault(d => Directory.GetFiles(d, "*.mdf", SearchOption.TopDirectoryOnly)
+                        .Any());
 
                 // Move up a directory
                 path = Path.GetDirectoryName(path);
@@ -72,15 +73,17 @@ namespace WebApplications.Testing
         /// Creates the connection string.
         /// </summary>
         /// <param name="databaseName">Name of the database.</param>
-        /// <param name="isAsync">if set to <see langword="true"/> then set connection to asynchronous.</param>
-        /// <returns></returns>
+        /// <param name="isAsync">If set to <see langword="true"/> then set connection to asynchronous.</param>
+        /// <returns>The created connection string.</returns>
         protected static string CreateConnectionString(string databaseName, bool isAsync = false)
         {
             return
                 String.Format(
                     @"Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\{0}.mdf;Integrated Security=True;Connect Timeout=30;User Instance=True;{1}",
                     databaseName,
-                    isAsync ? "Asynchronous Processing=true" : String.Empty);
+                    isAsync
+                        ? "Asynchronous Processing=true"
+                        : String.Empty);
         }
     }
 }

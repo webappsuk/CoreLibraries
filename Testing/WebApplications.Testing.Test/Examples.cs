@@ -113,13 +113,6 @@ namespace WebApplications.Testing.Test
         }
 
         [TestMethod]
-        public void RobsExample()
-        {
-            IObjectRecord exceptionRecord = new ExceptionRecord(new Data.Exceptions.SqlInvalidConnectionException());
-
-        }
-
-        [TestMethod]
         public void TestCustomException()
         {
             // To create a record that implement IDataRecord we start with a record set definition.
