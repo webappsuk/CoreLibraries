@@ -167,6 +167,9 @@
     <Compile Include="Ranges\DoubleRange.cs" />
     <Compile Include="Enumerations\TriState.cs" />
     <Compile Include="EqualityBuilder.cs" />
+    <Compile Include="Threading\AsyncLock.cs" />
+    <Compile Include="Threading\AsyncReaderWriterLock.cs" />
+    <Compile Include="Threading\AsyncSemaphore.cs" />
     <Compile Include="UtilityExtensions.cs" />
     <Compile Include="Interfaces\Caching\ICaching.cs" />
     <Compile Include="Ranges\IntRange.cs" />

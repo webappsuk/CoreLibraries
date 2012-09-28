@@ -100,12 +100,6 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <inheritdoc/>
-        public Type ReturnType
-        {
-            get { return Info.PropertyType; }
-        }
-
-        /// <inheritdoc/>
         ISignature ISignature.Close(Type[] typeClosures, Type[] signatureClosures)
         {
             // Indexers don't support signature closures.

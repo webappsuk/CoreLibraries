@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using JetBrains.Annotations;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -43,7 +44,15 @@ namespace WebApplications.Utilities.Test.Reflect
         /// <summary>
         /// Tests reflection of events.
         /// </summary>
+        [UsedImplicitly]
         public event EventHandler TestEvent;
+
+        [UsedImplicitly]
+        public void OnTestEvent(EventArgs e)
+        {
+            EventHandler handler = TestEvent;
+            if (handler != null) handler(this, e);
+        }
 
         /// <summary>
         /// Tests the reflector constructor.
