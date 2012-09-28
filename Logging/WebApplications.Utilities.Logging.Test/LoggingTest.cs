@@ -27,15 +27,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Logging.Configuration;
-using WebApplications.Utilities.Logging.Interfaces;
 
 namespace Utilities.Logging.Test
 {
@@ -57,34 +52,6 @@ namespace Utilities.Logging.Test
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
             Log.Flush();
-        }
-
-        [TestMethod]
-        public void TestPerformance()
-        {
-            Log.Add("Initialising Logs");
-            ILogger traceLogger;
-            if (Log.TryGetLogger("Trace Logger", out traceLogger))
-                traceLogger.ValidLevels = LogLevels.AtLeastInformation;
-            Stopwatch s = new Stopwatch();
-            s.Start();
-            Parallel.For(0, Loops, i =>
-                                       {
-                                           Log.Add("New log item {0}.", LogLevel.Debugging, i);
-                                           if (ChangeConfigAt != i) return;
-
-                                           // Change the configuration
-                                           LoggingConfiguration newConfiguration = new LoggingConfiguration();
-                                           newConfiguration.Loggers.Remove("Trace Logger");
-                                           LoggingConfiguration.Active = newConfiguration;
-                                       });
-
-            Trace.WriteLine(s.ToString("{0} Loops", Loops));
-            Log.Flush();
-
-            s.Stop();
-
-            Trace.WriteLine(s.ToString("Entire thread to Flush"));
         }
 
         [TestMethod]
