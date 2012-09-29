@@ -44,8 +44,8 @@ namespace WebApplications.Utilities.Logging.Performance
         [NotNull]
         private static readonly IEnumerable<CounterCreationData> _counterData = new[]
                 {
-                    new CounterCreationData("Count", "Total Operations Executed", PerformanceCounterType.NumberOfItems64),
-                    new CounterCreationData("PerSecond", "Operations execute per second", PerformanceCounterType.RateOfCountsPerSecond64)
+                    new CounterCreationData("Total operations", "Total operations executed since the start of the process.", PerformanceCounterType.NumberOfItems64),
+                    new CounterCreationData("Operations per second", "The number of operations per second.", PerformanceCounterType.RateOfCountsPerSecond64)
                 };
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace WebApplications.Utilities.Logging.Performance
         ///   <para>
         /// For more information see MSDN : http://msdn.microsoft.com/EN-US/library/s55bz6c1(v=VS.110,d=hv.2).aspx
         ///   </para></remarks>
-        protected static bool Delete([NotNull] string categoryName)
+        public static bool Delete([NotNull] string categoryName)
         {
             return Delete(categoryName, _counterData);
         }
