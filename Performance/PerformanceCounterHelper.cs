@@ -97,11 +97,10 @@ namespace WebApplications.Utilities.Logging.Performance
         protected System.Diagnostics.PerformanceCounter[] Counters;
 
         /// <summary>
-        ///   Prevents a default instance of the <see cref="PerformanceCounterHelper"/> class from being created.
+        /// Creates a performance counter instance.
         /// </summary>
-        /// <param name="categoryName">
-        ///   The performance counter's <see cref="PerformanceCounterHelper.CategoryName">category name</see>.
-        /// </param>
+        /// <param name="categoryName">The performance counter's <see cref="PerformanceCounterHelper.CategoryName">category name</see>.</param>
+        /// <param name="counters">The counters.</param>
         protected PerformanceCounterHelper([NotNull] string categoryName, [NotNull]IEnumerable<CounterCreationData> counters)
         {
             CategoryName = categoryName;
@@ -178,8 +177,7 @@ namespace WebApplications.Utilities.Logging.Performance
         /// </summary>
         /// <param name="categoryName">Name of the category.</param>
         /// <param name="categoryHelp">The category help.</param>
-        /// <param name="counters">The optional counter data collection (leave <see langword="null"/>
-        /// to use the <see cref="DefaultCounters">default counter collection</see>).</param>
+        /// <param name="counters">The counter data enumeration.</param>
         /// <returns><see langword="true" /> if the category was created; otherwise <see langword="false" />.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
         /// <remarks><para>
@@ -240,7 +238,8 @@ namespace WebApplications.Utilities.Logging.Performance
         /// Deletes the specified performance counter (use during uninstall only).
         /// </summary>
         /// <param name="categoryName">Name of the category.</param>
-        /// <returns><see langword="true"/> if the category no longer exists; otherwise <see langword="false"/>.</returns>
+        /// <param name="counters">The counters.</param>
+        /// <returns><see langword="true" /> if the category no longer exists; otherwise <see langword="false" />.</returns>
         /// <remarks><para>
         /// It is strongly recommended that performance counter categories are only removed
         /// during the removal of the application, not during the execution

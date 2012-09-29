@@ -83,6 +83,18 @@ namespace WebApplications.Utilities.Logging.Performance
         }
 
         /// <summary>
+        ///   Decrements the operation counters.
+        /// </summary>
+        public void Decrement()
+        {
+            if (!IsValid)
+                return;
+
+            Counters[0].Decrement();
+            Counters[1].Decrement();
+        }
+
+        /// <summary>
         ///   Increments the operation counters.
         /// </summary>
         public void Increment()
