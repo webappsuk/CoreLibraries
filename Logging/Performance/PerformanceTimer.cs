@@ -349,6 +349,13 @@ namespace WebApplications.Utilities.Logging.Performance
                 _stopwatch.Start();
             }
 
+            /// <summary>
+            /// Disposes the timer updating the performance counters the first time this is called.
+            /// </summary>
+            /// <remarks>
+            /// <para>
+            /// Following disposal, the public properties of this type remain safely accessible.</para>
+            /// </remarks>
             public void Dispose()
             {
                 // Set s to null, and check we were the thread that succeeded.
