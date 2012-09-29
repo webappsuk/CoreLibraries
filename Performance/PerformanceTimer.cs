@@ -25,7 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using JetBrains.Annotations;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
@@ -35,119 +38,324 @@ namespace WebApplications.Utilities.Logging.Performance
     /// <summary>
     ///   Times an operation using a performance timer.
     /// </summary>
-    public class PerformanceTimer : IDisposable
+    public class PerformanceTimer : PerformanceCounterHelper
     {
-#if Performance
-        private readonly PerformanceTimerHelper _helper;
-#endif
-        private readonly string _categoryName;
-        private readonly Stopwatch _stopwatch;
-        private readonly TimeSpan _warningDuration;
-        private readonly TimeSpan _criticalDuration;
-        private int _stopped;
-        private TimeSpan _duration;
+        /// <summary>
+        /// Default counters for a category.
+        /// </summary>
+        [NotNull] private static readonly IEnumerable<CounterCreationData> _counterData = new[]
+            {
+                new CounterCreationData("Count", "Total Operations Executed", PerformanceCounterType.NumberOfItems64),
+                new CounterCreationData("PerSecond", "Operations execute per second",
+                                        PerformanceCounterType.RateOfCountsPerSecond64),
+                new CounterCreationData("AverageDuration", "Average Operation duration",
+                                        PerformanceCounterType.AverageTimer32),
+                new CounterCreationData("AverageDurationBase", "Average Operation duration base counter",
+                                        PerformanceCounterType.AverageBase),
+                new CounterCreationData("Warnings", "Total operations that exceeded the warning duration",
+                                        PerformanceCounterType.NumberOfItems64),
+                new CounterCreationData("Criticals", "Total operations that exceeded the critical duration",
+                                        PerformanceCounterType.NumberOfItems64)
+            };
+
+        /// <summary>
+        /// Holds all counters.
+        /// </summary>
+        [NotNull] private static readonly ConcurrentDictionary<string, PerformanceTimer> _counters =
+            new ConcurrentDictionary<string, PerformanceTimer>();
+
+        /// <summary>
+        /// The duration after which the warning counter is incremented.
+        /// </summary>
+        public readonly TimeSpan DefaultWarningDuration;
+
+        /// <summary>
+        /// The duration after which the critical counter is incremented.
+        /// </summary>
+        public readonly TimeSpan DefaultCriticalDuration;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="PerformanceTimer"/> class.
         /// </summary>
         /// <param name="categoryName">The name of the category.</param>
-        public PerformanceTimer(string categoryName)
-            : this(categoryName, TimeSpan.MaxValue, TimeSpan.MaxValue)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="PerformanceTimer"/> class.
-        /// </summary>
-        /// <param name="categoryName">The name of the category.</param>
-        /// <param name="warningDuration">
+        /// <param name="defaultWarningDuration">
         ///   The duration of time that the operation should take before logging a warning.
         /// </param>
-        public PerformanceTimer(string categoryName, TimeSpan warningDuration)
-            : this(categoryName, warningDuration, TimeSpan.MaxValue)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="PerformanceTimer"/> class.
-        /// </summary>
-        /// <param name="categoryName">The name of the category.</param>
-        /// <param name="warningDuration">
-        ///   The duration of time that the operation should take before logging a warning.
-        /// </param>
-        /// <param name="criticalDuration">
+        /// <param name="defaultCriticalDuration">
         ///   The duration of time that the operation should take before logging an error.
         /// </param>
-        public PerformanceTimer(string categoryName, TimeSpan warningDuration, TimeSpan criticalDuration)
+        public PerformanceTimer([NotNull] string categoryName, TimeSpan defaultWarningDuration = default(TimeSpan),
+                                TimeSpan defaultCriticalDuration = default(TimeSpan))
+            : base(categoryName, _counterData)
         {
-            Contract.Requires(warningDuration <= criticalDuration);
-            if (warningDuration > criticalDuration)
-                criticalDuration = warningDuration;
-#if Performance
-            _helper = PerformanceTimerHelper.Get(categoryName, warningDuration, criticalDuration);
-#else
-            if ((warningDuration == TimeSpan.MaxValue) &&
-                (criticalDuration == TimeSpan.MaxValue))
-                return;
-#endif
-            _categoryName = categoryName;
-            _warningDuration = warningDuration;
-            _criticalDuration = criticalDuration;
-            _stopwatch = new Stopwatch();
-            _stopwatch.Start();
+            Contract.Requires(categoryName != null);
+            Contract.Requires(defaultWarningDuration <= defaultCriticalDuration);
+            if (defaultWarningDuration == default(TimeSpan))
+                defaultWarningDuration = TimeSpan.MaxValue;
+            if (defaultCriticalDuration == default(TimeSpan))
+                defaultCriticalDuration = TimeSpan.MaxValue;
+
+            if (defaultWarningDuration > defaultCriticalDuration)
+                defaultCriticalDuration = defaultWarningDuration;
+
+            DefaultWarningDuration = defaultWarningDuration;
+            DefaultCriticalDuration = defaultCriticalDuration;
         }
 
         /// <summary>
-        ///   Stops the <see cref="PerformanceTimer"/>.
+        /// <para>
+        /// Starts a timer that and returns an object that when disposed will update this
+        /// instance with the time between calling this method and disposing the result.</para>
+        ///   <para>This makes it easy to use a <see cref="PerformanceTimer" /> in a using block to time
+        /// a block of code.</para>
         /// </summary>
-        public TimeSpan Stop()
+        /// <param name="warningDuration">Duration before a warning is counted.</param>
+        /// <param name="criticalDuration">Duration before a critical is counted.</param>
+        /// <returns>IDisposable.</returns>
+        /// <remarks>TODO Add remarks</remarks>
+        public Timer Region(TimeSpan warningDuration = default (TimeSpan),
+                            TimeSpan criticalDuration = default (TimeSpan))
         {
-            // If the timer was already stopped return the duration.
-            if (Interlocked.Exchange(ref _stopped, 1) == 1)
-                return _duration;
-#if !Performance
-            if (this._stopwatch == null)
-                return TimeSpan.Zero;
-#endif
-            _stopwatch.Stop();
-            _duration = _stopwatch.Elapsed;
+            return new Timer(this, warningDuration, criticalDuration);
+        }
 
-            // Check performance levels
-            if (_duration >=
-                _warningDuration)
+        /// <summary>
+        /// Gets the current operation count.
+        /// </summary>
+        /// <value>The count.</value>
+        public long Count
+        {
+            get { return IsValid ? Counters[0].RawValue : 0; }
+        }
+
+        /// <summary>
+        /// Gets the operations per second.
+        /// </summary>
+        /// <value>The count.</value>
+        public float Rate
+        {
+            get { return IsValid ? Counters[1].NextValue() : float.NaN; }
+        }
+
+        /// <summary>
+        /// Gets the operations per second.
+        /// </summary>
+        /// <value>The count.</value>
+        public TimeSpan AverageDuration
+        {
+            get { return IsValid ? TimeSpan.FromMilliseconds(Counters[2].NextValue()) : TimeSpan.Zero; }
+        }
+
+        /// <summary>
+        /// Gets the current operation count.
+        /// </summary>
+        /// <value>The count.</value>
+        public long Warnings
+        {
+            get { return IsValid ? Counters[4].RawValue : 0; }
+        }
+
+        /// <summary>
+        /// Gets the current operation count.
+        /// </summary>
+        /// <value>The count.</value>
+        public long Criticals
+        {
+            get { return IsValid ? Counters[5].RawValue : 0; }
+        }
+
+        /// <summary>
+        ///   Increments the counters.
+        /// </summary>
+        /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
+        public void IncrementCounters(TimeSpan duration)
+        {
+            if (!IsValid)
+                return;
+            Counters[0].Increment();
+            Counters[1].Increment();
+
+            // Get the duration in CPU ticks rather than DateTime ticks.
+            Counters[2].IncrementBy((duration.Ticks*Stopwatch.Frequency)/10000000);
+            Counters[3].Increment();
+            if (duration < DefaultWarningDuration)
+                return;
+
+            Counters[4].Increment();
+            if (duration >= DefaultCriticalDuration)
+                Counters[5].Increment();
+        }
+
+        /// <summary>
+        /// Gets the performance counter with the specified category name.
+        /// </summary>
+        /// <param name="categoryName">Name of the category.</param>
+        /// <returns>The performance counter.</returns>
+        [NotNull]
+        public static PerformanceTimer Get([NotNull] string categoryName)
+        {
+            return _counters.GetOrAdd(categoryName, n => new PerformanceTimer(n));
+        }
+
+        /// <summary>
+        /// Creates the specified performance timer (use during installation only).
+        /// </summary>
+        /// <param name="categoryName">Name of the category.</param>
+        /// <param name="categoryHelp">The category help.</param>
+        /// <returns><see langword="true" /> if the category was created; otherwise <see langword="false" />.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        /// <remarks><para>
+        /// It is strongly recommended that new performance counter categories
+        /// be created during the installation of the application, not during the execution
+        /// of the application. This allows time for the operating system to refresh its list
+        /// of registered performance counter categories. If the list has not been refreshed,
+        /// the attempt to use the category will fail.
+        ///   </para>
+        ///   <para>
+        /// To read performance counters in Windows Vista and later, Windows XP Professional
+        /// x64 Edition, or Windows Server 2003, you must either be a member of the Performance
+        /// Monitor Users group or have administrative privileges.
+        ///   </para>
+        ///   <para>
+        /// To avoid having to elevate your privileges to access performance counters in Windows
+        /// Vista and later, add yourself to the Performance Monitor Users group.
+        ///   </para>
+        ///   <para>
+        /// In Windows Vista and later, User Account Control (UAC) determines the privileges of
+        /// a user. If you are a member of the Built-in Administrators group, you are assigned
+        /// two run-time access tokens: a standard user access token and an administrator access
+        /// token. By default, you are in the standard user role. To execute the code that
+        /// accesses performance counters, you must first elevate your privileges from standard
+        /// user to administrator. You can do this when you start an application by right-clicking
+        /// the application icon and indicating that you want to run as an administrator.
+        ///   </para>
+        ///   <para>
+        /// For more information see MSDN : http://msdn.microsoft.com/EN-US/library/sb32hxtc(v=VS.110,d=hv.2).aspx
+        ///   </para></remarks>
+        public static bool Create([NotNull] string categoryName, [NotNull] string categoryHelp)
+        {
+            return Create(categoryName, categoryHelp, _counterData);
+        }
+
+        /// <summary>
+        /// Deletes the specified performance timer (use during uninstall only).
+        /// </summary>
+        /// <param name="categoryName">Name of the category.</param>
+        /// <returns><see langword="true"/> if the category no longer exists; otherwise <see langword="false"/>.</returns>
+        /// <remarks><para>
+        /// It is strongly recommended that performance counter categories are only removed
+        /// during the removal of the application, not during the execution
+        /// of the application.</para>
+        ///   <para>
+        /// To read performance counters in Windows Vista and later, Windows XP Professional
+        /// x64 Edition, or Windows Server 2003, you must either be a member of the Performance
+        /// Monitor Users group or have administrative privileges.
+        ///   </para>
+        ///   <para>
+        /// To avoid having to elevate your privileges to access performance counters in Windows
+        /// Vista and later, add yourself to the Performance Monitor Users group.
+        ///   </para>
+        ///   <para>
+        /// In Windows Vista and later, User Account Control (UAC) determines the privileges of
+        /// a user. If you are a member of the Built-in Administrators group, you are assigned
+        /// two run-time access tokens: a standard user access token and an administrator access
+        /// token. By default, you are in the standard user role. To execute the code that
+        /// accesses performance counters, you must first elevate your privileges from standard
+        /// user to administrator. You can do this when you start an application by right-clicking
+        /// the application icon and indicating that you want to run as an administrator.
+        ///   </para>
+        ///   <para>
+        /// For more information see MSDN : http://msdn.microsoft.com/EN-US/library/s55bz6c1(v=VS.110,d=hv.2).aspx
+        ///   </para></remarks>
+        protected static bool Delete([NotNull] string categoryName)
+        {
+            return Delete(categoryName, _counterData);
+        }
+
+        /// <summary>
+        /// Used to allow the timing of a region of code for a <see cref="PerformanceTimer"/>.
+        /// </summary>
+        public class Timer : IDisposable
+        {
+            /// <summary>
+            /// The associated performance timer.
+            /// </summary>
+            [NotNull]
+            public readonly PerformanceTimer PerformanceTimer;
+
+            /// <summary>
+            /// The duration after which the warning counter is incremented.
+            /// </summary>
+            public readonly TimeSpan WarningDuration;
+
+            /// <summary>
+            /// The duration after which the critical counter is incremented.
+            /// </summary>
+            public readonly TimeSpan CriticalDuration;
+
+            private Stopwatch _stopwatch;
+            private TimeSpan _elapsed;
+
+            /// <summary>
+            /// Gets the elapsed time (even after disposal).
+            /// </summary>
+            /// <value>The elapsed.</value>
+            public TimeSpan Elapsed
             {
-                if (_duration >=
-                    _criticalDuration)
+                get
                 {
-                    Log.Add(
-                        Resources.PerformanceTimer_Stop_ExceededCriticalLevel,
-                        LogLevel.Error,
-                        _categoryName,
-                        _criticalDuration.TotalMilliseconds,
-                        _stopwatch.ElapsedMilliseconds);
-                }
-                else
-                {
-                    Log.Add(
-                        Resources.PerformanceTimer_Stop_ExceededWarningLevel,
-                        LogLevel.Warning,
-                        _categoryName,
-                        _warningDuration.TotalMilliseconds,
-                        _stopwatch.ElapsedMilliseconds);
+                    Stopwatch s = _stopwatch;
+                    return s == null ? _elapsed : s.Elapsed;
                 }
             }
-#if Performance
-            _helper.IncrementCounters(_duration);
-#endif
-            return _duration;
-        }
 
-        /// <summary>
-        ///   Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Stop();
+            /// <summary>
+            /// Gets a value indicating whether this <see cref="Timer" /> has exceeded the <see cref="WarningDuration"/>.
+            /// </summary>
+            /// <value><see langword="true" /> if warning; otherwise, <see langword="false" />.</value>
+            public bool Warning
+            {
+                get { return Elapsed > WarningDuration; }
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether this <see cref="Timer" /> has exceeded the <see cref="CriticalDuration"/>.
+            /// </summary>
+            /// <value><see langword="true" /> if critical; otherwise, <see langword="false" />.</value>
+            public bool Critical
+            {
+                get { return Elapsed > CriticalDuration; }
+            }
+
+            internal Timer([NotNull]PerformanceTimer performanceTimer, TimeSpan warningDuration, TimeSpan criticalDuration)
+            {
+                PerformanceTimer = performanceTimer;
+                if (warningDuration == default(TimeSpan))
+                    warningDuration = performanceTimer.DefaultWarningDuration;
+                if (criticalDuration == default(TimeSpan))
+                    criticalDuration = performanceTimer.DefaultCriticalDuration;
+
+                if (warningDuration > criticalDuration)
+                    criticalDuration = warningDuration;
+                WarningDuration = warningDuration;
+                CriticalDuration = criticalDuration;
+                _stopwatch = new Stopwatch();
+                _stopwatch.Start();
+            }
+
+            public void Dispose()
+            {
+                // Set s to null, and check we were the thread that succeeded.
+                Stopwatch s = Interlocked.Exchange(ref _stopwatch, null);
+                if (ReferenceEquals(s, null))
+                    return;
+
+                s.Stop();
+                _elapsed = s.Elapsed;
+
+                // Increment counters.
+                PerformanceTimer.IncrementCounters(_elapsed);
+            }
         }
     }
 }
