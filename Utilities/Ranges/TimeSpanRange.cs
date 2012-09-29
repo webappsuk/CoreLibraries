@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 
 namespace WebApplications.Utilities.Ranges
 {
@@ -40,7 +41,7 @@ namespace WebApplications.Utilities.Ranges
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
         public TimeSpanRange(TimeSpan start, TimeSpan end)
-            : base(start, end, TimeSpan.FromDays(1.0))
+            : base(start, end, AutoStep(end - start))
         {
         }
 
@@ -50,9 +51,30 @@ namespace WebApplications.Utilities.Ranges
         /// <param name="start">The start.</param>
         /// <param name="end">The end.</param>
         /// <param name="step">The step in days.</param>
-        public TimeSpanRange(TimeSpan start, TimeSpan end, double step)
-            : base(start, end, TimeSpan.FromDays(step))
+        public TimeSpanRange(TimeSpan start, TimeSpan end, TimeSpan step)
+            : base(start, end, step)
         {
+        }
+
+        /// <summary>
+        /// Given a delta automatically returns a sensible step size.
+        /// </summary>
+        /// <param name="delta">The delta.</param>
+        /// <returns>TimeSpan.</returns>
+        public static TimeSpan AutoStep(TimeSpan delta)
+        {
+            Contract.Requires(delta >= TimeSpan.Zero);
+            if (delta < TimeSpan.FromMilliseconds(1))
+                return TimeSpan.FromTicks(1);
+            if (delta < TimeSpan.FromSeconds(1))
+                return TimeSpan.FromMilliseconds(1);
+            if (delta < TimeSpan.FromMinutes(1))
+                return TimeSpan.FromSeconds(1);
+            if (delta < TimeSpan.FromHours(1))
+                return TimeSpan.FromMinutes(1);
+            if (delta < TimeSpan.FromDays(1))
+                return TimeSpan.FromHours(1);
+            return TimeSpan.FromDays(1);
         }
 
         /// <inheritdoc />

@@ -73,22 +73,42 @@ namespace WebApplications.Utilities.Ranges
             ParameterExpression parameterAExpression = Expression.Parameter(typeof (TValue), "a");
             ParameterExpression parameterBExpression = Expression.Parameter(typeof (TStep), "b");
 
+            // Workaround for the fact that byte types have no addition operator.
+            bool castTValueToShort = typeof (TValue) == typeof (byte) ||
+                              typeof (TValue) == typeof (sbyte);
+            bool castTStepToShort = typeof (TStep) == typeof (byte) ||
+                              typeof (TStep) == typeof (sbyte);
+
+            Expression lhs = castTValueToShort
+                                 ? Expression.Convert(parameterAExpression, typeof (short))
+                                 : (Expression)parameterAExpression;
+            Expression rhs = castTStepToShort
+                                 ? Expression.Convert(parameterBExpression, typeof(short))
+                                 : (Expression)parameterBExpression;
+
             // Create lambda for addition and compile
+            Expression add = Expression.Add(lhs, rhs);
+            if (add.Type != typeof(TValue))
+                add = Expression.Convert(add, typeof (TValue));
+
             Add =
                 (Func<TValue, TStep, TValue>)
                 Expression.Lambda(
-                    Expression.Add(parameterAExpression, parameterBExpression),
+                    add,
                     parameterAExpression,
                     parameterBExpression).Compile();
 
-            // Change type of parameter B to TValue (from TStep)
+            // Create new parameter for TValue 
             parameterBExpression = Expression.Parameter(typeof (TValue), "b");
+            rhs = castTValueToShort
+                      ? Expression.Convert(parameterBExpression, typeof (short))
+                      : (Expression) parameterBExpression;
 
             // Create lambda for less than and compile
             LessThan =
                 (Func<TValue, TValue, bool>)
                 Expression.Lambda(
-                    Expression.LessThan(parameterAExpression, parameterBExpression),
+                    Expression.LessThan(lhs, rhs),
                     parameterAExpression,
                     parameterBExpression).Compile();
         }

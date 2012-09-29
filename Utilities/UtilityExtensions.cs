@@ -1435,12 +1435,36 @@ namespace WebApplications.Utilities
         /// Calculate the standard deviation of an average
         /// </summary>
         /// <param name="values">The values.</param>
-        /// <returns>System.Double.</returns>
+        /// <returns>The standard deviation.</returns>
         public static double StdDev(this IEnumerable<double> values)
         {
             if (values == null) return 0;
 
             IEnumerable<double> enumerable = values as double[] ?? values.ToArray();
+
+            int count = enumerable.Count();
+            if (count < 2) return 0;
+
+            // Compute the Average
+            double avg = enumerable.Average();
+
+            // Return standard deviation
+            return Math.Sqrt(enumerable.Sum(d => (d - avg) * (d - avg)) / count);
+        }
+
+        /// <summary>
+        /// Calculate the standard deviation of an average
+        /// </summary>
+        /// <typeparam name="T">The type of each element.</typeparam>
+        /// <param name="values">The values.</param>
+        /// <param name="selector">A transform function to apply to each element.</param>
+        /// <returns>The standard deviation.</returns>
+        public static double StdDev<T>(this IEnumerable<T> values, [NotNull]Func<T, double> selector)
+        {
+            Contract.Requires(selector != null);
+            if (values == null) return 0;
+
+            IEnumerable<double> enumerable = values.Select(selector).ToArray();
 
             int count = enumerable.Count();
             if (count < 2) return 0;

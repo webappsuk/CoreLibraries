@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Ranges
         /// </exception>
         /// <remarks>The step size is 00:00:01.</remarks>
         public DateTimeRange(DateTime start, DateTime end)
-            : base(start, end, TimeSpan.FromSeconds(1))
+            : base(start, end, TimeSpanRange.AutoStep(end - start))
         {
         }
 

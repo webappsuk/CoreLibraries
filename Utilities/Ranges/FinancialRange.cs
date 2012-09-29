@@ -45,7 +45,7 @@ namespace WebApplications.Utilities.Ranges
         /// The <paramref name="start"/> value was greater than the <paramref name="end"/> value.
         /// </exception>
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end)
-            : base(start, end)
+            : base(start, end, 1)
         {
             Contract.Requires(start.Currency == end.Currency, "The currencies in the financial parameters must match.");
         }
@@ -89,7 +89,7 @@ namespace WebApplications.Utilities.Ranges
         /// <param name="start">The start value (inclusive).</param>
         /// <param name="end">The end value (inclusive).</param>
         public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end)
-            : base(new Financial(currency, start), new Financial(currency, end))
+            : base(new Financial(currency, start), new Financial(currency, end), 1)
         {
         }
 
