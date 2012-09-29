@@ -163,6 +163,11 @@ namespace WebApplications.Utilities.Logging
 #endif
 
         /// <summary>
+        /// Performance counter for creating logs.
+        /// </summary>
+        private static readonly PerformanceCounter _createdLogCounter = PerformanceCounter.Get("CreatedLog");
+
+        /// <summary>
         ///   Initializes a new instance of the <see cref="Log"/> class.
         /// </summary>
         /// <param name="logGroup">The unique ID that groups log items together.</param>
@@ -176,8 +181,6 @@ namespace WebApplications.Utilities.Logging
                     [NotNull] string message, LogLevel level, [NotNull] params object[] parameters)
             : this(CombGuid.NewCombGuid(DateTime.Now))
         {
-            using (new PerformanceCounter("Creating Log"))
-            {
                 // Create a context, adding the parameters.
                 _context = new LogContext(context, parameters);
 
@@ -237,9 +240,10 @@ namespace WebApplications.Utilities.Logging
                 // Queue the log entry.
                 _logQueue.Enqueue(this);
 
+            _createdLogCounter.Increment();
+
                 // Signal monitor thread of new arrival.
                 _logSignal.Set();
-            }
         }
 
         /// <summary>

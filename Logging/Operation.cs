@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The disposer for cleaning up the extended thread context.
         /// </summary>
-        [NonSerialized] private readonly IDisposable _disposer;
+        [NonSerialized] private IDisposable _contextStackDisposer;
 
         /// <summary>
         ///   Holds A reference to the parent <see cref="Operation"/>.
@@ -139,7 +139,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   Times the operation duration.
         /// </summary>
-        [NonSerialized] private PerformanceTimer _timer;
+        [NonSerialized] private PerformanceTimer.Timer _timer;
 
         /// <summary>
         ///   Caches the XML representation of the log item, to prevent regeneration.
@@ -443,7 +443,7 @@ namespace WebApplications.Utilities.Logging
                     .ToList();
 
             // Add this operation onto the context stack.
-            _disposer = _contextStack.Region(this);
+            _contextStackDisposer = _contextStack.Region(this);
 
             // Set 
             if (warningDuration == default(TimeSpan))
@@ -454,8 +454,7 @@ namespace WebApplications.Utilities.Logging
 
             Log.Add(Guid, "Started {0}", LogLevel.Information, Name);
 
-            _timer = new PerformanceTimer(
-                String.Join(": ", CategoryName, Name), warningDuration, criticalDuration);
+            _timer = PerformanceTimer.Get(String.Join(": ", CategoryName, Name)).Region(warningDuration, criticalDuration);
         }
 
 #if false
@@ -582,34 +581,37 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public bool InProgress
         {
-            get { return _disposer != null; }
+            get { return _contextStackDisposer != null; }
         }
 
         #region IDisposable Members
         /// <inheritdoc />
         public void Dispose()
         {
-            // If we've no disposer we cant dispose, just exit.
-            if (_disposer == null)
-                return;
-
-            // Close timer
-            if (_timer != null)
+            // Dispose timer.
+            var t = Interlocked.Exchange(ref _timer, null);
+            if (!ReferenceEquals(t, null))
             {
-                TimeSpan elapsedTime = _timer.Stop();
-                _timer.Dispose();
-                _timer = null;
+                t.Dispose();
+                TimeSpan elapsed = t.Elapsed;
 
                 Log.Add(
                     Guid,
-                    new LogContext("OperationDuration", elapsedTime.TotalMilliseconds.ToString()),
-                    "Stopping {0} [Operation took {1} ms]",
-                    LogLevel.Information,
+                    new LogContext("OperationDuration", elapsed.ToString()),
+                    "Stopping {0} [Operation took {1:0.0000} ms]{2}",
+                    t.Critical
+                        ? LogLevel.Critical
+                        : t.Warning
+                              ? LogLevel.Warning
+                              : LogLevel.Information,
                     Name,
-                    elapsedTime.TotalMilliseconds);
+                    elapsed.TotalMilliseconds);
             }
 
-            _disposer.Dispose();
+            // Dispose context stack
+            IDisposable d = Interlocked.Exchange(ref _contextStackDisposer, null);
+            if (!ReferenceEquals(d, null))
+                d.Dispose();
         }
         #endregion
 

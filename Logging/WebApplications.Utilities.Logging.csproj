@@ -56,9 +56,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Utilities, Version=2.0.4654.27188, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=2.0.4655.18032, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.2.0.4654.27188\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.2.0.4655.18032\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -86,7 +86,6 @@
     <Compile Include="Performance\PerformanceCounter.cs" />
     <Compile Include="Performance\PerformanceCounterHelper.cs" />
     <Compile Include="Performance\PerformanceTimer.cs" />
-    <Compile Include="Performance\PerformanceTimerHelper.cs" />
     <Compile Include="Performance\RequiresPerformanceCounter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />

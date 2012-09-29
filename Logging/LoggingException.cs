@@ -49,18 +49,26 @@ namespace WebApplications.Utilities.Logging
     [Serializable]
     public class LoggingException : ApplicationException, ISerializable
     {
-        [NonSerialized] private const string AttributeType = "type";
-        [NonSerialized] private const string AttributeLevel = "level";
-        [NonSerialized] private const string AttributeLogGroup = "logGroup";
-        [NonSerialized] private const string NodeError = "Error";
-        [NonSerialized] private const string NodeMessage = "Message";
-        [NonSerialized] private const string NodeStackTrace = "StackTrace";
-        [NonSerialized] private const string NodeInnerException = "InnerException";
+        [NonSerialized]
+        private const string AttributeType = "type";
+        [NonSerialized]
+        private const string AttributeLevel = "level";
+        [NonSerialized]
+        private const string AttributeLogGroup = "logGroup";
+        [NonSerialized]
+        private const string NodeError = "Error";
+        [NonSerialized]
+        private const string NodeMessage = "Message";
+        [NonSerialized]
+        private const string NodeStackTrace = "StackTrace";
+        [NonSerialized]
+        private const string NodeInnerException = "InnerException";
 
         /// <summary>
         ///   The <see cref="LogContext"/> for the exception.
         /// </summary>
-        [UsedImplicitly] public readonly LogContext Context;
+        [UsedImplicitly]
+        public readonly LogContext Context;
 
         /// <summary>
         ///   The logging level.
@@ -75,12 +83,15 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   Holds the parameters as an <see cref="Array"/>.
         /// </summary>
-        [NotNull] private readonly string[] _parameters;
+        [NotNull]
+        private readonly string[] _parameters;
 
         /// <summary>
         ///   Caches the XML version of the exception so that it doesn't need to be reconstructed.
         /// </summary>
-        [NonSerialized] [CanBeNull] private XElement _xml;
+        [NonSerialized]
+        [CanBeNull]
+        private XElement _xml;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="LoggingException"/> class.
@@ -234,6 +245,11 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
+        /// Performance counter for creating logs.
+        /// </summary>
+        private static readonly PerformanceCounter _loggedExceptionCounter = PerformanceCounter.Get("LoggedException");
+
+        /// <summary>
         ///   Initializes a new instance of the <see cref="LoggingException"/> class.
         /// </summary>
         /// <param name="context">The log context.</param>
@@ -262,78 +278,76 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
             Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
 
-            using (new PerformanceCounter("Creating Logging Exception"))
+            LogGroup = Guid.Empty;
+            Level = level;
+            Context = new LogContext(context, parameters);
+            _parameters = parameters
+                .Select(o =>
+                    o == null
+                        ? null
+                        : o.ToString())
+                .ToArray();
+
+            // Create an inner exception stack of all inner exceptions until the last logging exception
+            Stack<Exception> innerExceptions = new Stack<Exception>();
+            if (innerException != null)
             {
-                LogGroup = Guid.Empty;
-                Level = level;
-                Context = new LogContext(context, parameters);
-                _parameters = parameters
-                    .Select(o =>
-                        o == null
-                            ? null
-                            : o.ToString())
-                    .ToArray();
-
-                // Create an inner exception stack of all inner exceptions until the last logging exception
-                Stack<Exception> innerExceptions = new Stack<Exception>();
-                if (innerException != null)
+                Stack<Exception> currentStack = new Stack<Exception>();
+                currentStack.Push(innerException);
+                while (currentStack.Count > 0)
                 {
-                    Stack<Exception> currentStack = new Stack<Exception>();
-                    currentStack.Push(innerException);
-                    while (currentStack.Count > 0)
+                    Exception e = currentStack.Pop();
+                    LoggingException le = e as LoggingException;
+
+                    // If the inner exception is a logging exception stop, as it will have logged itself
+                    // and it's inner exceptions, already.
+                    if (le != null)
                     {
-                        Exception e = currentStack.Pop();
-                        LoggingException le = e as LoggingException;
-
-                        // If the inner exception is a logging exception stop, as it will have logged itself
-                        // and it's inner exceptions, already.
-                        if (le != null)
-                        {
-                            // Reuse the log group from the inner exception
-                            // Very Cool - this groups future exceptions
-                            // into the same group, if they correctly
-                            // pass the inner exception...
-                            LogGroup = le.LogGroup;
-                            break;
-                        }
-
-                        // Push the exception onto our stack
-                        innerExceptions.Push(e);
-
-                        // Check to see if we are an aggregate exception
-                        AggregateException ae = e as AggregateException;
-                        if (ae != null)
-                        {
-                            // Push all inner exceptions
-                            foreach (Exception aee in ae.InnerExceptions)
-                                currentStack.Push(aee);
-                        }
-                        else if (e.InnerException != null)
-                            // Push the inner exception
-                            currentStack.Push(e);
+                        // Reuse the log group from the inner exception
+                        // Very Cool - this groups future exceptions
+                        // into the same group, if they correctly
+                        // pass the inner exception...
+                        LogGroup = le.LogGroup;
+                        break;
                     }
+
+                    // Push the exception onto our stack
+                    innerExceptions.Push(e);
+
+                    // Check to see if we are an aggregate exception
+                    AggregateException ae = e as AggregateException;
+                    if (ae != null)
+                    {
+                        // Push all inner exceptions
+                        foreach (Exception aee in ae.InnerExceptions)
+                            currentStack.Push(aee);
+                    }
+                    else if (e.InnerException != null)
+                        // Push the inner exception
+                        currentStack.Push(e);
                 }
-
-                // If we haven't got a logGroup create a new one
-                if (LogGroup == Guid.Empty)
-                    LogGroup = Guid.NewGuid();
-
-                // We now take items back off stack (starting with deepest first, hence maintaining
-                // order based on when exception occurred) and log each independently.
-                while (innerExceptions.Count > 0)
-                {
-                    Exception e = innerExceptions.Pop();
-                    Log.Add(LogGroup, e, LogLevel.Information);
-                }
-
-                // Get stack trace now - note that normally the stack trace is only calculated at the point
-                // an exception is caught (so that it can stop the trace at the catching stack frame).
-                // We need to get a stack trace skipping 2 frames + the number of base types constructors.
-                StackTrace = FormatStackTrace(new StackTrace(2, true));
-
-                // Now we can create the associated log item for this exception.
-                Log.Add(LogGroup, this, Context);
             }
+
+            // If we haven't got a logGroup create a new one
+            if (LogGroup == Guid.Empty)
+                LogGroup = Guid.NewGuid();
+
+            // We now take items back off stack (starting with deepest first, hence maintaining
+            // order based on when exception occurred) and log each independently.
+            while (innerExceptions.Count > 0)
+            {
+                Exception e = innerExceptions.Pop();
+                Log.Add(LogGroup, e, LogLevel.Information);
+            }
+
+            // Get stack trace now - note that normally the stack trace is only calculated at the point
+            // an exception is caught (so that it can stop the trace at the catching stack frame).
+            // We need to get a stack trace skipping 2 frames + the number of base types constructors.
+            StackTrace = FormatStackTrace(new StackTrace(2, true));
+
+            // Now we can create the associated log item for this exception.
+            _loggedExceptionCounter.Increment();
+            Log.Add(LogGroup, this, Context);
         }
 
         /// <summary>
@@ -343,13 +357,14 @@ namespace WebApplications.Utilities.Logging
         /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
         /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
         /// <exception cref="ArgumentNullException"><paramref name="info"/> is a <see langword="null"/>.</exception>
-        private LoggingException(SerializationInfo info, StreamingContext context) : base(info, context)
+        private LoggingException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
             if (info == null)
                 throw new ArgumentNullException("info");
 
-            LogGroup = (Guid) info.GetValue("LG", typeof (Guid));
-            Level = (LogLevel) info.GetValue("LL", typeof (LogLevel));
+            LogGroup = (Guid)info.GetValue("LG", typeof(Guid));
+            Level = (LogLevel)info.GetValue("LL", typeof(LogLevel));
         }
 
         /// <summary>
@@ -385,8 +400,8 @@ namespace WebApplications.Utilities.Logging
         {
             base.GetObjectData(info, context);
 
-            info.AddValue("LG", LogGroup, typeof (Guid));
-            info.AddValue("LL", Level, typeof (LogLevel));
+            info.AddValue("LG", LogGroup, typeof(Guid));
+            info.AddValue("LL", Level, typeof(LogLevel));
         }
         #endregion
 
@@ -487,11 +502,11 @@ namespace WebApplications.Utilities.Logging
 
                         // Look for inheritance from logging exception.
                         baseType = declaringType;
-                        while ((baseType != typeof (object)) &&
-                               (baseType != typeof (LoggingException)))
+                        while ((baseType != typeof(object)) &&
+                               (baseType != typeof(LoggingException)))
                             baseType = baseType.BaseType;
 
-                        if (baseType == typeof (LoggingException))
+                        if (baseType == typeof(LoggingException))
                         {
                             // We are descended from LoggingException so skip frame.
                             baseType = declaringType;

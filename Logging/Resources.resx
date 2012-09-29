@@ -247,29 +247,23 @@
   <data name="MemoryLogger_MaximumLogsLessThanOne" xml:space="preserve">
     <value>Could not create memory logger as maximum log entries '{0}' was less than 1.</value>
   </data>
-  <data name="PerformanceCounterHelper_Initialize_CategoryDoesNotExist" xml:space="preserve">
+  <data name="PerformanceCounterHelper_CategoryDoesNotExist" xml:space="preserve">
     <value>The performance counter category '{0}' does not exist, and must be created before it can be used.</value>
   </data>
-  <data name="PerformanceCounterHelper_Initialize_ProcessDoesNotHaveAccess" xml:space="preserve">
+  <data name="PerformanceCounterHelper_ProcessDoesNotHaveAccess" xml:space="preserve">
     <value>The current process identity does not have access to performance counters, disabling counters.</value>
   </data>
-  <data name="PerformanceCounterHelper_Initialize_UnhandledExceptionOccurred" xml:space="preserve">
-    <value>An unhandled error occurred whilst initialising the counter category '{0}', disabling counters.</value>
+  <data name="PerformanceCounterHelper_UnhandledExceptionOccurred" xml:space="preserve">
+    <value>An unhandled error occurred whilst initialising the counter category '{0}'.</value>
   </data>
   <data name="PerformanceTimerHelper_Initialize_CategoryDoesNotExist" xml:space="preserve">
     <value>The performance counter category '{0}' does not exist, and must be created before it can be used.</value>
   </data>
-  <data name="PerformanceTimerHelper_Initialize_ProcessDoesNotHaveAccess" xml:space="preserve">
+  <data name="PerformanceTimerHelper_ProcessDoesNotHaveAccess" xml:space="preserve">
     <value>The current process identity does not have access to performance counters, disabling counters.</value>
   </data>
   <data name="PerformanceTimerHelper_Initialize_UnhandledExceptionOccurred" xml:space="preserve">
     <value>An unhandled error occurred whilst initialising the counter category '{0}', disabling counters.</value>
-  </data>
-  <data name="PerformanceTimer_Stop_ExceededCriticalLevel" xml:space="preserve">
-    <value>Performance Timer {0} exceeded critical level of {1} ms, operation took {2} ms.</value>
-  </data>
-  <data name="PerformanceTimer_Stop_ExceededWarningLevel" xml:space="preserve">
-    <value>Performance Timer {0} exceeded warning level of {1} ms, operation took {2} ms.</value>
   </data>
   <data name="SqlLogger_CouldNotRegisterService" xml:space="preserve">
     <value>Could not register service '{0}'</value>
@@ -282,5 +276,14 @@
   </data>
   <data name="Sqllogger_TimeoutLessThanOneSecond" xml:space="preserve">
     <value>The specified SQL timeout ({0}) was less than 1s.</value>
+  </data>
+  <data name="PerformanceCounterHelper_CounterDoesNotExist" xml:space="preserve">
+    <value>The performance counter category '{0}' does not contain a counter '{1}, that must be created before it can be used.</value>
+  </data>
+  <data name="PerformanceCounterHelper_Create_Failed" xml:space="preserve">
+    <value>Could not create the performance counter category '{0}'.</value>
+  </data>
+  <data name="PerformanceCounterHelper_Delete_Failed" xml:space="preserve">
+    <value>Could not delete the performance counter category '{0}'.</value>
   </data>
 </root>
