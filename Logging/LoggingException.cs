@@ -247,7 +247,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Performance counter for creating logs.
         /// </summary>
-        private static readonly PerformanceCounter _loggedExceptionCounter = PerformanceCounter.Get("LoggedException");
+        private static readonly PerformanceCounter _loggedExceptionCounter = PerformanceCounter.Get("Logged an exception");
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="LoggingException"/> class.

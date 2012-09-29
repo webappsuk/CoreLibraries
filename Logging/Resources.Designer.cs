@@ -484,6 +484,15 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Performance counters are enabled - instance GUID &apos;{0}&apos;..
+        /// </summary>
+        internal static string PerformanceCounterHelper_Enabled {
+            get {
+                return ResourceManager.GetString("PerformanceCounterHelper_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The current process identity does not have access to performance counters, disabling counters..
         /// </summary>
         internal static string PerformanceCounterHelper_ProcessDoesNotHaveAccess {
@@ -498,33 +507,6 @@ namespace WebApplications.Utilities.Logging {
         internal static string PerformanceCounterHelper_UnhandledExceptionOccurred {
             get {
                 return ResourceManager.GetString("PerformanceCounterHelper_UnhandledExceptionOccurred", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The performance counter category &apos;{0}&apos; does not exist, and must be created before it can be used..
-        /// </summary>
-        internal static string PerformanceTimerHelper_Initialize_CategoryDoesNotExist {
-            get {
-                return ResourceManager.GetString("PerformanceTimerHelper_Initialize_CategoryDoesNotExist", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An unhandled error occurred whilst initialising the counter category &apos;{0}&apos;, disabling counters..
-        /// </summary>
-        internal static string PerformanceTimerHelper_Initialize_UnhandledExceptionOccurred {
-            get {
-                return ResourceManager.GetString("PerformanceTimerHelper_Initialize_UnhandledExceptionOccurred", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The current process identity does not have access to performance counters, disabling counters..
-        /// </summary>
-        internal static string PerformanceTimerHelper_ProcessDoesNotHaveAccess {
-            get {
-                return ResourceManager.GetString("PerformanceTimerHelper_ProcessDoesNotHaveAccess", resourceCulture);
             }
         }
         

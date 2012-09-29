@@ -165,7 +165,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Performance counter for creating logs.
         /// </summary>
-        private static readonly PerformanceCounter _createdLogCounter = PerformanceCounter.Get("CreatedLog");
+        private static readonly PerformanceCounter _createdLogCounter = PerformanceCounter.Get("Logged new item");
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="Log"/> class.

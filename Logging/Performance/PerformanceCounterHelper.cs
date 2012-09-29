@@ -67,6 +67,8 @@ namespace WebApplications.Utilities.Logging.Performance
             {
                 // Check we have access to the performance counters.
                 PerformanceCounterCategory.Exists("TestAccess", MachineName);
+                HasAccess = true;
+                Log.Add(Resources.PerformanceCounterHelper_Enabled, LogLevel.Information, InstanceGuid);
             }
             catch (Exception exception)
             {
@@ -152,6 +154,7 @@ namespace WebApplications.Utilities.Logging.Performance
                     // Read the first value to 'start' the counters.
                     Counters[c].NextValue();
                 }
+                IsValid = true;
             }
             catch (UnauthorizedAccessException unauthorizedAccessException)
             {
@@ -279,7 +282,7 @@ namespace WebApplications.Utilities.Logging.Performance
                     return false;
 
                 PerformanceCounterCategory.Delete(categoryName);
-                return !cArray.Any(c => PerformanceCounterCategory.CounterExists(c.CounterName, categoryName));
+                return !PerformanceCounterCategory.Exists(categoryName);
             }
             catch (Exception e)
             {

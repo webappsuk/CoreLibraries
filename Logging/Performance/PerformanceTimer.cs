@@ -45,16 +45,15 @@ namespace WebApplications.Utilities.Logging.Performance
         /// </summary>
         [NotNull] private static readonly IEnumerable<CounterCreationData> _counterData = new[]
             {
-                new CounterCreationData("Count", "Total Operations Executed", PerformanceCounterType.NumberOfItems64),
-                new CounterCreationData("PerSecond", "Operations execute per second",
-                                        PerformanceCounterType.RateOfCountsPerSecond64),
-                new CounterCreationData("AverageDuration", "Average Operation duration",
+                    new CounterCreationData("Total operations", "Total operations executed since the start of the process.", PerformanceCounterType.NumberOfItems64),
+                    new CounterCreationData("Operations per second", "The number of operations per second.", PerformanceCounterType.RateOfCountsPerSecond64),
+                new CounterCreationData("Average duration", "The average duration of each operation.",
                                         PerformanceCounterType.AverageTimer32),
-                new CounterCreationData("AverageDurationBase", "Average Operation duration base counter",
+                new CounterCreationData("Average duration Base", "The average duration base counter.",
                                         PerformanceCounterType.AverageBase),
-                new CounterCreationData("Warnings", "Total operations that exceeded the warning duration",
+                new CounterCreationData("Total warnings", "Total operations executed since the start of the process that have exceeded the warning duration threshhold.",
                                         PerformanceCounterType.NumberOfItems64),
-                new CounterCreationData("Criticals", "Total operations that exceeded the critical duration",
+                new CounterCreationData("Total criticals", "Total operations executed since the start of the process that have exceeded the critical duration threshhold.",
                                         PerformanceCounterType.NumberOfItems64)
             };
 
@@ -84,7 +83,7 @@ namespace WebApplications.Utilities.Logging.Performance
         /// <param name="defaultCriticalDuration">
         ///   The duration of time that the operation should take before logging an error.
         /// </param>
-        public PerformanceTimer([NotNull] string categoryName, TimeSpan defaultWarningDuration = default(TimeSpan),
+        private PerformanceTimer([NotNull] string categoryName, TimeSpan defaultWarningDuration = default(TimeSpan),
                                 TimeSpan defaultCriticalDuration = default(TimeSpan))
             : base(categoryName, _counterData)
         {
@@ -112,7 +111,6 @@ namespace WebApplications.Utilities.Logging.Performance
         /// <param name="warningDuration">Duration before a warning is counted.</param>
         /// <param name="criticalDuration">Duration before a critical is counted.</param>
         /// <returns>IDisposable.</returns>
-        /// <remarks>TODO Add remarks</remarks>
         public Timer Region(TimeSpan warningDuration = default (TimeSpan),
                             TimeSpan criticalDuration = default (TimeSpan))
         {
@@ -143,7 +141,7 @@ namespace WebApplications.Utilities.Logging.Performance
         /// <value>The count.</value>
         public TimeSpan AverageDuration
         {
-            get { return IsValid ? TimeSpan.FromMilliseconds(Counters[2].NextValue()) : TimeSpan.Zero; }
+            get { return IsValid ? TimeSpan.FromSeconds(Counters[2].NextValue()) : TimeSpan.Zero; }
         }
 
         /// <summary>
@@ -168,7 +166,7 @@ namespace WebApplications.Utilities.Logging.Performance
         ///   Increments the counters.
         /// </summary>
         /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
-        public void IncrementCounters(TimeSpan duration)
+        public void Increment(TimeSpan duration)
         {
             if (!IsValid)
                 return;
@@ -190,11 +188,19 @@ namespace WebApplications.Utilities.Logging.Performance
         /// Gets the performance counter with the specified category name.
         /// </summary>
         /// <param name="categoryName">Name of the category.</param>
+        /// <param name="defaultWarningDuration">
+        ///   The duration of time that the operation should take before logging a warning.
+        /// </param>
+        /// <param name="defaultCriticalDuration">
+        ///   The duration of time that the operation should take before logging an error.
+        /// </param>
         /// <returns>The performance counter.</returns>
         [NotNull]
-        public static PerformanceTimer Get([NotNull] string categoryName)
+        public static PerformanceTimer Get([NotNull] string categoryName, TimeSpan defaultWarningDuration = default(TimeSpan),
+                                TimeSpan defaultCriticalDuration = default(TimeSpan))
         {
-            return _counters.GetOrAdd(categoryName, n => new PerformanceTimer(n));
+            return _counters.GetOrAdd(categoryName,
+                                      n => new PerformanceTimer(n, defaultWarningDuration, defaultCriticalDuration));
         }
 
         /// <summary>
@@ -267,7 +273,7 @@ namespace WebApplications.Utilities.Logging.Performance
         ///   <para>
         /// For more information see MSDN : http://msdn.microsoft.com/EN-US/library/s55bz6c1(v=VS.110,d=hv.2).aspx
         ///   </para></remarks>
-        protected static bool Delete([NotNull] string categoryName)
+        public static bool Delete([NotNull] string categoryName)
         {
             return Delete(categoryName, _counterData);
         }
@@ -354,7 +360,7 @@ namespace WebApplications.Utilities.Logging.Performance
                 _elapsed = s.Elapsed;
 
                 // Increment counters.
-                PerformanceTimer.IncrementCounters(_elapsed);
+                PerformanceTimer.Increment(_elapsed);
             }
         }
     }

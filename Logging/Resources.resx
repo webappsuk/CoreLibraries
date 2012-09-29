@@ -256,15 +256,6 @@
   <data name="PerformanceCounterHelper_UnhandledExceptionOccurred" xml:space="preserve">
     <value>An unhandled error occurred whilst initialising the counter category '{0}'.</value>
   </data>
-  <data name="PerformanceTimerHelper_Initialize_CategoryDoesNotExist" xml:space="preserve">
-    <value>The performance counter category '{0}' does not exist, and must be created before it can be used.</value>
-  </data>
-  <data name="PerformanceTimerHelper_ProcessDoesNotHaveAccess" xml:space="preserve">
-    <value>The current process identity does not have access to performance counters, disabling counters.</value>
-  </data>
-  <data name="PerformanceTimerHelper_Initialize_UnhandledExceptionOccurred" xml:space="preserve">
-    <value>An unhandled error occurred whilst initialising the counter category '{0}', disabling counters.</value>
-  </data>
   <data name="SqlLogger_CouldNotRegisterService" xml:space="preserve">
     <value>Could not register service '{0}'</value>
   </data>
@@ -285,5 +276,8 @@
   </data>
   <data name="PerformanceCounterHelper_Delete_Failed" xml:space="preserve">
     <value>Could not delete the performance counter category '{0}'.</value>
+  </data>
+  <data name="PerformanceCounterHelper_Enabled" xml:space="preserve">
+    <value>Performance counters are enabled - instance GUID '{0}'.</value>
   </data>
 </root>
