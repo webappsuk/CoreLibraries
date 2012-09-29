@@ -25,7 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Financials;
 
@@ -34,7 +36,7 @@ namespace WebApplications.Utilities.Ranges
     /// <summary>
     /// A range of <see cref="Financial"/> financial.
     /// </summary>
-    public class FinancialRange : Range<Financial, decimal>
+    public class FinancialRange : Range<Financial, decimal>, IFormattable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Range&lt;T&gt;"/> class.
@@ -47,6 +49,8 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end)
             : base(start, end, 1)
         {
+            Contract.Requires(start != null);
+            Contract.Requires(end != null);
             Contract.Requires(start.Currency == end.Currency, "The currencies in the financial parameters must match.");
         }
 
@@ -62,6 +66,8 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end, decimal step)
             : base(start, end, step)
         {
+            Contract.Requires(start != null);
+            Contract.Requires(end != null);
             Contract.Requires(start.Currency == end.Currency, "The currencies in the financial parameters must match.");
         }
 
@@ -77,6 +83,8 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] Financial start, [NotNull] Financial end, [NotNull] Financial step)
             : base(start, end, step.Amount)
         {
+            Contract.Requires(start != null);
+            Contract.Requires(end != null);
             Contract.Requires(start.Currency == end.Currency, "The currencies in the financial parameters must match.");
             Contract.Requires(step.Currency == start.Currency, "The currencies in the financial parameters must match.");
             Contract.Requires(step.Currency == end.Currency, "The currencies in the financial parameters must match.");
@@ -91,6 +99,7 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end)
             : base(new Financial(currency, start), new Financial(currency, end), 1)
         {
+            Contract.Requires(currency != null);
         }
 
         /// <summary>
@@ -103,6 +112,7 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end, decimal step)
             : base(new Financial(currency, start), new Financial(currency, end), step)
         {
+            Contract.Requires(currency != null);
         }
 
         /// <summary>
@@ -115,6 +125,7 @@ namespace WebApplications.Utilities.Ranges
         public FinancialRange([NotNull] CurrencyInfo currency, decimal start, decimal end, [NotNull] Financial step)
             : base(new Financial(currency, start), new Financial(currency, end), step.Amount)
         {
+            Contract.Requires(currency != null);
             Contract.Requires(step.Currency == currency, "The currencies in the financial parameters must match.");
         }
 
@@ -129,7 +140,35 @@ namespace WebApplications.Utilities.Ranges
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("{0} - {1}", Start, End);
+            // ReSharper disable RedundantToStringCall
+            return string.Format("{0} - {1}", Start.ToString(), End.ToString());
+            // ReSharper restore RedundantToStringCall
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format style: "I" for the value followed by the ISO currency code, "C" for a culture specific currency format.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
+        public string ToString(string format)
+        {
+            return string.Format("{0} - {1}", Start.ToString(format), End.ToString(format));
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format style: "I" for the value followed by the ISO currency code, "C" for a culture specific currency format.</param>
+        /// <param name="provider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
+        /// <exception cref="FormatException">The format string is not supported.</exception>
+        public string ToString(string format, IFormatProvider provider)
+        {
+            return string.Format("{0} - {1}", Start.ToString(format, provider), End.ToString(format, provider));
         }
     }
 }

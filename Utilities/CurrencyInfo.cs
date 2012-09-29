@@ -117,6 +117,13 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Gets all known <see cref="CurrencyInfo"/>.
+        /// </summary>
+        /// <value>All.</value>
+        /// <remarks>TODO Add remarks</remarks>
+        public static IEnumerable<CurrencyInfo> All { get { return _currencyInfos.Values; }}
+
+        /// <summary>
         ///   Gets the ISO Code.
         /// </summary>
         [NotNull]
@@ -161,28 +168,10 @@ namespace WebApplications.Utilities
             CurrencyInfo currencyInfo = new CurrencyInfo(currencyCode, isoNumber, exponent, fullName);
             _currencyInfos.Add(currencyCode, currencyInfo);
 
-            AddRegions(currencyInfo);
-            AddCultures(currencyInfo);
-        }
-
-        /// <summary>
-        /// Adds the cultures.
-        /// </summary>
-        /// <param name="info">The currency info.</param>
-        private static void AddCultures(CurrencyInfo info)
-        {
-            foreach (CultureInfo culture in info.Cultures.Where(culture => !_currencyInfoCultures.ContainsKey(culture)))
-                _currencyInfoCultures.Add(culture, info);
-        }
-
-        /// <summary>
-        /// Adds the regions.
-        /// </summary>
-        /// <param name="info">The region info.</param>
-        private static void AddRegions(CurrencyInfo info)
-        {
-            foreach (RegionInfo region in info.Regions.Where(region => !_currencyInfoRegions.ContainsKey(region)))
-                _currencyInfoRegions.Add(region, info);
+            foreach (RegionInfo region in currencyInfo.Regions.Where(region => !_currencyInfoRegions.ContainsKey(region)))
+                _currencyInfoRegions.Add(region, currencyInfo);
+            foreach (CultureInfo culture in currencyInfo.Cultures.Where(culture => !_currencyInfoCultures.ContainsKey(culture)))
+                _currencyInfoCultures.Add(culture, currencyInfo);
         }
 
         /// <summary>
