@@ -83,6 +83,31 @@ namespace WebApplications.Utilities.Logging.Performance
         }
 
         /// <summary>
+        ///   Increments the operation counters.
+        /// </summary>
+        public void Increment()
+        {
+            if (!IsValid)
+                return;
+
+            Counters[0].Increment();
+            Counters[1].Increment();
+        }
+
+        /// <summary>
+        ///   Increments the operation counters.
+        /// </summary>
+        public void IncrementBy(long value)
+        {
+            if (!IsValid ||
+                (value == 0))
+                return;
+
+            Counters[0].IncrementBy(value);
+            Counters[1].IncrementBy(value);
+        }
+
+        /// <summary>
         ///   Decrements the operation counters.
         /// </summary>
         public void Decrement()
@@ -95,15 +120,17 @@ namespace WebApplications.Utilities.Logging.Performance
         }
 
         /// <summary>
-        ///   Increments the operation counters.
+        ///   Decrements the operation counters.
         /// </summary>
-        public void Increment()
+        public void DecrementBy(long value)
         {
-            if (!IsValid)
+            if (!IsValid ||
+                (value == 0))
                 return;
 
-            Counters[0].Increment();
-            Counters[1].Increment();
+            long decrement = -value;
+            Counters[0].IncrementBy(decrement);
+            Counters[1].IncrementBy(decrement);
         }
 
         /// <summary>
