@@ -166,10 +166,12 @@ namespace WebApplications.Utilities.Logging.Performance
         ///   Increments the counters.
         /// </summary>
         /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
-        public void Increment(TimeSpan duration)
+        public void IncrementBy(TimeSpan duration)
         {
-            if (!IsValid)
+            if (!IsValid ||
+                (duration == TimeSpan.Zero))
                 return;
+
             Counters[0].Increment();
             Counters[1].Increment();
 
@@ -182,6 +184,31 @@ namespace WebApplications.Utilities.Logging.Performance
             Counters[4].Increment();
             if (duration >= DefaultCriticalDuration)
                 Counters[5].Increment();
+        }
+
+        /// <summary>
+        ///   Increments the counters.
+        /// </summary>
+        /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
+        public void DecrementBy(TimeSpan duration)
+        {
+            if (!IsValid ||
+                (duration == TimeSpan.Zero))
+                return;
+
+            Counters[0].Decrement();
+            Counters[1].Decrement();
+
+            // Get the duration in CPU ticks rather than DateTime ticks.
+            Counters[2].IncrementBy(((-duration).Ticks * Stopwatch.Frequency) / 10000000);
+            Counters[3].Decrement();
+
+            if (duration < DefaultWarningDuration)
+                return;
+
+            Counters[4].Decrement();
+            if (duration >= DefaultCriticalDuration)
+                Counters[5].Decrement();
         }
 
         /// <summary>
@@ -367,7 +394,7 @@ namespace WebApplications.Utilities.Logging.Performance
                 _elapsed = s.Elapsed;
 
                 // Increment counters.
-                PerformanceTimer.Increment(_elapsed);
+                PerformanceTimer.IncrementBy(_elapsed);
             }
         }
     }
