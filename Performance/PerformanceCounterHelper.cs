@@ -292,5 +292,134 @@ namespace WebApplications.Utilities.Logging.Performance
                 return false;
             }
         }
+
+        /// <summary>
+        /// Holds enumeration of all counters for creation/deletion.
+        /// </summary>
+        [NotNull]
+        private static readonly PerformanceInformation[] _performanceCounters = new[]
+            {
+                new PerformanceInformation("Logged new item", "Tracks every time a log entry is logged."),
+                new PerformanceInformation("Logged exception", "Tracks every time an exception is logged.")
+            };
+
+        [NotNull]
+        internal static readonly PerformanceCounter PerfCounterNewItem = _performanceCounters.GetPerformanceCounter(0);
+        [NotNull]
+        internal static readonly PerformanceCounter PerfCounterException = _performanceCounters.GetPerformanceCounter(1);
+
+        /// <summary>
+        /// <para>
+        /// Creates the Traveller performance counters - use during installation only.
+        /// </para>
+        /// <para>
+        /// Once performance counters are created they will not be usable until the next time the application is run, as such
+        /// the application should terminate following a call to this method.
+        /// </para>
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if the counters exist; otherwise <see langword="false"/>.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// It is strongly recommended that new performance counter categories
+        ///             be created during the installation of the application, not during the execution
+        ///             of the application. This allows time for the operating system to refresh its list
+        ///             of registered performance counter categories. If the list has not been refreshed,
+        ///             the attempt to use the category will fail.
+        /// </para>
+        /// <para>
+        /// To read performance counters in Windows Vista and later, Windows XP Professional
+        ///             x64 Edition, or Windows Server 2003, you must either be a member of the Performance
+        ///             Monitor Users group or have administrative privileges.
+        /// </para>
+        /// <para>
+        /// To avoid having to elevate your privileges to access performance counters in Windows
+        ///             Vista and later, add yourself to the Performance Monitor Users group.
+        /// </para>
+        /// <para>
+        /// In Windows Vista and later, User Account Control (UAC) determines the privileges of
+        ///             a user. If you are a member of the Built-in Administrators group, you are assigned
+        ///             two run-time access tokens: a standard user access token and an administrator access
+        ///             token. By default, you are in the standard user role. To execute the code that
+        ///             accesses performance counters, you must first elevate your privileges from standard
+        ///             user to administrator. You can do this when you start an application by right-clicking
+        ///             the application icon and indicating that you want to run as an administrator.
+        /// </para>
+        /// <para>
+        /// For more information see MSDN : http://msdn.microsoft.com/EN-US/library/sb32hxtc(v=VS.110,d=hv.2).aspx
+        /// </para>
+        /// </remarks>
+        public static bool CreatePerformanceCounters(IEnumerable<PerformanceInformation> performanceCounters = null)
+        {
+            if (ReferenceEquals(performanceCounters, null))
+                performanceCounters = Enumerable.Empty<PerformanceInformation>();
+            return performanceCounters
+                .Union(_performanceCounters)
+                .Aggregate(
+                true,
+                (current, performanceInformation) =>
+                current &
+                ((performanceInformation.IsTimer)
+                     ? PerformanceTimer.Create(performanceInformation.CategoryName, performanceInformation.CategoryHelp)
+                     : PerformanceCounter.Create(performanceInformation.CategoryName, performanceInformation.CategoryHelp)));
+        }
+
+
+        /// <summary>
+        /// <para>
+        /// Deletes the specified performance counter - use during uninstall only.
+        /// </para>
+        /// <para>
+        /// The application should terminate following a call to this method.
+        /// </para>
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if the counters no longer exists; otherwise <see langword="false"/>.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// It is strongly recommended that performance counter categories are only removed
+        ///             during the removal of the application, not during the execution
+        ///             of the application.
+        /// </para>
+        /// <para>
+        /// To read performance counters in Windows Vista and later, Windows XP Professional
+        ///             x64 Edition, or Windows Server 2003, you must either be a member of the Performance
+        ///             Monitor Users group or have administrative privileges.
+        /// 
+        /// </para>
+        /// <para>
+        /// To avoid having to elevate your privileges to access performance counters in Windows
+        ///             Vista and later, add yourself to the Performance Monitor Users group.
+        /// 
+        /// </para>
+        /// <para>
+        /// In Windows Vista and later, User Account Control (UAC) determines the privileges of
+        ///             a user. If you are a member of the Built-in Administrators group, you are assigned
+        ///             two run-time access tokens: a standard user access token and an administrator access
+        ///             token. By default, you are in the standard user role. To execute the code that
+        ///             accesses performance counters, you must first elevate your privileges from standard
+        ///             user to administrator. You can do this when you start an application by right-clicking
+        ///             the application icon and indicating that you want to run as an administrator.
+        /// </para>
+        /// <para>
+        /// For more information see MSDN : http://msdn.microsoft.com/EN-US/library/s55bz6c1(v=VS.110,d=hv.2).aspx
+        /// </para>
+        /// </remarks>
+        public static bool DeletePerformanceCounters(IEnumerable<PerformanceInformation> performanceCounters)
+        {
+            if (ReferenceEquals(performanceCounters, null))
+                performanceCounters = Enumerable.Empty<PerformanceInformation>();
+            return performanceCounters
+                .Union(_performanceCounters)
+                .Aggregate(
+                true,
+                (current, performanceInformation) =>
+                current &
+                ((performanceInformation.IsTimer)
+                     ? PerformanceTimer.Delete(performanceInformation.CategoryName)
+                     : PerformanceCounter.Delete(performanceInformation.CategoryHelp)));
+        }
     }
 }
