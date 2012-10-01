@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -216,9 +217,10 @@ namespace WebApplications.Utilities.Test.Ranges
         }
 
         [TestMethod]
-        public void Constructor_WithoutStepParam_StepDefaultsToOneSecond()
+        public void Constructor_WithoutStepParam_DeltaLessThanMillisecond_StepDefaultsToOneTick()
         {
-            TimeSpan length = RandomDuration(MinSpan, MaxSpan);
+            TimeSpan length = RandomDuration(TimeSpan.Zero, TimeSpan.FromMilliseconds(1));
+            Trace.WriteLine(length);
             DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
             DateTime end = start + length;
 
@@ -226,7 +228,82 @@ namespace WebApplications.Utilities.Test.Ranges
 
             Assert.AreEqual(start, dateRange.Start, "Starting point field must match the value supplied");
             Assert.AreEqual(end, dateRange.End, "End point field must match the value supplied");
-            Assert.AreEqual(TimeSpan.FromSeconds(1), dateRange.Step, "Step amount must default to one");
+            Assert.AreEqual(TimeSpan.FromTicks(1), dateRange.Step, "Step amount must default to one tick");
+        }
+
+        [TestMethod]
+        public void Constructor_WithoutStepParam_DeltaLessThanSecond_StepDefaultsToOneMillisecond()
+        {
+            TimeSpan length = RandomDuration(TimeSpan.FromMilliseconds(1), TimeSpan.FromSeconds(1));
+            Trace.WriteLine(length);
+            DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
+            DateTime end = start + length;
+
+            DateTimeRange dateRange = new DateTimeRange(start, end);
+
+            Assert.AreEqual(start, dateRange.Start, "Starting point field must match the value supplied");
+            Assert.AreEqual(end, dateRange.End, "End point field must match the value supplied");
+            Assert.AreEqual(TimeSpan.FromMilliseconds(1), dateRange.Step, "Step amount must default to one second");
+        }
+
+        [TestMethod]
+        public void Constructor_WithoutStepParam_DeltaLessThanMinute_StepDefaultsToOneSecond()
+        {
+            TimeSpan length = RandomDuration(TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1));
+            Trace.WriteLine(length);
+            DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
+            DateTime end = start + length;
+
+            DateTimeRange dateRange = new DateTimeRange(start, end);
+
+            Assert.AreEqual(start, dateRange.Start, "Starting point field must match the value supplied");
+            Assert.AreEqual(end, dateRange.End, "End point field must match the value supplied");
+            Assert.AreEqual(TimeSpan.FromSeconds(1), dateRange.Step, "Step amount must default to one second");
+        }
+
+        [TestMethod]
+        public void Constructor_WithoutStepParam_DeltaLessThanHour_StepDefaultsToOneMinute()
+        {
+            TimeSpan length = RandomDuration(TimeSpan.FromMinutes(1), TimeSpan.FromHours(1));
+            Trace.WriteLine(length);
+            DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
+            DateTime end = start + length;
+
+            DateTimeRange dateRange = new DateTimeRange(start, end);
+
+            Assert.AreEqual(start, dateRange.Start, "Starting point field must match the value supplied");
+            Assert.AreEqual(end, dateRange.End, "End point field must match the value supplied");
+            Assert.AreEqual(TimeSpan.FromMinutes(1), dateRange.Step, "Step amount must default to one minute");
+        }
+
+        [TestMethod]
+        public void Constructor_WithoutStepParam_DeltaLessThanDay_StepDefaultsToOneHour()
+        {
+            TimeSpan length = RandomDuration(TimeSpan.FromHours(1), TimeSpan.FromDays(1));
+            Trace.WriteLine(length);
+            DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
+            DateTime end = start + length;
+
+            DateTimeRange dateRange = new DateTimeRange(start, end);
+
+            Assert.AreEqual(start, dateRange.Start, "Starting point field must match the value supplied");
+            Assert.AreEqual(end, dateRange.End, "End point field must match the value supplied");
+            Assert.AreEqual(TimeSpan.FromHours(1), dateRange.Step, "Step amount must default to one minute");
+        }
+
+        [TestMethod]
+        public void Constructor_WithoutStepParam_DeltaGreaterThanDay_StepDefaultsToOneDay()
+        {
+            TimeSpan length = RandomDuration(TimeSpan.FromDays(1), MaxSpan);
+            Trace.WriteLine(length);
+            DateTime start = RandomDate(DateTime.MinValue, DateTime.MaxValue - length);
+            DateTime end = start + length;
+
+            DateTimeRange dateRange = new DateTimeRange(start, end);
+
+            Assert.AreEqual(start, dateRange.Start, "Starting point field must match the value supplied");
+            Assert.AreEqual(end, dateRange.End, "End point field must match the value supplied");
+            Assert.AreEqual(TimeSpan.FromDays(1), dateRange.Step, "Step amount must default to one day");
         }
 
         [TestMethod]
