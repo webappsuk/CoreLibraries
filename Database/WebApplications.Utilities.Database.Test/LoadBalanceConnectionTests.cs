@@ -194,8 +194,8 @@ namespace WebApplications.Utilities.Database.Test
             List<KeyValuePair<string, double>> connections =
                 new List<KeyValuePair<string, double>>
                     {
-                        new KeyValuePair<string, double>(CreateConnectionString("LocalData", false), 0.5),
-                        new KeyValuePair<string, double>(CreateConnectionString("LocalDataCopy", false), 0.5)
+                        new KeyValuePair<string, double>(CreateConnectionString("LocalDataCopy", false), 0.5),
+                        new KeyValuePair<string, double>(CreateConnectionString("LocalDataSecondCopy", false), 0.5)
                     };
 
             LoadBalancedConnection loadBalancedConnection = new LoadBalancedConnection(connections);
