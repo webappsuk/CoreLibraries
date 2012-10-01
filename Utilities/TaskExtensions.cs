@@ -688,7 +688,6 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static TaskAwaiter GetAwaiter(this WaitHandle handle)
         {
-            Contract.Requires<ArgumentNullException>(handle != null);
             return handle.ToTask().GetAwaiter();
         }
 
@@ -703,7 +702,6 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static Task ToTask(this WaitHandle handle)
         {
-            Contract.Requires<ArgumentNullException>(handle != null);
             Contract.Ensures(Contract.Result<Task>() != null);
 
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
@@ -729,6 +727,37 @@ namespace WebApplications.Utilities
             }
 
             return tcs.Task;
+        }
+
+        /// <summary>
+        /// An already completed task.
+        /// </summary>
+        public static Task Completed = Task.FromResult(true);
+
+        /// <summary>
+        /// Creates a Task from an exception
+        /// </summary>
+        /// <typeparam name="TResult">The type of the T result.</typeparam>
+        /// <param name="exception">The exception.</param>
+        /// <returns>A task.</returns>
+        public static Task ToTask([NotNull]this Exception exception)
+        {
+            TaskCompletionSource<Exception> source = new TaskCompletionSource<Exception>();
+            source.SetException(exception);
+            return source.Task;
+        }
+
+        /// <summary>
+        /// Creates a Task from an exception
+        /// </summary>
+        /// <typeparam name="TResult">The type of the T result.</typeparam>
+        /// <param name="exception">The exception.</param>
+        /// <returns>A task.</returns>
+        public static Task<TResult> ToTask<TResult>([NotNull]this Exception exception)
+        {
+            TaskCompletionSource<TResult> source = new TaskCompletionSource<TResult>();
+            source.SetException(exception);
+            return source.Task;
         }
     }
 }
