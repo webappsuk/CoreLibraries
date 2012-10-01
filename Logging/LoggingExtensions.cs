@@ -25,12 +25,16 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using JetBrains.Annotations;
+using System.Diagnostics.Contracts;
+using WebApplications.Utilities.Logging.Performance;
+
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
     ///   Extension methods for logging.
     /// </summary>
-    public static class Extensions
+    public static class LoggingExtensions
     {
         /// <summary>
         ///   Returns a <see cref="bool"/> value indicating whether the specified
@@ -47,6 +51,36 @@ namespace WebApplications.Utilities.Logging
         {
             LogLevels l = (LogLevels) level;
             return l == (l & validLevels);
+        }
+
+        /// <summary>
+        /// Gets the performance timer based on the index into <see paramref="counters" />.
+        /// </summary>
+        /// <param name="counters">The counters.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>PerformanceTimer.</returns>
+        [NotNull]
+        public static PerformanceTimer GetPerformanceTimer([NotNull]this PerformanceInformation[] counters, int index)
+        {
+            PerformanceInformation performanceInformation = counters[index];
+            Contract.Assert(performanceInformation.IsTimer);
+            return PerformanceTimer.Get(performanceInformation.CategoryName,
+                                        performanceInformation.DefaultWarningDuration,
+                                        performanceInformation.DefaultCriticalDuration);
+        }
+
+        /// <summary>
+        /// Gets the performance counter based on the index into <see paramref="counters" />.
+        /// </summary>
+        /// <param name="counters">The counters.</param>
+        /// <param name="index">The index.</param>
+        /// <returns>PerformanceTimer.</returns>
+        [NotNull]
+        public static PerformanceCounter GetPerformanceCounter([NotNull]this PerformanceInformation[] counters, int index)
+        {
+            PerformanceInformation performanceInformation = counters[index];
+            Contract.Assert(!performanceInformation.IsTimer);
+            return PerformanceCounter.Get(performanceInformation.CategoryName);
         }
     }
 }

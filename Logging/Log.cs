@@ -163,11 +163,6 @@ namespace WebApplications.Utilities.Logging
 #endif
 
         /// <summary>
-        /// Performance counter for creating logs.
-        /// </summary>
-        private static readonly PerformanceCounter _createdLogCounter = PerformanceCounter.Get("Logged new item");
-
-        /// <summary>
         ///   Initializes a new instance of the <see cref="Log"/> class.
         /// </summary>
         /// <param name="logGroup">The unique ID that groups log items together.</param>
@@ -240,7 +235,7 @@ namespace WebApplications.Utilities.Logging
                 // Queue the log entry.
                 _logQueue.Enqueue(this);
 
-            _createdLogCounter.Increment();
+                PerformanceCounterHelper.PerfCounterNewItem.Increment();
 
                 // Signal monitor thread of new arrival.
                 _logSignal.Set();

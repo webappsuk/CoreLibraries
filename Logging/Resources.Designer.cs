@@ -403,6 +403,15 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &quot;Completed {0} [Operation took {1:0.0000} ms]&quot;.
+        /// </summary>
+        internal static string Operation_Completed {
+            get {
+                return ResourceManager.GetString("Operation_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplication GUID provided for operation..
         /// </summary>
         internal static string Operation_DuplicateGuidProvided {

@@ -56,16 +56,16 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Utilities, Version=2.0.4655.34233, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=2.0.4656.31862, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.2.0.4655.34233\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.2.0.4656.31862\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\LoggerElement.cs" />
     <Compile Include="Configuration\LoggersCollection.cs" />
     <Compile Include="Configuration\LoggingConfiguration.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="LoggingExtensions.cs" />
     <Compile Include="Loggers\EventLogger.cs" />
     <Compile Include="Loggers\FileLogger.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
@@ -85,6 +85,7 @@
     <Compile Include="Operation.cs" />
     <Compile Include="Performance\PerformanceCounter.cs" />
     <Compile Include="Performance\PerformanceCounterHelper.cs" />
+    <Compile Include="Performance\PerformanceInformation.cs" />
     <Compile Include="Performance\PerformanceTimer.cs" />
     <Compile Include="Performance\RequiresPerformanceCounter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

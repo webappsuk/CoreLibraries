@@ -598,7 +598,7 @@ namespace WebApplications.Utilities.Logging
                 Log.Add(
                     Guid,
                     new LogContext("OperationDuration", elapsed.ToString()),
-                    "Stopping {0} [Operation took {1:0.0000} ms]{2}",
+                    Resources.Operation_Completed,
                     t.Critical
                         ? LogLevel.Critical
                         : t.Warning

@@ -280,4 +280,7 @@
   <data name="PerformanceCounterHelper_Enabled" xml:space="preserve">
     <value>Performance counters are enabled - instance GUID '{0}'.</value>
   </data>
+  <data name="Operation_Completed" xml:space="preserve">
+    <value>"Completed {0} [Operation took {1:0.0000} ms]"</value>
+  </data>
 </root>
