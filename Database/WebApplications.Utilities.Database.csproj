@@ -60,17 +60,17 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Utilities, Version=2.0.4655.34233, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=2.0.4658.28847, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.2.0.4655.34233\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.2.0.4658.28847\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=2.0.4656.18550, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Logging, Version=2.0.4658.28868, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.Logging.2.0.4656.18550\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.Logging.2.0.4658.28868\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Serialization, Version=2.0.4656.18570, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Serialization, Version=2.0.4658.28873, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.Serialization.2.0.4656.18570\lib\net45\WebApplications.Utilities.Serialization.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.Serialization.2.0.4658.28873\lib\net45\WebApplications.Utilities.Serialization.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

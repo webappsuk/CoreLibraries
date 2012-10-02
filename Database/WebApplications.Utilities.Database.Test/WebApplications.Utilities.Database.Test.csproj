@@ -62,17 +62,17 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing, Version=2.0.4654.19209, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Testing, Version=2.0.4658.28822, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Testing.2.0.4654.19209\lib\net45\WebApplications.Testing.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Testing.2.0.4658.28822\lib\net45\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities, Version=2.0.4655.34233, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=2.0.4658.28847, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.2.0.4655.34233\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.2.0.4658.28847\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=2.0.4656.18550, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Logging, Version=2.0.4658.28868, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Logging.2.0.4656.18550\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.2.0.4658.28868\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

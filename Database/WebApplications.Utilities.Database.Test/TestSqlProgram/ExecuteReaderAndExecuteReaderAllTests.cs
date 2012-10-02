@@ -289,18 +289,18 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             {
                 rows.Add(ExtendedTuple.Create(
                     Random.RandomInt32(),
-                    Random.RandomString(),
+                    Random.RandomString(50, false),
                     false,
                     true,
-                    Random.RandomDecimal(),
-                    Random.RandomDecimal(),
+                    RandomSqlSafeDecimal(),
+                    RandomSqlSafeDecimal(),
                     Random.RandomDouble(),
                     Random.RandomString(),
                     Random.RandomInt16(),
                     new TestSerializableObject { String1 = Random.RandomString(), String2 = Random.RandomString() },
                     Random.RandomByte(),
-                    Random.RandomDateTime(),
-                    Random.RandomDateTime(),
+                    RandomSqlSafeDateTime(),
+                    RandomSqlSafeDateTime(),
                     new XElement("Test", new XAttribute("attribute", Random.Next())),
                     Random.RandomInt32(),
                     Random.RandomInt64(),
@@ -370,6 +370,26 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                                                      }
                                                  }
                                              });
+        }
+
+        /// <summary>
+        /// Generates a random decimal between -999999999.999999999 and 999999999.999999999, which can be passed
+        /// to spTakesMultiTupleTable without causing truncation errors.
+        /// </summary>
+        /// <returns></returns>
+        private static decimal RandomSqlSafeDecimal()
+        {
+            return new decimal(Random.NextDouble() * 1999999999.99999998 - 999999999.999999999);
+        }
+
+        /// <summary>
+        /// Generates a random DateTime between 1970 and 2038, without fractional seconds, which can be passed
+        /// to spTakesMultiTupleTable without causing truncation errors.
+        /// </summary>
+        /// <returns></returns>
+        private static DateTime RandomSqlSafeDateTime()
+        {
+            return new DateTime(1970, 1, 1, 0, 0, 0).AddSeconds((UInt32)Random.Next());
         }
 
         [Serializable]
