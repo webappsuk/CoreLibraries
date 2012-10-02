@@ -319,7 +319,7 @@ namespace WebApplications.Utilities.Logging
                     }
                     else if (e.InnerException != null)
                         // Push the inner exception
-                        currentStack.Push(e);
+                        currentStack.Push(e.InnerException);
                 }
             }
 
