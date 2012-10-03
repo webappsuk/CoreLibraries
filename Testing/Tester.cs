@@ -713,13 +713,56 @@ namespace WebApplications.Testing
                 return null;
 
             // Get string length, if there's no maximum then use 8001 (as 8000 is max specific size in SQL Server).
-            int length = (maxLength < 0 ? random.Next(10000) : maxLength)*(unicode ? 2 : 1);
+            int length = random.Next(maxLength < 0 ? 8000 : maxLength);
             if (length < 1)
                 return String.Empty;
 
-            byte[] bytes = new byte[length];
-            random.NextBytes(bytes);
-            return unicode ? new UnicodeEncoding().GetString(bytes) : new ASCIIEncoding().GetString(bytes);
+            if (!unicode)
+            {
+                byte[] bytes = new byte[length];
+                random.NextBytes(bytes);
+                return new ASCIIEncoding().GetString(bytes);
+            }
+
+            StringBuilder stringBuilder = new StringBuilder(length);
+            for (int charIndex = 0; charIndex < length; ++charIndex)
+                stringBuilder.Append(random.RandomUnicodeCharacter());
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Generates a random Unicode character.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <param name="supplementaryPlaneProbability">The probability of the character coming from a random supplementary plane (0.0 for a Basic Multilingual Plane character).</param>
+        /// <returns>A random unicode character.</returns>
+        public static char[] RandomUnicodeCharacter(this Random random, double supplementaryPlaneProbability = 0.1)
+        {
+            random = random ?? RandomGenerator;
+            if (supplementaryPlaneProbability > 0.0 && random.NextDouble() < supplementaryPlaneProbability)
+                return new char[]
+                           {
+                               (char)random.Next(0xD800, 0xDBFF),
+                               (char)random.Next(0xDC00, 0xDFFF)
+                           };
+            int character = random.Next(0xF7E1);
+            switch (character)
+            {
+                case 0:
+                    character = 0x0009;
+                    break;
+                case 1:
+                    character = 0x000A;
+                    break;
+                case 2:
+                    character = 0x000D;
+                    break;
+                default:
+                    // Other valid characters are 0x0020-0xD7FF and 0xE000-0xFFFD:
+                    character += character < 0xD7E3 ? 0x001D : 0x081D;
+                    break;
+            }
+            return new char[] { (char)character };
         }
 
 
