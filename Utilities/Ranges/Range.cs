@@ -175,7 +175,8 @@ namespace WebApplications.Utilities.Ranges
         /// <filterpriority>1</filterpriority>
         public IEnumerator<TValue> GetEnumerator()
         {
-            for (TValue loop = Start, next = Start; !LessThan(End, loop); loop = next)
+            bool nextIsInRange = true;
+            for (TValue loop = Start, next = Start; !LessThan(End, loop) && nextIsInRange; loop = next)
             {
                 try
                 {
@@ -183,14 +184,14 @@ namespace WebApplications.Utilities.Ranges
                 }
                 catch (ArgumentOutOfRangeException) // For dates
                 {
-                    yield break;
+                    nextIsInRange = false;
                 }
                 catch (OverflowException) // For decimals
                 {
-                    yield break;
+                    nextIsInRange = false;
                 }
                 // Perform checks which are normally done behind the scenes to avoid infinite loops due to interger overflows
-                if (!LessThan(loop, next))
+                if (!LessThan(loop, next) && nextIsInRange)
                     yield break;
                 yield return loop;
             }
