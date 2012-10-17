@@ -737,7 +737,6 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Creates a Task from an exception
         /// </summary>
-        /// <typeparam name="TResult">The type of the T result.</typeparam>
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
         public static Task ToTask([NotNull]this Exception exception)

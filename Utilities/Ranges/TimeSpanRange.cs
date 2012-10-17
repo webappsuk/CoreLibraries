@@ -80,7 +80,7 @@ namespace WebApplications.Utilities.Ranges
         /// <inheritdoc />
         public override string ToString()
         {
-            return string.Format("{0:dd/MM/yyyy} - {1:dd/MM/yyyy}", Start, End);
+            return string.Format("{0} - {1}", Start, End);
         }
     }
 }
