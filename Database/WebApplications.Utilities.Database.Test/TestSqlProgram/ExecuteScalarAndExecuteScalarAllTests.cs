@@ -65,6 +65,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                     name: "spWithParametersReturnsScalar");
 
             string randomString = Random.RandomString(20, false);
+            int stringLength = randomString.Length;
             IList<string> scalarResult = program.ExecuteScalarAll<string>(
                 c =>
                     {
@@ -76,7 +77,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 
             Assert.AreEqual(2, scalarResult.Count);
             foreach (string result in scalarResult)
-                Assert.AreEqual(string.Format("{0} - {1} - {2} - 1", randomString.Substring(0, 20), AInt, ADecimal),
+                Assert.AreEqual(string.Format("{0} - {1} - {2} - 1", randomString.Substring(0, stringLength), AInt, ADecimal),
                                 result);
         }
     }
