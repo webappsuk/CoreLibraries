@@ -76,7 +76,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 
             Assert.AreEqual(2, scalarResult.Count);
             foreach (string result in scalarResult)
-                Assert.AreEqual(string.Format("{0} - {1} - {2} - 1", randomString.Substring(0, 20), AInt, ADecimal),
+                Assert.AreEqual(string.Format("{0} - {1} - {2} - 1", randomString.Substring(0, randomString.Length), AInt, ADecimal),
                                 result);
         }
     }
