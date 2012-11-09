@@ -123,7 +123,7 @@ namespace WebApplications.Utilities.Test.Extensions
             int num;
             do
             {
-                separator = Random.RandomString(1);
+                separator = "|";
             } while (int.TryParse(separator, out num));
             List<int> list = CreateRandomIdList();
             String csvList = CreateListOfIds(list, separator);
@@ -273,7 +273,7 @@ namespace WebApplications.Utilities.Test.Extensions
             int num;
             do
             {
-                separator = Random.RandomString(1);
+                separator = "|";
             } while (int.TryParse(separator, out num));
             List<short> list = CreateRandomId16List();
             String csvList = CreateListOfIds(list, separator);
@@ -425,7 +425,7 @@ namespace WebApplications.Utilities.Test.Extensions
             long num;
             do
             {
-                separator = Random.RandomString(1);
+                separator = "|";
             } while (long.TryParse(separator, out num));
             List<long> list = CreateRandomId64List();
             String csvList = CreateListOfIds(list, separator);
