@@ -34,6 +34,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -768,14 +769,7 @@ namespace WebApplications.Utilities
         {
             string stripped = String.IsNullOrEmpty(raw)
                                   ? raw
-                                  : new string(
-                                        raw.Where(
-                                            c => (0x1 <= c && c <= 0xD7FF) || (0xE000 <= c && c <= 0xFFFD)).
-                                            Where(
-                                                c =>
-                                                !(0x1 <= c && c <= 0x8) && !new[] {0xB, 0xC}.Contains(c) &&
-                                                !(0xE <= c && c <= 0x1F) && !(0x7F <= c && c <= 0x84) &&
-                                                !(0x86 <= c && c <= 9F)).ToArray());
+                                  : new string(raw.Where(c => c.IsValidXmlChar()).ToArray());
             return SecurityElement.Escape(stripped);
         }
 
@@ -787,6 +781,51 @@ namespace WebApplications.Utilities
         public static string XmlEscape(this object raw)
         {
             return raw.ToString().XmlEscape();
+        }
+
+        /// <summary>
+        /// Determines whether the specified character is valid in an XML document.
+        /// </summary>
+        /// <param name="c">The character.</param>
+        /// <returns><see langword="true" /> if the character is valid; otherwise, <see langword="false" />.</returns>
+        /// <remarks>
+        /// <para>This does not specify whether the character needs to be further encoded further.</para>
+        /// <para>Consider using <see cref="IsValidXmlChar"/> to also exclude characters that can cause compaibility issues.</para>
+        /// <para>See http://www.w3.org/TR/xml/#charsets for further info.</para>
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidXmlCharStrict(this char c)
+        {
+            return (c >= 0x20 && c <= 0xD7FF) ||
+                   (c >= 0xE000 && c <= 0xFFFD) ||
+                   (c == 0x9) ||
+                   (c == 0xA) ||
+                   (c == 0xD) ||
+                   (c == 0x85);
+        }
+
+        /// <summary>
+        /// Determines whether the specified character is valid in an XML document and won't cause compatibility issues.
+        /// </summary>
+        /// <param name="c">The character.</param>
+        /// <returns><see langword="true" /> if the character is valid; otherwise, <see langword="false" />.</returns>
+        /// <remarks>
+        /// <para>This does not specify whether the character needs to be further encoded further.</para>
+        /// <para>This is the preferred compatibility check (compared to <see cref="IsValidXmlCharStrict"/> as it
+        /// excludes characters that can cause issues.</para>
+        /// <para>See http://www.w3.org/TR/xml/#charsets for further info.</para>
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidXmlChar(this char c)
+        {
+            return (c >= 0x20 && c <= 0x7E) ||
+                   (c >= 0xA0 && c <= 0xD7FF) ||
+                   (c >= 0xE000 && c <= 0xFDCF) ||
+                   (c >= 0xFDF0 && c <= 0xFFFD) ||
+                   (c == 0x9) ||
+                   (c == 0xA) ||
+                   (c == 0xD) ||
+                   (c == 0x85);
         }
 
         /// <summary>
@@ -1082,6 +1121,7 @@ namespace WebApplications.Utilities
             return CombGuid.GetDateTime(guid);
         }
 
+        #region TopologicalSort
         /// <summary>
         ///   Performs a topological sort on an enumeration.
         /// </summary>
@@ -1203,6 +1243,7 @@ namespace WebApplications.Utilities
             if (dependants.Count > 0)
                 throw new InvalidOperationException(Resources.Extensions_TopologicalSortEdges_DependencyCyclesFound);
         }
+        #endregion
 
         /// <summary>
         ///   Wraps the specified <see cref="IAsyncResult"/> as an
@@ -1260,6 +1301,7 @@ namespace WebApplications.Utilities
             return ApmWrap<T>.WrapCallback(callback, data, syncContext);
         }
 
+        #region Mod
         /// <summary>
         /// Calculates the modulus of the value.
         /// </summary>
@@ -1337,6 +1379,7 @@ namespace WebApplications.Utilities
         {
             return value%modulus;
         }
+        #endregion
 
         /// <summary>
         /// Splits the specified array at the selected indices.
@@ -1431,6 +1474,7 @@ namespace WebApplications.Utilities
             return number + (number*increaseByPercent)/100;
         }
 
+        #region StdDev
         /// <summary>
         /// Calculate the standard deviation of an average
         /// </summary>
@@ -1475,7 +1519,9 @@ namespace WebApplications.Utilities
             // Return standard deviation
             return Math.Sqrt(enumerable.Sum(d => (d - avg) * (d - avg)) / count);
         }
+        #endregion
 
+        #region Min/Max
         /// <summary>
         /// Returns the maximal element of the given sequence, based on
         /// the given projection.
@@ -1745,6 +1791,126 @@ namespace WebApplications.Utilities
                 return min;
             }
         }
+        #endregion
+
+        #region ToMemorySize
+        /// <summary>
+        /// Converts a number of bytes to a friendly memory size.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="longUnits">if set to <see langword="true" /> use long form unit names instead of symbols.</param>
+        /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
+        /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
+        /// <returns>System.String.</returns>
+        public static string ToMemorySize(this short bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        {
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+        }
+
+        /// <summary>
+        /// Converts a number of bytes to a friendly memory size.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="longUnits">if set to <see langword="true" /> use long form unit names instead of symbols.</param>
+        /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
+        /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
+        /// <returns>System.String.</returns>
+        public static string ToMemorySize(this ushort bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        {
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+        }
+
+        /// <summary>
+        /// Converts a number of bytes to a friendly memory size.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="longUnits">if set to <see langword="true" /> use long form unit names instead of symbols.</param>
+        /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
+        /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
+        /// <returns>System.String.</returns>
+        public static string ToMemorySize(this int bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        {
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+        }
+
+        /// <summary>
+        /// Converts a number of bytes to a friendly memory size.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="longUnits">if set to <see langword="true" /> use long form unit names instead of symbols.</param>
+        /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
+        /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
+        /// <returns>System.String.</returns>
+        public static string ToMemorySize(this uint bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        {
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+        }
+
+        /// <summary>
+        /// Converts a number of bytes to a friendly memory size.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="longUnits">if set to <see langword="true" /> use long form unit names instead of symbols.</param>
+        /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
+        /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
+        /// <returns>System.String.</returns>
+        public static string ToMemorySize(this long bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        {
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+        }
+
+        /// <summary>
+        /// Converts a number of bytes to a friendly memory size.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="longUnits">if set to <see langword="true" /> use long form unit names instead of symbols.</param>
+        /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
+        /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
+        /// <returns>System.String.</returns>
+        public static string ToMemorySize(this ulong bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        {
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+        }
+
+        [NotNull]
+        private static readonly string[] _memoryUnitsLong = { " byte", " kilobyte", " megabyte", " gigabyte", " terabyte", " petabyte", " exabyte" };
+        [NotNull]
+        private static readonly string[] _memoryUnitsShort = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+
+        /// <summary>
+        /// Converts a number of bytes to a friendly memory size.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <param name="longUnits">if set to <see langword="true" /> use long form unit names instead of symbols.</param>
+        /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
+        /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
+        /// <returns>System.String.</returns>
+        public static string ToMemorySize(this double bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        {
+            if (decimalPlaces < 1) decimalPlaces = 0;
+            else if (decimalPlaces > 16) decimalPlaces = 16;
+
+            // 921.6 is 0.9*1024, this means that be default the breakpoint will round up the last decimal place.
+            if (breakPoint < 1) breakPoint = 921.6D * Math.Pow(10, -decimalPlaces);
+            else if (breakPoint > 1023) breakPoint = 1023;
+
+            uint maxDecimalPlaces = 0;
+            uint unit = 0;
+            double amount = bytes;
+            while ((Math.Abs(amount) >= breakPoint) &&
+                (unit < 6))
+            {
+                amount /= 1024;
+                unit++;
+                maxDecimalPlaces = Math.Min(decimalPlaces, maxDecimalPlaces + 3);
+            }
+            return string.Format("{0:N" + maxDecimalPlaces + "}{1}",
+                                 amount,
+                                 longUnits
+                                     ? _memoryUnitsLong[unit]
+                                     : _memoryUnitsShort[unit]);
+        }
+        #endregion
 
         #region Nested type: TypeCounter
         /// <summary>
