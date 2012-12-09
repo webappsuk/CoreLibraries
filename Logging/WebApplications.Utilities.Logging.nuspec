@@ -15,5 +15,6 @@
   <files>
     <file src="app.config.transform" target="Content" />
     <file src="web.config.transform" target="Content" />
+    <file src="WebApplications.Utilities.Logging.Tools.PerfSetup\PerfSetup.exe" target="tools" />
   </files>
 </package>

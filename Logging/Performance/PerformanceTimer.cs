@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Linq;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Concurrent;
@@ -38,7 +39,7 @@ namespace WebApplications.Utilities.Logging.Performance
     /// <summary>
     ///   Times an operation using a performance timer.
     /// </summary>
-    public class PerformanceTimer : PerformanceCounterHelper
+    public sealed class PerformanceTimer : PerformanceCounterHelper
     {
         /// <summary>
         /// Default counters for a category.
@@ -231,78 +232,14 @@ namespace WebApplications.Utilities.Logging.Performance
         }
 
         /// <summary>
-        /// Creates the specified performance timer (use during installation only).
+        /// Whether the counter exists fully.
         /// </summary>
         /// <param name="categoryName">Name of the category.</param>
-        /// <param name="categoryHelp">The category help.</param>
-        /// <returns><see langword="true" /> if the category was created; otherwise <see langword="false" />.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        /// <remarks><para>
-        /// It is strongly recommended that new performance counter categories
-        /// be created during the installation of the application, not during the execution
-        /// of the application. This allows time for the operating system to refresh its list
-        /// of registered performance counter categories. If the list has not been refreshed,
-        /// the attempt to use the category will fail.
-        ///   </para>
-        ///   <para>
-        /// To read performance counters in Windows Vista and later, Windows XP Professional
-        /// x64 Edition, or Windows Server 2003, you must either be a member of the Performance
-        /// Monitor Users group or have administrative privileges.
-        ///   </para>
-        ///   <para>
-        /// To avoid having to elevate your privileges to access performance counters in Windows
-        /// Vista and later, add yourself to the Performance Monitor Users group.
-        ///   </para>
-        ///   <para>
-        /// In Windows Vista and later, User Account Control (UAC) determines the privileges of
-        /// a user. If you are a member of the Built-in Administrators group, you are assigned
-        /// two run-time access tokens: a standard user access token and an administrator access
-        /// token. By default, you are in the standard user role. To execute the code that
-        /// accesses performance counters, you must first elevate your privileges from standard
-        /// user to administrator. You can do this when you start an application by right-clicking
-        /// the application icon and indicating that you want to run as an administrator.
-        ///   </para>
-        ///   <para>
-        /// For more information see MSDN : http://msdn.microsoft.com/EN-US/library/sb32hxtc(v=VS.110,d=hv.2).aspx
-        ///   </para></remarks>
-        public static bool Create([NotNull] string categoryName, [NotNull] string categoryHelp)
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
+        public static bool Exists([NotNull] string categoryName)
         {
-            return Create(categoryName, categoryHelp, _counterData);
-        }
-
-        /// <summary>
-        /// Deletes the specified performance timer (use during uninstall only).
-        /// </summary>
-        /// <param name="categoryName">Name of the category.</param>
-        /// <returns><see langword="true"/> if the category no longer exists; otherwise <see langword="false"/>.</returns>
-        /// <remarks><para>
-        /// It is strongly recommended that performance counter categories are only removed
-        /// during the removal of the application, not during the execution
-        /// of the application.</para>
-        ///   <para>
-        /// To read performance counters in Windows Vista and later, Windows XP Professional
-        /// x64 Edition, or Windows Server 2003, you must either be a member of the Performance
-        /// Monitor Users group or have administrative privileges.
-        ///   </para>
-        ///   <para>
-        /// To avoid having to elevate your privileges to access performance counters in Windows
-        /// Vista and later, add yourself to the Performance Monitor Users group.
-        ///   </para>
-        ///   <para>
-        /// In Windows Vista and later, User Account Control (UAC) determines the privileges of
-        /// a user. If you are a member of the Built-in Administrators group, you are assigned
-        /// two run-time access tokens: a standard user access token and an administrator access
-        /// token. By default, you are in the standard user role. To execute the code that
-        /// accesses performance counters, you must first elevate your privileges from standard
-        /// user to administrator. You can do this when you start an application by right-clicking
-        /// the application icon and indicating that you want to run as an administrator.
-        ///   </para>
-        ///   <para>
-        /// For more information see MSDN : http://msdn.microsoft.com/EN-US/library/s55bz6c1(v=VS.110,d=hv.2).aspx
-        ///   </para></remarks>
-        public static bool Delete([NotNull] string categoryName)
-        {
-            return Delete(categoryName, _counterData);
+            return (PerformanceCounterCategory.Exists(categoryName)) &&
+                   (_counterData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, categoryName)));
         }
 
         /// <summary>

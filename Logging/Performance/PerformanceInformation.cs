@@ -41,7 +41,8 @@ namespace WebApplications.Utilities.Logging.Performance
         /// </summary>
         /// <param name="categoryName">Name of the category.</param>
         /// <param name="categoryHelp">The category help.</param>
-        /// <remarks>TODO Add remarks</remarks>
+        /// <remarks>Allows use a string literal in the constructor call as it can then be detected and the counters can be
+        /// administered directly.</remarks>
         public PerformanceInformation(string categoryName, string categoryHelp)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(categoryName));
@@ -57,7 +58,8 @@ namespace WebApplications.Utilities.Logging.Performance
         /// <param name="categoryHelp">The category help.</param>
         /// <param name="defaultWarningDuration">Default duration of the warning.</param>
         /// <param name="defaultCriticalDuration">Default duration of the critical.</param>
-        /// <remarks>TODO Add remarks</remarks>
+        /// <remarks>Allows use a string literal in the constructor call as it can then be detected and the counters can be
+        /// administered directly.</remarks>
         public PerformanceInformation(string categoryName, string categoryHelp, TimeSpan defaultWarningDuration, TimeSpan defaultCriticalDuration)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(categoryName));
@@ -71,6 +73,20 @@ namespace WebApplications.Utilities.Logging.Performance
             DefaultCriticalDuration = defaultCriticalDuration == default(TimeSpan)
                                           ? TimeSpan.MaxValue
                                           : defaultCriticalDuration;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="PerformanceInformation" /> exists.
+        /// </summary>
+        /// <value><see langword="true" /> if exists; otherwise, <see langword="false" />.</value>
+        public bool Exists
+        {
+            get
+            {
+                return IsTimer
+                           ? PerformanceTimer.Exists(CategoryName)
+                           : PerformanceCounter.Exists(CategoryName);
+            }
         }
     }
 }

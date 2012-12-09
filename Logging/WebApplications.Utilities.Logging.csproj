@@ -84,6 +84,7 @@
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Performance\PerformanceCounter.cs" />
+    <Compile Include="Performance\PerformanceCounterExtensions.cs" />
     <Compile Include="Performance\PerformanceCounterHelper.cs" />
     <Compile Include="Performance\PerformanceInformation.cs" />
     <Compile Include="Performance\PerformanceTimer.cs" />
