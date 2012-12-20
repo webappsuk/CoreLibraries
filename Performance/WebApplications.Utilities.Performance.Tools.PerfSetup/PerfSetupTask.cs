@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace WebApplications.Utilities.Logging.Tools.PerfSetup
+namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 {
     public class PerfSetupTask : Task
     {

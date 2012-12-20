@@ -13,7 +13,7 @@ using CmdLine;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace WebApplications.Utilities.Logging.Tools.PerfSetup
+namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 {
     class Program
     {
@@ -110,13 +110,13 @@ namespace WebApplications.Utilities.Logging.Tools.PerfSetup
             //Creates an AssemblyDefinition from the "MyLibrary.dll" assembly
             AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(assemblyPath);
             ModuleDefinition[] referencingModules;
-            if (assembly.Name.Name != "WebApplications.Utilities.Logging")
+            if (assembly.Name.Name != "WebApplications.Utilities.Performance")
             {
                 // Find any modules that reference logging.
                 referencingModules = assembly.Modules
                                              .Where(m => m.AssemblyReferences
                                                           .FirstOrDefault(
-                                                              ar => ar.Name == "WebApplications.Utilities.Logging") !=
+                                                              ar => ar.Name == "WebApplications.Utilities.Performance") !=
                                                          null)
                                              .ToArray();
             }
@@ -167,7 +167,7 @@ namespace WebApplications.Utilities.Logging.Tools.PerfSetup
                             TypeReference typeReference = methodReference.DeclaringType;
                             if ((typeReference == null) ||
                                 (typeReference.FullName !=
-                                "WebApplications.Utilities.Logging.Performance.PerformanceInformation"))
+                                "WebApplications.Utilities.Performance.PerformanceInformation"))
                                 continue;
 
                             if (lastStrings.Count > 1)

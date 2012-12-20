@@ -33,7 +33,7 @@ using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Logging.Performance
+namespace WebApplications.Utilities.Performance
 {
     /// <summary>
     ///   Performance counters used for operations.
@@ -68,12 +68,11 @@ namespace WebApplications.Utilities.Logging.Performance
                 // Check we have access to the performance counters.
                 PerformanceCounterCategory.Exists("TestAccess", MachineName);
                 HasAccess = true;
-                Log.Add(Resources.PerformanceCounterHelper_Enabled, LogLevel.Information, InstanceGuid);
+                Trace.WriteLine(string.Format(Resources.PerformanceCounterHelper_Enabled, InstanceGuid));
             }
-            catch (Exception exception)
+            catch
             {
-                Log.Add(exception, LogLevel.SystemNotification);
-                Log.Add(Resources.PerformanceCounterHelper_ProcessDoesNotHaveAccess, LogLevel.SystemNotification);
+                Trace.WriteLine(Resources.PerformanceCounterHelper_ProcessDoesNotHaveAccess);
                 HasAccess = false;
             }
         }
@@ -119,10 +118,7 @@ namespace WebApplications.Utilities.Logging.Performance
             {
                 if (!PerformanceCounterCategory.Exists(CategoryName))
                 {
-                    Log.Add(
-                        Resources.PerformanceCounterHelper_CategoryDoesNotExist,
-                        LogLevel.SystemNotification,
-                        CategoryName);
+                    Trace.WriteLine(string.Format(Resources.PerformanceCounterHelper_CategoryDoesNotExist, CategoryName));
                     IsValid = false;
                     return;
                 }
@@ -133,10 +129,7 @@ namespace WebApplications.Utilities.Logging.Performance
                     CounterCreationData counter = cArray[c];
                     if (!PerformanceCounterCategory.CounterExists(counter.CounterName, categoryName))
                     {
-                        Log.Add(
-                            Resources.PerformanceCounterHelper_CounterDoesNotExist,
-                            LogLevel.SystemNotification,
-                            CategoryName, counter.CounterName);
+                        Trace.WriteLine(string.Format(Resources.PerformanceCounterHelper_CounterDoesNotExist, CategoryName, counter.CounterName));
                         IsValid = false;
                         return;
                     }
@@ -155,19 +148,14 @@ namespace WebApplications.Utilities.Logging.Performance
                 }
                 IsValid = true;
             }
-            catch (UnauthorizedAccessException unauthorizedAccessException)
+            catch (UnauthorizedAccessException)
             {
-                Log.Add(unauthorizedAccessException, LogLevel.SystemNotification);
-                Log.Add(Resources.PerformanceCounterHelper_ProcessDoesNotHaveAccess, LogLevel.SystemNotification);
+                Trace.WriteLine(Resources.PerformanceCounterHelper_ProcessDoesNotHaveAccess);
                 IsValid = false;
             }
-            catch (Exception exception)
+            catch
             {
-                // Create error but don't throw.
-                new LoggingException(exception,
-                                     Resources.PerformanceCounterHelper_UnhandledExceptionOccurred,
-                                     LogLevel.SystemNotification,
-                                     CategoryName);
+                Trace.WriteLine(string.Format(Resources.PerformanceCounterHelper_UnhandledExceptionOccurred, CategoryName));
                 IsValid = false;
             }
         }

@@ -27,7 +27,7 @@
 
 using System;
 
-namespace WebApplications.Utilities.Logging.Performance
+namespace WebApplications.Utilities.Performance
 {
     /// <summary>
     ///   An attribute added to assemblies to indicate a performance counter is required. This attribute is added

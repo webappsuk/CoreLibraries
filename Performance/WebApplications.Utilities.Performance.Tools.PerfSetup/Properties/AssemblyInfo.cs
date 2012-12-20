@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("PerfSetup")]
-[assembly: AssemblyDescription("Manages performance counters for WebApplications.Utilities.Logging")]
+[assembly: AssemblyDescription("Manages performance counters for WebApplications.Utilities.Performance")]
 [assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("PerfSetup")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("5.0.0.0")]
-[assembly: AssemblyFileVersion("5.0.0.0")]
+[assembly: AssemblyVersion("5.1.0.0")]
+[assembly: AssemblyFileVersion("5.1.0.0")]

@@ -31,7 +31,7 @@ using JetBrains.Annotations;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace WebApplications.Utilities.Logging.Performance
+namespace WebApplications.Utilities.Performance
 {
     /// <summary>
     ///   Performance counters used for operations.

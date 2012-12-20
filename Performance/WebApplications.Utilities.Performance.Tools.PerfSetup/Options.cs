@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CmdLine;
 
-namespace WebApplications.Utilities.Logging.Tools.PerfSetup
+namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 {
     /// <summary>
     /// The applications command line options.

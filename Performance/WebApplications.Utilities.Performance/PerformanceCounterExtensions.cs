@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Logging.Performance
+namespace WebApplications.Utilities.Performance
 {
     /// <summary>
     /// Extensions for performance counters.

@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Logging.Performance
+namespace WebApplications.Utilities.Performance
 {
     /// <summary>
     /// Holds information about performance counters.

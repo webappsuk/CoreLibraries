@@ -34,7 +34,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
 
-namespace WebApplications.Utilities.Logging.Performance
+namespace WebApplications.Utilities.Performance
 {
     /// <summary>
     ///   Times an operation using a performance timer.

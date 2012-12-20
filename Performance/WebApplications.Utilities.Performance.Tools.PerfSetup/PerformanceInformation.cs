@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Logging.Tools.PerfSetup
+namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 {
     /// <summary>
     /// Performance information for an individual set of counters.
