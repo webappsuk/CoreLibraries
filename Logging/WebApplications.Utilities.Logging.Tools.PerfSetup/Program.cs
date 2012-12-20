@@ -100,6 +100,11 @@ namespace WebApplications.Utilities.Logging.Tools.PerfSetup
             }
         }
 
+        internal static void Execute(Options options)
+        {
+            
+        }
+
         private static IEnumerable<PerformanceInformation> Load(string assemblyPath)
         {
             //Creates an AssemblyDefinition from the "MyLibrary.dll" assembly
