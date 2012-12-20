@@ -2,34 +2,23 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <PerfSetupTool Condition="!Exists('$(PerfSetupTool)')">$(MSBuildThisFileDirectory)\PerfSetup.exe</PerfSetupTool>
-    <PerfSetupTypeName>ModuleInitializer</PerfSetupTypeName>
-    <PerfSetupMethodName>Initialize</PerfSetupMethodName>
-    <InjectModuleSnk />
+    <PerfSetupPath>$(TargetDir)</PerfSetupPath>
   </PropertyGroup>
 
-  <!-- Check for the signed assemblies and located strong name key pair file -->
-  <PropertyGroup Condition="'$(SignAssembly)'=='true' AND
-                 Exists('$(MSBuildProjectDirectory)\$(AssemblyOriginatorKeyFile)')">
-    <InjectModuleSnk>$(MSBuildProjectDirectory)\$(AssemblyOriginatorKeyFile)</InjectModuleSnk>
-  </PropertyGroup>
-
-  <UsingTask TaskName="PerfSetup"
+  <UsingTask TaskName="PerfSetupTask"
              AssemblyFile="$(PerfSetupTool)" />
 
   <Target Name="CheckPrerequisites">
-    <!-- Raise an error if we're unable to locate WebApplications.Utilities.Initializer.dll  -->
+    <!-- Raise an error if we're unable to locate PerfSetup.exe  -->
     <Error Condition="!Exists('$(PerfSetupTool)')" Text="Unable to locate '$(PerfSetupTool)'" />
   </Target>
 
   <Target Name="PerfSetupTarget"
            Condition="'$(BuildingProject)'=='true' AND
-                 Exists('$(PerfSetupTool)')"
-      DependsOnTargets="ResolveKeySource">
+                 Exists('$(PerfSetupTool)')">
     <PerfSetup
-       AssemblyFile="$(TargetPath)"
-       TypeName="$(PerfSetupTypeName)"
-       MethodName="$(PerfSetupMethodName)"
-       StrongNameKeyPair="$(InjectModuleSnk)"/>
+       Mode="Add"
+       Path="$(PerfSetupPath)"/>
   </Target>
 
   <!-- Introduces PerfSetup in the chain of compilation targets -->

@@ -10,11 +10,16 @@ using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using CmdLine;
+using JetBrains.Annotations;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 {
+    /// <summary>
+    /// Console program entry point.
+    /// </summary>
+    [UsedImplicitly]
     class Program
     {
         static void Main(string[] args)
@@ -25,87 +30,94 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 Options options = CommandLine.Parse<Options>();
                 Contract.Assert(options != null);
 
-                // Check we have access to the performance counters.
-                PerformanceCounterCategory.Exists("TestAccess", options.MachineName);
-
-                string fullPath = Path.GetFullPath(options.Path);
-                string[] parts = fullPath.Split('/', '\\');
-                if (parts.Length < 1) throw new ArgumentOutOfRangeException("The '{0}' path was invalid.", options.Path);
-                string path = string.Join("\\", parts.Take(parts.Length - 1));
-                if (!Directory.Exists(path)) throw new ArgumentOutOfRangeException(string.Format("The '{0}' directory could not be found.", path));
-                string end = parts.Last();
-                string directory = Directory.GetDirectories(path, end).SingleOrDefault();
-                string[] files;
-                if (directory != null)
-                {
-                    files = Directory.GetFiles(directory);
-                }
-                else
-                {
-                    directory = path;
-                    files = Directory.GetFiles(path, end);
-                }
-                Contract.Assert(files != null);
-
-                files = files.Where(
-                    f =>
-                    {
-                        string ext = Path.GetExtension(f).ToLower();
-                        return (ext == ".dll" || ext == ".exe");
-                    }).ToArray();
-
-                if (files.Any())
-                {
-                    PerformanceInformation[] info = files.SelectMany(Load).ToArray();
-                    if (info.Length > 0)
-                    {
-                        foreach (PerformanceInformation performanceInformation in info)
-                        {
-                            switch (options.Mode.ToLower())
-                            {
-                                case "add":
-                                    var added = performanceInformation.Create(options.MachineName);
-                                    Console.WriteLine(
-                                        "Adding '{0}' {1}",
-                                        performanceInformation,
-                                                      added ? "succeeded" : "failed");
-                                    break;
-                                case "delete":
-                                    var deleted = performanceInformation.Delete(options.MachineName);
-                                    Console.WriteLine(
-                                        "Deleting '{0}' {1}",
-                                        performanceInformation,
-                                        deleted ? "succeeded" : "failed");
-                                    break;
-                                default:
-                                    // Treat everything else as list.
-                                    Console.WriteLine("{0} - {1}", performanceInformation,
-                                        performanceInformation.Exists ? "Exists" : "Missing");
-                                    break;
-                            }
-                        }
-                        Console.WriteLine("Found '{0}' counters.", info.Count());
-                    }
-                    else
-                        Console.WriteLine("No valid performance counters found.", info.Count());
-                }
-                else
-                    Console.WriteLine("The '{0}' path did not match any executables or dlls.", options.Path);
-
+                Execute(options,
+                        (s, l) => Console.WriteLine(l == Level.Message ? s : string.Format("{0}: {1}", l.ToString(), s)));
             }
-            catch (CommandLineException exception)
+            catch (CommandLineException commandLineException)
             {
-                Console.WriteLine(exception.ArgumentHelp.Message);
-                Console.WriteLine(exception.ArgumentHelp.GetHelpText(Console.BufferWidth));
+                Console.WriteLine(commandLineException.ArgumentHelp.Message);
+                Console.WriteLine(commandLineException.ArgumentHelp.GetHelpText(Console.BufferWidth));
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine("Fatal error occurred: " + exception.Message);
             }
         }
 
-        internal static void Execute(Options options)
+        internal static void Execute([NotNull] Options options, [NotNull] Action<string, Level> logger)
         {
-            
+            // Check we have access to the performance counters.
+            PerformanceCounterCategory.Exists("TestAccess", options.MachineName);
+
+            string fullPath = Path.GetFullPath(options.Path);
+            string[] parts = fullPath.Split('/', '\\');
+            if (parts.Length < 1) throw new ArgumentOutOfRangeException("The '{0}' path was invalid.", options.Path);
+            string path = string.Join("\\", parts.Take(parts.Length - 1));
+            if (!Directory.Exists(path)) throw new ArgumentOutOfRangeException(string.Format("The '{0}' directory could not be found.", path));
+            string end = parts.Last();
+            string directory = Directory.GetDirectories(path, end).SingleOrDefault();
+            string[] files;
+            if (directory != null)
+            {
+                files = Directory.GetFiles(directory);
+            }
+            else
+            {
+                directory = path;
+                files = Directory.GetFiles(path, end);
+            }
+            Contract.Assert(files != null);
+
+            files = files.Where(
+                f =>
+                {
+                    string ext = Path.GetExtension(f).ToLower();
+                    return (ext == ".dll" || ext == ".exe");
+                }).ToArray();
+
+            if (files.Any())
+            {
+                PerformanceInformation[] info = files.SelectMany(file => Load(file, logger)).ToArray();
+                if (info.Length > 0)
+                {
+                    foreach (PerformanceInformation performanceInformation in info)
+                    {
+                        switch (options.Mode.ToLower())
+                        {
+                            case "add":
+                                var added = performanceInformation.Create(options.MachineName);
+                                logger(string.Format(
+                                    "Adding '{0}' {1}",
+                                    performanceInformation,
+                                    added ? "succeeded" : "failed"), added ? Level.Message : Level.Error);
+                                break;
+                            case "delete":
+                                var deleted = performanceInformation.Delete(options.MachineName);
+                                logger(string.Format(
+                                    "Deleting '{0}' {1}",
+                                    performanceInformation,
+                                    deleted ? "succeeded" : "failed"), deleted ? Level.Message : Level.Error);
+                                break;
+                            default:
+                                // Treat everything else as list.
+                                var success = performanceInformation.Exists;
+                                logger(string.Format("{0} - {1}", performanceInformation,
+                                                     success ? "Exists" : "Missing"),
+                                       success ? Level.Message : Level.Error);
+                                break;
+                        }
+                    }
+                    logger(string.Format("Found '{0}' counters.", info.Count()), Level.Message);
+                }
+                else
+                    logger(string.Format("No valid performance counters found."), Level.Message);
+            }
+            else
+                logger(string.Format("The '{0}' path did not match any executables or dlls.", options.Path),
+                       Level.Warning);
         }
 
-        private static IEnumerable<PerformanceInformation> Load(string assemblyPath)
+        private static IEnumerable<PerformanceInformation> Load(string assemblyPath, [NotNull] Action<string, Level> logger)
         {
             //Creates an AssemblyDefinition from the "MyLibrary.dll" assembly
             AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(assemblyPath);
@@ -188,8 +200,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                             }
                             else
                             {
-                                Console.WriteLine("Performance counter creation found in '{0}' but could not find category name and or category help - make sure you use inline strings as constructor parameters.  Press any key to continue");
-                                Console.ReadKey();
+                                logger(string.Format("Performance counter creation found in '{0}' but could not find category name and or category help - make sure you use inline strings as constructor parameters.  Press any key to continue"), Level.Error);
                             }
                             lastStrings.Clear();
                         }

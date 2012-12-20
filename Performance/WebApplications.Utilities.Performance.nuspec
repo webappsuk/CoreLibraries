@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
+    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>Allows easy access to instance based performance counters and timers.</summary>
+    <description>$description$</description>
+    <tags>Utility Utilities Performance</tags>
+  </metadata>
+  <files>
+    <file src="install.ps1" target="tools\install.ps1" />
+    <file src="uninstall.ps1" target="tools\uninstall.ps1" />
+    <file src="PerfSetup.targets" target="tools\PerfSetup.targets" />
+    <file src="WebApplications.Utilities.Logging.Tools.PerfSetup\PerfSetup.exe" target="tools" />
+  </files>
+</package>

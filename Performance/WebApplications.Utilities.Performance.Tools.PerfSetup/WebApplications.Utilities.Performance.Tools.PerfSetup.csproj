@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Level.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="PerformanceInformation.cs" />
     <Compile Include="PerfSetupTask.cs" />
@@ -104,6 +105,6 @@
       <MergeAsm Include="$(OutputPath)\Mono.Cecil.Pdb.dll" />
       <MergeAsm Include="$(OutputPath)\Mono.Cecil.Rocks.dll" />
     </ItemGroup>
-    <ILMerge InputAssemblies="@(MergeAsm)" OutputFile="$(SolutionDir)\WebApplications.Utilities.Logging.Tools.PerfSetup\PerfSetup.exe" SnkFile="$(SolutionDir)\WebApplications.Utilities.Logging.Tools.PerfSetup\$(AssemblyOriginatorKeyFile)" TargetKind="Exe" />
+    <ILMerge InputAssemblies="@(MergeAsm)" OutputFile="$(MSBuildProjectDirectory)\PerfSetup.exe" SnkFile="$(MSBuildProjectDirectory)\$(AssemblyOriginatorKeyFile)" TargetKind="Exe" />
   </Target>
 </Project>
