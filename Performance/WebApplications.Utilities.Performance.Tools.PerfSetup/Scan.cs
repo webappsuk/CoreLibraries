@@ -16,6 +16,18 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
     public static class Scan
     {
         /// <summary>
+        /// The assembly resolver.
+        /// </summary>
+        public static readonly DefaultAssemblyResolver AssemblyResolver;
+        public static readonly ReaderParameters ReaderParameters;
+
+        static Scan()
+        {
+            AssemblyResolver = new DefaultAssemblyResolver();
+            ReaderParameters = new ReaderParameters() {AssemblyResolver = AssemblyResolver};
+        }
+
+        /// <summary>
         /// Scans the supplied <see paramref="fullPath"/> (to a directory or assembly) for performance counters and adds/deletes/lists
         /// them depending on the <see paramref="mode"/>.
         /// </summary>
@@ -53,48 +65,66 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             string end = parts.Last();
             string directory = Directory.GetDirectories(path, end).SingleOrDefault();
             string[] files;
-            files = directory != null ? Directory.GetFiles(directory) : Directory.GetFiles(path, end);
+            if (directory != null) files = Directory.GetFiles(directory);
+            else
+            {
+                directory = path;
+                if (!Directory.Exists(directory))
+                {
+                    logger(String.Format("The '{0}' directory could not be found.", directory), Level.Error);
+                    return;
+                }
+                files = Directory.GetFiles(path, end);
+            }
             Contract.Assert(files != null);
+            Contract.Assert(directory != null);
 
+            AssemblyResolver.AddSearchDirectory(directory);
+            
             files = files.Where(
                 f =>
-                    {
-                        string ext = Path.GetExtension(f).ToLower();
-                        return (ext == ".dll" || ext == ".exe");
-                    }).ToArray();
+                {
+                    string ext = Path.GetExtension(f).ToLower();
+                    return (ext == ".dll" || ext == ".exe");
+                }).ToArray();
 
             if (files.Any())
             {
-                PerformanceInformation[] info = files.SelectMany<string, PerformanceInformation>(file => Load(file, logger)).ToArray();
-                if (info.Length > 0)
+                foreach (string file in files)
+                    Load(file, logger);
+
+                int found = 0;
+                foreach (PerformanceInformation performanceInformation in PerformanceInformation.All)
                 {
-                    foreach (PerformanceInformation performanceInformation in info)
+                    switch (mode)
                     {
-                        switch (mode)
-                        {
-                            case ScanMode.Add:
-                                bool added = performanceInformation.Create(machineName);
-                                logger(String.Format(
-                                    "Adding '{0}' {1}",
-                                    performanceInformation,
-                                    added ? "succeeded" : "failed"), added ? Level.Normal : Level.Error);
-                                break;
-                            case ScanMode.Delete:
-                                bool deleted = performanceInformation.Delete(machineName);
-                                logger(String.Format(
-                                    "Deleting '{0}' {1}",
-                                    performanceInformation,
-                                    deleted ? "succeeded" : "failed"), deleted ? Level.Normal : Level.Error);
-                                break;
-                            default:
-                                // Treat everything else as list.
-                                bool exists = performanceInformation.Exists;
-                                logger(String.Format("{0} - {1}", performanceInformation,
-                                                     exists ? "Exists" : "Missing"),
-                                       exists ? Level.Normal : Level.Error);
-                                break;
-                        }
+                        case ScanMode.Add:
+                            bool added = performanceInformation.Create(machineName);
+                            logger(String.Format(
+                                "Adding '{0}' {1}",
+                                performanceInformation,
+                                added ? "succeeded" : "failed"), added ? Level.Normal : Level.Error);
+                            break;
+                        case ScanMode.Delete:
+                            bool deleted = performanceInformation.Delete(machineName);
+                            logger(String.Format(
+                                "Deleting '{0}' {1}",
+                                performanceInformation,
+                                deleted ? "succeeded" : "failed"), deleted ? Level.Normal : Level.Error);
+                            break;
+                        default:
+                            // Treat everything else as list.
+                            bool exists = performanceInformation.Exists;
+                            logger(String.Format("{0} - {1}", performanceInformation,
+                                                 exists ? "Exists" : "Missing"),
+                                   exists ? Level.Normal : Level.Error);
+                            break;
                     }
+                    found++;
+                }
+
+                if (found > 0)
+                {
                     string operation;
                     switch (mode)
                     {
@@ -108,7 +138,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                             operation = "Listed";
                             break;
                     }
-                    logger(String.Format("{0} '{1}' performance counters.", operation, info.Count()), Level.High);
+                    logger(String.Format("{0} '{1}' performance counters.", operation, found), Level.High);
                 }
                 else
                     logger(String.Format("No valid performance counters found."), Level.High);
@@ -118,28 +148,22 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                        Level.Warning);
         }
 
-        public static IEnumerable<PerformanceInformation> Load(string assemblyPath, [NotNull] Action<string, Level> logger)
+        private static void Load(string assemblyPath, [NotNull] Action<string, Level> logger)
         {
-            //Creates an AssemblyDefinition from the "MyLibrary.dll" assembly
-            AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(assemblyPath);
-            ModuleDefinition[] referencingModules;
-            if (assembly.Name.Name != "WebApplications.Utilities.Performance")
-            {
-                // Find any modules that reference logging.
-                referencingModules = assembly.Modules
-                                             .Where(m => m.AssemblyReferences
-                                                          .FirstOrDefault(
-                                                              ar => ar.Name == "WebApplications.Utilities.Performance") !=
-                                                         null)
-                                             .ToArray();
-            }
-            else
-            {
-                referencingModules = assembly.Modules.ToArray();
-            }
+            AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(assemblyPath, ReaderParameters);
+            if (assembly.Name.Name == "WebApplications.Utilities.Performance")
+                return;
+
+            // Find any modules that reference logging.
+            ModuleDefinition[] referencingModules = assembly.Modules
+                                                            .Where(m => m.AssemblyReferences
+                                                                         .FirstOrDefault(
+                                                                             ar => ar.Name == "WebApplications.Utilities.Performance") !=
+                                                                        null)
+                                                            .ToArray();
 
             if (referencingModules.Length < 1)
-                yield break;
+                return;
 
             Queue<string> lastStrings = new Queue<string>(2);
             foreach (var module in referencingModules)
@@ -162,26 +186,40 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                                 lastStrings.Enqueue(instr.Operand as string);
                                 continue;
                             }
-                            if (instr.OpCode.Code == Code.Ldsfld)
+
+                            if (instr.OpCode.Code == Code.Ldnull)
                             {
+                                // We track last two load strings.
+                                if (lastStrings.Count > 1)
+                                    lastStrings.Dequeue();
+
+                                lastStrings.Enqueue(null);
                                 continue;
                             }
 
-                            if (instr.OpCode.Code != Code.Newobj)
+                            if (instr.OpCode.Code != Code.Call)
                             {
                                 // If we have any ops other than NewObj after our loads then the loads aren't for us.
                                 lastStrings.Clear();
                                 continue;
                             }
 
-                            MethodReference methodReference = instr.Operand as MethodReference;
-                            if (methodReference == null) continue;
+                            GenericInstanceMethod methodReference = instr.Operand as GenericInstanceMethod;
+                            if ((methodReference == null) ||
+                                (methodReference.Name != "GetOrAdd") ||
+                                !methodReference.HasGenericArguments ||
+                                !methodReference.IsGenericInstance ||
+                                (methodReference.GenericArguments.Count != 1))
+                                continue;
 
                             TypeReference typeReference = methodReference.DeclaringType;
                             if ((typeReference == null) ||
                                 (typeReference.FullName !=
-                                 "WebApplications.Utilities.Performance.PerformanceInformation"))
+                                 "WebApplications.Utilities.Performance.PerfCounter"))
                                 continue;
+
+                            TypeReference perfCounterType = methodReference.GenericArguments.First();
+                            Contract.Assert(perfCounterType != null);
 
                             if (lastStrings.Count > 1)
                             {
@@ -191,17 +229,16 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                                 string categoryName = lastStrings.Dequeue();
                                 string categoryHelp = lastStrings.Dequeue();
 
-                                if (!String.IsNullOrWhiteSpace(categoryName) &&
-                                    !String.IsNullOrWhiteSpace(categoryHelp))
-                                {
-                                    // We have a constructor, create our own performance counter info.
-                                    yield return
-                                        new PerformanceInformation(assembly.Name.Name, categoryName, categoryHelp, isTimer);
-                                }
+                                // We have a constructor set performance information.
+                                if (!String.IsNullOrWhiteSpace(categoryName))
+                                    PerformanceInformation.Set(categoryName, perfCounterType, assembly.Name.Name,
+                                                               categoryHelp);
+                                else
+                                    logger(String.Format("Performance counter creation found in '{0}' but category name was null or empty - make sure you use inline strings as constructor parameters.  Press any key to continue", assemblyPath), Level.Error);
                             }
                             else
                             {
-                                logger(String.Format("Performance counter creation found in '{0}' but could not find category name and or category help - make sure you use inline strings as constructor parameters.  Press any key to continue"), Level.Error);
+                                logger(String.Format("Performance counter creation found in '{0}' but could not find category name and or category help - make sure you use inline strings as constructor parameters.  Press any key to continue", assemblyPath), Level.Error);
                             }
                             lastStrings.Clear();
                         }

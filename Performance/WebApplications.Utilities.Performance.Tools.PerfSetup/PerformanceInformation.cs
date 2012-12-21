@@ -1,44 +1,37 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
+using Mono.Cecil;
 
 namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 {
     /// <summary>
     /// Performance information for an individual set of counters.
     /// </summary>
-    public class PerformanceInformation
+    internal class PerformanceInformation
     {
         /// <summary>
-        /// Default counters for a category.
+        /// Holds information by category.
         /// </summary>
-        [NotNull] private static readonly CounterCreationData[] _counterData = new[]
-            {
-                new CounterCreationData("Total operations", "Total operations executed since the start of the process.",
-                                        PerformanceCounterType.NumberOfItems64),
-                new CounterCreationData("Operations per second", "The number of operations per second.",
-                                        PerformanceCounterType.RateOfCountsPerSecond64),
-                new CounterCreationData("Average duration", "The average duration of each operation.",
-                                        PerformanceCounterType.AverageTimer32),
-                new CounterCreationData("Average duration Base", "The average duration base counter.",
-                                        PerformanceCounterType.AverageBase),
-                new CounterCreationData("Total warnings",
-                                        "Total operations executed since the start of the process that have exceeded the warning duration threshhold.",
-                                        PerformanceCounterType.NumberOfItems64),
-                new CounterCreationData("Total criticals",
-                                        "Total operations executed since the start of the process that have exceeded the critical duration threshhold.",
-                                        PerformanceCounterType.NumberOfItems64)
-            };
+        [NotNull]
+        private static readonly ConcurrentDictionary<string, PerformanceInformation> _categories = new ConcurrentDictionary<string, PerformanceInformation>();
 
-        private readonly CounterCreationData[] _counters;
+        /// <summary>
+        /// The assemblies referencing the counter.
+        /// </summary>
+        private readonly List<string> _assemblies;
 
         /// <summary>
         /// The category name.
         /// </summary>
         [NotNull]
-        public readonly string Assembly;
+        public IEnumerable<string> Assemblies { get { return _assemblies; } }
+
+        [NotNull]
+        public readonly PerformanceType PerformanceType;
 
         /// <summary>
         /// The category name.
@@ -49,8 +42,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <summary>
         /// The category help.
         /// </summary>
-        [NotNull]
-        public readonly string CategoryHelp;
+        public string CategoryHelp { get; private set; }
 
         /// <summary>
         /// Whether the counter is a timer.
@@ -63,14 +55,46 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <param name="assembly">The assembly.</param>
         /// <param name="categoryName">Name of the category.</param>
         /// <param name="categoryHelp">The category help.</param>
-        /// <param name="isTimer">if set to <see langword="true" /> [is timer].</param>
-        public PerformanceInformation([NotNull]string assembly, [NotNull]string categoryName, [NotNull]string categoryHelp, bool isTimer)
+        private PerformanceInformation([NotNull]string assembly, [NotNull] PerformanceType performanceType, [NotNull]string categoryName)
         {
-            Assembly = assembly;
+            _assemblies = new List<string> {assembly};
+            PerformanceType = performanceType;
             CategoryName = categoryName;
-            CategoryHelp = categoryHelp;
-            IsTimer = isTimer;
-            _counters = IsTimer ? _counterData : _counterData.Take(2).ToArray();
+        }
+
+        public static void Set([NotNull] string categoryName, [NotNull] TypeReference typeReference, [NotNull] string assembly, string categoryHelp)
+        {
+            PerformanceType performanceType = PerformanceType.Get(typeReference);
+            var i = _categories.GetOrAdd(
+                categoryName,
+                n => new PerformanceInformation(assembly, performanceType, n));
+
+            // Type cannot change.
+            if (i.PerformanceType != performanceType)
+                throw new InvalidOperationException(
+                    string.Format(
+                        "The '{0}' performance counter was declared more than once with different types ('{1}' and '{2}').",
+                        categoryName,
+                        i.PerformanceType,
+                        performanceType));
+
+            // Only update category help if not already set.
+            if (!string.IsNullOrWhiteSpace(categoryHelp) &&
+                string.IsNullOrWhiteSpace(i.CategoryHelp))
+                i.CategoryHelp = categoryHelp;
+
+            // Add assembly if not seen before
+            if (!i._assemblies.Contains(assembly))
+                i._assemblies.Add(assembly);
+        }
+
+        /// <summary>
+        /// Gets all categories.
+        /// </summary>
+        /// <value>All.</value>
+        public static IEnumerable<PerformanceInformation> All
+        {
+            get { return _categories.Values; }
         }
 
         public bool Exists
@@ -78,7 +102,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             get
             {
                 return (PerformanceCounterCategory.Exists(CategoryName)) &&
-                       (_counters.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName)));
+                       (PerformanceType.CounterCreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName)));
             }
         }
 
@@ -93,7 +117,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             {
                 if (PerformanceCounterCategory.Exists(CategoryName))
                 {
-                    if (_counters.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName)))
+                    if (PerformanceType.CounterCreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName)))
                         return true;
 
                     // We don't have all the counters, so drop and recreate.
@@ -103,9 +127,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
                 PerformanceCounterCategory.Create(CategoryName, CategoryHelp,
                                                   PerformanceCounterCategoryType.MultiInstance,
-                                                  new CounterCreationDataCollection(_counters));
+                                                  new CounterCreationDataCollection(PerformanceType.CounterCreationData));
 
-                return _counters.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName));
+                return PerformanceType.CounterCreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName));
             }
             catch
             {
@@ -141,7 +165,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         public override string ToString()
         {
             return string.Format("{0}: {1}{2}",
-                                 Assembly,
+                                 string.Join(",", _assemblies),
                                  CategoryName,
                                  IsTimer ? " (Timer)" : string.Empty);
         }

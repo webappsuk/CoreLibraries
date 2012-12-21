@@ -39,78 +39,49 @@ namespace WebApplications.Utilities.Performance
     /// <summary>
     ///   Times an operation using a performance timer.
     /// </summary>
-    public sealed class PerformanceTimer : PerformanceCounterHelper
+    public sealed class PerfTimer : PerfCounter
     {
         /// <summary>
         /// Default counters for a category.
         /// </summary>
-        [NotNull] private static readonly IEnumerable<CounterCreationData> _counterData = new[]
+        [NotNull]
+        private static readonly CounterCreationData[] _counterData = new[]
             {
-                    new CounterCreationData("Total operations", "Total operations executed since the start of the process.", PerformanceCounterType.NumberOfItems64),
-                    new CounterCreationData("Operations per second", "The number of operations per second.", PerformanceCounterType.RateOfCountsPerSecond64),
+                new CounterCreationData("Total operations", "Total operations executed since the start of the process.",
+                                        PerformanceCounterType.NumberOfItems64),
+                new CounterCreationData("Operations per second", "The number of operations per second.",
+                                        PerformanceCounterType.RateOfCountsPerSecond64),
                 new CounterCreationData("Average duration", "The average duration of each operation.",
                                         PerformanceCounterType.AverageTimer32),
                 new CounterCreationData("Average duration Base", "The average duration base counter.",
                                         PerformanceCounterType.AverageBase),
-                new CounterCreationData("Total warnings", "Total operations executed since the start of the process that have exceeded the warning duration threshhold.",
+                new CounterCreationData("Total warnings",
+                                        "Total operations executed since the start of the process that have exceeded the warning duration threshhold.",
                                         PerformanceCounterType.NumberOfItems64),
-                new CounterCreationData("Total criticals", "Total operations executed since the start of the process that have exceeded the critical duration threshhold.",
+                new CounterCreationData("Total criticals",
+                                        "Total operations executed since the start of the process that have exceeded the critical duration threshhold.",
                                         PerformanceCounterType.NumberOfItems64)
             };
 
         /// <summary>
-        /// Holds all counters.
-        /// </summary>
-        [NotNull] private static readonly ConcurrentDictionary<string, PerformanceTimer> _counters =
-            new ConcurrentDictionary<string, PerformanceTimer>();
-
-        /// <summary>
-        /// The duration after which the warning counter is incremented.
-        /// </summary>
-        public readonly TimeSpan DefaultWarningDuration;
-
-        /// <summary>
-        /// The duration after which the critical counter is incremented.
-        /// </summary>
-        public readonly TimeSpan DefaultCriticalDuration;
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="PerformanceTimer"/> class.
+        /// Initializes a new instance of the <see cref="PerfTimer" /> class.
         /// </summary>
         /// <param name="categoryName">The name of the category.</param>
-        /// <param name="defaultWarningDuration">
-        ///   The duration of time that the operation should take before logging a warning.
-        /// </param>
-        /// <param name="defaultCriticalDuration">
-        ///   The duration of time that the operation should take before logging an error.
-        /// </param>
-        private PerformanceTimer([NotNull] string categoryName, TimeSpan defaultWarningDuration = default(TimeSpan),
-                                TimeSpan defaultCriticalDuration = default(TimeSpan))
+        /// <param name="data">The data.</param>
+        private PerfTimer([NotNull] string categoryName)
             : base(categoryName, _counterData)
         {
-            Contract.Requires(categoryName != null);
-            Contract.Requires(defaultWarningDuration <= defaultCriticalDuration);
-            if (defaultWarningDuration == default(TimeSpan))
-                defaultWarningDuration = TimeSpan.MaxValue;
-            if (defaultCriticalDuration == default(TimeSpan))
-                defaultCriticalDuration = TimeSpan.MaxValue;
-
-            if (defaultWarningDuration > defaultCriticalDuration)
-                defaultCriticalDuration = defaultWarningDuration;
-
-            DefaultWarningDuration = defaultWarningDuration;
-            DefaultCriticalDuration = defaultCriticalDuration;
         }
 
         /// <summary>
         /// <para>
         /// Starts a timer that and returns an object that when disposed will update this
         /// instance with the time between calling this method and disposing the result.</para>
-        ///   <para>This makes it easy to use a <see cref="PerformanceTimer" /> in a using block to time
+        ///   <para>This makes it easy to use a <see cref="PerfTimer" /> in a using block to time
         /// a block of code.</para>
         /// </summary>
-        /// <param name="warningDuration">Duration before a warning is counted.</param>
-        /// <param name="criticalDuration">Duration before a critical is counted.</param>
+        /// <param name="warningDuration">Duration before a warning is counted (defaults to infinite).</param>
+        /// <param name="criticalDuration">Duration before a critical is counted (defaults to infinite).</param>
         /// <returns>IDisposable.</returns>
         public Timer Region(TimeSpan warningDuration = default (TimeSpan),
                             TimeSpan criticalDuration = default (TimeSpan))
@@ -167,7 +138,12 @@ namespace WebApplications.Utilities.Performance
         ///   Increments the counters.
         /// </summary>
         /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
-        public void IncrementBy(TimeSpan duration)
+        /// <param name="warningDuration">Duration before a warning is counted (defaults to infinite).</param>
+        /// <param name="criticalDuration">Duration before a critical is counted (defaults to infinite).</param>
+        public void IncrementBy(
+            TimeSpan duration,
+            TimeSpan warningDuration = default (TimeSpan),
+            TimeSpan criticalDuration = default (TimeSpan))
         {
             if (!IsValid ||
                 (duration == TimeSpan.Zero))
@@ -177,21 +153,31 @@ namespace WebApplications.Utilities.Performance
             Counters[1].Increment();
 
             // Get the duration in CPU ticks rather than DateTime ticks.
-            Counters[2].IncrementBy((duration.Ticks*Stopwatch.Frequency)/10000000);
+            Counters[2].IncrementBy((duration.Ticks * Stopwatch.Frequency) / 10000000);
             Counters[3].Increment();
-            if (duration < DefaultWarningDuration)
+
+            if ((warningDuration == default(TimeSpan)) ||
+                (duration < warningDuration))
                 return;
 
             Counters[4].Increment();
-            if (duration >= DefaultCriticalDuration)
-                Counters[5].Increment();
+
+            if ((criticalDuration == default(TimeSpan)) ||
+                (duration < criticalDuration))
+                return;
+
+            Counters[5].Increment();
         }
 
         /// <summary>
         ///   Increments the counters.
         /// </summary>
         /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
-        public void DecrementBy(TimeSpan duration)
+        /// <param name="warningDuration">Duration before a warning is counted (defaults to infinite).</param>
+        /// <param name="criticalDuration">Duration before a critical is counted (defaults to infinite).</param>
+        public void DecrementBy(TimeSpan duration,
+            TimeSpan warningDuration = default (TimeSpan),
+            TimeSpan criticalDuration = default (TimeSpan))
         {
             if (!IsValid ||
                 (duration == TimeSpan.Zero))
@@ -204,46 +190,21 @@ namespace WebApplications.Utilities.Performance
             Counters[2].IncrementBy(((-duration).Ticks * Stopwatch.Frequency) / 10000000);
             Counters[3].Decrement();
 
-            if (duration < DefaultWarningDuration)
+            if ((warningDuration == default(TimeSpan)) ||
+                (duration < warningDuration))
                 return;
 
             Counters[4].Decrement();
-            if (duration >= DefaultCriticalDuration)
-                Counters[5].Decrement();
+
+            if ((criticalDuration == default(TimeSpan)) ||
+                (duration < criticalDuration))
+                return;
+
+            Counters[5].Decrement();
         }
 
         /// <summary>
-        /// Gets the performance counter with the specified category name.
-        /// </summary>
-        /// <param name="categoryName">Name of the category.</param>
-        /// <param name="defaultWarningDuration">
-        ///   The duration of time that the operation should take before logging a warning.
-        /// </param>
-        /// <param name="defaultCriticalDuration">
-        ///   The duration of time that the operation should take before logging an error.
-        /// </param>
-        /// <returns>The performance counter.</returns>
-        [NotNull]
-        internal static PerformanceTimer Get([NotNull] string categoryName, TimeSpan defaultWarningDuration = default(TimeSpan),
-                                TimeSpan defaultCriticalDuration = default(TimeSpan))
-        {
-            return _counters.GetOrAdd(categoryName,
-                                      n => new PerformanceTimer(n, defaultWarningDuration, defaultCriticalDuration));
-        }
-
-        /// <summary>
-        /// Whether the counter exists fully.
-        /// </summary>
-        /// <param name="categoryName">Name of the category.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
-        internal static bool Exists([NotNull] string categoryName)
-        {
-            return (PerformanceCounterCategory.Exists(categoryName)) &&
-                   (_counterData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, categoryName)));
-        }
-
-        /// <summary>
-        /// Used to allow the timing of a region of code for a <see cref="PerformanceTimer"/>.
+        /// Used to allow the timing of a region of code for a <see cref="PerfTimer"/>.
         /// </summary>
         public class Timer : IDisposable
         {
@@ -251,7 +212,7 @@ namespace WebApplications.Utilities.Performance
             /// The associated performance timer.
             /// </summary>
             [NotNull]
-            public readonly PerformanceTimer PerformanceTimer;
+            public readonly PerfTimer PerfTimer;
 
             /// <summary>
             /// The duration after which the warning counter is incremented.
@@ -297,13 +258,13 @@ namespace WebApplications.Utilities.Performance
                 get { return Elapsed > CriticalDuration; }
             }
 
-            internal Timer([NotNull]PerformanceTimer performanceTimer, TimeSpan warningDuration, TimeSpan criticalDuration)
+            internal Timer([NotNull]PerfTimer perfTimer, TimeSpan warningDuration, TimeSpan criticalDuration)
             {
-                PerformanceTimer = performanceTimer;
+                PerfTimer = perfTimer;
                 if (warningDuration == default(TimeSpan))
-                    warningDuration = performanceTimer.DefaultWarningDuration;
+                    warningDuration = TimeSpan.MaxValue;
                 if (criticalDuration == default(TimeSpan))
-                    criticalDuration = performanceTimer.DefaultCriticalDuration;
+                    criticalDuration = TimeSpan.MaxValue;
 
                 if (warningDuration > criticalDuration)
                     criticalDuration = warningDuration;
@@ -331,7 +292,7 @@ namespace WebApplications.Utilities.Performance
                 _elapsed = s.Elapsed;
 
                 // Increment counters.
-                PerformanceTimer.IncrementBy(_elapsed);
+                PerfTimer.IncrementBy(_elapsed);
             }
         }
     }

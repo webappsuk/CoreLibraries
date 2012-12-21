@@ -34,32 +34,26 @@ using System.Diagnostics;
 namespace WebApplications.Utilities.Performance
 {
     /// <summary>
-    ///   Performance counters used for operations.
+    ///   Performance counters used to count operations.
     /// </summary>
-    public sealed class PerformanceCounter : PerformanceCounterHelper
+    public sealed class PerfMetric : PerfCounter
     {
         /// <summary>
         /// Default counters for a category.
         /// </summary>
-        [NotNull]
-        private static readonly IEnumerable<CounterCreationData> _counterData = new[]
-                {
-                    new CounterCreationData("Total operations", "Total operations executed since the start of the process.", PerformanceCounterType.NumberOfItems64),
-                    new CounterCreationData("Operations per second", "The number of operations per second.", PerformanceCounterType.RateOfCountsPerSecond64)
-                };
-
+        [NotNull] private static readonly CounterCreationData[] _counterData = new[]
+            {
+                new CounterCreationData("Total operations", "Total operations executed since the start of the process.",
+                                        PerformanceCounterType.NumberOfItems64),
+                new CounterCreationData("Operations per second", "The number of operations per second.",
+                                        PerformanceCounterType.RateOfCountsPerSecond64)
+            };
+        
         /// <summary>
-        /// Holds all counters.
-        /// </summary>
-        [NotNull]
-        private static readonly ConcurrentDictionary<string, PerformanceCounter> _counters =
-            new ConcurrentDictionary<string, PerformanceCounter>();
-
-        /// <summary>
-        ///   Initializes a new instance of <see cref="PerformanceCounter"/>.
+        ///   Initializes a new instance of <see cref="PerfMetric"/>.
         /// </summary>
         /// <param name="categoryName">The performance counter's category name.</param>
-        private PerformanceCounter([NotNull]string categoryName)
+        private PerfMetric([NotNull]string categoryName)
             : base(categoryName, _counterData)
         {
         }
@@ -131,28 +125,6 @@ namespace WebApplications.Utilities.Performance
             long decrement = -value;
             Counters[0].IncrementBy(decrement);
             Counters[1].IncrementBy(decrement);
-        }
-
-        /// <summary>
-        /// Gets the performance counter with the specified category name.
-        /// </summary>
-        /// <param name="categoryName">Name of the category.</param>
-        /// <returns>The performance counter.</returns>
-        [NotNull]
-        internal static PerformanceCounter Get([NotNull]string categoryName)
-        {
-            return _counters.GetOrAdd(categoryName, n => new PerformanceCounter(n));
-        }
-
-        /// <summary>
-        /// Whether the counter exists fully.
-        /// </summary>
-        /// <param name="categoryName">Name of the category.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
-        internal static bool Exists([NotNull] string categoryName)
-        {
-            return (PerformanceCounterCategory.Exists(categoryName)) &&
-                   (_counterData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, categoryName)));
         }
     }
 }
