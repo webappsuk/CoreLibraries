@@ -32,7 +32,7 @@ using System.Threading;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Caching;
-using WebApplications.Utilities.Logging.Performance;
+using WebApplications.Utilities.Performance;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Logging

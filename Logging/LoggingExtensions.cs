@@ -27,7 +27,7 @@
 
 using JetBrains.Annotations;
 using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Logging.Performance;
+using WebApplications.Utilities.Performance;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -51,36 +51,6 @@ namespace WebApplications.Utilities.Logging
         {
             LogLevels l = (LogLevels) level;
             return l == (l & validLevels);
-        }
-
-        /// <summary>
-        /// Gets the performance timer based on the index into <see paramref="counters" />.
-        /// </summary>
-        /// <param name="counters">The counters.</param>
-        /// <param name="index">The index.</param>
-        /// <returns>PerformanceTimer.</returns>
-        [NotNull]
-        public static PerformanceTimer GetPerformanceTimer([NotNull]this PerformanceInformation[] counters, int index)
-        {
-            PerformanceInformation performanceInformation = counters[index];
-            Contract.Assert(performanceInformation.IsTimer);
-            return PerformanceTimer.Get(performanceInformation.CategoryName,
-                                        performanceInformation.DefaultWarningDuration,
-                                        performanceInformation.DefaultCriticalDuration);
-        }
-
-        /// <summary>
-        /// Gets the performance counter based on the index into <see paramref="counters" />.
-        /// </summary>
-        /// <param name="counters">The counters.</param>
-        /// <param name="index">The index.</param>
-        /// <returns>PerformanceTimer.</returns>
-        [NotNull]
-        public static PerformanceCounter GetPerformanceCounter([NotNull]this PerformanceInformation[] counters, int index)
-        {
-            PerformanceInformation performanceInformation = counters[index];
-            Contract.Assert(!performanceInformation.IsTimer);
-            return PerformanceCounter.Get(performanceInformation.CategoryName);
         }
     }
 }

@@ -30,7 +30,7 @@ using System.Data.SqlClient;
 using System.Threading;
 using System.Xml.Linq;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Logging.Performance;
+using WebApplications.Utilities.Performance;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -40,6 +40,10 @@ namespace WebApplications.Utilities.Logging
     [Serializable]
     public sealed partial class Log : IEquatable<Log>
     {
+        [NotNull] private static readonly PerformanceCounter _perfCounterNewItem =
+            new PerformanceInformation("Logged new item", "Tracks every time a log entry is logged.")
+                .GetPerformanceCounter();
+
         /// <summary>
         ///   The exception type or a <see langword="null"/> if the log item isn't an exception.
         /// </summary>
@@ -235,7 +239,7 @@ namespace WebApplications.Utilities.Logging
                 // Queue the log entry.
                 _logQueue.Enqueue(this);
 
-                PerformanceCounterHelper.PerfCounterNewItem.Increment();
+                _perfCounterNewItem.Increment();
 
                 // Signal monitor thread of new arrival.
                 _logSignal.Set();

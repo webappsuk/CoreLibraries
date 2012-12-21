@@ -37,7 +37,8 @@ using System.Security;
 using System.Text;
 using System.Xml.Linq;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Logging.Performance;
+using WebApplications.Utilities.Performance;
+using PerformanceCounter = WebApplications.Utilities.Performance.PerformanceCounter;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -49,6 +50,10 @@ namespace WebApplications.Utilities.Logging
     [Serializable]
     public class LoggingException : ApplicationException, ISerializable
     {
+        [NotNull] private static readonly PerformanceCounter _perfCounterException =
+            new PerformanceInformation("Logged exception", "Tracks every time an exception is logged.")
+                .GetPerformanceCounter();
+
         [NonSerialized]
         private const string AttributeType = "type";
         [NonSerialized]
@@ -341,7 +346,7 @@ namespace WebApplications.Utilities.Logging
             StackTrace = FormatStackTrace(new StackTrace(2, true));
 
             // Now we can create the associated log item for this exception.
-            PerformanceCounterHelper.PerfCounterException.Increment();
+            _perfCounterException.Increment();
             Log.Add(LogGroup, this, Context);
         }
 
