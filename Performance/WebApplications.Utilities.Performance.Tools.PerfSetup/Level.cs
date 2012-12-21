@@ -3,9 +3,11 @@
     /// <summary>
     /// Log levels
     /// </summary>
-    internal enum Level
+    public enum Level
     {
-        Message,
+        Low,
+        Normal,
+        High,
         Warning,
         Error
     }

@@ -32,22 +32,23 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <returns>true if the task successfully executed; otherwise, false.</returns>
         public override bool Execute()
         {
+            if (string.IsNullOrWhiteSpace(Path))
+                Log.LogWarning("Not path supplied to PerfSetup");
             try
             {
-                Options o = new Options
+                Scan.Execute(ScanMode.Add, Path, (s, l) =>
                     {
-                        Help = false,
-                        Mode = Mode ?? "Add",
-                        MachineName = ".",
-                        Path = Path
-                    };
-
-                Program.Execute(o, (s, l) =>
-                    {
+                        s = "PerfSetup: " + s;
                         switch (l)
                         {
-                            case Level.Message:
-                                Log.LogMessage(s);
+                            case Level.Low:
+                                Log.LogMessage(MessageImportance.Low, s);
+                                break;
+                            case Level.Normal:
+                                Log.LogMessage(MessageImportance.Normal, s);
+                                break;
+                            case Level.High:
+                                Log.LogMessage(MessageImportance.High, s);
                                 break;
                             case Level.Warning:
                                 Log.LogWarning(s);
@@ -57,7 +58,6 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                                 break;
                         }
                     });
-
                 return true;
             }
             catch (Exception e)

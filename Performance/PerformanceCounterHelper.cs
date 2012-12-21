@@ -159,20 +159,5 @@ namespace WebApplications.Utilities.Performance
                 IsValid = false;
             }
         }
-
-        /// <summary>
-        /// Holds enumeration of all counters for creation/deletion.
-        /// </summary>
-        [NotNull]
-        private static readonly PerformanceInformation[] _performanceCounters = new[]
-            {
-                new PerformanceInformation("Logged new item", "Tracks every time a log entry is logged."),
-                new PerformanceInformation("Logged exception", "Tracks every time an exception is logged.")
-            };
-
-        [NotNull]
-        internal static readonly PerformanceCounter PerfCounterNewItem = _performanceCounters.GetPerformanceCounter(0);
-        [NotNull]
-        internal static readonly PerformanceCounter PerfCounterException = _performanceCounters.GetPerformanceCounter(1);
     }
 }

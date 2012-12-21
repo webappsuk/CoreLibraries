@@ -15,7 +15,7 @@ $targetUri = new-object Uri('file://' + $targetsFile)
 $relativePath = $projectUri.MakeRelativeUri($targetUri).ToString().Replace([System.IO.Path]::AltDirectorySeparatorChar, [System.IO.Path]::DirectorySeparatorChar)
 
 # Remove previous imports to PerfSetup.targets
-$msbuild.Xml.Imports | Where-Object {$_.Project.ToLowerInvariant().EndsWith("PerfSetup.targets") } | Foreach { 
+$msbuild.Xml.Imports | Where-Object {$_.Project.ToLowerInvariant().EndsWith("perfsetup.targets") } | Foreach { 
 	$_.Parent.RemoveChild( $_ ) 
 	[string]::Format( "Removed import of '{0}'" , $_.Project )
 }

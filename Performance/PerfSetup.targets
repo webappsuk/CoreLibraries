@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <PerfSetupTool Condition="!Exists('$(PerfSetupTool)')">$(MSBuildThisFileDirectory)\PerfSetup.exe</PerfSetupTool>
+    <PerfSetupTool Condition="!Exists('$(PerfSetupTool)')">$(MSBuildThisFileDirectory)PerfSetup.exe</PerfSetupTool>
     <PerfSetupPath>$(TargetDir)</PerfSetupPath>
   </PropertyGroup>
 
@@ -16,16 +16,16 @@
   <Target Name="PerfSetupTarget"
            Condition="'$(BuildingProject)'=='true' AND
                  Exists('$(PerfSetupTool)')">
-    <PerfSetup
+    <PerfSetupTask
        Mode="Add"
        Path="$(PerfSetupPath)"/>
   </Target>
 
-  <!-- Introduces PerfSetup in the chain of compilation targets -->
+  <!-- Introduces PerfSetup after Build -->
   <PropertyGroup>
-    <CoreBuildDependsOn>
-      $(CoreBuildDependsOn);
+    <BuildDependsOn>
+      $(BuildDependsOn);
       PerfSetupTarget
-    </CoreBuildDependsOn>
+    </BuildDependsOn>
   </PropertyGroup>
 </Project>
