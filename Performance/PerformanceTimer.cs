@@ -224,7 +224,7 @@ namespace WebApplications.Utilities.Performance
         /// </param>
         /// <returns>The performance counter.</returns>
         [NotNull]
-        public static PerformanceTimer Get([NotNull] string categoryName, TimeSpan defaultWarningDuration = default(TimeSpan),
+        internal static PerformanceTimer Get([NotNull] string categoryName, TimeSpan defaultWarningDuration = default(TimeSpan),
                                 TimeSpan defaultCriticalDuration = default(TimeSpan))
         {
             return _counters.GetOrAdd(categoryName,
@@ -236,7 +236,7 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <param name="categoryName">Name of the category.</param>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
-        public static bool Exists([NotNull] string categoryName)
+        internal static bool Exists([NotNull] string categoryName)
         {
             return (PerformanceCounterCategory.Exists(categoryName)) &&
                    (_counterData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, categoryName)));

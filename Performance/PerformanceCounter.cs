@@ -139,7 +139,7 @@ namespace WebApplications.Utilities.Performance
         /// <param name="categoryName">Name of the category.</param>
         /// <returns>The performance counter.</returns>
         [NotNull]
-        public static PerformanceCounter Get([NotNull]string categoryName)
+        internal static PerformanceCounter Get([NotNull]string categoryName)
         {
             return _counters.GetOrAdd(categoryName, n => new PerformanceCounter(n));
         }
@@ -149,7 +149,7 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <param name="categoryName">Name of the category.</param>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
-        public static bool Exists([NotNull] string categoryName)
+        internal static bool Exists([NotNull] string categoryName)
         {
             return (PerformanceCounterCategory.Exists(categoryName)) &&
                    (_counterData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, categoryName)));

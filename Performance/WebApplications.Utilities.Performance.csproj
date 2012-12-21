@@ -51,13 +51,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PerformanceCounter.cs" />
-    <Compile Include="PerformanceCounterExtensions.cs" />
     <Compile Include="PerformanceCounterHelper.cs" />
     <Compile Include="PerformanceExtensions.cs" />
     <Compile Include="PerformanceInformation.cs" />
     <Compile Include="PerformanceTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequiresPerformanceCounter.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
