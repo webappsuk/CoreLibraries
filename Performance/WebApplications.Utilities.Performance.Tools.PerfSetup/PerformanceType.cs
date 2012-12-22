@@ -177,8 +177,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     if (lastStrings.Count == 2)
                     {
                         // Add creation data.
-                        string counterHelp = lastStrings.Dequeue();
                         string counterCategory = lastStrings.Dequeue();
+                        string counterHelp = lastStrings.Dequeue();
                         data.Add(new CounterCreationData(counterCategory, counterHelp, lastCounterType));
                         Logger.Add(
                             Level.Low,

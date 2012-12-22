@@ -70,7 +70,7 @@ namespace WebApplications.Utilities.Performance {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The performance counter category &apos;{0}&apos; does not contain a counter &apos;{1}, that must be created before it can be used..
+        ///   Looks up a localized string similar to The performance counter category &apos;{0}&apos; does not contain a counter &apos;{1}&apos;, that must be created before it can be used..
         /// </summary>
         internal static string PerformanceCounterHelper_CounterDoesNotExist {
             get {

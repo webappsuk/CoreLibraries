@@ -121,7 +121,7 @@
     <value>The performance counter category '{0}' does not exist, and must be created before it can be used.</value>
   </data>
   <data name="PerformanceCounterHelper_CounterDoesNotExist" xml:space="preserve">
-    <value>The performance counter category '{0}' does not contain a counter '{1}, that must be created before it can be used.</value>
+    <value>The performance counter category '{0}' does not contain a counter '{1}', that must be created before it can be used.</value>
   </data>
   <data name="PerformanceCounterHelper_Create_Failed" xml:space="preserve">
     <value>Could not create the performance counter category '{0}'.</value>
