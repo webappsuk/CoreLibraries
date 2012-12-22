@@ -56,12 +56,12 @@ namespace WebApplications.Utilities
         [UsedImplicitly] public readonly Guid Guid;
 
         /// <summary>
-        ///   The base date time used during new <see cref="System.DateTime"/> calculations.
+        ///   The base UTC date time used during new <see cref="System.DateTime"/> calculations.
         /// </summary>
-        private static readonly DateTime _baseDate = new DateTime(1900, 1, 1);
+        private static readonly DateTimeOffset _baseDate = new DateTimeOffset(1900, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
         /// <summary>
-        ///   The <see cref="System.DateTime"/> encoded into the <see cref="CombGuid"/>.
+        ///   The UTC <see cref="System.DateTime"/> encoded into the <see cref="CombGuid"/>.
         /// </summary>
         /// <remarks>This is accurate to ~3.4ms (or ~8ms from SQL) depending on the source.</remarks>
         public readonly DateTime Created;
@@ -520,7 +520,7 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static CombGuid NewCombGuid()
         {
-            return NewCombGuid(DateTime.Now);
+            return NewCombGuid(DateTimeOffset.UtcNow);
         }
 
         /// <summary>
@@ -532,6 +532,26 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static CombGuid NewCombGuid(DateTime dateTime)
         {
+            return NewCombGuid((DateTimeOffset) dateTime);
+        }
+
+        /// <summary>
+        ///   Creates a new <see cref="CombGuid"/> based on the <see cref="System.DateTime">date time</see> specified.
+        /// </summary>
+        /// <param name="dateTime">The date time.</param>
+        /// <returns>A new <see cref="CombGuid"/> instance.</returns>
+        [SecuritySafeCritical]
+        [UsedImplicitly]
+        public static CombGuid NewCombGuid(DateTimeOffset dateTime)
+        {
+            // Always convert to universal time.
+            dateTime = dateTime.ToUniversalTime();
+            if (dateTime < _baseDate)
+                throw new ArgumentOutOfRangeException(
+                    "dateTime",
+                    Resources.CombGuid_InvalidDateTime_TooEarly,
+                    _baseDate.ToString());
+
             // First of all get a new GUID into a byte[].
             byte[] guidArray = Guid.NewGuid().ToByteArray();
 
@@ -558,7 +578,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="guid">The Guid.</param>
         /// <returns>
-        ///   The <see cref="System.Guid"/>'s creation <see cref="System.DateTime"/>.
+        ///   The <see cref="System.Guid"/>'s creation <see cref="System.DateTime"/> (always UTC).
         /// </returns>
         /// <remarks>
         ///   The creation date is stored in the last 6 bytes of the <see cref="System.Guid"/>.
@@ -584,7 +604,8 @@ namespace WebApplications.Utilities
             daysArray[1] = guidArray[10];
 
             return _baseDate.AddDays(BitConverter.ToInt32(daysArray, 0))
-                .AddMilliseconds(BitConverter.ToInt64(msecsArray, 0)*3.333333);
+                            .AddMilliseconds(BitConverter.ToInt64(msecsArray, 0)*3.333333)
+                            .UtcDateTime;
         }
 
         /// <summary>

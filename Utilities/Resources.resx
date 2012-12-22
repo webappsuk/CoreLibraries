@@ -408,4 +408,7 @@
   <data name="AsyncResult_SetAsCompleted_CanOnlySetResultOnce" xml:space="preserve">
     <value>You can set a result only once</value>
   </data>
+  <data name="CombGuid_InvalidDateTime_TooEarly" xml:space="preserve">
+    <value>The date time supplied to a CombGuid cannot be before '{0}' UTC.</value>
+  </data>
 </root>
