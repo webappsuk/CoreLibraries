@@ -19,7 +19,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// The type cache.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<TypeReference, PerformanceType> _types = new ConcurrentDictionary<TypeReference, PerformanceType>();
+        private static readonly ConcurrentDictionary<string, PerformanceType> _types = new ConcurrentDictionary<string, PerformanceType>();
 
         /// <summary>
         /// The performance counter type lookup
@@ -237,7 +237,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         [NotNull]
         public static PerformanceType Get(TypeReference typeReference)
         {
-            return _types.GetOrAdd(typeReference, t => new PerformanceType(t));
+            return _types.GetOrAdd(typeReference.FullName, t => new PerformanceType(typeReference));
         }
 
         /// <summary>

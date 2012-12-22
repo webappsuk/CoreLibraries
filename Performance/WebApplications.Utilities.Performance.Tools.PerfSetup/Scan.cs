@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using JetBrains.Annotations;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -38,7 +39,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         public static void Execute(
             ScanMode mode,
             [NotNull] string fullPath,
-            [NotNull] string machineName = ".")
+            [NotNull] string machineName = ".",
+            bool firstRun = true)
         {
             // Check we have access to the performance counters.
             PerformanceCounterCategory.Exists("TestAccess", machineName);
@@ -96,7 +98,6 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 int failed = 0;
                 foreach (PerfCategory performanceInformation in PerfCategory.All)
                 {
-                    bool success = false;
                     switch (mode)
                     {
                         case ScanMode.Add:
@@ -156,12 +157,24 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     }
                     Logger.Add(Level.High, "{0} '{1}' performance counters.{2}", operation, succeeded,
                                failed > 0 ? string.Format(" {0} failures.", failed) : string.Empty);
+                    
+                    if (Environment.Is64BitOperatingSystem && firstRun)
+                    {
+                        bool bit64 = Environment.Is64BitProcess;
+                        Logger.Add(Level.High,
+                                   "Running PerfSetup in {0} bit process on 64 bit operating system, will run again in {1} bit mode to ensure counters are added to both environments!",
+                                   bit64 ? 64 : 32,
+                                   bit64 ? 32 : 64);
+                        ExecuteAgain(mode, fullPath, machineName, !bit64);
+                    }
                 }
                 else
                     Logger.Add(Level.High, "No valid performance counters found.");
             }
             else
                 Logger.Add(Level.Warning, "The '{0}' path did not match any executables or dlls, so no performance counters added.", fullPath);
+
+
         }
 
         /// <summary>
@@ -283,6 +296,36 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Launches a new process in the opposite mode (64/32 bit).
+        /// </summary>
+        /// <param name="mode">The mode.</param>
+        /// <param name="fullPath">The full path.</param>
+        /// <param name="machineName">Name of the machine.</param>
+        /// <param name="bit64">if set to <see langword="true" /> [bit64].</param>
+        private static void ExecuteAgain(
+            ScanMode mode,
+            [NotNull] string fullPath,
+            [NotNull] string machineName,
+            bool bit64)
+        {
+            string executable = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
+                                @"\PerfSetup" +
+                                (bit64
+                                     ? "64"
+                                     : "32") +
+                                ".exe";
+
+            if (!File.Exists(executable))
+            {
+                Logger.Add(Level.Error,
+                           "Could not find '{0}' executable, could not add performance counters in {1} bit mode.",
+                           executable,
+                           bit64 ? 64 : 32);
+                return;
             }
         }
     }

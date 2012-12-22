@@ -51,7 +51,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 {
                     message = string.Format(format, parameters);
                 }
-                catch (FormatException ex)
+                catch (FormatException)
                 {
                     message = string.Format("{0}. {1}", message, string.Join(", ", parameters));
                 }

@@ -43,8 +43,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         mode = ScanMode.List;
                         break;
                 }
-
-
+                
                 Scan.Execute(
                     mode,
                     options.Path,

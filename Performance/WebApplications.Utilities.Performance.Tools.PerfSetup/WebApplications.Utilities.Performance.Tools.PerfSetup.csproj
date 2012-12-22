@@ -14,25 +14,6 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -41,6 +22,45 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>Web Applications - PerfSetup.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <MergedOutputPath>$(MSBuildProjectDirectory)\bin\Debug\</MergedOutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <MergedOutputFile>$(MergedOutputPath)PerfSetup32.exe</MergedOutputFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <MergedOutputPath>$(MSBuildProjectDirectory)\bin\Release\</MergedOutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <MergedOutputFile>$(MergedOutputPath)PerfSetup32.exe</MergedOutputFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Prefer32Bit>false</Prefer32Bit>
+    <MergedOutputPath>$(MSBuildProjectDirectory)\bin\Debug\</MergedOutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <MergedOutputFile>$(MergedOutputPath)PerfSetup64.exe</MergedOutputFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x64</PlatformTarget>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <MergedOutputPath>$(MSBuildProjectDirectory)\bin\Release\</MergedOutputPath>
+    <MergedOutputFile>$(MergedOutputPath)PerfSetup64.exe</MergedOutputFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CmdLine">
@@ -101,14 +121,16 @@
   -->
   <Target Name="AfterBuild">
     <ItemGroup>
-      <MergeAsm Include="$(OutputPath)\PerfSetup.exe" />
-      <MergeAsm Include="$(OutputPath)\CmdLine.dll" />
-      <MergeAsm Include="$(OutputPath)\JetBrains.Annotations.dll" />
-      <MergeAsm Include="$(OutputPath)\Mono.Cecil.dll" />
-      <MergeAsm Include="$(OutputPath)\Mono.Cecil.Mdb.dll" />
-      <MergeAsm Include="$(OutputPath)\Mono.Cecil.Pdb.dll" />
-      <MergeAsm Include="$(OutputPath)\Mono.Cecil.Rocks.dll" />
+      <MergeAsm Include="$(OutputPath)PerfSetup.exe" />
+      <MergeAsm Include="$(OutputPath)CmdLine.dll" />
+      <MergeAsm Include="$(OutputPath)JetBrains.Annotations.dll" />
+      <MergeAsm Include="$(OutputPath)Mono.Cecil.dll" />
+      <MergeAsm Include="$(OutputPath)Mono.Cecil.Mdb.dll" />
+      <MergeAsm Include="$(OutputPath)Mono.Cecil.Pdb.dll" />
+      <MergeAsm Include="$(OutputPath)Mono.Cecil.Rocks.dll" />
     </ItemGroup>
-    <ILMerge InputAssemblies="@(MergeAsm)" OutputFile="$(MSBuildProjectDirectory)\PerfSetup.exe" SnkFile="$(MSBuildProjectDirectory)\$(AssemblyOriginatorKeyFile)" TargetKind="Exe" />
+    <MakeDir Directories="$(MergedOutputPath)" />
+    <ILMerge InputAssemblies="@(MergeAsm)" OutputFile="$(MergedOutputFile)" SnkFile="$(MSBuildProjectDirectory)\$(AssemblyOriginatorKeyFile)" TargetKind="Exe" />
+    <MSBuild Condition="'$(Platform)' == 'x86'" Projects="$(MSBuildProjectFile)" Properties="Platform=x64;PlatFormTarget=x64" RunEachTargetSeparately="true" />
   </Target>
 </Project>

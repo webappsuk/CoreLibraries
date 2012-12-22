@@ -45,16 +45,11 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         public string CategoryHelp { get; private set; }
 
         /// <summary>
-        /// Whether the counter is a timer.
-        /// </summary>
-        public readonly bool IsTimer;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="PerfCategory" /> class.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
+        /// <param name="performanceType">Type of the performance.</param>
         /// <param name="categoryName">Name of the category.</param>
-        /// <param name="categoryHelp">The category help.</param>
         private PerfCategory([NotNull]string assembly, [NotNull] PerformanceType performanceType, [NotNull]string categoryName)
         {
             _assemblies = new List<string> {assembly};
@@ -134,6 +129,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             }
         }
 
+        public bool Created { get; private set; }
+
         /// <summary>
         /// Creates the counters on the specified machine name.
         /// </summary>
@@ -143,6 +140,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         {
             if (!PerformanceType.IsValid)
                 return false;
+            if (Created) return true;
             try
             {
                 if (PerformanceCounterCategory.Exists(CategoryName))
@@ -159,13 +157,18 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                                                   PerformanceCounterCategoryType.MultiInstance,
                                                   new CounterCreationDataCollection(PerformanceType.CounterCreationData));
 
-                return PerformanceType.CounterCreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName));
+                Created = PerformanceType.CounterCreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName));
+                Deleted = false;
+                return Created;
             }
             catch
             {
+                Created = false;
                 return false;
             }
         }
+
+        public bool Deleted { get; private set; }
 
         /// <summary>
         /// Deletes the counters from specified machine name.
@@ -175,17 +178,24 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         public bool Delete(string machineName)
         {
             if (!PerformanceType.IsValid)
+            {
+                Deleted = false;
                 return false;
+            }
+            if (Deleted) return true;
             try
             {
                 if (!PerformanceCounterCategory.Exists(CategoryName))
                     return true;
                     
                 PerformanceCounterCategory.Delete(CategoryName);
-                return !PerformanceCounterCategory.Exists(CategoryName);
+                Deleted = !PerformanceCounterCategory.Exists(CategoryName);
+                Created = false;
+                return Deleted;
             }
             catch
             {
+                Deleted = false;
                 return false;
             }
         }
