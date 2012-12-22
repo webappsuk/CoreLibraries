@@ -36,11 +36,12 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <param name="mode">The mode.</param>
         /// <param name="fullPath">The assemblies path.</param>
         /// <param name="machineName">Name of the machine.</param>
+        /// <param name="executeAgain">if set to <see langword="true" /> execute's again on 64-bit OS.</param>
         public static void Execute(
             ScanMode mode,
             [NotNull] string fullPath,
-            [NotNull] string machineName = ".",
-            bool firstRun = true)
+            [NotNull] string machineName,
+            bool executeAgain)
         {
             // Check we have access to the performance counters.
             PerformanceCounterCategory.Exists("TestAccess", machineName);
@@ -157,8 +158,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     }
                     Logger.Add(Level.High, "{0} '{1}' performance counters.{2}", operation, succeeded,
                                failed > 0 ? string.Format(" {0} failures.", failed) : string.Empty);
-                    
-                    if (Environment.Is64BitOperatingSystem && firstRun)
+
+                    if (executeAgain &&
+                        Environment.Is64BitOperatingSystem)
                     {
                         bool bit64 = Environment.Is64BitProcess;
                         Logger.Add(Level.High,
@@ -326,6 +328,35 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                            executable,
                            bit64 ? 64 : 32);
                 return;
+            }
+
+            try
+            {
+                if (fullPath.EndsWith(@"\"))
+                    fullPath = fullPath.Substring(0, fullPath.Length - 1);
+
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(executable,
+                                                                         string.Format("/M:\"{0}\" /E- {1} \"{2}\"", 
+                                                                         machineName,
+                                                                         mode.ToString(), 
+                                                                         fullPath))
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true
+                    };
+
+                Logger.Add(Level.Low, "Executing: {0} {1}", processStartInfo.FileName, processStartInfo.Arguments);
+                
+                Process process = Process.Start(processStartInfo);
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+                Logger.Add(Level.Low, output);
+                Logger.Add(Level.High, "Completed execution in {0} mode.", bit64 ? 64 : 32);
+            }
+            catch (Exception e)
+            {
+                Logger.Add(Level.Error, "Failed execution in {0} mode. {1}", bit64 ? 64 : 32, e.Message);
             }
         }
     }

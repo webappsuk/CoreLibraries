@@ -36,6 +36,9 @@
     <WarningLevel>4</WarningLevel>
     <PerfSetupTool>$(MSBuildProjectDirectory)\..\WebApplications.Utilities.Performance.Tools.PerfSetup\bin\Debug\PerfSetup64.exe</PerfSetupTool>
   </PropertyGroup>
+  <PropertyGroup>
+    <PST>$(PerfSetupTool)</PST>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>

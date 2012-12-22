@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 Logger.Add(Level.Warning, "Not path supplied to PerfSetup");
             try
             {
-                Scan.Execute(ScanMode.Add, Path);
+                Scan.Execute(ScanMode.Add, Path, ".", true);
                 return true;
             }
             catch (Exception e)

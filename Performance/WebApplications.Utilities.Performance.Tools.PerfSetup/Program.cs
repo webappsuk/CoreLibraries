@@ -43,11 +43,15 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         mode = ScanMode.List;
                         break;
                 }
+
+                if (options.Path.EndsWith("\""))
+                    options.Path = options.Path.Substring(0, options.Path.Length - 1);
                 
                 Scan.Execute(
                     mode,
                     options.Path,
-                    options.MachineName);
+                    options.MachineName ?? ".",
+                    options.ExecuteAgain);
             }
             catch (CommandLineException commandLineException)
             {
