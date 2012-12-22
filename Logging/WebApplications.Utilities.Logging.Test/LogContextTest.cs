@@ -47,6 +47,28 @@ namespace WebApplications.Utilities.Logging.Test
             Guid r2;
             Assert.IsTrue(_keyReservations.TryGetValue(key, out r2));
             Assert.AreEqual(reservation, r2);
+            string value = Tester.RandomGenerator.RandomString();
+            LogContext context = new LogContext(reservation, key, value);
+            Assert.IsNotNull(context);
+            string value2 = context.Get(key);
+            Assert.AreEqual(value, value2);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(LoggingException))]
+        public void TestKeyReservationErrors()
+        {
+            _keyReservations.Clear();
+            _prefixReservations.Clear();
+            Guid reservation = Guid.NewGuid();
+            string key = Tester.RandomGenerator.RandomString();
+            string key2 = LogContext.ReserveKey(key, reservation);
+            Assert.AreEqual(key, key2);
+            Guid r2;
+            Assert.IsTrue(_keyReservations.TryGetValue(key, out r2));
+            Assert.AreEqual(reservation, r2);
+            string value = Tester.RandomGenerator.RandomString();
+            LogContext context = new LogContext(key, value);
         }
     }
 }

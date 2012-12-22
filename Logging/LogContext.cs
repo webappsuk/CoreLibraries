@@ -196,6 +196,8 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext([NotNull] string key, [CanBeNull] string value, [NotNull] params string[] keyValuePairs)
         {
+            _context = new ConcurrentDictionary<string, string>();
+
             // Add initial value
             _context.AddOrUpdate(Validate(Guid.Empty, key), k => value, (k, o) => value);
 
@@ -227,6 +229,8 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext(Guid reservation, [NotNull] string key, [CanBeNull] string value, [NotNull] params string[] keyValuePairs)
         {
+            _context = new ConcurrentDictionary<string, string>();
+
             // Add initial value
             _context.AddOrUpdate(Validate(reservation, key), k => value, (k, o) => value);
 
@@ -259,6 +263,8 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext([NotNull] string key, [CanBeNull] object value, [NotNull] params object[] keyValuePairs)
         {
+            _context = new ConcurrentDictionary<string, string>();
+
             string v = value == null ? null : value.ToString();
             // Add initial value
             _context.AddOrUpdate(Validate(Guid.Empty, key), k => v, (k, o) => v);
@@ -292,6 +298,8 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext(Guid reservation, [NotNull] string key, [CanBeNull] object value, [NotNull] params object[] keyValuePairs)
         {
+            _context = new ConcurrentDictionary<string, string>();
+
             string v = value == null ? null : value.ToString();
             // Add initial value
             _context.AddOrUpdate(Validate(reservation, key), k => v, (k, o) => v);
