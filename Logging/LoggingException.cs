@@ -38,7 +38,6 @@ using System.Text;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Performance;
-using PerformanceCounter = WebApplications.Utilities.Performance.PerformanceCounter;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -50,9 +49,9 @@ namespace WebApplications.Utilities.Logging
     [Serializable]
     public class LoggingException : ApplicationException, ISerializable
     {
-        [NotNull] private static readonly PerformanceCounter _perfCounterException =
-            new PerformanceInformation("Logged exception", "Tracks every time an exception is logged.")
-                .GetPerformanceCounter();
+        [NotNull]
+        private static readonly PerfCounter _perfCounterException =
+            PerfCategory.GetOrAdd<PerfCounter>("Logged exception", "Tracks every time an exception is logged.");
 
         [NonSerialized]
         private const string AttributeType = "type";

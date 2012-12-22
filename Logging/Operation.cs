@@ -43,6 +43,9 @@ namespace WebApplications.Utilities.Logging
     [Serializable]
     public sealed class Operation : IDisposable, IEqualityComparer<Operation>, IEquatable<Operation>
     {
+        [NotNull] private static readonly PerfTimer _perfTimerOperation =
+            PerfCategory.GetOrAdd<PerfTimer>("Logging Operation", "Tracks duration of operations in logging.");
+
         [NonSerialized] private const string NodeOperation = "Operation";
         [NonSerialized] private const string NodeArguments = "Arguments";
         [NonSerialized] private const string NodeArgument = "Argument";
@@ -139,7 +142,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   Times the operation duration.
         /// </summary>
-        [NonSerialized] private PerformanceTimer.Timer _timer;
+        [NonSerialized] private PerfTimer.Timer _timer;
 
         /// <summary>
         ///   Caches the XML representation of the log item, to prevent regeneration.
@@ -454,7 +457,7 @@ namespace WebApplications.Utilities.Logging
 
             Log.Add(Guid, "Started {0}", LogLevel.Information, Name);
 
-            _timer = PerformanceTimer.Get(String.Join(": ", CategoryName, Name)).Region(warningDuration, criticalDuration);
+            _timer = _perfTimerOperation.Region(warningDuration, criticalDuration);
         }
 
 #if false

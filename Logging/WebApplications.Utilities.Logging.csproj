@@ -60,9 +60,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\WebApplications.Utilities.2.0.4696.21138\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Performance, Version=5.0.4738.16793, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Performance, Version=5.0.4739.19328, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.Performance.5.0.4738.16793\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.Performance.5.0.4739.19328\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -115,7 +115,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <Import Project="packages\WebApplications.Utilities.Initializer.2.0.4673.24422\tools\InjectModuleInitializer.targets" Condition="Exists('packages\WebApplications.Utilities.Initializer.2.0.4673.24422\tools\InjectModuleInitializer.targets')" />
-  <Import Project="packages\WebApplications.Utilities.Performance.5.0.4738.16793\tools\PerfSetup.targets" Condition="Exists('packages\WebApplications.Utilities.Performance.5.0.4738.16793\tools\PerfSetup.targets')" />
+  <Import Project="packages\WebApplications.Utilities.Performance.5.0.4739.19328\tools\PerfSetup.targets" Condition="Exists('packages\WebApplications.Utilities.Performance.5.0.4739.19328\tools\PerfSetup.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

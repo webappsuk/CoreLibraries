@@ -40,9 +40,8 @@ namespace WebApplications.Utilities.Logging
     [Serializable]
     public sealed partial class Log : IEquatable<Log>
     {
-        [NotNull] private static readonly PerformanceCounter _perfCounterNewItem =
-            new PerformanceInformation("Logged new item", "Tracks every time a log entry is logged.")
-                .GetPerformanceCounter();
+        [NotNull] private static readonly PerfCounter _perfCounterNewItem =
+            PerfCategory.GetOrAdd<PerfCounter>("Logged new item", "Tracks every time a log entry is logged.");
 
         /// <summary>
         ///   The exception type or a <see langword="null"/> if the log item isn't an exception.
