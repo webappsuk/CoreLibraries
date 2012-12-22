@@ -53,8 +53,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PerfMetric.cs" />
     <Compile Include="PerfCounter.cs" />
+    <Compile Include="PerfCategory.cs" />
     <Compile Include="PerfTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">

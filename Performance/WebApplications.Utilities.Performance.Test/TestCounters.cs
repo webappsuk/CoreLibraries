@@ -8,8 +8,8 @@ namespace WebApplications.Utilities.Performance.Test
     [TestClass]
     public class TestCounters
     {
-        private static readonly PerfTimer _timer = PerfCounter.GetOrAdd<PerfTimer>("Test Timer", "Test timer help.");
-        private static readonly PerfMetric _counter = PerfCounter.GetOrAdd<PerfMetric>("Test Counter", "Test counter help.");
+        private static readonly PerfTimer _timer = PerfCategory.GetOrAdd<PerfTimer>("Test Timer", "Test timer help.");
+        private static readonly PerfCounter _counter = PerfCategory.GetOrAdd<PerfCounter>("Test Counter", "Test counter help.");
 
         [TestMethod]
         public void TestStatics()
@@ -21,7 +21,7 @@ namespace WebApplications.Utilities.Performance.Test
         [TestMethod]
         public void TestInstance()
         {
-            PerfTimer t = PerfCounter.GetOrAdd<PerfTimer>("Test Timer");
+            PerfTimer t = PerfCategory.GetOrAdd<PerfTimer>("Test Timer");
             Assert.IsNotNull(_timer);
             Assert.AreSame(t, _timer);
         }
@@ -30,11 +30,11 @@ namespace WebApplications.Utilities.Performance.Test
         [ExpectedException(typeof(InvalidOperationException))]
         public void TestInvalid()
         {
-            InvalidCounter s = PerfCounter.GetOrAdd<InvalidCounter>("Test fail");
+            InvalidCounter s = PerfCategory.GetOrAdd<InvalidCounter>("Test fail");
             Assert.IsNotNull(_timer);
         }
 
-        private class InvalidCounter :PerfCounter
+        private class InvalidCounter :PerfCategory
         {
             public InvalidCounter() : base(null, null)
             {

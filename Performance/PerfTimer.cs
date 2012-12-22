@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Performance
     /// <summary>
     ///   Times an operation using a performance timer.
     /// </summary>
-    public sealed class PerfTimer : PerfCounter
+    public sealed class PerfTimer : PerfCategory
     {
         /// <summary>
         /// Default counters for a category.

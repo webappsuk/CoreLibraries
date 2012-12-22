@@ -32,37 +32,39 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <returns>true if the task successfully executed; otherwise, false.</returns>
         public override bool Execute()
         {
+            Logger.AddLogger((s, l) =>
+            {
+                s = "PerfSetup: " + s;
+                switch (l)
+                {
+                    case Level.Low:
+                        Log.LogMessage(MessageImportance.Low, s);
+                        break;
+                    case Level.Normal:
+                        Log.LogMessage(MessageImportance.Normal, s);
+                        break;
+                    case Level.High:
+                        Log.LogMessage(MessageImportance.High, s);
+                        break;
+                    case Level.Warning:
+                        Log.LogWarning(s);
+                        break;
+                    case Level.Error:
+                        Log.LogError(s);
+                        break;
+                }
+            });
+
             if (string.IsNullOrWhiteSpace(Path))
-                Log.LogWarning("Not path supplied to PerfSetup");
+                Logger.Add(Level.Warning, "Not path supplied to PerfSetup");
             try
             {
-                Scan.Execute(ScanMode.Add, Path, (s, l) =>
-                    {
-                        s = "PerfSetup: " + s;
-                        switch (l)
-                        {
-                            case Level.Low:
-                                Log.LogMessage(MessageImportance.Low, s);
-                                break;
-                            case Level.Normal:
-                                Log.LogMessage(MessageImportance.Normal, s);
-                                break;
-                            case Level.High:
-                                Log.LogMessage(MessageImportance.High, s);
-                                break;
-                            case Level.Warning:
-                                Log.LogWarning(s);
-                                break;
-                            case Level.Error:
-                                Log.LogError(s);
-                                break;
-                        }
-                    });
+                Scan.Execute(ScanMode.Add, Path);
                 return true;
             }
             catch (Exception e)
             {
-                Log.LogError(e.Message);
+                Logger.Add(Level.Error, e.Message);
                 return false;
             }
         }

@@ -18,6 +18,10 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
     {
         static void Main(string[] args)
         {
+            Logger.AddLogger((s, l) =>
+                          Console.WriteLine(l == Level.Error || l == Level.Warning
+                                                ? string.Format("{0}: {1}", l.ToString(), s)
+                                                : s));
             // Parse options
             try
             {
@@ -44,20 +48,16 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 Scan.Execute(
                     mode,
                     options.Path,
-                    (s, l) =>
-                    Console.WriteLine(l == Level.Error || l == Level.Warning
-                                          ? string.Format("{0}: {1}", l.ToString(), s)
-                                          : s),
                     options.MachineName);
             }
             catch (CommandLineException commandLineException)
             {
-                Console.WriteLine(commandLineException.ArgumentHelp.Message);
-                Console.WriteLine(commandLineException.ArgumentHelp.GetHelpText(Console.BufferWidth));
+                Logger.Add(Level.Error, commandLineException.ArgumentHelp.Message);
+                Logger.Add(Level.High, commandLineException.ArgumentHelp.GetHelpText(Console.BufferWidth));
             }
             catch (Exception exception)
             {
-                Console.WriteLine("Fatal error occurred: " + exception.Message);
+                Logger.Add(Level.Error, "Fatal error occurred: {0}", exception.Message);
             }
         }
     }

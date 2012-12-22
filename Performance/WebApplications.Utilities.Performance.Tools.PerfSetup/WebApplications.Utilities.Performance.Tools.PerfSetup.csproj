@@ -75,8 +75,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Level.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Options.cs" />
-    <Compile Include="PerformanceInformation.cs" />
+    <Compile Include="PerfCategory.cs" />
     <Compile Include="PerformanceType.cs" />
     <Compile Include="PerfSetupTask.cs" />
     <Compile Include="Program.cs" />
