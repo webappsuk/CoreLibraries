@@ -42,6 +42,7 @@ namespace WebApplications.Utilities.Threading
     /// </remarks>
     [DebuggerStepThrough]
     [UsedImplicitly]
+    [Obsolete("Consider using TPL or Async.")]
     public class AsyncResult : IAsyncResult
     {
         private const int StateCancelled = 3;

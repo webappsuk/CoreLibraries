@@ -47,6 +47,7 @@ namespace WebApplications.Utilities.Threading
     [StructLayout(LayoutKind.Sequential)]
     [DebuggerStepThrough]
     [UsedImplicitly]
+    [Obsolete("Consider using TPL or Async.")]
     public struct ApmWrap<T>
     {
         /// <summary>

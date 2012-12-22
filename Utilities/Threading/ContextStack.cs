@@ -51,6 +51,7 @@ namespace WebApplications.Utilities.Threading
     /// </remarks>
     /// <typeparam name="T">The type of objects in the stack.</typeparam>
     [UsedImplicitly]
+    [Obsolete("Context stacks can cause problems in asynchronous code (particular Rx) and should therefore be avoided.")]
     public class ContextStack<T>
     {
         /// <summary>
