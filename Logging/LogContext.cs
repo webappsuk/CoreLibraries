@@ -429,8 +429,10 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Validates the specified key, throwing an exception if it is reserved.
         /// </summary>
+        /// <param name="reservation">The reservation.</param>
         /// <param name="key">The key.</param>
         /// <returns>System.String.</returns>
+        /// <exception cref="LoggingException"></exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [NotNull]
         private static string Validate(Guid reservation, string key)
@@ -470,6 +472,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Sets the specified key to the specified value.
         /// </summary>
+        /// <param name="reservation">The reservation.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -482,6 +485,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Sets the specified key to the specified value.
         /// </summary>
+        /// <param name="reservation">The reservation.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

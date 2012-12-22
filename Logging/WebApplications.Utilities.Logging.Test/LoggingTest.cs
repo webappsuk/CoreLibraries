@@ -30,9 +30,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
-using WebApplications.Utilities.Logging;
 
-namespace Utilities.Logging.Test
+namespace WebApplications.Utilities.Logging.Test
 {
     [TestClass]
     public class LoggingTests : TestBase

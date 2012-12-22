@@ -9,8 +9,8 @@
     <ProjectGuid>{4B05B106-0F92-46D0-B129-107D0D05F48A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Utilities.Logging.Test</RootNamespace>
-    <AssemblyName>Utilities.Logging.Test</AssemblyName>
+    <RootNamespace>WebApplications.Utilities.Logging.Test</RootNamespace>
+    <AssemblyName>WebApplications.Utilities.Logging.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -68,6 +68,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LogContextTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LoggingTest.cs" />
   </ItemGroup>
