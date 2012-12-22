@@ -53,7 +53,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </param>
         /// <param name="validLevels">
         ///   <para>The valid log levels.</para>
-        ///   <para>By default this is set to <see cref="LogLevels">LogLevels.AtLeastInformation</see>.</para>
+        ///   <para>By default this is set to <see cref="LoggingLevels">LogLevels.AtLeastInformation</see>.</para>
         /// </param>
         /// <remarks>
         ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
@@ -64,7 +64,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         public EventLogger(
             [NotNull] string name,
             [NotNull] string eventLog = "Application",
-            LogLevels validLevels = LogLevels.AtLeastInformation)
+            LoggingLevels validLevels = LoggingLevels.AtLeastInformation)
             : base(name, false, validLevels)
         {
             Contract.Requires(name != null, Resources.EventLogger_NameCannotBeNull);
@@ -94,17 +94,17 @@ namespace WebApplications.Utilities.Logging.Loggers
             EventLogEntryType entryType;
             switch (log.Level)
             {
-                case LogLevel.Emergency:
-                case LogLevel.Critical:
-                case LogLevel.Error:
+                case LoggingLevel.Emergency:
+                case LoggingLevel.Critical:
+                case LoggingLevel.Error:
                     entryType = EventLogEntryType.Error;
                     break;
-                case LogLevel.Warning:
+                case LoggingLevel.Warning:
                     entryType = EventLogEntryType.Warning;
                     break;
-                case LogLevel.SystemNotification:
-                case LogLevel.Notification:
-                case LogLevel.Information:
+                case LoggingLevel.SystemNotification:
+                case LoggingLevel.Notification:
+                case LoggingLevel.Information:
                     entryType = EventLogEntryType.Information;
                     break;
                 default:

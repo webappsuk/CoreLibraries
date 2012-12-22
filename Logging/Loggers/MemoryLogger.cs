@@ -72,7 +72,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </param>
         /// <param name="validLevels">
         ///   <para>The valid log levels.</para>
-        ///   <para>By default this is set allow all <see cref="LogLevels">all log levels</see>.</para>
+        ///   <para>By default this is set allow all <see cref="LoggingLevels">all log levels</see>.</para>
         /// </param>
         /// <exception cref="LoggingException">
         ///   <para><paramref name="maximumLogEntries"/> was less than 1.</para>
@@ -84,18 +84,18 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] string name,
             TimeSpan cacheExpiry = default(TimeSpan),
             int maximumLogEntries = 10000,
-            LogLevels validLevels = LogLevels.All)
+            LoggingLevels validLevels = LoggingLevels.All)
             : base(name, true, validLevels)
         {
             if (maximumLogEntries <= 1)
                 throw new LoggingException(Resources.MemoryLogger_MaximumLogsLessThanOne,
-                    LogLevel.Critical, maximumLogEntries);
+                    LoggingLevel.Critical, maximumLogEntries);
 
             if (cacheExpiry == default(TimeSpan))
                 cacheExpiry = TimeSpan.FromMinutes(10);
             else if (cacheExpiry < TimeSpan.FromSeconds(10))
                 throw new LoggingException(Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
-                    LogLevel.Critical, cacheExpiry);
+                    LoggingLevel.Critical, cacheExpiry);
 
             MaximumLogEntries = maximumLogEntries;
             CacheExpiry = cacheExpiry;
@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </param>
         /// <param name="validLevels">
         ///   <para>The valid log levels.</para>
-        ///   <para>By default this is set allow all <see cref="LogLevels">all log levels</see>.</para>
+        ///   <para>By default this is set allow all <see cref="LoggingLevels">all log levels</see>.</para>
         /// </param>
         /// <exception cref="LoggingException">
         ///   <para><paramref name="maximumLogEntries"/> was less than 1.</para>
@@ -129,18 +129,18 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] string name,
             TimeSpan cacheExpiry = default(TimeSpan),
             int maximumLogEntries = 10000,
-            LogLevels validLevels = LogLevels.All)
+            LoggingLevels validLevels = LoggingLevels.All)
             : base(name, true, validLevels)
         {
             if (maximumLogEntries <= 1)
                 throw new LoggingException(Resources.MemoryLogger_MaximumLogsLessThanOne,
-                    LogLevel.Critical, maximumLogEntries);
+                    LoggingLevel.Critical, maximumLogEntries);
 
             if (cacheExpiry == default(TimeSpan))
                 cacheExpiry = TimeSpan.FromMinutes(10);
             else if (cacheExpiry < TimeSpan.FromSeconds(10))
                 throw new LoggingException(Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
-                    LogLevel.Critical,cacheExpiry);
+                    LoggingLevel.Critical,cacheExpiry);
 
             MaximumLogEntries = maximumLogEntries;
             CacheExpiry = cacheExpiry;

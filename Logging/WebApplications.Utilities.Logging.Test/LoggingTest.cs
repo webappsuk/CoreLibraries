@@ -50,65 +50,7 @@ namespace Utilities.Logging.Test
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
             Log.Flush();
         }
-
-        [TestMethod]
-        public void TestOperations()
-        {
-            Operation.Wrap(
-                o =>
-                    {
-                        Assert.IsNotNull(Operation.Current);
-                        Assert.AreEqual(o, Operation.Current);
-
-                        Log.Add(OperationFunction("Test value", 1));
-
-                        Log.Flush();
-                    }, "TestOperations", instance: this);
-        }
-
-        private string OperationFunction(string aValue, int anotherValue, TimeSpan timeSpan = default(TimeSpan))
-        {
-            return Operation.Wrap(
-                () =>
-                    {
-                        Log.Add("Inside OperationFunction");
-                        return aValue;
-                    }, "OperationFunction",
-                instance: this,
-                arguments: new Dictionary<string, object>
-                               {
-                                   {"aValue", aValue},
-                                   {"anotherValue", anotherValue},
-                                   {"timeSpan", timeSpan}
-                               }) ?? String.Empty;
-        }
-
-        [TestMethod]
-        public void TestContext()
-        {
-            Operation.Wrap(
-                () =>
-                    {
-                        using (new LogContext("First Value", "A").Region)
-                        {
-                            using (LogContext.CreateRegion(new Dictionary<string, string> {{"Second Value", "B"}}))
-                            {
-                                Log.Add("Test Context 1");
-                                Log.Add(new LogContext("Third Value", "C", "First Value", null, "Forth Value"),
-                                        "Test Context 2",
-                                        1,
-                                        2, null, "A string");
-                                new LoggingException(new InvalidOperationException("A test invalid operation"),
-                                                     "Test logging exception", 1, 2, null, "A string");
-                            }
-                            Log.Add("Test Context 3");
-                        }
-                        Log.Add("Test Context 4");
-                        Log.Flush();
-                    },
-                "TestContext", instance: this);
-        }
-
+        
         [TestMethod]
         public void TestExceptions()
         {

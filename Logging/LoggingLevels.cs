@@ -25,15 +25,62 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.ComponentModel;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
-    ///   The severity of a Log Entry.
+    ///   Allows the specification of multiple <see cref="LoggingLevel">log levels</see>.
     /// </summary>
-    public enum LogLevel
+    [Flags]
+    public enum LoggingLevels
     {
+        /// <summary>
+        ///   All Levels.
+        /// </summary>
+        [Description("All Levels.")] All =
+            Emergency | Critical | Error | Warning | SystemNotification | Notification | Information | Debugging,
+
+        /// <summary>
+        ///   No Levels.
+        /// </summary>
+        [Description("No Levels.")] None = 0,
+
+        /// <summary>
+        ///   At least critical.
+        /// </summary>
+        [Description("At least critical.")] [UsedImplicitly] AtLeastCritical = Emergency | Critical,
+
+        /// <summary>
+        ///   At least an error.
+        /// </summary>
+        [Description("At least an error.")] [UsedImplicitly] AtLeastError = Emergency | Critical | Error,
+
+        /// <summary>
+        ///   At least a warning.
+        /// </summary>
+        [Description("At least a warning.")] [UsedImplicitly] AtLeastWarning = Emergency | Critical | Error | Warning,
+
+        /// <summary>
+        ///   At least a system notification.
+        /// </summary>
+        [Description("At least a system notification.")] [UsedImplicitly] AtLeastSystemNotification =
+            Emergency | Critical | Error | Warning | SystemNotification,
+
+        /// <summary>
+        ///   At least a notification.
+        /// </summary>
+        [Description("At least a notification.")] [UsedImplicitly] AtLeastNotification =
+            Emergency | Critical | Error | Warning | SystemNotification | Notification,
+
+        /// <summary>
+        ///   At least information.
+        /// </summary>
+        [Description("At least information.")] AtLeastInformation =
+            Emergency | Critical | Error | Warning | SystemNotification | Notification | Information,
+
         /// <summary>
         ///   Used for critical, unrecoverable errors that can cause damage. The system should be stopped immediately.
         /// </summary>

@@ -121,9 +121,6 @@
     <value>({0} entr{1})</value>
     <comment>{context.Count} entr{y | ies}</comment>
   </data>
-  <data name="LoggingException_ContextCannotBeNull" xml:space="preserve">
-    <value>Parameter 'context' can not be null</value>
-  </data>
   <data name="LoggingException_InnerExceptionCannotBeNull" xml:space="preserve">
     <value>Parameter 'innerException' can not be null</value>
   </data>
@@ -135,9 +132,6 @@
   </data>
   <data name="LogStatic_AddOrUpdateLogger_RetrievalNotSupported" xml:space="preserve">
     <value>Can not copy logs over from {0} logger as log retrieval is not supported!</value>
-  </data>
-  <data name="LogStatic_GetLog_OperationCouldNotBeFound" xml:space="preserve">
-    <value>Operation '{0}' could not be found.</value>
   </data>
   <data name="LogStatic_Get_LimitLessThanZero" xml:space="preserve">
     <value>Cannot retrieve logs, limit is not greater than zero!</value>
@@ -166,32 +160,8 @@
   <data name="LogStatic_LoggerThread_LoggingThreadWasAborted" xml:space="preserve">
     <value>Logging thread was aborted.</value>
   </data>
-  <data name="Log_Operation_OperationNotReLinked" xml:space="preserve">
-    <value>Operation was not re-linked correctly.</value>
-  </data>
-  <data name="Log_SqlException" xml:space="preserve">
-    <value>{1}{0}Procedure: {2}, Line: {3}.</value>
-  </data>
-  <data name="Log_ToString" xml:space="preserve">
-    <value>Log{0}==={0}{1}ID: {2}{0}{1}Thread: {3} - {4}{0}{1}Group: {5}{0}{1}Time: {6:o}{0}{1}Level: {7}{0}{1}Message: {8}{0}{1}Operation: {9}{0}{1}Context: {10}{0}{11}</value>
-  </data>
-  <data name="Log_ToString_LogException" xml:space="preserve">
-    <value>{1}Exception Type: {2}{0}{1}Stack Trace: {3}{0}</value>
-  </data>
-  <data name="Operation_DuplicateGuidProvided" xml:space="preserve">
-    <value>Duplication GUID provided for operation.</value>
-  </data>
-  <data name="Operation_Parent_CannotRecoverParent" xml:space="preserve">
-    <value>Cannot recover the operation's parent with GUID '{0}'.</value>
-  </data>
-  <data name="Operation_Stop_OperationAlreadyStopped" xml:space="preserve">
-    <value>The '{0}' operation has already been stopped.</value>
-  </data>
-  <data name="Operation_ToString" xml:space="preserve">
-    <value>{1}{0}		Method: {2} ({3}){0}		Thread: {4} - {5}{0}		Guid: {6}{0}		Parent GUID: {7}{0}		Arguments: {8}</value>
-  </data>
-  <data name="Operation_Wrap_UnhandledExceptionOccurred" xml:space="preserve">
-    <value>An unhandled exception occurred in the operation. {0}</value>
+  <data name="Log_ToString_Log_Header" xml:space="preserve">
+    <value>- logged on {0:D} at {1:c}.</value>
   </data>
   <data name="EventLogger_EventLogCannotBeNull" xml:space="preserve">
     <value>Parameter 'eventLog' can not be null</value>
@@ -259,7 +229,37 @@
   <data name="Sqllogger_TimeoutLessThanOneSecond" xml:space="preserve">
     <value>The specified SQL timeout ({0}) was less than 1s.</value>
   </data>
-  <data name="Operation_Completed" xml:space="preserve">
-    <value>"Completed {0} [Operation took {1:0.0000} ms]"</value>
+  <data name="LogContext_Empty_Reservation" xml:space="preserve">
+    <value>The reservation cannot be Guid.Empty.</value>
+  </data>
+  <data name="LogContext_Key_Already_Reserved" xml:space="preserve">
+    <value>The '{0}' key has already been reserved with a different reservation.</value>
+  </data>
+  <data name="LogContext_Key_Reservation_Failed_Prefix_Match" xml:space="preserve">
+    <value>The '{0}' key matches the '{1}' prefix - which has already been reserved.</value>
+  </data>
+  <data name="LogContext_Null_Key" xml:space="preserve">
+    <value>The log context key cannot be null.</value>
+  </data>
+  <data name="LogContext_Null_Prefix" xml:space="preserve">
+    <value>The log context key prefix cannot be null.</value>
+  </data>
+  <data name="LogContext_Prefix_Already_Reserved" xml:space="preserve">
+    <value>The '{0}' key prefix has already been reserved with a different reservation.</value>
+  </data>
+  <data name="LogContext_Prefix_Reservation_Failed_Key_Match" xml:space="preserve">
+    <value>The '{0}' key prefix collides with the '{1}' key reservation.</value>
+  </data>
+  <data name="LogContext_Prefix_Reservation_Failed_Prefix_Match" xml:space="preserve">
+    <value>The '{0}' key prefix matches the '{1}' prefix - which has already been reserved.</value>
+  </data>
+  <data name="LogContext_Prefix_Too_Short" xml:space="preserve">
+    <value>The log context key prefic '{0}' is less than {1} characters (too short).</value>
+  </data>
+  <data name="LogContext_Reserved_Key" xml:space="preserve">
+    <value>The '{0}' key is reserved and cannot be added to a log context explicitly.</value>
+  </data>
+  <data name="Log_ToString_Exception_Header" xml:space="preserve">
+    <value>- thrown on {0:D} at {1:c}.</value>
   </data>
 </root>

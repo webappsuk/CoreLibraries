@@ -72,13 +72,13 @@ namespace WebApplications.Utilities.Logging.Configuration
         }
 
         /// <summary>
-        ///   Gets the valid <see cref="LogLevels">logging levels</see>.
+        ///   Gets the valid <see cref="LoggingLevels">logging levels</see>.
         /// </summary>
-        [ConfigurationProperty("validLevels", DefaultValue = LogLevels.All, IsRequired = false)]
+        [ConfigurationProperty("validLevels", DefaultValue = LoggingLevels.All, IsRequired = false)]
         [UsedImplicitly]
-        public LogLevels ValidLevels
+        public LoggingLevels ValidLevels
         {
-            get { return GetProperty<LogLevels>("validLevels"); }
+            get { return GetProperty<LoggingLevels>("validLevels"); }
             set { SetProperty("validLevels", value); }
         }
 
@@ -174,7 +174,7 @@ namespace WebApplications.Utilities.Logging.Configuration
                     Name = "Trace Logger",
                     Type = typeof (TraceLogger),
                     Enabled = true,
-                    ValidLevels = LogLevels.All
+                    ValidLevels = LoggingLevels.All
                 });
 
             ApplicationGuid = Guid.NewGuid();

@@ -49,9 +49,9 @@ namespace WebApplications.Utilities.Logging.Interfaces
         bool CanRetrieve { get; }
 
         /// <summary>
-        ///   The valid <see cref="LogLevels">log levels</see> for this log level.
+        ///   The valid <see cref="LoggingLevels">log levels</see> for this log level.
         /// </summary>
-        LogLevels ValidLevels { get; set; }
+        LoggingLevels ValidLevels { get; set; }
 
         /// <summary>
         ///   Gets the logger name.

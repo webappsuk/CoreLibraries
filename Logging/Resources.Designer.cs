@@ -169,38 +169,110 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Operation was not re-linked correctly..
+        ///   Looks up a localized string similar to - thrown on {0:D} at {1:c}..
         /// </summary>
-        internal static string Log_Operation_OperationNotReLinked {
+        internal static string Log_ToString_Exception_Header {
             get {
-                return ResourceManager.GetString("Log_Operation_OperationNotReLinked", resourceCulture);
+                return ResourceManager.GetString("Log_ToString_Exception_Header", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {1}{0}Procedure: {2}, Line: {3}..
+        ///   Looks up a localized string similar to - logged on {0:D} at {1:c}..
         /// </summary>
-        internal static string Log_SqlException {
+        internal static string Log_ToString_Log_Header {
             get {
-                return ResourceManager.GetString("Log_SqlException", resourceCulture);
+                return ResourceManager.GetString("Log_ToString_Log_Header", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Log{0}==={0}{1}ID: {2}{0}{1}Thread: {3} - {4}{0}{1}Group: {5}{0}{1}Time: {6:o}{0}{1}Level: {7}{0}{1}Message: {8}{0}{1}Operation: {9}{0}{1}Context: {10}{0}{11}.
+        ///   Looks up a localized string similar to The reservation cannot be Guid.Empty..
         /// </summary>
-        internal static string Log_ToString {
+        internal static string LogContext_Empty_Reservation {
             get {
-                return ResourceManager.GetString("Log_ToString", resourceCulture);
+                return ResourceManager.GetString("LogContext_Empty_Reservation", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {1}Exception Type: {2}{0}{1}Stack Trace: {3}{0}.
+        ///   Looks up a localized string similar to The &apos;{0}&apos; key has already been reserved with a different reservation..
         /// </summary>
-        internal static string Log_ToString_LogException {
+        internal static string LogContext_Key_Already_Reserved {
             get {
-                return ResourceManager.GetString("Log_ToString_LogException", resourceCulture);
+                return ResourceManager.GetString("LogContext_Key_Already_Reserved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; key matches the &apos;{1}&apos; prefix - which has already been reserved..
+        /// </summary>
+        internal static string LogContext_Key_Reservation_Failed_Prefix_Match {
+            get {
+                return ResourceManager.GetString("LogContext_Key_Reservation_Failed_Prefix_Match", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The log context key cannot be null..
+        /// </summary>
+        internal static string LogContext_Null_Key {
+            get {
+                return ResourceManager.GetString("LogContext_Null_Key", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The log context key prefix cannot be null..
+        /// </summary>
+        internal static string LogContext_Null_Prefix {
+            get {
+                return ResourceManager.GetString("LogContext_Null_Prefix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; key prefix has already been reserved with a different reservation..
+        /// </summary>
+        internal static string LogContext_Prefix_Already_Reserved {
+            get {
+                return ResourceManager.GetString("LogContext_Prefix_Already_Reserved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; key prefix collides with the &apos;{1}&apos; key reservation..
+        /// </summary>
+        internal static string LogContext_Prefix_Reservation_Failed_Key_Match {
+            get {
+                return ResourceManager.GetString("LogContext_Prefix_Reservation_Failed_Key_Match", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; key prefix matches the &apos;{1}&apos; prefix - which has already been reserved..
+        /// </summary>
+        internal static string LogContext_Prefix_Reservation_Failed_Prefix_Match {
+            get {
+                return ResourceManager.GetString("LogContext_Prefix_Reservation_Failed_Prefix_Match", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The log context key prefic &apos;{0}&apos; is less than {1} characters (too short)..
+        /// </summary>
+        internal static string LogContext_Prefix_Too_Short {
+            get {
+                return ResourceManager.GetString("LogContext_Prefix_Too_Short", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; key is reserved and cannot be added to a log context explicitly..
+        /// </summary>
+        internal static string LogContext_Reserved_Key {
+            get {
+                return ResourceManager.GetString("LogContext_Reserved_Key", resourceCulture);
             }
         }
         
@@ -246,15 +318,6 @@ namespace WebApplications.Utilities.Logging {
         internal static string LoggerBase_GetForwardStartDateLimit_NotImplemented {
             get {
                 return ResourceManager.GetString("LoggerBase_GetForwardStartDateLimit_NotImplemented", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;context&apos; can not be null.
-        /// </summary>
-        internal static string LoggingException_ContextCannotBeNull {
-            get {
-                return ResourceManager.GetString("LoggingException_ContextCannotBeNull", resourceCulture);
             }
         }
         
@@ -340,15 +403,6 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Operation &apos;{0}&apos; could not be found..
-        /// </summary>
-        internal static string LogStatic_GetLog_OperationCouldNotBeFound {
-            get {
-                return ResourceManager.GetString("LogStatic_GetLog_OperationCouldNotBeFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Error occurred whilst creating logger &apos;{0}&apos; as specified in configuration file. {1}.
         /// </summary>
         internal static string LogStatic_LoadConfiguration_ErrorCreatingLogger {
@@ -399,60 +453,6 @@ namespace WebApplications.Utilities.Logging {
         internal static string MemoryLogger_MaximumLogsLessThanOne {
             get {
                 return ResourceManager.GetString("MemoryLogger_MaximumLogsLessThanOne", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &quot;Completed {0} [Operation took {1:0.0000} ms]&quot;.
-        /// </summary>
-        internal static string Operation_Completed {
-            get {
-                return ResourceManager.GetString("Operation_Completed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Duplication GUID provided for operation..
-        /// </summary>
-        internal static string Operation_DuplicateGuidProvided {
-            get {
-                return ResourceManager.GetString("Operation_DuplicateGuidProvided", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot recover the operation&apos;s parent with GUID &apos;{0}&apos;..
-        /// </summary>
-        internal static string Operation_Parent_CannotRecoverParent {
-            get {
-                return ResourceManager.GetString("Operation_Parent_CannotRecoverParent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The &apos;{0}&apos; operation has already been stopped..
-        /// </summary>
-        internal static string Operation_Stop_OperationAlreadyStopped {
-            get {
-                return ResourceManager.GetString("Operation_Stop_OperationAlreadyStopped", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {1}{0}		Method: {2} ({3}){0}		Thread: {4} - {5}{0}		Guid: {6}{0}		Parent GUID: {7}{0}		Arguments: {8}.
-        /// </summary>
-        internal static string Operation_ToString {
-            get {
-                return ResourceManager.GetString("Operation_ToString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An unhandled exception occurred in the operation. {0}.
-        /// </summary>
-        internal static string Operation_Wrap_UnhandledExceptionOccurred {
-            get {
-                return ResourceManager.GetString("Operation_Wrap_UnhandledExceptionOccurred", resourceCulture);
             }
         }
         

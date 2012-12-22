@@ -41,7 +41,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         /// <param name="name">The logger name.</param>
         /// <param name="validLevels">The valid log levels.</param>
-        public TraceLogger([NotNull] string name, LogLevels validLevels)
+        public TraceLogger([NotNull] string name, LoggingLevels validLevels)
             : base(name, false, validLevels)
         {
         }

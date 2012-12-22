@@ -25,42 +25,54 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using JetBrains.Annotations;
-using WebApplications.Utilities.Logging.Interfaces;
+using System.ComponentModel;
 
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
-    ///   A base class for classes that implement a logger that can persist logs.
+    ///   The severity of a Log Entry.
     /// </summary>
-    public class Logger : ILoggerFacade
+    public enum LoggingLevel
     {
-        #region ILoggerFacade Members
         /// <summary>
-        ///   Adds a log at the specified <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see>.
+        ///   Used for critical, unrecoverable errors that can cause damage. The system should be stopped immediately.
         /// </summary>
-        /// <param name="message">The message to log.</param>
-        /// <param name="level">The log level.</param>
-        /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
-        public void Add(string message, LogLevel level, params object[] parameters)
-        {
-            Log.Add(message, level, parameters);
-        }
+        [Description("Used for critical, unrecoverable errors that can cause damage.")] Emergency = 128,
 
         /// <summary>
-        ///   Adds a log at the specified <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see>.
+        ///   Used for critical, unrecoverable errors that don't cause damage.
+        ///   You should stop the system and repair the error, but it may be capable of continuing in some capacity.
         /// </summary>
-        /// <param name="logGroup">The unique ID to group log items together.</param>
-        /// <param name="message">The message.</param>
-        /// <param name="level">The level.</param>
-        /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
-        public void Add(Guid logGroup, string message, LogLevel level, params object[] parameters)
-        {
-            Log.Add(logGroup, message, level, parameters);
-        }
-        #endregion
+        [Description("Used for critical, unrecoverable errors that don't cause damage.")] Critical = 64,
+
+        /// <summary>
+        ///   Used for errors.
+        /// </summary>
+        [Description("Used for errors.")] Error = 32,
+
+        /// <summary>
+        ///   Used to indicate potential problems that should be addressed.
+        /// </summary>
+        [Description("Used to indicate potential problems that should be addressed.")] Warning = 16,
+
+        /// <summary>
+        ///   Used by system to notify key events.
+        /// </summary>
+        [Description("Used by system to notify key events.")] SystemNotification = 8,
+
+        /// <summary>
+        ///   Used by modules to notify key events.
+        /// </summary>
+        [Description("Used by modules to notify key events.")] Notification = 4,
+
+        /// <summary>
+        ///   Informational use.
+        /// </summary>
+        [Description("Informational use.")] Information = 2,
+
+        /// <summary>
+        ///   Debugging information.
+        /// </summary>
+        [Description("Debugging information.")] Debugging = 1
     }
 }

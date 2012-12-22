@@ -27,8 +27,10 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml.Linq;
 using JetBrains.Annotations;
@@ -44,81 +46,49 @@ namespace WebApplications.Utilities.Logging
     ///   implicit casts, or the static <see cref="Empty">new LogContext()</see>.
     /// </remarks>
     [Serializable]
-    public class LogContext : IEnumerable<KeyValuePair<string, string>>
+    public class LogContext
     {
-        [NonSerialized] private const string NodeContexts = "Contexts";
-        [NonSerialized] private const string NodeContext = "Context";
-        [NonSerialized] private const string AttributeKey = "key";
-        [NonSerialized] private const string AttributeValue = "value";
-
-
         /// <summary>
-        ///   Holds <see cref="LogContext"/> against the thread call stack.
+        /// The Key reservations.
         /// </summary>
-        private static readonly ContextStack<LogContext> _contextStack = new ContextStack<LogContext>();
+        [NotNull]
+        private static readonly ConcurrentDictionary<string, Guid> _keyReservations = new ConcurrentDictionary<string, Guid>();
 
         /// <summary>
-        ///   The context information.
+        /// The prefix reservations.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, string> _context;
+        [NotNull]
+        private static readonly ConcurrentDictionary<string, Guid> _prefixReservations = new ConcurrentDictionary<string, Guid>();
 
         /// <summary>
-        ///   The cached <see cref="string"/> representation.
+        /// The context dictionary.
         /// </summary>
-        [NonSerialized] private string _string;
+        [NotNull]
+        private readonly ConcurrentDictionary<string, string> _context;
 
         /// <summary>
-        ///   The cached XML representation.
-        /// </summary>
-        [NonSerialized] private XElement _xml;
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="LogContext"/> class.
-        /// </summary>
-        [UsedImplicitly]
-        private LogContext()
-        {
-            // Get the context
-            LogContext current = _contextStack.Current;
-
-            // Either create a new blank dictionary or a copy.
-            _context = current == null
-                ? new Dictionary<string, string>()
-                : new Dictionary<string, string>(current._context);
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="LogContext"/> class.
-        ///   Adds a parameter collection to an optional existing context.
+        /// Initializes a new instance of the <see cref="LogContext" /> class.
+        /// Adds a parameter collection to an optional existing context.
         /// </summary>
         /// <param name="context">The context.</param>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="prefix">The prefix.</param>
         /// <param name="parameters">The parameters.</param>
-        public LogContext([CanBeNull] LogContext context, [NotNull] params object[] parameters) : this()
+        public LogContext([CanBeNull] LogContext context, Guid reservation, string prefix, [NotNull] params object[] parameters)
         {
-            if (context != null)
-                // Update dictionary.
-                foreach (KeyValuePair<string, string> kvp in context._context)
-                {
-                    if (kvp.Key == null) continue;
-                    if (_context.ContainsKey(kvp.Key))
-                        _context[kvp.Key] = kvp.Value;
-                    else
-                        _context.Add(kvp.Key, kvp.Value);
-                }
+            _context = context != null
+                           ? new ConcurrentDictionary<string, string>(context._context)
+                           : new ConcurrentDictionary<string, string>();
 
-            if (parameters.Length > 0)
+            if (parameters.Length < 1) return;
+
+            // Update dictionary.
+            int i = 1;
+            foreach (object p in parameters)
             {
-                // Update dictionary.
-                int i = 1;
-                foreach (object p in parameters)
-                {
-                    string key = "Parameter" + i++;
-                    string value = p == null ? null : p.ToString();
-                    if (_context.ContainsKey(key))
-                        _context[key] = value;
-                    else
-                        _context.Add(key, value);
-                }
+                string key = prefix + i++;
+                string value = p == null ? null : p.ToString();
+                Set(reservation, key, value);
             }
         }
 
@@ -131,9 +101,149 @@ namespace WebApplications.Utilities.Logging
         ///   <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.
         /// </remarks>
         [UsedImplicitly]
-        public LogContext([NotNull] params KeyValuePair<string, string>[] keyValuePairs)
-            : this((IEnumerable<KeyValuePair<string, string>>) keyValuePairs)
+        public LogContext([NotNull] params KeyValuePair<string, object>[] keyValuePairs)
         {
+            _context =
+                new ConcurrentDictionary<string, string>(
+                    keyValuePairs.Select(
+                        kvp =>
+                        new KeyValuePair<string, string>(Validate(Guid.Empty, kvp.Key), kvp.Value == null ? null : kvp.Value.ToString())));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class.
+        /// </summary>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext(Guid reservation, [NotNull] params KeyValuePair<string, object>[] keyValuePairs)
+        {
+            _context =
+                new ConcurrentDictionary<string, string>(
+                    keyValuePairs.Select(
+                        kvp =>
+                        new KeyValuePair<string, string>(Validate(reservation, kvp.Key), kvp.Value == null ? null : kvp.Value.ToString())));
+        }
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="LogContext"/> class.
+        /// </summary>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>
+        ///   This can accept any object that implements the interface, which includes objects that implement
+        ///   <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.
+        /// </remarks>
+        [UsedImplicitly]
+        public LogContext([NotNull] params KeyValuePair<string, string>[] keyValuePairs)
+        {
+            _context = new ConcurrentDictionary<string, string>(
+                keyValuePairs.Select(kvp => new KeyValuePair<string, string>(Validate(Guid.Empty, kvp.Key), kvp.Value)));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class.
+        /// </summary>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext(Guid reservation, [NotNull] params KeyValuePair<string, string>[] keyValuePairs)
+        {
+            _context = new ConcurrentDictionary<string, string>(
+                keyValuePairs.Select(kvp => new KeyValuePair<string, string>(Validate(reservation, kvp.Key), kvp.Value)));
+        }
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="LogContext"/> class.
+        /// </summary>
+        /// <remarks>
+        ///   This can accept any object that implements the interface, which includes objects that implement
+        ///   <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.
+        /// </remarks>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        [UsedImplicitly]
+        public LogContext([NotNull] IEnumerable<KeyValuePair<string, string>> keyValuePairs)
+        {
+            _context = new ConcurrentDictionary<string, string>(
+                keyValuePairs.Select(kvp => new KeyValuePair<string, string>(Validate(Guid.Empty, kvp.Key), kvp.Value)));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class.
+        /// </summary>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext(Guid reservation, [NotNull] IEnumerable<KeyValuePair<string, string>> keyValuePairs)
+        {
+            _context = new ConcurrentDictionary<string, string>(
+                keyValuePairs.Select(kvp => new KeyValuePair<string, string>(Validate(reservation, kvp.Key), kvp.Value)));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class.
+        /// </summary>
+        /// <param name="key">The first key.</param>
+        /// <param name="value">The first value.</param>
+        /// <param name="keyValuePairs">Subsequent key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([NotNull] string key, [CanBeNull] string value, [NotNull] params string[] keyValuePairs)
+        {
+            // Add initial value
+            _context.AddOrUpdate(Validate(Guid.Empty, key), k => value, (k, o) => value);
+
+            int l = keyValuePairs.Length;
+            if (l < 1) return;
+
+            int i = 0;
+            while (i < keyValuePairs.Length)
+            {
+                string k = keyValuePairs[i];
+                string v = i + 1 < l
+                    ? keyValuePairs[i + 1]
+                    : null;
+                if (k != null)
+                    _context.AddOrUpdate(Validate(Guid.Empty, k), y => v, (y, o) => v);
+                i += 2;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class.
+        /// </summary>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="key">The first key.</param>
+        /// <param name="value">The first value.</param>
+        /// <param name="keyValuePairs">Subsequent key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext(Guid reservation, [NotNull] string key, [CanBeNull] string value, [NotNull] params string[] keyValuePairs)
+        {
+            // Add initial value
+            _context.AddOrUpdate(Validate(reservation, key), k => value, (k, o) => value);
+
+            int l = keyValuePairs.Length;
+            if (l < 1) return;
+
+            int i = 0;
+            while (i < keyValuePairs.Length)
+            {
+                string k = keyValuePairs[i];
+                string v = i + 1 < l
+                    ? keyValuePairs[i + 1]
+                    : null;
+                if (k != null)
+                    _context.AddOrUpdate(Validate(reservation, k), y => v, (y, o) => v);
+                i += 2;
+            }
         }
 
         /// <summary>
@@ -147,222 +257,294 @@ namespace WebApplications.Utilities.Logging
         ///   <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.
         /// </remarks>
         [UsedImplicitly]
-        public LogContext([NotNull] string key, [CanBeNull] string value, [NotNull] params string[] keyValuePairs)
-            : this(Convert(key, value, keyValuePairs))
+        public LogContext([NotNull] string key, [CanBeNull] object value, [NotNull] params object[] keyValuePairs)
         {
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="LogContext"/> class.
-        /// </summary>
-        /// <remarks>
-        ///   This can accept any object that implements the interface, which includes objects that implement
-        ///   <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.
-        /// </remarks>
-        /// <param name="keyValuePairs">The key value pairs.</param>
-        [UsedImplicitly]
-        public LogContext([NotNull] IEnumerable<KeyValuePair<string, string>> keyValuePairs)
-            : this()
-        {
-            // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            if (keyValuePairs == null) return;
-            // ReSharper restore ConditionIsAlwaysTrueOrFalse
-
-            // Update dictionary.
-            foreach (KeyValuePair<string, string> kvp in keyValuePairs)
-            {
-                if (kvp.Key == null) continue;
-                if (_context.ContainsKey(kvp.Key))
-                    _context[kvp.Key] = kvp.Value;
-                else
-                    _context.Add(kvp.Key, kvp.Value);
-            }
-        }
-
-        /// <summary>
-        ///   Creates a region from the current <see cref="LogContext"/>.
-        /// </summary>
-        public IDisposable Region
-        {
-            get { return _contextStack.Region(_context); }
-        }
-
-        // ReSharper restore ParameterTypeCanBeEnumerable.Global
-
-        /// <summary>
-        ///   Gets the value with the specified key, or a <see langword="null"/> if not found.
-        /// </summary>
-        [CanBeNull]
-        [UsedImplicitly]
-        public string this[[CanBeNull] string key]
-        {
-            get
-            {
-                string value;
-                return _context.TryGetValue(key, out value) ? value : null;
-            }
-        }
-
-        /// <summary>
-        ///   Gets the XML version of the operation.
-        ///   This is cached to avoid reconstructing the XML each time.
-        /// </summary>
-        /// <value>The XML version of the operation.</value>
-        [NotNull]
-        [UsedImplicitly]
-        public XElement Xml
-        {
-            get
-            {
-                if (_xml == null)
-                {
-                    // Create XML for context.
-                    _xml = new XElement(NodeContexts,
-                        _context
-                            .Select(kvp =>
-                                new XElement(NodeContext,
-                                    new XAttribute(AttributeKey, kvp.Key ?? "xs:null"),
-                                    new XAttribute(AttributeValue, kvp.Value ?? "xs:null")))
-                            .ToArray());
-                }
-
-                // Return copy of cached XElement
-                return new XElement(_xml);
-            }
-        }
-
-        #region IEnumerable<KeyValuePair<string,string>> Members
-        /// <summary>
-        ///   Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>
-        ///   A <see cref="T:System.Collections.Generic.IEnumerator`1">T:System.Collections.Generic.IEnumerator`1</see>
-        ///   that can be used to iterate through the collection.
-        /// </returns>
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
-        {
-            return _context.GetEnumerator();
-        }
-
-        /// <summary>
-        ///   Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        ///   An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-        #endregion
-
-        /// <summary>
-        ///   Converts the <see cref="Array">array</see> of <see cref="string"/>s into key value pairs.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="keyValuePairs">The key value pairs.</param>
-        /// <returns>The converted result.</returns>
-        [NotNull]
-        private static IEnumerable<KeyValuePair<string, string>> Convert([NotNull] string key, [CanBeNull] string value,
-                                                                         [NotNull] string[] keyValuePairs)
-        {
-            // Create initial list.
-            List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>
-                                                          {new KeyValuePair<string, string>(key, value)};
+            string v = value == null ? null : value.ToString();
+            // Add initial value
+            _context.AddOrUpdate(Validate(Guid.Empty, key), k => v, (k, o) => v);
 
             int l = keyValuePairs.Length;
-            if (l < 1) return list;
+            if (l < 1) return;
 
             int i = 0;
             while (i < keyValuePairs.Length)
             {
-                string k = keyValuePairs[i];
-                string v = i + 1 < l
+                string k = keyValuePairs[i] as string;
+                value = i + 1 < l
                     ? keyValuePairs[i + 1]
                     : null;
+                v = value == null ? null : value.ToString();
                 if (k != null)
-                    list.Add(new KeyValuePair<string, string>(k, v));
+                    _context.AddOrUpdate(Validate(Guid.Empty, k), y => v, (y, o) => v);
                 i += 2;
             }
-            return list;
         }
 
         /// <summary>
-        ///   Creates a context region.
+        /// Initializes a new instance of the <see cref="LogContext" /> class.
         /// </summary>
-        /// <remarks>
-        ///   Although this accepts a <see cref="LogContext"/>, you can implicitly convert a <see cref="Dictionary{TKey,TValue}">Dictionary&lt;string,string&gt;</see>
-        ///   or <see cref="IEnumerable{T}">enumeration</see> of <see cref="KeyValuePair{TKey,TValue}">KeyValuePair&lt;string,string&gt;</see> into a <see cref="LogContext"/>.
-        ///   In doing so it automatically prepends the existing context from the thread stack.
-        /// </remarks>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="key">The first key.</param>
+        /// <param name="value">The first value.</param>
+        /// <param name="keyValuePairs">Subsequent key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
         [UsedImplicitly]
-        public static IDisposable CreateRegion([NotNull] string key, [CanBeNull] string value, [NotNull] string[] keyValuePairs)
+        public LogContext(Guid reservation, [NotNull] string key, [CanBeNull] object value, [NotNull] params object[] keyValuePairs)
         {
-            return _contextStack.Region(new LogContext(key, value, keyValuePairs));
+            string v = value == null ? null : value.ToString();
+            // Add initial value
+            _context.AddOrUpdate(Validate(reservation, key), k => v, (k, o) => v);
+
+            int l = keyValuePairs.Length;
+            if (l < 1) return;
+
+            int i = 0;
+            while (i < keyValuePairs.Length)
+            {
+                string k = keyValuePairs[i] as string;
+                value = i + 1 < l
+                    ? keyValuePairs[i + 1]
+                    : null;
+                v = value == null ? null : value.ToString();
+                if (k != null)
+                    _context.AddOrUpdate(Validate(reservation, k), y => v, (y, o) => v);
+                i += 2;
+            }
         }
 
         /// <summary>
-        ///   Creates a context region.
+        /// Reserves a key.
         /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="reservation">The reservation (must not be <see cref="Guid.Empty" />.</param>
+        /// <returns>The reserved key.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException">The key reservation fails.</exception>
+        /// <remarks><para>The context key can only be modified with the specified reservation GUID after being reserved.</para>
+        ///   <para>The recommended practice is to create a random static GUID in the class and use this for reservations, preventing
+        /// anyone else modifying a reserved key for a context.</para>
+        ///   <para>Trying to reserve a key when it has already been reserved with a different GUID will throw an exception.</para></remarks>
+        public static string ReserveKey(string key, Guid reservation)
+        {
+            if (key == null)
+                throw new LoggingException(Resources.LogContext_Null_Key);
+            if (reservation == Guid.Empty)
+                throw new LoggingException(Resources.LogContext_Empty_Reservation);
+            
+            // First check prefixes
+            foreach (KeyValuePair<string, Guid> kvp in _prefixReservations)
+            {
+                if (!key.StartsWith(kvp.Key) ||
+                    kvp.Value.Equals(reservation)) continue;
+
+                throw new LoggingException(Resources.LogContext_Key_Reservation_Failed_Prefix_Match,
+                                           key, kvp.Key);
+            }
+
+            Guid existing = _keyReservations.GetOrAdd(key, reservation);
+            if (existing != reservation)
+                throw new LoggingException(Resources.LogContext_Key_Already_Reserved, key);
+
+            return key;
+        }
+
+        /// <summary>
+        /// Reserves a prefix.
+        /// </summary>
+        /// <param name="prefix">The prefix (minimum of 3 characters).</param>
+        /// <param name="reservation">The reservation (must not be <see cref="Guid.Empty"/>.</param>
+        /// <returns>The reserved key.</returns>
         /// <remarks>
-        ///   Although this accepts a <see cref="LogContext"/>, you can implicitly convert a <see cref="Dictionary{TKey,TValue}">Dictionary&lt;string,string&gt;</see>
-        ///   or <see cref="IEnumerable{T}">enumeration</see> of <see cref="KeyValuePair{TKey,TValue}">KeyValuePair&lt;string,string&gt;</see>
-        ///   into a <see cref="LogContext"/>. In doing so it automatically prepends the existing context from the thread stack.
+        /// <para>Any context key beginning with the prefix can only be modified with the specified reservation GUID after being reserved.</para>
+        /// <para>The recommended practice is to create a random static GUID in the class and use this for reservations, preventing
+        /// anyone else modifying a reserved key prefix for a context.</para>
+        /// <para>Trying to reserve a key prefix when it has already been reserved with a different GUID, or when a reservation
+        /// for a key that matches the prefix has already been reserved will throw an exception.</para>
         /// </remarks>
-        // ReSharper disable ParameterTypeCanBeEnumerable.Global
-        public static IDisposable CreateRegion(LogContext context)
+        public static string ReservePrefix(string prefix, Guid reservation)
         {
-            return _contextStack.Region(context);
+            if (prefix == null)
+                throw new LoggingException(Resources.LogContext_Null_Prefix);
+            if (prefix.Length < 3)
+                throw new LoggingException(Resources.LogContext_Prefix_Too_Short, prefix, 3);
+            if (reservation == Guid.Empty)
+                throw new LoggingException(Resources.LogContext_Empty_Reservation);
+
+            // First check prefixes
+            foreach (KeyValuePair<string, Guid> kvp in _prefixReservations)
+            {
+                if (!prefix.StartsWith(kvp.Key) ||
+                    kvp.Value.Equals(reservation)) continue;
+
+                throw new LoggingException(Resources.LogContext_Prefix_Reservation_Failed_Prefix_Match, prefix, kvp.Key);
+            }
+
+            // Next check existing key reservations
+            foreach (KeyValuePair<string, Guid> kvp in _keyReservations)
+            {
+                if (!kvp.Key.StartsWith(prefix) ||
+                    kvp.Value.Equals(reservation)) continue;
+
+                throw new LoggingException("",
+                                           prefix, kvp.Key);
+            }
+
+            // Note that race conditions are possible here (i.e. checks above could succeed for more than one conflicting
+            // pair) but the side effect is negligent.
+            Guid existing = _prefixReservations.GetOrAdd(prefix, reservation);
+            if (existing != reservation)
+                throw new LoggingException(Resources.LogContext_Prefix_Already_Reserved, prefix);
+            return prefix;
         }
 
         /// <summary>
-        ///   Returns a <see cref="string"/> that represents this instance.
+        /// Determines whether the specified key is a reserved key.
         /// </summary>
-        /// <returns>
-        ///   A <see cref="string"/> representation of this instance. The format strings can be changed in the 
-        ///   Resources.resx resource file at the key 'LogContextToString'
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        ///   The format string was a <see langword="null"/>.
-        /// </exception>
-        /// <exception cref="FormatException">
-        ///   An index from the format string is either less than zero or greater than or equal to the number of arguments.
-        /// </exception>
+        /// <param name="key">The key.</param>
+        /// <returns><see langword="true" /> if the specified key is a reserved key; otherwise, <see langword="false" />.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [UsedImplicitly]
+        public static bool IsReservedKey(string key)
+        {
+            // Check for reservation.
+            return Reservation(key) != Guid.Empty;
+        }
+
+        /// <summary>
+        /// Get's the reservation (if any) for the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>Guid reservation; otherwise <see cref="Guid.Empty"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Guid Reservation(string key)
+        {
+            if (key == null) return Guid.Empty;
+
+            foreach (var kvp in _prefixReservations.Where(kvp => key.StartsWith(kvp.Key)))
+                return kvp.Value;
+            Guid reservation;
+            return _keyReservations.TryGetValue(key, out reservation) ? reservation : Guid.Empty;
+        }
+
+        /// <summary>
+        /// Validates the specified key, throwing an exception if it is reserved.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>System.String.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [NotNull]
+        private static string Validate(Guid reservation, string key)
+        {
+            // Check for reservation
+            Guid r = Reservation(key);
+            if ((r != Guid.Empty) && (r != reservation))
+                throw new LoggingException(Resources.LogContext_Reserved_Key, key);
+            if (key == null)
+                throw new LoggingException(Resources.LogContext_Null_Key);
+            return key;
+        }
+
+        /// <summary>
+        /// Sets the specified key to the specified value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Set(string key, string value)
+        {
+            Set(Guid.Empty, key, value);
+        }
+
+        /// <summary>
+        /// Sets the specified key to the specified value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Set(string key, object value)
+        {
+            string v = value == null ? null : value.ToString();
+            Set(Guid.Empty, key, v);
+        }
+
+        /// <summary>
+        /// Sets the specified key to the specified value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Set(Guid reservation, string key, object value)
+        {
+            string v = value == null ? null : value.ToString();
+            Set(reservation, key, v);
+        }
+
+        /// <summary>
+        /// Sets the specified key to the specified value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Set(Guid reservation, string key, string value)
+        {
+            _context.AddOrUpdate(Validate(reservation, key), k => value, (k, o) => value);
+        }
+
+        /// <summary>
+        /// Gets the value of the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>System.String.</returns>
+        public string Get(string key)
+        {
+            string value;
+            return _context.TryGetValue(key, out value) ? value : null;
+        }
+
+        /// <summary>
+        /// Gets all keys and their values that match the prefix.
+        /// </summary>
+        /// <param name="prefix">The prefix.</param>
+        /// <returns>IEnumerable{KeyValuePair{System.StringSystem.String}}.</returns>
+        public IEnumerable<KeyValuePair<string, string>> GetPrefixed(string prefix)
+        {
+            return _context.Where(kvp => kvp.Key.StartsWith(prefix));
+        }
+
+        /// <summary>
+        /// Returns a <see cref="string" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="string" /> representation of this instance. The format strings can be changed in the
+        /// Resources.resx resource file at the key 'LogContextToString'</returns>
+        /// <exception cref="ArgumentNullException">The format string was a <see langword="null" />.</exception>
+        /// <exception cref="FormatException">An index from the format string is either less than zero or greater than or equal to the number of arguments.</exception>
         public override string ToString()
         {
-            if (_string == null)
+            StringBuilder stringBuilder =
+                new StringBuilder(String.Format(Resources.LogContext_ToString, _context.Count, _context.Count == 1 ? "y" : "ies"));
+            foreach (KeyValuePair<string, string> kvp in _context)
             {
-                StringBuilder stringBuilder =
-                    new StringBuilder(String.Format(Resources.LogContext_ToString, _context.Count,
-                        _context.Count == 1
-                            ? "y"
-                            : "ies"));
-                foreach (KeyValuePair<string, string> kvp in _context)
+                stringBuilder.Append(Environment.NewLine);
+                stringBuilder.Append("\t\t");
+                if (kvp.Key == null)
+                    stringBuilder.Append("null");
+                else
                 {
-                    stringBuilder.Append(Environment.NewLine);
-                    stringBuilder.Append("\t\t");
-                    if (kvp.Key == null)
-                        stringBuilder.Append("null");
-                    else
-                    {
-                        stringBuilder.Append("'");
-                        stringBuilder.Append(kvp.Key);
-                        stringBuilder.Append("'");
-                    }
-                    stringBuilder.Append(" = ");
-                    if (kvp.Value == null)
-                        stringBuilder.Append("null");
-                    else
-                    {
-                        stringBuilder.Append("'");
-                        stringBuilder.Append(kvp.Value);
-                        stringBuilder.Append("'");
-                    }
+                    stringBuilder.Append("'");
+                    stringBuilder.Append(kvp.Key);
+                    stringBuilder.Append("'");
                 }
-                _string = stringBuilder.ToString();
+                stringBuilder.Append(" = ");
+                if (kvp.Value == null)
+                    stringBuilder.Append("null");
+                else
+                {
+                    stringBuilder.Append("'");
+                    stringBuilder.Append(kvp.Value);
+                    stringBuilder.Append("'");
+                }
             }
-            return _string;
+            return stringBuilder.ToString();
         }
 
         /// <summary>
@@ -373,7 +555,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns>The result of the conversion.</returns>
         public static implicit operator LogContext([NotNull] Dictionary<string, string> dictionary)
         {
-            return new LogContext((IEnumerable<KeyValuePair<string, string>>) dictionary);
+            return new LogContext((IEnumerable<KeyValuePair<string, string>>)dictionary);
         }
 
         /// <summary>

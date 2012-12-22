@@ -45,27 +45,11 @@ namespace WebApplications.Utilities.Logging
     /// </summary>
     public sealed partial class Log
     {
-        [NonSerialized] private const string NodeLog = "Log";
-        [NonSerialized] private const string NodeThread = "Thread";
-        [NonSerialized] private const string NodeLevel = "Level";
-        [NonSerialized] private const string NodeMessage = "Message";
-        [NonSerialized] private const string NodeExceptionType = "ExceptionType";
-        [NonSerialized] private const string NodeStackTrace = "StackTrace";
-        [NonSerialized] private const string AttributeId = "id";
-        [NonSerialized] private const string AttributeTimestamp = "time";
-        [NonSerialized] private const string AttributeLoggroup = "logGroup";
-
-        /// <summary>
-        ///   Holds weak reference to log items.
-        /// </summary>
-        [NonSerialized] private static readonly WeakConcurrentDictionary<CombGuid, Log> _logItems =
-            new WeakConcurrentDictionary<CombGuid, Log>(allowResurrection: true);
-
         /// <summary>
         ///   The currently logged levels, which is all of the log levels that the registered loggers are
         ///   interested in ANDed with the current <see cref="ValidLevels"/>.
         /// </summary>
-        [NonSerialized] private static LogLevels _loggedLevels = LogLevels.None;
+        [NonSerialized] private static LoggingLevels _loggedLevels = LoggingLevels.None;
 
         /// <summary>
         ///   Dictionary of all available loggers.
@@ -126,12 +110,12 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        ///   Gets the valid <see cref="WebApplications.Utilities.Logging.LogLevel">log levels</see>.
+        ///   Gets the valid <see cref="LoggingLevel">log levels</see>.
         /// </summary>
         [UsedImplicitly]
-        public static LogLevels ValidLevels
+        public static LoggingLevels ValidLevels
         {
-            get { return LoggingConfiguration.Active.ValidLevels; }
+            get { return ConfigurationSection<LoggingConfiguration>.Active.ValidLevels; }
         }
 
         /// <summary>
@@ -167,7 +151,7 @@ namespace WebApplications.Utilities.Logging
                 }
 
                 // Get the active configuration
-                LoggingConfiguration configuration = LoggingConfiguration.Active;
+                LoggingConfiguration configuration = ConfigurationSection<LoggingConfiguration>.Active;
 
                 // Remove loggers
                 foreach (string loggerName in _loggers.Keys)
@@ -226,7 +210,7 @@ namespace WebApplications.Utilities.Logging
                         {
                             new LoggingException(exception,
                                                  Resources.LogStatic_LoadConfiguration_ErrorCreatingLogger,
-                                                 LogLevel.Critical,
+                                                 LoggingLevel.Critical,
                                                  loggerElement.Name,
                                                  exception.Message);
                         }
@@ -254,47 +238,6 @@ namespace WebApplications.Utilities.Logging
             }
         }
 
-#if false
-        internal static IEnumerable<Log> GetLogs(
-            [NotNull] IEnumerable<LogRow> logs,
-            [NotNull] Dictionary<Guid, Operation.OperationRow> operations,
-            [NotNull] ILookup<Guid, OperationArgument.OperationArgumentRow> arguments)
-        {
-            Dictionary<Guid, Operation> logOperations = new Dictionary<Guid, Operation>(operations.Count());
-
-            // Create operations and their arguments first, as these can be evaluated separately from the log items.
-            foreach (KeyValuePair<Guid, Operation.OperationRow> o in
-                operations.Where(o => !logOperations.ContainsKey(o.Key)))
-            {
-                // Retrieve or create the operation and add it to the dictionary.
-                logOperations.Add(o.Key, Operation.GetOperation(o.Value, operations, arguments));
-            }
-
-            // All Operations have been loaded, so now we need to load the log items.
-            // ReSharper disable AssignNullToNotNullAttribute
-            return logs.Select(l => GetLog(l, logOperations)).ToList();
-            // ReSharper restore AssignNullToNotNullAttribute
-        }
-
-        private static Log GetLog([NotNull] LogRow logRow, [NotNull] IDictionary<Guid, Operation> operations)
-        {
-            Log log;
-
-            // Try and find the log in the dictionary of weak reference log items first.
-            if (_logItems.TryGetValue(logRow.ID, out log))
-                return log;
-
-            // Don't have it already, so lets build it again.
-            // First get the operation.
-            Operation operation = null;
-            if (logRow.OperationGuid != Guid.Empty && !operations.TryGetValue(logRow.OperationGuid, out operation))
-                throw new LoggingException(Resources.LogStatic_Getlog_OperationCouldNotBeFound, LogLevel.Error, logRow.OperationGuid);
-
-            // Return a new log item created from the log row.
-            return new Log(logRow, operation);
-        }
-#endif
-
         /// <summary>
         ///   Adds a new logger and copies over log items from the source logger.
         /// </summary>
@@ -315,7 +258,7 @@ namespace WebApplications.Utilities.Logging
         private static ILogger AddOrUpdateLogger(
             [NotNull] ILogger logger,
             [CanBeNull] ILogger sourceLogger = null,
-            int limit = int.MaxValue)
+            int limit = Int32.MaxValue)
         {
             if (sourceLogger != null)
             {
@@ -324,7 +267,7 @@ namespace WebApplications.Utilities.Logging
                 {
                     throw new LoggingException(
                         Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
-                        LogLevel.Error,
+                        LoggingLevel.Error,
                         logger.Name);
                 }
 
@@ -374,7 +317,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         internal static void RecalculateLoggedLevels()
         {
-            _loggedLevels = _loggers.Aggregate(LogLevels.None, (c, n) => c | n.Value.ValidLevels) & ValidLevels;
+            _loggedLevels = _loggers.Aggregate(LoggingLevels.None, (c, n) => c | n.Value.ValidLevels) & ValidLevels;
         }
 
         /// <summary>
@@ -395,7 +338,7 @@ namespace WebApplications.Utilities.Logging
         public static IEnumerable<Log> Get(DateTime endDate, int limit)
         {
             if (DefaultMemoryLogger == null)
-                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LogLevel.Critical);
+                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LoggingLevel.Critical);
             return Get(DefaultMemoryLogger, endDate, limit);
         }
 
@@ -419,10 +362,10 @@ namespace WebApplications.Utilities.Logging
         {
             if (!logger.CanRetrieve)
                 throw new LoggingException(
-                    Resources.LogStatic_Get_RetrievalNotSupported, LogLevel.Critical, logger.Name);
+                    Resources.LogStatic_Get_RetrievalNotSupported, LoggingLevel.Critical, logger.Name);
 
             if (limit <= 0)
-                throw new LoggingException(Resources.LogStatic_Get_LimitLessThanZero, LogLevel.Error);
+                throw new LoggingException(Resources.LogStatic_Get_LimitLessThanZero, LoggingLevel.Error);
 
             // First get results from cache
             IEnumerable<Log> results = DefaultMemoryLogger == null
@@ -460,7 +403,7 @@ namespace WebApplications.Utilities.Logging
         public static IEnumerable<Log> Get(DateTime endDate, DateTime startDate)
         {
             if (DefaultMemoryLogger == null)
-                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LogLevel.Critical);
+                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LoggingLevel.Critical);
             return Get(DefaultMemoryLogger, endDate, startDate);
         }
 
@@ -487,15 +430,15 @@ namespace WebApplications.Utilities.Logging
         {
             if (!logger.CanRetrieve)
                 throw new LoggingException(
-                    Resources.LogStatic_Get_RetrievalNotSupported, LogLevel.Critical, logger.Name);
+                    Resources.LogStatic_Get_RetrievalNotSupported, LoggingLevel.Critical, logger.Name);
 
             if (startDate >= DateTime.Now)
                 throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToCurrent, LogLevel.Error);
+                    Resources.LogStatic_Get_StartGreaterThanOrEqualToCurrent, LoggingLevel.Error);
 
             if (startDate >= endDate)
                 throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToEnd, LogLevel.Error);
+                    Resources.LogStatic_Get_StartGreaterThanOrEqualToEnd, LoggingLevel.Error);
 
             // If we can get the logs from cache, do so.
             if ((DefaultMemoryLogger != null) && (startDate >= DefaultMemoryLogger.CachingFrom))
@@ -526,7 +469,7 @@ namespace WebApplications.Utilities.Logging
         public static IEnumerable<Log> GetForward(DateTime startDate, int limit)
         {
             if (DefaultMemoryLogger == null)
-                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LogLevel.Critical);
+                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LoggingLevel.Critical);
             return GetForward(DefaultMemoryLogger, startDate, limit);
         }
 
@@ -554,14 +497,14 @@ namespace WebApplications.Utilities.Logging
         {
             if (!logger.CanRetrieve)
                 throw new LoggingException(
-                    Resources.LogStatic_Get_RetrievalNotSupported, LogLevel.Critical, logger.Name);
+                    Resources.LogStatic_Get_RetrievalNotSupported, LoggingLevel.Critical, logger.Name);
 
             if (limit <= 0)
-                throw new LoggingException(Resources.LogStatic_Get_LimitLessThanZero, LogLevel.Error);
+                throw new LoggingException(Resources.LogStatic_Get_LimitLessThanZero, LoggingLevel.Error);
 
             if (startDate >= DateTime.Now)
                 throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToCurrent, LogLevel.Error);
+                    Resources.LogStatic_Get_StartGreaterThanOrEqualToCurrent, LoggingLevel.Error);
 
             // If we can get the logs from cache, do so.
             if ((DefaultMemoryLogger != null) && (startDate >= DefaultMemoryLogger.CachingFrom))
@@ -591,7 +534,7 @@ namespace WebApplications.Utilities.Logging
         public static IEnumerable<Log> GetForward(DateTime startDate, DateTime endDate)
         {
             if (DefaultMemoryLogger == null)
-                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LogLevel.Critical);
+                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LoggingLevel.Critical);
             return GetForward(DefaultMemoryLogger, startDate, endDate);
         }
 
@@ -620,15 +563,15 @@ namespace WebApplications.Utilities.Logging
         {
             if (!logger.CanRetrieve)
                 throw new LoggingException(
-                    Resources.LogStatic_Get_RetrievalNotSupported, LogLevel.Critical, logger.Name);
+                    Resources.LogStatic_Get_RetrievalNotSupported, LoggingLevel.Critical, logger.Name);
 
             if (startDate >= DateTime.Now)
                 throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToCurrent, LogLevel.Error);
+                    Resources.LogStatic_Get_StartGreaterThanOrEqualToCurrent, LoggingLevel.Error);
 
             if (startDate >= endDate)
                 throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToEnd, LogLevel.Error);
+                    Resources.LogStatic_Get_StartGreaterThanOrEqualToEnd, LoggingLevel.Error);
 
             // If we can get the logs from cache, do so.
             if ((DefaultMemoryLogger != null) && (startDate >= DefaultMemoryLogger.CachingFrom))
@@ -672,88 +615,83 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         private static void LoggerThread()
         {
-            Operation.Wrap(
-                () =>
+            try
+            {
+                // Loop infinitely, logging
+                do
+                {
+                    // Signal we are pausing
+                    _pausing.Set();
+
+                    // Wait if the pause flag is set.
+                    _continue.Wait();
+
+                    // Signal pause has completed.
+                    _pausing.Reset();
+
+                    // Check for an empty queue
+                    if (_logQueue.IsEmpty)
+                        // Block for 30s, or until we get a new log item
+                        // We don't block permanently as there is a rare
+                        // race condition where log items may still be in
+                        // the queue, and we can't lock the wait!
+                        _logSignal.Wait(30000);
+
+                    // Reset the log signal
+                    _logSignal.Reset();
+
+                    // Once signalled we wait 2s, in many cases this allows
+                    // our queue to build up to a nice size before storing
+                    // It does add the risk that the last 2s of logs can
+                    // be permanently lost, but the performance benefit
+                    // far exceeds the disadvantage.
+                    Thread.Sleep((int) ConfigurationSection<LoggingConfiguration>.Active.BatchWait.TotalMilliseconds);
+
+                    // Always dump the first batch of logs here.
+                    do
                     {
-                        // Create logging operation
-                        try
-                        {
-                            // Loop infinitely, logging
-                            do
-                            {
-                                // Signal we are pausing
-                                _pausing.Set();
+                        LogBatch();
 
-                                // Wait if the pause flag is set.
-                                _continue.Wait();
-
-                                // Signal pause has completed.
-                                _pausing.Reset();
-
-                                // Check for an empty queue
-                                if (_logQueue.IsEmpty)
-                                    // Block for 30s, or until we get a new log item
-                                    // We don't block permanently as there is a rare
-                                    // race condition where log items may still be in
-                                    // the queue, and we can't lock the wait!
-                                    _logSignal.Wait(30000);
-
-                                // Reset the log signal
-                                _logSignal.Reset();
-
-                                // Once signalled we wait 2s, in many cases this allows
-                                // our queue to build up to a nice size before storing
-                                // It does add the risk that the last 2s of logs can
-                                // be permanently lost, but the performance benefit
-                                // far exceeds the disadvantage.
-                                Thread.Sleep((int) LoggingConfiguration.Active.BatchWait.TotalMilliseconds);
-
-                                // Always dump the first batch of logs here.
-                                do
-                                {
-                                    LogBatch();
-
-                                    // Do more batches if we have more than the minimum batch size left.
-                                } while (_logQueue.Count >= LoggingConfiguration.Active.MinBatchSize);
+                        // Do more batches if we have more than the minimum batch size left.
+                    } while (_logQueue.Count >= ConfigurationSection<LoggingConfiguration>.Active.MinBatchSize);
 
 
-                                // Set the batch complete flag if we have an empty queue.
-                                if (_logQueue.Count < 1)
-                                    _batchComplete.Set();
-                            } while (true);
-                        }
-                        catch (ThreadAbortException)
-                        {
-                            Add(Resources.LogStatic_LoggerThread_LoggingThreadWasAborted);
-                        }
-                        catch (Exception e)
-                        {
-                            // Log exception, don't throw as can't catch anyway.
-                            new LoggingException(e, Resources.LogStatic_LoggerThread_FatalErrorWhilstLogging,
-                                                 LogLevel.Critical);
-                        }
-                        finally
-                        {
-                            // Count logs
-                            int remaining = _logQueue.Count;
+                    // Set the batch complete flag if we have an empty queue.
+                    if (_logQueue.Count < 1)
+                        _batchComplete.Set();
+                } while (true);
+            }
+            catch (ThreadAbortException)
+            {
+                Add(Resources.LogStatic_LoggerThread_LoggingThreadWasAborted);
+            }
+            catch (Exception e)
+            {
+                // Log exception, don't throw as can't catch anyway.
+                new LoggingException(e, Resources.LogStatic_LoggerThread_FatalErrorWhilstLogging,
+                                     LoggingLevel.Critical);
+            }
+            finally
+            {
+                // Count logs
+                int remaining = _logQueue.Count;
 
-                            // Get rid of the remaining logs in batches.
-                            // Note it is possible for extra logs that are added to be stored - but this is not guaranteed
-                            // as it will ultimately stop trying when the count goes below zero.  This stops infinite log loops
-                            // from preventing clean termination.
-                            while (remaining > 0)
-                                remaining -= LogBatch();
+                // Get rid of the remaining logs in batches.
+                // Note it is possible for extra logs that are added to be stored - but this is not guaranteed
+                // as it will ultimately stop trying when the count goes below zero.  This stops infinite log loops
+                // from preventing clean termination.
+                while (remaining > 0)
+                    remaining -= LogBatch();
 
-                            // Explicitly dispose loggers.
-                            foreach (KeyValuePair<string, ILogger> kvp in _loggers)
-                            {
-                                kvp.Value.Dispose();
-                                ILogger l;
-                                _loggers.TryRemove(kvp.Key, out l);
-                            }
-                            _loggerThread = null;
-                        }
-                    }, "Logging thread", methodName: "LoggerThread");
+                // Explicitly dispose loggers.
+                foreach (KeyValuePair<string, ILogger> kvp in _loggers)
+                {
+                    kvp.Value.Dispose();
+                    ILogger l;
+                    _loggers.TryRemove(kvp.Key, out l);
+                }
+                _loggerThread = null;
+            }
         }
 
         /// <summary>
@@ -772,23 +710,23 @@ namespace WebApplications.Utilities.Logging
                 // Build up batch from queue
                 Log log;
                 while ((_logQueue.TryDequeue(out log)) &&
-                       (bsize++ < LoggingConfiguration.Active.MaxBatchSize))
+                       (bsize++ < ConfigurationSection<LoggingConfiguration>.Active.MaxBatchSize))
                     batch.Add(log);
 
                 // Run each logger in parallel.
                 Parallel.ForEach(
-                    _loggers.Values.Where(l => l != null && l.ValidLevels != LogLevels.None),
+                    _loggers.Values.Where(l => l != null && l.ValidLevels != LoggingLevels.None),
                     l =>
                         {
                             try
                             {
-                                LogLevels validLogLevels = ValidLevels & l.ValidLevels;
+                                LoggingLevels validLoggingLevels = ValidLevels & l.ValidLevels;
                                 // Only add log items that are valid for this logger.
-                                IEnumerable<Log> loggerLogs = validLogLevels != LogLevels.All
+                                IEnumerable<Log> loggerLogs = validLoggingLevels != LoggingLevels.All
                                                                   ? batch.Where(
                                                                       logItem =>
                                                                       logItem != null &&
-                                                                      logItem.Level.IsValid(validLogLevels))
+                                                                      logItem.Level.IsValid(validLoggingLevels))
                                                                   : batch;
 
                                 if (loggerLogs.Any())
@@ -800,7 +738,7 @@ namespace WebApplications.Utilities.Logging
                                 new LoggingException(
                                     e,
                                     Resources.LogStatic_LogBatch_FatalErrorOccured,
-                                    LogLevel.Critical,
+                                    LoggingLevel.Critical,
                                     l.Name,
                                     e.Message);
                                 TryRemoveLogger(l.Name, out l);
@@ -816,30 +754,30 @@ namespace WebApplications.Utilities.Logging
 
         #region Add Overloads
         /// <summary>
-        ///   Logs a message at the information <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see>.
+        ///   Logs a message at the information <see cref="LoggingLevel">log level</see>.
         /// </summary>
         /// <param name="message">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>
-        ///   If the information <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see> is invalid then the log won't be added.
+        ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
         public static void Add([NotNull] string message, [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (LogLevel.Information.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, null, null, message, LogLevel.Information, parameters);
+            if (LoggingLevel.Information.IsValid(_loggedLevels))
+                new Log(System.Guid.Empty, null, null, LoggingLevel.Information, message, parameters);
         }
 
         /// <summary>
-        ///   Logs a message at the information <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see>.
+        ///   Logs a message at the information <see cref="LoggingLevel">log level</see>.
         /// </summary>
         /// <param name="context">The log context.</param>
         /// <param name="message">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>
-        ///   If the information <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see> is invalid then the log won't be added.
+        ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
@@ -847,37 +785,37 @@ namespace WebApplications.Utilities.Logging
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (LogLevel.Information.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, context, null, message, LogLevel.Information, parameters);
+            if (LoggingLevel.Information.IsValid(_loggedLevels))
+                new Log(System.Guid.Empty, context, null, LoggingLevel.Information, message, parameters);
         }
 
         /// <summary>
-        ///   Logs a message at the information <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see>.
+        ///   Logs a message at the information <see cref="LoggingLevel">log level</see>.
         /// </summary>
         /// <param name="logGroup">The unique ID that groups log items together.</param>
         /// <param name="message">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>
-        ///   If the information <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see> is invalid then the log won't be added.
+        ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
         public static void Add(Guid logGroup, [NotNull] string message, [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (LogLevel.Information.IsValid(_loggedLevels))
-                new Log(logGroup, null, null, message, LogLevel.Information, parameters);
+            if (LoggingLevel.Information.IsValid(_loggedLevels))
+                new Log(logGroup, null, null, LoggingLevel.Information, message, parameters);
         }
 
         /// <summary>
-        ///   Logs a message at the information <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see>.
+        ///   Logs a message at the information <see cref="LoggingLevel">log level</see>.
         /// </summary>
         /// <param name="logGroup">The unique ID that groups log items together.</param>
         /// <param name="context">The log context.</param>
         /// <param name="message">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>
-        ///   If the information <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see> is invalid then the log won't be added.
+        ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
@@ -885,12 +823,12 @@ namespace WebApplications.Utilities.Logging
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (LogLevel.Information.IsValid(_loggedLevels))
-                new Log(logGroup, context, null, message, LogLevel.Information, parameters);
+            if (LoggingLevel.Information.IsValid(_loggedLevels))
+                new Log(logGroup, context, null, LoggingLevel.Information, message, parameters);
         }
 
         /// <summary>
-        ///   Logs a message at the specified <see cref="WebApplications.Utilities.Logging.LogLevel"/>.
+        ///   Logs a message at the specified <see cref="LoggingLevel"/>.
         /// </summary>
         /// <param name="message">The log message.</param>
         /// <param name="level">The log level.</param>
@@ -900,72 +838,66 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add([NotNull] string message, LogLevel level, [NotNull] params object[] parameters)
+        public static void Add(LoggingLevel level, [NotNull] string message, [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, null, null, message, level, parameters);
+                new Log(System.Guid.Empty, null, null, level, message, parameters);
         }
 
         /// <summary>
-        ///   Logs a message at the specified <see cref="WebApplications.Utilities.Logging.LogLevel"/>.
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
         /// </summary>
         /// <param name="context">The log context.</param>
-        /// <param name="message">The log message.</param>
         /// <param name="level">The log level.</param>
+        /// <param name="message">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        /// <remarks>
-        ///   If the log <paramref name="level"/> is invalid then the log won't be added.
-        /// </remarks>
+        /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add([NotNull] LogContext context, [NotNull] string message, LogLevel level,
+        public static void Add([NotNull] LogContext context, LoggingLevel level, [NotNull] string message,
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, context, null, message, level, parameters);
+                new Log(System.Guid.Empty, context, null, level, message, parameters);
         }
 
         /// <summary>
-        ///   Logs a message at the specified <see cref="WebApplications.Utilities.Logging.LogLevel"/>.
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
         /// </summary>
         /// <param name="logGroup">The unique ID that groups log items together.</param>
-        /// <param name="message">The log message.</param>
         /// <param name="level">The log level.</param>
+        /// <param name="message">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        /// <remarks>
-        ///   If the log <paramref name="level"/> is invalid then the log won't be added.
-        /// </remarks>
+        /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add(Guid logGroup, [NotNull] string message, LogLevel level,
+        public static void Add(Guid logGroup, LoggingLevel level, [NotNull] string message,
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(logGroup, null, null, message, level, parameters);
+                new Log(logGroup, null, null, level, message, parameters);
         }
 
         /// <summary>
-        ///   Logs a message at the specified <see cref="WebApplications.Utilities.Logging.LogLevel"/>.
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
         /// </summary>
         /// <param name="logGroup">The unique ID that groups log items together.</param>
         /// <param name="context">The log context.</param>
-        /// <param name="message">The log message.</param>
         /// <param name="level">The log level.</param>
+        /// <param name="message">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        /// <remarks>
-        ///   If the log <paramref name="level"/> is invalid then the log won't be added.
-        /// </remarks>
+        /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add(Guid logGroup, [NotNull] LogContext context, [NotNull] string message, LogLevel level,
+        public static void Add(Guid logGroup, [NotNull] LogContext context, LoggingLevel level, [NotNull] string message,
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(logGroup, context, null, message, level, parameters);
+                new Log(logGroup, context, null, level, message, parameters);
         }
 
         /// <summary>
@@ -983,7 +915,7 @@ namespace WebApplications.Utilities.Logging
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
         [UsedImplicitly]
-        public static void Add([NotNull] Exception exception, LogLevel level = LogLevel.Error)
+        public static void Add([NotNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
         {
             // Don't re-add logging exception, as they add themselves.
             if (exception is LoggingException)
@@ -991,7 +923,7 @@ namespace WebApplications.Utilities.Logging
 
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, null, exception, exception.Message, level);
+                new Log(System.Guid.Empty, null, exception, level, exception.Message);
         }
 
         /// <summary>
@@ -1011,7 +943,7 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [UsedImplicitly]
         public static void Add([NotNull] LogContext context, [NotNull] Exception exception,
-                               LogLevel level = LogLevel.Error)
+                               LoggingLevel level = LoggingLevel.Error)
         {
             // Don't re-add logging exception, as they add themselves.
             if (exception is LoggingException)
@@ -1019,7 +951,7 @@ namespace WebApplications.Utilities.Logging
 
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, context, exception, exception.Message, level);
+                new Log(System.Guid.Empty, context, exception, level, exception.Message);
         }
 
         /// <summary>
@@ -1038,7 +970,7 @@ namespace WebApplications.Utilities.Logging
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
         [UsedImplicitly]
-        public static void Add(Guid logGroup, [NotNull] Exception exception, LogLevel level = LogLevel.Error)
+        public static void Add(Guid logGroup, [NotNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
         {
             // Don't re-add logging exception, as they add themselves.
             if (exception is LoggingException)
@@ -1046,7 +978,7 @@ namespace WebApplications.Utilities.Logging
 
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(logGroup, null, exception, exception.Message, level);
+                new Log(logGroup, null, exception, level, exception.Message);
         }
 
         /// <summary>
@@ -1067,7 +999,7 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [UsedImplicitly]
         public static void Add(Guid logGroup, [NotNull] LogContext context, [NotNull] Exception exception,
-                               LogLevel level = LogLevel.Error)
+                               LoggingLevel level = LoggingLevel.Error)
         {
             // Don't re-add logging exception, as they add themselves.
             if (exception is LoggingException)
@@ -1075,24 +1007,25 @@ namespace WebApplications.Utilities.Logging
 
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(logGroup, context, exception, exception.Message, level);
+                new Log(logGroup, context, exception, level, exception.Message);
         }
 
 
         /// <summary>
-        ///   Logs exception.
+        /// Logs a logging exception.
         /// </summary>
         /// <param name="logGroup">The unique ID that groups log items together.</param>
-        /// <param name="exception">The exception to log.</param>
         /// <param name="context">The log context.</param>
-        /// <remarks>
-        ///   If the error <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see> is invalid then the log won't be added.
-        /// </remarks>
+        /// <param name="exception">The exception to log.</param>
+        /// <param name="level">The level.</param>
+        /// <param name="message">The message.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>If the error <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.</remarks>
         [UsedImplicitly]
-        internal static void Add(Guid logGroup, [NotNull] LoggingException exception, [NotNull] LogContext context)
+        internal static Log Add(Guid logGroup, [CanBeNull] LogContext context, [NotNull] LoggingException exception, LoggingLevel level, [NotNull] string message,
+                               [NotNull] params object[] parameters)
         {
-            if (LogLevel.Error.IsValid(_loggedLevels))
-                new Log(logGroup, context, exception, exception.Message, exception.Level);
+            return new Log(logGroup, context, exception, level, message, parameters);
         }
         #endregion
     }

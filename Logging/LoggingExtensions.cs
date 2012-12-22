@@ -38,8 +38,8 @@ namespace WebApplications.Utilities.Logging
     {
         /// <summary>
         ///   Returns a <see cref="bool"/> value indicating whether the specified
-        ///   <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see> is within the valid
-        ///   <see cref="LogLevels">levels</see>.
+        ///   <see cref="LoggingLevel">log level</see> is within the valid
+        ///   <see cref="LoggingLevels">levels</see>.
         /// </summary>
         /// <param name="level">The level.</param>
         /// <param name="validLevels">The valid levels.</param>
@@ -47,9 +47,9 @@ namespace WebApplications.Utilities.Logging
         ///   Returns <see langword="true"/> if the specified <paramref name="level"/> is within the <paramref name="validLevels"/>;
         ///   provided; otherwise returns <see langword="false"/>.
         /// </returns>
-        public static bool IsValid(this LogLevel level, LogLevels validLevels)
+        public static bool IsValid(this LoggingLevel level, LoggingLevels validLevels)
         {
-            LogLevels l = (LogLevels) level;
+            LoggingLevels l = (LoggingLevels) level;
             return l == (l & validLevels);
         }
     }

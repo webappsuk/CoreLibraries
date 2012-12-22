@@ -97,7 +97,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="maxDuration">The maximum time period that a single log file can cover.</param>
         /// <param name="validLevels">
         ///   <para>The valid log levels.</para>
-        ///   <para>By default allows <see cref="LogLevels">all log levels</see>.</para>
+        ///   <para>By default allows <see cref="LoggingLevels">all log levels</see>.</para>
         /// </param>
         /// <param name="format">
         ///   <para>The filename format - where {DateTime} is the creation date time.</para>
@@ -129,26 +129,26 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] string directory,
             Int64 maxLog = 1000,
             TimeSpan maxDuration = default(TimeSpan),
-            LogLevels validLevels = LogLevels.All,
+            LoggingLevels validLevels = LoggingLevels.All,
             string format = "{ApplicationName}-{DateTime:yyMMddHHmmssffff}",
             string extension = "log")
             : base(name, false, validLevels)
         {
             if (maxLog < 10)
                 throw new LoggingException(
-                    Resources.FileLogger_MaximumLogsLessThanTen, LogLevel.Critical, maxLog);
+                    Resources.FileLogger_MaximumLogsLessThanTen, LoggingLevel.Critical, maxLog);
 
             if (maxDuration == default(TimeSpan))
                 maxDuration = TimeSpan.FromDays(1);
             else if (maxDuration < TimeSpan.FromSeconds(10))
-                throw new LoggingException(Resources.FileLogger_FileDurationLessThanTenSeconds, LogLevel.Critical, maxLog);
+                throw new LoggingException(Resources.FileLogger_FileDurationLessThanTenSeconds, LoggingLevel.Critical, maxLog);
 
             MaxLog = maxLog;
             MaxDuration = maxDuration;
 
             if (string.IsNullOrWhiteSpace(directory))
             {
-                throw new LoggingException(Resources.FileLogger_DirectoryNotSpecified, LogLevel.Critical);
+                throw new LoggingException(Resources.FileLogger_DirectoryNotSpecified, LoggingLevel.Critical);
             }
             try
             {
@@ -160,11 +160,11 @@ namespace WebApplications.Utilities.Logging.Loggers
             catch (Exception e)
             {
                 throw new LoggingException(e, Resources.FileLogger_DirectoryAccessOrCreationError,
-                    LogLevel.Critical, directory, e.Message);
+                    LoggingLevel.Critical, directory, e.Message);
             }
 
             if (string.IsNullOrWhiteSpace(format))
-                throw new LoggingException(Resources.FileLogger_FileNameFormatNotSpecified, LogLevel.Critical);
+                throw new LoggingException(Resources.FileLogger_FileNameFormatNotSpecified, LoggingLevel.Critical);
 
 
             if (string.IsNullOrWhiteSpace(extension))
@@ -176,7 +176,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 extension = extension.Trim();
                 if (extension.Length > 5)
                     throw new LoggingException(
-                        Resources.FileLogger_ExtensionLongerThanFiveCharacters, LogLevel.Critical, extension);
+                        Resources.FileLogger_ExtensionLongerThanFiveCharacters, LoggingLevel.Critical, extension);
                 extension = "." + extension;
             }
 
@@ -190,7 +190,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingConfiguration configuration = LoggingConfiguration.Active;
             string testFormat = string.Format(_format, DateTime.Now, Int32.MaxValue, configuration.ApplicationName, configuration.ApplicationGuid);
             if (testFormat.IndexOfAny(Path.GetInvalidPathChars()) > -1)
-                throw new LoggingException(Resources.FileLogger_FileNameFormatInvalid, LogLevel.Critical, format);
+                throw new LoggingException(Resources.FileLogger_FileNameFormatInvalid, LoggingLevel.Critical, format);
 
             try
             {
@@ -198,11 +198,11 @@ namespace WebApplications.Utilities.Logging.Loggers
             }
             catch (Exception e)
             {
-                throw new LoggingException(e, Resources.FileLogger_InvalidPathCreation, LogLevel.Critical, format, e.Message);
+                throw new LoggingException(e, Resources.FileLogger_InvalidPathCreation, LoggingLevel.Critical, format, e.Message);
             }
 
             if (!testFormat.StartsWith(directory))
-                throw new LoggingException(Resources.FileLogger_PathCreatedOutsideDirectory, LogLevel.Critical, format);
+                throw new LoggingException(Resources.FileLogger_PathCreatedOutsideDirectory, LoggingLevel.Critical, format);
         }
 
         /// <summary>

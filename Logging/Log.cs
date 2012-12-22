@@ -26,7 +26,14 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Security;
+using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using JetBrains.Annotations;
@@ -35,53 +42,121 @@ using WebApplications.Utilities.Performance;
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
-    ///   Holds information about a single log item.
+    /// Holds information about a single log item.
     /// </summary>
     [Serializable]
     public sealed partial class Log : IEquatable<Log>
     {
-        [NotNull] private static readonly PerfCounter _perfCounterNewItem =
+        /// <summary>
+        /// The new log item performance counter.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        private static readonly PerfCounter _perfCounterNewItem =
             PerfCategory.GetOrAdd<PerfCounter>("Logged new item", "Tracks every time a log entry is logged.");
 
         /// <summary>
-        ///   The exception type or a <see langword="null"/> if the log item isn't an exception.
+        /// The log reservation.
         /// </summary>
-        [CanBeNull] [UsedImplicitly] public readonly string ExceptionType;
+        [NonSerialized]
+        private static readonly Guid _logReservation = System.Guid.NewGuid();
+
+        /// <summary>
+        /// The parameter key prefix.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ParameterKeyPrefix = LogContext.ReservePrefix("Parameter ", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string MessageFormatKey = LogContext.ReserveKey("Message Format", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ExceptionTypeKey = LogContext.ReserveKey("Exception Type", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StackTraceKey = LogContext.ReserveKey("Stack Trace", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadIDKey = LogContext.ReserveKey("Thread ID", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadNameKey = LogContext.ReserveKey("Thread Name", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StoredProcedureKey = LogContext.ReserveKey("Stored Procedure", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StoredProcedureLineKey = LogContext.ReserveKey("Stored Procedure Line", _logReservation);
+
+        /// <summary>
+        /// The logging assembly
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
 
         /// <summary>
         ///   A Guid used to group log items together.
         /// </summary>
-        [UsedImplicitly] public readonly CombGuid Group;
+        [UsedImplicitly]
+        public readonly CombGuid Group;
 
         /// <summary>
         ///   A Guid used to uniquely identify a log item.
         /// </summary>
-        [UsedImplicitly] public readonly CombGuid Guid;
+        [UsedImplicitly]
+        public readonly CombGuid Guid;
 
         /// <summary>
-        ///   The <see cref="WebApplications.Utilities.Logging.LogLevel">log level</see>.
+        ///   The <see cref="LoggingLevel">log level</see>.
         /// </summary>
-        [UsedImplicitly] public readonly LogLevel Level;
+        [UsedImplicitly]
+        public readonly LoggingLevel Level;
 
         /// <summary>
         ///   The log message.
         /// </summary>
-        [UsedImplicitly] [NotNull] public readonly string Message;
+        [UsedImplicitly]
+        [NotNull]
+        public readonly string Message;
 
         /// <summary>
-        ///   The stack trace, if this was an exception.
+        ///   Gets a <see cref="bool"/> value indicating whether this instance was generated from an exception.
         /// </summary>
-        [UsedImplicitly] public readonly string StackTrace;
-
-        /// <summary>
-        ///   The ID of the thread that the log item was created on.
-        /// </summary>
-        [UsedImplicitly] public readonly int ThreadId;
-
-        /// <summary>
-        ///   The <see cref="Thread.Name">name</see> (or the ID if no name is set) of the thread that the log item was created on.
-        /// </summary>
-        [UsedImplicitly] [NotNull] public readonly string ThreadName;
+        /// <value>
+        ///   Returns <see langword="true"/> if this instance was an exception; otherwise <see langword="false"/>.
+        /// </value>
+        [UsedImplicitly]
+        public readonly bool IsException;
 
         /// <summary>
         ///   The time stamp of when the log item was created.
@@ -95,222 +170,226 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The <see cref="LogContext">context</see> information for the log item.
         /// </summary>
-        [NotNull] [UsedImplicitly] private readonly LogContext _context;
-
-        /// <summary>
-        ///   Gets the <see cref="LogContext">context</see> information for the log item.
-        /// </summary>
         [NotNull]
         [UsedImplicitly]
-        public LogContext Context
-        {
-            get { return _context; }
-        }
+        private readonly LogContext Context;
 
         /// <summary>
-        ///   The currently executing command (if any).
+        /// Gets the parameters.
         /// </summary>
-        private readonly Operation _operation;
+        /// <value>The parameters.</value>
+        [NotNull]
+        public IEnumerable<string> Parameters { get { return Context.GetPrefixed(ParameterKeyPrefix).Select(kvp => kvp.Value); } }
 
         /// <summary>
-        ///   The Guid of the log item's operation
+        /// Gets the stack trace.
         /// </summary>
-        private readonly CombGuid _operationGuid;
+        /// <value>The stack trace.</value>
+        [NotNull]
+        public string StackTrace { get { return Context.Get(StackTraceKey); } }
 
         /// <summary>
-        ///   Caches the <see cref="string"/> representation of the log item, to prevent regeneration.
-        /// </summary>
-        [NonSerialized] private string _string;
-
-        /// <summary>
-        ///   The cached XML representation.
-        /// </summary>
-        [NonSerialized] private XElement _xml;
-
-        /// <summary>
-        ///   Prevents a default instance of the <see cref="Log"/> class from being created.
-        /// </summary>
-        /// <param name="guid">The log item's Guid.</param>
-        private Log(CombGuid guid)
-        {
-            Guid = guid;
-
-            // Store a weak reference to the log item within the store of log items.
-            _logItems.GetOrAdd(Guid, this);
-        }
-
-#if false
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="Log"/> class.
-    /// </summary>
-    /// <param name="logRow">The log row.</param>
-    /// <param name="operation">The operation.</param>
-        private Log([NotNull] LogRow logRow, [CanBeNull] Operation operation)
-            : this(logRow.ID)
-        {
-            Group = logRow.LogGroup;
-            Message = logRow.Message;
-            StackTrace = logRow.StackTrace;
-            TimeStamp = logRow.TimeStamp;
-            Level = (LogLevel) logRow.Level;
-            _context = logRow.Context;
-
-            ThreadId = logRow.ThreadID;
-            ThreadName = logRow.ThreadName;
-
-            // Set the operation and the operation guid.
-            _operation = operation;
-            if (operation != null)
-                _operationGuid = operation.Guid;
-        }
-#endif
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="Log"/> class.
+        /// Initializes a new instance of the <see cref="Log" /> class.
         /// </summary>
         /// <param name="logGroup">The unique ID that groups log items together.</param>
         /// <param name="context">The context information.</param>
-        /// <param name="exception">The exception. If none then pass <see langword="null"/>.</param>
-        /// <param name="message">The log message.</param>
+        /// <param name="exception">The exception. If none then pass <see langword="null" />.</param>
         /// <param name="level">The log level.</param>
+        /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
         [StringFormatMethod("message")]
-        private Log(Guid logGroup, [NotNull] LogContext context, [CanBeNull] Exception exception,
-                    [NotNull] string message, LogLevel level, [NotNull] params object[] parameters)
-            : this(CombGuid.NewCombGuid(DateTime.Now))
+        private Log(
+            CombGuid logGroup,
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [NotNull] string format,
+            [NotNull] params object[] parameters)
         {
-                // Create a context, adding the parameters.
-                _context = new LogContext(context, parameters);
+            Guid = CombGuid.NewCombGuid();
 
-                if (exception != null)
-                {
-                    ExceptionType = exception.GetType().ToString();
+            // Create a context, based on the original context, adding the parameters.
+            Context = new LogContext(context, _logReservation, ParameterKeyPrefix, parameters);
+            Context.Set(_logReservation, MessageFormatKey, format);
 
-                    // Logging exception has a more robust stack trace retrieval algorithm
-                    LoggingException loggingException = exception as LoggingException;
-                    StackTrace = loggingException != null
-                        ? loggingException.StackTrace
-                        : exception.StackTrace;
+            // Add stack trace
+            Context.Set(_logReservation, StackTraceKey, FormatStackTrace(new StackTrace(2, true)));
 
-                    if (String.IsNullOrWhiteSpace(StackTrace))
-                        StackTrace = "No stack trace found.";
-
-                    // If this is a SQL exception, then log the stored proc.
-                    SqlException sqlException;
-                    if ((sqlException = exception as SqlException) != null)
-                    {
-                        message = string.Format(
-                            Resources.Log_SqlException,
-                            Environment.NewLine,
-                            message,
-                            string.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure,
-                            sqlException.LineNumber);
-                    }
-                }
-                else
-                {
-                    ExceptionType = null;
-                    StackTrace = null;
-                }
-
-                // Get operation from thread context
-                _operation = Operation.Current;
-
-                _operationGuid = _operation == null ? CombGuid.Empty : _operation.Guid;
-
-                // Get the current thread information
-                ThreadId = Thread.CurrentThread.ManagedThreadId;
-                ThreadName = string.IsNullOrWhiteSpace(Thread.CurrentThread.Name)
-                    ? ThreadId.ToString()
-                    : Thread.CurrentThread.Name;
-
-                // Set provided properties
-                Group = logGroup.Equals(System.Guid.Empty)
-                    ? CombGuid.NewCombGuid(TimeStamp)
-                    : (CombGuid) logGroup;
-
-                // Attempt to format string safely.
-                // ReSharper disable ConditionIsAlwaysTrueOrFalse
-                Message = message == null ? string.Empty : message.SafeFormat(parameters);
-                // ReSharper restore ConditionIsAlwaysTrueOrFalse
-                Level = level;
-
-                // Queue the log entry.
-                _logQueue.Enqueue(this);
-
-                _perfCounterNewItem.Increment();
-
-                // Signal monitor thread of new arrival.
-                _logSignal.Set();
-        }
-
-        /// <summary>
-        ///   Gets the <see cref="Operation">operation</see>.
-        /// </summary>
-        /// <value>The <see cref="Operation"/> or a <see langword="null"/> if there is none.</value>
-        /// <exception cref="LoggingException">Operation was not re-linked correctly.</exception>
-        public Operation Operation
-        {
-            get
+            if (exception != null)
             {
-                if (_operationGuid == CombGuid.Empty)
-                    return null;
-                if (_operation == null)
-                    throw new LoggingException(Resources.Log_Operation_OperationNotReLinked, LogLevel.Critical);
+                IsException = true;
+                Context.Set(_logReservation, ExceptionTypeKey, exception.GetType().ToString());
 
-                return _operation;
-            }
-        }
-
-        /// <summary>
-        ///   Gets a <see cref="bool"/> value indicating whether this instance was generated from an exception.
-        /// </summary>
-        /// <value>
-        ///   Returns <see langword="true"/> if this instance was an exception; otherwise <see langword="false"/>.
-        /// </value>
-        [UsedImplicitly]
-        public bool IsException
-        {
-            get { return ExceptionType != null; }
-        }
-
-        /// <summary>
-        ///   Gets the XML version of the operation.
-        /// </summary>
-        /// <value>The XML version of the operation.</value>
-        /// <remarks>The XML version is cached to avoid regeneration.</remarks>
-        [UsedImplicitly]
-        public XElement Xml
-        {
-            get
-            {
-                if (_xml == null)
+                // If this is a SQL exception, then log the stored proc.
+                SqlException sqlException = exception as SqlException;
+                if (sqlException != null)
                 {
-                    _xml = new XElement(
-                        NodeLog,
-                        new XAttribute(AttributeId, Guid.Guid),
-                        new XAttribute(AttributeTimestamp, TimeStamp),
-                        new XAttribute(AttributeLoggroup, Group),
-                        new XElement(NodeThread, new XAttribute(AttributeId, ThreadId), ThreadName.XmlEscape()),
-                        new XElement(NodeLevel, Level),
-                        new XElement(NodeMessage, Message.XmlEscape()));
+                    Context.Set(_logReservation, StoredProcedureKey, String.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure);
+                    Context.Set(_logReservation, StoredProcedureLineKey, sqlException.LineNumber);
+                }
+            }
 
-                    if (_operation != null)
-                        _xml.Add(_operation.Xml);
+            // Get the current thread information
+            Thread currentThread = Thread.CurrentThread;
+            int threadId = currentThread.ManagedThreadId;
+            Context.Set(_logReservation, ThreadIDKey, threadId);
+            Context.Set(_logReservation, ThreadNameKey,
+                         String.IsNullOrWhiteSpace(currentThread.Name)
+                             ? threadId.ToString()
+                             : currentThread.Name);
 
-                    _xml.Add(_context.Xml);
+            // Set provided properties
+            Group = logGroup.Equals(CombGuid.Empty)
+                        ? CombGuid.NewCombGuid()
+                        : logGroup;
 
-                    if (IsException)
-                    {
-                        _xml.Add(
-                            new XElement(NodeExceptionType, ExceptionType.XmlEscape()),
-                            new XElement(NodeStackTrace, StackTrace.XmlEscape()));
-                    }
+            // Attempt to format string safely.
+            // ReSharper disable ConditionIsAlwaysTrueOrFalse
+            Message = format == null ? String.Empty : format.SafeFormat(parameters);
+            // ReSharper restore ConditionIsAlwaysTrueOrFalse
+
+            // Set the level.
+            Level = level;
+
+            // Queue the log entry.
+            _logQueue.Enqueue(this);
+
+            // Increment performance counter.
+            _perfCounterNewItem.Increment();
+
+            // Signal monitor thread of new arrival.
+            _logSignal.Set();
+        }
+
+        /// <summary>
+        ///   Formats the stack trace, skipping stack frames that form part of the exception construction.
+        /// </summary>
+        /// <param name="trace">The stack trace to format.</param>
+        /// <returns>The formatted stack <paramref name="trace"/>.</returns>
+        private static String FormatStackTrace(StackTrace trace)
+        {
+            // Check for stack trace frames.
+            if (trace == null)
+                return "No stack trace available.";
+
+            StackFrame[] frames = trace.GetFrames();
+            if ((frames == null) || (frames.Length < 1))
+                return "No stack trace frames available.";
+
+            bool checkSkip = true;
+            bool displayFilenames = true; // we'll try, but demand may fail
+            const string word_At = "at";
+            const string inFileLineNum = "in {0}:line {1}";
+
+            StringBuilder sb = new StringBuilder(255);
+            foreach (StackFrame sf in frames)
+            {
+                MethodBase mb = sf.GetMethod();
+                if (mb == null)
+                {
+                    sb.AppendFormat("Could not retrieve method from stack frame.");
+                    continue;
                 }
 
-                // Return copy of cached XElement
-                return new XElement(_xml);
+                // We only check for frame skipping until we stop skipping.
+                if (checkSkip)
+                {
+                    // We skip everything in this assembly.
+                    if ((mb.DeclaringType != null) &&
+                        (mb.DeclaringType.Assembly == LoggingAssembly))
+                        continue;
+
+                    // We are not part of this assembly, so no longer check for frame skipping.
+                    checkSkip = false;
+                }
+
+                // Add newline if this isn't the first new line.
+                sb.Append(Environment.NewLine);
+
+                sb.AppendFormat(CultureInfo.InvariantCulture, "   {0} ", word_At);
+
+                Type t = mb.DeclaringType;
+                // if there is a type (non global method) print it
+                if (t != null)
+                {
+                    sb.Append(t.FullName.Replace('+', '.'));
+                    sb.Append(".");
+                }
+                sb.Append(mb.Name);
+
+                // deal with the generic portion of the method 
+                if (mb is MethodInfo && mb.IsGenericMethod)
+                {
+                    Type[] typars = mb.GetGenericArguments();
+                    sb.Append("[");
+                    int k = 0;
+                    bool fFirstTyParam = true;
+                    while (k < typars.Length)
+                    {
+                        if (fFirstTyParam == false)
+                            sb.Append(",");
+                        else
+                            fFirstTyParam = false;
+
+                        sb.Append(typars[k].Name);
+                        k++;
+                    }
+                    sb.Append("]");
+                }
+
+                // arguments printing
+                sb.Append("(");
+                ParameterInfo[] pi = mb.GetParameters();
+                bool fFirstParam = true;
+                foreach (ParameterInfo t1 in pi)
+                {
+                    if (fFirstParam == false)
+                        sb.Append(", ");
+                    else
+                        fFirstParam = false;
+
+                    String typeName = "<UnknownType>";
+                    if (t1.ParameterType != null)
+                        typeName = t1.ParameterType.Name;
+                    sb.Append(typeName + " " + t1.Name);
+                }
+                sb.Append(")");
+
+                // source location printing
+                if (!displayFilenames || (sf.GetILOffset() == -1)) continue;
+
+                // If we don't have a PDB or PDB-reading is disabled for the module,
+                // then the file name will be null. 
+                String fileName = null;
+
+                // Getting the filename from a StackFrame is a privileged operation - we won't want 
+                // to disclose full path names to arbitrarily untrusted code.  Rather than just omit
+                // this we could probably trim to just the filename so it's still mostly useful.
+                try
+                {
+                    fileName = sf.GetFileName();
+                }
+                catch (NotSupportedException)
+                {
+                    // Having a deprecated stack modifier on the callstack (such as Deny) will cause
+                    // a NotSupportedException to be thrown.  Since we don't know if the app can
+                    // access the file names, we'll conservatively hide them.
+                    displayFilenames = false;
+                }
+                catch (SecurityException)
+                {
+                    // If the demand for displaying filenames fails, then it won't 
+                    // succeed later in the loop.  Avoid repeated exceptions by not trying again.
+                    displayFilenames = false;
+                }
+
+                if (fileName == null) continue;
+
+                // tack on e.g. " in c:\tmp\MyFile.cs:line 5" 
+                sb.Append(' ');
+                sb.AppendFormat(CultureInfo.InvariantCulture, inFileLineNum, fileName, sf.GetFileLineNumber());
             }
+            return sb.ToString();
         }
 
         #region IEquatable<Log> Members
@@ -344,35 +423,43 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public override string ToString()
         {
-            // Build the string only once, then cache.
-            if (_string == null)
-            {
-                string exception = IsException
-                    ? string.Format(
-                        Resources.Log_ToString_LogException,
-                        Environment.NewLine,
-                        '\t',
-                        ExceptionType,
-                        StackTrace)
-                    : string.Empty;
+            string s = new string('=', 80);
+            const string indent = "\t";
 
-                _string =
-                    string.Format(
-                        Resources.Log_ToString,
-                        Environment.NewLine,
-                        '\t',
-                        Guid,
-                        ThreadId,
-                        ThreadName,
-                        Group,
-                        TimeStamp,
-                        Level,
-                        Message,
-                        _operation == null ? "No operation." : _operation.ToString(),
-                        _context,
-                        exception);
-            }
-            return _string;
+            StringBuilder builder = new StringBuilder();
+
+            builder.AppendLine(s);
+            builder.Append("\"");
+            builder.Append(Message);
+            builder.AppendLine("\"");
+
+            DateTime timestamp = TimeStamp;
+            builder.AppendFormat(IsException
+                               ? Resources.Log_ToString_Exception_Header
+                               : Resources.Log_ToString_Log_Header,
+                               timestamp.Date,
+                               timestamp.TimeOfDay);
+            builder.AppendLine();
+
+            builder.Append(indent);
+            builder.Append("Level: ");
+            builder.AppendLine(Level.ToString());
+
+            builder.Append(indent);
+            builder.Append("ID: ");
+            builder.AppendLine(Guid.ToString());
+
+            builder.Append(indent);
+            builder.Append("Group: ");
+            builder.AppendLine(Group.ToString());
+
+            builder.Append(indent);
+            builder.Append("Context: ");
+            builder.AppendLine(Context.ToString());
+
+            builder.AppendLine(s);
+
+            return builder.ToString();
         }
     }
 }

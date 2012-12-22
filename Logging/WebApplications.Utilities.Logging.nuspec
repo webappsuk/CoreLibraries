@@ -10,7 +10,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <summary>Allows extensible and automated logging to File, Trace or SQL Database, allows supports log retrieval.</summary>
     <description>$description$</description>
-    <tags>Utility Utilities Logging Performance Operation</tags>
+    <tags>Utility Utilities Logging</tags>
   </metadata>
   <files>
     <file src="app.config.transform" target="Content" />

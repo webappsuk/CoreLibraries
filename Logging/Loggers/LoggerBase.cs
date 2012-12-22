@@ -38,7 +38,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     /// </summary>
     public abstract class LoggerBase : ILogger
     {
-        private LogLevels _validLevels;
+        private LoggingLevels _validLevels;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="LoggerBase"/> class.
@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="name">The logger name.</param>
         /// <param name="canRetrieve">Whether the logger can <see cref="LoggerBase.CanRetrieve">retrieve</see> historic logs.</param>
         /// <param name="validLevels">The valid log levels.</param>
-        protected LoggerBase([NotNull] string name, bool canRetrieve, LogLevels validLevels)
+        protected LoggerBase([NotNull] string name, bool canRetrieve, LoggingLevels validLevels)
         {
             CanRetrieve = canRetrieve;
             Name = name;
@@ -63,10 +63,10 @@ namespace WebApplications.Utilities.Logging.Loggers
         public virtual bool CanRetrieve { get; private set; }
 
         /// <summary>
-        ///   The valid <see cref="LogLevels"/> for this logger
+        ///   The valid <see cref="LoggingLevels"/> for this logger
         /// </summary>
         /// <value>The valid log levels.</value>
-        public LogLevels ValidLevels
+        public LoggingLevels ValidLevels
         {
             get { return _validLevels; }
             set
@@ -124,9 +124,9 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             if (CanRetrieve)
             {
-                throw new LoggingException(Resources.LoggerBase_GetEndDateLimit_NotImplemented, LogLevel.Critical, Name);
+                throw new LoggingException(Resources.LoggerBase_GetEndDateLimit_NotImplemented, LoggingLevel.Critical, Name);
             }
-            throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval, LogLevel.Critical, Name);
+            throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval, LoggingLevel.Critical, Name);
         }
 
         /// <summary>
@@ -149,9 +149,9 @@ namespace WebApplications.Utilities.Logging.Loggers
             if (CanRetrieve)
             {
                 throw new LoggingException(Resources.LoggerBase_GetEndDateStartDate_NotImplemented,
-                    LogLevel.Critical, Name);
+                    LoggingLevel.Critical, Name);
             }
-            throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval, LogLevel.Critical, Name);
+            throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval, LoggingLevel.Critical, Name);
         }
 
         /// <summary>
@@ -173,9 +173,9 @@ namespace WebApplications.Utilities.Logging.Loggers
             if (CanRetrieve)
             {
                 throw new LoggingException(Resources.LoggerBase_GetForwardStartDateLimit_NotImplemented,
-                    LogLevel.Critical, Name);
+                    LoggingLevel.Critical, Name);
             }
-            throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval, LogLevel.Critical, Name);
+            throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval, LoggingLevel.Critical, Name);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             if (!CanRetrieve)
                 throw new LoggingException(Resources.LoggerBase_DoesNotSupportRetrieval,
-                    LogLevel.Critical, Name);
+                    LoggingLevel.Critical, Name);
 
             return Get(endDate, startDate).Reverse();
         }
