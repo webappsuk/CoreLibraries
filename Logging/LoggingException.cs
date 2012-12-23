@@ -53,14 +53,6 @@ namespace WebApplications.Utilities.Logging
     public class LoggingException : ApplicationException, IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
         /// <summary>
-        /// The exception performance counter.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        private static readonly PerfCounter _perfCounterException =
-            PerfCategory.GetOrAdd<PerfCounter>("Logged exception", "Tracks every time an exception is logged.");
-
-        /// <summary>
         /// The associated log item.
         /// </summary>
         [NotNull]
@@ -420,7 +412,7 @@ namespace WebApplications.Utilities.Logging
             _log = Log.Add(group, context, this, level, message, parameters);
 
             // Finally increment performance counter.
-            _perfCounterException.Increment();
+            Log.PerfCounterException.Increment();
         }
 
         /// <summary>

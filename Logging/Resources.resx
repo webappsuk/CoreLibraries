@@ -139,7 +139,7 @@
     <value>No log cache available.</value>
   </data>
   <data name="LogStatic_Get_RetrievalNotSupported" xml:space="preserve">
-    <value>The {0} logger does not support log retrieval.</value>
+    <value>The {0} logger does not support log querying.</value>
   </data>
   <data name="LogStatic_Get_StartGreaterThanOrEqualToCurrent" xml:space="preserve">
     <value>Cannot retrieve logs, start date is greater or equal than current date!</value>
@@ -156,8 +156,8 @@
   <data name="LogStatic_LoggerThread_FatalErrorWhilstLogging" xml:space="preserve">
     <value>Fatal error whilst logging - aborting.</value>
   </data>
-  <data name="LogStatic_LoggerThread_LoggingThreadWasAborted" xml:space="preserve">
-    <value>Logging thread was aborted.</value>
+  <data name="Log_Application_Exiting" xml:space="preserve">
+    <value>Application '{0}' [{1}] exiting.</value>
   </data>
   <data name="EventLogger_EventLogCannotBeNull" xml:space="preserve">
     <value>Parameter 'eventLog' can not be null</value>
@@ -257,6 +257,21 @@
   </data>
   <data name="LogContext_Plural" xml:space="preserve">
     <value>({0} log entries)</value>
+  </data>
+  <data name="Log_Configured" xml:space="preserve">
+    <value>Application '{0}' [{1}] configured.</value>
+  </data>
+  <data name="Log_PerfCategory_Access_Denied" xml:space="preserve">
+    <value>Performance counters cannot be accessed.</value>
+  </data>
+  <data name="Log_PerfCategory_Enabled" xml:space="preserve">
+    <value>Performance counters are enabled and can be found with instance GUID '{0}'.</value>
+  </data>
+  <data name="Log_PerfCategory_Initialized" xml:space="preserve">
+    <value>Performance category '{0}' initialized.</value>
+  </data>
+  <data name="Log_PerfCategory_Missing" xml:space="preserve">
+    <value>Performance category '{0}' is missing.</value>
   </data>
   <data name="Log_ToString_Invalid_Format" xml:space="preserve">
     <value>The '{0}' format is not valid for a log.  See the LogFormat enumeration for valid values.</value>

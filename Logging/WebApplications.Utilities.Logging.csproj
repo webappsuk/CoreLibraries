@@ -65,6 +65,7 @@
     <Reference Include="System.Reactive.Providers">
       <HintPath>packages\Rx-Providers.2.0.21114\lib\Net45\System.Reactive.Providers.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -85,12 +86,12 @@
     <Compile Include="Configuration\LoggersCollection.cs" />
     <Compile Include="Configuration\LoggingConfiguration.cs" />
     <Compile Include="LogFormat.cs" />
+    <Compile Include="Loggers\LoggerBase.cs" />
     <Compile Include="LoggingExtensions.cs" />
-    <Compile Include="Loggers\EventLogger.cs" />
-    <Compile Include="Loggers\FileLogger.cs" />
+    <None Include="Loggers\EventLogger.cs" />
+    <None Include="Loggers\FileLogger.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="Log.cs" />
-    <Compile Include="Loggers\LoggerBase.cs" />
     <Compile Include="LogContext.cs" />
     <Compile Include="LoggingException.cs" />
     <Compile Include="LoggingLevel.cs" />

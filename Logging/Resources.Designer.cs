@@ -169,6 +169,60 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application &apos;{0}&apos; [{1}] exiting..
+        /// </summary>
+        internal static string Log_Application_Exiting {
+            get {
+                return ResourceManager.GetString("Log_Application_Exiting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application &apos;{0}&apos; [{1}] configured..
+        /// </summary>
+        internal static string Log_Configured {
+            get {
+                return ResourceManager.GetString("Log_Configured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performance counters cannot be accessed..
+        /// </summary>
+        internal static string Log_PerfCategory_Access_Denied {
+            get {
+                return ResourceManager.GetString("Log_PerfCategory_Access_Denied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performance counters are enabled and can be found with instance GUID &apos;{0}&apos;..
+        /// </summary>
+        internal static string Log_PerfCategory_Enabled {
+            get {
+                return ResourceManager.GetString("Log_PerfCategory_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performance category &apos;{0}&apos; initialized..
+        /// </summary>
+        internal static string Log_PerfCategory_Initialized {
+            get {
+                return ResourceManager.GetString("Log_PerfCategory_Initialized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performance category &apos;{0}&apos; is missing..
+        /// </summary>
+        internal static string Log_PerfCategory_Missing {
+            get {
+                return ResourceManager.GetString("Log_PerfCategory_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;{0}&apos; format is not valid for a log.  See the LogFormat enumeration for valid values..
         /// </summary>
         internal static string Log_ToString_Invalid_Format {
@@ -376,7 +430,7 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} logger does not support log retrieval..
+        ///   Looks up a localized string similar to The {0} logger does not support log querying..
         /// </summary>
         internal static string LogStatic_Get_RetrievalNotSupported {
             get {
@@ -426,15 +480,6 @@ namespace WebApplications.Utilities.Logging {
         internal static string LogStatic_LoggerThread_FatalErrorWhilstLogging {
             get {
                 return ResourceManager.GetString("LogStatic_LoggerThread_FatalErrorWhilstLogging", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logging thread was aborted..
-        /// </summary>
-        internal static string LogStatic_LoggerThread_LoggingThreadWasAborted {
-            get {
-                return ResourceManager.GetString("LogStatic_LoggerThread_LoggingThreadWasAborted", resourceCulture);
             }
         }
         

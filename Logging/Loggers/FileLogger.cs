@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     ///   A logger that implements logging to files.
     /// </summary>
     /// <remarks>
-    ///   TODO It should be possible to turn this into a logger that sets <see cref="ILogger.CanRetrieve"/> to <see langword="true"/>.
+    ///   TODO It should be possible to turn this into a logger that sets <see cref="ILogger.Queryable"/> to <see langword="true"/>.
     ///   That is that supports log retrieval.
     /// </remarks>
     [UsedImplicitly]

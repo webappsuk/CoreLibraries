@@ -35,7 +35,7 @@ namespace WebApplications.Utilities.Logging
     ///   Allows the specification of multiple <see cref="LoggingLevel">log levels</see>.
     /// </summary>
     [Flags]
-    public enum LoggingLevels
+    public enum LoggingLevels : byte
     {
         /// <summary>
         ///   All Levels.
@@ -84,42 +84,42 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   Used for critical, unrecoverable errors that can cause damage. The system should be stopped immediately.
         /// </summary>
-        [Description("Used for critical, unrecoverable errors that can cause damage.")] Emergency = 128,
+        [Description("Used for critical, unrecoverable errors that can cause damage.")] Emergency = 1 << 7,
 
         /// <summary>
         ///   Used for critical, unrecoverable errors that don't cause damage.
         ///   You should stop the system and repair the error, but it may be capable of continuing in some capacity.
         /// </summary>
-        [Description("Used for critical, unrecoverable errors that don't cause damage.")] Critical = 64,
+        [Description("Used for critical, unrecoverable errors that don't cause damage.")] Critical = 1 << 6,
 
         /// <summary>
         ///   Used for errors.
         /// </summary>
-        [Description("Used for errors.")] Error = 32,
+        [Description("Used for errors.")] Error = 1 << 5,
 
         /// <summary>
         ///   Used to indicate potential problems that should be addressed.
         /// </summary>
-        [Description("Used to indicate potential problems that should be addressed.")] Warning = 16,
+        [Description("Used to indicate potential problems that should be addressed.")] Warning = 1 << 4,
 
         /// <summary>
         ///   Used by system to notify key events.
         /// </summary>
-        [Description("Used by system to notify key events.")] SystemNotification = 8,
+        [Description("Used by system to notify key events.")] SystemNotification = 1 << 3,
 
         /// <summary>
         ///   Used by modules to notify key events.
         /// </summary>
-        [Description("Used by modules to notify key events.")] Notification = 4,
+        [Description("Used by modules to notify key events.")] Notification = 1 << 2,
 
         /// <summary>
         ///   Informational use.
         /// </summary>
-        [Description("Informational use.")] Information = 2,
+        [Description("Informational use.")] Information = 1 << 1,
 
         /// <summary>
         ///   Debugging information.
         /// </summary>
-        [Description("Debugging information.")] Debugging = 1
+        [Description("Debugging information.")] Debugging = 1 << 0
     }
 }

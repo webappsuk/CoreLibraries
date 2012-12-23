@@ -33,12 +33,15 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Performance;
 
@@ -51,152 +54,6 @@ namespace WebApplications.Utilities.Logging
     [DebuggerDisplay("{Message} @ {TimeStamp}")]
     public partial class Log : IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
-
-        /// <summary>
-        /// The Header/Footer string
-        /// </summary>
-        [NotNull]
-        private const string Header =
-            "====================================================================================================";
-
-        /// <summary>
-        /// The new log item performance counter.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        private static readonly PerfCounter _perfCounterNewItem =
-            PerfCategory.GetOrAdd<PerfCounter>("Logged new item", "Tracks every time a log entry is logged.");
-
-        /// <summary>
-        /// Holds lookup for logging levels.
-        /// </summary>
-        [NotNull]
-        private static readonly Dictionary<string, LoggingLevel> _levels =
-            ExtendedEnum<LoggingLevel>.ValueDetails
-                            .SelectMany(
-                                vd => vd.Select(v => new KeyValuePair<string, LoggingLevel>(v.ToLower(), vd.Value)))
-                            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-        /// <summary>
-        /// Holds lookup for logging levels.
-        /// </summary>
-        [NotNull]
-        private static readonly Dictionary<string, LogFormat> _formats =
-            ExtendedEnum<LogFormat>.ValueDetails
-                                      .SelectMany(
-                                          vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
-                                      .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-        /// <summary>
-        /// The log reservation.
-        /// </summary>
-        [NonSerialized]
-        private static readonly Guid _logReservation = System.Guid.NewGuid();
-
-        /// <summary>
-        /// The parameter key prefix.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string LogKeyPrefix = LogContext.ReservePrefix("Log ", _logReservation);
-
-        /// <summary>
-        /// The parameter key prefix.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ParameterKeyPrefix = LogContext.ReservePrefix("Log Parameter ", _logReservation);
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string GuidKey = LogContext.ReserveKey("Log GUID", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string GroupKey = LogContext.ReserveKey("Log Group", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string LevelKey = LogContext.ReserveKey("Log Level", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string MessageFormatKey = LogContext.ReserveKey("Log Message Format", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ExceptionTypeFullNameKey = LogContext.ReserveKey("Log Exception Type", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string StackTraceKey = LogContext.ReserveKey("Log Stack Trace", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ThreadIDKey = LogContext.ReserveKey("Log Thread ID", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ThreadNameKey = LogContext.ReserveKey("Log Thread Name", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ThreadCultureKey = LogContext.ReserveKey("Log Thread Culture", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ThreadUICultureKey = LogContext.ReserveKey("Log Thread UI Culture", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string StoredProcedureKey = LogContext.ReserveKey("Log Stored Procedure", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string StoredProcedureLineKey = LogContext.ReserveKey("Log Stored Procedure Line", _logReservation);
-
-        /// <summary>
-        /// The logging assembly
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
-
         /// <summary>
         /// The context (holds all log data).
         /// </summary>
@@ -281,7 +138,7 @@ namespace WebApplications.Utilities.Logging
         /// Gets the thread ID.
         /// </summary>
         /// <value>The thread ID.</value>
-        public int ThreadID { get { return int.Parse(_context[ThreadIDKey]); } }
+        public int ThreadID { get { return Int32.Parse(_context[ThreadIDKey]); } }
 
         /// <summary>
         /// Gets the name of the thread.
@@ -303,6 +160,22 @@ namespace WebApplications.Utilities.Logging
         /// <value>The thread UI culture.</value>
         [NotNull]
         public string ThreadUICulture { get { return _context[ThreadUICultureKey]; } }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Log" /> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <remarks>
+        /// <para>This is used for deserializing Log entries - it does not result in logs being added!</para>
+        /// <para>To add logs use <see cref="Log.Add(string, object[])" /> instead.</para>
+        /// </remarks>
+        private Log(IEnumerable<KeyValuePair<string, string>> context)
+        {
+            _context = context.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            // TODO Validate context...
+
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Log" /> class.
@@ -389,18 +262,19 @@ namespace WebApplications.Utilities.Logging
 
             // Add stack trace.
             _context.Add(StackTraceKey,
-                         string.IsNullOrWhiteSpace(stackTrace)
+                         String.IsNullOrWhiteSpace(stackTrace)
                              ? FormatStackTrace(new StackTrace(2, true), threadUICulture)
                              : stackTrace);
 
-            // Queue the log entry.
-            _logQueue.Enqueue(this);
+            // Post the log if the level is valid
+            // We check here as exceptions always create a log (even if the level isn't valid).
+            // It also reduces the race when the ValidLevels is changed.
+            if (Level.IsValid(ValidLevels))
+                lock (_queue)
+                    _queue.Enqueue(this);
 
             // Increment performance counter.
             _perfCounterNewItem.Increment();
-
-            // Signal monitor thread of new arrival.
-            _logSignal.Set();
         }
 
         /// <summary>
@@ -747,7 +621,7 @@ namespace WebApplications.Utilities.Logging
         {
             const int headerSize = 120;
             if (format == LogFormat.None)
-                return string.Empty;
+                return String.Empty;
 
             if (!format.IsCombinationFlag(true))
             {
@@ -760,7 +634,7 @@ namespace WebApplications.Utilities.Logging
                     case LogFormat.Message:
                         return _context[MessageFormatKey].SafeFormat(Parameters.ToArray());
                     case LogFormat.TimeStamp:
-                        return TimeStamp.ToString("s");
+                        return TimeStamp.ToString("o");
                     case LogFormat.Level:
                         return _context[LevelKey];
                     case LogFormat.Guid:
@@ -780,12 +654,12 @@ namespace WebApplications.Utilities.Logging
                     case LogFormat.SQLException:
                         string sql;
                         return _context.TryGetValue(StoredProcedureKey, out sql)
-                                   ? string.Format("{0} at line {1}", sql, _context[StoredProcedureLineKey])
+                                   ? String.Format("{0} at line {1}", sql, _context[StoredProcedureLineKey])
                                    : "null";
                     case LogFormat.StackTrace:
                         return _context[StackTraceKey];
                     default:
-                        throw new FormatException(string.Format("Unexpected singular format '{0}'.", format));
+                        throw new FormatException(String.Format("Unexpected singular format '{0}'.", format));
                 }
             }
 
@@ -808,7 +682,7 @@ namespace WebApplications.Utilities.Logging
             {
                 DateTime timestamp = TimeStamp;
                 builder.Append("Timestamp:   ");
-                builder.AppendLine(timestamp.ToString("s"));
+                builder.AppendLine(timestamp.ToString("o"));
             }
 
             if (format.HasFlag(LogFormat.Level))

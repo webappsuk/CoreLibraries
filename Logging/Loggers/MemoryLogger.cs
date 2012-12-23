@@ -26,16 +26,24 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Joins;
+using System.Reactive.Subjects;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Caching;
+using WebApplications.Utilities.Logging.Interfaces;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
     /// <summary>
-    ///   A logger that stores logs solely in memory.
-    ///   Is used by the core logger to hold log items temporarily, and for caching.
+    /// A logger that stores logs solely in memory.
+    /// Is used by the core logger to hold log items temporarily, and for caching.
     /// </summary>
     [UsedImplicitly]
     public class MemoryLogger : LoggerBase
@@ -44,64 +52,60 @@ namespace WebApplications.Utilities.Logging.Loggers
         ///   The length of time log items are cached for.
         ///   <see cref="TimeSpan.Zero"/> is used for infinity.
         /// </summary>
-        public readonly TimeSpan CacheExpiry;
+        public TimeSpan CacheExpiry
+        {
+            get { return _cacheExpiry; }
+            set
+            {
+                if (_cacheExpiry == value) return;
+
+                if (value == default(TimeSpan))
+                    value = TimeSpan.MaxValue;
+                else if (value < TimeSpan.FromSeconds(10))
+                    throw new LoggingException(Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
+                        LoggingLevel.Critical, value);
+
+                _cacheExpiry = value;
+                Clean();
+            }
+        }
+
+        /// <summary>
+        /// The oldest queue item.
+        /// </summary>
+        private DateTime _oldest = DateTime.MaxValue;
 
         /// <summary>
         ///   The maximum number of log entries to store.
         /// </summary>
-        public readonly int MaximumLogEntries;
+        public int MaximumLogEntries
+        {
+            get { return _maximumLogEntries; }
+            set
+            {
+                if (_maximumLogEntries == value) return;
+
+                if (value < 1)
+                    throw new LoggingException(Resources.MemoryLogger_MaximumLogsLessThanOne,
+                        LoggingLevel.Critical, value);
+                _maximumLogEntries = value;
+                Clean();
+            }
+        }
 
         /// <summary>
         ///   The cache that stores the logs.
         /// </summary>
-        private readonly CachingQueue<Log> _logs;
+        [NotNull]
+        private readonly Queue<Log> _queue = new Queue<Log>();
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="MemoryLogger"/> class with the logs from an older logger.
+        /// The cleaner subscription.
         /// </summary>
-        /// <param name="oldLogger">The old logger.</param>
-        /// <param name="name">The logger name.</param>
-        /// <param name="cacheExpiry">
-        ///   <para>The length of time that log items are cached for.</para>
-        ///   <para>Use <see cref="TimeSpan.Zero"/> for infinity.</para>
-        ///   <para>By default the expiry will be set to 10 minutes.</para>
-        /// </param>
-        /// <param name="maximumLogEntries">
-        ///   <para>The maximum number of log entries to store.</para>
-        ///   <para>By default this is set to 10,000.</para>
-        /// </param>
-        /// <param name="validLevels">
-        ///   <para>The valid log levels.</para>
-        ///   <para>By default this is set allow all <see cref="LoggingLevels">all log levels</see>.</para>
-        /// </param>
-        /// <exception cref="LoggingException">
-        ///   <para><paramref name="maximumLogEntries"/> was less than 1.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="cacheExpiry"/> cannot be less than 10 seconds.</para>
-        /// </exception>
-        internal MemoryLogger(
-            [NotNull] MemoryLogger oldLogger,
-            [NotNull] string name,
-            TimeSpan cacheExpiry = default(TimeSpan),
-            int maximumLogEntries = 10000,
-            LoggingLevels validLevels = LoggingLevels.All)
-            : base(name, true, validLevels)
-        {
-            if (maximumLogEntries <= 1)
-                throw new LoggingException(Resources.MemoryLogger_MaximumLogsLessThanOne,
-                    LoggingLevel.Critical, maximumLogEntries);
+        private readonly IDisposable _cleaner;
 
-            if (cacheExpiry == default(TimeSpan))
-                cacheExpiry = TimeSpan.FromMinutes(10);
-            else if (cacheExpiry < TimeSpan.FromSeconds(10))
-                throw new LoggingException(Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
-                    LoggingLevel.Critical, cacheExpiry);
-
-            MaximumLogEntries = maximumLogEntries;
-            CacheExpiry = cacheExpiry;
-
-            _logs = oldLogger._logs;
-        }
+        private int _maximumLogEntries;
+        private TimeSpan _cacheExpiry;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="MemoryLogger"/> class.
@@ -132,110 +136,94 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, true, validLevels)
         {
-            if (maximumLogEntries <= 1)
-                throw new LoggingException(Resources.MemoryLogger_MaximumLogsLessThanOne,
-                    LoggingLevel.Critical, maximumLogEntries);
-
-            if (cacheExpiry == default(TimeSpan))
-                cacheExpiry = TimeSpan.FromMinutes(10);
-            else if (cacheExpiry < TimeSpan.FromSeconds(10))
-                throw new LoggingException(Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
-                    LoggingLevel.Critical,cacheExpiry);
-
             MaximumLogEntries = maximumLogEntries;
             CacheExpiry = cacheExpiry;
-
-            _logs = new CachingQueue<Log>(cacheExpiry, maximumLogEntries);
+            _cleaner = Log.Tick.Subscribe(t => Clean());
         }
 
         /// <summary>
-        ///   Gets the time which marks when the log is caching from.
+        /// Adds the specified logs to storage in batches.
         /// </summary>
-        /// <value>The time the log is currently caching from.</value>
-        public DateTime CachingFrom
+        /// <param name="logs">The logs to add to storage.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token)
         {
-            get { return DateTime.Now.Subtract(CacheExpiry); }
+            lock (_lock)
+            {
+                foreach (Log log in logs
+                    .Where(log => log.Level.IsValid(ValidLevels) &&
+                                  CacheExpiry > (DateTime.UtcNow - log.TimeStamp)))
+                {
+                    token.ThrowIfCancellationRequested();
+                    _queue.Enqueue(log);
+                }
+            }
+
+            // We always complete synchronously.
+            return Task.FromResult(true);
         }
 
         /// <summary>
-        ///   Adds the specified log to the cache.
+        /// Gets all cached logs.
         /// </summary>
-        /// <param name="log">The log to add.</param>
-        public override void Add(Log log)
+        /// <value>All.</value>
+        [NotNull]
+        public IEnumerable<Log> All
         {
-            _logs.Enqueue(log);
+            get
+            {
+                Log[] snapshot;
+                lock (_lock)
+                    snapshot = _queue.ToArray();
+
+                // Combine cache with any added in future.
+                return snapshot
+                    .Skip(snapshot.Length > MaximumLogEntries ? snapshot.Length - MaximumLogEntries : 0)
+                    .Where(log => CacheExpiry > (DateTime.UtcNow - log.TimeStamp));
+            }
         }
 
         /// <summary>
-        ///   Gets all of the logs from the end date backwards up to the specified limit.
+        /// Gets the Qbservable allowing asynchronous querying of log data.
         /// </summary>
-        /// <param name="endDate">The last date to get logs up to (exclusive).</param>
-        /// <param name="limit">The maximum number of logs to retrieve.</param>
-        /// <returns>
-        ///   The retrieved logs in reverse date order, the first being the newest log before the <paramref name="endDate"/>.
-        /// </returns>
-        public override IEnumerable<Log> Get(DateTime endDate, int limit)
+        /// <value>The query.</value>
+        [NotNull]
+        public override IQbservable<IEnumerable<KeyValuePair<string, string>>> Qbserve
         {
-            DateTime e = CachingFrom;
-            return (from l in _logs
-                    where l.TimeStamp < endDate && l.TimeStamp > e
-                    orderby l.TimeStamp descending
-                    select l)
-                .Take(limit);
+            get
+            {
+                return All
+                    .ToObservable()
+                    .AsQbservable();
+            }
         }
 
         /// <summary>
-        ///   Gets all of the logs from the end date backwards up to the start date.
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <param name="endDate">The last date to get logs from (exclusive).</param>
-        /// <param name="startDate">The start date to get logs up to (inclusive).</param>
-        /// <returns>
-        ///   The retrieved logs in reverse date order, the first being the newest log before the <paramref name="endDate"/>
-        ///   and the last being the first log after the <paramref name="startDate"/>.
-        /// </returns>
-        public override IEnumerable<Log> Get(DateTime endDate, DateTime startDate)
+        public override void Dispose()
         {
-            DateTime e = CachingFrom;
-            return from l in _logs
-                   where l.TimeStamp >= startDate && l.TimeStamp < endDate && l.TimeStamp > e
-                   orderby l.TimeStamp descending
-                   select l;
+            _cleaner.Dispose();
+            lock (_lock)
+                _queue.Clear();
         }
 
-        /// <summary>
-        ///   Gets all of the logs from the start date forwards up to the specified limit.
-        /// </summary>
-        /// <param name="startDate">The start date to get logs from (inclusive).</param>
-        /// <param name="limit">The maximum number of logs to retrieve.</param>
-        /// <returns>
-        ///   The retrieved logs starting from the <paramref name="startDate"/> up to the specified <paramref name="limit"/>.
-        /// </returns>
-        public override IEnumerable<Log> GetForward(DateTime startDate, int limit)
-        {
-            DateTime e = CachingFrom;
-
-            // We ToList() before we exit otherwise the deferred execution object will be passed round instead.
-            return (from l in _logs
-                    where l.TimeStamp >= startDate && l.TimeStamp > e
-                    select l).Take(limit).ToList();
-        }
+        private object _lock = new object();
 
         /// <summary>
-        ///   Gets all of the logs from the start date forwards up to the end date.
-        ///   By default this calls the Get method and reverses, override in classes where reversal can be done when retrieving from storage.
+        /// Cleans this instance.
         /// </summary>
-        /// <param name="startDate">The start date to get logs from (inclusive).</param>
-        /// <param name="endDate">The last date to get logs to (exclusive).</param>
-        /// <returns>
-        ///   All of the retrieved logs from the <paramref name="startDate"/> to the <paramref name="endDate"/>.
-        /// </returns>
-        public override IEnumerable<Log> GetForward(DateTime startDate, DateTime endDate)
+        private void Clean()
         {
-            DateTime e = CachingFrom;
-            return from l in _logs
-                   where l.TimeStamp >= startDate && l.TimeStamp < endDate && l.TimeStamp > e
-                   orderby l.TimeStamp
-                   select l;
+            // only one cleaner should run at a time.
+            lock (_lock)
+            {
+                while ((_queue.Count > 0) &&
+                       ((_queue.Count > MaximumLogEntries) ||
+                        (CacheExpiry > (DateTime.UtcNow - _queue.Peek().TimeStamp))))
+                    _queue.Dequeue();
+            }
         }
     }
 }

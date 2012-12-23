@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using System.Diagnostics.Contracts;
 using WebApplications.Utilities.Performance;
@@ -47,6 +48,7 @@ namespace WebApplications.Utilities.Logging
         ///   Returns <see langword="true"/> if the specified <paramref name="level"/> is within the <paramref name="validLevels"/>;
         ///   provided; otherwise returns <see langword="false"/>.
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValid(this LoggingLevel level, LoggingLevels validLevels)
         {
             LoggingLevels l = (LoggingLevels) level;

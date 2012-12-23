@@ -28,7 +28,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -37,6 +41,7 @@ using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
+using WebApplications.Utilities.Performance;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -46,79 +51,233 @@ namespace WebApplications.Utilities.Logging
     public partial class Log
     {
         /// <summary>
-        ///   The currently logged levels, which is all of the log levels that the registered loggers are
-        ///   interested in ANDed with the current <see cref="ValidLevels"/>.
+        /// The Header/Footer string
         /// </summary>
-        [NonSerialized] private static LoggingLevels _loggedLevels = LoggingLevels.None;
-
-        /// <summary>
-        ///   Dictionary of all available loggers.
-        /// </summary>
-        [NonSerialized] [NotNull] private static readonly ConcurrentDictionary<string, ILogger> _loggers =
-            new ConcurrentDictionary<string, ILogger>();
-
-        /// <summary>
-        ///   Holds a pointer to the default memory logger, used for caching.
-        /// </summary>
-        [UsedImplicitly] [NonSerialized] [CanBeNull] public static MemoryLogger DefaultMemoryLogger;
-
-        /// <summary>
-        ///   Used to signal the arrival of a new log item
-        /// </summary>
-        [NonSerialized] private static readonly ManualResetEventSlim _logSignal = new ManualResetEventSlim(false);
-
-        /// <summary>
-        ///   Used to signal when a batch has emptied the queue.
-        /// </summary>
-        [NonSerialized] private static readonly ManualResetEventSlim _batchComplete = new ManualResetEventSlim(true);
-
-        /// <summary>
-        ///   Used to signal when the logging thread should pause.
-        /// </summary>
-        [NonSerialized] private static readonly ManualResetEventSlim _continue = new ManualResetEventSlim(true);
-
-        /// <summary>
-        ///   Used to signal when the logging thread is pausing.
-        /// </summary>
-        [NonSerialized] private static readonly ManualResetEventSlim _pausing = new ManualResetEventSlim(false);
-
-        /// <summary>
-        ///   The <see cref="Thread"/> that handles the logging.
-        /// </summary>
-        [NonSerialized] [CanBeNull] private static Thread _loggerThread;
-
-        /// <summary>
-        ///   A queue of log items waiting to be dumped to loggers.
-        /// </summary>
-        [NonSerialized] 
         [NotNull]
-        private static readonly ConcurrentQueue<Log> _logQueue = new ConcurrentQueue<Log>();
-
+        private const string Header =
+            "====================================================================================================";
 
         /// <summary>
-        ///   Used to synchronise methods.
+        /// The new log item performance counter.
         /// </summary>
-        [NonSerialized] [NotNull] private static readonly object _lock = new object();
+        [NotNull]
+        [NonSerialized]
+        private static readonly PerfCounter _perfCounterNewItem;
+
+        /// <summary>
+        /// The exception performance counter.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        internal static readonly PerfCounter PerfCounterException;
+
+        /// <summary>
+        /// Holds lookup for logging levels.
+        /// </summary>
+        [NotNull]
+        private static readonly Dictionary<string, LoggingLevel> _levels =
+            ExtendedEnum<LoggingLevel>.ValueDetails
+                            .SelectMany(
+                                vd => vd.Select(v => new KeyValuePair<string, LoggingLevel>(v.ToLower(), vd.Value)))
+                            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        /// <summary>
+        /// Holds lookup for logging levels.
+        /// </summary>
+        [NotNull]
+        private static readonly Dictionary<string, LogFormat> _formats =
+            ExtendedEnum<LogFormat>.ValueDetails
+                                      .SelectMany(
+                                          vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
+                                      .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        /// <summary>
+        /// The log reservation.
+        /// </summary>
+        [NonSerialized]
+        private static readonly Guid _logReservation = System.Guid.NewGuid();
+
+        /// <summary>
+        /// The parameter key prefix.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string LogKeyPrefix = LogContext.ReservePrefix("Log ", _logReservation);
+
+        /// <summary>
+        /// The parameter key prefix.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ParameterKeyPrefix = LogContext.ReservePrefix("Log Parameter ", _logReservation);
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string GuidKey = LogContext.ReserveKey("Log GUID", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string GroupKey = LogContext.ReserveKey("Log Group", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string LevelKey = LogContext.ReserveKey("Log Level", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string MessageFormatKey = LogContext.ReserveKey("Log Message Format", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ExceptionTypeFullNameKey = LogContext.ReserveKey("Log Exception Type", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StackTraceKey = LogContext.ReserveKey("Log Stack Trace", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadIDKey = LogContext.ReserveKey("Log Thread ID", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadNameKey = LogContext.ReserveKey("Log Thread Name", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadCultureKey = LogContext.ReserveKey("Log Thread Culture", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadUICultureKey = LogContext.ReserveKey("Log Thread UI Culture", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StoredProcedureKey = LogContext.ReserveKey("Log Stored Procedure", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StoredProcedureLineKey = LogContext.ReserveKey("Log Stored Procedure Line", _logReservation);
+
+        /// <summary>
+        /// The logging assembly
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
+
+        /// <summary>
+        /// The global tick, ticks once a second and is used for batching, etc.
+        /// </summary>
+        [NonSerialized]
+        [NotNull]
+        public static readonly IObservable<long> Tick;
+
+        /// <summary>
+        /// Loggers collection.
+        /// </summary>
+        [NonSerialized]
+        [NotNull]
+        private static readonly List<ILogger> _loggers;
+
+        /// <summary>
+        /// The default memory logger always exists and ensures we're always capturing at least the last minutes worth of logs.
+        /// </summary>
+        [NonSerialized]
+        [NotNull]
+        private static readonly MemoryLogger _defaultMemoryLogger;
+
+        /// <summary>
+        /// The tick subscription.
+        /// </summary>
+        [NonSerialized]
+        [NotNull]
+        private static readonly IDisposable _tickSubscription;
 
         /// <summary>
         ///   Initializes static members of the <see cref="Log" /> class.
         /// </summary>
         static Log()
         {
+            // Set logging to all
+            ValidLevels = LoggingLevels.All;
+
+            // Initialize performance counters
+            PerfCounterException =
+                PerfCategory.GetOrAdd<PerfCounter>("Logged exception", "Tracks every time an exception is logged.");
+            _perfCounterNewItem =
+                PerfCategory.GetOrAdd<PerfCounter>("Logged new item", "Tracks every time a log entry is logged.");
+
+            // Create tick
+            Tick = Observable.Timer(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+
+            _loggers = new List<ILogger>();
+            _defaultMemoryLogger = new MemoryLogger("Default memory logger", TimeSpan.FromMinutes(1));
+
+            // Flush on tick.
+            _tickSubscription = Tick.Subscribe(l => Flush());
+
             ConfigurationSection<LoggingConfiguration>.Changed += (o, e) => LoadConfiguration();
 
             // Flush logs on domain unload.
-            AppDomain.CurrentDomain.DomainUnload += (s, e) => Flush();
+            AppDomain.CurrentDomain.DomainUnload += (s, e) => Cleanup();
+
+            if (PerfCategory.HasAccess)
+            {
+                Add(LoggingLevel.Notification, Resources.Log_PerfCategory_Enabled, PerfCategory.InstanceGuid);
+
+                foreach (var pc in PerfCategory.All)
+                {
+                    if (pc.IsValid)
+                        Add(LoggingLevel.Debugging, Resources.Log_PerfCategory_Initialized, pc.CategoryName);
+                    else
+                        Add(LoggingLevel.Warning, Resources.Log_PerfCategory_Missing, pc.CategoryName);
+                }
+            }
+            else
+                Add(LoggingLevel.Warning, Resources.Log_PerfCategory_Access_Denied);
         }
 
         /// <summary>
         ///   Gets the valid <see cref="LoggingLevel">log levels</see>.
         /// </summary>
         [UsedImplicitly]
-        public static LoggingLevels ValidLevels
-        {
-            get { return ConfigurationSection<LoggingConfiguration>.Active.ValidLevels; }
-        }
+        public static LoggingLevels ValidLevels { get; set; }
 
         /// <summary>
         ///   Gets the loggers.
@@ -127,8 +286,27 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         public static IEnumerable<ILogger> Loggers
         {
-            get { return _loggers.Values; }
+            get
+            {
+                ILogger[] copy;
+                lock (_loggers)
+                    copy = _loggers.ToArray();
+                return copy;
+            }
         }
+
+        /// <summary>
+        /// Gets the name of the application.
+        /// </summary>
+        /// <value>The name of the application.</value>
+        [NotNull]
+        public static string ApplicationName { get; private set; }
+
+        /// <summary>
+        /// Gets the application GUID.
+        /// </summary>
+        /// <value>The name of the application.</value>
+        public static Guid ApplicationGuid { get; private set; }
 
         /// <summary>
         ///   Loads the configuration whenever it is changed.
@@ -141,72 +319,39 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         internal static void LoadConfiguration()
         {
-            lock (_lock)
+            lock (_loggers)
             {
-                // Reset the continue flag, which will cause logging thread to block
-                _continue.Reset();
-
-                // If we have a logging thread wait for it to pause.
-                if (_loggerThread != null)
-                {
-                    _pausing.Wait();
-                }
-
                 // Get the active configuration
                 LoggingConfiguration configuration = ConfigurationSection<LoggingConfiguration>.Active;
 
-                // Remove loggers
-                foreach (string loggerName in _loggers.Keys)
-                {
-                    if (loggerName == null) continue;
-                    ILogger logger;
-                    if ((_loggers.TryRemove(loggerName, out logger)) &&
-                        (logger != DefaultMemoryLogger))
-                        // Dispose loggers (except the default memory logger)
-                        logger.Dispose();
-                }
+                ApplicationName = configuration.ApplicationName;
+                ApplicationGuid = configuration.ApplicationGuid;
 
-                // Create a memory logger for caching and add to loggers
-                if ((configuration.Enabled) &&
-                    (configuration.LogCacheExpiry > TimeSpan.Zero) &&
-                    (configuration.LogCacheMaximumEntries > 0))
-                {
-                    if (DefaultMemoryLogger == null)
-                    {
-                        // No memory logger - create one.
-                        DefaultMemoryLogger = new MemoryLogger(System.Guid.NewGuid().ToString(),
-                                                               configuration.LogCacheExpiry);
-                    }
-                    else if ((DefaultMemoryLogger.CacheExpiry != configuration.LogCacheExpiry) ||
-                             (DefaultMemoryLogger.MaximumLogEntries != configuration.LogCacheMaximumEntries))
-                    {
-                        // Changed the settings so create a new memory logger.
-                        MemoryLogger oldLogger = DefaultMemoryLogger;
-                        DefaultMemoryLogger = new MemoryLogger(oldLogger, System.Guid.NewGuid().ToString(),
-                                                               configuration.LogCacheExpiry,
-                                                               configuration.LogCacheMaximumEntries);
-                        oldLogger.Dispose();
-                    }
-                    _loggers.AddOrUpdate(DefaultMemoryLogger.Name, DefaultMemoryLogger,
-                                         (k, d) => DefaultMemoryLogger);
-                }
-                else
-                {
-                    if (DefaultMemoryLogger != null)
-                        DefaultMemoryLogger.Dispose();
+                // Get all loggers
+                ILogger[] loggers = _loggers.ToArray();
+                // Remove all loggers
+                _loggers.Clear();
 
-                    // Disable the memory logger.
-                    DefaultMemoryLogger = null;
-                }
+                // Dispose loggers
+                foreach (ILogger logger in loggers.Where(logger => logger != null))
+                    logger.Dispose();
+
+                // Update default memory logger values
+                if (configuration.LogCacheExpiry > TimeSpan.Zero)
+                    _defaultMemoryLogger.CacheExpiry = configuration.LogCacheExpiry;
+                if (configuration.LogCacheMaximumEntries > 0)
+                    _defaultMemoryLogger.MaximumLogEntries = configuration.LogCacheMaximumEntries;
+
 
                 // If we're enabled add specified loggers that are also enabled.
                 if (configuration.Enabled)
                 {
+                    ValidLevels = configuration.ValidLevels;
                     foreach (LoggerElement loggerElement in configuration.Loggers.Where(l => l != null && l.Enabled))
                     {
                         try
                         {
-                            AddOrUpdateLogger(loggerElement.GetInstance<ILogger>(), DefaultMemoryLogger);
+                            AddLogger(loggerElement.GetInstance<ILogger>(), _defaultMemoryLogger);
                         }
                         catch (Exception exception)
                         {
@@ -218,25 +363,13 @@ namespace WebApplications.Utilities.Logging
                         }
                     }
 
-                    // If we don't have a logging thread create it.
-                    if (_loggerThread == null)
-                    {
-                        _loggerThread = new Thread(LoggerThread) {Priority = ThreadPriority.BelowNormal, IsBackground = true};
-                        _loggerThread.Start();
-                    }
+                    Add(LoggingLevel.Notification, Resources.Log_Configured, ApplicationName, ApplicationGuid);
                 }
                 else
                 {
-                    // If we have a logging thread, abort it.
-                    if (_loggerThread != null)
-                    {
-                        _loggerThread.Abort();
-                        _loggerThread = null;
-                    }
+                    // Disable logging.
+                    ValidLevels = LoggingLevels.None;
                 }
-
-                // Set the continue thread, any blocked logging thread will now continue with new configuration settings.
-                _continue.Set();
             }
         }
 
@@ -254,10 +387,10 @@ namespace WebApplications.Utilities.Logging
         /// </param>
         /// <returns>The logger with the specified logger name.</returns>
         /// <exception cref="LoggingException">
-        ///   <see cref="WebApplications.Utilities.Logging.Loggers.LoggerBase.CanRetrieve">retrieval</see> is not supported.
+        ///   <see cref="LoggerBase.Queryable">retrieval</see> is not supported.
         /// </exception>
         [UsedImplicitly]
-        private static ILogger AddOrUpdateLogger(
+        public static ILogger AddLogger(
             [NotNull] ILogger logger,
             [CanBeNull] ILogger sourceLogger = null,
             int limit = Int32.MaxValue)
@@ -265,7 +398,7 @@ namespace WebApplications.Utilities.Logging
             if (sourceLogger != null)
             {
                 // Check for source logger can retrieve logs
-                if (!sourceLogger.CanRetrieve)
+                if (!sourceLogger.Queryable)
                 {
                     throw new LoggingException(
                         Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
@@ -274,484 +407,168 @@ namespace WebApplications.Utilities.Logging
                 }
 
                 // Add logs
-                logger.Add(sourceLogger.Get(DateTime.Now, limit).Reverse());
+                logger.Add(sourceLogger.Qbserve.TakeLast(limit).ToEnumerable().Select(l => new Log(l)));
             }
 
-            _loggedLevels = _loggedLevels | logger.ValidLevels & ValidLevels;
-            return _loggers.AddOrUpdate(logger.Name, logger, (k, l) => logger);
+            lock (_loggers)
+                _loggers.Add(logger);
+
+            return logger;
         }
 
         /// <summary>
-        ///   Tries to retrieve the logger with the name specified.
+        /// Tries to remove the logger with the name specified.
         /// </summary>
-        /// <param name="loggerName">The name of the logger to retrieve.</param>
         /// <param name="logger">The retrieved logger.</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the logger was retrieved successfully; otherwise returns <see langword="false"/>.
-        /// </returns>
+        /// <returns>Returns <see langword="true" /> if the logger was retrieved successfully; otherwise returns <see langword="false" />.</returns>
         [UsedImplicitly]
-        public static bool TryGetLogger([NotNull] string loggerName, out ILogger logger)
+        public static bool RemoveLogger([NotNull]ILogger logger)
         {
-            return _loggers.TryGetValue(loggerName, out logger);
+            lock (_loggers)
+                return _loggers.Remove(logger);
         }
 
         /// <summary>
-        ///   Tries to remove a logger with the name specified.
+        /// Ensure we only have one flush running at once.
         /// </summary>
-        /// <param name="name">The name of the logger to remove.</param>
-        /// <param name="logger">The logger removed.</param>
-        /// <returns>
-        ///   Returns <see langword="true"/> if the logger was removed successfully; otherwise returns <see langword="false"/>.
-        /// </returns>
-        [UsedImplicitly]
-        private static bool TryRemoveLogger([NotNull] string name, out ILogger logger)
-        {
-            if (_loggers.TryRemove(name, out logger))
-            {
-                RecalculateLoggedLevels();
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        ///   Recalculates the logged log levels if a logger is removed.
-        /// </summary>
-        internal static void RecalculateLoggedLevels()
-        {
-            _loggedLevels = _loggers.Aggregate(LoggingLevels.None, (c, n) => c | n.Value.ValidLevels) & ValidLevels;
-        }
-
-        /// <summary>
-        ///   Gets all of the logs from the end date backwards up to the specified limit.
-        /// </summary>
-        /// <param name="endDate">The last date to get logs up to (exclusive).</param>
-        /// <param name="limit">The maximum number of logs to retrieve.</param>
-        /// <returns>
-        ///   The retrieved logs in reverse date order, the first being the newest log before the <paramref name="endDate"/>.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   <para>There is no log cache available.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="limit"/> is less than 1.</para>
-        /// </exception>
-        [UsedImplicitly]
+        [NonSerialized]
+        private static Task _flushTask;
+        [NonSerialized]
+        private static CancellationToken _flushToken;
         [NotNull]
-        public static IEnumerable<Log> Get(DateTime endDate, int limit)
-        {
-            if (DefaultMemoryLogger == null)
-                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LoggingLevel.Critical);
-            return Get(DefaultMemoryLogger, endDate, limit);
-        }
+        [NonSerialized]
+        private static readonly object _flushLock = new object();
 
         /// <summary>
-        ///   Gets all of the logs from the end date backwards up to the specified limit.
-        /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="endDate">The last date to get logs up to. (exclusive)</param>
-        /// <param name="limit">The maximum number of logs to retrieve.</param>
-        /// <returns>
-        ///   The retrieved logs in reverse date order, the first being the newest log before the <paramref name="endDate"/>.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   <para><paramref name="logger"/> doesn't support <see cref="WebApplications.Utilities.Logging.Loggers.LoggerBase.CanRetrieve">retrieval</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="limit"/> is less than 1.</para>
-        /// </exception>
-        [UsedImplicitly]
-        [NotNull]
-        public static IEnumerable<Log> Get([NotNull] LoggerBase logger, DateTime endDate, int limit)
-        {
-            if (!logger.CanRetrieve)
-                throw new LoggingException(
-                    Resources.LogStatic_Get_RetrievalNotSupported, LoggingLevel.Critical, logger.Name);
-
-            if (limit <= 0)
-                throw new LoggingException(Resources.LogStatic_Get_LimitLessThanZero, LoggingLevel.Error);
-
-            // First get results from cache
-            IEnumerable<Log> results = DefaultMemoryLogger == null
-                                           ? Enumerable.Empty<Log>()
-                                           : DefaultMemoryLogger.Get(endDate, limit);
-
-            // If the logger is the memory logger, or we have enough results return
-            if ((logger == DefaultMemoryLogger) ||
-                (results.Count() >= limit))
-                return results;
-
-            return logger.Get(endDate, limit);
-        }
-
-        /// <summary>
-        ///   Gets all of the logs from the end date backwards up to the start date.
-        /// </summary>
-        /// <param name="endDate">The last date to get logs from (exclusive).</param>
-        /// <param name="startDate">The start date to get logs up to (inclusive).</param>
-        /// <returns>
-        ///   The retrieved logs in reverse date order, the first being the newest log before the <paramref name="endDate"/>
-        ///   and the last being the first log after the <paramref name="startDate"/>.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   <para>There is no log cache available.</para>
-        ///   <para>-or-</para>
-        ///   <para>The logger doesn't support <see cref="WebApplications.Utilities.Logging.Loggers.LoggerBase.CanRetrieve">retrieval</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is is greater than the <see cref="System.DateTime.Now">current date</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is greater than <paramref name="endDate"/>.</para>
-        /// </exception>
-        [UsedImplicitly]
-        [NotNull]
-        public static IEnumerable<Log> Get(DateTime endDate, DateTime startDate)
-        {
-            if (DefaultMemoryLogger == null)
-                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LoggingLevel.Critical);
-            return Get(DefaultMemoryLogger, endDate, startDate);
-        }
-
-        /// <summary>
-        ///   Gets all logs from the end date backwards to start date
-        /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="endDate">The last date to get logs from (exclusive).</param>
-        /// <param name="startDate">The start date to get logs up to (inclusive).</param>
-        /// <returns>
-        ///   The retrieved logs in reverse date order, the first being the newest log before the <paramref name="endDate"/>
-        ///   and the last being the first log after the <paramref name="startDate"/>.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   <para>The <paramref name="logger"/> doesn't  support <see cref="WebApplications.Utilities.Logging.Loggers.LoggerBase.CanRetrieve">retrieval</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is greater than the <see cref="System.DateTime.Now">current date</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is greater than <paramref name="endDate"/>.</para>
-        /// </exception>
-        [UsedImplicitly]
-        [NotNull]
-        public static IEnumerable<Log> Get([NotNull] LoggerBase logger, DateTime endDate, DateTime startDate)
-        {
-            if (!logger.CanRetrieve)
-                throw new LoggingException(
-                    Resources.LogStatic_Get_RetrievalNotSupported, LoggingLevel.Critical, logger.Name);
-
-            if (startDate >= DateTime.Now)
-                throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToCurrent, LoggingLevel.Error);
-
-            if (startDate >= endDate)
-                throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToEnd, LoggingLevel.Error);
-
-            // If we can get the logs from cache, do so.
-            if ((DefaultMemoryLogger != null) && (startDate >= DefaultMemoryLogger.CachingFrom))
-                logger = DefaultMemoryLogger;
-
-            return logger.Get(endDate, startDate);
-        }
-
-        /// <summary>
-        ///   Gets all of the logs from the start date forwards up to the specified limit.
-        /// </summary>
-        /// <param name="startDate">The start date to get logs from (inclusive).</param>
-        /// <param name="limit">The maximum number of logs to retrieve.</param>
-        /// <returns>
-        ///   The retrieved logs starting from the <paramref name="startDate"/> up to the specified <paramref name="limit"/>.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   <para>There is no log cache available.</para>
-        ///   <para>-or-</para>
-        ///   <para>The logger doesn't  support <see cref="WebApplications.Utilities.Logging.Loggers.LoggerBase.CanRetrieve">retrieval</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="limit"/> is less than 1.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is greater than the <see cref="System.DateTime.Now">current date</see>.</para>
-        /// </exception>
-        [UsedImplicitly]
-        [NotNull]
-        public static IEnumerable<Log> GetForward(DateTime startDate, int limit)
-        {
-            if (DefaultMemoryLogger == null)
-                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LoggingLevel.Critical);
-            return GetForward(DefaultMemoryLogger, startDate, limit);
-        }
-
-        /// <summary>
-        ///   Gets all of the logs from the start date forwards up to the specified limit.
-        /// </summary>
-        /// <param name = "logger">The logger to use.</param>
-        /// <param name="startDate">The start date to get logs from (inclusive).</param>
-        /// <param name="limit">The maximum number of logs to retrieve.</param>
-        /// <returns>
-        ///   The retrieved logs starting from the <paramref name="startDate"/> up to the specified <paramref name="limit"/>.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   <para>The <paramref name="logger"/> doesn't implement Get.</para>
-        ///   <para>-or-</para>
-        ///   <para>The <paramref name="logger"/> doesn't  support <see cref="WebApplications.Utilities.Logging.Loggers.LoggerBase.CanRetrieve">retrieval</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="limit"/> is less than 1.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is greater than the <see cref="System.DateTime.Now">current date</see>.</para>
-        /// </exception>
-        [UsedImplicitly]
-        [NotNull]
-        public static IEnumerable<Log> GetForward([NotNull] LoggerBase logger, DateTime startDate, int limit)
-        {
-            if (!logger.CanRetrieve)
-                throw new LoggingException(
-                    Resources.LogStatic_Get_RetrievalNotSupported, LoggingLevel.Critical, logger.Name);
-
-            if (limit <= 0)
-                throw new LoggingException(Resources.LogStatic_Get_LimitLessThanZero, LoggingLevel.Error);
-
-            if (startDate >= DateTime.Now)
-                throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToCurrent, LoggingLevel.Error);
-
-            // If we can get the logs from cache, do so.
-            if ((DefaultMemoryLogger != null) && (startDate >= DefaultMemoryLogger.CachingFrom))
-                logger = DefaultMemoryLogger;
-
-            return logger.GetForward(startDate, limit);
-        }
-
-        /// <summary>
-        ///   Gets all of the logs from the start date forwards up to the end date.
-        ///   This calls the Get method and reverses.
-        /// </summary>
-        /// <param name="startDate">The start date to get logs from (inclusive).</param>
-        /// <param name="endDate">The last date to get logs to (exclusive).</param>
-        /// <returns>
-        ///   All of the retrieved logs from the <paramref name="startDate"/> to the <paramref name="endDate"/>.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   <para>The logger doesn't  support <see cref="WebApplications.Utilities.Logging.Loggers.LoggerBase.CanRetrieve">retrieval</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is greater than the <see cref="System.DateTime.Now">current date</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is greater than the <paramref name="endDate"/>.</para>
-        /// </exception>
-        [UsedImplicitly]
-        [NotNull]
-        public static IEnumerable<Log> GetForward(DateTime startDate, DateTime endDate)
-        {
-            if (DefaultMemoryLogger == null)
-                throw new LoggingException(Resources.LogStatic_Get_NoLogCacheAvailable, LoggingLevel.Critical);
-            return GetForward(DefaultMemoryLogger, startDate, endDate);
-        }
-
-        /// <summary>
-        ///   Gets all of the logs from the start date forwards up to the end date.
-        ///   This calls the Get method and reverses.
-        /// </summary>
-        /// <param name="logger">The logger to use.</param>
-        /// <param name="startDate">The start date to get logs from (inclusive).</param>
-        /// <param name="endDate">The last date to get logs to (exclusive).</param>
-        /// <returns>
-        ///   All of the retrieved logs from the <paramref name="startDate"/> to the <paramref name="endDate"/>.
-        /// </returns>
-        /// <exception cref="LoggingException">
-        ///   <para>The <paramref name="logger"/> doesn't implement Get.</para>
-        ///   <para>-or-</para>
-        ///   <para>The <paramref name="logger"/> doesn't  support <see cref="WebApplications.Utilities.Logging.Loggers.LoggerBase.CanRetrieve">retrieval</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is greater than the <see cref="System.DateTime.Now">current date</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="startDate"/> is greater than the <paramref name="endDate"/>.</para>
-        /// </exception>
-        [UsedImplicitly]
-        [NotNull]
-        public static IEnumerable<Log> GetForward([NotNull] LoggerBase logger, DateTime startDate, DateTime endDate)
-        {
-            if (!logger.CanRetrieve)
-                throw new LoggingException(
-                    Resources.LogStatic_Get_RetrievalNotSupported, LoggingLevel.Critical, logger.Name);
-
-            if (startDate >= DateTime.Now)
-                throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToCurrent, LoggingLevel.Error);
-
-            if (startDate >= endDate)
-                throw new LoggingException(
-                    Resources.LogStatic_Get_StartGreaterThanOrEqualToEnd, LoggingLevel.Error);
-
-            // If we can get the logs from cache, do so.
-            if ((DefaultMemoryLogger != null) && (startDate >= DefaultMemoryLogger.CachingFrom))
-                logger = DefaultMemoryLogger;
-
-            return logger.GetForward(startDate, endDate);
-        }
-
-        /// <summary>
-        ///   Flushes all outstanding logs.
+        ///   Flushes all outstanding logs asynchronously.
         /// </summary>
         /// <remarks>
         ///   Note: If more logs are added whilst the system is flushing this will continue to block until there are no outstanding logs.
         /// </remarks>
         [UsedImplicitly]
-        public static void Flush()
+        public static Task Flush(CancellationToken token = default(CancellationToken))
         {
-            lock (_lock)
+            lock (_flushLock)
             {
-                if ((_loggerThread != null) && (_loggerThread.IsAlive))
+                // Check for existing task.
+                if (_flushTask != null)
                 {
-                    // Firstly we reset the batch complete flag
-                    // this ensures that we will block until we next clear down the logs completely.
-                    _batchComplete.Reset();
-
-                    // Set the log signal, to ensure we release the batch thread (if it is blocked).
-                    _logSignal.Set();
-
-                    // Block until we receive a batch complete signal.
-                    _batchComplete.Wait();
-                }
-
-                // Flush loggers themselves.
-                foreach (ILogger logger in _loggers.Values)
-                    logger.Flush();
-            }
-        }
-
-        /// <summary>
-        ///   Thread entry point for logging items to loggers.
-        /// </summary>
-        private static void LoggerThread()
-        {
-            try
-            {
-                // Loop infinitely, logging
-                do
-                {
-                    // Signal we are pausing
-                    _pausing.Set();
-
-                    // Wait if the pause flag is set.
-                    _continue.Wait();
-
-                    // Signal pause has completed.
-                    _pausing.Reset();
-
-                    // Check for an empty queue
-                    if (_logQueue.IsEmpty)
-                        // Block for 30s, or until we get a new log item
-                        // We don't block permanently as there is a rare
-                        // race condition where log items may still be in
-                        // the queue, and we can't lock the wait!
-                        _logSignal.Wait(30000);
-
-                    // Reset the log signal
-                    _logSignal.Reset();
-
-                    // Once signalled we wait 2s, in many cases this allows
-                    // our queue to build up to a nice size before storing
-                    // It does add the risk that the last 2s of logs can
-                    // be permanently lost, but the performance benefit
-                    // far exceeds the disadvantage.
-                    Thread.Sleep((int) ConfigurationSection<LoggingConfiguration>.Active.BatchWait.TotalMilliseconds);
-
-                    // Always dump the first batch of logs here.
-                    do
+                    // Combine tokens if necessary.
+                    if (token != default(CancellationToken))
                     {
-                        LogBatch();
-
-                        // Do more batches if we have more than the minimum batch size left.
-                    } while (_logQueue.Count >= ConfigurationSection<LoggingConfiguration>.Active.MinBatchSize);
-
-
-                    // Set the batch complete flag if we have an empty queue.
-                    if (_logQueue.Count < 1)
-                        _batchComplete.Set();
-                } while (true);
-            }
-            catch (ThreadAbortException)
-            {
-                Add(Resources.LogStatic_LoggerThread_LoggingThreadWasAborted);
-            }
-            catch (Exception e)
-            {
-                // Log exception, don't throw as can't catch anyway.
-                new LoggingException(e, Resources.LogStatic_LoggerThread_FatalErrorWhilstLogging,
-                                     LoggingLevel.Critical);
-            }
-            finally
-            {
-                // Count logs
-                int remaining = _logQueue.Count;
-
-                // Get rid of the remaining logs in batches.
-                // Note it is possible for extra logs that are added to be stored - but this is not guaranteed
-                // as it will ultimately stop trying when the count goes below zero.  This stops infinite log loops
-                // from preventing clean termination.
-                while (remaining > 0)
-                    remaining -= LogBatch();
-
-                // Explicitly dispose loggers.
-                foreach (KeyValuePair<string, ILogger> kvp in _loggers)
-                {
-                    kvp.Value.Dispose();
-                    ILogger l;
-                    _loggers.TryRemove(kvp.Key, out l);
+                        _flushToken = _flushToken != default(CancellationToken)
+                                          ? CancellationTokenSource.CreateLinkedTokenSource(_flushToken, token).Token
+                                          : token;
+                    }
+                    // Return existing task.
+                    return _flushTask;
                 }
-                _loggerThread = null;
-            }
-        }
 
-        /// <summary>
-        ///   Dumps a batch of logs.
-        /// </summary>
-        private static int LogBatch()
-        {
-            int bsize = 0;
-            List<Log> batch = new List<Log>(bsize);
-
-            try
-            {
-                // Prevent thread abortion during log write outs.
-                Thread.BeginCriticalRegion();
-
-                // Build up batch from queue
-                Log log;
-                while ((_logQueue.TryDequeue(out log)) &&
-                       (bsize++ < ConfigurationSection<LoggingConfiguration>.Active.MaxBatchSize))
-                    batch.Add(log);
-
-                // Run each logger in parallel.
-                Parallel.ForEach(
-                    _loggers.Values.Where(l => l != null && l.ValidLevels != LoggingLevels.None),
-                    l =>
+                // Create new task.
+                _flushToken = token;
+                var ft = new Task(DoFlush, _flushToken);
+                _flushTask = ft
+                    .ContinueWith(t =>
                         {
-                            try
+                            lock (_flushTask)
                             {
-                                LoggingLevels validLoggingLevels = ValidLevels & l.ValidLevels;
-                                // Only add log items that are valid for this logger.
-                                IEnumerable<Log> loggerLogs = validLoggingLevels != LoggingLevels.All
-                                                                  ? batch.Where(
-                                                                      logItem =>
-                                                                      logItem != null &&
-                                                                      logItem.Level.IsValid(validLoggingLevels))
-                                                                  : batch;
-
-                                if (loggerLogs.Any())
-                                    l.Add(loggerLogs);
-                            }
-                            catch (Exception e)
-                            {
-                                // Disable this logger as it threw an exception
-                                new LoggingException(
-                                    e,
-                                    Resources.LogStatic_LogBatch_FatalErrorOccured,
-                                    LoggingLevel.Critical,
-                                    l.Name,
-                                    e.Message);
-                                TryRemoveLogger(l.Name, out l);
+                                _flushTask = null;
+                                _flushToken = default(CancellationToken);
                             }
                         });
+                ft.Start();
+                return _flushTask;
             }
-            finally
+        }
+
+        /// <summary>
+        /// Does the flush (not re-entrant).
+        /// </summary>
+        private static void DoFlush()
+        {
+            // Grab batch.
+            Log[] batch;
+            int batchCount = 0;
+            lock (_queue)
             {
-                Thread.EndCriticalRegion();
+                batch = new Log[_queue.Count];
+                while (_queue.Count > 0 &&
+                    !_flushToken.IsCancellationRequested)
+                {
+                    Log l = _queue.Dequeue();
+                    if (l.Level.IsValid(ValidLevels))
+                        batch[batchCount++] = l;
+                }
             }
-            return bsize;
+
+            if (ValidLevels == LoggingLevels.None)
+                return;
+
+            // Grab valid loggers
+            List<ILogger> loggers;
+            lock (_loggers)
+                loggers = _loggers
+                    .Where(l => (((byte)l.ValidLevels) & ((byte)ValidLevels)) > 0)
+                    .ToList();
+
+            // Add memory logger.
+            loggers.Add(_defaultMemoryLogger);
+
+            // Next bit we can run in parallel.
+            Parallel.ForEach(loggers, l =>
+            {
+                try
+                {
+                    l.Add(batch.Where(log => log.Level.IsValid(l.ValidLevels)));
+                }
+                catch (Exception e)
+                {
+                    // Disable this logger as it threw an exception
+                    new LoggingException(
+                        e,
+                        Resources.LogStatic_LogBatch_FatalErrorOccured,
+                        LoggingLevel.Critical,
+                        l.Name,
+                        e.Message);
+
+                    // Stop logger running again.
+                    l.ValidLevels = LoggingLevels.None;
+                }
+            });
+        }
+
+        /// <summary>
+        /// Allows querying of the in memory log cache.
+        /// </summary>
+        /// <value>The query.</value>
+        [NotNull]
+        public static IQueryable<Log> Query { get { return _defaultMemoryLogger.All.AsQueryable(); } }
+
+        /// <summary>
+        /// The global logging queue.
+        /// </summary>
+        [NotNull]
+        private static readonly Queue<Log> _queue = new Queue<Log>();
+
+        /// <summary>
+        /// Cleanups this instance.
+        /// </summary>
+        private static void Cleanup()
+        {
+            Thread.BeginCriticalRegion();
+            _tickSubscription.Dispose();
+            Add(LoggingLevel.Notification, Resources.Log_Application_Exiting, ApplicationName, ApplicationGuid);
+
+            Flush().Wait();
+            var loggers = _loggers.ToArray();
+
+            _loggers.Clear();
+            foreach (var logger in _loggers)
+                logger.Dispose();
+
+            _defaultMemoryLogger.Dispose();
+            Thread.EndCriticalRegion();
+            Trace.WriteLine("Finished clean up.");
         }
 
         #region Add Overloads
@@ -768,7 +585,7 @@ namespace WebApplications.Utilities.Logging
         public static void Add([NotNull] string message, [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (LoggingLevel.Information.IsValid(_loggedLevels))
+            if (LoggingLevel.Information.IsValid(ValidLevels))
                 new Log(CombGuid.Empty, null, null, LoggingLevel.Information, message, parameters);
         }
 
@@ -787,7 +604,7 @@ namespace WebApplications.Utilities.Logging
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (LoggingLevel.Information.IsValid(_loggedLevels))
+            if (LoggingLevel.Information.IsValid(ValidLevels))
                 new Log(CombGuid.Empty, context, null, LoggingLevel.Information, message, parameters);
         }
 
@@ -805,7 +622,7 @@ namespace WebApplications.Utilities.Logging
         public static void Add(CombGuid logGroup, [NotNull] string message, [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (LoggingLevel.Information.IsValid(_loggedLevels))
+            if (LoggingLevel.Information.IsValid(ValidLevels))
                 new Log(logGroup, null, null, LoggingLevel.Information, message, parameters);
         }
 
@@ -825,7 +642,7 @@ namespace WebApplications.Utilities.Logging
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (LoggingLevel.Information.IsValid(_loggedLevels))
+            if (LoggingLevel.Information.IsValid(ValidLevels))
                 new Log(logGroup, context, null, LoggingLevel.Information, message, parameters);
         }
 
@@ -843,7 +660,7 @@ namespace WebApplications.Utilities.Logging
         public static void Add(LoggingLevel level, [NotNull] string message, [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (level.IsValid(_loggedLevels))
+            if (level.IsValid(ValidLevels))
                 new Log(CombGuid.Empty, null, null, level, message, parameters);
         }
 
@@ -861,7 +678,7 @@ namespace WebApplications.Utilities.Logging
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (level.IsValid(_loggedLevels))
+            if (level.IsValid(ValidLevels))
                 new Log(CombGuid.Empty, context, null, level, message, parameters);
         }
 
@@ -879,7 +696,7 @@ namespace WebApplications.Utilities.Logging
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (level.IsValid(_loggedLevels))
+            if (level.IsValid(ValidLevels))
                 new Log(logGroup, null, null, level, message, parameters);
         }
 
@@ -898,7 +715,7 @@ namespace WebApplications.Utilities.Logging
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
-            if (level.IsValid(_loggedLevels))
+            if (level.IsValid(ValidLevels))
                 new Log(logGroup, context, null, level, message, parameters);
         }
 
@@ -924,7 +741,7 @@ namespace WebApplications.Utilities.Logging
                 return;
 
             // Add to queue for logging if we are a valid level.
-            if (level.IsValid(_loggedLevels))
+            if (level.IsValid(ValidLevels))
                 new Log(CombGuid.Empty, null, exception, level, exception.Message);
         }
 
@@ -952,7 +769,7 @@ namespace WebApplications.Utilities.Logging
                 return;
 
             // Add to queue for logging if we are a valid level.
-            if (level.IsValid(_loggedLevels))
+            if (level.IsValid(ValidLevels))
                 new Log(CombGuid.Empty, context, exception, level, exception.Message);
         }
 
@@ -979,7 +796,7 @@ namespace WebApplications.Utilities.Logging
                 return;
 
             // Add to queue for logging if we are a valid level.
-            if (level.IsValid(_loggedLevels))
+            if (level.IsValid(ValidLevels))
                 new Log(logGroup, null, exception, level, exception.Message);
         }
 
@@ -1008,7 +825,7 @@ namespace WebApplications.Utilities.Logging
                 return;
 
             // Add to queue for logging if we are a valid level.
-            if (level.IsValid(_loggedLevels))
+            if (level.IsValid(ValidLevels))
                 new Log(logGroup, context, exception, level, exception.Message);
         }
 

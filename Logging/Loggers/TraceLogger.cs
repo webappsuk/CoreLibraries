@@ -25,8 +25,15 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.SqlServer.Server;
+using WebApplications.Utilities.Logging.Interfaces;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -37,31 +44,39 @@ namespace WebApplications.Utilities.Logging.Loggers
     internal class TraceLogger : LoggerBase
     {
         /// <summary>
-        ///   Initializes a new instance of the <see cref="TraceLogger" /> class.
+        /// Initializes a new instance of the <see cref="TraceLogger" /> class.
         /// </summary>
         /// <param name="name">The logger name.</param>
         /// <param name="validLevels">The valid log levels.</param>
-        public TraceLogger([NotNull] string name, LoggingLevels validLevels)
-            : base(name, false, validLevels)
+        /// <param name="format">The format.</param>
+        public TraceLogger([NotNull] string name, LoggingLevels validLevels = LoggingLevels.All, string format = "V")
+            :base(name, false, validLevels)
         {
+            Format = format;
         }
 
         /// <summary>
-        ///   Adds the specified log to the <see cref="DefaultTraceListener"/>.
+        /// Adds the specified logs to storage in batches.
         /// </summary>
-        /// <param name="log">The log to write in time order.</param>
-        public override void Add(Log log)
+        /// <param name="logs">The logs to add to storage.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token)
         {
-            Trace.WriteLine(log.ToString());
+            foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
+            {
+                token.ThrowIfCancellationRequested();
+                Trace.WriteLine(log.ToString(Format));
+            }
+
+            // We always complete synchronously.
+            return Task.FromResult(true);
         }
 
         /// <summary>
-        ///   Flushes the logger.
-        ///   This should be overridden in classes that require Flush logic.
+        /// Gets or sets the format for trace messages.
         /// </summary>
-        public override void Flush()
-        {
-            Trace.Flush();
-        }
+        /// <value>The format.</value>
+        public string Format { get; set; }
     }
 }

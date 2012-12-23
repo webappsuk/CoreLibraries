@@ -33,6 +33,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Testing.Data;
@@ -44,13 +45,13 @@ namespace WebApplications.Utilities.Logging.Test
     public class LoggingTests : TestBase
     {
         [TestMethod]
-        public void TestMemoryCache()
+        public async Task TestMemoryCache()
         {
-            DateTime startDate = DateTime.Now;
+            DateTime startDate = DateTime.UtcNow - TimeSpan.FromSeconds(1);
             string message = "Test message " + Guid.NewGuid();
             Log.Add(message);
-            Log.Flush();
-            List<Log> logs = Log.Get(DateTime.Now, startDate.AddMinutes(-5)).ToList();
+            await Log.Flush();
+            List<Log> logs = Log.Query.Where(l => l.TimeStamp >= startDate).ToList();
             Assert.IsNotNull(logs);
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
@@ -87,13 +88,14 @@ namespace WebApplications.Utilities.Logging.Test
         public async Task TestDataContractSerialization()
         {
             DateTime startDate = DateTime.Now;
-            string message = "Test message " + Guid.NewGuid();
-            Log.Add(message);
+            for (int m = 0; m < 5; m++)
+                Log.Add("Test Message {0} - {1}", m, Guid.NewGuid());
+
             Log.Flush();
-            List<Log> logs = Log.Get(DateTime.Now, startDate.AddMinutes(-5)).ToList();
+            List<Log> logs = Log.Query.Where(l => l.TimeStamp >= startDate).ToList();
             Assert.IsNotNull(logs);
             Assert.IsTrue(logs.Any(), "No logs found!");
-            Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
+            Assert.IsTrue(logs.Any(l => l.MessageFormat == "Test Message {0} - {1}"), "No log with the message format found");
             Log.Flush();
 
             DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Log>));
@@ -105,6 +107,10 @@ namespace WebApplications.Utilities.Logging.Test
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
                 logs2 = serializer.ReadObject(memoryStream) as IEnumerable<Log>;
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                XDocument doc = XDocument.Load(memoryStream);
+                Trace.WriteLine(doc.ToString());
             }
             Assert.IsNotNull(logs2);
             List<Log> result = logs2.ToList();
