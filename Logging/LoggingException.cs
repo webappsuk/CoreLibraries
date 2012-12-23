@@ -443,7 +443,7 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public override string ToString()
         {
-            return _log.ToString(LogFormat.Verbose);
+            return _log.ToString(LogFormat.General);
         }
 
         /// <summary>
@@ -476,7 +476,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            if (format == null) format = LogFormat.Verbose.ToString();
+            if (format == null) format = LogFormat.General.ToString();
 
             if (formatProvider != null)
             {

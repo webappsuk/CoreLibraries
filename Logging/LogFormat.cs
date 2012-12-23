@@ -7,7 +7,7 @@ namespace WebApplications.Utilities.Logging
     /// Log formatting flags
     /// </summary>
     [Flags]
-    public enum LogFormat : short
+    public enum LogFormat
     {
         /// <summary>
         /// Nothing displayed.
@@ -115,10 +115,54 @@ namespace WebApplications.Utilities.Logging
         T = StackTrace,
 
         /// <summary>
+        /// Include the thread ID.
+        /// </summary>
+        [Description("Include the thread ID.")]
+        ThreadID = 1 << 9,
+        /// <summary>
+        /// Include the thread ID.
+        /// </summary>
+        [Description("Include the thread ID.")]
+        TD = ThreadID,
+
+        /// <summary>
+        /// Include the thread Name.
+        /// </summary>
+        [Description("Include the thread name.")]
+        ThreadName = 1 << 10,
+        /// <summary>
+        /// Include the thread Name.
+        /// </summary>
+        [Description("Include the thread name.")]
+        TN = ThreadName,
+
+        /// <summary>
+        /// Include the thread culture.
+        /// </summary>
+        [Description("Include the thread culture.")]
+        ThreadCulture = 1 << 11,
+        /// <summary>
+        /// Include the thread culture.
+        /// </summary>
+        [Description("Include the thread culture.")]
+        TC = ThreadCulture,
+
+        /// <summary>
+        /// Include the thread UI culture.
+        /// </summary>
+        [Description("Include the thread UI culture.")]
+        ThreadUICulture = 1 << 12,
+        /// <summary>
+        /// Include the thread UI culture.
+        /// </summary>
+        [Description("Include the thread UI culture.")]
+        TU = ThreadUICulture,
+
+        /// <summary>
         /// Include a header and footer.
         /// </summary>
         [Description("Include a header and footer")]
-        Header = 1 << 12,
+        Header = 1 << 29,
         /// <summary>
         /// Include a header and footer.
         /// </summary>
@@ -129,7 +173,7 @@ namespace WebApplications.Utilities.Logging
         /// When set will include elements even if missing.
         /// </summary>
         [Description("When set will include elements even if missing.")]
-        IncludeMissing = 1 << 14,
+        IncludeMissing = 1 << 30,
         /// <summary>
         /// When set will include elements even if missing.
         /// </summary>
@@ -140,12 +184,23 @@ namespace WebApplications.Utilities.Logging
         /// Includes everything (except missing elements).
         /// </summary>
         [Description("Includes everything (except missing elements).")]
-        Verbose = Message | TimeStamp | Level | Guid | Group | Context | Exception | SQLException | StackTrace | Header,
+        Verbose = Message | TimeStamp | Level | Guid | Group | ThreadID | ThreadName | ThreadCulture | ThreadUICulture | Context | Exception | SQLException | StackTrace | Header,
         /// <summary>
         /// Includes everything (except missing elements).
         /// </summary>
         [Description("Includes everything (except missing elements).")]
         V = Verbose,
+
+        /// <summary>
+        /// Includes essential information.
+        /// </summary>
+        [Description("Includes main information.")]
+        General = Message | TimeStamp | Level | Group | ThreadName | Exception | SQLException,
+        /// <summary>
+        /// Includes essential information.
+        /// </summary>
+        [Description("Includes main information.")]
+        R = General,
 
         /// <summary>
         /// Includes essential information.

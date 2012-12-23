@@ -145,7 +145,14 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The name of the thread.</value>
         [NotNull]
-        public string ThreadName { get { return _context[ThreadNameKey]; } }
+        public string ThreadName
+        {
+            get
+            {
+                string tn;
+                return _context.TryGetValue(ThreadNameKey, out tn) ? tn : _context[ThreadIDKey];
+            }
+        }
 
         /// <summary>
         /// Gets the thread culture.
@@ -197,15 +204,6 @@ namespace WebApplications.Utilities.Logging
         {
             var guid = CombGuid.NewCombGuid();
 
-            // Get the current thread information
-            Thread currentThread = Thread.CurrentThread;
-            int threadId = currentThread.ManagedThreadId;
-            string threadname = String.IsNullOrWhiteSpace(currentThread.Name)
-                                    ? threadId.ToString()
-                                    : currentThread.Name;
-            CultureInfo threadCulture = currentThread.CurrentCulture;
-            CultureInfo threadUICulture = currentThread.CurrentUICulture;
-
             // Dictionary size
             int size = parameters.Length + 9 + (context == null ? 0 : context.Count);
 
@@ -219,6 +217,12 @@ namespace WebApplications.Utilities.Logging
                     _context.Add(kvp.Key, kvp.Value);
             }
 
+            // Get the current thread information
+            Thread currentThread = Thread.CurrentThread;
+            int threadId = currentThread.ManagedThreadId;
+            CultureInfo threadCulture = currentThread.CurrentCulture;
+            CultureInfo threadUICulture = currentThread.CurrentUICulture;
+
             // We can safely add our data due to the way LogContext protects reservations.
             _context.Add(LevelKey, level.ToString());
             _context.Add(GuidKey, CombGuid.NewCombGuid().ToString());
@@ -226,7 +230,8 @@ namespace WebApplications.Utilities.Logging
             if (!logGroup.Equals(CombGuid.Empty))
                 _context.Add(GroupKey, logGroup.ToString());
             _context.Add(ThreadIDKey, threadId.ToString(threadUICulture));
-            _context.Add(ThreadNameKey, threadname);
+            if (!string.IsNullOrWhiteSpace(currentThread.Name))
+                _context.Add(ThreadNameKey, currentThread.Name);
             _context.Add(ThreadCultureKey, threadCulture.Name);
             _context.Add(ThreadUICultureKey, threadUICulture.Name);
             _context.Add(MessageFormatKey, format);
@@ -489,7 +494,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return ToString(LogFormat.Verbose.ToString(), null);
+            return ToString(LogFormat.General);
         }
 
         /// <summary>
@@ -522,7 +527,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            if (format == null) format = LogFormat.Verbose.ToString();
+            if (format == null) format = LogFormat.General.ToString();
 
             if (formatProvider != null)
             {
@@ -577,10 +582,10 @@ namespace WebApplications.Utilities.Logging
                             string t = tag.ToString();
                             tag.Clear();
 
-                            string cv; 
+                            string cv;
                             if (_context.TryGetValue(t, out cv))
                                 // We have a context key.
-                                builder.Append(cv); 
+                                builder.Append(cv);
                             else if (_formats.TryGetValue(t.ToLower(), out logFormat) ||
                                      Enum.TryParse(t, true, out logFormat))
                                 // We have a standard formatter.
@@ -658,6 +663,17 @@ namespace WebApplications.Utilities.Logging
                                    : "null";
                     case LogFormat.StackTrace:
                         return _context[StackTraceKey];
+                    case LogFormat.ThreadID:
+                        return _context[ThreadIDKey];
+                    case LogFormat.ThreadName:
+                        string tn;
+                        return _context.TryGetValue(ThreadNameKey, out tn)
+                                   ? tn
+                                   : _context[ThreadIDKey];
+                    case LogFormat.ThreadCulture:
+                        return _context[ThreadCultureKey];
+                    case LogFormat.ThreadUICulture:
+                        return _context[ThreadUICultureKey];
                     default:
                         throw new FormatException(String.Format("Unexpected singular format '{0}'.", format));
                 }
@@ -706,6 +722,35 @@ namespace WebApplications.Utilities.Logging
 
                 builder.Append("Group:       ");
                 builder.AppendLine(g);
+            }
+
+            if (format.HasFlag(LogFormat.ThreadID))
+            {
+                builder.Append("Thread ID:   ");
+                builder.AppendLine(_context[ThreadIDKey]);
+            }
+
+            string tname;
+            if (format.HasFlag(LogFormat.ThreadName) &&
+                (_context.TryGetValue(ThreadNameKey, out tname) || includeMissing))
+            {
+                if (tname == null)
+                    tname = _context[ThreadIDKey];
+
+                builder.Append("Thread Name: ");
+                builder.AppendLine(tname);
+            }
+
+            if (format.HasFlag(LogFormat.ThreadCulture))
+            {
+                builder.Append("Culture :    ");
+                builder.AppendLine(_context[ThreadCultureKey]);
+            }
+
+            if (format.HasFlag(LogFormat.ThreadUICulture))
+            {
+                builder.Append("UI Culture : ");
+                builder.AppendLine(_context[ThreadUICultureKey]);
             }
 
             if (format.HasFlag(LogFormat.Context))
