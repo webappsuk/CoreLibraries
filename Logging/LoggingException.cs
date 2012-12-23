@@ -35,6 +35,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Performance;
@@ -47,6 +48,7 @@ namespace WebApplications.Utilities.Logging
     ///   BabelException should always be used where exceptions are thrown.
     /// </summary>
     [Serializable]
+    [DebuggerDisplay("[{ExceptionTypeFullName}] {Message} @ {TimeStamp}")]
     public class LoggingException : ApplicationException
     {
         /// <summary>
@@ -320,7 +322,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [NotNull] string message,
             [NotNull] params object[] parameters)
-            : base(message.SafeFormat(parameters), innerException)
+            : base(message.SafeFormat(Thread.CurrentThread.CurrentUICulture, parameters), innerException)
         {
             Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
             Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
@@ -401,7 +403,7 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public override string ToString()
         {
-            return base.ToString();
+            return _log.ToString();
         }
     }
 }

@@ -45,6 +45,7 @@ namespace WebApplications.Utilities.Logging
     /// Holds information about a single log item.
     /// </summary>
     [Serializable]
+    [DebuggerDisplay("{Message} @ {TimeStamp}")]
     public sealed partial class Log : IEquatable<Log>
     {
         /// <summary>
@@ -259,10 +260,6 @@ namespace WebApplications.Utilities.Logging
                         ? CombGuid.NewCombGuid()
                         : logGroup;
             Level = level;
-            // Attempt to format string safely.
-            // ReSharper disable ConditionIsAlwaysTrueOrFalse
-            Message = format == null ? String.Empty : format.SafeFormat(parameters);
-            // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
             // Get the current thread information
             Thread currentThread = Thread.CurrentThread;
@@ -272,6 +269,11 @@ namespace WebApplications.Utilities.Logging
                                     : currentThread.Name;
             CultureInfo threadCulture = currentThread.CurrentCulture;
             CultureInfo threadUICulture = currentThread.CurrentUICulture;
+
+            // Attempt to format string safely.
+            // ReSharper disable ConditionIsAlwaysTrueOrFalse
+            Message = format == null ? String.Empty : format.SafeFormat(threadUICulture, parameters);
+            // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
             // Build context.
             Dictionary<string, string> logContext = new Dictionary<string, string>(parameters.Length + 9)
