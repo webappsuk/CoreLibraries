@@ -55,7 +55,8 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The Header/Footer string
         /// </summary>
-        [NotNull] private const string Header =
+        [NotNull]
+        private const string Header =
             "====================================================================================================";
 
         /// <summary>
@@ -657,11 +658,82 @@ namespace WebApplications.Utilities.Logging
                     return formatter.Format(format, this, formatProvider);
             }
 
+            // Try to get the actual format if specified as an enum.
             LogFormat logFormat;
-            if (!_formats.TryGetValue(format.ToLower(), out logFormat) &&
-                !Enum.TryParse(format, true, out logFormat))
-                throw new FormatException(string.Format(Resources.Log_ToString_Invalid_Format, format));
-            return ToString(logFormat);
+            if (_formats.TryGetValue(format.ToLower(), out logFormat) || Enum.TryParse(format, true, out logFormat))
+                return ToString(logFormat);
+
+            // Parse format
+            StringBuilder builder = new StringBuilder(format.Length);
+            int i = 0;
+            bool inTag = false;
+            bool escape = false;
+            StringBuilder tag = new StringBuilder(16);
+            while (i < format.Length)
+            {
+                char c = format[i++];
+
+                switch (c)
+                {
+                    case '\\':
+                        if (!escape)
+                        {
+                            escape = true;
+                            continue;
+                        }
+                        break;
+                    case '{':
+                        if (!escape)
+                        {
+                            // If we're already in a tag start a new tag, and dump out previous one as not a tag.
+                            if (inTag)
+                            {
+                                builder.Append('{');
+                                builder.Append(tag);
+                                tag.Clear();
+                            }
+                            inTag = true;
+                            continue;
+                        }
+                        break;
+                    case '}':
+                        if (!escape && inTag)
+                        {
+                            // Finished a tag.
+                            string t = tag.ToString();
+                            tag.Clear();
+
+                            string cv; 
+                            if (_context.TryGetValue(t, out cv))
+                                // We have a context key.
+                                builder.Append(cv); 
+                            else if (_formats.TryGetValue(t.ToLower(), out logFormat) ||
+                                     Enum.TryParse(t, true, out logFormat))
+                                // We have a standard formatter.
+                                builder.Append(ToString(logFormat));
+                            else
+                            {
+                                // We didn't match anything
+                                builder.Append('{');
+                                builder.Append(t);
+                                builder.Append('}');
+                            }
+                            inTag = false;
+                            continue;
+                        }
+                        break;
+                }
+
+                // Output the character to the current tag or the builder.
+                if (inTag)
+                    tag.Append(c);
+                else
+                    builder.Append(c);
+                escape = false;
+            }
+
+            // Output our formatted string.
+            return builder.ToString();
         }
 
         /// <summary>
@@ -814,7 +886,7 @@ namespace WebApplications.Utilities.Logging
                 this.Where(kvp => !kvp.Key.StartsWith(LogKeyPrefix)).ToArray();
             if (remainingContext.Length < 1 &&
                 !includeMissing) return;
-            
+
             if (header)
             {
                 builder.Append("Context:     ");
