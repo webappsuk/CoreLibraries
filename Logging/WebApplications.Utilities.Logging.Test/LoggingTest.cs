@@ -27,9 +27,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
+using WebApplications.Testing.Data;
+using WebApplications.Testing.Data.Exceptions;
 
 namespace WebApplications.Utilities.Logging.Test
 {
@@ -49,7 +56,7 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
             Log.Flush();
         }
-        
+
         [TestMethod]
         public void TestExceptions()
         {
@@ -65,10 +72,45 @@ namespace WebApplications.Utilities.Logging.Test
             }
 
             private TestException(string message, params object[] parameters)
-                : base(message, parameters)
+                : base(
+                new LogContext("My data", "Was here"),
+                (new SqlInvalidSyntaxException()).SqlException,
+                LoggingLevel.Error,
+                message,
+                parameters)
             {
             }
         }
         #endregion
+
+        [TestMethod]
+        public async Task TestDataContractSerialization()
+        {
+            DateTime startDate = DateTime.Now;
+            string message = "Test message " + Guid.NewGuid();
+            Log.Add(message);
+            Log.Flush();
+            List<Log> logs = Log.Get(DateTime.Now, startDate.AddMinutes(-5)).ToList();
+            Assert.IsNotNull(logs);
+            Assert.IsTrue(logs.Any(), "No logs found!");
+            Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
+            Log.Flush();
+
+            DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Log>));
+            IEnumerable<Log> logs2;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                serializer.WriteObject(memoryStream, logs);
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                logs2 = serializer.ReadObject(memoryStream) as IEnumerable<Log>;
+            }
+            Assert.IsNotNull(logs2);
+            List<Log> result = logs2.ToList();
+            Assert.AreEqual(logs.Count, result.Count);
+            for (int i = 0; i < logs.Count; i++)
+                Assert.AreEqual(logs[i].ToString(), result[i].ToString());
+        }
     }
 }

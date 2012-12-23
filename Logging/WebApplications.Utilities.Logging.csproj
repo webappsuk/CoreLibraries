@@ -84,6 +84,7 @@
     <Compile Include="Configuration\LoggerElement.cs" />
     <Compile Include="Configuration\LoggersCollection.cs" />
     <Compile Include="Configuration\LoggingConfiguration.cs" />
+    <Compile Include="LogFormat.cs" />
     <Compile Include="LoggingExtensions.cs" />
     <Compile Include="Loggers\EventLogger.cs" />
     <Compile Include="Loggers\FileLogger.cs" />

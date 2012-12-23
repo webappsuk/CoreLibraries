@@ -169,20 +169,11 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - thrown on {0:D} at {1:c}..
+        ///   Looks up a localized string similar to The &apos;{0}&apos; format is not valid for a log.  See the LogFormat enumeration for valid values..
         /// </summary>
-        internal static string Log_ToString_Exception_Header {
+        internal static string Log_ToString_Invalid_Format {
             get {
-                return ResourceManager.GetString("Log_ToString_Exception_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to - logged on {0:D} at {1:c}..
-        /// </summary>
-        internal static string Log_ToString_Log_Header {
-            get {
-                return ResourceManager.GetString("Log_ToString_Log_Header", resourceCulture);
+                return ResourceManager.GetString("Log_ToString_Invalid_Format", resourceCulture);
             }
         }
         

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -49,7 +50,7 @@ namespace WebApplications.Utilities.Logging
     /// </summary>
     [Serializable]
     [DebuggerDisplay("[{ExceptionTypeFullName}] {Message} @ {TimeStamp}")]
-    public class LoggingException : ApplicationException
+    public class LoggingException : ApplicationException, IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
         /// <summary>
         /// The exception performance counter.
@@ -89,12 +90,6 @@ namespace WebApplications.Utilities.Logging
         /// <value>The parameters.</value>
         [NotNull]
         public IEnumerable<string> Parameters { get { return _log.Parameters; } }
-
-        /// <summary>
-        /// Gets the context.
-        /// </summary>
-        /// <value>The context.</value>
-        public LogContext Context { get { return _log.Context; } }
 
         /// <summary>
         /// Gets the time stamp.
@@ -141,14 +136,14 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The full name of the type of the exception.</value>
         [NotNull]
-        public string ExceptionTypeFullName { get { return _log.Context.Get(Log.ExceptionTypeKey); } }
+        public string ExceptionTypeFullName { get { return _log.Get(Log.ExceptionTypeFullNameKey); } }
 
         /// <summary>
         /// Gets the stored procedure name (if a SQL exception - otherwise null).
         /// </summary>
         /// <value>The stored procedure.</value>
         [NotNull]
-        public string StoredProcedure { get { return _log.Context.Get(Log.StoredProcedureKey); } }
+        public string StoredProcedure { get { return _log.Get(Log.StoredProcedureKey); } }
 
         /// <summary>
         /// Gets the stored procedure line number (if a SQL exception - otherwise 0).
@@ -158,11 +153,49 @@ namespace WebApplications.Utilities.Logging
         {
             get
             {
-                string line = _log.Context.Get(Log.StoredProcedureLineKey);
+                string line = _log.Get(Log.StoredProcedureLineKey);
                 if (string.IsNullOrWhiteSpace(line))
                     return 0;
                 int l;
                 return int.TryParse(line, out l) ? l : 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the value of the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>System.String.</returns>
+        [CanBeNull]
+        public string Get(string key)
+        {
+            return _log.Get(key);
+        }
+
+        /// <summary>
+        /// Gets all keys and their values that match the prefix.
+        /// </summary>
+        /// <param name="prefix">The prefix.</param>
+        /// <returns>IEnumerable{KeyValuePair{System.StringSystem.String}}.</returns>
+        [NotNull]
+        public IEnumerable<KeyValuePair<string, string>> GetPrefixed(string prefix)
+        {
+            return _log.GetPrefixed(prefix);
+        }
+
+        /// <summary>
+        /// Gets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The value associated with the specified key. If the specified key is not found, throws a <see cref="T:System.Collections.Generic.KeyNotFoundException" />.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
+        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> does not exist in the collection.</exception>
+        [CanBeNull]
+        public string this[[NotNull]string key]
+        {
+            get
+            {
+                return _log[key];
             }
         }
 
@@ -328,9 +361,8 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
             
             // Create an inner exception stack of all inner exceptions until the last logging exception
-            CombGuid group = CombGuid.NewCombGuid();
-
             Stack<Exception> innerExceptions = new Stack<Exception>();
+            CombGuid group = CombGuid.Empty;
             if (innerException != null)
             {
                 Stack<Exception> currentStack = new Stack<Exception>();
@@ -368,13 +400,20 @@ namespace WebApplications.Utilities.Logging
                         currentStack.Push(e.InnerException);
                 }
             }
-            
-            // We now take items back off stack (starting with deepest first, hence maintaining
-            // order based on when exception occurred) and log each independently.
-            while (innerExceptions.Count > 0)
+
+            if (innerExceptions.Count > 0)
             {
-                Exception e = innerExceptions.Pop();
-                Log.Add(Group, e, LoggingLevel.Information);
+                // If we haven't found a base logging exception, we need to create our own group.
+                if (group == CombGuid.Empty)
+                    group = CombGuid.NewCombGuid();
+
+                // We now take items back off stack (starting with deepest first, hence maintaining
+                // order based on when exception occurred) and log each independently.
+                while (innerExceptions.Count > 0)
+                {
+                    Exception e = innerExceptions.Pop();
+                    Log.Add(group, e, LoggingLevel.Information);
+                }
             }
 
             // Now we can create the associated log item for this exception.
@@ -392,7 +431,16 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [UsedImplicitly]
         public new string StackTrace { get { return _log.StackTrace; } }
-        
+
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        /// <returns>IEnumerator{KeyValuePair{System.StringSystem.String}}.</returns>
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            return _log.GetEnumerator();
+        }
+
         /// <summary>
         ///   Returns a <see cref="string"/> that represents this instance.
         /// </summary>
@@ -403,7 +451,70 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public override string ToString()
         {
-            return _log.ToString();
+            return _log.ToString(LogFormat.Verbose);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        public string ToString(string format)
+        {
+            return _log.ToString(format, null);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        public string ToString(IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
+        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public string ToString(string format, IFormatProvider formatProvider)
+        {
+            if (format == null) format = LogFormat.Verbose.ToString();
+
+            if (formatProvider != null)
+            {
+                ICustomFormatter formatter = formatProvider.GetFormat(this.GetType()) as ICustomFormatter;
+
+                if (formatter != null)
+                    return formatter.Format(format, this, formatProvider);
+            }
+            return _log.ToString(format, formatProvider);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        /// <exception cref="System.FormatException"></exception>
+        [NotNull]
+        public string ToString(LogFormat format)
+        {
+            return _log.ToString(format);
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

@@ -159,9 +159,6 @@
   <data name="LogStatic_LoggerThread_LoggingThreadWasAborted" xml:space="preserve">
     <value>Logging thread was aborted.</value>
   </data>
-  <data name="Log_ToString_Log_Header" xml:space="preserve">
-    <value>- logged on {0:D} at {1:c}.</value>
-  </data>
   <data name="EventLogger_EventLogCannotBeNull" xml:space="preserve">
     <value>Parameter 'eventLog' can not be null</value>
   </data>
@@ -258,10 +255,10 @@
   <data name="LogContext_Reserved_Key" xml:space="preserve">
     <value>The '{0}' key is reserved and cannot be added to a log context explicitly.</value>
   </data>
-  <data name="Log_ToString_Exception_Header" xml:space="preserve">
-    <value>- thrown on {0:D} at {1:c}.</value>
-  </data>
   <data name="LogContext_Plural" xml:space="preserve">
     <value>({0} log entries)</value>
+  </data>
+  <data name="Log_ToString_Invalid_Format" xml:space="preserve">
+    <value>The '{0}' format is not valid for a log.  See the LogFormat enumeration for valid values.</value>
   </data>
 </root>

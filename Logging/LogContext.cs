@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Logging
     /// <remarks>As well as constructing a <see cref="LogContext" /> directly, it is equally valid to use one of the
     /// implicit casts, or the static <see cref="Empty">new LogContext()</see>.</remarks>
     [Serializable]
-    public class LogContext
+    public class LogContext : IEnumerable<KeyValuePair<string, string>>
     {
         /// <summary>
         /// The Key reservations.
@@ -739,6 +739,15 @@ namespace WebApplications.Utilities.Logging
                 i += 2;
             }
         }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <value>The count.</value>
+        public int Count
+        {
+            get { return _context.Count; }
+        }
         #endregion
 
         /// <summary>
@@ -930,6 +939,15 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        /// <returns>IEnumerator{KeyValuePair{System.StringSystem.String}}.</returns>
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            return _context.GetEnumerator();
+        }
+
+        /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="string" /> representation of this instance. The format strings can be changed in the
@@ -947,7 +965,7 @@ namespace WebApplications.Utilities.Logging
             foreach (KeyValuePair<string, string> kvp in _context)
             {
                 stringBuilder.AppendLine();
-                stringBuilder.Append("\t\t");
+                stringBuilder.Append("   ");
                 if (kvp.Key == null)
                     stringBuilder.Append("null");
                 else
@@ -967,6 +985,15 @@ namespace WebApplications.Utilities.Logging
                 }
             }
             return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         #region Conversion Operators

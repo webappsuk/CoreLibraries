@@ -43,7 +43,7 @@ namespace WebApplications.Utilities.Logging
     /// <summary>
     ///   Defines <see langword="static"/> members of the <see cref="Log"/> class.
     /// </summary>
-    public sealed partial class Log
+    public partial class Log
     {
         /// <summary>
         ///   The currently logged levels, which is all of the log levels that the registered loggers are
@@ -769,7 +769,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, null, null, LoggingLevel.Information, message, parameters);
+                new Log(CombGuid.Empty, null, null, LoggingLevel.Information, message, parameters);
         }
 
         /// <summary>
@@ -788,7 +788,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, context, null, LoggingLevel.Information, message, parameters);
+                new Log(CombGuid.Empty, context, null, LoggingLevel.Information, message, parameters);
         }
 
         /// <summary>
@@ -802,7 +802,7 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add(Guid logGroup, [NotNull] string message, [NotNull] params object[] parameters)
+        public static void Add(CombGuid logGroup, [NotNull] string message, [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(_loggedLevels))
@@ -821,7 +821,7 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add(Guid logGroup, [NotNull] LogContext context, [NotNull] string message,
+        public static void Add(CombGuid logGroup, [NotNull] LogContext context, [NotNull] string message,
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
@@ -844,7 +844,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, null, null, level, message, parameters);
+                new Log(CombGuid.Empty, null, null, level, message, parameters);
         }
 
         /// <summary>
@@ -862,7 +862,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, context, null, level, message, parameters);
+                new Log(CombGuid.Empty, context, null, level, message, parameters);
         }
 
         /// <summary>
@@ -875,7 +875,7 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add(Guid logGroup, LoggingLevel level, [NotNull] string message,
+        public static void Add(CombGuid logGroup, LoggingLevel level, [NotNull] string message,
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
@@ -894,7 +894,7 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add(Guid logGroup, [NotNull] LogContext context, LoggingLevel level, [NotNull] string message,
+        public static void Add(CombGuid logGroup, [NotNull] LogContext context, LoggingLevel level, [NotNull] string message,
                                [NotNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
@@ -925,7 +925,7 @@ namespace WebApplications.Utilities.Logging
 
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, null, exception, level, exception.Message);
+                new Log(CombGuid.Empty, null, exception, level, exception.Message);
         }
 
         /// <summary>
@@ -953,7 +953,7 @@ namespace WebApplications.Utilities.Logging
 
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(_loggedLevels))
-                new Log(System.Guid.Empty, context, exception, level, exception.Message);
+                new Log(CombGuid.Empty, context, exception, level, exception.Message);
         }
 
         /// <summary>
@@ -972,7 +972,7 @@ namespace WebApplications.Utilities.Logging
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
         [UsedImplicitly]
-        public static void Add(Guid logGroup, [NotNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
+        public static void Add(CombGuid logGroup, [NotNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
         {
             // Don't re-add logging exception, as they add themselves.
             if (exception is LoggingException)
@@ -1000,7 +1000,7 @@ namespace WebApplications.Utilities.Logging
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
         [UsedImplicitly]
-        public static void Add(Guid logGroup, [NotNull] LogContext context, [NotNull] Exception exception,
+        public static void Add(CombGuid logGroup, [NotNull] LogContext context, [NotNull] Exception exception,
                                LoggingLevel level = LoggingLevel.Error)
         {
             // Don't re-add logging exception, as they add themselves.
@@ -1025,7 +1025,7 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>If the error <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.</remarks>
         [UsedImplicitly]
         [NotNull]
-        internal static Log Add(Guid logGroup, [CanBeNull] LogContext context, [NotNull] LoggingException exception, LoggingLevel level, [NotNull] string message,
+        internal static Log Add(CombGuid logGroup, [CanBeNull] LogContext context, [NotNull] LoggingException exception, LoggingLevel level, [NotNull] string message,
                                [NotNull] params object[] parameters)
         {
             return new Log(logGroup, context, exception, level, message, parameters);
