@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     /// Is used by the core logger to hold log items temporarily, and for caching.
     /// </summary>
     [UsedImplicitly]
-    public class MemoryLogger : LoggerBase
+    internal class MemoryLogger : LoggerBase
     {
         /// <summary>
         ///   The length of time log items are cached for.
@@ -134,7 +134,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             TimeSpan cacheExpiry = default(TimeSpan),
             int maximumLogEntries = 10000,
             LoggingLevels validLevels = LoggingLevels.All)
-            : base(name, true, validLevels)
+            : base(name, true, false, validLevels)
         {
             MaximumLogEntries = maximumLogEntries;
             CacheExpiry = cacheExpiry;

@@ -38,6 +38,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Testing.Data;
 using WebApplications.Testing.Data.Exceptions;
+using WebApplications.Utilities.Logging.Loggers;
 
 namespace WebApplications.Utilities.Logging.Test
 {
@@ -47,6 +48,7 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public async Task TestMemoryCache()
         {
+            Log.SetTrace(LogFormat.Message);
             DateTime startDate = DateTime.UtcNow - TimeSpan.FromSeconds(1);
             string message = "Test message " + Guid.NewGuid();
             Log.Add(message);

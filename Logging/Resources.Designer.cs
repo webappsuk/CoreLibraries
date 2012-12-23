@@ -178,11 +178,29 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Finished logging clean up..
+        /// </summary>
+        internal static string Log_Cleanup_Finished {
+            get {
+                return ResourceManager.GetString("Log_Cleanup_Finished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Application &apos;{0}&apos; [{1}] configured..
         /// </summary>
         internal static string Log_Configured {
             get {
                 return ResourceManager.GetString("Log_Configured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; logger cannot be added as there is a logger present of the same type that does not support multiple instances..
+        /// </summary>
+        internal static string Log_Logger_Multiple_Instances {
+            get {
+                return ResourceManager.GetString("Log_Logger_Multiple_Instances", resourceCulture);
             }
         }
         

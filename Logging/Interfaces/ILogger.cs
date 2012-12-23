@@ -44,6 +44,12 @@ namespace WebApplications.Utilities.Logging.Interfaces
     public interface ILogger : IDisposable
     {
         /// <summary>
+        /// A <see cref="bool" /> value indicating whether the logger supports multiple instances.
+        /// </summary>
+        /// <value>Returns <see langword="true" /> if the logger supports multiple instances; otherwise returns <see langword="false" />.</value>
+        bool AllowMultiple { get; }
+
+        /// <summary>
         ///   A <see cref="bool"/> value indicating whether the logger is queryable.
         /// </summary>
         /// <value>

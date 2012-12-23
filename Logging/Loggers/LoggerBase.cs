@@ -43,17 +43,20 @@ namespace WebApplications.Utilities.Logging.Loggers
     {
         private readonly string _name;
         private readonly bool _queryable;
+        private readonly bool _allowMultiple;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerBase" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="queryable">if set to <see langword="true" /> [queryable].</param>
+        /// <param name="allowMultiple">if set to <see langword="true" /> [allow multiple].</param>
         /// <param name="validLevels">The valid levels.</param>
-        protected LoggerBase(string name, bool queryable = false, LoggingLevels validLevels = LoggingLevels.All)
+        protected LoggerBase(string name, bool queryable = false, bool allowMultiple = true, LoggingLevels validLevels = LoggingLevels.All)
         {
             _name = name;
             _queryable = queryable;
+            _allowMultiple = allowMultiple;
             ValidLevels = validLevels;
         }
 
@@ -64,6 +67,12 @@ namespace WebApplications.Utilities.Logging.Loggers
         public virtual void Dispose()
         {
         }
+
+        /// <summary>
+        /// A <see cref="bool" /> value indicating whether the logger supports multiple instances.
+        /// </summary>
+        /// <value>Returns <see langword="true" /> if the logger supports multiple instances; otherwise returns <see langword="false" />.</value>
+        public bool AllowMultiple { get { return _allowMultiple; } }
 
         /// <summary>
         /// A <see cref="bool" /> value indicating whether the logger is queryable.

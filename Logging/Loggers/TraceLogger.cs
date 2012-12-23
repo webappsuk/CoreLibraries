@@ -41,7 +41,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     ///   Allows logging to the debug window.
     /// </summary>
     [UsedImplicitly]
-    internal class TraceLogger : LoggerBase
+    public class TraceLogger : LoggerBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceLogger" /> class.
@@ -49,8 +49,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="name">The logger name.</param>
         /// <param name="validLevels">The valid log levels.</param>
         /// <param name="format">The format.</param>
-        public TraceLogger([NotNull] string name, LoggingLevels validLevels = LoggingLevels.All, string format = "V")
-            :base(name, false, validLevels)
+        public TraceLogger([NotNull] string name, string format = "V", LoggingLevels validLevels = LoggingLevels.All)
+            :base(name, false, false, validLevels)
         {
             Format = format;
         }

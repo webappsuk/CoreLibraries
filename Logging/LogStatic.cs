@@ -33,6 +33,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -374,12 +375,58 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
+        /// Sets a trace logger.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="validLevels">The valid levels.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SetTrace(LogFormat format, LoggingLevels validLevels = LoggingLevels.All)
+        {
+            SetTrace(format.ToString(), validLevels);
+        }
+
+        /// <summary>
+        /// Sets a trace logger.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="validLevels">The valid levels.</param>
+        public static void SetTrace(string format, LoggingLevels validLevels = LoggingLevels.All)
+        {
+            TraceLogger traceLogger = _loggers.OfType<TraceLogger>().SingleOrDefault();
+            if (traceLogger != null)
+            {
+                traceLogger.Format = format;
+                traceLogger.ValidLevels = validLevels;
+                return;
+            }
+
+            AddLogger(new TraceLogger("Trace logger", format, validLevels), _defaultMemoryLogger);
+        }
+
+        /// <summary>
+        ///   The maximum number of log entries to store in the memory cache.
+        /// </summary>
+        public static int CacheMaximum
+        {
+            get { return _defaultMemoryLogger.MaximumLogEntries; }
+            set { _defaultMemoryLogger.MaximumLogEntries = value; }
+        }
+
+        /// <summary>
+        ///   The maximum length of time to hold items in the memory cache.
+        /// </summary>
+        public static TimeSpan CacheExpiry
+        {
+            get { return _defaultMemoryLogger.CacheExpiry; }
+            set { _defaultMemoryLogger.CacheExpiry = value; }
+        }
+
+        /// <summary>
         ///   Adds a new logger and copies over log items from the source logger.
         /// </summary>
         /// <param name="logger">The logger to add.</param>
         /// <param name="sourceLogger">
-        ///   <para>The source logger to copy log items from.</para>
-        ///   <para>Set to null if you don't want to copy the logs from the source.</para>
+        ///   <para>The source logger to copy log items from defaults to the cache.</para>
         /// </param>
         /// <param name="limit">
         ///   <para>The maximum number of logs to copy.</para>
@@ -395,23 +442,35 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] ILogger sourceLogger = null,
             int limit = Int32.MaxValue)
         {
-            if (sourceLogger != null)
-            {
-                // Check for source logger can retrieve logs
-                if (!sourceLogger.Queryable)
-                {
-                    throw new LoggingException(
-                        Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
-                        LoggingLevel.Error,
-                        logger.Name);
-                }
+            if (sourceLogger == null)
+                sourceLogger = _defaultMemoryLogger;
 
-                // Add logs
-                logger.Add(sourceLogger.Qbserve.TakeLast(limit).ToEnumerable().Select(l => new Log(l)));
+            // Check for source logger can retrieve logs
+            if (!sourceLogger.Queryable)
+            {
+                throw new LoggingException(
+                    Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
+                    LoggingLevel.Error,
+                    logger.Name);
             }
 
+            // Add logs
+            logger.Add(sourceLogger.Qbserve.TakeLast(limit).ToEnumerable().Select(l => new Log(l)));
+
             lock (_loggers)
+            {
                 _loggers.Add(logger);
+
+                // Check for collisions on singletons.
+                Type lType = _loggers.GetType();
+                if (_loggers.Any(l => !l.AllowMultiple && l.GetType() == lType))
+                {
+                    _loggers.Remove(logger);
+                    throw new LoggingException(
+                        Resources.Log_Logger_Multiple_Instances,
+                        logger.Name);
+                }
+            }
 
             return logger;
         }
@@ -568,7 +627,7 @@ namespace WebApplications.Utilities.Logging
 
             _defaultMemoryLogger.Dispose();
             Thread.EndCriticalRegion();
-            Trace.WriteLine("Finished clean up.");
+            Trace.WriteLine(Resources.Log_Cleanup_Finished);
         }
 
         #region Add Overloads
