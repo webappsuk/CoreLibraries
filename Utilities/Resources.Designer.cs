@@ -412,24 +412,6 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;format&apos; can not be null.
-        /// </summary>
-        internal static string Extensions_SafeFormat_FormatCannotBeNull {
-            get {
-                return ResourceManager.GetString("Extensions_SafeFormat_FormatCannotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;parameters&apos; can not be null.
-        /// </summary>
-        internal static string Extensions_SafeFormat_ParametersCannotBeNull {
-            get {
-                return ResourceManager.GetString("Extensions_SafeFormat_ParametersCannotBeNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Dependency cycles found in enumeration, cannot sort topologically..
         /// </summary>
         internal static string Extensions_TopologicalSortEdges_DependencyCyclesFound {

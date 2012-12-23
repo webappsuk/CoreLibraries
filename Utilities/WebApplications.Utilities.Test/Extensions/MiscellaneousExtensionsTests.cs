@@ -768,17 +768,14 @@ namespace WebApplications.Utilities.Test.Extensions
                             "ToDegrees should convert a value in radians to the value in degrees (i.e. divide by pi/180)");
         }
 
-        [ExpectedException(typeof(ArgumentNullException))]
         [TestMethod]
         public void SafeFormat_NullString_ThrowsArgumentNullException()
         {
             int a = Random.Next();
             int b = Random.Next(0, 256);
             const string formatString = null;
-            // This is a deliberate attempt to break things
-            // ReSharper disable AssignNullToNotNullAttribute
             string result = formatString.SafeFormat(a, b);
-            // ReSharper restore AssignNullToNotNullAttribute
+            Assert.AreEqual(formatString, result, "Passing a null format string to SafeFormat should result in a null output.");
         }
 
         [TestMethod]

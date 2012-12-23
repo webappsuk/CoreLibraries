@@ -1093,16 +1093,38 @@ namespace WebApplications.Utilities
         ///   Returns the formatted <see cref="string"/> if successful; otherwise returns the <paramref name="format"/> string.
         /// </returns>
         [NotNull]
-        public static string SafeFormat([NotNull] this string format, [NotNull] params object[] parameters)
+        public static string SafeFormat(this string format, params object[] parameters)
         {
-            Contract.Requires(format != null, Resources.Extensions_SafeFormat_FormatCannotBeNull);
-            Contract.Requires(parameters != null, Resources.Extensions_SafeFormat_ParametersCannotBeNull);
-
-            if (parameters.Length < 1)
+            if (format == null) return null;
+            if (parameters == null || parameters.Length < 1)
                 return format;
             try
             {
                 return String.Format(format, parameters);
+            }
+            catch (FormatException)
+            {
+                return format;
+            }
+        }
+
+        /// <summary>
+        /// A safe <see cref="string" /> format.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="parameters">The values used in the format string.</param>
+        /// <returns>Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.</returns>
+        [NotNull]
+        public static string SafeFormat(this string format, IFormatProvider formatProvider, params object[] parameters)
+        {
+            if (format == null) return null;
+            if (parameters == null || parameters.Length < 1)
+                return format;
+
+            try
+            {
+                return String.Format(formatProvider, format, parameters);
             }
             catch (FormatException)
             {

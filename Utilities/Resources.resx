@@ -228,12 +228,6 @@
   <data name="Extensions_EmbeddedXml_Exception" xml:space="preserve">
     <value>Could not load embedded resource '{0}' from the '{1}' assembly. {2}</value>
   </data>
-  <data name="Extensions_SafeFormat_FormatCannotBeNull" xml:space="preserve">
-    <value>Parameter 'format' can not be null</value>
-  </data>
-  <data name="Extensions_SafeFormat_ParametersCannotBeNull" xml:space="preserve">
-    <value>Parameter 'parameters' can not be null</value>
-  </data>
   <data name="Extensions_TopologicalSortEdges_DependencyCyclesFound" xml:space="preserve">
     <value>Dependency cycles found in enumeration, cannot sort topologically.</value>
   </data>
