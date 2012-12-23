@@ -108,6 +108,20 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        public static readonly string ThreadCultureKey = LogContext.ReserveKey("Thread Culture", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadUICultureKey = LogContext.ReserveKey("Thread UI Culture", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
         public static readonly string StoredProcedureKey = LogContext.ReserveKey("Stored Procedure", _logReservation);
 
         /// <summary>
@@ -172,7 +186,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [UsedImplicitly]
-        private readonly LogContext Context;
+        public readonly LogContext Context;
 
         /// <summary>
         /// Gets the parameters.
@@ -207,49 +221,58 @@ namespace WebApplications.Utilities.Logging
             [NotNull] params object[] parameters)
         {
             Guid = CombGuid.NewCombGuid();
-
-            // Create a context, based on the original context, adding the parameters.
-            Context = new LogContext(context, _logReservation, ParameterKeyPrefix, parameters);
-            Context.Set(_logReservation, MessageFormatKey, format);
-
-            // Add stack trace
-            Context.Set(_logReservation, StackTraceKey, FormatStackTrace(new StackTrace(2, true)));
-
-            if (exception != null)
-            {
-                IsException = true;
-                Context.Set(_logReservation, ExceptionTypeKey, exception.GetType().ToString());
-
-                // If this is a SQL exception, then log the stored proc.
-                SqlException sqlException = exception as SqlException;
-                if (sqlException != null)
-                {
-                    Context.Set(_logReservation, StoredProcedureKey, String.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure);
-                    Context.Set(_logReservation, StoredProcedureLineKey, sqlException.LineNumber);
-                }
-            }
-
-            // Get the current thread information
-            Thread currentThread = Thread.CurrentThread;
-            int threadId = currentThread.ManagedThreadId;
-            Context.Set(_logReservation, ThreadIDKey, threadId);
-            Context.Set(_logReservation, ThreadNameKey,
-                         String.IsNullOrWhiteSpace(currentThread.Name)
-                             ? threadId.ToString()
-                             : currentThread.Name);
-
-            // Set provided properties
             Group = logGroup.Equals(CombGuid.Empty)
                         ? CombGuid.NewCombGuid()
                         : logGroup;
-
+            Level = level;
             // Attempt to format string safely.
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
             Message = format == null ? String.Empty : format.SafeFormat(parameters);
             // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
-            // Set the level.
-            Level = level;
+            // Get the current thread information
+            Thread currentThread = Thread.CurrentThread;
+            int threadId = currentThread.ManagedThreadId;
+            string threadname = String.IsNullOrWhiteSpace(currentThread.Name)
+                                    ? threadId.ToString()
+                                    : currentThread.Name;
+            CultureInfo threadCulture = currentThread.CurrentCulture;
+            CultureInfo threadUICulture = currentThread.CurrentUICulture;
+
+            // Build context.
+            Dictionary<string, string> logContext = new Dictionary<string, string>(parameters.Length + 9)
+                {
+                    {ThreadIDKey, threadId.ToString(threadUICulture)},
+                    {ThreadNameKey, threadname},
+                    {ThreadCultureKey, threadCulture.Name},
+                    {ThreadUICultureKey, threadUICulture.Name},
+                    {MessageFormatKey, format}
+                };
+            for (int p = 0; p < parameters.Length; p++)
+            {
+                object v = parameters[p];
+                logContext.Add(ParameterKeyPrefix + " " + p, v == null ? null : v.ToString());
+            }
+            
+            if (exception != null)
+            {
+                IsException = true;
+                logContext.Add(ExceptionTypeKey, exception.GetType().ToString());
+
+                // If this is a SQL exception, then log the stored proc.
+                SqlException sqlException = exception as SqlException;
+                if (sqlException != null)
+                {
+                    logContext.Add(StoredProcedureKey, String.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure);
+                    logContext.Add(StoredProcedureLineKey, sqlException.LineNumber.ToString(threadUICulture));
+                }
+            }
+
+            // Add stack trace.
+            logContext.Add(StackTraceKey, FormatStackTrace(new StackTrace(2, true), threadUICulture));
+
+            // Set context.
+            Context = new LogContext(context, _logReservation, logContext);
 
             // Queue the log entry.
             _logQueue.Enqueue(this);
@@ -262,11 +285,12 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        ///   Formats the stack trace, skipping stack frames that form part of the exception construction.
+        /// Formats the stack trace, skipping stack frames that form part of the exception construction.
         /// </summary>
         /// <param name="trace">The stack trace to format.</param>
-        /// <returns>The formatted stack <paramref name="trace"/>.</returns>
-        private static String FormatStackTrace(StackTrace trace)
+        /// <param name="culture">The culture.</param>
+        /// <returns>The formatted stack <paramref name="trace" />.</returns>
+        private static String FormatStackTrace(StackTrace trace, CultureInfo culture)
         {
             // Check for stack trace frames.
             if (trace == null)
@@ -387,7 +411,7 @@ namespace WebApplications.Utilities.Logging
 
                 // tack on e.g. " in c:\tmp\MyFile.cs:line 5" 
                 sb.Append(' ');
-                sb.AppendFormat(CultureInfo.InvariantCulture, inFileLineNum, fileName, sf.GetFileLineNumber());
+                sb.AppendFormat(culture, inFileLineNum, fileName, sf.GetFileLineNumber());
             }
             return sb.ToString();
         }

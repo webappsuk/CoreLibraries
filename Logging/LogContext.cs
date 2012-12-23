@@ -32,19 +32,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Xml.Linq;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
-    ///   Allows for additional contextual information to be stored against a <see cref="Log">log item</see>.
+    /// Allows for additional contextual information to be stored against a <see cref="Log">log item</see>.
     /// </summary>
-    /// <remarks>
-    ///   As well as constructing a <see cref="LogContext"/> directly, it is equally valid to use one of the
-    ///   implicit casts, or the static <see cref="Empty">new LogContext()</see>.
-    /// </remarks>
+    /// <remarks>As well as constructing a <see cref="LogContext" /> directly, it is equally valid to use one of the
+    /// implicit casts, or the static <see cref="Empty">new LogContext()</see>.</remarks>
     [Serializable]
     public class LogContext
     {
@@ -52,41 +48,41 @@ namespace WebApplications.Utilities.Logging
         /// The Key reservations.
         /// </summary>
         [NotNull]
+        [NonSerialized]
         private static readonly ConcurrentDictionary<string, Guid> _keyReservations = new ConcurrentDictionary<string, Guid>();
 
         /// <summary>
         /// The prefix reservations.
         /// </summary>
         [NotNull]
+        [NonSerialized]
         private static readonly ConcurrentDictionary<string, Guid> _prefixReservations = new ConcurrentDictionary<string, Guid>();
 
         /// <summary>
         /// The context dictionary.
         /// </summary>
         [NotNull]
-        private readonly ConcurrentDictionary<string, string> _context;
+        private readonly Dictionary<string, string> _context;
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="LogContext" /> class.
         /// Adds a parameter collection to an optional existing context.
         /// </summary>
-        /// <param name="context">The context.</param>
         /// <param name="reservation">The reservation.</param>
         /// <param name="prefix">The prefix.</param>
         /// <param name="parameters">The parameters.</param>
-        public LogContext([CanBeNull] LogContext context, Guid reservation, string prefix, [NotNull] params object[] parameters)
+        /// <remarks>Creates entries where they key starts with <see paramref="prefix" /> followed by a
+        /// 1-indexed ordinal (e.g. "Parameter 1").</remarks>
+        public LogContext(Guid reservation, string prefix, [NotNull] params object[] parameters)
         {
-            _context = context != null
-                           ? new ConcurrentDictionary<string, string>(context._context)
-                           : new ConcurrentDictionary<string, string>();
-
-            if (parameters.Length < 1) return;
+            _context = new Dictionary<string, string>();
 
             // Update dictionary.
             int i = 1;
             foreach (object p in parameters)
             {
-                string key = prefix + i++;
+                string key = Validate(reservation, prefix + i++);
                 string value = p == null ? null : p.ToString();
                 Set(reservation, key, value);
             }
@@ -103,11 +99,9 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext([NotNull] params KeyValuePair<string, object>[] keyValuePairs)
         {
-            _context =
-                new ConcurrentDictionary<string, string>(
-                    keyValuePairs.Select(
-                        kvp =>
-                        new KeyValuePair<string, string>(Validate(Guid.Empty, kvp.Key), kvp.Value == null ? null : kvp.Value.ToString())));
+            _context = keyValuePairs.ToDictionary(
+                kvp => Validate(Guid.Empty, kvp.Key),
+                kvp => kvp.Value == null ? null : kvp.Value.ToString());
         }
 
         /// <summary>
@@ -120,11 +114,9 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext(Guid reservation, [NotNull] params KeyValuePair<string, object>[] keyValuePairs)
         {
-            _context =
-                new ConcurrentDictionary<string, string>(
-                    keyValuePairs.Select(
-                        kvp =>
-                        new KeyValuePair<string, string>(Validate(reservation, kvp.Key), kvp.Value == null ? null : kvp.Value.ToString())));
+            _context = keyValuePairs.ToDictionary(
+                kvp => Validate(reservation, kvp.Key),
+                kvp => kvp.Value == null ? null : kvp.Value.ToString());
         }
 
         /// <summary>
@@ -138,8 +130,9 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext([NotNull] params KeyValuePair<string, string>[] keyValuePairs)
         {
-            _context = new ConcurrentDictionary<string, string>(
-                keyValuePairs.Select(kvp => new KeyValuePair<string, string>(Validate(Guid.Empty, kvp.Key), kvp.Value)));
+            _context = keyValuePairs.ToDictionary(
+                kvp => Validate(Guid.Empty, kvp.Key),
+                kvp => kvp.Value);
         }
 
         /// <summary>
@@ -152,8 +145,9 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext(Guid reservation, [NotNull] params KeyValuePair<string, string>[] keyValuePairs)
         {
-            _context = new ConcurrentDictionary<string, string>(
-                keyValuePairs.Select(kvp => new KeyValuePair<string, string>(Validate(reservation, kvp.Key), kvp.Value)));
+            _context = keyValuePairs.ToDictionary(
+                kvp => Validate(reservation, kvp.Key),
+                kvp => kvp.Value);
         }
 
         /// <summary>
@@ -165,10 +159,14 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         /// <param name="keyValuePairs">The key value pairs.</param>
         [UsedImplicitly]
-        public LogContext([NotNull] IEnumerable<KeyValuePair<string, string>> keyValuePairs)
+        public LogContext(IEnumerable<KeyValuePair<string, string>> keyValuePairs)
         {
-            _context = new ConcurrentDictionary<string, string>(
-                keyValuePairs.Select(kvp => new KeyValuePair<string, string>(Validate(Guid.Empty, kvp.Key), kvp.Value)));
+            _context =
+                keyValuePairs == null
+                    ? new Dictionary<string, string>()
+                    : keyValuePairs.ToDictionary(
+                        kvp => Validate(Guid.Empty, kvp.Key),
+                        kvp => kvp.Value);
         }
 
         /// <summary>
@@ -179,10 +177,51 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>This can accept any object that implements the interface, which includes objects that implement
         /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
         [UsedImplicitly]
-        public LogContext(Guid reservation, [NotNull] IEnumerable<KeyValuePair<string, string>> keyValuePairs)
+        public LogContext(Guid reservation, IEnumerable<KeyValuePair<string, string>> keyValuePairs)
         {
-            _context = new ConcurrentDictionary<string, string>(
-                keyValuePairs.Select(kvp => new KeyValuePair<string, string>(Validate(reservation, kvp.Key), kvp.Value)));
+            _context =
+                keyValuePairs == null
+                    ? new Dictionary<string, string>()
+                    : keyValuePairs.ToDictionary(
+                        kvp => Validate(reservation, kvp.Key),
+                        kvp => kvp.Value);
+        }
+
+        /// <summary>
+        ///   Initializes a new instance of the <see cref="LogContext"/> class.
+        /// </summary>
+        /// <remarks>
+        ///   This can accept any object that implements the interface, which includes objects that implement
+        ///   <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.
+        /// </remarks>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        [UsedImplicitly]
+        public LogContext(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+        {
+            _context =
+                keyValuePairs == null
+                    ? new Dictionary<string, string>()
+                    : keyValuePairs.ToDictionary(
+                        kvp => Validate(Guid.Empty, kvp.Key),
+                        kvp => kvp.Value == null ? null : kvp.Value.ToString());
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class.
+        /// </summary>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext(Guid reservation, IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+        {
+            _context =
+                keyValuePairs == null
+                    ? new Dictionary<string, string>()
+                    : keyValuePairs.ToDictionary(
+                        kvp => Validate(reservation, kvp.Key),
+                        kvp => kvp.Value == null ? null : kvp.Value.ToString());
         }
 
         /// <summary>
@@ -196,10 +235,7 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext([NotNull] string key, [CanBeNull] string value, [NotNull] params string[] keyValuePairs)
         {
-            _context = new ConcurrentDictionary<string, string>();
-
-            // Add initial value
-            _context.AddOrUpdate(Validate(Guid.Empty, key), k => value, (k, o) => value);
+            _context = new Dictionary<string, string> { { Validate(Guid.Empty, key), value } };
 
             int l = keyValuePairs.Length;
             if (l < 1) return;
@@ -212,7 +248,7 @@ namespace WebApplications.Utilities.Logging
                     ? keyValuePairs[i + 1]
                     : null;
                 if (k != null)
-                    _context.AddOrUpdate(Validate(Guid.Empty, k), y => v, (y, o) => v);
+                    Set(Guid.Empty, k, v);
                 i += 2;
             }
         }
@@ -229,10 +265,7 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext(Guid reservation, [NotNull] string key, [CanBeNull] string value, [NotNull] params string[] keyValuePairs)
         {
-            _context = new ConcurrentDictionary<string, string>();
-
-            // Add initial value
-            _context.AddOrUpdate(Validate(reservation, key), k => value, (k, o) => value);
+            _context = new Dictionary<string, string> { { Validate(reservation, key), value } };
 
             int l = keyValuePairs.Length;
             if (l < 1) return;
@@ -245,7 +278,7 @@ namespace WebApplications.Utilities.Logging
                     ? keyValuePairs[i + 1]
                     : null;
                 if (k != null)
-                    _context.AddOrUpdate(Validate(reservation, k), y => v, (y, o) => v);
+                    Set(reservation, k, v);
                 i += 2;
             }
         }
@@ -263,11 +296,8 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext([NotNull] string key, [CanBeNull] object value, [NotNull] params object[] keyValuePairs)
         {
-            _context = new ConcurrentDictionary<string, string>();
-
             string v = value == null ? null : value.ToString();
-            // Add initial value
-            _context.AddOrUpdate(Validate(Guid.Empty, key), k => v, (k, o) => v);
+            _context = new Dictionary<string, string> { { Validate(Guid.Empty, key), v } };
 
             int l = keyValuePairs.Length;
             if (l < 1) return;
@@ -281,7 +311,7 @@ namespace WebApplications.Utilities.Logging
                     : null;
                 v = value == null ? null : value.ToString();
                 if (k != null)
-                    _context.AddOrUpdate(Validate(Guid.Empty, k), y => v, (y, o) => v);
+                    Set(Guid.Empty, k, v);
                 i += 2;
             }
         }
@@ -298,11 +328,8 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public LogContext(Guid reservation, [NotNull] string key, [CanBeNull] object value, [NotNull] params object[] keyValuePairs)
         {
-            _context = new ConcurrentDictionary<string, string>();
-
             string v = value == null ? null : value.ToString();
-            // Add initial value
-            _context.AddOrUpdate(Validate(reservation, key), k => v, (k, o) => v);
+            _context = new Dictionary<string, string> { { Validate(reservation, key), v } };
 
             int l = keyValuePairs.Length;
             if (l < 1) return;
@@ -316,9 +343,418 @@ namespace WebApplications.Utilities.Logging
                     : null;
                 v = value == null ? null : value.ToString();
                 if (k != null)
-                    _context.AddOrUpdate(Validate(reservation, k), y => v, (y, o) => v);
+                    Set(reservation, k, v);
                 i += 2;
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// Adds a parameter collection to an optional existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="prefix">The prefix.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// <para>Creates entries where they key starts with <see paramref="prefix"/> followed by a
+        /// 1-indexed ordinal (e.g. "Parameter 1").</para>
+        /// </remarks>
+        public LogContext([CanBeNull] LogContext context, Guid reservation, string prefix, [NotNull] params object[] parameters)
+        {
+            _context = context == null || context._context.Count < 1
+                           ? new Dictionary<string, string>()
+                           : new Dictionary<string, string>(context._context);
+
+            if (parameters.Length < 1) return;
+
+            // Update dictionary.
+            int i = 1;
+            foreach (object p in parameters)
+            {
+                string key = Validate(reservation, prefix + i++);
+                string value = p == null ? null : p.ToString();
+                Set(reservation, key, value);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, [NotNull] params KeyValuePair<string, object>[] keyValuePairs)
+        {
+            if ((context == null) ||
+                (context._context.Count < 1))
+            {
+                _context = keyValuePairs.ToDictionary(
+                    kvp => Validate(Guid.Empty, kvp.Key),
+                    kvp => kvp.Value == null ? null : kvp.Value.ToString());
+                return;
+            }
+
+            _context = new Dictionary<string, string>(context._context);
+            foreach (KeyValuePair<string, object> kvp in keyValuePairs)
+                Set(Guid.Empty, kvp.Key, kvp.Value == null ? null : kvp.Value.ToString());
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, Guid reservation, [NotNull] params KeyValuePair<string, object>[] keyValuePairs)
+        {
+            if ((context == null) ||
+                (context._context.Count < 1))
+            {
+                _context = keyValuePairs.ToDictionary(
+                    kvp => Validate(reservation, kvp.Key),
+                    kvp => kvp.Value == null ? null : kvp.Value.ToString());
+                return;
+            }
+
+            _context = new Dictionary<string, string>(context._context);
+            foreach (KeyValuePair<string, object> kvp in keyValuePairs)
+                Set(reservation, kvp.Key, kvp.Value == null ? null : kvp.Value.ToString());
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, [NotNull] params KeyValuePair<string, string>[] keyValuePairs)
+        {
+            if ((context == null) ||
+                (context._context.Count < 1))
+            {
+                _context = keyValuePairs.ToDictionary(
+                    kvp => Validate(Guid.Empty, kvp.Key),
+                    kvp => kvp.Value);
+                return;
+            }
+
+            _context = new Dictionary<string, string>(context._context);
+            foreach (KeyValuePair<string, string> kvp in keyValuePairs)
+                Set(Guid.Empty, kvp.Key, kvp.Value);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, Guid reservation, [NotNull] params KeyValuePair<string, string>[] keyValuePairs)
+        {
+            if ((context == null) ||
+                (context._context.Count < 1))
+            {
+                _context = keyValuePairs.ToDictionary(
+                    kvp => Validate(reservation, kvp.Key),
+                    kvp => kvp.Value);
+                return;
+            }
+
+            _context = new Dictionary<string, string>(context._context);
+            foreach (KeyValuePair<string, string> kvp in keyValuePairs)
+                Set(reservation, kvp.Key, kvp.Value);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, IEnumerable<KeyValuePair<string, string>> keyValuePairs)
+        {
+            if ((context == null) ||
+                (context._context.Count < 1))
+            {
+                _context =
+                    keyValuePairs == null
+                        ? new Dictionary<string, string>()
+                        : keyValuePairs.ToDictionary(
+                            kvp => Validate(Guid.Empty, kvp.Key),
+                            kvp => kvp.Value);
+                return;
+            }
+
+            _context = new Dictionary<string, string>(context._context);
+
+            if (keyValuePairs == null) return;
+
+            foreach (KeyValuePair<string, string> kvp in keyValuePairs)
+                Set(Guid.Empty, kvp.Key, kvp.Value);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, Guid reservation, IEnumerable<KeyValuePair<string, string>> keyValuePairs)
+        {
+            if ((context == null) ||
+                (context._context.Count < 1))
+            {
+                _context =
+                    keyValuePairs == null
+                        ? new Dictionary<string, string>()
+                        : keyValuePairs.ToDictionary(
+                            kvp => Validate(reservation, kvp.Key),
+                            kvp => kvp.Value);
+                return;
+            }
+
+            _context = new Dictionary<string, string>(context._context);
+
+            if (keyValuePairs == null) return;
+
+            foreach (KeyValuePair<string, string> kvp in keyValuePairs)
+                Set(reservation, kvp.Key, kvp.Value);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+        {
+            if ((context == null) ||
+                (context._context.Count < 1))
+            {
+                _context =
+                    keyValuePairs == null
+                        ? new Dictionary<string, string>()
+                        : keyValuePairs.ToDictionary(
+                            kvp => Validate(Guid.Empty, kvp.Key),
+                            kvp => kvp.Value == null ? null : kvp.Value.ToString());
+                return;
+            }
+
+            _context = new Dictionary<string, string>(context._context);
+
+            if (keyValuePairs == null) return;
+
+            foreach (KeyValuePair<string, object> kvp in keyValuePairs)
+                Set(Guid.Empty, kvp.Key, kvp.Value == null ? null : kvp.Value.ToString());
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="keyValuePairs">The key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, Guid reservation, IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+        {
+            if ((context == null) ||
+                (context._context.Count < 1))
+            {
+                _context =
+                    keyValuePairs == null
+                        ? new Dictionary<string, string>()
+                        : keyValuePairs.ToDictionary(
+                    kvp => Validate(reservation, kvp.Key),
+                    kvp => kvp.Value == null ? null : kvp.Value.ToString());
+                return;
+            }
+
+            _context = new Dictionary<string, string>(context._context);
+
+            if (keyValuePairs == null) return;
+
+            foreach (KeyValuePair<string, object> kvp in keyValuePairs)
+                Set(reservation, kvp.Key, kvp.Value == null ? null : kvp.Value.ToString());
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="key">The first key.</param>
+        /// <param name="value">The first value.</param>
+        /// <param name="keyValuePairs">Subsequent key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, [NotNull] string key, [CanBeNull] string value, [NotNull] params string[] keyValuePairs)
+        {
+            _context = context == null || context._context.Count < 1
+                           ? new Dictionary<string, string>()
+                           : new Dictionary<string, string>(context._context);
+
+            _context.Add(Validate(Guid.Empty, key), value);
+
+            int l = keyValuePairs.Length;
+            if (l < 1) return;
+
+            int i = 0;
+            while (i < keyValuePairs.Length)
+            {
+                string k = keyValuePairs[i];
+                string v = i + 1 < l
+                    ? keyValuePairs[i + 1]
+                    : null;
+                if (k != null)
+                    Set(Guid.Empty, k, v);
+                i += 2;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="key">The first key.</param>
+        /// <param name="value">The first value.</param>
+        /// <param name="keyValuePairs">Subsequent key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, Guid reservation, [NotNull] string key, [CanBeNull] string value, [NotNull] params string[] keyValuePairs)
+        {
+            _context = context == null || context._context.Count < 1
+                           ? new Dictionary<string, string>()
+                           : new Dictionary<string, string>(context._context);
+
+            _context.Add(Validate(reservation, key), value);
+
+            int l = keyValuePairs.Length;
+            if (l < 1) return;
+
+            int i = 0;
+            while (i < keyValuePairs.Length)
+            {
+                string k = keyValuePairs[i];
+                string v = i + 1 < l
+                    ? keyValuePairs[i + 1]
+                    : null;
+                if (k != null)
+                    Set(reservation, k, v);
+                i += 2;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="key">The first key.</param>
+        /// <param name="value">The first value.</param>
+        /// <param name="keyValuePairs">Subsequent key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, [NotNull] string key, [CanBeNull] object value, [NotNull] params object[] keyValuePairs)
+        {
+            _context = context == null || context._context.Count < 1
+                           ? new Dictionary<string, string>()
+                           : new Dictionary<string, string>(context._context);
+
+            string v = value == null ? null : value.ToString();
+            _context.Add(Validate(Guid.Empty, key), v);
+
+            int l = keyValuePairs.Length;
+            if (l < 1) return;
+
+            int i = 0;
+            while (i < keyValuePairs.Length)
+            {
+                string k = keyValuePairs[i] as string;
+                value = i + 1 < l
+                    ? keyValuePairs[i + 1]
+                    : null;
+                v = value == null ? null : value.ToString();
+                if (k != null)
+                    Set(Guid.Empty, k, v);
+                i += 2;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext" /> class based on an existing context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="key">The first key.</param>
+        /// <param name="value">The first value.</param>
+        /// <param name="keyValuePairs">Subsequent key value pairs.</param>
+        /// <remarks>This can accept any object that implements the interface, which includes objects that implement
+        /// <see cref="IDictionary{TKey, TValue}">IDictionary&lt;string, string&gt;</see>.</remarks>
+        [UsedImplicitly]
+        public LogContext([CanBeNull] LogContext context, Guid reservation, [NotNull] string key, [CanBeNull] object value, [NotNull] params object[] keyValuePairs)
+        {
+            _context = context == null || context._context.Count < 1
+                           ? new Dictionary<string, string>()
+                           : new Dictionary<string, string>(context._context);
+
+            string v = value == null ? null : value.ToString();
+            _context.Add(Validate(reservation, key), v);
+
+            int l = keyValuePairs.Length;
+            if (l < 1) return;
+
+            int i = 0;
+            while (i < keyValuePairs.Length)
+            {
+                string k = keyValuePairs[i] as string;
+                value = i + 1 < l
+                    ? keyValuePairs[i + 1]
+                    : null;
+                v = value == null ? null : value.ToString();
+                if (k != null)
+                    Set(reservation, k, v);
+                i += 2;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Sets the value of the key.
+        /// </summary>
+        /// <param name="reservation">The reservation.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Set(Guid reservation, string key, string value)
+        {
+            key = Validate(reservation, key);
+            if (_context.ContainsKey(key))
+                _context[key] = value;
+            else
+                _context.Add(key, value);
         }
 
         /// <summary>
@@ -338,7 +774,7 @@ namespace WebApplications.Utilities.Logging
                 throw new LoggingException(Resources.LogContext_Null_Key);
             if (reservation == Guid.Empty)
                 throw new LoggingException(Resources.LogContext_Empty_Reservation);
-            
+
             // First check prefixes
             foreach (KeyValuePair<string, Guid> kvp in _prefixReservations)
             {
@@ -455,54 +891,6 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Sets the specified key to the specified value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Set(string key, string value)
-        {
-            Set(Guid.Empty, key, value);
-        }
-
-        /// <summary>
-        /// Sets the specified key to the specified value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Set(string key, object value)
-        {
-            string v = value == null ? null : value.ToString();
-            Set(Guid.Empty, key, v);
-        }
-
-        /// <summary>
-        /// Sets the specified key to the specified value.
-        /// </summary>
-        /// <param name="reservation">The reservation.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Set(Guid reservation, string key, object value)
-        {
-            string v = value == null ? null : value.ToString();
-            Set(reservation, key, v);
-        }
-
-        /// <summary>
-        /// Sets the specified key to the specified value.
-        /// </summary>
-        /// <param name="reservation">The reservation.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Set(Guid reservation, string key, string value)
-        {
-            _context.AddOrUpdate(Validate(reservation, key), k => value, (k, o) => value);
-        }
-
-        /// <summary>
         /// Gets the value of the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -518,6 +906,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="prefix">The prefix.</param>
         /// <returns>IEnumerable{KeyValuePair{System.StringSystem.String}}.</returns>
+        [NotNull]
         public IEnumerable<KeyValuePair<string, string>> GetPrefixed(string prefix)
         {
             return _context.Where(kvp => kvp.Key.StartsWith(prefix));
@@ -532,11 +921,15 @@ namespace WebApplications.Utilities.Logging
         /// <exception cref="FormatException">An index from the format string is either less than zero or greater than or equal to the number of arguments.</exception>
         public override string ToString()
         {
-            StringBuilder stringBuilder =
-                new StringBuilder(String.Format(Resources.LogContext_ToString, _context.Count, _context.Count == 1 ? "y" : "ies"));
+            StringBuilder stringBuilder = new StringBuilder();
+            if (_context.Count == 1)
+                stringBuilder.Append(Resources.LogContext_Singular);
+            else
+                stringBuilder.AppendFormat(Resources.LogContext_Plural, _context.Count);
+
             foreach (KeyValuePair<string, string> kvp in _context)
             {
-                stringBuilder.Append(Environment.NewLine);
+                stringBuilder.AppendLine();
                 stringBuilder.Append("\t\t");
                 if (kvp.Key == null)
                     stringBuilder.Append("null");
@@ -559,15 +952,67 @@ namespace WebApplications.Utilities.Logging
             return stringBuilder.ToString();
         }
 
+        #region Conversion Operators
         /// <summary>
         ///   Performs an implicit conversion from <see cref="Dictionary&lt;T, T&gt;">Dictionary&lt;string, string&gt;</see> 
         ///   to <see cref="WebApplications.Utilities.Logging.LogContext"/>.
         /// </summary>
         /// <param name="dictionary">The dictionary to convert.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator LogContext([NotNull] Dictionary<string, string> dictionary)
+        public static implicit operator LogContext([NotNull] Dictionary<string, object> dictionary)
+        {
+            return new LogContext((IEnumerable<KeyValuePair<string, object>>)dictionary);
+        }
+
+        /// <summary>
+        ///   Performs an implicit conversion from <see cref="Dictionary&lt;T, T&gt;">Dictionary&lt;string, string&gt;</see> 
+        ///   to <see cref="WebApplications.Utilities.Logging.LogContext"/>.
+        /// </summary>
+        /// <param name="dictionary">The dictionary to convert.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator LogContext(Dictionary<string, string> dictionary)
         {
             return new LogContext((IEnumerable<KeyValuePair<string, string>>)dictionary);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="List{KeyValuePair{System.StringSystem.Object}}" /> to <see cref="LogContext" />.
+        /// </summary>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator LogContext([NotNull] List<KeyValuePair<string, object>> enumerable)
+        {
+            return new LogContext((IEnumerable<KeyValuePair<string, object>>)enumerable);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="List{KeyValuePair{System.StringSystem.String}}" /> to <see cref="LogContext" />.
+        /// </summary>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator LogContext([NotNull] List<KeyValuePair<string, string>> enumerable)
+        {
+            return new LogContext((IEnumerable<KeyValuePair<string, string>>)enumerable);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="KeyValuePair{System.StringSystem.Object}[][]" /> to <see cref="LogContext" />.
+        /// </summary>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator LogContext([NotNull] KeyValuePair<string, object>[] enumerable)
+        {
+            return new LogContext(enumerable);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="KeyValuePair{System.StringSystem.String}[][]" /> to <see cref="LogContext" />.
+        /// </summary>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator LogContext([NotNull] KeyValuePair<string, string>[] enumerable)
+        {
+            return new LogContext(enumerable);
         }
 
         /// <summary>
@@ -580,5 +1025,27 @@ namespace WebApplications.Utilities.Logging
         {
             return new LogContext(keyValuePair);
         }
+
+        /// <summary>
+        ///   Performs an implicit conversion from <see cref="KeyValuePair&lt;T, T&gt;">KeyValuePair&lt;string, string&gt;</see> 
+        ///   to a <see cref="WebApplications.Utilities.Logging.LogContext"/>.
+        /// </summary>
+        /// <param name="keyValuePair">The key value pair.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator LogContext(KeyValuePair<string, object> keyValuePair)
+        {
+            return new LogContext(keyValuePair);
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="LogContext" /> to <see cref="Dictionary{TKey, TValue}" />.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator Dictionary<string, string>(LogContext context)
+        {
+            return context == null ? null : context._context;
+        }
+        #endregion
     }
 }

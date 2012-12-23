@@ -117,9 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LogContext_ToString" xml:space="preserve">
-    <value>({0} entr{1})</value>
-    <comment>{context.Count} entr{y | ies}</comment>
+  <data name="LogContext_Singular" xml:space="preserve">
+    <value>(1 log entry)</value>
   </data>
   <data name="LoggingException_InnerExceptionCannotBeNull" xml:space="preserve">
     <value>Parameter 'innerException' can not be null</value>
@@ -261,5 +260,8 @@
   </data>
   <data name="Log_ToString_Exception_Header" xml:space="preserve">
     <value>- thrown on {0:D} at {1:c}.</value>
+  </data>
+  <data name="LogContext_Plural" xml:space="preserve">
+    <value>({0} log entries)</value>
   </data>
 </root>

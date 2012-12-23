@@ -90,7 +90,9 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   A queue of log items waiting to be dumped to loggers.
         /// </summary>
-        [NonSerialized] private static readonly ConcurrentQueue<Log> _logQueue = new ConcurrentQueue<Log>();
+        [NonSerialized] 
+        [NotNull]
+        private static readonly ConcurrentQueue<Log> _logQueue = new ConcurrentQueue<Log>();
 
 
         /// <summary>
