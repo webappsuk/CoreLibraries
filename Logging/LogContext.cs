@@ -891,10 +891,27 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
+        /// Gets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The value associated with the specified key. If the specified key is not found, throws a <see cref="T:System.Collections.Generic.KeyNotFoundException" />.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
+        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> does not exist in the collection.</exception>
+        [CanBeNull]
+        public string this[[NotNull]string key]
+        {
+            get
+            {
+                return _context[key];
+            }
+        }
+
+        /// <summary>
         /// Gets the value of the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>System.String.</returns>
+        [CanBeNull]
         public string Get(string key)
         {
             string value;

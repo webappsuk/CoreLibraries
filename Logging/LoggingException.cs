@@ -64,10 +64,16 @@ namespace WebApplications.Utilities.Logging
         private readonly Log _log;
 
         /// <summary>
+        /// Gets the GUID.
+        /// </summary>
+        /// <value>The GUID.</value>
+        public CombGuid Guid { get { return _log.Guid; } }
+
+        /// <summary>
         /// Gets the log group.
         /// </summary>
         /// <value>The log group.</value>
-        public CombGuid LogGroup { get { return _log.Group; } }
+        public CombGuid Group { get { return _log.Group; } }
 
         /// <summary>
         /// Gets the log group.
@@ -80,7 +86,83 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The parameters.</value>
         [NotNull]
-        public IEnumerable<string> Parameters { get { return _log.Parameters; }}
+        public IEnumerable<string> Parameters { get { return _log.Parameters; } }
+
+        /// <summary>
+        /// Gets the context.
+        /// </summary>
+        /// <value>The context.</value>
+        public LogContext Context { get { return _log.Context; } }
+
+        /// <summary>
+        /// Gets the time stamp.
+        /// </summary>
+        /// <value>The time stamp.</value>
+        public DateTime TimeStamp { get { return _log.TimeStamp; } }
+
+        /// <summary>
+        /// Gets the message format.
+        /// </summary>
+        /// <value>The message format.</value>
+        [NotNull]
+        public string MessageFormat { get { return _log.MessageFormat; } }
+
+        /// <summary>
+        /// Gets the thread ID.
+        /// </summary>
+        /// <value>The thread ID.</value>
+        public int ThreadID { get { return _log.ThreadID; } }
+
+        /// <summary>
+        /// Gets the name of the thread.
+        /// </summary>
+        /// <value>The name of the thread.</value>
+        [NotNull]
+        public string ThreadName { get { return _log.ThreadName; } }
+
+        /// <summary>
+        /// Gets the thread culture.
+        /// </summary>
+        /// <value>The thread culture.</value>
+        [NotNull]
+        public string ThreadCulture { get { return _log.ThreadCulture; } }
+
+        /// <summary>
+        /// Gets the thread UI culture.
+        /// </summary>
+        /// <value>The thread UI culture.</value>
+        [NotNull]
+        public string ThreadUICulture { get { return _log.ThreadUICulture; } }
+
+        /// <summary>
+        /// Gets the full name of the type of the exception.
+        /// </summary>
+        /// <value>The full name of the type of the exception.</value>
+        [NotNull]
+        public string ExceptionTypeFullName { get { return _log.Context.Get(Log.ExceptionTypeKey); } }
+
+        /// <summary>
+        /// Gets the stored procedure name (if a SQL exception - otherwise null).
+        /// </summary>
+        /// <value>The stored procedure.</value>
+        [NotNull]
+        public string StoredProcedure { get { return _log.Context.Get(Log.StoredProcedureKey); } }
+
+        /// <summary>
+        /// Gets the stored procedure line number (if a SQL exception - otherwise 0).
+        /// </summary>
+        /// <value>The stored procedure line.</value>
+        public int StoredProcedureLine
+        {
+            get
+            {
+                string line = _log.Context.Get(Log.StoredProcedureLineKey);
+                if (string.IsNullOrWhiteSpace(line))
+                    return 0;
+                int l;
+                return int.TryParse(line, out l) ? l : 0;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingException" /> class.
@@ -264,7 +346,7 @@ namespace WebApplications.Utilities.Logging
                         // Very Cool - this groups future exceptions
                         // into the same group, if they correctly
                         // pass the inner exception...
-                        group = le.LogGroup;
+                        group = le.Group;
                         break;
                     }
 
@@ -290,12 +372,13 @@ namespace WebApplications.Utilities.Logging
             while (innerExceptions.Count > 0)
             {
                 Exception e = innerExceptions.Pop();
-                Log.Add(LogGroup, e, LoggingLevel.Information);
+                Log.Add(Group, e, LoggingLevel.Information);
             }
 
             // Now we can create the associated log item for this exception.
             _log = Log.Add(group, context, this, level, message, parameters);
 
+            // Finally increment performance counter.
             _perfCounterException.Increment();
         }
 

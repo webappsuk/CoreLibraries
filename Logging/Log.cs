@@ -200,7 +200,41 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The stack trace.</value>
         [NotNull]
-        public string StackTrace { get { return Context.Get(StackTraceKey); } }
+        public string StackTrace { get { return Context[StackTraceKey]; } }
+
+        /// <summary>
+        /// Gets the message format.
+        /// </summary>
+        /// <value>The message format.</value>
+        [NotNull]
+        public string MessageFormat { get { return Context[MessageFormatKey]; } }
+
+        /// <summary>
+        /// Gets the thread ID.
+        /// </summary>
+        /// <value>The thread ID.</value>
+        public int ThreadID { get { return int.Parse(Context[ThreadIDKey]); } }
+
+        /// <summary>
+        /// Gets the name of the thread.
+        /// </summary>
+        /// <value>The name of the thread.</value>
+        [NotNull]
+        public string ThreadName { get { return Context[ThreadNameKey]; } }
+
+        /// <summary>
+        /// Gets the thread culture.
+        /// </summary>
+        /// <value>The thread culture.</value>
+        [NotNull]
+        public string ThreadCulture { get { return Context[ThreadCultureKey]; } }
+
+        /// <summary>
+        /// Gets the thread UI culture.
+        /// </summary>
+        /// <value>The thread UI culture.</value>
+        [NotNull]
+        public string ThreadUICulture { get { return Context[ThreadUICultureKey]; } }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Log" /> class.
@@ -253,7 +287,7 @@ namespace WebApplications.Utilities.Logging
                 object v = parameters[p];
                 logContext.Add(ParameterKeyPrefix + " " + p, v == null ? null : v.ToString());
             }
-            
+
             if (exception != null)
             {
                 IsException = true;

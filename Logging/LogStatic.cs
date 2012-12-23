@@ -1024,6 +1024,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="parameters">The parameters.</param>
         /// <remarks>If the error <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.</remarks>
         [UsedImplicitly]
+        [NotNull]
         internal static Log Add(Guid logGroup, [CanBeNull] LogContext context, [NotNull] LoggingException exception, LoggingLevel level, [NotNull] string message,
                                [NotNull] params object[] parameters)
         {

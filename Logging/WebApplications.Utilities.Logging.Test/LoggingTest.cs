@@ -53,7 +53,7 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public void TestExceptions()
         {
-            new TestException();
+            var t = new TestException();
         }
 
         #region Nested type: TestException
