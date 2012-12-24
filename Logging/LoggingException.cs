@@ -110,20 +110,6 @@ namespace WebApplications.Utilities.Logging
         public string ThreadName { get { return _log.ThreadName; } }
 
         /// <summary>
-        /// Gets the thread culture.
-        /// </summary>
-        /// <value>The thread culture.</value>
-        [NotNull]
-        public string ThreadCulture { get { return _log.ThreadCulture; } }
-
-        /// <summary>
-        /// Gets the thread UI culture.
-        /// </summary>
-        /// <value>The thread UI culture.</value>
-        [NotNull]
-        public string ThreadUICulture { get { return _log.ThreadUICulture; } }
-
-        /// <summary>
         /// Gets the full name of the type of the exception.
         /// </summary>
         /// <value>The full name of the type of the exception.</value>
@@ -138,7 +124,7 @@ namespace WebApplications.Utilities.Logging
         public string StoredProcedure { get { return _log.Get(Log.StoredProcedureKey); } }
 
         /// <summary>
-        /// Gets the stored procedure line number (if a SQL exception - otherwise 0).
+        /// Gets the stored procedure line number (if a SQL exception - otherwise -1).
         /// </summary>
         /// <value>The stored procedure line.</value>
         public int StoredProcedureLine
@@ -147,9 +133,9 @@ namespace WebApplications.Utilities.Logging
             {
                 string line = _log.Get(Log.StoredProcedureLineKey);
                 if (string.IsNullOrWhiteSpace(line))
-                    return 0;
+                    return -1;
                 int l;
-                return int.TryParse(line, out l) ? l : 0;
+                return int.TryParse(line, out l) ? l : -1;
             }
         }
 
@@ -413,6 +399,16 @@ namespace WebApplications.Utilities.Logging
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Gets a message that describes the current exception.
+        /// </summary>
+        /// <value>The message.</value>
+        /// <returns>The error message that explains the reason for the exception, or an empty string("").</returns>
+        public override string Message
+        {
+            get { return _log.Message; }
         }
 
         /// <summary>

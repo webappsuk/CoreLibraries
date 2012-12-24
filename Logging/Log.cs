@@ -64,7 +64,16 @@ namespace WebApplications.Utilities.Logging
         ///   A Guid used to uniquely identify a log item.
         /// </summary>
         [UsedImplicitly]
-        public CombGuid Guid { get { return CombGuid.Parse(_context[GuidKey]); } }
+        public CombGuid Guid
+        {
+            get
+            {
+                string gStr = Get(GuidKey);
+                if (gStr == null) return CombGuid.Empty;
+                CombGuid g;
+                return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
+            }
+        }
 
         /// <summary>
         ///   A Guid used to group log items together.
@@ -77,8 +86,10 @@ namespace WebApplications.Utilities.Logging
         {
             get
             {
-                string g;
-                return _context.TryGetValue(GroupKey, out g) ? CombGuid.Parse(g) : Guid;
+                string gStr = Get(GroupKey);
+                if (gStr == null) return CombGuid.Empty;
+                CombGuid g;
+                return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
             }
         }
 
@@ -86,14 +97,23 @@ namespace WebApplications.Utilities.Logging
         ///   The <see cref="LoggingLevel">log level</see>.
         /// </summary>
         [UsedImplicitly]
-        public LoggingLevel Level { get { return _levels[_context[LevelKey].ToLower()]; } }
+        public LoggingLevel Level
+        {
+            get
+            {
+                string lStr = Get(LevelKey);
+                if (lStr == null) return LoggingLevel.Information;
+                LoggingLevel l;
+                return _levels.TryGetValue(lStr, out l) ? l : LoggingLevel.Information;
+            }
+        }
 
         /// <summary>
-        ///   The log message.
+        ///   The formatted log message.
         /// </summary>
         [UsedImplicitly]
         [NotNull]
-        public string Message { get { return ToString("M"); } }
+        public virtual string Message { get { return MessageFormat.SafeFormat(Parameters.Cast<object>().ToArray()); } }
 
         /// <summary>
         ///   Gets a <see cref="bool"/> value indicating whether this instance was generated from an exception.
@@ -124,50 +144,36 @@ namespace WebApplications.Utilities.Logging
         /// Gets the stack trace.
         /// </summary>
         /// <value>The stack trace.</value>
-        [NotNull]
-        public string StackTrace { get { return _context[StackTraceKey]; } }
+        public string StackTrace { get { return Get(StackTraceKey); } }
 
         /// <summary>
         /// Gets the message format.
         /// </summary>
         /// <value>The message format.</value>
         [NotNull]
-        public string MessageFormat { get { return _context[MessageFormatKey]; } }
+        public string MessageFormat { get { return Get(MessageFormatKey) ?? string.Empty; } }
 
         /// <summary>
-        /// Gets the thread ID.
+        /// Gets the thread ID (or -1 if not known).
         /// </summary>
         /// <value>The thread ID.</value>
-        public int ThreadID { get { return Int32.Parse(_context[ThreadIDKey]); } }
+        public int ThreadID
+        {
+            get
+            {
+                string iStr = Get(ThreadIDKey);
+                if (iStr == null) return -1;
+                int i;
+                return Int32.TryParse(iStr, out i) ? i : -1;
+            }
+        }
 
         /// <summary>
         /// Gets the name of the thread.
         /// </summary>
         /// <value>The name of the thread.</value>
-        [NotNull]
-        public string ThreadName
-        {
-            get
-            {
-                string tn;
-                return _context.TryGetValue(ThreadNameKey, out tn) ? tn : _context[ThreadIDKey];
-            }
-        }
-
-        /// <summary>
-        /// Gets the thread culture.
-        /// </summary>
-        /// <value>The thread culture.</value>
-        [NotNull]
-        public string ThreadCulture { get { return _context[ThreadCultureKey]; } }
-
-        /// <summary>
-        /// Gets the thread UI culture.
-        /// </summary>
-        /// <value>The thread UI culture.</value>
-        [NotNull]
-        public string ThreadUICulture { get { return _context[ThreadUICultureKey]; } }
-
+        public string ThreadName { get { return Get(ThreadNameKey); } }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="Log" /> class.
         /// </summary>
@@ -175,13 +181,36 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// <para>This is used for deserializing Log entries - it does not result in logs being added!</para>
         /// <para>To add logs use <see cref="Log.Add(string, object[])" /> instead.</para>
+        /// <para>You can create partial logs, however the context must contain at least the 
+        /// <see cref="GuidKey">Guid key</see>, and be a valid <see cref="CombGuid"/>.</para>
+        /// <para>Typed keys must also be valid if supplied otherwise an exception will be thrown.</para>
         /// </remarks>
-        private Log(IEnumerable<KeyValuePair<string, string>> context)
+        public Log(IEnumerable<KeyValuePair<string, string>> context)
         {
             _context = context.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            string s;
+            CombGuid guid;
+            if (!_context.TryGetValue(GuidKey, out s) || 
+                !CombGuid.TryParse(s, out guid))
+                throw new LoggingException("The log deserialization did not supply a valid GUID.");
 
-            // TODO Validate context...
+            if (_context.TryGetValue(GroupKey, out s) &&
+                !CombGuid.TryParse(s, out guid))
+                throw new LoggingException("The log deserialization supplied an invalid Group.");
 
+            LoggingLevel level;
+            if (_context.TryGetValue(LevelKey, out s) &&
+                !_levels.ContainsKey(s.ToLower()))
+                throw new LoggingException("The log deserialization supplied an invalid Level.");
+
+            int i;
+            if (_context.TryGetValue(ThreadIDKey, out s) &&
+                !Int32.TryParse(s, out i))
+                throw new LoggingException("The log deserialization supplied an invalid Thread ID.");
+
+            if (_context.TryGetValue(StoredProcedureLineKey, out s) &&
+                !Int32.TryParse(s, out i))
+                throw new LoggingException("The log deserialization supplied an invalid Stored Procedure line number.");
         }
 
         /// <summary>
@@ -220,8 +249,6 @@ namespace WebApplications.Utilities.Logging
             // Get the current thread information
             Thread currentThread = Thread.CurrentThread;
             int threadId = currentThread.ManagedThreadId;
-            CultureInfo threadCulture = currentThread.CurrentCulture;
-            CultureInfo threadUICulture = currentThread.CurrentUICulture;
 
             // We can safely add our data due to the way LogContext protects reservations.
             _context.Add(LevelKey, level.ToString());
@@ -229,11 +256,9 @@ namespace WebApplications.Utilities.Logging
             // Only add group if specified.
             if (!logGroup.Equals(CombGuid.Empty))
                 _context.Add(GroupKey, logGroup.ToString());
-            _context.Add(ThreadIDKey, threadId.ToString(threadUICulture));
+            _context.Add(ThreadIDKey, threadId.ToString());
             if (!string.IsNullOrWhiteSpace(currentThread.Name))
                 _context.Add(ThreadNameKey, currentThread.Name);
-            _context.Add(ThreadCultureKey, threadCulture.Name);
-            _context.Add(ThreadUICultureKey, threadUICulture.Name);
             _context.Add(MessageFormatKey, format);
 
             for (int p = 0; p < parameters.Length; p++)
@@ -260,7 +285,7 @@ namespace WebApplications.Utilities.Logging
                     {
                         _context.Add(StoredProcedureKey,
                                      String.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure);
-                        _context.Add(StoredProcedureLineKey, sqlException.LineNumber.ToString(threadUICulture));
+                        _context.Add(StoredProcedureLineKey, sqlException.LineNumber.ToString());
                     }
                 }
             }
@@ -268,18 +293,33 @@ namespace WebApplications.Utilities.Logging
             // Add stack trace.
             _context.Add(StackTraceKey,
                          String.IsNullOrWhiteSpace(stackTrace)
-                             ? FormatStackTrace(new StackTrace(2, true), threadUICulture)
+                             ? FormatStackTrace(new StackTrace(2, true))
                              : stackTrace);
 
+            // Post log onto queue.
+            ReLog();
+
+            // Increment performance counter.
+            _perfCounterNewItem.Increment();
+        }
+
+        /// <summary>
+        /// Reposts a log to the logging queue.
+        /// </summary>
+        /// <remarks>
+        /// <para>Logs are added to the queue automatically, this allows a log to be 'relogged',
+        /// i.e. reposted to the queue.  This should rarely be necessary but is useful for transferring logs between
+        /// stores, etc.</para>
+        /// <para>That said, this method should be used with extreme caution to avoid duplicate logging.</para>
+        /// </remarks>
+        public void ReLog()
+        {
             // Post the log if the level is valid
             // We check here as exceptions always create a log (even if the level isn't valid).
             // It also reduces the race when the ValidLevels is changed.
             if (Level.IsValid(ValidLevels))
                 lock (_queue)
                     _queue.Enqueue(this);
-
-            // Increment performance counter.
-            _perfCounterNewItem.Increment();
         }
 
         /// <summary>
@@ -288,7 +328,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="trace">The stack trace to format.</param>
         /// <param name="culture">The culture.</param>
         /// <returns>The formatted stack <paramref name="trace" />.</returns>
-        private static String FormatStackTrace(StackTrace trace, CultureInfo culture)
+        private static String FormatStackTrace(StackTrace trace)
         {
             // Check for stack trace frames.
             if (trace == null)
@@ -354,7 +394,7 @@ namespace WebApplications.Utilities.Logging
                 // Add newline if this isn't the first new line.
                 sb.Append(Environment.NewLine);
 
-                sb.AppendFormat(culture, "   {0} ", word_At);
+                sb.AppendFormat("   {0} ", word_At);
 
                 Type t = mb.DeclaringType;
                 // if there is a type (non global method) print it
@@ -435,7 +475,7 @@ namespace WebApplications.Utilities.Logging
 
                 // tack on e.g. " in c:\tmp\MyFile.cs:line 5" 
                 sb.Append(' ');
-                sb.AppendFormat(culture, inFileLineNum, fileName, sf.GetFileLineNumber());
+                sb.AppendFormat(inFileLineNum, fileName, sf.GetFileLineNumber());
             }
             return sb.ToString();
         }
@@ -455,6 +495,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="key">The key.</param>
         /// <returns>System.String.</returns>
         [CanBeNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string Get(string key)
         {
             string value;
@@ -488,6 +529,7 @@ namespace WebApplications.Utilities.Logging
             }
         }
 
+        #region ToString overloads
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
@@ -628,199 +670,135 @@ namespace WebApplications.Utilities.Logging
             if (format == LogFormat.None)
                 return String.Empty;
 
-            if (!format.IsCombinationFlag(true))
-            {
-                // This is a single value format, just output the value directly
-                switch (format)
-                {
-                    case LogFormat.Header:
-                        // Would be bizarre but valid to ask for this!
-                        return Header;
-                    case LogFormat.Message:
-                        return _context[MessageFormatKey].SafeFormat(Parameters.ToArray());
-                    case LogFormat.TimeStamp:
-                        return TimeStamp.ToString("o");
-                    case LogFormat.Level:
-                        return _context[LevelKey];
-                    case LogFormat.Guid:
-                        return _context[GuidKey];
-                    case LogFormat.Group:
-                        string group;
-                        return _context.TryGetValue(GroupKey, out group) ? group : _context[GuidKey];
-                    case LogFormat.Context:
-                        StringBuilder c = new StringBuilder();
-                        AppendContext(c, false, false);
-                        return c.ToString();
-                    case LogFormat.Exception:
-                        string e;
-                        return _context.TryGetValue(ExceptionTypeFullNameKey, out e)
-                                   ? e
-                                   : "null";
-                    case LogFormat.SQLException:
-                        string sql;
-                        return _context.TryGetValue(StoredProcedureKey, out sql)
-                                   ? String.Format("{0} at line {1}", sql, _context[StoredProcedureLineKey])
-                                   : "null";
-                    case LogFormat.StackTrace:
-                        return _context[StackTraceKey];
-                    case LogFormat.ThreadID:
-                        return _context[ThreadIDKey];
-                    case LogFormat.ThreadName:
-                        string tn;
-                        return _context.TryGetValue(ThreadNameKey, out tn)
-                                   ? tn
-                                   : _context[ThreadIDKey];
-                    case LogFormat.ThreadCulture:
-                        return _context[ThreadCultureKey];
-                    case LogFormat.ThreadUICulture:
-                        return _context[ThreadUICultureKey];
-                    default:
-                        throw new FormatException(String.Format("Unexpected singular format '{0}'.", format));
-                }
-            }
-
+            // Get option flags
             bool includeMissing = format.HasFlag(LogFormat.IncludeMissing);
+            bool includeHeader = format.HasFlag(LogFormat.Header);
+            // Remove option flags
+            format = ((LogFormat) (((int) format) & 0x9FFFFFFF));
+
+            // If we are a combination of keys then include keys.
+            bool includeKey = format.IsCombinationFlag(true);
+
+            // Otherwise always inclue value.
+            if (!includeKey)
+                includeMissing = true;
 
             StringBuilder builder = new StringBuilder();
-
-            if (format.HasFlag(LogFormat.Header))
+            if (includeHeader)
                 builder.AppendLine(Header);
-
-            if (format.HasFlag(LogFormat.Message))
+            foreach (LogFormat flag in format.SplitFlags(true))
             {
-                builder.Append("Message:     ");
-                builder.AppendLine(_context[MessageFormatKey].SafeFormat(Parameters.ToArray()));
-            }
+                string key;
+                string value;
 
-            string ex;
-            bool isException = _context.TryGetValue(ExceptionTypeFullNameKey, out ex);
-            if (format.HasFlag(LogFormat.TimeStamp))
-            {
-                DateTime timestamp = TimeStamp;
-                builder.Append("Timestamp:   ");
-                builder.AppendLine(timestamp.ToString("o"));
-            }
-
-            if (format.HasFlag(LogFormat.Level))
-            {
-                builder.Append("Level:       ");
-                builder.AppendLine(_context[LevelKey]);
-            }
-
-            if (format.HasFlag(LogFormat.Guid))
-            {
-                builder.Append("GUID:        ");
-                builder.AppendLine(_context[GuidKey]);
-            }
-
-            string g;
-            if (format.HasFlag(LogFormat.Group) &&
-                (_context.TryGetValue(GroupKey, out g) || includeMissing))
-            {
-                if (g == null)
-                    g = _context[GuidKey];
-
-                builder.Append("Group:       ");
-                builder.AppendLine(g);
-            }
-
-            if (format.HasFlag(LogFormat.ThreadID))
-            {
-                builder.Append("Thread ID:   ");
-                builder.AppendLine(_context[ThreadIDKey]);
-            }
-
-            string tname;
-            if (format.HasFlag(LogFormat.ThreadName) &&
-                (_context.TryGetValue(ThreadNameKey, out tname) || includeMissing))
-            {
-                if (tname == null)
-                    tname = _context[ThreadIDKey];
-
-                builder.Append("Thread Name: ");
-                builder.AppendLine(tname);
-            }
-
-            if (format.HasFlag(LogFormat.ThreadCulture))
-            {
-                builder.Append("Culture :    ");
-                builder.AppendLine(_context[ThreadCultureKey]);
-            }
-
-            if (format.HasFlag(LogFormat.ThreadUICulture))
-            {
-                builder.Append("UI Culture : ");
-                builder.AppendLine(_context[ThreadUICultureKey]);
-            }
-
-            if (format.HasFlag(LogFormat.Context))
-                AppendContext(builder, true, includeMissing);
-
-            if (format.HasFlag(LogFormat.Exception) &&
-                (isException || includeMissing))
-            {
-                if (!isException)
-                    ex = "null";
-
-                builder.Append("Exception:   ");
-                builder.AppendLine(ex);
-
-                string sp;
-                if (format.HasFlag(LogFormat.SQLException) &&
-                    (_context.TryGetValue(StoredProcedureKey, out sp) || includeMissing))
+                // This is a single value format, just output the value directly
+                switch (flag)
                 {
-                    builder.Append("Stored Proc: ");
-                    if (sp != null)
-                    {
-                        builder.Append(_context[StoredProcedureKey]);
-                        builder.Append(" at line ");
-                        builder.AppendLine(_context[StoredProcedureLineKey]);
-                    }
-                    else
-                    {
-                        builder.AppendLine("null");
-                    }
+                    case LogFormat.Message:
+                        key = "Message";
+                        value = Message;
+                        break;
+                    case LogFormat.TimeStamp:
+                        key = "TimeStamp";
+                        value = TimeStamp.ToString("o");
+                        break;
+                    case LogFormat.Level:
+                        key = "Level";
+                        value = Level.ToString();
+                        break;
+                    case LogFormat.Guid:
+                        key = "Guid";
+                        var guid = Guid;
+                        value = guid == CombGuid.Empty ? null : guid.ToString();
+                        break;
+                    case LogFormat.Group:
+                        key = "Group";
+                        var group = Group;
+                        value = group == CombGuid.Empty ? null : group.ToString();
+                        break;
+                    case LogFormat.Context:
+                        key = "Context";
+                        value = GetContext();
+                        break;
+                    case LogFormat.Exception:
+                        key = "Exception Type";
+                        value = Get(ExceptionTypeFullNameKey) ?? null;
+                        break;
+                    case LogFormat.SQLException:
+                        key = "Stored Procedure";
+                        value = Get(StoredProcedureKey);
+                        if (value != null)
+                        {
+                            string sline = Get(StoredProcedureLineKey);
+                            int sl;
+                            if (!string.IsNullOrWhiteSpace(sline) &&
+                                (int.TryParse(sline, out sl)))
+                                value += " at line " + sl.ToString();
+                        }
+                        break;
+                    case LogFormat.StackTrace:
+                        key = "Stack Trace";
+                        value = StackTrace;
+                        break;
+                    case LogFormat.ThreadID:
+                        key = "Thread ID";
+                        int threadID = ThreadID;
+                        value = threadID < 0 ? null : threadID.ToString();
+                        break;
+                    case LogFormat.ThreadName:
+                        key = "Thread Name";
+                        value = ThreadName;
+                        break;
+                    case LogFormat.ApplicationName:
+                        key = "Application Name";
+                        value = ApplicationName;
+                        break;
+                    case LogFormat.ApplicationGuid:
+                        key = "Application Guid";
+                        value = ApplicationGuid.ToString();
+                        break;
+
+                    default:
+                        throw new FormatException(String.Format("Unexpected singular format '{0}'.", flag));
+                }
+                if (value == null)
+                {
+                    if (includeMissing)
+                        value = string.Empty;
+                    else continue;
+                }
+                if (includeKey)
+                {
+                    builder.Append(key);
+                    builder.Append(' ', 17 - key.Length);
+                    builder.Append(": ");
+                    builder.AppendLine(value);
+                }
+                else
+                {
+                    builder.Append(value);
                 }
             }
-
-            if (format.HasFlag(LogFormat.StackTrace))
-            {
-                builder.Append("Stack Trace: ");
-                builder.AppendLine(_context[StackTraceKey]);
-            }
-
-            if (format.HasFlag(LogFormat.Header))
+            if (includeHeader)
                 builder.AppendLine(Header);
-
             return builder.ToString();
         }
+        #endregion
 
         /// <summary>
         /// Appends the additional context.
         /// </summary>
-        /// <param name="builder">The builder.</param>
-        private void AppendContext([NotNull]StringBuilder builder, bool header, bool includeMissing)
+        /// <returns>Context value</returns>
+        private string GetContext()
         {
             KeyValuePair<string, string>[] remainingContext =
                 this.Where(kvp => !kvp.Key.StartsWith(LogKeyPrefix)).ToArray();
-            if (remainingContext.Length < 1 &&
-                !includeMissing) return;
+            if (remainingContext.Length < 1) return string.Empty;
 
-            if (header)
-            {
-                builder.Append("Context:     ");
-
-                if (remainingContext.Length == 1)
-                    builder.Append(Resources.LogContext_Singular);
-                else
-                    builder.AppendFormat(Resources.LogContext_Plural, remainingContext.Length);
-                builder.AppendLine();
-            }
-
-            if (remainingContext.Length < 1) return;
-
+            StringBuilder builder = new StringBuilder();
             foreach (KeyValuePair<string, string> kvp in remainingContext)
             {
+                builder.AppendLine();
                 builder.Append("   ");
                 if (kvp.Key == null)
                     builder.Append("null");
@@ -839,10 +817,14 @@ namespace WebApplications.Utilities.Logging
                     builder.Append(kvp.Value);
                     builder.Append("'");
                 }
-                builder.AppendLine();
             }
+            return builder.ToString();
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

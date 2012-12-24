@@ -172,20 +172,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        public static readonly string ThreadCultureKey = LogContext.ReserveKey("Log Thread Culture", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ThreadUICultureKey = LogContext.ReserveKey("Log Thread UI Culture", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
         public static readonly string StoredProcedureKey = LogContext.ReserveKey("Log Stored Procedure", _logReservation);
 
         /// <summary>

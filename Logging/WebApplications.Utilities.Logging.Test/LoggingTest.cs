@@ -48,20 +48,52 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public async Task TestMemoryCache()
         {
-            Log.SetTrace(LogFormat.Message);
-            DateTime startDate = DateTime.UtcNow - TimeSpan.FromSeconds(1);
+            Log.SetTrace(LogFormat.Verbose);
             string message = "Test message " + Guid.NewGuid();
-            Log.Add(message);
+            Log.Add(new LogContext("My data", 1, "Some more", "Test"), message);
             await Log.Flush();
-            List<Log> logs = Log.AllCached.Where(l => l.TimeStamp >= startDate).ToList();
+            List<Log> logs = Log.AllCached.ToList();
             Assert.IsNotNull(logs);
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
-            foreach (var log in logs)
-            {
-                Trace.WriteLine(log.ToString(LogFormat.Basic));
-            }
-            await Log.Flush();
+
+        }
+
+        [TestMethod]
+        public void TestPartialLogMinimum()
+        {
+            Log partialLog = new Log(new[]
+                {
+                    new KeyValuePair<string, string>(Log.GuidKey, CombGuid.NewCombGuid().ToString())
+                });
+            Assert.IsNotNull(partialLog);
+
+            partialLog.ReLog();
+        }
+
+        [TestMethod]
+        public void TestPartialLog()
+        {
+            Log partialLog = new Log(new[]
+                {
+                    new KeyValuePair<string, string>(Log.GuidKey, CombGuid.NewCombGuid().ToString()),
+                    new KeyValuePair<string, string>(Log.GroupKey, CombGuid.NewCombGuid().ToString()),
+                    new KeyValuePair<string, string>(Log.LevelKey, LoggingLevel.SystemNotification.ToString()),
+                    new KeyValuePair<string, string>(Log.ThreadIDKey, "1"),
+                    new KeyValuePair<string, string>(Log.ExceptionTypeFullNameKey, "System.Data.SqlException"),
+                    new KeyValuePair<string, string>(Log.StoredProcedureKey, "spTest"),
+                    new KeyValuePair<string, string>(Log.StoredProcedureLineKey, "2")
+                });
+            Assert.IsNotNull(partialLog);
+
+            partialLog.ReLog();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(LoggingException))]
+        public void TestPartialLogRequiresGUID()
+        {
+            Log partialLog = new Log(new List<KeyValuePair<string, string>>());
         }
 
         [TestMethod]
@@ -94,16 +126,15 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public async Task TestDataContractSerialization()
         {
-            DateTime startDate = DateTime.Now;
             for (int m = 0; m < 5; m++)
                 Log.Add("Test Message {0} - {1}", m, Guid.NewGuid());
 
-            Log.Flush();
-            List<Log> logs = Log.AllCached.Where(l => l.TimeStamp >= startDate).ToList();
+            await Log.Flush();
+            List<Log> logs = Log.AllCached.ToList();
             Assert.IsNotNull(logs);
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.MessageFormat == "Test Message {0} - {1}"), "No log with the message format found");
-            Log.Flush();
+            await Log.Flush();
 
             DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Log>));
             IEnumerable<Log> logs2;
@@ -124,6 +155,12 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.AreEqual(logs.Count, result.Count);
             for (int i = 0; i < logs.Count; i++)
                 Assert.AreEqual(logs[i].ToString(), result[i].ToString());
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            Log.Flush().Wait();
         }
     }
 }

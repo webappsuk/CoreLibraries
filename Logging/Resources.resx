@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LogContext_Singular" xml:space="preserve">
-    <value>(1 log entry)</value>
-  </data>
   <data name="LoggingException_InnerExceptionCannotBeNull" xml:space="preserve">
     <value>Parameter 'innerException' can not be null</value>
   </data>
@@ -254,9 +251,6 @@
   </data>
   <data name="LogContext_Reserved_Key" xml:space="preserve">
     <value>The '{0}' key is reserved and cannot be added to a log context explicitly.</value>
-  </data>
-  <data name="LogContext_Plural" xml:space="preserve">
-    <value>({0} log entries)</value>
   </data>
   <data name="Log_Cleanup_Finished" xml:space="preserve">
     <value>Finished logging clean up.</value>

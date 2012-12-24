@@ -86,44 +86,35 @@ namespace WebApplications.Utilities.Logging.Loggers
         private DateTime _startCurrentLog = DateTime.MinValue;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="FileLogger"/> class.
+        /// Initializes a new instance of the <see cref="FileLogger" /> class.
         /// </summary>
         /// <param name="name">The filename.</param>
         /// <param name="directory">The directory to log to.</param>
-        /// <param name="maxLog">
-        ///   <para>The maximum number of log items in a single log file.</para>
-        ///   <para>By default this is set to 1,000.</para>
-        /// </param>
+        /// <param name="maxLog"><para>The maximum number of log items in a single log file.</para>
+        ///   <para>By default this is set to 1,000.</para></param>
         /// <param name="maxDuration">The maximum time period that a single log file can cover.</param>
-        /// <param name="validLevels">
-        ///   <para>The valid log levels.</para>
-        ///   <para>By default allows <see cref="LoggingLevels">all log levels</see>.</para>
-        /// </param>
-        /// <param name="format">
-        ///   <para>The filename format - where {DateTime} is the creation date time.</para>
-        ///   <para>By default the format is "{ApplicationName}-{DateTime:yyMMddHHmmssffff}".</para>
-        /// </param>
-        /// <param name="extension">
-        ///   <para>The file extension.</para>
-        ///   <para>By default this is set to use "log".</para>
-        /// </param>
-        /// <exception cref="LoggingException">
-        ///   <para><paramref name="maxLog"/> was less than 10, which would result in too many log files to be created.</para>
+        /// <param name="validLevels"><para>The valid log levels.</para>
+        ///   <para>By default allows <see cref="LoggingLevels">all log levels</see>.</para></param>
+        /// <param name="format"><para>The filename format - where {DateTime} is the creation date time.</para>
+        ///   <para>By default the format is "{ApplicationName}-{DateTime:yyMMddHHmmssffff}".</para></param>
+        /// <param name="extension"><para>The file extension.</para>
+        ///   <para>By default this is set to use "log".</para></param>
+        /// <param name="excludeKeys">The comma seperated list of keys to exclude.</param>
+        /// <exception cref="LoggingException"><para><paramref name="maxLog" /> was less than 10, which would result in too many log files to be created.</para>
         ///   <para>-or-</para>
-        ///   <para><paramref name="maxDuration"/> was less than 10 seconds, which would result in too many log files to be created.</para>
+        ///   <para><paramref name="maxDuration" /> was less than 10 seconds, which would result in too many log files to be created.</para>
         ///   <para>-or-</para>
-        ///   <para><paramref name="directory"/> was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
+        ///   <para><paramref name="directory" /> was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
         ///   <para>-or-</para>
-        ///   <para>The <paramref name="format"/> string was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
+        ///   <para>The <paramref name="format" /> string was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
         ///   <para>-or-</para>
-        ///   <para>An error occurred trying to access the <paramref name="directory"/>.</para>
+        ///   <para>An error occurred trying to access the <paramref name="directory" />.</para>
         ///   <para>-or-</para>
-        ///   <para><paramref name="extension"/> was more than 5 characters long.</para>
+        ///   <para><paramref name="extension" /> was more than 5 characters long.</para>
         ///   <para>-or-</para>
-        ///   <para>The <paramref name="format"/> led to an invalid path or created a path that references the wrong <paramref name="directory"/>.</para>
+        ///   <para>The <paramref name="format" /> led to an invalid path or created a path that references the wrong <paramref name="directory" />.</para>
         ///   <para>-or-</para>
-        ///   <para>File path contained <see cref="Path.GetInvalidPathChars">invalid characters</see>.</para>
-        /// </exception>
+        ///   <para>File path contained <see cref="Path.GetInvalidPathChars">invalid characters</see>.</para></exception>
         public FileLogger(
             [NotNull] string name,
             [NotNull] string directory,
@@ -131,8 +122,9 @@ namespace WebApplications.Utilities.Logging.Loggers
             TimeSpan maxDuration = default(TimeSpan),
             LoggingLevels validLevels = LoggingLevels.All,
             string format = "{ApplicationName}-{DateTime:yyMMddHHmmssffff}",
-            string extension = "log")
-            : base(name, false, validLevels)
+            string extension = "log",
+            string excludeKeys = "")
+            : base(name, false, true, validLevels)
         {
             if (maxLog < 10)
                 throw new LoggingException(

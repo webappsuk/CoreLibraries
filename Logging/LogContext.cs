@@ -976,11 +976,6 @@ namespace WebApplications.Utilities.Logging
         public override string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            if (_context.Count == 1)
-                stringBuilder.Append(Resources.LogContext_Singular);
-            else
-                stringBuilder.AppendFormat(Resources.LogContext_Plural, _context.Count);
-
             foreach (KeyValuePair<string, string> kvp in _context)
             {
                 stringBuilder.AppendLine();

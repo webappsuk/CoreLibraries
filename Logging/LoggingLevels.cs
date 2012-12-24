@@ -40,86 +40,107 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   All Levels.
         /// </summary>
-        [Description("All Levels.")] All =
+        [Description("All Levels.")]
+        All =
             Emergency | Critical | Error | Warning | SystemNotification | Notification | Information | Debugging,
 
         /// <summary>
         ///   No Levels.
         /// </summary>
-        [Description("No Levels.")] None = 0,
+        [Description("No Levels.")]
+        None = 0,
 
         /// <summary>
         ///   At least critical.
         /// </summary>
-        [Description("At least critical.")] [UsedImplicitly] AtLeastCritical = Emergency | Critical,
+        [Description("At least critical.")]
+        [UsedImplicitly]
+        AtLeastCritical = Emergency | Critical,
 
         /// <summary>
         ///   At least an error.
         /// </summary>
-        [Description("At least an error.")] [UsedImplicitly] AtLeastError = Emergency | Critical | Error,
+        [Description("At least an error.")]
+        [UsedImplicitly]
+        AtLeastError = Emergency | Critical | Error,
 
         /// <summary>
         ///   At least a warning.
         /// </summary>
-        [Description("At least a warning.")] [UsedImplicitly] AtLeastWarning = Emergency | Critical | Error | Warning,
+        [Description("At least a warning.")]
+        [UsedImplicitly]
+        AtLeastWarning = Emergency | Critical | Error | Warning,
 
         /// <summary>
         ///   At least a system notification.
         /// </summary>
-        [Description("At least a system notification.")] [UsedImplicitly] AtLeastSystemNotification =
+        [Description("At least a system notification.")]
+        [UsedImplicitly]
+        AtLeastSystemNotification =
             Emergency | Critical | Error | Warning | SystemNotification,
 
         /// <summary>
         ///   At least a notification.
         /// </summary>
-        [Description("At least a notification.")] [UsedImplicitly] AtLeastNotification =
+        [Description("At least a notification.")]
+        [UsedImplicitly]
+        AtLeastNotification =
             Emergency | Critical | Error | Warning | SystemNotification | Notification,
 
         /// <summary>
         ///   At least information.
         /// </summary>
-        [Description("At least information.")] AtLeastInformation =
+        [Description("At least information.")]
+        AtLeastInformation =
             Emergency | Critical | Error | Warning | SystemNotification | Notification | Information,
 
         /// <summary>
         ///   Used for critical, unrecoverable errors that can cause damage. The system should be stopped immediately.
         /// </summary>
-        [Description("Used for critical, unrecoverable errors that can cause damage.")] Emergency = 1 << 7,
+        [Description("Used for critical, unrecoverable errors that can cause damage.")]
+        Emergency = LoggingLevel.Emergency,
 
         /// <summary>
         ///   Used for critical, unrecoverable errors that don't cause damage.
         ///   You should stop the system and repair the error, but it may be capable of continuing in some capacity.
         /// </summary>
-        [Description("Used for critical, unrecoverable errors that don't cause damage.")] Critical = 1 << 6,
+        [Description("Used for critical, unrecoverable errors that don't cause damage.")]
+        Critical = LoggingLevel.Critical,
 
         /// <summary>
         ///   Used for errors.
         /// </summary>
-        [Description("Used for errors.")] Error = 1 << 5,
+        [Description("Used for errors.")]
+        Error = 1 << 5,
 
         /// <summary>
         ///   Used to indicate potential problems that should be addressed.
         /// </summary>
-        [Description("Used to indicate potential problems that should be addressed.")] Warning = 1 << 4,
+        [Description("Used to indicate potential problems that should be addressed.")]
+        Warning = LoggingLevel.Warning,
 
         /// <summary>
         ///   Used by system to notify key events.
         /// </summary>
-        [Description("Used by system to notify key events.")] SystemNotification = 1 << 3,
+        [Description("Used by system to notify key events.")]
+        SystemNotification = LoggingLevel.SystemNotification,
 
         /// <summary>
         ///   Used by modules to notify key events.
         /// </summary>
-        [Description("Used by modules to notify key events.")] Notification = 1 << 2,
+        [Description("Used by modules to notify key events.")]
+        Notification = LoggingLevel.Notification,
 
         /// <summary>
         ///   Informational use.
         /// </summary>
-        [Description("Informational use.")] Information = 1 << 1,
+        [Description("Informational use.")]
+        Information = LoggingLevel.Information,
 
         /// <summary>
         ///   Debugging information.
         /// </summary>
-        [Description("Debugging information.")] Debugging = 1 << 0
+        [Description("Debugging information.")]
+        Debugging = LoggingLevel.Debugging
     }
 }

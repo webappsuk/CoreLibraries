@@ -313,15 +313,6 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ({0} log entries).
-        /// </summary>
-        internal static string LogContext_Plural {
-            get {
-                return ResourceManager.GetString("LogContext_Plural", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The &apos;{0}&apos; key prefix has already been reserved with a different reservation..
         /// </summary>
         internal static string LogContext_Prefix_Already_Reserved {
@@ -372,15 +363,6 @@ namespace WebApplications.Utilities.Logging {
         internal static string LogContext_Reserved_Key {
             get {
                 return ResourceManager.GetString("LogContext_Reserved_Key", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (1 log entry).
-        /// </summary>
-        internal static string LogContext_Singular {
-            get {
-                return ResourceManager.GetString("LogContext_Singular", resourceCulture);
             }
         }
         
