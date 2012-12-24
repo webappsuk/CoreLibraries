@@ -277,6 +277,24 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The log context key &apos;{0}&apos; is longer than {1} characters (too long)..
+        /// </summary>
+        internal static string LogContext_Key_Too_Long {
+            get {
+                return ResourceManager.GetString("LogContext_Key_Too_Long", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The log context key &apos;{0}&apos; is less than {1} characters (too short)..
+        /// </summary>
+        internal static string LogContext_Key_Too_Short {
+            get {
+                return ResourceManager.GetString("LogContext_Key_Too_Short", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The log context key cannot be null..
         /// </summary>
         internal static string LogContext_Null_Key {
@@ -331,7 +349,16 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The log context key prefic &apos;{0}&apos; is less than {1} characters (too short)..
+        ///   Looks up a localized string similar to The log context key prefix &apos;{0}&apos; is longer than {1} characters (too long)..
+        /// </summary>
+        internal static string LogContext_Prefix_Too_Long {
+            get {
+                return ResourceManager.GetString("LogContext_Prefix_Too_Long", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The log context key prefix &apos;{0}&apos; is less than {1} characters (too short)..
         /// </summary>
         internal static string LogContext_Prefix_Too_Short {
             get {

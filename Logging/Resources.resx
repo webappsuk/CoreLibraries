@@ -250,7 +250,7 @@
     <value>The '{0}' key prefix matches the '{1}' prefix - which has already been reserved.</value>
   </data>
   <data name="LogContext_Prefix_Too_Short" xml:space="preserve">
-    <value>The log context key prefic '{0}' is less than {1} characters (too short).</value>
+    <value>The log context key prefix '{0}' is less than {1} characters (too short).</value>
   </data>
   <data name="LogContext_Reserved_Key" xml:space="preserve">
     <value>The '{0}' key is reserved and cannot be added to a log context explicitly.</value>
@@ -281,5 +281,14 @@
   </data>
   <data name="Log_ToString_Invalid_Format" xml:space="preserve">
     <value>The '{0}' format is not valid for a log.  See the LogFormat enumeration for valid values.</value>
+  </data>
+  <data name="LogContext_Key_Too_Long" xml:space="preserve">
+    <value>The log context key '{0}' is longer than {1} characters (too long).</value>
+  </data>
+  <data name="LogContext_Key_Too_Short" xml:space="preserve">
+    <value>The log context key '{0}' is less than {1} characters (too short).</value>
+  </data>
+  <data name="LogContext_Prefix_Too_Long" xml:space="preserve">
+    <value>The log context key prefix '{0}' is longer than {1} characters (too long).</value>
   </data>
 </root>

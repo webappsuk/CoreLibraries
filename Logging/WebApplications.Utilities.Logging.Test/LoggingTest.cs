@@ -53,16 +53,21 @@ namespace WebApplications.Utilities.Logging.Test
             string message = "Test message " + Guid.NewGuid();
             Log.Add(message);
             await Log.Flush();
-            List<Log> logs = Log.Query.Where(l => l.TimeStamp >= startDate).ToList();
+            List<Log> logs = Log.AllCached.Where(l => l.TimeStamp >= startDate).ToList();
             Assert.IsNotNull(logs);
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
-            Log.Flush();
+            foreach (var log in logs)
+            {
+                Trace.WriteLine(log.ToString(LogFormat.Basic));
+            }
+            await Log.Flush();
         }
 
         [TestMethod]
         public void TestExceptions()
         {
+            Log.SetTrace("Message = {Log Message Format}");
             var t = new TestException();
         }
 
@@ -94,7 +99,7 @@ namespace WebApplications.Utilities.Logging.Test
                 Log.Add("Test Message {0} - {1}", m, Guid.NewGuid());
 
             Log.Flush();
-            List<Log> logs = Log.Query.Where(l => l.TimeStamp >= startDate).ToList();
+            List<Log> logs = Log.AllCached.Where(l => l.TimeStamp >= startDate).ToList();
             Assert.IsNotNull(logs);
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.MessageFormat == "Test Message {0} - {1}"), "No log with the message format found");

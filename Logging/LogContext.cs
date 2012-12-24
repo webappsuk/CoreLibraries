@@ -45,6 +45,15 @@ namespace WebApplications.Utilities.Logging
     public class LogContext : IEnumerable<KeyValuePair<string, string>>
     {
         /// <summary>
+        /// The minimum key length (note also minimum prefix length).
+        /// </summary>
+        public const int MinimumKeyLength = 3;
+        /// <summary>
+        /// The maximum key length (note maximum prefix length is this minus <see cref="MinimumKeyLength"/>.
+        /// </summary>
+        public const int MaximumKeyLength = 200;
+
+        /// <summary>
         /// The Key reservations.
         /// </summary>
         [NotNull]
@@ -783,6 +792,10 @@ namespace WebApplications.Utilities.Logging
                 throw new LoggingException(Resources.LogContext_Null_Key);
             if (reservation == Guid.Empty)
                 throw new LoggingException(Resources.LogContext_Empty_Reservation);
+            if (key.Length < MinimumKeyLength)
+                throw new LoggingException(Resources.LogContext_Key_Too_Short, key, MinimumKeyLength);
+            if (key.Length > MaximumKeyLength)
+                throw new LoggingException(Resources.LogContext_Key_Too_Long, key, MaximumKeyLength);
 
             // First check prefixes
             foreach (KeyValuePair<string, Guid> kvp in _prefixReservations)
@@ -818,8 +831,10 @@ namespace WebApplications.Utilities.Logging
         {
             if (prefix == null)
                 throw new LoggingException(Resources.LogContext_Null_Prefix);
-            if (prefix.Length < 3)
-                throw new LoggingException(Resources.LogContext_Prefix_Too_Short, prefix, 3);
+            if (prefix.Length < MinimumKeyLength)
+                throw new LoggingException(Resources.LogContext_Prefix_Too_Short, prefix, MinimumKeyLength);
+            if (prefix.Length > (MaximumKeyLength - MinimumKeyLength))
+                throw new LoggingException(Resources.LogContext_Prefix_Too_Long, prefix, (MaximumKeyLength - MinimumKeyLength));
             if (reservation == Guid.Empty)
                 throw new LoggingException(Resources.LogContext_Empty_Reservation);
 
@@ -896,6 +911,10 @@ namespace WebApplications.Utilities.Logging
                 throw new LoggingException(Resources.LogContext_Reserved_Key, key);
             if (key == null)
                 throw new LoggingException(Resources.LogContext_Null_Key);
+            if (key.Length < MinimumKeyLength)
+                throw new LoggingException(Resources.LogContext_Key_Too_Short, key, MinimumKeyLength);
+            if (key.Length > MaximumKeyLength)
+                throw new LoggingException(Resources.LogContext_Key_Too_Long, key, MaximumKeyLength);
             return key;
         }
 

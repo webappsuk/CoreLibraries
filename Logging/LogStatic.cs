@@ -597,11 +597,11 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Allows querying of the in memory log cache.
+        /// Gets all cached logs.
         /// </summary>
         /// <value>The query.</value>
         [NotNull]
-        public static IQueryable<Log> Query { get { return _defaultMemoryLogger.All.AsQueryable(); } }
+        public static IEnumerable<Log> AllCached { get { return _defaultMemoryLogger.All; } }
 
         /// <summary>
         /// The global logging queue.
