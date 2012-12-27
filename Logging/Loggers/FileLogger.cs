@@ -369,7 +369,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override async Task Add(IEnumerable<Log> logs, CancellationToken token)
+        public override async Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             LogFile logFile = null;
             foreach (Log log in logs)
@@ -437,7 +437,12 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         private class LogFile : IDisposable
         {
+            /// <summary>
+            /// The file name
+            /// </summary>
+            [NotNull]
             public readonly string FileName;
+            [NotNull]
             public readonly string Format;
             public readonly uint Buffer;
 
@@ -449,6 +454,13 @@ namespace WebApplications.Utilities.Logging.Loggers
 
             public readonly DateTime Start;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="LogFile" /> class.
+            /// </summary>
+            /// <param name="fileName">Name of the file.</param>
+            /// <param name="format">The format.</param>
+            /// <param name="buffer">The buffer.</param>
+            /// <param name="start">The start.</param>
             public LogFile(string fileName, string format, uint buffer, DateTime start)
             {
                 Format = format;
@@ -491,19 +503,25 @@ namespace WebApplications.Utilities.Logging.Loggers
                 Trace.WriteLine(string.Format(Resources.FileLogger_Started_File, FileName, b.ToMemorySize()));
             }
 
+            /// <summary>
+            /// Writes the specified log.
+            /// </summary>
+            /// <param name="log">The log.</param>
+            /// <param name="token">The token.</param>
+            /// <returns>Task.</returns>
             [NotNull]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public async Task Write(Log log, CancellationToken token = default(CancellationToken))
             {
                 if (log == null) return;
-                Logs++;
                 string logStr = log.ToString(Format);
+                Logs++;
 
                 if (IsXml)
                 {
                     _fileStream.Seek(-18, SeekOrigin.End);
-                    await Write(logStr);
-                    await WriteLine("</Logs>");
+                    await Write(logStr, token);
+                    await WriteLine("</Logs>", token);
                     return;
                 }
 
@@ -511,16 +529,22 @@ namespace WebApplications.Utilities.Logging.Loggers
                 {
                     _fileStream.Seek(-8, SeekOrigin.End);
                     if (Logs > 1)
-                        await WriteLine(",");
+                        await WriteLine(",", token);
 
-                    await Write(logStr);
-                    await WriteLine("]");
+                    await Write(logStr, token);
+                    await WriteLine("]", token);
                     return;
                 }
 
-                await Write(logStr);
+                await Write(logStr, token);
             }
 
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="text">The text.</param>
+            /// <param name="token">The token.</param>
+            /// <returns>Task.</returns>
             [NotNull]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Task WriteLine(string text, CancellationToken token = default(CancellationToken))
@@ -528,6 +552,12 @@ namespace WebApplications.Utilities.Logging.Loggers
                 return Write(text + Environment.NewLine);
             }
 
+            /// <summary>
+            /// Writes the specified text.
+            /// </summary>
+            /// <param name="text">The text.</param>
+            /// <param name="token">The token.</param>
+            /// <returns>Task.</returns>
             [NotNull]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Task Write(string text, CancellationToken token = default(CancellationToken))
@@ -537,6 +567,11 @@ namespace WebApplications.Utilities.Logging.Loggers
                 return _fileStream.WriteAsync(bytes, 0, bytes.Length, token);
             }
 
+            /// <summary>
+            /// Flushes the log file.
+            /// </summary>
+            /// <param name="token">The token.</param>
+            /// <returns>Task.</returns>
             [NotNull]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Task FlushAsync(CancellationToken token = default(CancellationToken))
@@ -544,6 +579,9 @@ namespace WebApplications.Utilities.Logging.Loggers
                 return _fileStream.FlushAsync(token);
             }
 
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
             public void Dispose()
             {
                 FileStream fileStream = Interlocked.Exchange(ref _fileStream, null);

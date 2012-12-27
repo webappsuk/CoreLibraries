@@ -61,7 +61,7 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;eventLog&apos; can not be null.
+        ///   Looks up a localized string similar to The event logger event log name cannot be empty..
         /// </summary>
         internal static string EventLogger_EventLogCannotBeNull {
             get {
@@ -70,16 +70,16 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;log&apos; can not be null.
+        ///   Looks up a localized string similar to The machine name can not be null.
         /// </summary>
-        internal static string EventLogger_LogCannotBeNull {
+        internal static string EventLogger_MachineNameCannotBeNull {
             get {
-                return ResourceManager.GetString("EventLogger_LogCannotBeNull", resourceCulture);
+                return ResourceManager.GetString("EventLogger_MachineNameCannotBeNull", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Parameter &apos;name&apos; can not be null.
+        ///   Looks up a localized string similar to The event logger name cannot be empty..
         /// </summary>
         internal static string EventLogger_NameCannotBeNull {
             get {

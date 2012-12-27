@@ -214,7 +214,7 @@ namespace WebApplications.Utilities.Logging
         /// Includes everything (except missing elements).
         /// </summary>
         [Description("Includes everything (except missing elements).")]
-        Verbose = Message | TimeStamp | Level | Guid | Group | ThreadID | ThreadName | Context | Exception | SQLException | StackTrace | Header,
+        Verbose = Message | TimeStamp | Level | Guid | Group | ThreadID | ThreadName | Context | Exception | SQLException | StackTrace,
         /// <summary>
         /// Includes everything (except missing elements).
         /// </summary>
@@ -225,7 +225,7 @@ namespace WebApplications.Utilities.Logging
         /// Includes essential information.
         /// </summary>
         [Description("Includes main information.")]
-        General = Message | TimeStamp | Level | Group | ThreadName | Exception | SQLException | Header,
+        General = Message | TimeStamp | Level | Group | ThreadName | Exception | SQLException,
         /// <summary>
         /// Includes essential information.
         /// </summary>

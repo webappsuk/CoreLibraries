@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="name">The logger name.</param>
         /// <param name="validLevels">The valid log levels.</param>
         /// <param name="format">The format.</param>
-        public TraceLogger([NotNull] string name, string format = "V", LoggingLevels validLevels = LoggingLevels.All)
+        public TraceLogger([NotNull] string name, string format = "Verbose,Header", LoggingLevels validLevels = LoggingLevels.All)
             :base(name, false, false, validLevels)
         {
             Format = format;
@@ -63,10 +63,11 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <returns>Task.</returns>
         public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
+            string format = Format;
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {
                 token.ThrowIfCancellationRequested();
-                Trace.WriteLine(log.ToString(Format));
+                Trace.WriteLine(log.ToString(format));
             }
 
             // We always complete synchronously.

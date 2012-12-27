@@ -25,8 +25,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging.Configuration;
 
@@ -38,10 +42,47 @@ namespace WebApplications.Utilities.Logging.Loggers
     [UsedImplicitly]
     public class EventLogger : LoggerBase
     {
+        private string _eventLog;
+        private string _machineName;
+
         /// <summary>
         ///   The <see cref="System.Diagnostics.EventLog.Log">name</see> of the <see cref="EventLog">event log</see>.
         /// </summary>
-        [UsedImplicitly] [NotNull] public readonly string EventLog;
+        [UsedImplicitly]
+        [NotNull]
+        public string EventLog
+        {
+            get { return _eventLog; }
+            set
+            {
+                if (_eventLog == value) return;
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new LoggingException(Resources.EventLogger_EventLogCannotBeNull);
+                _eventLog = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the format for trace messages.
+        /// </summary>
+        /// <value>The format.</value>
+        public string Format { get; set; }
+
+        /// <summary>
+        /// Gets or sets the format for trace messages.
+        /// </summary>
+        /// <value>The format.</value>
+        public string MachineName
+        {
+            get { return _machineName; }
+            set
+            {
+                if (_machineName == value) return;
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new LoggingException(Resources.EventLogger_MachineNameCannotBeNull);
+                _machineName = value;
+            }
+        }
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="EventLogger"/> class.
@@ -64,54 +105,82 @@ namespace WebApplications.Utilities.Logging.Loggers
         public EventLogger(
             [NotNull] string name,
             [NotNull] string eventLog = "Application",
-            LoggingLevels validLevels = LoggingLevels.AtLeastInformation)
-            : base(name, false, validLevels)
+            LoggingLevels validLevels = LoggingLevels.AtLeastInformation,
+            string format = "Verbose",
+            string machineName = "."
+            )
+            : base(name, false, false, validLevels)
         {
             Contract.Requires(name != null, Resources.EventLogger_NameCannotBeNull);
-            Contract.Requires(eventLog != null, Resources.EventLogger_EventLogCannotBeNull);
             EventLog = eventLog;
+            MachineName = machineName;
+            Format = format;
         }
 
         /// <summary>
-        ///   Adds the specified log to the <see cref="EventLog">event log</see>.
+        /// Adds the specified logs to storage in batches.
         /// </summary>
-        /// <param name="log">The log to write to the <see cref="EventLog">event log</see>.</param>
-        /// <remarks>
-        ///   There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="log"/> to not be a null value.
-        /// </remarks>
-        /// <exception cref="System.InvalidOperationException">
-        ///   The registry key for the event log couldn't be opened.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">
-        ///   The <see cref="Log.ToString()">log message</see> is larger than 32766 bytes.
-        /// </exception>
-        public override void Add(Log log)
+        /// <param name="logs">The logs to add to storage.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires(log != null, Resources.EventLogger_LogCannotBeNull);
+            string source = Log.ApplicationName;
+            if (string.IsNullOrWhiteSpace(source))
+                source = "Application";
+            else if (source.Length > 254)
+                source = source.Substring(0, 254);
 
-            EventLog eventLog = new EventLog {Source = LoggingConfiguration.Active.ApplicationName, Log = EventLog};
+            EventLog eventLog = new EventLog { Source = source, MachineName = MachineName, Log = EventLog };
             EventLogEntryType entryType;
-            switch (log.Level)
+            string format = Format;
+            foreach (Log log in logs)
             {
-                case LoggingLevel.Emergency:
-                case LoggingLevel.Critical:
-                case LoggingLevel.Error:
-                    entryType = EventLogEntryType.Error;
-                    break;
-                case LoggingLevel.Warning:
-                    entryType = EventLogEntryType.Warning;
-                    break;
-                case LoggingLevel.SystemNotification:
-                case LoggingLevel.Notification:
-                case LoggingLevel.Information:
-                    entryType = EventLogEntryType.Information;
-                    break;
-                default:
-                    // Ignore debug information.
-                    return;
+                token.ThrowIfCancellationRequested();
+                string logStr = log.ToString(format);
+                StringBuilder builder = new StringBuilder(logStr.Length);
+                int a = 0;
+
+                // Maximum event log size is 31839
+                bool percChar = false;
+                while ((builder.Length < 31839) && 
+                    (a < logStr.Length))
+                {
+                    char c = logStr[a++];
+                    // Can't log nulls
+                    if (c == null) continue;
+
+                    // We cannot have a digit after a '%'.
+                    if (percChar && char.IsDigit(c))
+                        continue;
+
+                    percChar = c == '%';
+
+                    builder.Append(c);
+                }
+
+                switch (log.Level)
+                {
+                    case LoggingLevel.Emergency:
+                    case LoggingLevel.Critical:
+                    case LoggingLevel.Error:
+                        entryType = EventLogEntryType.Error;
+
+                        break;
+                    case LoggingLevel.Warning:
+                        entryType = EventLogEntryType.Warning;
+                        break;
+                    default:
+                        entryType = EventLogEntryType.Information;
+                        break;
+                }
+
+                // Create an id based on time of day.
+                int id = (int)(log.TimeStamp.TimeOfDay.TotalSeconds / 1.32);
+
+                eventLog.WriteEntry(builder.ToString(), entryType, id, (short)log.Level, log.Guid.ToByteArray());
             }
-            eventLog.WriteEntry(log.ToString(), entryType);
+            return Task.FromResult(true);
         }
     }
 }

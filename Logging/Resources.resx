@@ -157,13 +157,10 @@
     <value>Application '{0}' [{1}] exiting.</value>
   </data>
   <data name="EventLogger_EventLogCannotBeNull" xml:space="preserve">
-    <value>Parameter 'eventLog' can not be null</value>
-  </data>
-  <data name="EventLogger_LogCannotBeNull" xml:space="preserve">
-    <value>Parameter 'log' can not be null</value>
+    <value>The event logger event log name cannot be empty.</value>
   </data>
   <data name="EventLogger_NameCannotBeNull" xml:space="preserve">
-    <value>Parameter 'name' can not be null</value>
+    <value>The event logger name cannot be empty.</value>
   </data>
   <data name="FileLogger_DirectoryAccessOrCreationError" xml:space="preserve">
     <value>Could not create file logger as error occurred when trying to create/access directory '{0}'.</value>
@@ -308,5 +305,8 @@
   </data>
   <data name="Log_Invalid_Format_XML_JSON" xml:space="preserve">
     <value>Invalid log format - cannot output as both XML &amp; JSON.</value>
+  </data>
+  <data name="EventLogger_MachineNameCannotBeNull" xml:space="preserve">
+    <value>The machine name can not be null</value>
   </data>
 </root>
