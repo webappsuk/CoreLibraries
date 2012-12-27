@@ -48,7 +48,6 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public async Task TestMemoryCache()
         {
-            Log.SetTrace(LogFormat.Verbose);
             string message = "Test message " + Guid.NewGuid();
             Log.Add(new LogContext("My data", 1, "Some more", "Test"), message);
             await Log.Flush();
@@ -57,6 +56,9 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
 
+            Trace.WriteLine(logs[0].ToString(LogFormat.All));
+            Trace.WriteLine(logs[0].ToString(LogFormat.All | LogFormat.Json));
+            Trace.WriteLine(logs[0].ToString(LogFormat.All | LogFormat.Xml));
         }
 
         [TestMethod]
@@ -99,7 +101,6 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public void TestExceptions()
         {
-            Log.SetTrace("Message = {Log Message Format}");
             var t = new TestException();
         }
 

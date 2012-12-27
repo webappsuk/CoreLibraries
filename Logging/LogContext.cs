@@ -915,6 +915,10 @@ namespace WebApplications.Utilities.Logging
                 throw new LoggingException(Resources.LogContext_Key_Too_Short, key, MinimumKeyLength);
             if (key.Length > MaximumKeyLength)
                 throw new LoggingException(Resources.LogContext_Key_Too_Long, key, MaximumKeyLength);
+            if (!Char.IsLetter(key[0]))
+                throw new LoggingException(Resources.LogContext_Key_Invalid_First_Char, key);
+            if (key.Any(c => !Char.IsLetterOrDigit(c) && (c != ' ')))
+                throw new LoggingException(Resources.LogContext_Key_Invalid_Char, key);
             return key;
         }
 

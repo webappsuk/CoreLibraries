@@ -112,8 +112,7 @@ namespace WebApplications.Utilities.Logging
         ///   The formatted log message.
         /// </summary>
         [UsedImplicitly]
-        [NotNull]
-        public virtual string Message { get { return MessageFormat.SafeFormat(Parameters.Cast<object>().ToArray()); } }
+        public virtual string Message { get { return MessageFormat == null ? null : MessageFormat.SafeFormat(Parameters.Cast<object>().ToArray()); } }
 
         /// <summary>
         ///   Gets a <see cref="bool"/> value indicating whether this instance was generated from an exception.
@@ -150,8 +149,7 @@ namespace WebApplications.Utilities.Logging
         /// Gets the message format.
         /// </summary>
         /// <value>The message format.</value>
-        [NotNull]
-        public string MessageFormat { get { return Get(MessageFormatKey) ?? string.Empty; } }
+        public string MessageFormat { get { return Get(MessageFormatKey); } }
 
         /// <summary>
         /// Gets the thread ID (or -1 if not known).
@@ -673,11 +671,17 @@ namespace WebApplications.Utilities.Logging
             // Get option flags
             bool includeMissing = format.HasFlag(LogFormat.IncludeMissing);
             bool includeHeader = format.HasFlag(LogFormat.Header);
+            bool asXml = format.HasFlag(LogFormat.Xml);
+            bool asJson = format.HasFlag(LogFormat.Json);
+
+            if (asXml && asJson)
+                throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
+
             // Remove option flags
-            format = ((LogFormat) (((int) format) & 0x9FFFFFFF));
+            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
 
             // If we are a combination of keys then include keys.
-            bool includeKey = format.IsCombinationFlag(true);
+            bool includeKey = asXml || asJson || format.IsCombinationFlag(true);
 
             // Otherwise always inclue value.
             if (!includeKey)
@@ -685,7 +689,16 @@ namespace WebApplications.Utilities.Logging
 
             StringBuilder builder = new StringBuilder();
             if (includeHeader)
-                builder.AppendLine(Header);
+            {
+                if (asXml)
+                    builder.AppendLine("<Log>");
+                else if (asJson)
+                    builder.AppendLine("{");
+                else
+                    builder.AppendLine(Header);
+            }
+
+            bool first = true;
             foreach (LogFormat flag in format.SplitFlags(true))
             {
                 string key;
@@ -759,20 +772,65 @@ namespace WebApplications.Utilities.Logging
                         break;
 
                     default:
-                        throw new FormatException(String.Format("Unexpected singular format '{0}'.", flag));
+                        throw new FormatException(String.Format(Resources.Log_Invalid_Format_Singular, flag));
                 }
-                if (value == null)
-                {
-                    if (includeMissing)
-                        value = string.Empty;
-                    else continue;
-                }
+                if (value == null && !includeMissing)
+                    continue;
+                
                 if (includeKey)
                 {
+                    if (asXml)
+                    {
+                        builder.Append("   <");
+                        key = key.Replace(' ', '_');
+                    }
+                    else if (asJson)
+                    {
+                        if (!first)
+                            builder.AppendLine(",");
+                        first = false;
+                        builder.Append("   \"");
+                    }
+
                     builder.Append(key);
-                    builder.Append(' ', 17 - key.Length);
-                    builder.Append(": ");
-                    builder.AppendLine(value);
+
+                    if (asXml)
+                    {
+                        if (value == null)
+                        {
+                            builder.AppendLine(" />");
+                            continue;
+                        }
+                        builder.Append('>');
+                        value = value.XmlEscape();
+                    }
+                    else if (asJson)
+                    {
+                        builder.Append("\": ");
+                        if (value == null)
+                        {
+                            builder.Append("null");
+                            continue;
+                        }
+                        value = value.ToJSON();
+                    }
+                    else
+                    {
+                        builder.Append(' ', 17 - key.Length);
+                        builder.Append(": ");
+                    }
+
+                    if (value != null)
+                        builder.Append(value);
+
+                    if (asXml)
+                    {
+                        builder.Append("</");
+                        builder.Append(key);
+                        builder.AppendLine(">");
+                    }
+                    else if (!asJson)
+                        builder.AppendLine();
                 }
                 else
                 {
@@ -780,7 +838,17 @@ namespace WebApplications.Utilities.Logging
                 }
             }
             if (includeHeader)
-                builder.AppendLine(Header);
+            {
+                if (asXml)
+                    builder.AppendLine("</Log>");
+                else if (asJson)
+                {
+                    builder.AppendLine();
+                    builder.AppendLine("}");
+                }
+                else
+                    builder.AppendLine(Header);
+            }
             return builder.ToString();
         }
         #endregion
@@ -793,7 +861,7 @@ namespace WebApplications.Utilities.Logging
         {
             KeyValuePair<string, string>[] remainingContext =
                 this.Where(kvp => !kvp.Key.StartsWith(LogKeyPrefix)).ToArray();
-            if (remainingContext.Length < 1) return string.Empty;
+            if (remainingContext.Length < 1) return null;
 
             StringBuilder builder = new StringBuilder();
             foreach (KeyValuePair<string, string> kvp in remainingContext)

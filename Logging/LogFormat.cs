@@ -159,10 +159,40 @@ namespace WebApplications.Utilities.Logging
         T = StackTrace,
 
         /// <summary>
+        /// When set will format as JSON.
+        /// </summary>
+        /// <remarks><para>Setting this and <see cref="Xml"/> at this same time 
+        /// will result in a <see cref="FormatException"/>.</para></remarks>
+        [Description("When set will format as JSON.")]
+        Json = 1 << 28,
+        /// <summary>
+        /// When set will format as JSON.
+        /// </summary>
+        /// <remarks><para>Setting this and <see cref="Xml"/> at this same time 
+        /// will result in a <see cref="FormatException"/>.</para></remarks>
+        [Description("When set will format as JSON.")]
+        J = Json,
+
+        /// <summary>
+        /// When set will format as XML.
+        /// </summary>
+        /// <remarks><para>Setting this and <see cref="Json"/> at this same time 
+        /// will result in a <see cref="FormatException"/>.</para></remarks>
+        [Description("When set will format as XML.")]
+        Xml = 1 << 29,
+        /// <summary>
+        /// When set will format as XML.
+        /// </summary>
+        /// <remarks><para>Setting this and <see cref="Json"/> at this same time 
+        /// will result in a <see cref="FormatException"/>.</para></remarks>
+        [Description("When set will format as XML.")]
+        X = Xml,
+
+        /// <summary>
         /// Include a header and footer.
         /// </summary>
         [Description("Include a header and footer")]
-        Header = 1 << 29,
+        Header = 1 << 30,
         /// <summary>
         /// Include a header and footer.
         /// </summary>
@@ -173,12 +203,12 @@ namespace WebApplications.Utilities.Logging
         /// When set will include elements even if missing.
         /// </summary>
         [Description("When set will include elements even if missing.")]
-        IncludeMissing = 1 << 30,
+        IncludeMissing = 1 << 31,
         /// <summary>
         /// When set will include elements even if missing.
         /// </summary>
         [Description("When set will include elements even if missing.")]
-        X=IncludeMissing,
+        Z = IncludeMissing,
 
         /// <summary>
         /// Includes everything (except missing elements).

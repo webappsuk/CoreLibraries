@@ -95,7 +95,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="maxDuration">The maximum time period that a single log file can cover.</param>
         /// <param name="validLevels"><para>The valid log levels.</para>
         ///   <para>By default allows <see cref="LoggingLevels">all log levels</see>.</para></param>
-        /// <param name="format"><para>The filename format - where {DateTime} is the creation date time.</para>
+        /// <param name="fileNameFormat"><para>The filename format - where {DateTime} is the creation date time.</para>
         ///   <para>By default the format is "{ApplicationName}-{DateTime:yyMMddHHmmssffff}".</para></param>
         /// <param name="extension"><para>The file extension.</para>
         ///   <para>By default this is set to use "log".</para></param>
@@ -106,13 +106,13 @@ namespace WebApplications.Utilities.Logging.Loggers
         ///   <para>-or-</para>
         ///   <para><paramref name="directory" /> was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
         ///   <para>-or-</para>
-        ///   <para>The <paramref name="format" /> string was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
+        ///   <para>The <paramref name="fileNameFormat" /> string was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
         ///   <para>-or-</para>
         ///   <para>An error occurred trying to access the <paramref name="directory" />.</para>
         ///   <para>-or-</para>
         ///   <para><paramref name="extension" /> was more than 5 characters long.</para>
         ///   <para>-or-</para>
-        ///   <para>The <paramref name="format" /> led to an invalid path or created a path that references the wrong <paramref name="directory" />.</para>
+        ///   <para>The <paramref name="fileNameFormat" /> led to an invalid path or created a path that references the wrong <paramref name="directory" />.</para>
         ///   <para>-or-</para>
         ///   <para>File path contained <see cref="Path.GetInvalidPathChars">invalid characters</see>.</para></exception>
         public FileLogger(
@@ -121,7 +121,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             Int64 maxLog = 1000,
             TimeSpan maxDuration = default(TimeSpan),
             LoggingLevels validLevels = LoggingLevels.All,
-            string format = "{ApplicationName}-{DateTime:yyMMddHHmmssffff}",
+            string logFormat,
+            string fileNameFormat = "{ApplicationName}-{DateTime:yyMMddHHmmssffff}",
             string extension = "log",
             string excludeKeys = "")
             : base(name, false, true, validLevels)
@@ -155,7 +156,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                     LoggingLevel.Critical, directory, e.Message);
             }
 
-            if (string.IsNullOrWhiteSpace(format))
+            if (string.IsNullOrWhiteSpace(fileNameFormat))
                 throw new LoggingException(Resources.FileLogger_FileNameFormatNotSpecified, LoggingLevel.Critical);
 
 
@@ -173,7 +174,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             }
 
             _format = Directory + @"\" +
-                        format.Replace("DateTime", "0")
+                        fileNameFormat.Replace("DateTime", "0")
                             .Replace("ApplicationName", "2")
                                 .Replace("ApplicationGuid", "3")
                         + "{1}" + extension;
@@ -182,7 +183,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingConfiguration configuration = LoggingConfiguration.Active;
             string testFormat = string.Format(_format, DateTime.Now, Int32.MaxValue, configuration.ApplicationName, configuration.ApplicationGuid);
             if (testFormat.IndexOfAny(Path.GetInvalidPathChars()) > -1)
-                throw new LoggingException(Resources.FileLogger_FileNameFormatInvalid, LoggingLevel.Critical, format);
+                throw new LoggingException(Resources.FileLogger_FileNameFormatInvalid, LoggingLevel.Critical, fileNameFormat);
 
             try
             {
@@ -190,11 +191,11 @@ namespace WebApplications.Utilities.Logging.Loggers
             }
             catch (Exception e)
             {
-                throw new LoggingException(e, Resources.FileLogger_InvalidPathCreation, LoggingLevel.Critical, format, e.Message);
+                throw new LoggingException(e, Resources.FileLogger_InvalidPathCreation, LoggingLevel.Critical, fileNameFormat, e.Message);
             }
 
             if (!testFormat.StartsWith(directory))
-                throw new LoggingException(Resources.FileLogger_PathCreatedOutsideDirectory, LoggingLevel.Critical, format);
+                throw new LoggingException(Resources.FileLogger_PathCreatedOutsideDirectory, LoggingLevel.Critical, fileNameFormat);
         }
 
         /// <summary>

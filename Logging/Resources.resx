@@ -285,4 +285,16 @@
   <data name="LogContext_Prefix_Too_Long" xml:space="preserve">
     <value>The log context key prefix '{0}' is longer than {1} characters (too long).</value>
   </data>
+  <data name="LogContext_Key_Invalid_Char" xml:space="preserve">
+    <value>Keys can only contain letters, digits or spaces.</value>
+  </data>
+  <data name="LogContext_Key_Invalid_First_Char" xml:space="preserve">
+    <value>Key must start with a letter.</value>
+  </data>
+  <data name="Log_Invalid_Format_Singular" xml:space="preserve">
+    <value>Unexpected singular format '{0}'.</value>
+  </data>
+  <data name="Log_Invalid_Format_XML_JSON" xml:space="preserve">
+    <value>Invalid log format - cannot output as both XML &amp; JSON.</value>
+  </data>
 </root>

@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Logging.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(LoggingException))]
+        [ExpectedException(typeof(LoggingException), "Using a reserved key without the reservation should throw an error.")]
         public void TestKeyReservationErrors()
         {
             _keyReservations.Clear();

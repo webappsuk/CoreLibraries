@@ -196,6 +196,24 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unexpected singular format &apos;{0}&apos;..
+        /// </summary>
+        internal static string Log_Invalid_Format_Singular {
+            get {
+                return ResourceManager.GetString("Log_Invalid_Format_Singular", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid log format - cannot output as both XML &amp; JSON..
+        /// </summary>
+        internal static string Log_Invalid_Format_XML_JSON {
+            get {
+                return ResourceManager.GetString("Log_Invalid_Format_XML_JSON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The &apos;{0}&apos; logger cannot be added as there is a logger present of the same type that does not support multiple instances..
         /// </summary>
         internal static string Log_Logger_Multiple_Instances {
@@ -264,6 +282,24 @@ namespace WebApplications.Utilities.Logging {
         internal static string LogContext_Key_Already_Reserved {
             get {
                 return ResourceManager.GetString("LogContext_Key_Already_Reserved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keys can only contain letters, digits or spaces..
+        /// </summary>
+        internal static string LogContext_Key_Invalid_Char {
+            get {
+                return ResourceManager.GetString("LogContext_Key_Invalid_Char", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Key must start with a letter..
+        /// </summary>
+        internal static string LogContext_Key_Invalid_First_Char {
+            get {
+                return ResourceManager.GetString("LogContext_Key_Invalid_First_Char", resourceCulture);
             }
         }
         
