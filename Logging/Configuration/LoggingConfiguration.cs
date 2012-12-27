@@ -81,43 +81,7 @@ namespace WebApplications.Utilities.Logging.Configuration
             get { return GetProperty<LoggingLevels>("validLevels"); }
             set { SetProperty("validLevels", value); }
         }
-
-        /// <summary>
-        ///   Gets minimum batch size.
-        /// </summary>
-        [ConfigurationProperty("minBatchSize", DefaultValue = 10, IsRequired = false)]
-        [IntegerValidator(MinValue = 1, MaxValue = 5000)]
-        [UsedImplicitly]
-        public int MinBatchSize
-        {
-            get { return GetProperty<int>("minBatchSize"); }
-            set { SetProperty("minBatchSize", value); }
-        }
-
-        /// <summary>
-        ///   Gets the maximum batch size.
-        /// </summary>
-        [ConfigurationProperty("maxBatchSize", DefaultValue = 1000, IsRequired = false)]
-        [IntegerValidator(MinValue = 1, MaxValue = 10000)]
-        [UsedImplicitly]
-        public int MaxBatchSize
-        {
-            get { return GetProperty<int>("maxBatchSize"); }
-            set { SetProperty("maxBatchSize", value); }
-        }
-
-        /// <summary>
-        ///   Gets the batch wait time.
-        /// </summary>
-        [ConfigurationProperty("batchWait", DefaultValue = "00:00:02", IsRequired = false)]
-        [TimeSpanValidator(MinValueString = "00:00:00.5", MaxValueString = "1:00:00")]
-        [UsedImplicitly]
-        public TimeSpan BatchWait
-        {
-            get { return GetProperty<TimeSpan>("batchWait"); }
-            set { SetProperty("batchWait", value); }
-        }
-
+        
         /// <summary>
         ///   Gets the log cache's expiry.
         /// </summary>

@@ -262,7 +262,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             string format = "Verbose,Xml",
             string fileNameFormat = "{ApplicationName}-{DateTime:yyMMddHHmmssffff}",
             string extension = null,
-            string excludeKeys = "",
             uint buffer = 65536,
             bool autoFlush = false)
             : base(name, false, true, validLevels)
@@ -275,7 +274,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, _extension);
             Format = format;
             Buffer = buffer;
-            AutoFlush = true;
+            AutoFlush = autoFlush;
         }
 
         /// <summary>
