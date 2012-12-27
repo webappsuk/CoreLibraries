@@ -56,72 +56,72 @@ namespace WebApplications.Utilities.Logging
         /// The associated log item.
         /// </summary>
         [NotNull]
-        private readonly Log _log;
+        protected readonly Log Log;
 
         /// <summary>
         /// Gets the GUID.
         /// </summary>
         /// <value>The GUID.</value>
-        public CombGuid Guid { get { return _log.Guid; } }
+        public CombGuid Guid { get { return Log.Guid; } }
 
         /// <summary>
         /// Gets the log group.
         /// </summary>
         /// <value>The log group.</value>
-        public CombGuid Group { get { return _log.Group; } }
+        public CombGuid Group { get { return Log.Group; } }
 
         /// <summary>
         /// Gets the log group.
         /// </summary>
         /// <value>The log group.</value>
-        public LoggingLevel Level { get { return _log.Level; } }
+        public LoggingLevel Level { get { return Log.Level; } }
 
         /// <summary>
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
         [NotNull]
-        public IEnumerable<string> Parameters { get { return _log.Parameters; } }
+        public IEnumerable<string> Parameters { get { return Log.Parameters; } }
 
         /// <summary>
         /// Gets the time stamp.
         /// </summary>
         /// <value>The time stamp.</value>
-        public DateTime TimeStamp { get { return _log.TimeStamp; } }
+        public DateTime TimeStamp { get { return Log.TimeStamp; } }
 
         /// <summary>
         /// Gets the message format.
         /// </summary>
         /// <value>The message format.</value>
         [NotNull]
-        public string MessageFormat { get { return _log.MessageFormat; } }
+        public string MessageFormat { get { return Log.MessageFormat; } }
 
         /// <summary>
         /// Gets the thread ID.
         /// </summary>
         /// <value>The thread ID.</value>
-        public int ThreadID { get { return _log.ThreadID; } }
+        public int ThreadID { get { return Log.ThreadID; } }
 
         /// <summary>
         /// Gets the name of the thread.
         /// </summary>
         /// <value>The name of the thread.</value>
         [NotNull]
-        public string ThreadName { get { return _log.ThreadName; } }
+        public string ThreadName { get { return Log.ThreadName; } }
 
         /// <summary>
         /// Gets the full name of the type of the exception.
         /// </summary>
         /// <value>The full name of the type of the exception.</value>
         [NotNull]
-        public string ExceptionTypeFullName { get { return _log.Get(Log.ExceptionTypeFullNameKey); } }
+        public string ExceptionTypeFullName { get { return Log.Get(Log.ExceptionTypeFullNameKey); } }
 
         /// <summary>
         /// Gets the stored procedure name (if a SQL exception - otherwise null).
         /// </summary>
         /// <value>The stored procedure.</value>
         [NotNull]
-        public string StoredProcedure { get { return _log.Get(Log.StoredProcedureKey); } }
+        public string StoredProcedure { get { return Log.Get(Log.StoredProcedureKey); } }
 
         /// <summary>
         /// Gets the stored procedure line number (if a SQL exception - otherwise -1).
@@ -131,7 +131,7 @@ namespace WebApplications.Utilities.Logging
         {
             get
             {
-                string line = _log.Get(Log.StoredProcedureLineKey);
+                string line = Log.Get(Log.StoredProcedureLineKey);
                 if (string.IsNullOrWhiteSpace(line))
                     return -1;
                 int l;
@@ -147,7 +147,7 @@ namespace WebApplications.Utilities.Logging
         [CanBeNull]
         public string Get(string key)
         {
-            return _log.Get(key);
+            return Log.Get(key);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         public IEnumerable<KeyValuePair<string, string>> GetPrefixed(string prefix)
         {
-            return _log.GetPrefixed(prefix);
+            return Log.GetPrefixed(prefix);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace WebApplications.Utilities.Logging
         {
             get
             {
-                return _log[key];
+                return Log[key];
             }
         }
 
@@ -395,7 +395,7 @@ namespace WebApplications.Utilities.Logging
             }
 
             // Now we can create the associated log item for this exception.
-            _log = Log.Add(group, context, this, level, message, parameters);
+            Log = Log.Add(group, context, this, level, message, parameters);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -408,7 +408,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns>The error message that explains the reason for the exception, or an empty string("").</returns>
         public override string Message
         {
-            get { return _log.Message; }
+            get { return Log.Message; }
         }
 
         /// <summary>
@@ -418,7 +418,7 @@ namespace WebApplications.Utilities.Logging
         /// <value>The safe stack trace.</value>
         [NotNull]
         [UsedImplicitly]
-        public new string StackTrace { get { return _log.StackTrace; } }
+        public new string StackTrace { get { return Log.StackTrace; } }
 
         /// <summary>
         /// Gets the enumerator.
@@ -426,7 +426,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns>IEnumerator{KeyValuePair{System.StringSystem.String}}.</returns>
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            return _log.GetEnumerator();
+            return Log.GetEnumerator();
         }
 
         /// <summary>
@@ -439,7 +439,7 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public override string ToString()
         {
-            return _log.ToString(LogFormat.General);
+            return Log.ToString(LogFormat.General);
         }
 
         /// <summary>
@@ -450,7 +450,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         public string ToString(string format)
         {
-            return _log.ToString(format, null);
+            return Log.ToString(format, null);
         }
 
         /// <summary>
@@ -481,7 +481,7 @@ namespace WebApplications.Utilities.Logging
                 if (formatter != null)
                     return formatter.Format(format, this, formatProvider);
             }
-            return _log.ToString(format, formatProvider);
+            return Log.ToString(format, formatProvider);
         }
 
         /// <summary>
@@ -493,7 +493,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         public string ToString(LogFormat format)
         {
-            return _log.ToString(format);
+            return Log.ToString(format);
         }
 
         /// <summary>
