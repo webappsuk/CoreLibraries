@@ -57,7 +57,7 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   All the specified culture names.
         /// </summary>
-        [NotNull] private static readonly List<string> _cultureNames;
+        [NotNull] private static readonly Dictionary<string, CultureInfo> _cultureNames;
 
         /// <summary>
         ///   The invariant culture LCID.
@@ -76,9 +76,9 @@ namespace WebApplications.Utilities
             // currency and RegionInfo is only applicable to specific cultures
             CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
             int length = cultures.GetLength(0);
-            _currencyCultureInfo = new Dictionary<string, Dictionary<CultureInfo, RegionInfo>>(length);
-            _regionNames = new Dictionary<string, RegionInfo>(length);
-            _cultureNames = new List<string>(length);
+            _currencyCultureInfo = new Dictionary<string, Dictionary<CultureInfo, RegionInfo>>(length, StringComparer.InvariantCultureIgnoreCase);
+            _regionNames = new Dictionary<string, RegionInfo>(length, StringComparer.InvariantCultureIgnoreCase);
+            _cultureNames = new Dictionary<string, CultureInfo>(length, StringComparer.InvariantCultureIgnoreCase);
             InvariantLCID = CultureInfo.InvariantCulture.LCID;
 
             foreach (CultureInfo ci in cultures)
@@ -87,8 +87,8 @@ namespace WebApplications.Utilities
                 // RegionInfo holds the currency ISO code
                 RegionInfo ri = ci.RegionInfo();
 
-                if (!_cultureNames.Contains(ci.Name))
-                    _cultureNames.Add(ci.Name);
+                if (!_cultureNames.ContainsKey(ci.Name))
+                    _cultureNames.Add(ci.Name, ci);
 
                 // multiple cultures can have the same currency code
                 Dictionary<CultureInfo, RegionInfo> cdict;
@@ -102,8 +102,13 @@ namespace WebApplications.Utilities
                 if (!_regionNames.ContainsKey(ri.EnglishName))
                     _regionNames.Add(ri.EnglishName, ri);
             }
-            _cultureNames.AddRange(CultureInfo.GetCultures(CultureTypes.NeutralCultures).Select(c => c.Name).Distinct());
-            _cultureNames.TrimExcess();
+
+            // Now add neutral culture names.
+            foreach (CultureInfo ci in
+                CultureInfo.GetCultures(CultureTypes.NeutralCultures)
+                           .Distinct()
+                           .Where(ci => !_cultureNames.ContainsKey(ci.Name)))
+                _cultureNames.Add(ci.Name, ci);
         }
 
         /// <summary>
@@ -116,7 +121,55 @@ namespace WebApplications.Utilities
         [NotNull]
         public static IEnumerable<string> CultureNames
         {
-            get { return _cultureNames; }
+            get { return _cultureNames.Keys; }
+        }
+
+        /// <summary>
+        ///   Gets the region names.
+        /// </summary>
+        /// <remarks>
+        ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
+        /// </remarks>
+        [UsedImplicitly]
+        [NotNull]
+        public static IEnumerable<string> RegionNames
+        {
+            get { return _regionNames.Keys; }
+        }
+
+        /// <summary>
+        ///   Gets the region names.
+        /// </summary>
+        /// <remarks>
+        ///   This is particularly useful when looking for culture specific directories (e.g. for resource files).
+        /// </remarks>
+        [UsedImplicitly]
+        [NotNull]
+        public static IEnumerable<string> CurrencyNames
+        {
+            get { return _currencyCultureInfo.Keys; }
+        }
+
+        /// <summary>
+        /// Tries to get the culture info with the specified name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns><see langword="true" /> if found, otherwise <see langword="false" />.</returns>
+        public static  CultureInfo GetCultureInfo(string name)
+        {
+            CultureInfo cultureInfo;
+            return _cultureNames.TryGetValue(name, out cultureInfo) ? cultureInfo : null;
+        }
+
+        /// <summary>
+        /// Tries to get the culture info with the specified name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns><see langword="true" /> if found, otherwise <see langword="false" />.</returns>
+        public static RegionInfo GetRegionInfo(string name)
+        {
+            RegionInfo regionInfo;
+            return _regionNames.TryGetValue(name, out regionInfo) ? regionInfo : null;
         }
 
         /// <summary>
