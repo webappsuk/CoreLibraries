@@ -164,7 +164,7 @@ namespace WebApplications.Utilities.Logging
         /// <remarks><para>Setting this and <see cref="Xml"/> at this same time 
         /// will result in a <see cref="FormatException"/>.</para></remarks>
         [Description("When set will format as JSON.")]
-        Json = 1 << 28,
+        Json = 1 << 28 | Header,
         /// <summary>
         /// When set will format as JSON.
         /// </summary>
@@ -179,7 +179,7 @@ namespace WebApplications.Utilities.Logging
         /// <remarks><para>Setting this and <see cref="Json"/> at this same time 
         /// will result in a <see cref="FormatException"/>.</para></remarks>
         [Description("When set will format as XML.")]
-        Xml = 1 << 29,
+        Xml = 1 << 29 | Header,
         /// <summary>
         /// When set will format as XML.
         /// </summary>

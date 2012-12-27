@@ -852,17 +852,16 @@ namespace WebApplications.Utilities.Logging
 
             if (includeHeader)
             {
+                builder.AppendLine();
                 switch (masterFormat)
                 {
                     case MasterFormat.Xml:
-                        builder.AppendLine();
                         builder.AppendLine("</Log>");
                         break;
                     case MasterFormat.JSON:
                         builder.AppendLine("}");
                         break;
                     default:
-                        builder.AppendLine();
                         builder.AppendLine(Header);
                         break;
                 }

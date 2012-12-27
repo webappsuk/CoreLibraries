@@ -60,6 +60,8 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.IsNotNull(logs);
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
+
+            logs[0].ToString("{Verbose}\r\n");
         }
 
         [TestMethod]

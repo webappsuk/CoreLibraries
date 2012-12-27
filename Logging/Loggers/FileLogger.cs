@@ -384,7 +384,8 @@ namespace WebApplications.Utilities.Logging.Loggers
                     // Close out the last logfile.
 #pragma warning disable 4014
                     LogFile lf = logFile;
-                    Task.Run(() => lf.Dispose());
+                    if (lf != null)
+                        Task.Run(() => lf.Dispose());
 #pragma warning restore 4014
 
                     int dedupe = 1;
@@ -514,7 +515,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             public async Task Write(Log log, CancellationToken token = default(CancellationToken))
             {
                 if (log == null) return;
-                string logStr = log.ToString(Format);
+                string logStr = log.ToString(Format) + Environment.NewLine;
                 Logs++;
 
                 if (IsXml)
