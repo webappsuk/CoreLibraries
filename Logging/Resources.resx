@@ -145,10 +145,10 @@
     <value>Cannot retrieve logs, start date is greater or equal to end date!</value>
   </data>
   <data name="LogStatic_LoadConfiguration_ErrorCreatingLogger" xml:space="preserve">
-    <value>Error occurred whilst creating logger '{0}' as specified in configuration file. {1}</value>
+    <value>Error occurred whilst creating logger '{0}' as specified in configuration file.</value>
   </data>
   <data name="LogStatic_LogBatch_FatalErrorOccured" xml:space="preserve">
-    <value>Fatal error occurred whilst running the '{0}' logger, disabling - {1}</value>
+    <value>Fatal error occurred whilst running the '{0}' logger, disabling.</value>
   </data>
   <data name="LogStatic_LoggerThread_FatalErrorWhilstLogging" xml:space="preserve">
     <value>Fatal error whilst logging - aborting.</value>
@@ -166,10 +166,7 @@
     <value>Parameter 'name' can not be null</value>
   </data>
   <data name="FileLogger_DirectoryAccessOrCreationError" xml:space="preserve">
-    <value>Could not create file logger as error occurred when trying to create/access directory '{0}'. {1}</value>
-  </data>
-  <data name="FileLogger_DirectoryNotSpecified" xml:space="preserve">
-    <value>Cannot create file logger as directory not specified.</value>
+    <value>Could not create file logger as error occurred when trying to create/access directory '{0}'.</value>
   </data>
   <data name="FileLogger_ExtensionLongerThanFiveCharacters" xml:space="preserve">
     <value>Cannot create file logger as extension '{0}' has more than five characters.</value>
@@ -184,7 +181,7 @@
     <value>Cannot create file logger as file name format not specified.</value>
   </data>
   <data name="FileLogger_InvalidPathCreation" xml:space="preserve">
-    <value>Cannot create file logger as file name format '{0}' led to invalid path creation. {1}</value>
+    <value>Cannot create file logger as file name format '{0}' led to invalid path creation.</value>
   </data>
   <data name="FileLogger_MaximumLogsLessThanTen" xml:space="preserve">
     <value>Cannot create file logger as maximum logs per file '{0}' was less than 10, which would cause too many log files to be created.</value>
@@ -284,6 +281,21 @@
   </data>
   <data name="LogContext_Prefix_Too_Long" xml:space="preserve">
     <value>The log context key prefix '{0}' is longer than {1} characters (too long).</value>
+  </data>
+  <data name="FileLogger_BufferSize_Too_Big" xml:space="preserve">
+    <value>The file buffer size '{0}' cannot exceed the maximum value of an int.</value>
+  </data>
+  <data name="FileLogger_BufferSize_Too_Small" xml:space="preserve">
+    <value>The file  buffer size '{0}' cannot be less than 128 bytes.</value>
+  </data>
+  <data name="FileLogger_Ended_File" xml:space="preserve">
+    <value>Finished writing logs to '{0}'</value>
+  </data>
+  <data name="FileLogger_Extension_Invalid_Char" xml:space="preserve">
+    <value>Cannot create file logger as extension '{0}' has invalid characters (only letters and digits allowed).</value>
+  </data>
+  <data name="FileLogger_Started_File" xml:space="preserve">
+    <value>Began writing logs to '{0}' with '{1}' buffer.</value>
   </data>
   <data name="LogContext_Key_Invalid_Char" xml:space="preserve">
     <value>Keys can only contain letters, digits or spaces.</value>

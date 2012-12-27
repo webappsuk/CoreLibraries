@@ -88,7 +88,25 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not create file logger as error occurred when trying to create/access directory &apos;{0}&apos;. {1}.
+        ///   Looks up a localized string similar to The file buffer size &apos;{0}&apos; cannot exceed the maximum value of an int..
+        /// </summary>
+        internal static string FileLogger_BufferSize_Too_Big {
+            get {
+                return ResourceManager.GetString("FileLogger_BufferSize_Too_Big", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file  buffer size &apos;{0}&apos; cannot be less than 128 bytes..
+        /// </summary>
+        internal static string FileLogger_BufferSize_Too_Small {
+            get {
+                return ResourceManager.GetString("FileLogger_BufferSize_Too_Small", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not create file logger as error occurred when trying to create/access directory &apos;{0}&apos;..
         /// </summary>
         internal static string FileLogger_DirectoryAccessOrCreationError {
             get {
@@ -97,11 +115,20 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot create file logger as directory not specified..
+        ///   Looks up a localized string similar to Finished writing logs to &apos;{0}&apos;.
         /// </summary>
-        internal static string FileLogger_DirectoryNotSpecified {
+        internal static string FileLogger_Ended_File {
             get {
-                return ResourceManager.GetString("FileLogger_DirectoryNotSpecified", resourceCulture);
+                return ResourceManager.GetString("FileLogger_Ended_File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create file logger as extension &apos;{0}&apos; has invalid characters (only letters and digits allowed)..
+        /// </summary>
+        internal static string FileLogger_Extension_Invalid_Char {
+            get {
+                return ResourceManager.GetString("FileLogger_Extension_Invalid_Char", resourceCulture);
             }
         }
         
@@ -142,7 +169,7 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot create file logger as file name format &apos;{0}&apos; led to invalid path creation. {1}.
+        ///   Looks up a localized string similar to Cannot create file logger as file name format &apos;{0}&apos; led to invalid path creation..
         /// </summary>
         internal static string FileLogger_InvalidPathCreation {
             get {
@@ -165,6 +192,15 @@ namespace WebApplications.Utilities.Logging {
         internal static string FileLogger_PathCreatedOutsideDirectory {
             get {
                 return ResourceManager.GetString("FileLogger_PathCreatedOutsideDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Began writing logs to &apos;{0}&apos; with &apos;{1}&apos; buffer..
+        /// </summary>
+        internal static string FileLogger_Started_File {
+            get {
+                return ResourceManager.GetString("FileLogger_Started_File", resourceCulture);
             }
         }
         
@@ -520,7 +556,7 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error occurred whilst creating logger &apos;{0}&apos; as specified in configuration file. {1}.
+        ///   Looks up a localized string similar to Error occurred whilst creating logger &apos;{0}&apos; as specified in configuration file..
         /// </summary>
         internal static string LogStatic_LoadConfiguration_ErrorCreatingLogger {
             get {
@@ -529,7 +565,7 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fatal error occurred whilst running the &apos;{0}&apos; logger, disabling - {1}.
+        ///   Looks up a localized string similar to Fatal error occurred whilst running the &apos;{0}&apos; logger, disabling..
         /// </summary>
         internal static string LogStatic_LogBatch_FatalErrorOccured {
             get {

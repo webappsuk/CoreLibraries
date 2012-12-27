@@ -62,8 +62,8 @@ namespace WebApplications.Utilities.Logging.Loggers
                 if (value == default(TimeSpan))
                     value = TimeSpan.MaxValue;
                 else if (value < TimeSpan.FromSeconds(10))
-                    throw new LoggingException(Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
-                        LoggingLevel.Critical, value);
+                    throw new LoggingException(LoggingLevel.Critical, Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
+                       value);
 
                 _cacheExpiry = value;
                 Clean();
@@ -86,8 +86,8 @@ namespace WebApplications.Utilities.Logging.Loggers
                 if (_maximumLogEntries == value) return;
 
                 if (value < 1)
-                    throw new LoggingException(Resources.MemoryLogger_MaximumLogsLessThanOne,
-                        LoggingLevel.Critical, value);
+                    throw new LoggingException(LoggingLevel.Critical, Resources.MemoryLogger_MaximumLogsLessThanOne,
+                        value);
                 _maximumLogEntries = value;
                 Clean();
             }
@@ -147,7 +147,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override Task Add(IEnumerable<Log> logs, CancellationToken token)
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             lock (_lock)
             {
@@ -162,6 +162,17 @@ namespace WebApplications.Utilities.Logging.Loggers
 
             // We always complete synchronously.
             return Task.FromResult(true);
+        }
+
+        /// <summary>
+        /// Force a flush of this logger.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        public override Task Flush(CancellationToken token = default(CancellationToken))
+        {
+            Clean();
+            return base.Flush(token);
         }
 
         /// <summary>

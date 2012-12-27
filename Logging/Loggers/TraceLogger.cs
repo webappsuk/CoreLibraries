@@ -61,7 +61,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override Task Add(IEnumerable<Log> logs, CancellationToken token)
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {

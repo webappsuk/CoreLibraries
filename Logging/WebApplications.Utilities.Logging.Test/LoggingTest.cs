@@ -46,19 +46,20 @@ namespace WebApplications.Utilities.Logging.Test
     public class LoggingTests : TestBase
     {
         [TestMethod]
-        public async Task TestMemoryCache()
+        public async Task TestMemoryLogger()
         {
+            FileLogger fileLogger = Log.Loggers.OfType<FileLogger>().First();
+            Assert.IsNotNull(fileLogger);
+            fileLogger.Format = "Verbose,Xml";
+
             string message = "Test message " + Guid.NewGuid();
             Log.Add(new LogContext("My data", 1, "Some more", "Test"), message);
             await Log.Flush();
+
             List<Log> logs = Log.AllCached.ToList();
             Assert.IsNotNull(logs);
             Assert.IsTrue(logs.Any(), "No logs found!");
             Assert.IsTrue(logs.Any(l => l.Message == message), "No log with the message '{0}' found.", message);
-
-            Trace.WriteLine(logs[0].ToString(LogFormat.All));
-            Trace.WriteLine(logs[0].ToString(LogFormat.All | LogFormat.Json));
-            Trace.WriteLine(logs[0].ToString(LogFormat.All | LogFormat.Xml));
         }
 
         [TestMethod]

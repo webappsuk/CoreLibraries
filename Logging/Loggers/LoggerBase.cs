@@ -96,9 +96,10 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Adds the specified logs to storage in batches.
         /// </summary>
         /// <param name="logs">The logs to add to storage.</param>
+        /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public abstract Task Add(IEnumerable<Log> logs, CancellationToken token);
+        public abstract Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Gets the Qbservable allowing asynchronous querying of log data.
@@ -118,8 +119,10 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         /// Force a flush of this logger.
         /// </summary>
+        /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public virtual Task Flush()
+        [NotNull]
+        public virtual Task Flush(CancellationToken token = default(CancellationToken))
         {
             return Task.FromResult(true);
         }

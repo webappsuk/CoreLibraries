@@ -89,6 +89,6 @@ namespace WebApplications.Utilities.Logging.Interfaces
         /// Force a flush of this logger.
         /// </summary>
         [NotNull]
-        Task Flush();
+        Task Flush(CancellationToken token = default(CancellationToken));
     }
 }

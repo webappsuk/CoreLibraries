@@ -171,7 +171,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The name of the thread.</value>
         public string ThreadName { get { return Get(ThreadNameKey); } }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Log" /> class.
         /// </summary>
@@ -188,7 +188,7 @@ namespace WebApplications.Utilities.Logging
             _context = context.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             string s;
             CombGuid guid;
-            if (!_context.TryGetValue(GuidKey, out s) || 
+            if (!_context.TryGetValue(GuidKey, out s) ||
                 !CombGuid.TryParse(s, out guid))
                 throw new LoggingException("The log deserialization did not supply a valid GUID.");
 
@@ -289,10 +289,12 @@ namespace WebApplications.Utilities.Logging
             }
 
             // Add stack trace.
-            _context.Add(StackTraceKey,
-                         String.IsNullOrWhiteSpace(stackTrace)
-                             ? FormatStackTrace(new StackTrace(2, true))
-                             : stackTrace);
+            if (string.IsNullOrWhiteSpace(stackTrace))
+                stackTrace = FormatStackTrace(new StackTrace(2, true));
+
+            if (!string.IsNullOrWhiteSpace(stackTrace))
+
+                _context.Add(StackTraceKey, stackTrace);
 
             // Post log onto queue.
             ReLog();
@@ -324,17 +326,16 @@ namespace WebApplications.Utilities.Logging
         /// Formats the stack trace, skipping stack frames that form part of the exception construction.
         /// </summary>
         /// <param name="trace">The stack trace to format.</param>
-        /// <param name="culture">The culture.</param>
         /// <returns>The formatted stack <paramref name="trace" />.</returns>
         private static String FormatStackTrace(StackTrace trace)
         {
             // Check for stack trace frames.
             if (trace == null)
-                return "No stack trace available.";
+                return null;
 
             StackFrame[] frames = trace.GetFrames();
             if ((frames == null) || (frames.Length < 1))
-                return "No stack trace frames available.";
+                return null;
 
             bool checkSkip = true;
             bool displayFilenames = true; // we'll try, but demand may fail
@@ -674,14 +675,35 @@ namespace WebApplications.Utilities.Logging
             bool asXml = format.HasFlag(LogFormat.Xml);
             bool asJson = format.HasFlag(LogFormat.Json);
 
+            // Remove option flags
+            format = ((LogFormat)(((int)format) & 0x0FFFFFFF));
+
             if (asXml && asJson)
                 throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
 
-            // Remove option flags
-            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
+            MasterFormat masterFormat;
+            bool includeKey;
+            string indent;
+            if (asXml)
+            {
+                masterFormat = MasterFormat.Xml;
+                includeKey = true;
+                indent = "   ";
+            }
+            else if (asJson)
+            {
+                masterFormat = MasterFormat.JSON;
+                includeKey = true;
+                indent = "   ";
+            }
+            else
+            {
+                masterFormat = MasterFormat.Text;
 
-            // If we are a combination of keys then include keys.
-            bool includeKey = asXml || asJson || format.IsCombinationFlag(true);
+                // Only include the key if we're a combination of keys.
+                includeKey = format.IsCombinationFlag(true);
+                indent = string.Empty;
+            }
 
             // Otherwise always inclue value.
             if (!includeKey)
@@ -690,12 +712,18 @@ namespace WebApplications.Utilities.Logging
             StringBuilder builder = new StringBuilder();
             if (includeHeader)
             {
-                if (asXml)
-                    builder.AppendLine("<Log>");
-                else if (asJson)
-                    builder.AppendLine("{");
-                else
-                    builder.AppendLine(Header);
+                switch (masterFormat)
+                {
+                    case MasterFormat.Xml:
+                        builder.AppendLine("<Log>");
+                        break;
+                    case MasterFormat.JSON:
+                        builder.AppendLine("{");
+                        break;
+                    default:
+                        builder.AppendLine(Header);
+                        break;
+                }
             }
 
             bool first = true;
@@ -728,10 +756,6 @@ namespace WebApplications.Utilities.Logging
                         key = "Group";
                         var group = Group;
                         value = group == CombGuid.Empty ? null : group.ToString();
-                        break;
-                    case LogFormat.Context:
-                        key = "Context";
-                        value = GetContext();
                         break;
                     case LogFormat.Exception:
                         key = "Exception Type";
@@ -770,123 +794,136 @@ namespace WebApplications.Utilities.Logging
                         key = "Application Guid";
                         value = ApplicationGuid.ToString();
                         break;
+                    case LogFormat.Context:
+                        KeyValuePair<string, string>[] remainingContext =
+                            this.Where(kvp => !kvp.Key.StartsWith(LogKeyPrefix)).ToArray();
+                        key = "Context";
+
+                        if (remainingContext.Length < 1)
+                        {
+                            value = null;
+                        }
+                        else
+                        {
+                            StringBuilder cv = new StringBuilder();
+                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : string.Empty);
+
+                            string i = indent + "   ";
+                            bool cvf = true;
+                            foreach (var kvp in remainingContext)
+                            {
+                                if (!cvf)
+                                    cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : string.Empty);
+                                cvf = false;
+                                AddKVP(cv, masterFormat, i, kvp.Key, kvp.Value);
+                            }
+                            switch (masterFormat)
+                            {
+                                case MasterFormat.Xml:
+                                    cv.AppendLine();
+                                    cv.Append(indent);
+                                    break;
+                                case MasterFormat.JSON:
+                                    cv.Append("}");
+                                    break;
+                            }
+                            value = cv.ToString();
+                        }
+                        break;
 
                     default:
                         throw new FormatException(String.Format(Resources.Log_Invalid_Format_Singular, flag));
                 }
                 if (value == null && !includeMissing)
                     continue;
-                
+
                 if (includeKey)
                 {
-                    if (asXml)
-                    {
-                        builder.Append("   <");
-                        key = key.Replace(' ', '_');
-                    }
-                    else if (asJson)
-                    {
-                        if (!first)
-                            builder.AppendLine(",");
-                        first = false;
-                        builder.Append("   \"");
-                    }
+                    if (!first)
+                        builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : string.Empty);
 
-                    builder.Append(key);
+                    AddKVP(builder, masterFormat, indent, key, value, flag == LogFormat.Context);
 
-                    if (asXml)
-                    {
-                        if (value == null)
-                        {
-                            builder.AppendLine(" />");
-                            continue;
-                        }
-                        builder.Append('>');
-                        value = value.XmlEscape();
-                    }
-                    else if (asJson)
-                    {
-                        builder.Append("\": ");
-                        if (value == null)
-                        {
-                            builder.Append("null");
-                            continue;
-                        }
-                        value = value.ToJSON();
-                    }
-                    else
-                    {
-                        builder.Append(' ', 17 - key.Length);
-                        builder.Append(": ");
-                    }
-
-                    if (value != null)
-                        builder.Append(value);
-
-                    if (asXml)
-                    {
-                        builder.Append("</");
-                        builder.Append(key);
-                        builder.AppendLine(">");
-                    }
-                    else if (!asJson)
-                        builder.AppendLine();
+                    first = false;
                 }
                 else
-                {
                     builder.Append(value);
-                }
             }
+
             if (includeHeader)
             {
-                if (asXml)
-                    builder.AppendLine("</Log>");
-                else if (asJson)
+                switch (masterFormat)
                 {
-                    builder.AppendLine();
-                    builder.AppendLine("}");
+                    case MasterFormat.Xml:
+                        builder.AppendLine();
+                        builder.AppendLine("</Log>");
+                        break;
+                    case MasterFormat.JSON:
+                        builder.AppendLine("}");
+                        break;
+                    default:
+                        builder.AppendLine();
+                        builder.AppendLine(Header);
+                        break;
                 }
-                else
-                    builder.AppendLine(Header);
             }
             return builder.ToString();
         }
         #endregion
 
         /// <summary>
-        /// Appends the additional context.
+        /// Adds the KVP.
         /// </summary>
-        /// <returns>Context value</returns>
-        private string GetContext()
+        /// <param name="builder">The builder.</param>
+        /// <param name="masterFormat">The master format.</param>
+        /// <param name="indent">The indent.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="escaped">if set to <see langword="true" /> [escaped].</param>
+        private void AddKVP(StringBuilder builder, MasterFormat masterFormat, string indent, string key, string value, bool escaped = false)
         {
-            KeyValuePair<string, string>[] remainingContext =
-                this.Where(kvp => !kvp.Key.StartsWith(LogKeyPrefix)).ToArray();
-            if (remainingContext.Length < 1) return null;
-
-            StringBuilder builder = new StringBuilder();
-            foreach (KeyValuePair<string, string> kvp in remainingContext)
+            builder.Append(indent);
+            switch (masterFormat)
             {
-                builder.AppendLine();
-                builder.Append("   ");
-                if (kvp.Key == null)
-                    builder.Append("null");
-                else
-                {
-                    builder.Append("'");
-                    builder.Append(kvp.Key);
-                    builder.Append("'");
-                }
-                builder.Append(" = ");
-                if (kvp.Value == null)
-                    builder.Append("null");
-                else
-                {
-                    builder.Append("'");
-                    builder.Append(kvp.Value);
-                    builder.Append("'");
-                }
+                case MasterFormat.Xml:
+                    builder.Append('<');
+                    key = key.Replace(' ', '_');
+                    builder.Append(key);
+                    if (value == null)
+                    {
+                        builder.AppendLine(" />");
+                        return;
+                    }
+                    builder.Append('>');
+                    builder.Append(escaped ? value : value.XmlEscape());
+                    builder.Append("</");
+                    builder.Append(key);
+                    builder.Append(">");
+                    return;
+                case MasterFormat.JSON:
+                    builder.Append(key.ToJSON());
+                    builder.Append(": ");
+                    builder.Append(escaped ? value : value.ToJSON());
+                    return;
+                default:
+                    builder.Append(key);
+                    int len = key.Length;
+                    if (len < 17)
+                        builder.Append(' ', 17 - len);
+                    builder.Append(": ");
+                    builder.Append(value);
+                    return;
             }
-            return builder.ToString();
+        }
+
+        /// <summary>
+        /// The overall output format.
+        /// </summary>
+        private enum MasterFormat
+        {
+            Text,
+            Xml,
+            JSON
         }
 
         /// <summary>

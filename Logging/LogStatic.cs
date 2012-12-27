@@ -343,10 +343,9 @@ namespace WebApplications.Utilities.Logging
                         catch (Exception exception)
                         {
                             new LoggingException(exception,
-                                                 Resources.LogStatic_LoadConfiguration_ErrorCreatingLogger,
                                                  LoggingLevel.Critical,
-                                                 loggerElement.Name,
-                                                 exception.Message);
+                                                 Resources.LogStatic_LoadConfiguration_ErrorCreatingLogger,
+                                                 loggerElement.Name);
                         }
                     }
 
@@ -436,7 +435,6 @@ namespace WebApplications.Utilities.Logging
             {
                 throw new LoggingException(
                     Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
-                    LoggingLevel.Error,
                     logger.Name);
             }
 
@@ -546,7 +544,8 @@ namespace WebApplications.Utilities.Logging
                 }
             }
 
-            if (ValidLevels == LoggingLevels.None)
+            if ((ValidLevels == LoggingLevels.None) || 
+                (batch.Length < 1))
                 return;
 
             // Grab valid loggers
@@ -570,11 +569,10 @@ namespace WebApplications.Utilities.Logging
                 {
                     // Disable this logger as it threw an exception
                     new LoggingException(
-                        e,
-                        Resources.LogStatic_LogBatch_FatalErrorOccured,
+                        e, 
                         LoggingLevel.Critical,
-                        l.Name,
-                        e.Message);
+                        Resources.LogStatic_LogBatch_FatalErrorOccured,
+                        l.Name);
 
                     // Stop logger running again.
                     l.ValidLevels = LoggingLevels.None;

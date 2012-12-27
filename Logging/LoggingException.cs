@@ -261,7 +261,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="innerException">The inner exception.</param>
         /// <param name="level">The log level.</param>
         /// <remarks>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        /// <paramref name="innerException" /> to not be a null value.</remarks>
+        /// <paramref name="innerException" /> to not be a non null value.</remarks>
         public LoggingException([NotNull] Exception innerException, LoggingLevel level = LoggingLevel.Error)
             : this(null, innerException, level, innerException.Message)
         {

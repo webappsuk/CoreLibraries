@@ -89,7 +89,7 @@
     <Compile Include="Loggers\LoggerBase.cs" />
     <Compile Include="LoggingExtensions.cs" />
     <None Include="Loggers\EventLogger.cs" />
-    <None Include="Loggers\FileLogger.cs" />
+    <Compile Include="Loggers\FileLogger.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="LogContext.cs" />

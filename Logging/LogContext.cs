@@ -853,8 +853,7 @@ namespace WebApplications.Utilities.Logging
                 if (!kvp.Key.StartsWith(prefix) ||
                     kvp.Value.Equals(reservation)) continue;
 
-                throw new LoggingException("",
-                                           prefix, kvp.Key);
+                throw new LoggingException(Resources.LogContext_Prefix_Reservation_Failed_Key_Match, prefix, kvp.Key);
             }
 
             // Note that race conditions are possible here (i.e. checks above could succeed for more than one conflicting
