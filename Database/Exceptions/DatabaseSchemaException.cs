@@ -51,13 +51,13 @@ namespace WebApplications.Utilities.Database.Exceptions
         /// <summary>
         ///   Initializes a new instance of the <see cref="LoggingException"/> class.
         /// </summary>
-        /// <param name="message">The exception message.</param>
         /// <param name="level">The severity of the exception being logged.</param>
+        /// <param name="message">The exception message.</param>
         /// <param name="parameters">
-        ///   The parameters, which are formatted by the <paramref name="message"/> <see cref="string"/>.
+        /// The parameters, which are formatted by the <paramref name="message"/> <see cref="string"/>.
         /// </param>
-        public DatabaseSchemaException([NotNull] string message, LogLevel level, [NotNull] params object[] parameters)
-            : base(message, level, parameters)
+        public DatabaseSchemaException(LoggingLevel level, [NotNull] string message, [NotNull] params object[] parameters)
+            : base(level, message, parameters)
         {
         }
 
@@ -68,7 +68,7 @@ namespace WebApplications.Utilities.Database.Exceptions
         ///   The exception that occurred during parsing.
         /// </param>
         /// <param name="level">The severity of the exception being logged.</param>
-        public DatabaseSchemaException([NotNull] Exception innerException, LogLevel level) : base(innerException, level)
+        public DatabaseSchemaException([NotNull] Exception innerException, LoggingLevel level) : base(innerException, level)
         {
         }
 
@@ -91,15 +91,14 @@ namespace WebApplications.Utilities.Database.Exceptions
         ///   Initializes a new instance of the <see cref="LoggingException"/> class.
         /// </summary>
         /// <param name="innerException">
-        ///   The exception that occurred during parsing.
+        /// The exception that occurred during parsing.
         /// </param>
-        /// <param name="message">The exception message.</param>
         /// <param name="level">The severity of the exception being logged.</param>
+        /// <param name="message">The exception message.</param>
         /// <param name="parameters">
-        ///   The parameters, which are formatted by the <paramref name="message"/> <see cref="string"/>.
+        /// The parameters, which are formatted by the <paramref name="message"/> <see cref="string"/>.
         /// </param>
-        public DatabaseSchemaException([CanBeNull] Exception innerException, [NotNull] string message, LogLevel level,
-                                       [NotNull] params object[] parameters)
+        public DatabaseSchemaException([CanBeNull] Exception innerException, LoggingLevel level, [NotNull] string message, [NotNull] params object[] parameters)
             : base(innerException, message, level, parameters)
         {
         }

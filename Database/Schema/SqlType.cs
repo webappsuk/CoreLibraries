@@ -53,7 +53,9 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   Valid date ranges for date types.
         /// </summary>
-        [NotNull] [UsedImplicitly] public static readonly Dictionary<SqlDbType, DateTimeRange> DateTypeSizes =
+        [NotNull]
+        [UsedImplicitly]
+        public static readonly Dictionary<SqlDbType, DateTimeRange> DateTypeSizes =
             new Dictionary<SqlDbType, DateTimeRange>
                 {
                     {SqlDbType.Date, new DateTimeRange(new DateTime(1, 1, 1), new DateTime(9999, 12, 31))},
@@ -78,7 +80,8 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   Holds the SQL data type to <see cref="SqlDbType"/> mapping.
         /// </summary>
-        [NotNull] private static readonly Dictionary<string, SqlDbType> _systemTypes =
+        [NotNull]
+        private static readonly Dictionary<string, SqlDbType> _systemTypes =
             new Dictionary<string, SqlDbType>
                 {
                     {"bigint", SqlDbType.BigInt},
@@ -120,47 +123,59 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         ///   The base type (if any).
         /// </summary>
-        [UsedImplicitly] [CanBeNull] public readonly SqlType BaseType;
+        [UsedImplicitly]
+        [CanBeNull]
+        public readonly SqlType BaseType;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether this is a CLR type.
         /// </summary>
-        [UsedImplicitly] public readonly bool IsCLR;
+        [UsedImplicitly]
+        public readonly bool IsCLR;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether the type accepts nulls.
         /// </summary>
-        [UsedImplicitly] public readonly bool IsNullable;
+        [UsedImplicitly]
+        public readonly bool IsNullable;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether this type is a table.
         /// </summary>
-        [UsedImplicitly] public readonly bool IsTable;
+        [UsedImplicitly]
+        public readonly bool IsTable;
 
         /// <summary>
         ///   A <see cref="bool"/> value indicating whether this is a user defined type.
         /// </summary>
-        [UsedImplicitly] public readonly bool IsUserDefined;
+        [UsedImplicitly]
+        public readonly bool IsUserDefined;
 
         /// <summary>
         ///   The type name.
         /// </summary>
-        [NotNull] [UsedImplicitly] public readonly string Name;
+        [NotNull]
+        [UsedImplicitly]
+        public readonly string Name;
 
         /// <summary>
         ///   The SQL schema the type belongs to.
         /// </summary>
-        [NotNull] [UsedImplicitly] public readonly string SchemaName;
+        [NotNull]
+        [UsedImplicitly]
+        public readonly string SchemaName;
 
         /// <summary>
         ///   The <see cref="SqlTypeSize">size</see> of the type.
         /// </summary>
-        [UsedImplicitly] public readonly SqlTypeSize Size;
+        [UsedImplicitly]
+        public readonly SqlTypeSize Size;
 
         /// <summary>
         ///   The CLR type convertors for this type.
         /// </summary>
-        [NotNull] private readonly ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>>
+        [NotNull]
+        private readonly ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>>
             _clrTypeConvertors = new ConcurrentDictionary<Type, Func<object, TypeConstraintMode, object>>();
 
         private int? _hashCode;
@@ -256,7 +271,7 @@ namespace WebApplications.Utilities.Database.Schema
                 else
                 {
                     // Log error and return NVarChar as fall back.
-                    new DatabaseSchemaException(Resources.SqlType_UnknownSqlSystemType, LogLevel.Warning, FullName);
+                    new DatabaseSchemaException(LoggingLevel.Warning, Resources.SqlType_UnknownSqlSystemType, FullName);
                     SqlDbType = SqlDbType.NVarChar;
                 }
             }
@@ -270,7 +285,7 @@ namespace WebApplications.Utilities.Database.Schema
             else
             {
                 // Log error and return NVarChar as fall back.
-                new DatabaseSchemaException(Resources.SqlType_UnknownSqlSystemType, LogLevel.Critical, FullName);
+                new DatabaseSchemaException(LoggingLevel.Critical, Resources.SqlType_UnknownSqlSystemType, FullName);
                 SqlDbType = SqlDbType.NVarChar;
             }
         }
@@ -350,7 +365,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 obj.IsNullable.GetHashCode() ^ obj.IsUserDefined.GetHashCode() ^ obj.IsCLR.GetHashCode() ^
                                 obj.IsTable.GetHashCode();
             }
-            return (int) obj._hashCode;
+            return (int)obj._hashCode;
         }
         #endregion
 
@@ -406,7 +421,7 @@ namespace WebApplications.Utilities.Database.Schema
         [CanBeNull]
         public object CastCLRValue<T>(T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            Func<object, TypeConstraintMode, object> convertor = GetClrToSqlConvertor(typeof (T));
+            Func<object, TypeConstraintMode, object> convertor = GetClrToSqlConvertor(typeof(T));
             return convertor != null ? convertor(value, mode) : value;
         }
 
@@ -424,7 +439,7 @@ namespace WebApplications.Utilities.Database.Schema
         [UsedImplicitly]
         public Func<object, TypeConstraintMode, object> GetClrToSqlConvertor<T>()
         {
-            return GetClrToSqlConvertor(typeof (T));
+            return GetClrToSqlConvertor(typeof(T));
         }
 
         /// <summary>
@@ -457,585 +472,581 @@ namespace WebApplications.Utilities.Database.Schema
             return _clrTypeConvertors.GetOrAdd(
                 clrType,
                 t =>
+                {
+                    // Should never happen, but if it does there is not conversion from a null type!
+                    if (t == null)
                     {
-                        // Should never happen, but if it does there is not conversion from a null type!
-                        if (t == null)
-                        {
-                            // Log error, but don't throw it.
-                            new DatabaseSchemaException(
-                                Resources.SqlType_GetClrToSqlConverter_NoTypeSpecified,
-                                LogLevel.Critical, this);
-                            return null;
-                        }
+                        // Log error, but don't throw it.
+                        new DatabaseSchemaException(LoggingLevel.Critical,
+                            Resources.SqlType_GetClrToSqlConverter_NoTypeSpecified,
+                            this);
+                        return null;
+                    }
 
-                        try
+                    try
+                    {
+                        // Check for standard conversions first
+                        switch (SqlDbType)
                         {
-                            // Check for standard conversions first
-                            switch (SqlDbType)
-                            {
-                                case SqlDbType.BigInt:
-                                    return CreateConvertor<long>(t);
-                                case SqlDbType.Binary:
-                                case SqlDbType.Image:
-                                case SqlDbType.Timestamp:
-                                case SqlDbType.VarBinary:
-                                    // If we have a byte[] (or can cast to byte[]) then use that.
-                                    Func<object, TypeConstraintMode, object> convertor = CreateConvertor<byte[]>(
-                                        t,
+                            case SqlDbType.BigInt:
+                                return CreateConvertor<long>(t);
+                            case SqlDbType.Binary:
+                            case SqlDbType.Image:
+                            case SqlDbType.Timestamp:
+                            case SqlDbType.VarBinary:
+                                // If we have a byte[] (or can cast to byte[]) then use that.
+                                Func<object, TypeConstraintMode, object> convertor = CreateConvertor<byte[]>(
+                                    t,
+                                    (c, m) =>
+                                        {
+                                            if (c == null)
+                                                return SqlBinary.Null;
+                                            // Check for truncation.
+                                            if ((m != TypeConstraintMode.Silent) &&
+                                                (Size.MaximumLength > -1) &&
+                                                (Size.MaximumLength < c.Length))
+                                            {
+                                                if (m == TypeConstraintMode.Error)
+                                                    throw new DatabaseSchemaException(LoggingLevel.Error,
+                                                                                      Resources.
+                                                                                          SqlType_GetClrToSqlConverter_CouldNotConvertBinaryData,
+                                                                                      c.Length,
+                                                                                      FullName, Size.MaximumLength);
+
+                                                // Warn - don't need to truncate as that happens under the hood anyway.
+                                                Log.Add(
+                                                    LoggingLevel.Warning,
+                                                    Resources.SqlType_GetClrToSqlConverter_BinaryDataTruncated,
+                                                    c.Length,
+                                                    FullName,
+                                                    Size.MaximumLength);
+                                            }
+                                            return c;
+                                        });
+                                if (convertor != null)
+                                    return convertor;
+
+                                // Support serializable objects.
+                                if (t.IsSerializable)
+                                {
+                                    return
                                         (c, m) =>
                                             {
                                                 if (c == null)
                                                     return SqlBinary.Null;
+                                                // Serialize object
+                                                byte[] serializedObject = c.SerializeToByteArray();
+
                                                 // Check for truncation.
-                                                if ((m != TypeConstraintMode.Silent) &&
-                                                    (Size.MaximumLength > -1) &&
-                                                    (Size.MaximumLength < c.Length))
+                                                if (Size.MaximumLength > -1)
+                                                {
+                                                    // NOTE We always fail regardless of truncation mode as a partially serialized object is junk.
+                                                    if (Size.MaximumLength < serializedObject.Length)
+                                                        throw new DatabaseSchemaException(LoggingLevel.Error,
+                                                                                          Resources.
+                                                                                              SqlType_GetClrToSqlConverter_CouldNotSerializeObject,
+                                                                                          t.FullName,
+                                                                                          FullName,
+                                                                                          serializedObject.Length,
+                                                                                          Size.MaximumLength);
+                                                }
+                                                return serializedObject;
+                                            };
+                                }
+
+                                // Do not support this type.
+                                return null;
+                            case SqlDbType.Bit:
+                                return CreateConvertor<bool>(t);
+                            case SqlDbType.Char:
+                            case SqlDbType.Text:
+                            case SqlDbType.VarChar:
+                                return CreateConvertor<string>(
+                                    t,
+                                    (c, m) =>
+                                        {
+                                            if (c == null)
+                                                return SqlString.Null;
+                                            if (m != TypeConstraintMode.Silent)
+                                            {
+                                                // Check for truncation
+                                                if ((Size.MaximumLength > -1) &&
+                                                    (c.Length > Size.MaximumLength))
                                                 {
                                                     if (m == TypeConstraintMode.Error)
-                                                        throw new DatabaseSchemaException(
-                                                            Resources.
-                                                                SqlType_GetClrToSqlConverter_CouldNotConvertBinaryData,
-                                                            LogLevel.Error,
-                                                            c.Length,
-                                                            FullName,
-                                                            Size.MaximumLength);
+                                                        throw new DatabaseSchemaException(LoggingLevel.Error,
+                                                                                          Resources.
+                                                                                              SqlType_GetClrToSqlConverter_CouldNotConvertString,
+                                                                                          c.Length,
+                                                                                          FullName, Size.MaximumLength);
 
                                                     // Warn - don't need to truncate as that happens under the hood anyway.
                                                     Log.Add(
-                                                        Resources.SqlType_GetClrToSqlConverter_BinaryDataTruncated,
-                                                        LogLevel.Warning,
+                                                        LoggingLevel.Warning,
+                                                        Resources.SqlType_GetClrToSqlConverter_StringTruncated,
                                                         c.Length,
                                                         FullName,
                                                         Size.MaximumLength);
                                                 }
-                                                return c;
-                                            });
-                                    if (convertor != null)
-                                        return convertor;
 
-                                    // Support serializable objects.
-                                    if (t.IsSerializable)
-                                    {
-                                        return
-                                            (c, m) =>
-                                                {
-                                                    if (c == null)
-                                                        return SqlBinary.Null;
-                                                    // Serialize object
-                                                    byte[] serializedObject = c.SerializeToByteArray();
-
-                                                    // Check for truncation.
-                                                    if (Size.MaximumLength > -1)
-                                                    {
-                                                        // NOTE We always fail regardless of truncation mode as a partially serialized object is junk.
-                                                        if (Size.MaximumLength < serializedObject.Length)
-                                                            throw new DatabaseSchemaException(
-                                                                Resources.
-                                                                    SqlType_GetClrToSqlConverter_CouldNotSerializeObject,
-                                                                LogLevel.Error,
-                                                                t.FullName,
-                                                                FullName,
-                                                                serializedObject.Length,
-                                                                Size.MaximumLength);
-                                                    }
-                                                    return serializedObject;
-                                                };
-                                    }
-
-                                    // Do not support this type.
-                                    return null;
-                                case SqlDbType.Bit:
-                                    return CreateConvertor<bool>(t);
-                                case SqlDbType.Char:
-                                case SqlDbType.Text:
-                                case SqlDbType.VarChar:
-                                    return CreateConvertor<string>(
-                                        t,
-                                        (c, m) =>
-                                            {
-                                                if (c == null)
-                                                    return SqlString.Null;
-                                                if (m != TypeConstraintMode.Silent)
-                                                {
-                                                    // Check for truncation
-                                                    if ((Size.MaximumLength > -1) &&
-                                                        (c.Length > Size.MaximumLength))
-                                                    {
-                                                        if (m == TypeConstraintMode.Error)
-                                                            throw new DatabaseSchemaException(
-                                                                Resources.
-                                                                    SqlType_GetClrToSqlConverter_CouldNotConvertString,
-                                                                LogLevel.Error,
-                                                                c.Length,
-                                                                FullName,
-                                                                Size.MaximumLength);
-
-                                                        // Warn - don't need to truncate as that happens under the hood anyway.
-                                                        Log.Add(
-                                                            Resources.SqlType_GetClrToSqlConverter_StringTruncated,
-                                                            LogLevel.Warning,
-                                                            c.Length,
-                                                            FullName,
-                                                            Size.MaximumLength);
-                                                    }
-
-                                                    // Check for non ASCII chars
-                                                    if (c.Any(ch => ch > 255))
-                                                    {
-                                                        if (m == TypeConstraintMode.Error)
-                                                            throw new DatabaseSchemaException(
-                                                                Resources.
-                                                                    SqlType_GetClrToSqlConverter_StringContainsUnicodeCharacters,
-                                                                LogLevel.Error,
-                                                                FullName);
-
-                                                        // Warn - don't need to do anything as that happens under the hood anyway.
-                                                        Log.Add(
-                                                            Resources.SqlType_GetClrToSqlConverter_UnicodeCharactersLost,
-                                                            LogLevel.Warning,
-                                                            FullName);
-                                                    }
-                                                }
-                                                return new SqlString(c);
-                                            });
-                                case SqlDbType.NChar:
-                                case SqlDbType.NText:
-                                case SqlDbType.NVarChar:
-                                    return CreateConvertor<string>(
-                                        t,
-                                        (c, m) =>
-                                            {
-                                                if (c == null)
-                                                    return SqlString.Null;
-                                                // SQL reports size in bytes rather than characters - so divide by 2.
-                                                int sqlSize = Size.MaximumLength/2;
-                                                if ((m != TypeConstraintMode.Silent) &&
-                                                    (Size.MaximumLength > -1) &&
-                                                    (c.Length > Size.MaximumLength/2))
+                                                // Check for non ASCII chars
+                                                if (c.Any(ch => ch > 255))
                                                 {
                                                     if (m == TypeConstraintMode.Error)
-                                                        throw new DatabaseSchemaException(
-                                                            Resources.SqlType_GetClrToSqlConverter_CouldNotConvertString,
-                                                            LogLevel.Error,
-                                                            c.Length,
-                                                            FullName,
-                                                            sqlSize);
+                                                        throw new DatabaseSchemaException(LoggingLevel.Error,
+                                                                                          Resources.
+                                                                                              SqlType_GetClrToSqlConverter_StringContainsUnicodeCharacters,
+                                                                                          FullName);
 
-                                                    // Warn - don't need to truncate as that happens under the hood anyway.
+                                                    // Warn - don't need to do anything as that happens under the hood anyway.
                                                     Log.Add(
-                                                        Resources.SqlType_GetClrToSqlConverter_StringTruncated,
-                                                        LogLevel.Warning,
-                                                        c.Length,
-                                                        FullName,
-                                                        sqlSize);
+                                                        LoggingLevel.Warning,
+                                                        Resources.SqlType_GetClrToSqlConverter_UnicodeCharactersLost,
+                                                        FullName);
                                                 }
-                                                return new SqlString(c);
+                                            }
+                                            return new SqlString(c);
+                                        });
+                            case SqlDbType.NChar:
+                            case SqlDbType.NText:
+                            case SqlDbType.NVarChar:
+                                return CreateConvertor<string>(
+                                    t,
+                                    (c, m) =>
+                                        {
+                                            if (c == null)
+                                                return SqlString.Null;
+                                            // SQL reports size in bytes rather than characters - so divide by 2.
+                                            int sqlSize = Size.MaximumLength/2;
+                                            if ((m != TypeConstraintMode.Silent) &&
+                                                (Size.MaximumLength > -1) &&
+                                                (c.Length > Size.MaximumLength/2))
+                                            {
+                                                if (m == TypeConstraintMode.Error)
+                                                    throw new DatabaseSchemaException(LoggingLevel.Error,
+                                                                                      Resources
+                                                                                          .SqlType_GetClrToSqlConverter_CouldNotConvertString,
+                                                                                      c.Length,
+                                                                                      FullName, sqlSize);
+
+                                                // Warn - don't need to truncate as that happens under the hood anyway.
+                                                Log.Add(
+                                                    LoggingLevel.Warning,
+                                                    Resources.SqlType_GetClrToSqlConverter_StringTruncated,
+                                                    c.Length,
+                                                    FullName,
+                                                    sqlSize);
+                                            }
+                                            return new SqlString(c);
+                                        });
+                            case SqlDbType.SmallDateTime:
+                            case SqlDbType.DateTime:
+                            case SqlDbType.Date:
+                            case SqlDbType.DateTime2:
+                            case SqlDbType.DateTimeOffset:
+                                return clrType.IsGenericType &&
+                                       clrType.GetGenericTypeDefinition() == typeof (Nullable<>)
+                                           ? CreateConvertor<DateTime?>(
+                                               t,
+                                               (c, m) =>
+                                                   {
+                                                       if (c == null)
+                                                           return DBNull.Value;
+
+                                                       DateTime original = (DateTime) c;
+                                                       DateTimeRange range = DateTypeSizes[SqlDbType];
+                                                       DateTime bound = range.Bind(original);
+
+                                                       if ((m != TypeConstraintMode.Silent) &&
+                                                           (original != bound))
+                                                       {
+                                                           if (m == TypeConstraintMode.Error)
+                                                               throw new DatabaseSchemaException(LoggingLevel.Error,
+                                                                                                 Resources.
+                                                                                                     SqlType_GetClrToSqlConverter_CouldNotConvertDateTimeToSqlType,
+                                                                                                 original,
+                                                                                                 FullName, range);
+
+                                                           // Warn - don't need to truncate as that happens under the hood anyway.
+                                                           Log.Add(
+                                                               LoggingLevel.Warning,
+                                                               Resources.
+                                                                   SqlType_GetClrToSqlConverter_DateTimeTruncated,
+                                                               original,
+                                                               FullName,
+                                                               range);
+                                                       }
+                                                       return bound;
+                                                   })
+                                           : CreateConvertor<DateTime>(
+                                               t,
+                                               (c, m) =>
+                                                   {
+                                                       DateTimeRange range = DateTypeSizes[SqlDbType];
+                                                       DateTime bound = range.Bind(c);
+
+                                                       if ((m != TypeConstraintMode.Silent) &&
+                                                           (c != bound))
+                                                       {
+                                                           if (m == TypeConstraintMode.Error)
+                                                               throw new DatabaseSchemaException(LoggingLevel.Error,
+                                                                                                 Resources.
+                                                                                                     SqlType_GetClrToSqlConverter_CouldNotConvertDateTimeToSqlType,
+                                                                                                 c,
+                                                                                                 FullName, range);
+
+                                                           // Warn - don't need to truncate as that happens under the hood anyway.
+                                                           Log.Add(
+                                                               LoggingLevel.Warning,
+                                                               Resources.
+                                                                   SqlType_GetClrToSqlConverter_DateTimeTruncated,
+                                                               c,
+                                                               FullName,
+                                                               range);
+                                                       }
+                                                       return bound;
+                                                   });
+                            case SqlDbType.Time:
+                                return CreateConvertor<TimeSpan>(t);
+                            case SqlDbType.Decimal:
+                                return CreateConvertor<decimal>(t);
+                            case SqlDbType.Float:
+                                return CreateConvertor<double>(t);
+                            case SqlDbType.Int:
+                                return CreateConvertor<int>(t);
+                            case SqlDbType.Money:
+                            case SqlDbType.SmallMoney:
+                                return CreateConvertor<decimal>(t);
+                            case SqlDbType.Real:
+                                return CreateConvertor<float>(t);
+                            case SqlDbType.UniqueIdentifier:
+                                return CreateConvertor<Guid>(t);
+                            case SqlDbType.SmallInt:
+                                return CreateConvertor<short>(t);
+                            case SqlDbType.TinyInt:
+                                return CreateConvertor<byte>(t);
+                            case SqlDbType.Variant:
+                                // TODO Variant type can't accept everything!
+                                return (c, m) => c;
+                            case SqlDbType.Xml:
+                                return
+                                    CreateConvertor<XNode>(
+                                        t,
+                                        (c, m) =>
+                                            {
+                                                if (c == null)
+                                                    return (object) SqlXml.Null;
+                                                using (XmlReader xmlNodeReader = c.CreateReader())
+                                                    return new SqlXml(xmlNodeReader);
+                                            })
+                                    ??
+                                    CreateConvertor<XmlNode>(
+                                        t,
+                                        (c, m) =>
+                                            {
+                                                if (c == null)
+                                                    return (object) SqlXml.Null;
+                                                using (XmlNodeReader xmlNodeReader = new XmlNodeReader(c))
+                                                    return new SqlXml(xmlNodeReader);
                                             });
-                                case SqlDbType.SmallDateTime:
-                                case SqlDbType.DateTime:
-                                case SqlDbType.Date:
-                                case SqlDbType.DateTime2:
-                                case SqlDbType.DateTimeOffset:
-                                    return clrType.IsGenericType &&
-                                           clrType.GetGenericTypeDefinition() == typeof (Nullable<>)
-                                               ? CreateConvertor<DateTime?>(
-                                                   t,
-                                                   (c, m) =>
-                                                       {
-                                                           if (c == null)
-                                                               return DBNull.Value;
-
-                                                           DateTime original = (DateTime) c;
-                                                           DateTimeRange range = DateTypeSizes[SqlDbType];
-                                                           DateTime bound = range.Bind(original);
-
-                                                           if ((m != TypeConstraintMode.Silent) &&
-                                                               (original != bound))
-                                                           {
-                                                               if (m == TypeConstraintMode.Error)
-                                                                   throw new DatabaseSchemaException(
-                                                                       Resources.
-                                                                           SqlType_GetClrToSqlConverter_CouldNotConvertDateTimeToSqlType,
-                                                                       LogLevel.Error,
-                                                                       original,
-                                                                       FullName,
-                                                                       range);
-
-                                                               // Warn - don't need to truncate as that happens under the hood anyway.
-                                                               Log.Add(
-                                                                   Resources.
-                                                                       SqlType_GetClrToSqlConverter_DateTimeTruncated,
-                                                                   LogLevel.Warning,
-                                                                   original,
-                                                                   FullName,
-                                                                   range);
-                                                           }
-                                                           return bound;
-                                                       })
-                                               : CreateConvertor<DateTime>(
-                                                   t,
-                                                   (c, m) =>
-                                                       {
-                                                           DateTimeRange range = DateTypeSizes[SqlDbType];
-                                                           DateTime bound = range.Bind(c);
-
-                                                           if ((m != TypeConstraintMode.Silent) &&
-                                                               (c != bound))
-                                                           {
-                                                               if (m == TypeConstraintMode.Error)
-                                                                   throw new DatabaseSchemaException(
-                                                                       Resources.
-                                                                           SqlType_GetClrToSqlConverter_CouldNotConvertDateTimeToSqlType,
-                                                                       LogLevel.Error,
-                                                                       c,
-                                                                       FullName,
-                                                                       range);
-
-                                                               // Warn - don't need to truncate as that happens under the hood anyway.
-                                                               Log.Add(
-                                                                   Resources.
-                                                                       SqlType_GetClrToSqlConverter_DateTimeTruncated,
-                                                                   LogLevel.Warning,
-                                                                   c,
-                                                                   FullName,
-                                                                   range);
-                                                           }
-                                                           return bound;
-                                                       });
-                                case SqlDbType.Time:
-                                    return CreateConvertor<TimeSpan>(t);
-                                case SqlDbType.Decimal:
-                                    return CreateConvertor<decimal>(t);
-                                case SqlDbType.Float:
-                                    return CreateConvertor<double>(t);
-                                case SqlDbType.Int:
-                                    return CreateConvertor<int>(t);
-                                case SqlDbType.Money:
-                                case SqlDbType.SmallMoney:
-                                    return CreateConvertor<decimal>(t);
-                                case SqlDbType.Real:
-                                    return CreateConvertor<float>(t);
-                                case SqlDbType.UniqueIdentifier:
-                                    return CreateConvertor<Guid>(t);
-                                case SqlDbType.SmallInt:
-                                    return CreateConvertor<short>(t);
-                                case SqlDbType.TinyInt:
-                                    return CreateConvertor<byte>(t);
-                                case SqlDbType.Variant:
-                                    // TODO Variant type can't accept everything!
-                                    return (c, m) => c;
-                                case SqlDbType.Xml:
-                                    return
-                                        CreateConvertor<XNode>(
-                                            t,
-                                            (c, m) =>
-                                                {
-                                                    if (c == null)
-                                                        return (object) SqlXml.Null;
-                                                    using (XmlReader xmlNodeReader = c.CreateReader())
-                                                        return new SqlXml(xmlNodeReader);
-                                                })
-                                        ??
-                                        CreateConvertor<XmlNode>(
-                                            t,
-                                            (c, m) =>
-                                                {
-                                                    if (c == null)
-                                                        return (object) SqlXml.Null;
-                                                    using (XmlNodeReader xmlNodeReader = new XmlNodeReader(c))
-                                                        return new SqlXml(xmlNodeReader);
-                                                });
-                                case SqlDbType.Udt:
-                                    // Add UDT conversions (which depend on the type name).
-                                    switch (Name)
-                                    {
-                                        case "geography":
-                                            return CreateConvertor<SqlGeography>(t, false);
-                                        case "geometry":
-                                            return CreateConvertor<SqlGeometry>(t, false);
-                                        case "hierarchyid":
-                                            return CreateConvertor<SqlHierarchyId>(t, false);
-                                        default:
-                                            // Log error, but don't throw it.
-                                            new DatabaseSchemaException(
-                                                Resources.SqlType_GetClrToSqlConverter_UdtTypeNotSupported,
-                                                LogLevel.Critical, Name);
-                                            return null;
-                                    }
-                                case SqlDbType.Structured:
-                                    // This is actually a SqlTableType.
-                                    SqlTableType tableType = this as SqlTableType;
-                                    if (tableType == null)
-                                    {
+                            case SqlDbType.Udt:
+                                // Add UDT conversions (which depend on the type name).
+                                switch (Name)
+                                {
+                                    case "geography":
+                                        return CreateConvertor<SqlGeography>(t, false);
+                                    case "geometry":
+                                        return CreateConvertor<SqlGeometry>(t, false);
+                                    case "hierarchyid":
+                                        return CreateConvertor<SqlHierarchyId>(t, false);
+                                    default:
                                         // Log error, but don't throw it.
-                                        new DatabaseSchemaException(
-                                            Resources.SqlType_GetClrToSqlConverter_NotCreatedAsSqlTableType,
-                                            LogLevel.Critical, this);
+                                        new DatabaseSchemaException(LoggingLevel.Critical,
+                                                                    Resources
+                                                                        .SqlType_GetClrToSqlConverter_UdtTypeNotSupported,
+                                                                    Name);
                                         return null;
+                                }
+                            case SqlDbType.Structured:
+                                // This is actually a SqlTableType.
+                                SqlTableType tableType = this as SqlTableType;
+                                if (tableType == null)
+                                {
+                                    // Log error, but don't throw it.
+                                    new DatabaseSchemaException(LoggingLevel.Critical,
+                                                                Resources
+                                                                    .SqlType_GetClrToSqlConverter_NotCreatedAsSqlTableType,
+                                                                this);
+                                    return null;
+                                }
+
+                                SqlType[] columnSqlTypes =
+                                    tableType.TableDefinition.Columns.Select(c => c.Type).ToArray();
+                                int columns = columnSqlTypes.Length;
+
+                                // Find out last non-nullable column to determine the minimum number of columns that must
+                                // be supplied - as columns are unnamed on the input (we only have the type to go by), the we
+                                // cannot 'skip' columns, and all non-null columns must be supplied.
+                                int minColumns;
+                                for (minColumns = columns; minColumns > 1; minColumns--)
+                                {
+                                    if (!columnSqlTypes[minColumns - 1].IsNullable)
+                                        break;
+                                }
+
+                                // Check if type implements IEnumerable<T>
+                                Type enumerableInterface =
+                                    t.IsGenericType && (t.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+                                        ? t
+                                        : t.GetInterfaces()
+                                           .FirstOrDefault(
+                                               it =>
+                                               it.IsGenericType &&
+                                               it.GetGenericTypeDefinition() == typeof (IEnumerable<>));
+
+                                if (enumerableInterface != null)
+                                {
+                                    // Get the enumeration type
+                                    Type enumerationType = enumerableInterface.GetGenericArguments().First();
+
+                                    // If the type passed in is assignable from IEnumerable<SqlDataRecord> then we can pass straight through
+                                    // after checking there are rows available.
+                                    if (typeof (SqlDataRecord).IsAssignableFrom(enumerationType))
+                                    {
+                                        // We are the base non-generic table type.
+                                        return (Func<object, TypeConstraintMode, object>)
+                                               ((c, m) =>
+                                                   {
+                                                       if (c == null)
+                                                           return null;
+                                                       List<SqlDataRecord> records =
+                                                           ((IEnumerable<SqlDataRecord>) c).ToList();
+                                                       return records.Count < 1 ? null : records;
+                                                   });
                                     }
 
-                                    SqlType[] columnSqlTypes =
-                                        tableType.TableDefinition.Columns.Select(c => c.Type).ToArray();
-                                    int columns = columnSqlTypes.Length;
 
-                                    // Find out last non-nullable column to determine the minimum number of columns that must
-                                    // be supplied - as columns are unnamed on the input (we only have the type to go by), the we
-                                    // cannot 'skip' columns, and all non-null columns must be supplied.
-                                    int minColumns;
-                                    for (minColumns = columns; minColumns > 1; minColumns--)
+                                    // Check if we are IEnumerable<Tuple<...>>
+                                    if (enumerationType.IsGenericType &&
+                                        enumerationType.GetInterfaces().Any(i => i.FullName == "System.ITuple"))
                                     {
-                                        if (!columnSqlTypes[minColumns - 1].IsNullable)
-                                            break;
-                                    }
+                                        // Get convertors for tuple elements
+                                        Type[] tupleTypes = enumerationType.GetIndexTypes();
+                                        int items = tupleTypes.Length;
 
-                                    // Check if type implements IEnumerable<T>
-                                    Type enumerableInterface =
-                                        t.IsGenericType && (t.GetGenericTypeDefinition() == typeof (IEnumerable<>))
-                                            ? t
-                                            : t.GetInterfaces()
-                                                  .FirstOrDefault(
-                                                      it =>
-                                                      it.IsGenericType &&
-                                                      it.GetGenericTypeDefinition() == typeof (IEnumerable<>));
-
-                                    if (enumerableInterface != null)
-                                    {
-                                        // Get the enumeration type
-                                        Type enumerationType = enumerableInterface.GetGenericArguments().First();
-
-                                        // If the type passed in is assignable from IEnumerable<SqlDataRecord> then we can pass straight through
-                                        // after checking there are rows available.
-                                        if (typeof (SqlDataRecord).IsAssignableFrom(enumerationType))
+                                        // Check we don't have too many items in the tuple.
+                                        if (items > columns)
                                         {
-                                            // We are the base non-generic table type.
-                                            return (Func<object, TypeConstraintMode, object>)
-                                                   ((c, m) =>
-                                                        {
-                                                            if (c == null)
-                                                                return null;
-                                                            List<SqlDataRecord> records =
-                                                                ((IEnumerable<SqlDataRecord>) c).ToList();
-                                                            return records.Count < 1 ? null : records;
-                                                        });
+                                            // Log error, but don't throw it.
+                                            new DatabaseSchemaException(LoggingLevel.Critical,
+                                                                        Resources.
+                                                                            SqlType_GetClrToSqlConverter_ColumnNumberAndTupleSizeMismatch,
+                                                                        this, enumerationType.Name, columns,
+                                                                        items);
+                                            return null;
                                         }
 
-
-                                        // Check if we are IEnumerable<Tuple<...>>
-                                        if (enumerationType.IsGenericType &&
-                                            enumerationType.GetInterfaces().Any(i => i.FullName == "System.ITuple"))
+                                        // Check we don't have too few!
+                                        if (items < minColumns)
                                         {
-                                            // Get convertors for tuple elements
-                                            Type[] tupleTypes = enumerationType.GetIndexTypes();
-                                            int items = tupleTypes.Length;
+                                            // Log error, but don't throw it.
+                                            new DatabaseSchemaException(LoggingLevel.Critical,
+                                                                        Resources.
+                                                                            SqlType_GetClrToSqlConverter_ColumnNumberAndTupleSizeMismatch,
+                                                                        this, enumerationType.Name, columns,
+                                                                        items);
+                                            return null;
+                                        }
 
-                                            // Check we don't have too many items in the tuple.
-                                            if (items > columns)
+                                        // Get the tuple indexer (note this supports extended/nested tuples).
+                                        Func<object, int, object> indexer = enumerationType.GetTupleIndexer();
+
+                                        Func<object, TypeConstraintMode, object>[] convertors =
+                                            new Func<object, TypeConstraintMode, object>[tupleTypes.Length];
+                                        for (int i = 0; i < tupleTypes.Length; i++)
+                                        {
+                                            Func<object, TypeConstraintMode, object> columnConvertor =
+                                                columnSqlTypes[i].GetClrToSqlConvertor(tupleTypes[i]);
+                                            if (columnConvertor == null)
                                             {
                                                 // Log error, but don't throw it.
-                                                new DatabaseSchemaException(
-                                                    Resources.
-                                                        SqlType_GetClrToSqlConverter_ColumnNumberAndTupleSizeMismatch,
-                                                    LogLevel.Critical, this, enumerationType.Name, columns,
-                                                    items);
+                                                new DatabaseSchemaException(LoggingLevel.Critical,
+                                                                            Resources
+                                                                                .SqlType_GetClrToSqlConverter_CanNotCast,
+                                                                            this, enumerationType.Name, tupleTypes[i],
+                                                                            columnSqlTypes[i], i);
                                                 return null;
                                             }
 
-                                            // Check we don't have too few!
-                                            if (items < minColumns)
-                                            {
-                                                // Log error, but don't throw it.
-                                                new DatabaseSchemaException(
-                                                    Resources.
-                                                        SqlType_GetClrToSqlConverter_ColumnNumberAndTupleSizeMismatch,
-                                                    LogLevel.Critical, this, enumerationType.Name, columns,
-                                                    items);
-                                                return null;
-                                            }
+                                            // TODO A direct expression tree would probably be quicker... need to performance test.
+                                            int cindex = i;
+                                            convertors[i] = (o, m) => columnConvertor(indexer(o, cindex), m);
+                                        }
 
-                                            // Get the tuple indexer (note this supports extended/nested tuples).
-                                            Func<object, int, object> indexer = enumerationType.GetTupleIndexer();
+                                        // Create lambda
+                                        return (Func<object, TypeConstraintMode, object>)
+                                               ((c, m) =>
+                                                   {
+                                                       IEnumerable enumerable = c as IEnumerable;
+                                                       if (enumerable == null)
+                                                           return null;
+                                                       List<SqlDataRecord> records = new List<SqlDataRecord>();
+                                                       SqlMetaData[] sqlMetaData =
+                                                           tableType.TableDefinition.SqlMetaData;
+                                                       foreach (object o in enumerable)
+                                                       {
+                                                           SqlDataRecord record = new SqlDataRecord(sqlMetaData);
+                                                           for (int i = 0; i < items; i++)
+                                                               record.SetValue(i, convertors[i](o, m));
+                                                           records.Add(record);
+                                                       }
 
-                                            Func<object, TypeConstraintMode, object>[] convertors =
-                                                new Func<object, TypeConstraintMode, object>[tupleTypes.Length];
-                                            for (int i = 0; i < tupleTypes.Length; i++)
-                                            {
-                                                Func<object, TypeConstraintMode, object> columnConvertor =
-                                                    columnSqlTypes[i].GetClrToSqlConvertor(tupleTypes[i]);
-                                                if (columnConvertor == null)
-                                                {
-                                                    // Log error, but don't throw it.
-                                                    new DatabaseSchemaException(
-                                                        Resources.SqlType_GetClrToSqlConverter_CanNotCast,
-                                                        LogLevel.Critical, this, enumerationType.Name, tupleTypes[i],
-                                                        columnSqlTypes[i], i);
-                                                    return null;
-                                                }
+                                                       // If we have zero count return DBNull (never return empty enumeration!)
+                                                       return records.Count < 1
+                                                                  ? (object) null
+                                                                  : records;
+                                                   });
+                                    }
 
-                                                // TODO A direct expression tree would probably be quicker... need to performance test.
-                                                int cindex = i;
-                                                convertors[i] = (o, m) => columnConvertor(indexer(o, cindex), m);
-                                            }
-
+                                    // If we're single column we support enumeration of column type
+                                    if (minColumns < 2)
+                                    {
+                                        // Get convertor for column type
+                                        SqlType columnType = columnSqlTypes[0];
+                                        Func<object, TypeConstraintMode, object> enumConvertor =
+                                            columnType.GetClrToSqlConvertor(enumerationType);
+                                        if (enumConvertor != null)
+                                        {
                                             // Create lambda
                                             return (Func<object, TypeConstraintMode, object>)
                                                    ((c, m) =>
-                                                        {
-                                                            IEnumerable enumerable = c as IEnumerable;
-                                                            if (enumerable == null)
-                                                                return null;
-                                                            List<SqlDataRecord> records = new List<SqlDataRecord>();
-                                                            SqlMetaData[] sqlMetaData =
-                                                                tableType.TableDefinition.SqlMetaData;
-                                                            foreach (object o in enumerable)
-                                                            {
-                                                                SqlDataRecord record = new SqlDataRecord(sqlMetaData);
-                                                                for (int i = 0; i < items; i++)
-                                                                    record.SetValue(i, convertors[i](o, m));
-                                                                records.Add(record);
-                                                            }
+                                                       {
+                                                           IEnumerable enumerable = c as IEnumerable;
+                                                           if (enumerable == null)
+                                                               return null;
+                                                           List<SqlDataRecord> records = new List<SqlDataRecord>();
+                                                           SqlMetaData[] sqlMetaData =
+                                                               tableType.TableDefinition.SqlMetaData;
+                                                           foreach (object o in enumerable)
+                                                           {
+                                                               SqlDataRecord record = new SqlDataRecord(sqlMetaData);
+                                                               record.SetValue(0, enumConvertor(o, m));
+                                                               records.Add(record);
+                                                           }
 
-                                                            // If we have zero count return DBNull (never return empty enumeration!)
-                                                            return records.Count < 1
-                                                                       ? (object) null
-                                                                       : records;
-                                                        });
+                                                           // If we have zero count return DBNull (never return empty enumeration!)
+                                                           return records.Count < 1
+                                                                      ? (object) null
+                                                                      : records;
+                                                       });
                                         }
+                                    }
 
-                                        // If we're single column we support enumeration of column type
-                                        if (minColumns < 2)
+                                    // If we have more than 1 column, but we need less than 3, then a keyvaluepair is fine.
+                                    if ((minColumns < 3) && (columns > 1) &&
+                                        (enumerationType.IsGenericType &&
+                                         enumerationType.GetGenericTypeDefinition() == typeof (KeyValuePair<,>)))
+                                    {
+                                        // Get convertor for key and value column types
+                                        Type[] kvpTypes = enumerationType.GetGenericArguments();
+
+                                        SqlType keyColumnType = columnSqlTypes[0];
+                                        SqlType valueColumnType = columnSqlTypes[1];
+                                        Func<object, TypeConstraintMode, object> keyConvertor =
+                                            keyColumnType.GetClrToSqlConvertor(kvpTypes[0]);
+                                        if (keyConvertor == null)
                                         {
-                                            // Get convertor for column type
-                                            SqlType columnType = columnSqlTypes[0];
-                                            Func<object, TypeConstraintMode, object> enumConvertor =
-                                                columnType.GetClrToSqlConvertor(enumerationType);
-                                            if (enumConvertor != null)
-                                            {
-                                                // Create lambda
-                                                return (Func<object, TypeConstraintMode, object>)
-                                                       ((c, m) =>
-                                                            {
-                                                                IEnumerable enumerable = c as IEnumerable;
-                                                                if (enumerable == null)
-                                                                    return null;
-                                                                List<SqlDataRecord> records = new List<SqlDataRecord>();
-                                                                SqlMetaData[] sqlMetaData =
-                                                                    tableType.TableDefinition.SqlMetaData;
-                                                                foreach (object o in enumerable)
-                                                                {
-                                                                    SqlDataRecord record = new SqlDataRecord(sqlMetaData);
-                                                                    record.SetValue(0, enumConvertor(o, m));
-                                                                    records.Add(record);
-                                                                }
-
-                                                                // If we have zero count return DBNull (never return empty enumeration!)
-                                                                return records.Count < 1
-                                                                           ? (object) null
-                                                                           : records;
-                                                            });
-                                            }
+                                            // Log error, but don't throw it.
+                                            new DatabaseSchemaException(LoggingLevel.Critical,
+                                                                        Resources
+                                                                            .SqlType_GetClrToSqlConverter_CanNotConvertKeyType,
+                                                                        this, enumerationType.Name, kvpTypes[0],
+                                                                        keyColumnType);
+                                            return null;
                                         }
 
-                                        // If we have more than 1 column, but we need less than 3, then a keyvaluepair is fine.
-                                        if ((minColumns < 3) && (columns > 1) &&
-                                            (enumerationType.IsGenericType &&
-                                             enumerationType.GetGenericTypeDefinition() == typeof (KeyValuePair<,>)))
+                                        // Create key selector
+                                        Func<object, object> keySelector =
+                                            enumerationType.GetGetter<object, object>("Key");
+                                        Func<object, TypeConstraintMode, object> k =
+                                            (o, m) => keyConvertor(keySelector(o), m);
+
+                                        Func<object, TypeConstraintMode, object> valueConvertor =
+                                            valueColumnType.GetClrToSqlConvertor(kvpTypes[1]);
+                                        if (valueConvertor == null)
                                         {
-                                            // Get convertor for key and value column types
-                                            Type[] kvpTypes = enumerationType.GetGenericArguments();
-
-                                            SqlType keyColumnType = columnSqlTypes[0];
-                                            SqlType valueColumnType = columnSqlTypes[1];
-                                            Func<object, TypeConstraintMode, object> keyConvertor =
-                                                keyColumnType.GetClrToSqlConvertor(kvpTypes[0]);
-                                            if (keyConvertor == null)
-                                            {
-                                                // Log error, but don't throw it.
-                                                new DatabaseSchemaException(
-                                                    Resources.SqlType_GetClrToSqlConverter_CanNotConvertKeyType,
-                                                    LogLevel.Critical, this, enumerationType.Name, kvpTypes[0],
-                                                    keyColumnType);
-                                                return null;
-                                            }
-
-                                            // Create key selector
-                                            Func<object, object> keySelector =
-                                                enumerationType.GetGetter<object, object>("Key");
-                                            Func<object, TypeConstraintMode, object> k =
-                                                (o, m) => keyConvertor(keySelector(o), m);
-
-                                            Func<object, TypeConstraintMode, object> valueConvertor =
-                                                valueColumnType.GetClrToSqlConvertor(kvpTypes[1]);
-                                            if (valueConvertor == null)
-                                            {
-                                                // Log error, but don't throw it.
-                                                new DatabaseSchemaException(
-                                                    Resources.SqlType_GetClrToSqlConverter_CannotAcceptEnumerationType,
-                                                    LogLevel.Critical, this, enumerationType.Name);
-                                                return null;
-                                            }
-                                            Func<object, object> valueSelector =
-                                                enumerationType.GetGetter<object, object>("Value");
-                                            Func<object, TypeConstraintMode, object> v =
-                                                (o, m) => valueConvertor(valueSelector(o), m);
-
-
-                                            // Create lambda
-                                            return (Func<object, TypeConstraintMode, object>)
-                                                   ((c, m) =>
-                                                        {
-                                                            IEnumerable enumerable = c as IEnumerable;
-                                                            if (enumerable == null)
-                                                                return null;
-                                                            List<SqlDataRecord> records = new List<SqlDataRecord>();
-                                                            SqlMetaData[] sqlMetaData =
-                                                                tableType.TableDefinition.SqlMetaData;
-                                                            foreach (object o in enumerable)
-                                                            {
-                                                                SqlDataRecord record = new SqlDataRecord(sqlMetaData);
-                                                                record.SetValue(0, k(o, m));
-                                                                record.SetValue(1, v(o, m));
-                                                                records.Add(record);
-                                                            }
-
-                                                            // If we have zero count return DBNull (never return empty enumeration!)
-                                                            return records.Count < 1
-                                                                       ? (object) null
-                                                                       : records;
-                                                        });
+                                            // Log error, but don't throw it.
+                                            new DatabaseSchemaException(LoggingLevel.Critical,
+                                                                        Resources
+                                                                            .SqlType_GetClrToSqlConverter_CannotAcceptEnumerationType,
+                                                                        this, enumerationType.Name);
+                                            return null;
                                         }
+                                        Func<object, object> valueSelector =
+                                            enumerationType.GetGetter<object, object>("Value");
+                                        Func<object, TypeConstraintMode, object> v =
+                                            (o, m) => valueConvertor(valueSelector(o), m);
 
-                                        // Unsupported Log error, but don't throw it.
-                                        new DatabaseSchemaException(
-                                            Resources.SqlType_GetClrToSqlConverter_CannotAcceptEnumerationType,
-                                            LogLevel.Critical, this, enumerationType);
-                                        return null;
+
+                                        // Create lambda
+                                        return (Func<object, TypeConstraintMode, object>)
+                                               ((c, m) =>
+                                                   {
+                                                       IEnumerable enumerable = c as IEnumerable;
+                                                       if (enumerable == null)
+                                                           return null;
+                                                       List<SqlDataRecord> records = new List<SqlDataRecord>();
+                                                       SqlMetaData[] sqlMetaData =
+                                                           tableType.TableDefinition.SqlMetaData;
+                                                       foreach (object o in enumerable)
+                                                       {
+                                                           SqlDataRecord record = new SqlDataRecord(sqlMetaData);
+                                                           record.SetValue(0, k(o, m));
+                                                           record.SetValue(1, v(o, m));
+                                                           records.Add(record);
+                                                       }
+
+                                                       // If we have zero count return DBNull (never return empty enumeration!)
+                                                       return records.Count < 1
+                                                                  ? (object) null
+                                                                  : records;
+                                                   });
                                     }
 
                                     // Unsupported Log error, but don't throw it.
-                                    new DatabaseSchemaException(
-                                        Resources.SqlType_GetClrToSqlConverter_CannotAcceptType,
-                                        LogLevel.Critical, this, t);
+                                    new DatabaseSchemaException(LoggingLevel.Critical,
+                                                                Resources
+                                                                    .SqlType_GetClrToSqlConverter_CannotAcceptEnumerationType,
+                                                                this, enumerationType);
                                     return null;
-                                default:
-                                    throw new DatabaseSchemaException(
-                                        Resources.SqlType_GetClrToSqlConverter_UnsupportedSqlDbType, LogLevel.Critical,
-                                        SqlDbType);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            new DatabaseSchemaException(e,
-                                                        Resources.SqlType_GetClrToSqlConverter_FatalErrorOccurred,
-                                                        LogLevel.Critical,
-                                                        t,
-                                                        this,
-                                                        e.Message
-                                );
-                        }
+                                }
 
-                        // Unsupported conversion
-                        return null;
-                    });
+                                // Unsupported Log error, but don't throw it.
+                                new DatabaseSchemaException(LoggingLevel.Critical,
+                                                            Resources.SqlType_GetClrToSqlConverter_CannotAcceptType,
+                                                            this, t);
+                                return null;
+                            default:
+                                throw new DatabaseSchemaException(LoggingLevel.Critical,
+                                    Resources.SqlType_GetClrToSqlConverter_UnsupportedSqlDbType, 
+                                    SqlDbType);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        new DatabaseSchemaException(
+                            e,
+                            LoggingLevel.Critical,
+                            Resources.SqlType_GetClrToSqlConverter_FatalErrorOccurred,
+                            t,
+                            this,
+                            e.Message
+                            );
+                    }
+
+                    // Unsupported conversion
+                    return null;
+                });
         }
 
         /// <summary>
@@ -1059,7 +1070,7 @@ namespace WebApplications.Utilities.Database.Schema
             // Check if we support nullable types and the type is Nullable<>
             if (supportNullable &&
                 actualClrType.IsGenericType &&
-                actualClrType.GetGenericTypeDefinition() == typeof (Nullable<>))
+                actualClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 // Get the generic parameter and find the relevant converter
                 actualClrType = actualClrType.GetGenericArguments().First();
@@ -1067,7 +1078,7 @@ namespace WebApplications.Utilities.Database.Schema
             }
 
             // Find a conversion if any
-            Func<object, object> converter = actualClrType.GetConversion(typeof (TClr));
+            Func<object, object> converter = actualClrType.GetConversion(typeof(TClr));
 
             // If we didn't find one there is no known conversion.
             if (converter == null)
@@ -1101,7 +1112,7 @@ namespace WebApplications.Utilities.Database.Schema
         {
             Func<object, TClr> toInputType = actualClrType.GetConversion<object, TClr>();
             return toInputType != null
-                       ? (Func<object, TypeConstraintMode, object>) ((c, m) => convertor(toInputType(c), m))
+                       ? (Func<object, TypeConstraintMode, object>)((c, m) => convertor(toInputType(c), m))
                        : null;
         }
 
