@@ -1,106 +1,59 @@
-﻿<#@ template language="C#" hostspecific="True" debug="True" #>
-<#@ include file="T4Toolbox.tt" #>
+﻿<#@ template language="C#" hostspecific="True"
+#><#@output extension=".log" 
+#><#@import namespace="System"
+#><#@import namespace="System.IO"
+#><#@import namespace="System.Diagnostics"
+#><#@import namespace="System.Linq"
+#><#@import namespace="System.Collections"
+#><#@import namespace="System.Collections.Generic"
+#><#@import namespace="System.Runtime.ExceptionServices"
+#><#@include file="$(SolutionDir)\Manager.ttinclude"
+#><#
+Stopwatch stopwatch = new Stopwatch();
+stopwatch.Start();
+DateTime started = DateTime.Now;
+var manager = TemplateFileManager.Create(this);
+
+ExceptionDispatchInfo error = null;
+
+// Get the current year
+int year =started.Year;
+#>This software, its object code and source code and all modifications made to
+the same (the “Software”) are, and shall at all times remain, the proprietary
+information and intellectual property rights of Web Applications (UK) Limited. 
+You are only entitled to use the Software as expressly permitted by Web
+Applications (UK) Limited within the Software Customisation and
+Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
+distribution, licensing, sale, transfer or other use of the Software other than
+as expressly permitted in the Agreement is expressly forbidden.  Web
+Applications (UK) Limited reserves its rights to take action against you and
+your employer in accordance with its contractual and common law rights
+(including injunctive relief) should you breach the terms of the Agreement or
+otherwise infringe its copyright or other intellectual property rights in the
+Software.
+
+© Copyright Web Applications (UK) Ltd, <#=year#>.  All rights reserved.
+
+*******************************************************************************
+* WARNING: Do not have this file open during regeneration as it can slow down *
+* Visual Studio considerably.                                                 *
+*******************************************************************************
+
+Schema code file generation
+============================
+Started			: <#= started #>
 <#
-    SqlProgramGenerator generator = new SqlProgramGenerator(1, 32);
-    generator.Run();
-#>
-<#+
-public class SqlProgramGenerator : Generator
-{
-    public readonly int MinGeneric;
-    public readonly int MaxGeneric;
-
-    public SqlProgramGenerator(int minGeneric, int maxGeneric)
+try {
+	for (int count = 1; count < 33; count++)
     {
-        MinGeneric = minGeneric;
-        MaxGeneric = maxGeneric;
-    }
-    protected override void RunCore()
-    {
-        for (int count = MinGeneric; count <= MaxGeneric; count++)
-        {
-            SqlProgramGenericTemplate template = new SqlProgramGenericTemplate(count);
-            if (count == MinGeneric)
-                template.Render();
-            else
-                template.RenderToFile("SqlProgramGeneric"+count+".Generated.cs");
-        }
-    }
-}
+		manager.StartNewFile(
+			string.Format("SqlProgramGeneric{0}.Generated.cs", count),
+			projectName: "WebApplications.Utilities.Database", 
+			folderName: "Generated");
+		
+        var Strings = new Strings(count);
 
-public class Strings
-{
-    public readonly int GenericCount;
-    public readonly string TypeParams = string.Empty;
-    public readonly string TypeOfs = string.Empty;
-    public readonly string TypeComments = string.Empty;
-    public readonly string TypeColumnComments = string.Empty;
-    public readonly string TypeColumnComments2 = string.Empty;
-    public readonly string ConstructorNames = string.Empty;
-    public readonly string ConstructorNameParams = string.Empty;
-    public readonly string ConstructorNames2 = string.Empty;
-    public readonly string Parameters = string.Empty;
-    public readonly string ParametersTyped = string.Empty;
-    public readonly string ParametersTypedDefault = string.Empty;
-    public readonly string ParameterComments = string.Empty;
-    public readonly string FuncParameters = string.Empty;
-    public readonly string FuncParametersComments = string.Empty;
-    public readonly string FuncParametersList = string.Empty;
-
-    public Strings(int genericCount)
-    {
-        GenericCount = genericCount;
-
-        // Build strings
-        for (int i = 1; i <= GenericCount; i++) {
-            if(i > 1) {
-                TypeParams += ", ";
-                TypeOfs += ", ";
-                TypeComments += Environment.NewLine + new string(' ', 8);
-                TypeColumnComments += Environment.NewLine + new string(' ', 4);
-                TypeColumnComments2 += Environment.NewLine + new string(' ', 8);
-                ConstructorNames += ", ";
-                ConstructorNameParams += Environment.NewLine + new string(' ', 8);
-                ConstructorNames2 += ", ";
-                Parameters += ", ";
-                ParametersTyped += ", ";
-                ParametersTypedDefault += ", ";
-                ParameterComments += Environment.NewLine + new string(' ', 8);
-                FuncParameters += ", ";
-                FuncParametersComments += Environment.NewLine + new string(' ', 8);
-                FuncParametersList += ", ";
-            }
-            TypeParams += "T" + i;
-            TypeOfs += string.Format("typeof(T{0})", i);
-            TypeComments += string.Format("/// <typeparam name=\"T{0}\">The type of parameter {0}.</typeparam>", i);
-            TypeColumnComments += string.Format("/// <typeparam name=\"T{0}\">The type of column {0}.</typeparam>", i);
-            TypeColumnComments2 += string.Format("/// <typeparam name=\"T{0}\">The type of column {0}.</typeparam>", i);
-            ConstructorNames += string.Format("string p{0}Name", i);
-            ConstructorNameParams += string.Format("/// <param name=\"p{0}Name\">Name of parameter {0}.</param>", i);
-            ConstructorNames2 += string.Format("p{0}Name", i);
-            Parameters += string.Format("p{0}Value", i);
-            ParametersTyped += string.Format("T{0} p{0}Value", i);
-            ParametersTypedDefault += string.Format("T{0} p{0}Value = default(T{0})", i);
-            ParameterComments += string.Format("/// <param name=\"p{0}Value\">Value of SQL Parameter {0}.</param>", i);
-            FuncParameters += string.Format("[NotNull]Func<TItem, T{0}> getParam{0}", i);
-            FuncParametersComments += string.Format("/// <param name=\"getParam{0}\">The function to retrieve column {0}.</param>", i);
-            FuncParametersList += string.Format("getParam{0}", i);
-        }
-    }
-}
-
-public class SqlProgramGenericTemplate : Template
-{
-    public readonly Strings Strings;
-
-    public SqlProgramGenericTemplate(int genericCount)
-    {
-        Strings = new Strings(genericCount);
-    }
-
-    public override string TransformText()
-    {
-        #>#region © Copyright Web Applications (UK) Ltd, 2010.  All rights reserved.
+		#>#region © Copyright Web Applications (UK) Ltd, 2010.  All rights reserved.
 // This software, its object code and source code and all modifications made to
 // the same (the “Software”) are, and shall at all times remain, the proprietary
 // information and intellectual property rights of Web Applications (UK) Limited.
@@ -156,8 +109,8 @@ namespace WebApplications.Utilities.Database
             int pCount = parameters.GetLength(0);
             if (pCount < <#= Strings.GenericCount #>)
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '<#= Strings.GenericCount #>'.",
-                        LogLevel.Critical,
                         _program.Name,
                         pCount);
 
@@ -165,7 +118,7 @@ namespace WebApplications.Utilities.Database
             SqlParameter parameter;
             SqlProgramParameter programParameter;
             int index;
-        <#+ for (int i = 0; i < Strings.GenericCount; i++) { #>
+        <# for (int i = 0; i < Strings.GenericCount; i++) { #>
 
             // Find or create SQL Parameter <#= i+1 #>.
             programParameter = parameters[<#= i #>];
@@ -173,7 +126,7 @@ namespace WebApplications.Utilities.Database
             parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
             parameter.Value = programParameter.CastCLRValue(p<#= i+1 #>Value, mode);
             sqlParameters.Add(parameter);
-        <#+ } #>
+        <# } #>
 
             // Return parameters that were set
             return sqlParameters;
@@ -191,8 +144,8 @@ namespace WebApplications.Utilities.Database
         {
             if ((names == null) || (names.Count() != <#= Strings.GenericCount #>))
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Wrong number of parameter names supplied for the '{0}' program, which expected '<#= Strings.GenericCount #>' name(s) but was supplied with '{1}.",
-                        LogLevel.Critical,
                         _program.Name,
                         names == null ? 0 : names.Count());
 
@@ -203,8 +156,8 @@ namespace WebApplications.Utilities.Database
                             SqlProgramParameter parameterDefinition;
                             if (!_program.Definition.TryGetParameter(n, out parameterDefinition))
                                 throw new LoggingException(
+                                        LoggingLevel.Critical,
                                         "The SQL Program '{0}' does not have a '{1}' parameter.",
-                                        LogLevel.Critical,
                                         _program.Name,
                                         n);
                             return parameterDefinition;
@@ -213,8 +166,8 @@ namespace WebApplications.Utilities.Database
             int pCount = parameters.GetLength(0);
             if (pCount < <#= Strings.GenericCount #>)
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '<#= Strings.GenericCount #>'.",
-                        LogLevel.Critical,
                         _program.Name,
                         pCount);
 
@@ -222,7 +175,7 @@ namespace WebApplications.Utilities.Database
             SqlParameter parameter;
             SqlProgramParameter programParameter;
             int index;
-            <#+ for (int i = 0; i < Strings.GenericCount; i++) { #>
+            <# for (int i = 0; i < Strings.GenericCount; i++) { #>
 
             // Find or create SQL Parameter <#= i+1 #>.
             programParameter = parameters[<#= i #>];
@@ -230,7 +183,7 @@ namespace WebApplications.Utilities.Database
             parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
             parameter.Value = programParameter.CastCLRValue(p<#= i+1 #>Value, mode);
             sqlParameters.Add(parameter);
-        <#+ } #>
+        <# } #>
 
             // Return parameters that were set
             return sqlParameters;
@@ -248,8 +201,8 @@ namespace WebApplications.Utilities.Database
         {
             if ((parameters == null) || (parameters.Count() != <#= Strings.GenericCount #>))
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Wrong number of parameter supplied for the '{0}' program, which expected '<#= Strings.GenericCount #>' parameter(s) but was supplied with '{1}.",
-                        LogLevel.Critical,
                         _program.Name,
                         parameters == null ? 0 : parameters.Count());
 
@@ -258,8 +211,8 @@ namespace WebApplications.Utilities.Database
             int pCount = parametersArray.GetLength(0);
             if (pCount < <#= Strings.GenericCount #>)
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '<#= Strings.GenericCount #>'.",
-                        LogLevel.Critical,
                         _program.Name,
                         pCount);
 
@@ -267,7 +220,7 @@ namespace WebApplications.Utilities.Database
             SqlParameter parameter;
             SqlProgramParameter programParameter;
             int index;
-            <#+ for (int i = 0; i < Strings.GenericCount; i++) { #>
+            <# for (int i = 0; i < Strings.GenericCount; i++) { #>
 
             // Find or create SQL Parameter <#= i+1 #>.
             programParameter = parametersArray[<#= i #>];
@@ -275,7 +228,7 @@ namespace WebApplications.Utilities.Database
             parameter = index < 0 ? this._command.Parameters.Add(programParameter.CreateSqlParameter()) : this._command.Parameters[index];
             parameter.Value = programParameter.CastCLRValue(p<#= i+1 #>Value, mode);
             sqlParameters.Add(parameter);
-        <#+ } #>
+        <# } #>
 
             // Return parameters that were set
             return sqlParameters;
@@ -841,8 +794,7 @@ namespace WebApplications.Utilities.Database.Configuration
             // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];
             if ((db == null) || (!db.Enabled))
-                throw new LoggingException("The database with id '{0}' could not be found in the configuration.",
-                                           LogLevel.Error, database);
+                throw new LoggingException("The database with id '{0}' could not be found in the configuration.", database);
 
             return db.GetSqlProgram<<#= Strings.TypeParams#>>(name, <#= Strings.ConstructorNames2#>, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode);
         }
@@ -883,8 +835,7 @@ namespace WebApplications.Utilities.Database.Configuration
 
             if (connection == null)
                 throw new LoggingException(
-                    "Could not find a default load balanced connection for the database with id '{0}'.",
-                    LogLevel.Error, this.Id);
+                    "Could not find a default load balanced connection for the database with id '{0}'.", this.Id);
             
             // Look for program mapping information
             ProgramElement prog = this.Programs[name];
@@ -907,22 +858,22 @@ namespace WebApplications.Utilities.Database.Configuration
                         (!connection.Enabled))
                         throw new LoggingException(
                             "Could not find a load balanced connection with id '{0}' for the database with id '{1}' for use with the '{2}' SqlProgram.",
-                            LogLevel.Error, prog.Connection, this.Id, name);
+                            prog.Connection, this.Id, name);
                 }
                 
                 // Check for parameter mappings
                 ParameterElement param;
-<#+ for (int i = 1; i <= Strings.GenericCount; i++) { #>
+<# for (int i = 1; i <= Strings.GenericCount; i++) { #>
                 param = prog.Parameters[p<#= i #>Name];
                 if (param != null) {
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p<#= i #>Name, prog.Name);
+                            p<#= i #>Name, prog.Name);
                 
                     p<#= i #>Name = param.MapTo;
                 }
-<#+ } #>
+<# } #>
             }
 			
             if (constraintMode == null) constraintMode = TypeConstraintMode.Warn;
@@ -933,8 +884,97 @@ namespace WebApplications.Utilities.Database.Configuration
     #endregion
 }
 #endregion
-        <#+
-        return this.GenerationEnvironment.ToString();
+<#
+		manager.EndBlock();
+    }
+
+	// Process files
+	manager.Process(true);
+}
+catch (Exception e)
+{
+	error = ExceptionDispatchInfo.Capture(e);
+	#>
+
+
+Fatal error occurred: <#= e.Message #>
+<# PushIndent("     "); #>
+<#= e.StackTrace #>
+
+
+<#
+}
+
+/*
+ * Log summary.
+ */
+#>
+
+Finished        : <#= DateTime.Now #>
+Total Duration  : <#= string.Format("{0:N3} ms",((decimal)(stopwatch.ElapsedTicks*1000))/Stopwatch.Frequency) #><#
+if (error != null)
+	error.Throw();
+#>
+<#+
+
+public class Strings
+{
+    public readonly int GenericCount;
+    public readonly string TypeParams = string.Empty;
+    public readonly string TypeOfs = string.Empty;
+    public readonly string TypeComments = string.Empty;
+    public readonly string TypeColumnComments = string.Empty;
+    public readonly string TypeColumnComments2 = string.Empty;
+    public readonly string ConstructorNames = string.Empty;
+    public readonly string ConstructorNameParams = string.Empty;
+    public readonly string ConstructorNames2 = string.Empty;
+    public readonly string Parameters = string.Empty;
+    public readonly string ParametersTyped = string.Empty;
+    public readonly string ParametersTypedDefault = string.Empty;
+    public readonly string ParameterComments = string.Empty;
+    public readonly string FuncParameters = string.Empty;
+    public readonly string FuncParametersComments = string.Empty;
+    public readonly string FuncParametersList = string.Empty;
+
+    public Strings(int genericCount)
+    {
+        GenericCount = genericCount;
+
+        // Build strings
+        for (int i = 1; i <= GenericCount; i++) {
+            if(i > 1) {
+                TypeParams += ", ";
+                TypeOfs += ", ";
+                TypeComments += Environment.NewLine + new string(' ', 8);
+                TypeColumnComments += Environment.NewLine + new string(' ', 4);
+                TypeColumnComments2 += Environment.NewLine + new string(' ', 8);
+                ConstructorNames += ", ";
+                ConstructorNameParams += Environment.NewLine + new string(' ', 8);
+                ConstructorNames2 += ", ";
+                Parameters += ", ";
+                ParametersTyped += ", ";
+                ParametersTypedDefault += ", ";
+                ParameterComments += Environment.NewLine + new string(' ', 8);
+                FuncParameters += ", ";
+                FuncParametersComments += Environment.NewLine + new string(' ', 8);
+                FuncParametersList += ", ";
+            }
+            TypeParams += "T" + i;
+            TypeOfs += string.Format("typeof(T{0})", i);
+            TypeComments += string.Format("/// <typeparam name=\"T{0}\">The type of parameter {0}.</typeparam>", i);
+            TypeColumnComments += string.Format("/// <typeparam name=\"T{0}\">The type of column {0}.</typeparam>", i);
+            TypeColumnComments2 += string.Format("/// <typeparam name=\"T{0}\">The type of column {0}.</typeparam>", i);
+            ConstructorNames += string.Format("string p{0}Name", i);
+            ConstructorNameParams += string.Format("/// <param name=\"p{0}Name\">Name of parameter {0}.</param>", i);
+            ConstructorNames2 += string.Format("p{0}Name", i);
+            Parameters += string.Format("p{0}Value", i);
+            ParametersTyped += string.Format("T{0} p{0}Value", i);
+            ParametersTypedDefault += string.Format("T{0} p{0}Value = default(T{0})", i);
+            ParameterComments += string.Format("/// <param name=\"p{0}Value\">Value of SQL Parameter {0}.</param>", i);
+            FuncParameters += string.Format("[NotNull]Func<TItem, T{0}> getParam{0}", i);
+            FuncParametersComments += string.Format("/// <param name=\"getParam{0}\">The function to retrieve column {0}.</param>", i);
+            FuncParametersList += string.Format("getParam{0}", i);
+        }
     }
 }
 #>

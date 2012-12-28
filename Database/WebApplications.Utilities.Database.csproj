@@ -106,95 +106,98 @@
     <Compile Include="Exceptions\DatabaseSchemaException.cs" />
     <Compile Include="Exceptions\SqlProgramExecutionException.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Generated\SqlProgramGeneric1.Generated.cs">
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
+    </Compile>
     <Compile Include="Generated\SqlProgramGeneric10.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric11.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric12.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric13.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric14.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric15.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric16.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric17.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric18.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric19.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric20.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric21.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric22.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric23.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric24.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric25.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric26.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric27.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric28.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric29.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric3.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric30.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric31.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric32.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric4.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric5.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric6.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric7.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric8.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Generated\SqlProgramGeneric9.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -212,13 +215,8 @@
     <Compile Include="Schema\SqlProgramDefinition.cs" />
     <Compile Include="Schema\SqlProgramParameter.cs" />
     <Compile Include="SqlProgramCommand.cs" />
-    <Compile Include="Generated\SqlProgramGeneric.Generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
-    </Compile>
     <Compile Include="Generated\SqlProgramGeneric2.Generated.cs">
-      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+      <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
     <Compile Include="SQLResources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -236,11 +234,17 @@
     <None Include="app.config.transform">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Generated\SqlProgramGeneric.Generated.log">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
+    </None>
+    <None Include="Generated\SqlProgramGeneric.Generated.txt4" />
     <None Include="packages.config" />
     <None Include="web.config.transform" />
     <None Include="Generated\SqlProgramGeneric.Generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>SqlProgramGeneric.Generated.cs</LastGenOutput>
+      <LastGenOutput>SqlProgramGeneric.Generated.log</LastGenOutput>
     </None>
     <None Include="Web Applications UK - Core.snk" />
   </ItemGroup>
