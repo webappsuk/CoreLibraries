@@ -195,7 +195,7 @@ namespace WebApplications.Utilities.Database.Configuration
             DatabaseElement db = Databases[database];
             if ((db == null) || (!db.Enabled))
                 throw new LoggingException(Resources.DatabaseConfiguration_GetSqlProgram_DatabaseIdNotFound,
-                                           LogLevel.Error, database);
+                                           database);
 
             return db.GetSqlProgram(name, parameters, ignoreValidationErrors, checkOrder, defaultCommandTimeout,
                                     constraintMode);

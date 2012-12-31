@@ -908,8 +908,7 @@ namespace WebApplications.Utilities.Database.Schema
                 case SqlDbType.DateTimeOffset:
                     return MetaDateTimeOffset;
                 default:
-                    throw new DatabaseSchemaException(Resources.SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType,
-                                                      LogLevel.Error, target);
+                    throw new DatabaseSchemaException(Resources.SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType, target);
             }
         }
 

@@ -296,8 +296,8 @@ namespace WebApplications.Utilities.Database.Schema
             int tCount = t.Count();
             if (nCount != tCount)
                 throw new LoggingException(
+                    LoggingLevel.Critical, 
                     Resources.SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual,
-                    LogLevel.Critical,
                     nCount,
                     tCount);
 
@@ -313,8 +313,8 @@ namespace WebApplications.Utilities.Database.Schema
                         // Sanity check
                         if (ne.MoveNext())
                             throw new LoggingException(
+                                LoggingLevel.Critical,
                                 Resources.SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual,
-                                LogLevel.Critical,
                                 nCount,
                                 tCount);
                         break;
@@ -384,8 +384,8 @@ namespace WebApplications.Utilities.Database.Schema
             int dCount = Parameters.Count();
             if (dCount < sCount)
                 throw new LoggingException(
+                    LoggingLevel.Critical,
                     Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
-                    LogLevel.Critical,
                     FullName,
                     dCount,
                     sCount);
@@ -405,8 +405,8 @@ namespace WebApplications.Utilities.Database.Schema
                             // If we still have parameters to check, we don't match - should be caught above - but sanity check.
                             if (p2.MoveNext())
                                 throw new LoggingException(
+                                    LoggingLevel.Critical,
                                     Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
-                                    LogLevel.Critical,
                                     FullName,
                                     dCount,
                                     sCount);
@@ -428,8 +428,8 @@ namespace WebApplications.Utilities.Database.Schema
                         // Only check name if not null.
                         if ((name != null) && (parameter.Name != (name = name.ToLower())))
                             throw new LoggingException(
+                                LoggingLevel.Critical,
                                 Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
-                                LogLevel.Critical,
                                 name,
                                 FullName);
 
@@ -441,8 +441,8 @@ namespace WebApplications.Utilities.Database.Schema
                         // Check to see if parameter accepts type
                         if (!parameter.Type.AcceptsCLRType(type))
                             throw new LoggingException(
+                                LoggingLevel.Critical,
                                 Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType,
-                                LogLevel.Critical,
                                 parameter.Name,
                                 FullName,
                                 parameter.Type.FullName,
@@ -457,16 +457,16 @@ namespace WebApplications.Utilities.Database.Schema
                 // If we have a null parameter name, cannot possibly match.
                 if (kvp.Key == null)
                     throw new LoggingException(
+                        LoggingLevel.Critical,
                         Resources.SqlProgramDefinition_ValidateParameters_MustSpecifyParameterName,
-                        LogLevel.Critical,
                         FullName);
 
                 SqlProgramParameter parameter;
                 string name = kvp.Key.ToLower();
                 if (!_parameters.TryGetValue(name, out parameter))
                     throw new LoggingException(
+                        LoggingLevel.Critical,
                         Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
-                        LogLevel.Critical,
                         name,
                         FullName);
 
@@ -476,8 +476,8 @@ namespace WebApplications.Utilities.Database.Schema
                 Type type = kvp.Value;
                 if ((type != null) && (!parameter.Type.AcceptsCLRType(type)))
                     throw new LoggingException(
+                        LoggingLevel.Critical,
                         Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType,
-                        LogLevel.Critical,
                         parameter.Name,
                         FullName,
                         parameter.Type.FullName,
@@ -555,8 +555,8 @@ namespace WebApplications.Utilities.Database.Schema
             int dCount = Parameters.Count();
             if (dCount < sCount)
                 throw new LoggingException(
+                    LoggingLevel.Critical,
                     Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
-                    LogLevel.Critical,
                     FullName,
                     dCount,
                     sCount);
@@ -576,8 +576,8 @@ namespace WebApplications.Utilities.Database.Schema
                             // If we still have parameters to check, we don't match - should be caught above - but sanity check.
                             if (p2.MoveNext())
                                 throw new LoggingException(
+                                    LoggingLevel.Critical,
                                     Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
-                                    LogLevel.Critical,
                                     FullName,
                                     dCount,
                                     sCount);
@@ -599,8 +599,8 @@ namespace WebApplications.Utilities.Database.Schema
                         // Only check name if not null.
                         if ((name != null) && (parameter.Name != (name = name.ToLower())))
                             throw new LoggingException(
+                                LoggingLevel.Critical,
                                 Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
-                                LogLevel.Critical,
                                 name,
                                 FullName);
 
@@ -608,8 +608,8 @@ namespace WebApplications.Utilities.Database.Schema
                         // Check to see if parameter accepts type
                         if (parameter.Type.SqlDbType != type)
                             throw new LoggingException(
+                                LoggingLevel.Critical,
                                 Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptSqlDbType,
-                                LogLevel.Critical,
                                 parameter.Name,
                                 FullName,
                                 parameter.Type.FullName,
@@ -624,16 +624,16 @@ namespace WebApplications.Utilities.Database.Schema
                 // If we have a null parameter name, cannot possibly match.
                 if (kvp.Key == null)
                     throw new LoggingException(
+                        LoggingLevel.Critical,
                         Resources.SqlProgramDefinition_ValidateParameters_MustSpecifyParameterName,
-                        LogLevel.Critical,
                         FullName);
 
                 SqlProgramParameter parameter;
                 string name = kvp.Key.ToLower();
                 if (!_parameters.TryGetValue(name, out parameter))
                     throw new LoggingException(
+                        LoggingLevel.Critical,
                         Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
-                        LogLevel.Critical,
                         name,
                         FullName);
 
@@ -644,8 +644,8 @@ namespace WebApplications.Utilities.Database.Schema
                 // Check to see if parameter accepts type
                 if (parameter.Type.SqlDbType != type)
                     throw new LoggingException(
+                        LoggingLevel.Critical,
                         Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptSqlDbType,
-                        LogLevel.Critical,
                         parameter.Name,
                         FullName,
                         parameter.Type.FullName,

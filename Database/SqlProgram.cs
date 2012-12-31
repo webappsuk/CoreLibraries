@@ -220,9 +220,9 @@ namespace WebApplications.Utilities.Database
             Contract.Requires(name != null, Resources.SqlProgram_NameCanNotBeNull);
 
             if (connection == null)
-                throw new LoggingException(Resources.SqlProgram_NoConnectionSpecified, LogLevel.Critical);
+                throw new LoggingException(LoggingLevel.Critical, Resources.SqlProgram_NoConnectionSpecified);
             if (String.IsNullOrWhiteSpace(name))
-                throw new LoggingException(Resources.SqlProgram_NoProgramNameSpecified, LogLevel.Critical);
+                throw new LoggingException(LoggingLevel.Critical, Resources.SqlProgram_NoProgramNameSpecified);
 
             Name = name;
             _connection = connection;
@@ -504,7 +504,8 @@ namespace WebApplications.Utilities.Database
 
                         if (programDefinition == null)
                             throw new LoggingException(
-                                Resources.SqlProgram_Validate_DefinitionsNotFound, LogLevel.Critical, name);
+                                LoggingLevel.Critical, 
+                                Resources.SqlProgram_Validate_DefinitionsNotFound, name);
 
                         // If this is the first connection just set the program definition
                         if (first)
@@ -515,8 +516,8 @@ namespace WebApplications.Utilities.Database
                         else if (!Definition.Equals(programDefinition))
                             // If the program definition is different we have a fatal error.
                             throw new LoggingException(
+                                LoggingLevel.Critical,
                                 Resources.SqlProgram_Validate_InconsistentProgramDefinitions,
-                                LogLevel.Critical,
                                 name);
 
                         // If schemas are identical, no need to check anymore

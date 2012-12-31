@@ -45,7 +45,6 @@ namespace WebApplications.Utilities.Database.Exceptions
             : base(
                 innerException,
                 Resources.SqlProgramExecutionException_ErrorOccurredDuringExecution,
-                LogLevel.Error,
                 sqlProgram.Name,
                 innerException.Message)
         {

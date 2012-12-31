@@ -1,10 +1,10 @@
-#region © Copyright Web Applications (UK) Ltd, 2010.  All rights reserved.
+Ôªø#region ¬© Copyright Web Applications (UK) Ltd, 2010.  All rights reserved.
 // This software, its object code and source code and all modifications made to
-// the same (the ìSoftwareî) are, and shall at all times remain, the proprietary
+// the same (the ‚ÄúSoftware‚Äù) are, and shall at all times remain, the proprietary
 // information and intellectual property rights of Web Applications (UK) Limited.
 // You are only entitled to use the Software as expressly permitted by Web
 // Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the ìAgreementî).  Any copying, modification, decompiling,
+// Licence Agreement (the ‚ÄúAgreement‚Äù).  Any copying, modification, decompiling,
 // distribution, licensing, sale, transfer or other use of the Software other than
 // as expressly permitted in the Agreement is expressly forbidden.  Web
 // Applications (UK) Limited reserves its rights to take action against you and
@@ -13,7 +13,7 @@
 // otherwise infringe its copyright or other intellectual property rights in the
 // Software.
 //
-// ©  Copyright Web Applications (UK) Ltd, 2010.  All rights reserved.
+// ¬©  Copyright Web Applications (UK) Ltd, 2010.  All rights reserved.
 #endregion
 
 #region Designer generated code
@@ -92,8 +92,8 @@ namespace WebApplications.Utilities.Database
             int pCount = parameters.GetLength(0);
             if (pCount < 20)
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '20'.",
-                        LogLevel.Critical,
                         _program.Name,
                         pCount);
 
@@ -296,8 +296,8 @@ namespace WebApplications.Utilities.Database
         {
             if ((names == null) || (names.Count() != 20))
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Wrong number of parameter names supplied for the '{0}' program, which expected '20' name(s) but was supplied with '{1}.",
-                        LogLevel.Critical,
                         _program.Name,
                         names == null ? 0 : names.Count());
 
@@ -308,8 +308,8 @@ namespace WebApplications.Utilities.Database
                             SqlProgramParameter parameterDefinition;
                             if (!_program.Definition.TryGetParameter(n, out parameterDefinition))
                                 throw new LoggingException(
+                                        LoggingLevel.Critical,
                                         "The SQL Program '{0}' does not have a '{1}' parameter.",
-                                        LogLevel.Critical,
                                         _program.Name,
                                         n);
                             return parameterDefinition;
@@ -318,8 +318,8 @@ namespace WebApplications.Utilities.Database
             int pCount = parameters.GetLength(0);
             if (pCount < 20)
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '20'.",
-                        LogLevel.Critical,
                         _program.Name,
                         pCount);
 
@@ -522,8 +522,8 @@ namespace WebApplications.Utilities.Database
         {
             if ((parameters == null) || (parameters.Count() != 20))
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Wrong number of parameter supplied for the '{0}' program, which expected '20' parameter(s) but was supplied with '{1}.",
-                        LogLevel.Critical,
                         _program.Name,
                         parameters == null ? 0 : parameters.Count());
 
@@ -532,8 +532,8 @@ namespace WebApplications.Utilities.Database
             int pCount = parametersArray.GetLength(0);
             if (pCount < 20)
                 throw new LoggingException(
+                        LoggingLevel.Critical,
                         "Too many parameters supplied for the '{0}' program, which only accepts '{1} parameter(s) but was supplied with '20'.",
-                        LogLevel.Critical,
                         _program.Name,
                         pCount);
 
@@ -1835,8 +1835,7 @@ namespace WebApplications.Utilities.Database.Configuration
             // We have to find the database otherwise we cannot get a load balanced connection.
             DatabaseElement db = Databases[database];
             if ((db == null) || (!db.Enabled))
-                throw new LoggingException("The database with id '{0}' could not be found in the configuration.",
-                                           LogLevel.Error, database);
+                throw new LoggingException("The database with id '{0}' could not be found in the configuration.", database);
 
             return db.GetSqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(name, p1Name, p2Name, p3Name, p4Name, p5Name, p6Name, p7Name, p8Name, p9Name, p10Name, p11Name, p12Name, p13Name, p14Name, p15Name, p16Name, p17Name, p18Name, p19Name, p20Name, ignoreValidationErrors, checkOrder, defaultCommandTimeout, constraintMode);
         }
@@ -1915,8 +1914,7 @@ namespace WebApplications.Utilities.Database.Configuration
 
             if (connection == null)
                 throw new LoggingException(
-                    "Could not find a default load balanced connection for the database with id '{0}'.",
-                    LogLevel.Error, this.Id);
+                    "Could not find a default load balanced connection for the database with id '{0}'.", this.Id);
             
             // Look for program mapping information
             ProgramElement prog = this.Programs[name];
@@ -1939,7 +1937,7 @@ namespace WebApplications.Utilities.Database.Configuration
                         (!connection.Enabled))
                         throw new LoggingException(
                             "Could not find a load balanced connection with id '{0}' for the database with id '{1}' for use with the '{2}' SqlProgram.",
-                            LogLevel.Error, prog.Connection, this.Id, name);
+                            prog.Connection, this.Id, name);
                 }
                 
                 // Check for parameter mappings
@@ -1949,7 +1947,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p1Name, prog.Name);
+                            p1Name, prog.Name);
                 
                     p1Name = param.MapTo;
                 }
@@ -1958,7 +1956,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p2Name, prog.Name);
+                            p2Name, prog.Name);
                 
                     p2Name = param.MapTo;
                 }
@@ -1967,7 +1965,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p3Name, prog.Name);
+                            p3Name, prog.Name);
                 
                     p3Name = param.MapTo;
                 }
@@ -1976,7 +1974,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p4Name, prog.Name);
+                            p4Name, prog.Name);
                 
                     p4Name = param.MapTo;
                 }
@@ -1985,7 +1983,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p5Name, prog.Name);
+                            p5Name, prog.Name);
                 
                     p5Name = param.MapTo;
                 }
@@ -1994,7 +1992,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p6Name, prog.Name);
+                            p6Name, prog.Name);
                 
                     p6Name = param.MapTo;
                 }
@@ -2003,7 +2001,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p7Name, prog.Name);
+                            p7Name, prog.Name);
                 
                     p7Name = param.MapTo;
                 }
@@ -2012,7 +2010,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p8Name, prog.Name);
+                            p8Name, prog.Name);
                 
                     p8Name = param.MapTo;
                 }
@@ -2021,7 +2019,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p9Name, prog.Name);
+                            p9Name, prog.Name);
                 
                     p9Name = param.MapTo;
                 }
@@ -2030,7 +2028,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p10Name, prog.Name);
+                            p10Name, prog.Name);
                 
                     p10Name = param.MapTo;
                 }
@@ -2039,7 +2037,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p11Name, prog.Name);
+                            p11Name, prog.Name);
                 
                     p11Name = param.MapTo;
                 }
@@ -2048,7 +2046,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p12Name, prog.Name);
+                            p12Name, prog.Name);
                 
                     p12Name = param.MapTo;
                 }
@@ -2057,7 +2055,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p13Name, prog.Name);
+                            p13Name, prog.Name);
                 
                     p13Name = param.MapTo;
                 }
@@ -2066,7 +2064,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p14Name, prog.Name);
+                            p14Name, prog.Name);
                 
                     p14Name = param.MapTo;
                 }
@@ -2075,7 +2073,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p15Name, prog.Name);
+                            p15Name, prog.Name);
                 
                     p15Name = param.MapTo;
                 }
@@ -2084,7 +2082,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p16Name, prog.Name);
+                            p16Name, prog.Name);
                 
                     p16Name = param.MapTo;
                 }
@@ -2093,7 +2091,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p17Name, prog.Name);
+                            p17Name, prog.Name);
                 
                     p17Name = param.MapTo;
                 }
@@ -2102,7 +2100,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p18Name, prog.Name);
+                            p18Name, prog.Name);
                 
                     p18Name = param.MapTo;
                 }
@@ -2111,7 +2109,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p19Name, prog.Name);
+                            p19Name, prog.Name);
                 
                     p19Name = param.MapTo;
                 }
@@ -2120,7 +2118,7 @@ namespace WebApplications.Utilities.Database.Configuration
                     if (String.IsNullOrWhiteSpace(param.MapTo))
                         throw new LoggingException(
                             "Must specify a valid mapping for '{0}' parameter on '{1}' program.",
-                            LogLevel.Error, p20Name, prog.Name);
+                            p20Name, prog.Name);
                 
                     p20Name = param.MapTo;
                 }
@@ -2134,4 +2132,3 @@ namespace WebApplications.Utilities.Database.Configuration
     #endregion
 }
 #endregion
-        

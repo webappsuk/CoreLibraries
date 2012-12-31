@@ -50,4 +50,4 @@ using System.Runtime.InteropServices;
                 AttributePriority = 2, AttributeExclude = true)]
  */
 
-[assembly: AssemblyVersion("2.0.*")]
+[assembly: AssemblyVersion("5.0.*")]

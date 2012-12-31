@@ -344,11 +344,11 @@ namespace WebApplications.Utilities.Database.Schema
                         Version version;
                         if (!Version.TryParse(sqlConnection.ServerVersion, out version))
                             throw new DatabaseSchemaException(
-                                Resources.DatabaseSchema_Load_CouldNotParseVersionInformation, LogLevel.Error);
+                                Resources.DatabaseSchema_Load_CouldNotParseVersionInformation);
 
                         if (version.Major < 9)
                             throw new DatabaseSchemaException(Resources.DatabaseSchema_Load_VersionNotSupported,
-                                                              LogLevel.Error, version);
+                                                              version);
 
                         string sql = version.Major == 9 ? SQLResources.RetrieveSchema9 : SQLResources.RetrieveSchema10;
 
@@ -371,7 +371,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                 if (sqlSchemas.Count < 1)
                                     throw new DatabaseSchemaException(
-                                        Resources.DatabaseSchema_Load_CouldNotRetrieveSchemas, LogLevel.Error);
+                                        Resources.DatabaseSchema_Load_CouldNotRetrieveSchemas);
 
                                 // Order schemas
                                 Schemas = sqlSchemas.Values.OrderBy(s => s).ToList();
@@ -381,7 +381,7 @@ namespace WebApplications.Utilities.Database.Schema
                                  */
                                 if (!reader.NextResult())
                                     throw new DatabaseSchemaException(
-                                        Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingTypes, LogLevel.Error);
+                                        Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingTypes);
 
                                 while (reader.Read())
                                 {
@@ -390,7 +390,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     if (!sqlSchemas.TryGetValue(schemaId, out schema) || (schema == null))
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_CouldNotFindSchema,
-                                            LogLevel.Error,
                                             schemaId);
                                     int id = reader.GetInt32(1);
                                     string name = reader.GetString(2).ToLower();
@@ -439,8 +438,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 }
 
                                 if (_types.Count < 1)
-                                    throw new DatabaseSchemaException(
-                                        Resources.DatabaseSchema_Load_CouldNotRetrieveTypes, LogLevel.Error);
+                                    throw new DatabaseSchemaException(Resources.DatabaseSchema_Load_CouldNotRetrieveTypes);
 
                                 // Order types
                                 // ReSharper disable PossibleNullReferenceException
@@ -451,8 +449,7 @@ namespace WebApplications.Utilities.Database.Schema
                                  * Load program definitions
                                  */
                                 if (!reader.NextResult())
-                                    throw new DatabaseSchemaException(
-                                        Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingPrograms, LogLevel.Error);
+                                    throw new DatabaseSchemaException(Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingPrograms);
 
                                 SqlProgramDefinition lastProgramDefinition = null;
                                 while (reader.Read())
@@ -462,7 +459,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out type))
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_CouldNotFindTypeWhenLoadingPrograms,
-                                            LogLevel.Error,
                                             typeString);
 
                                     int schemaId = reader.GetInt32(1);
@@ -470,7 +466,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     if (!sqlSchemas.TryGetValue(schemaId, out schema))
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_CouldNotFindSchemaWhenLoadingPrograms,
-                                            LogLevel.Error,
                                             schemaId);
                                     string name = reader.GetString(2).ToLower();
                                     string fullName = string.Format("{0}.{1}", schema, name);
@@ -487,7 +482,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     else if (programDefinition.Type != type)
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_InconsistentType,
-                                            LogLevel.Error,
                                             fullName);
                                     lastProgramDefinition = programDefinition;
 
@@ -503,7 +497,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     {
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_ParameterTypeNotFound,
-                                            LogLevel.Error,
                                             parameterName,
                                             typeId,
                                             fullName);
@@ -544,9 +537,7 @@ namespace WebApplications.Utilities.Database.Schema
                                  * Load tables and views
                                  */
                                 if (!reader.NextResult())
-                                    throw new DatabaseSchemaException(
-                                        Resources.DatabaseSchema_Load_RanOutOfTablesAndViews,
-                                        LogLevel.Error);
+                                    throw new DatabaseSchemaException(Resources.DatabaseSchema_Load_RanOutOfTablesAndViews);
 
                                 Dictionary<int, SqlTableDefinition> tableTypeTables =
                                     new Dictionary<int, SqlTableDefinition>();
@@ -558,7 +549,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out type))
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_CouldNotFindObjectType,
-                                            LogLevel.Error,
                                             typeString);
 
                                     int schemaId = reader.GetInt32(1);
@@ -566,7 +556,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     if (!sqlSchemas.TryGetValue(schemaId, out schema))
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
-                                            LogLevel.Error,
                                             schemaId);
                                     string name = reader.GetString(2).ToLower();
                                     string fullName = string.Format("{0}.{1}", schema, name);
@@ -584,7 +573,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     {
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_InconsistentTypeLoadingTablesAndViews,
-                                            LogLevel.Error,
                                             fullName);
                                     }
                                     lastTableDefinition = tableDefinition;
@@ -597,7 +585,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     {
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_ColumnTypeNotFound,
-                                            LogLevel.Error,
                                             columnName,
                                             typeId,
                                             fullName);
@@ -640,7 +627,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     {
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_TableTypeNotFound,
-                                            LogLevel.Error,
                                             kvp.Key,
                                             kvp.Value.FullName);
                                     }
@@ -649,7 +635,6 @@ namespace WebApplications.Utilities.Database.Schema
                                     {
                                         throw new DatabaseSchemaException(
                                             Resources.DatabaseSchema_Load_TypeNotTableType,
-                                            LogLevel.Error,
                                             kvp.Key,
                                             kvp.Value.FullName);
                                     }
@@ -677,8 +662,8 @@ namespace WebApplications.Utilities.Database.Schema
                 {
                     _error = new DatabaseSchemaException(
                         exception,
-                        Resources.DatabaseSchema_Load_ErrorOccurred,
-                        LogLevel.Critical);
+                        LoggingLevel.Critical,
+                        Resources.DatabaseSchema_Load_ErrorOccurred);
                     _loaded = false;
                     Schemas = Enumerable.Empty<string>();
                     Types = Enumerable.Empty<SqlType>();

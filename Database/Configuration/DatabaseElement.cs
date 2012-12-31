@@ -166,7 +166,7 @@ namespace WebApplications.Utilities.Database.Configuration
             if (connection == null)
                 throw new LoggingException(
                     Resources.DatabaseElement_GetSqlProgram_DefaultLoadBalanceConnectionNotFound,
-                    LogLevel.Error, Id);
+                    Id);
 
             // Look for program mapping information
             ProgramElement prog = Programs[name];
@@ -189,7 +189,7 @@ namespace WebApplications.Utilities.Database.Configuration
                         (!connection.Enabled))
                         throw new LoggingException(
                             Resources.DatabaseElement_GetSqlProgram_LoadBalanceConnectionNotFound,
-                            LogLevel.Error, prog.Connection, Id, name);
+                            prog.Connection, Id, name);
                 }
 
                 // Check for parameter mappings
@@ -204,7 +204,7 @@ namespace WebApplications.Utilities.Database.Configuration
                                         if (String.IsNullOrWhiteSpace(param.MapTo))
                                             throw new LoggingException(
                                                 Resources.DatabaseElement_GetSqlProgram_MappingNotSpecified,
-                                                LogLevel.Error, kvp.Key, prog.Name);
+                                                kvp.Key, prog.Name);
 
                                         return new KeyValuePair<string, Type>(param.MapTo, kvp.Value);
                                     }).ToList();

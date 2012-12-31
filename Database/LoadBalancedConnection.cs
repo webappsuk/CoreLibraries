@@ -182,7 +182,7 @@ namespace WebApplications.Utilities.Database
 
             if ((connectionStrings == null))
                 throw new LoggingException(
-                    Resources.LoadBalancedConnection_ConnectionStringsNotSet, LogLevel.Error);
+                    Resources.LoadBalancedConnection_ConnectionStringsNotSet);
 
             // Combine identical connection strings and their weighting.
             foreach (KeyValuePair<string, double> kvp in connectionStrings)
@@ -203,22 +203,22 @@ namespace WebApplications.Utilities.Database
 
             if (!_connections.Any())
                 throw new LoggingException(
-                    Resources.LoadBalancedConnection_NoConnectionStrings, LogLevel.Error);
+                    Resources.LoadBalancedConnection_NoConnectionStrings);
 
             // Throw an exception if we have any connection strings with a negative weighting.
             if (_connections.Any(c => c.Weight < 0))
                 throw new LoggingException(
-                    Resources.LoadBalancedConnection_WeightLessThanZero, LogLevel.Error);
+                    Resources.LoadBalancedConnection_WeightLessThanZero);
 
             if (_totalWeight <= 0.0D)
                 throw new LoggingException(
-                    Resources.LoadBalancedConnection_AllStringsZeroWeighted, LogLevel.Error);
+                    Resources.LoadBalancedConnection_AllStringsZeroWeighted);
 
             // Finally validate the schemas are identical if required.
             if ((ensureSchemasIdentical) &&
                 (!IdenticalSchemas))
                 throw new LoggingException(
-                    Resources.LoadBalancedConnection_SchemasNotIdentical, LogLevel.Error);
+                    Resources.LoadBalancedConnection_SchemasNotIdentical);
         }
 
         /// <summary>
@@ -328,8 +328,8 @@ namespace WebApplications.Utilities.Database
             }
 
             if (connectionString == null)
-                throw new LoggingException(
-                    Resources.LoadBalancedConnection_CreateConnection_NoValidConnectionString, LogLevel.Critical);
+                throw new LoggingException(LoggingLevel.Critical,
+                    Resources.LoadBalancedConnection_CreateConnection_NoValidConnectionString);
 
             // Create connection using connection string
             SqlConnection connection = new SqlConnection(connectionString);
@@ -371,8 +371,7 @@ namespace WebApplications.Utilities.Database
             if ((ensureSchemasIdentical) &&
                 (!IdenticalSchemas))
             {
-                throw new LoggingException(
-                    Resources.LoadBalancedConnection_ReloadSchemas_SchemasNotIdentical, LogLevel.Error);
+                throw new LoggingException(Resources.LoadBalancedConnection_ReloadSchemas_SchemasNotIdentical);
             }
 
             return hasChanges;
@@ -418,7 +417,7 @@ namespace WebApplications.Utilities.Database
             public Connection(string connectionString, double weight = 1.0D)
             {
                 if (String.IsNullOrWhiteSpace(connectionString))
-                    throw new LoggingException(Resources.Connection_EmptyConnectionString, LogLevel.Error);
+                    throw new LoggingException(Resources.Connection_EmptyConnectionString);
 
                 _connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
                 Weight = weight;
