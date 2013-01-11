@@ -322,7 +322,7 @@ namespace WebApplications.Utilities.Reflect
 
             // Convert value parameter if necessary
             if ((valueType != propertyType) &&
-                !expression.TryConvert(propertyType, out expression))
+                !valueExpression.TryConvert(propertyType, out valueExpression))
                 return null;
 
             Contract.Assert(expression != null);
@@ -382,7 +382,7 @@ namespace WebApplications.Utilities.Reflect
 
             // Convert value parameter if necessary
             if ((valueType != propertyType) &&
-                !expression.TryConvert(propertyType, out expression))
+                !valueExpression.TryConvert(propertyType, out valueExpression))
                 return null;
 
             Contract.Assert(expression != null);

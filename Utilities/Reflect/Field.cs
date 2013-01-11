@@ -104,8 +104,7 @@ namespace WebApplications.Utilities.Reflect
         /// <returns>A function that takes an object of the type T and returns the value of the field.</returns>
         [UsedImplicitly]
         [CanBeNull]
-        public Func<TValue> Getter<TValue>(
-            )
+        public Func<TValue> Getter<TValue>()
         {
             // Only valid for static fields.
             if (!Info.IsStatic)
@@ -134,7 +133,7 @@ namespace WebApplications.Utilities.Reflect
             // Create lambda and compile
             return Expression.Lambda<Func<TValue>>(expression).Compile();
         }
-
+        
         /// <summary>
         /// Retrieves the lambda function equivalent of the specified instance getter method.
         /// </summary>
