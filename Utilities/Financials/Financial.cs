@@ -39,6 +39,10 @@ namespace WebApplications.Utilities.Financials
     /// </summary>
     public class Financial : IEquatable<Financial>, IFormattable
     {
+        [NotNull]
+        private readonly CurrencyInfo _currency;
+        private readonly decimal _amount;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Financial"/> class.
         /// </summary>
@@ -48,8 +52,8 @@ namespace WebApplications.Utilities.Financials
         {
             Contract.Requires(currency != null, "Parameter 'currency' can not be null");
 
-            Currency = currency;
-            Amount = amount;
+            _currency = currency;
+            _amount = amount;
         }
 
         /// <summary>
@@ -57,13 +61,13 @@ namespace WebApplications.Utilities.Financials
         /// </summary>
         [NotNull]
         [UsedImplicitly]
-        public CurrencyInfo Currency { get; private set; }
+        public CurrencyInfo Currency { get { return _currency; } }
 
         /// <summary>
         /// Gets or sets the amount.
         /// </summary>
         [UsedImplicitly]
-        public decimal Amount { get; private set; }
+        public decimal Amount { get { return _amount; } }
 
         #region IEquatable<Financial> Members
         /// <summary>
@@ -75,7 +79,7 @@ namespace WebApplications.Utilities.Financials
         /// </returns>
         public bool Equals(Financial other)
         {
-            return other != null && Currency == other.Currency && Amount == other.Amount;
+            return other != null && _currency == other._currency && _amount == other._amount;
         }
         #endregion
 
@@ -95,7 +99,7 @@ namespace WebApplications.Utilities.Financials
             switch (format.ToUpperInvariant())
             {
                 case "I":
-                    return String.Format(provider, "{0} {1}", Amount, Currency.Code);
+                    return String.Format(provider, "{0} {1}", _amount, _currency.Code);
                 case "C":
                     CultureInfo culture;
                     try
@@ -128,10 +132,10 @@ namespace WebApplications.Utilities.Financials
         public Financial Exchange([NotNull] CurrencyInfo currency, decimal exchangeRate = decimal.One,
                                   decimal inputCharge = decimal.Zero, decimal outputCharge = decimal.Zero)
         {
-            if (Currency == currency)
+            if (_currency == currency)
                 return this;
 
-            decimal amount = Amount;
+            decimal amount = _amount;
             amount += inputCharge;
             amount *= exchangeRate;
             amount += outputCharge;
@@ -151,8 +155,8 @@ namespace WebApplications.Utilities.Financials
             if (!financialsArray.Any())
                 throw new InvalidOperationException(Resources.Financial_Sum_EmptyEnumeration);
 
-            decimal summedAmounts = financialsArray.Sum(f => f.Amount);
-            return new Financial(financialsArray.First().Currency, summedAmounts);
+            decimal summedAmounts = financialsArray.Sum(f => f._amount);
+            return new Financial(financialsArray.First()._currency, summedAmounts);
         }
 
         /// <summary>
@@ -167,8 +171,8 @@ namespace WebApplications.Utilities.Financials
             if (!financialsArray.Any())
                 throw new InvalidOperationException(Resources.Financial_Sum_EmptyEnumeration);
 
-            decimal averageAmount = financialsArray.Average(f => f.Amount);
-            return new Financial(financialsArray.First().Currency, averageAmount);
+            decimal averageAmount = financialsArray.Average(f => f._amount);
+            return new Financial(financialsArray.First()._currency, averageAmount);
         }
 
         /// <summary>
@@ -183,8 +187,8 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator +([NotNull] Financial a, [NotNull] Financial b)
         {
-            ValidateCurrenciesMatch(a.Currency, b.Currency, "Addition");
-            return new Financial(a.Currency, a.Amount + b.Amount);
+            ValidateCurrenciesMatch(a._currency, b._currency, "Addition");
+            return new Financial(a._currency, a._amount + b._amount);
         }
 
         /// <summary>
@@ -199,7 +203,7 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator +([NotNull] Financial financial, decimal amount)
         {
-            return new Financial(financial.Currency, financial.Amount + amount);
+            return new Financial(financial._currency, financial._amount + amount);
         }
 
         /// <summary>
@@ -214,8 +218,8 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator -([NotNull] Financial a, [NotNull] Financial b)
         {
-            ValidateCurrenciesMatch(a.Currency, b.Currency, "Subtraction");
-            return new Financial(a.Currency, a.Amount - b.Amount);
+            ValidateCurrenciesMatch(a._currency, b._currency, "Subtraction");
+            return new Financial(a._currency, a._amount - b._amount);
         }
 
         /// <summary>
@@ -230,7 +234,7 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator -([NotNull] Financial financial, decimal amount)
         {
-            return new Financial(financial.Currency, financial.Amount - amount);
+            return new Financial(financial._currency, financial._amount - amount);
         }
 
         /// <summary>
@@ -244,8 +248,8 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static bool operator <([NotNull] Financial a, [NotNull] Financial b)
         {
-            ValidateCurrenciesMatch(a.Currency, b.Currency, "less than");
-            return a.Amount < b.Amount;
+            ValidateCurrenciesMatch(a._currency, b._currency, "less than");
+            return a._amount < b._amount;
         }
 
         /// <summary>
@@ -259,8 +263,8 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static bool operator >([NotNull] Financial a, [NotNull] Financial b)
         {
-            ValidateCurrenciesMatch(a.Currency, b.Currency, "more than");
-            return a.Amount > b.Amount;
+            ValidateCurrenciesMatch(a._currency, b._currency, "more than");
+            return a._amount > b._amount;
         }
 
         /// <summary>
@@ -274,8 +278,8 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static bool operator <=([NotNull] Financial a, [NotNull] Financial b)
         {
-            ValidateCurrenciesMatch(a.Currency, b.Currency, "less than or equal to");
-            return a.Amount <= b.Amount;
+            ValidateCurrenciesMatch(a._currency, b._currency, "less than or equal to");
+            return a._amount <= b._amount;
         }
 
         /// <summary>
@@ -289,8 +293,8 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static bool operator >=([NotNull] Financial a, [NotNull] Financial b)
         {
-            ValidateCurrenciesMatch(a.Currency, b.Currency, "more than or equal to");
-            return a.Amount >= b.Amount;
+            ValidateCurrenciesMatch(a._currency, b._currency, "more than or equal to");
+            return a._amount >= b._amount;
         }
 
         /// <summary>
@@ -305,8 +309,8 @@ namespace WebApplications.Utilities.Financials
         {
             if (ReferenceEquals(a, b)) return true;
             if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
-            return Equals(a.Amount, b.Amount) &&
-                   Equals(a.Currency, b.Currency);
+            return Equals(a._amount, b._amount) &&
+                   Equals(a._currency, b._currency);
         }
 
         /// <summary>
@@ -333,7 +337,7 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator *([NotNull] Financial a, [NotNull] Financial b)
         {
-            return new Financial(a.Currency, a.Amount*b.Amount);
+            return new Financial(a._currency, a._amount * b._amount);
         }
 
         /// <summary>
@@ -361,7 +365,7 @@ namespace WebApplications.Utilities.Financials
         {
             unchecked
             {
-                return (Currency.GetHashCode()*397) ^ Amount.GetHashCode();
+                return (_currency.GetHashCode() * 397) ^ _amount.GetHashCode();
             }
         }
 
@@ -397,16 +401,16 @@ namespace WebApplications.Utilities.Financials
         /// </returns>
         private string FormatCurrency(CultureInfo culture)
         {
-            if (!Currency.Cultures.Contains(culture))
+            if (!_currency.Cultures.Contains(culture))
             {
                 List<CultureInfo> matchingCultures =
-                    Currency.Cultures.Where(c => c.TwoLetterISOLanguageName == culture.TwoLetterISOLanguageName).ToList();
+                    _currency.Cultures.Where(c => c.TwoLetterISOLanguageName == culture.TwoLetterISOLanguageName).ToList();
                 if (matchingCultures.Count > 0)
                     culture = matchingCultures.First();
-                else if (Currency.Cultures.Any())
-                    culture = Currency.Cultures.First();
+                else if (_currency.Cultures.Any())
+                    culture = _currency.Cultures.First();
             }
-            return String.Format(culture, "{0:C}", Amount);
+            return String.Format(culture, "{0:C}", _amount);
         }
 
         /// <summary>

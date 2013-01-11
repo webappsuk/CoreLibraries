@@ -113,7 +113,6 @@ namespace WebApplications.Utilities.Reflect
 
             Type fieldType = Info.FieldType;
             Type returnType = typeof (TValue);
-            Type declaringType = ExtendedType.Type;
 
             // Check the return type can be assigned from the member type
             if ((returnType != fieldType) &&
@@ -126,8 +125,9 @@ namespace WebApplications.Utilities.Reflect
             Contract.Assert(expression != null);
 
             // Cast return value if necessary
-            if (returnType != fieldType)
-                expression = expression.Convert(returnType);
+            if ((returnType != fieldType) &&
+                !expression.TryConvert(returnType, out expression))
+                return null;
 
             Contract.Assert(expression != null);
 
@@ -152,26 +152,16 @@ namespace WebApplications.Utilities.Reflect
             Type fieldType = Info.FieldType;
             Type declaringType = ExtendedType.Type;
             Type parameterType = typeof (T);
-
-            //  Check the parameter type can be assigned from the declaring type.
-            if ((parameterType != declaringType) &&
-                (!parameterType.IsAssignableFrom(declaringType)))
-                return null;
-
             Type returnType = typeof (TValue);
-
-            // Check the return type can be assigned from the member type
-            if ((returnType != fieldType) &&
-                (!returnType.IsAssignableFrom(fieldType)))
-                return null;
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(parameterType, "target");
 
             // Cast parameter if necessary
-            Expression expression = parameterType != declaringType
-                                        ? parameterExpression.Convert(declaringType)
-                                        : parameterExpression;
+            Expression expression = parameterExpression;
+            if ((parameterType != declaringType) &&
+                !expression.TryConvert(declaringType, out expression))
+                return null;
 
             // Get a member access expression
             expression = Expression.Field(expression, Info);
@@ -180,8 +170,9 @@ namespace WebApplications.Utilities.Reflect
             Contract.Assert(returnType != null);
 
             // Cast return value if necessary
-            if (returnType != fieldType)
-                expression = expression.Convert(returnType);
+            if ((returnType != fieldType) &&
+                !expression.TryConvert(returnType, out expression))
+                return null;
 
             Contract.Assert(expression != null);
             Contract.Assert(parameterExpression != null);
@@ -208,20 +199,18 @@ namespace WebApplications.Utilities.Reflect
             Type fieldType = Info.FieldType;
             Type valueType = typeof (TValue);
 
-            // Check the value type can be assigned to the member type
-            if ((valueType != fieldType) &&
-                (!fieldType.IsAssignableFrom(valueType)))
-                return null;
-
             // Get a field access expression
             Expression expression = Expression.Field(null, Info);
 
             // Create value parameter expression
             ParameterExpression valueParameterExpression = Expression.Parameter(
                 valueType, "value");
-            Expression valueExpression = valueType != fieldType
-                                             ? valueParameterExpression.Convert(fieldType)
-                                             : valueParameterExpression;
+            Expression valueExpression = valueParameterExpression;
+            
+            // Cast value if necessary
+            if ((valueType != fieldType) &&
+                !valueExpression.TryConvert(fieldType, out valueExpression)) 
+                return null;
 
             Contract.Assert(expression != null);
             Contract.Assert(valueExpression != null);
@@ -253,28 +242,18 @@ namespace WebApplications.Utilities.Reflect
 
             Type declaringType = ExtendedType.Type;
             Type parameterType = typeof (T);
-
-            //  Check the parameter type can be assigned from the declaring type.
-            if ((parameterType != declaringType) &&
-                (!parameterType.IsAssignableFrom(declaringType)))
-                return null;
-
             Type fieldType = Info.FieldType;
             Type valueType = typeof (TValue);
-
-            // Check the value type can be assigned to the member type
-            if ((valueType != fieldType) &&
-                (!fieldType.IsAssignableFrom(valueType)))
-                return null;
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(
                 parameterType, "target");
 
             // Cast parameter if necessary
-            Expression expression = parameterType != declaringType
-                                        ? parameterExpression.Convert(declaringType)
-                                        : parameterExpression;
+            Expression expression = parameterExpression;
+            if ((parameterType != declaringType) &&
+                !expression.TryConvert(declaringType, out expression))
+                return null;
 
             // Get a member access expression
             expression = Expression.Field(expression, Info);
@@ -282,9 +261,11 @@ namespace WebApplications.Utilities.Reflect
             // Create value parameter expression
             ParameterExpression valueParameterExpression = Expression.Parameter(
                 valueType, "value");
-            Expression valueExpression = valueType != fieldType
-                                             ? valueParameterExpression.Convert(fieldType)
-                                             : valueParameterExpression;
+
+            Expression valueExpression = valueParameterExpression;
+            if ((valueType != fieldType) &&
+                !valueExpression.TryConvert(fieldType, out valueExpression))
+                return null;
 
             Contract.Assert(expression != null);
             Contract.Assert(valueExpression != null);

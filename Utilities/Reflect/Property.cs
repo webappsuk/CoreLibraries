@@ -217,7 +217,6 @@ namespace WebApplications.Utilities.Reflect
 
             Type propertyType = Info.PropertyType;
             Type returnType = typeof (TValue);
-            Type declaringType = ExtendedType.Type;
 
             // Check the return type can be assigned from the member type
             if ((returnType != propertyType) &&
@@ -230,8 +229,9 @@ namespace WebApplications.Utilities.Reflect
             Contract.Assert(expression != null);
 
             // Cast return value if necessary
-            if (returnType != propertyType)
-                expression = expression.Convert(returnType);
+            if ((returnType != propertyType) &&
+                !expression.TryConvert(returnType, out expression))
+                return null;
 
             Contract.Assert(expression != null);
 
@@ -262,26 +262,16 @@ namespace WebApplications.Utilities.Reflect
             Type propertyType = Info.PropertyType;
             Type declaringType = ExtendedType.Type;
             Type parameterType = typeof (T);
-
-            //  Check the parameter type can be assigned from the declaring type.
-            if ((parameterType != declaringType) &&
-                (!parameterType.IsAssignableFrom(declaringType)))
-                return null;
-
             Type returnType = typeof (TValue);
-
-            // Check the return type can be assigned from the member type
-            if ((returnType != propertyType) &&
-                (!returnType.IsAssignableFrom(propertyType)))
-                return null;
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(parameterType, "target");
 
             // Cast parameter if necessary
-            Expression expression = parameterType != declaringType
-                                        ? parameterExpression.Convert(declaringType)
-                                        : parameterExpression;
+            Expression expression = parameterExpression;
+            if ((parameterType != declaringType) &&
+                !expression.TryConvert(declaringType, out expression))
+                return null;
 
             // Get a member access expression
             expression = Expression.Property(expression, Info);
@@ -290,8 +280,9 @@ namespace WebApplications.Utilities.Reflect
             Contract.Assert(returnType != null);
 
             // Cast return value if necessary
-            if (returnType != propertyType)
-                expression = expression.Convert(returnType);
+            if ((returnType != propertyType) &&
+                !expression.TryConvert(returnType, out expression))
+                return null;
 
             Contract.Assert(expression != null);
             Contract.Assert(parameterExpression != null);
@@ -321,20 +312,18 @@ namespace WebApplications.Utilities.Reflect
             Type propertyType = Info.PropertyType;
             Type valueType = typeof (TValue);
 
-            // Check the value type can be assigned to the member type
-            if ((valueType != propertyType) &&
-                (!propertyType.IsAssignableFrom(valueType)))
-                return null;
-
             // Get a field access expression
             Expression expression = Expression.Property(null, Info);
 
             // Create value parameter expression
             ParameterExpression valueParameterExpression = Expression.Parameter(
                 valueType, "value");
-            Expression valueExpression = valueType != propertyType
-                                             ? valueParameterExpression.Convert(propertyType)
-                                             : valueParameterExpression;
+            Expression valueExpression = valueParameterExpression;
+
+            // Convert value parameter if necessary
+            if ((valueType != propertyType) &&
+                !expression.TryConvert(propertyType, out expression))
+                return null;
 
             Contract.Assert(expression != null);
             Contract.Assert(valueExpression != null);
@@ -370,28 +359,18 @@ namespace WebApplications.Utilities.Reflect
 
             Type declaringType = ExtendedType.Type;
             Type parameterType = typeof (T);
-
-            //  Check the parameter type can be assigned from the declaring type.
-            if ((parameterType != declaringType) &&
-                (!parameterType.IsAssignableFrom(declaringType)))
-                return null;
-
             Type propertyType = Info.PropertyType;
             Type valueType = typeof (TValue);
-
-            // Check the value type can be assigned to the member type
-            if ((valueType != propertyType) &&
-                (!propertyType.IsAssignableFrom(valueType)))
-                return null;
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(
                 parameterType, "target");
 
             // Cast parameter if necessary
-            Expression expression = parameterType != declaringType
-                                        ? parameterExpression.Convert(declaringType)
-                                        : parameterExpression;
+            Expression expression = parameterExpression;
+            if ((parameterType != declaringType) &&
+                !expression.TryConvert(declaringType, out expression))
+                return null;
 
             // Get a member access expression
             expression = Expression.Property(expression, Info);
@@ -399,9 +378,12 @@ namespace WebApplications.Utilities.Reflect
             // Create value parameter expression
             ParameterExpression valueParameterExpression = Expression.Parameter(
                 valueType, "value");
-            Expression valueExpression = valueType != propertyType
-                                             ? valueParameterExpression.Convert(propertyType)
-                                             : valueParameterExpression;
+            Expression valueExpression = valueParameterExpression;
+
+            // Convert value parameter if necessary
+            if ((valueType != propertyType) &&
+                !expression.TryConvert(propertyType, out expression))
+                return null;
 
             Contract.Assert(expression != null);
             Contract.Assert(valueExpression != null);

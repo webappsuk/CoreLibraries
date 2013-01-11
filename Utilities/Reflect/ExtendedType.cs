@@ -48,14 +48,16 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Binding flags for returning all fields/properties from a type.
         /// </summary>
-        [UsedImplicitly] public const BindingFlags AllMembersBindingFlags =
+        [UsedImplicitly]
+        public const BindingFlags AllMembersBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.DeclaredOnly;
 
         /// <summary>
         /// Holds all known extended types.
         /// </summary>
-        [NotNull] private static readonly ConcurrentDictionary<Type, ExtendedType> _extendedTypes =
+        [NotNull]
+        private static readonly ConcurrentDictionary<Type, ExtendedType> _extendedTypes =
             new ConcurrentDictionary<Type, ExtendedType>();
 
         /// <summary>
@@ -91,7 +93,22 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The underlying type.
         /// </summary>
-        [NotNull] public readonly Type Type;
+        [NotNull]
+        public readonly Type Type;
+
+        /// <summary>
+        /// Gets the <see cref="ExtendedType"/> for the Base Type.
+        /// </summary>
+        /// <value>The type of the base.</value>
+        public ExtendedType BaseType
+        {
+            get
+            {
+                return Type.BaseType == null
+                           ? null
+                           : Get(Type.BaseType);
+            }
+        }
 
         /// <summary>
         /// Creates a cache for casts on demand.
@@ -103,28 +120,36 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Calculates custom attributes on demand.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)] [NotNull] private readonly Lazy<IEnumerable<Attribute>>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [NotNull]
+        private readonly Lazy<IEnumerable<Attribute>>
             _customAttributes;
 
         /// <summary>
         /// Calculates default member on demand.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)] [NotNull] private readonly Lazy<string> _defaultMember;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [NotNull]
+        private readonly Lazy<string> _defaultMember;
 
         /// <summary>
         /// Holds all events.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, Event> _events = new Dictionary<string, Event>();
+        [NotNull]
+        private readonly Dictionary<string, Event> _events = new Dictionary<string, Event>();
 
         /// <summary>
         /// Holds all fields.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, Field> _fields = new Dictionary<string, Field>();
+        [NotNull]
+        private readonly Dictionary<string, Field> _fields = new Dictionary<string, Field>();
 
         /// <summary>
         /// Creates array of generic arguments on demand.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)] [NotNull] private readonly Lazy<List<GenericArgument>>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [NotNull]
+        private readonly Lazy<List<GenericArgument>>
             _genericArguments;
 
         private readonly Lazy<Dictionary<string, Type>> _interfaces;
@@ -133,24 +158,30 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Holds all methods.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, List<Method>> _methods = new Dictionary<string, List<Method>>();
+        [NotNull]
+        private readonly Dictionary<string, List<Method>> _methods = new Dictionary<string, List<Method>>();
 
         private readonly Lazy<Type> _nonNullableType;
 
         /// <summary>
         /// Holds all properties.
         /// </summary>
-        [NotNull] private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
+        [NotNull]
+        private readonly Dictionary<string, Property> _properties = new Dictionary<string, Property>();
 
         /// <summary>
         /// Creates a signature on demand.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)] [NotNull] private readonly Lazy<string> _signature;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [NotNull]
+        private readonly Lazy<string> _signature;
 
         /// <summary>
         /// Creates a simple full name on demand.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<string> _simpleFullName;
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<string> _simpleFullName;
 
         /// <summary>
         /// Holds user defined methods that cast to this type from another type.
@@ -165,10 +196,12 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Caches closed types.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private
             Lazy<ConcurrentDictionary<string, ExtendedType>> _closedTypes =
-                new Lazy<ConcurrentDictionary<string, ExtendedType>>(
-                    () => new ConcurrentDictionary<string, ExtendedType>(), LazyThreadSafetyMode.PublicationOnly);
+            new Lazy<ConcurrentDictionary<string, ExtendedType>>(
+            () => new ConcurrentDictionary<string, ExtendedType>(), LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// Holds all constructors.
@@ -178,7 +211,8 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Holds all indexers.
         /// </summary>
-        [NotNull] private IEnumerable<Indexer> _indexers;
+        [NotNull]
+        private IEnumerable<Indexer> _indexers;
 
         /// <summary>
         /// Spinlock for locking during member load.
@@ -207,36 +241,36 @@ namespace WebApplications.Utilities.Reflect
             _defaultMember =
                 new Lazy<string>(
                     () =>
-                        {
-                            // Look for default member.
-                            DefaultMemberAttribute defaultMemberAttribute =
-                                CustomAttributes.OfType<DefaultMemberAttribute>().SingleOrDefault();
-                            return defaultMemberAttribute != null
-                                       ? defaultMemberAttribute.MemberName
-                                       : null;
-                        }, LazyThreadSafetyMode.PublicationOnly);
+                    {
+                        // Look for default member.
+                        DefaultMemberAttribute defaultMemberAttribute =
+                            CustomAttributes.OfType<DefaultMemberAttribute>().SingleOrDefault();
+                        return defaultMemberAttribute != null
+                                   ? defaultMemberAttribute.MemberName
+                                   : null;
+                    }, LazyThreadSafetyMode.PublicationOnly);
 
             _signature
                 = new Lazy<string>(
                     () =>
-                        {
-                            Type elementType = type;
+                    {
+                        Type elementType = type;
 
-                            while (elementType.HasElementType)
-                                elementType = elementType.GetElementType();
+                        while (elementType.HasElementType)
+                            elementType = elementType.GetElementType();
 
-                            if (elementType.IsNested)
-                                return type.Name;
+                        if (elementType.IsNested)
+                            return type.Name;
 
-                            string sigToString = type.ToString();
+                        string sigToString = type.ToString();
 
-                            if (elementType.IsPrimitive ||
-                                elementType == typeof (void) ||
-                                elementType == typeof (TypedReference))
-                                sigToString = sigToString.Substring(7);
+                        if (elementType.IsPrimitive ||
+                            elementType == typeof(void) ||
+                            elementType == typeof(TypedReference))
+                            sigToString = sigToString.Substring(7);
 
-                            return sigToString;
-                        }, LazyThreadSafetyMode.PublicationOnly);
+                        return sigToString;
+                    }, LazyThreadSafetyMode.PublicationOnly);
 
             _simpleFullName
                 = new Lazy<string>(
@@ -252,36 +286,36 @@ namespace WebApplications.Utilities.Reflect
             _nonNullableType =
                 new Lazy<Type>(
                     () =>
-                    (Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof (Nullable<>))
+                    (Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof(Nullable<>))
                         ? Type.GetGenericArguments()[0]
                         : Type,
                     LazyThreadSafetyMode.PublicationOnly);
 
             _isConvertible = new Lazy<bool>(
                 () =>
+                {
+                    Type t = _nonNullableType.Value;
+                    if (t.IsEnum)
+                        return true;
+                    switch (Type.GetTypeCode(t))
                     {
-                        Type t = _nonNullableType.Value;
-                        if (t.IsEnum)
+                        case TypeCode.Boolean:
+                        case TypeCode.Char:
+                        case TypeCode.SByte:
+                        case TypeCode.Byte:
+                        case TypeCode.Int16:
+                        case TypeCode.UInt16:
+                        case TypeCode.Int32:
+                        case TypeCode.UInt32:
+                        case TypeCode.Int64:
+                        case TypeCode.UInt64:
+                        case TypeCode.Single:
+                        case TypeCode.Double:
                             return true;
-                        switch (Type.GetTypeCode(t))
-                        {
-                            case TypeCode.Boolean:
-                            case TypeCode.Char:
-                            case TypeCode.SByte:
-                            case TypeCode.Byte:
-                            case TypeCode.Int16:
-                            case TypeCode.UInt16:
-                            case TypeCode.Int32:
-                            case TypeCode.UInt32:
-                            case TypeCode.Int64:
-                            case TypeCode.UInt64:
-                            case TypeCode.Single:
-                            case TypeCode.Double:
-                                return true;
-                            default:
-                                return false;
-                        }
-                    },
+                        default:
+                            return false;
+                    }
+                },
                 LazyThreadSafetyMode.PublicationOnly);
 
             _interfaces =
@@ -674,56 +708,111 @@ namespace WebApplications.Utilities.Reflect
         /// Gets the field.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <returns>The <see cref="Field"/> if found; otherwise <see langword="null"/>.</returns>
-        public Field GetField([NotNull] string name)
+        /// <param name="includeBase">if set to <see langword="true" /> includes fields from the base type.</param>
+        /// <returns>The <see cref="Field" /> if found; otherwise <see langword="null" />.</returns>
+        public Field GetField([NotNull] string name, bool includeBase = true)
         {
-            if (!_loaded) LoadMembers();
-            Field field;
-            return _fields.TryGetValue(name, out field) ? field : null;
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                Field field;
+                if (type._fields.TryGetValue(name, out field) || !includeBase)
+                    return field;
+                type = type.BaseType;
+            }
+            return null;
         }
 
         /// <summary>
-        /// Gets the <see cref="Field"/> matching the <see cref="FieldInfo"/> if found.
+        /// Gets the <see cref="Field" /> matching the <see cref="FieldInfo" /> if found.
         /// </summary>
         /// <param name="fieldInfo">The field info.</param>
-        /// <returns>The <see cref="Field"/> if found; otherwise <see langword="null"/>.</returns>
-        public Field GetField([NotNull] FieldInfo fieldInfo)
+        /// <param name="includeBase">if set to <see langword="true" /> includes fields from the base type.</param>
+        /// <returns>The <see cref="Field" /> if found; otherwise <see langword="null" />.</returns>
+        public Field GetField([NotNull] FieldInfo fieldInfo, bool includeBase = true)
         {
-            if (fieldInfo.DeclaringType != Type) return null;
-            if (!_loaded) LoadMembers();
-            return _fields.Values.FirstOrDefault(f => f.Info == fieldInfo);
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                Field field = type._fields.Values.FirstOrDefault(f => f.Info == fieldInfo);
+                if ((field != null) || (!includeBase))
+                    return field;
+                type = type.BaseType;
+            }
+            return null;
         }
 
         /// <summary>
         /// Gets the property.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <returns>The <see cref="Property"/> if found; otherwise <see langword="null"/>.</returns>
-        public Property GetProperty([NotNull] string name)
+        /// <param name="includeBase">if set to <see langword="true" /> includes properties from the base type.</param>
+        /// <returns>The <see cref="Property" /> if found; otherwise <see langword="null" />.</returns>
+        public Property GetProperty([NotNull] string name, bool includeBase = true)
         {
-            if (!_loaded) LoadMembers();
-            Property property;
-            return _properties.TryGetValue(name, out property) ? property : null;
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                Property property;
+                if (type._properties.TryGetValue(name, out property) || !includeBase)
+                    return property;
+                type = type.BaseType;
+            }
+            return null;
         }
 
         /// <summary>
         /// Gets the <see cref="Property"/> matching the <see cref="PropertyInfo"/> if any.
         /// </summary>
         /// <param name="propertyInfo">The property info.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes properties from the base type.</param>
         /// <returns>The <see cref="Property"/> if found; otherwise <see langword="null"/>.</returns>
-        public Property GetProperty([NotNull] PropertyInfo propertyInfo)
+        public Property GetProperty([NotNull] PropertyInfo propertyInfo, bool includeBase = true)
         {
-            if (propertyInfo.DeclaringType != Type) return null;
-            if (!_loaded) LoadMembers();
-            return _properties.Values.FirstOrDefault(p => p.Info == propertyInfo);
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                Property property = type._properties.Values.FirstOrDefault(p => p.Info == propertyInfo);
+                if ((property != null) || !includeBase)
+                    return property;
+                type = type.BaseType;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the indexer from the type (or base types).
+        /// </summary>
+        /// <param name="types">The types.</param>
+        /// <returns>The indexer.</returns>
+        public Indexer GetIndexer([NotNull] params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return GetIndexer(true, out castsRequired, types);
+        }
+
+        /// <summary>
+        /// Gets the indexer from the type (or base types).
+        /// </summary>
+        /// <param name="types">The types.</param>
+        /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
+        /// <returns>The indexer.</returns>
+        public Indexer GetIndexer(out bool[] castsRequired, [NotNull] params TypeSearch[] types)
+        {
+            return GetIndexer(true, out castsRequired, types);
         }
 
         /// <summary>
         /// Gets the indexer.
         /// </summary>
+        /// <param name="includeBase">if set to <see langword="true" /> includes indexers from the base type.</param>
         /// <param name="types">The types.</param>
         /// <returns>The indexer.</returns>
-        public Indexer GetIndexer([NotNull] params TypeSearch[] types)
+        public Indexer GetIndexer(bool includeBase, [NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
             return GetIndexer(out castsRequired, types);
@@ -732,56 +821,93 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Gets the indexer.
         /// </summary>
-        /// <param name="types">The types.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes indexers from the base type.</param>
         /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
+        /// <param name="types">The types.</param>
         /// <returns>The indexer.</returns>
-        public Indexer GetIndexer(out bool[] castsRequired, [NotNull] params TypeSearch[] types)
+        public Indexer GetIndexer(bool includeBase, out bool[] castsRequired, [NotNull] params TypeSearch[] types)
         {
-            if (!_loaded) LoadMembers();
-            return _indexers.BestMatch(0, true, true, out castsRequired, types) as Indexer;
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                Indexer indexer = type._indexers.BestMatch(0, true, true, out castsRequired, types) as Indexer;
+                if ((indexer != null) || !includeBase)
+                    return indexer;
+                type = type.BaseType;
+            }
+            castsRequired = Reflection.EmptyBools;
+            return null;
         }
 
         /// <summary>
         /// Gets the <see cref="Indexer"/> matching the <see cref="PropertyInfo"/> (if any).
         /// </summary>
         /// <param name="propertyInfo">The property info.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes indexers from the base type.</param>
         /// <returns>The indexer.</returns>
-        public Indexer GetIndexer([NotNull] PropertyInfo propertyInfo)
+        public Indexer GetIndexer([NotNull] PropertyInfo propertyInfo, bool includeBase = true)
         {
-            if ((propertyInfo.DeclaringType != Type) ||
-                (propertyInfo.Name != DefaultMember))
-                return null;
-            if (!_loaded) LoadMembers();
-            return _indexers.FirstOrDefault(i => i.Info == propertyInfo);
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                if (propertyInfo.Name == type.DefaultMember)
+                {
+                    Indexer indexer = type._indexers.FirstOrDefault(i => i.Info == propertyInfo);
+                    if (indexer != null) return indexer;
+                }
+                if (!includeBase)
+                    return null;
+                type = type.BaseType;
+            }
+            return null;
         }
 
         /// <summary>
         /// Gets the methods.
         /// </summary>
         /// <param name="name">The name.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
         /// <returns>The <see cref="Methods"/> if found; otherwise <see langword="null"/>.</returns>
-        public IEnumerable<Method> GetMethods([NotNull] string name)
+        public IEnumerable<Method> GetMethods([NotNull] string name, bool includeBase = true)
         {
-            if (!_loaded) LoadMembers();
-            List<Method> methods;
-            return _methods.TryGetValue(name, out methods) ? methods : null;
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                List<Method> methods;
+                if (type._methods.TryGetValue(name, out methods) || !includeBase)
+                    return methods;
+                type = type.BaseType;
+            }
+            return null;
         }
 
         /// <summary>
         /// Gets the <see cref="Method"/> matching the <see cref="MethodInfo"/> (if any).
         /// </summary>
         /// <param name="methodInfo">The method info.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
         /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
-        public Method GetMethod([NotNull] MethodInfo methodInfo)
+        public Method GetMethod([NotNull] MethodInfo methodInfo, bool includeBase = true)
         {
-            if (methodInfo.DeclaringType != Type)
-                return null;
-            if (!_loaded) LoadMembers();
-            List<Method> methods;
-            if (!_methods.TryGetValue(methodInfo.Name, out methods))
-                return null;
-            Contract.Assert(methods != null);
-            return methods.FirstOrDefault(m => m.Info == methodInfo);
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                List<Method> methods;
+                if (type._methods.TryGetValue(methodInfo.Name, out methods))
+                {
+                    Contract.Assert(methods != null);
+                    var method = methods.FirstOrDefault(m => m.Info == methodInfo);
+                    if (method != null)
+                        return method;
+                }
+                if (!includeBase) return null;
+                type = type.BaseType;
+            }
+            return null;
         }
 
         /// <summary>
@@ -793,7 +919,20 @@ namespace WebApplications.Utilities.Reflect
         public Method GetMethod([NotNull] string name, [NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
-            return GetMethod(name, 0, true, true, out castsRequired, types);
+            return GetMethod(name, 0, true, true, out castsRequired, true, types);
+        }
+
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method"/> if found; otherwise <see langword="null"/>.</returns>
+        public Method GetMethod([NotNull] string name, bool includeBase, [NotNull] params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return GetMethod(name, 0, true, true, out castsRequired, includeBase, types);
         }
 
         /// <summary>
@@ -806,7 +945,21 @@ namespace WebApplications.Utilities.Reflect
         public Method GetMethod([NotNull] string name, int genericArguments, [NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
-            return GetMethod(name, genericArguments, true, true, out castsRequired, types);
+            return GetMethod(name, genericArguments, true, true, out castsRequired, true, types);
+        }
+
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="genericArguments">The number of generic arguments.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        public Method GetMethod([NotNull] string name, int genericArguments, bool includeBase, [NotNull] params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return GetMethod(name, genericArguments, true, true, out castsRequired, includeBase, types);
         }
 
         /// <summary>
@@ -822,7 +975,24 @@ namespace WebApplications.Utilities.Reflect
                                 [NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
-            return GetMethod(name, genericArguments, allowClosure, allowCasts, out castsRequired, types);
+            return GetMethod(name, genericArguments, allowClosure, allowCasts, out castsRequired, true, types);
+        }
+
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="genericArguments">The number of generic arguments.</param>
+        /// <param name="allowClosure">if set to <see langword="true" /> will automatically close the signatures generic types if possible.</param>
+        /// <param name="allowCasts">if set to <see langword="true" /> then types will match if they can be cast to the required type.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        public Method GetMethod([NotNull] string name, int genericArguments, bool allowClosure, bool allowCasts, bool includeBase,
+                                [NotNull] params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return GetMethod(name, genericArguments, allowClosure, allowCasts, out castsRequired, includeBase, types);
         }
 
         /// <summary>
@@ -838,15 +1008,39 @@ namespace WebApplications.Utilities.Reflect
         public Method GetMethod([NotNull] string name, int genericArguments, bool allowClosure, bool allowCasts,
                                 out bool[] castsRequired, [NotNull] params TypeSearch[] types)
         {
-            if (!_loaded) LoadMembers();
-            List<Method> methods;
-            if (!_methods.TryGetValue(name, out methods))
+            return GetMethod(name, genericArguments, allowClosure, allowCasts, out castsRequired, true, types);
+        }
+
+        /// <summary>
+        /// Gets the method.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="genericArguments">The number of generic arguments.</param>
+        /// <param name="allowClosure">if set to <see langword="true" /> will automatically close the signatures generic types if possible.</param>
+        /// <param name="allowCasts">if set to <see langword="true" /> then types will match if they can be cast to the required type.</param>
+        /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes methods from the base type.</param>
+        /// <param name="types">The parameter types and return type.</param>
+        /// <returns>The <see cref="Method" /> if found; otherwise <see langword="null" />.</returns>
+        public Method GetMethod([NotNull] string name, int genericArguments, bool allowClosure, bool allowCasts,
+                                out bool[] castsRequired, bool includeBase, [NotNull] params TypeSearch[] types)
+        {
+            ExtendedType type = this;
+            while (type != null)
             {
-                castsRequired = Reflection.EmptyBools;
-                return null;
+                if (!type._loaded) type.LoadMembers();
+                List<Method> methods;
+                if (type._methods.TryGetValue(name, out methods))
+                {
+                    Contract.Assert(methods != null);
+                    Method method = methods.BestMatch(genericArguments, allowClosure, allowCasts, out castsRequired, types) as Method;
+                    if (method != null) return method;
+                }
+                if (!includeBase) break;
+                type = type.BaseType;
             }
-            Contract.Assert(methods != null);
-            return methods.BestMatch(genericArguments, allowClosure, allowCasts, out castsRequired, types) as Method;
+            castsRequired = Reflection.EmptyBools;
+            return null;
         }
 
         /// <summary>
@@ -857,56 +1051,112 @@ namespace WebApplications.Utilities.Reflect
         public Constructor GetConstructor([NotNull] params TypeSearch[] types)
         {
             bool[] castsRequired;
-            return GetConstructor(out castsRequired, types);
+            return GetConstructor(out castsRequired, true, types);
+        }
+
+        /// <summary>
+        /// Gets the constructor.
+        /// </summary>
+        /// <param name="includeBase">if set to <see langword="true" /> includes constructors from the base type.</param>
+        /// <param name="types">The parameter types and return type (normally the same as <see cref="Type" />).</param>
+        /// <returns>The <see cref="Constructor" /> if found; otherwise <see langword="null" />.</returns>
+        public Constructor GetConstructor(bool includeBase, [NotNull] params TypeSearch[] types)
+        {
+            bool[] castsRequired;
+            return GetConstructor(out castsRequired, includeBase, types);
         }
 
         /// <summary>
         /// Gets the constructor.
         /// </summary>
         /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
-        /// <param name="types">The parameter types and return type (normally the same as <see cref="Type"/>).</param>
-        /// <returns>The <see cref="Constructor"/> if found; otherwise <see langword="null"/>.</returns>
+        /// <param name="types">The parameter types and return type (normally the same as <see cref="Type" />).</param>
+        /// <returns>The <see cref="Constructor" /> if found; otherwise <see langword="null" />.</returns>
         public Constructor GetConstructor(out bool[] castsRequired, [NotNull] params TypeSearch[] types)
         {
-            if (!_loaded) LoadMembers();
-            return _constructors.BestMatch(0, true, true, out castsRequired, types) as Constructor;
+            return GetConstructor(out castsRequired, true, types);
+        }
+
+        /// <summary>
+        /// Gets the constructor.
+        /// </summary>
+        /// <param name="castsRequired">Any array indicating which parameters require a cast (the last element is for the return type).</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes constructors from the base type.</param>
+        /// <param name="types">The parameter types and return type (normally the same as <see cref="Type"/>).</param>
+        /// <returns>The <see cref="Constructor"/> if found; otherwise <see langword="null"/>.</returns>
+        public Constructor GetConstructor(out bool[] castsRequired, bool includeBase, [NotNull] params TypeSearch[] types)
+        {
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                var constructor = type._constructors.BestMatch(0, true, true, out castsRequired, types) as Constructor;
+                if ((constructor != null) || !includeBase)
+                    return constructor;
+                type = type.BaseType;
+            }
+            castsRequired = Reflection.EmptyBools;
+            return null;
         }
 
         /// <summary>
         /// Gets the <see cref="Constructor"/> matching the <see cref="ConstructorInfo"/> (if any).
         /// </summary>
+        /// <param name="includeBase">if set to <see langword="true" /> includes constructors from the base type.</param>
         /// <param name="constructorInfo">The constructor info.</param>
         /// <returns>The constructor information wrapped with useful accessors.</returns>
-        public Constructor GetConstructor([NotNull] ConstructorInfo constructorInfo)
+        public Constructor GetConstructor([NotNull] ConstructorInfo constructorInfo, bool includeBase = true)
         {
-            if (constructorInfo.DeclaringType != Type)
-                return null;
-            if (!_loaded) LoadMembers();
-            return _constructors == null ? null : _constructors.FirstOrDefault(c => c.Info == constructorInfo);
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                Constructor constructor = type._constructors == null ? null : type._constructors.FirstOrDefault(c => c.Info == constructorInfo);
+                if ((constructor != null) || !includeBase)
+                    return constructor;
+                type = type.BaseType;
+            }
+            return null;
         }
 
         /// <summary>
         /// Gets the event.
         /// </summary>
         /// <param name="name">The name.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes events from the base type.</param>
         /// <returns>The <see cref="Event"/> if found; otherwise <see langword="null"/>.</returns>
-        public Event GetEvent([NotNull] string name)
+        public Event GetEvent([NotNull] string name, bool includeBase = true)
         {
-            if (!_loaded) LoadMembers();
-            Event @event;
-            return _events.TryGetValue(name, out @event) ? @event : null;
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                Event @event;
+                if (_events.TryGetValue(name, out @event) || !includeBase)
+                    return @event;
+                type = type.BaseType;
+            }
+            return null;
         }
 
         /// <summary>
         /// Gets the <see cref="Event"/> matching the <see cref="EventInfo"/> if any.
         /// </summary>
         /// <param name="eventInfo">The event info.</param>
+        /// <param name="includeBase">if set to <see langword="true" /> includes events from the base type.</param>
         /// <returns>The <see cref="Event"/> if found; otherwise <see langword="null"/>.</returns>
-        public Event GetEvent([NotNull] EventInfo eventInfo)
+        public Event GetEvent([NotNull] EventInfo eventInfo, bool includeBase = true)
         {
-            if (eventInfo.DeclaringType != Type) return null;
-            if (!_loaded) LoadMembers();
-            return _events.Values.FirstOrDefault(e => e.Info == eventInfo);
+            ExtendedType type = this;
+            while (type != null)
+            {
+                if (!type._loaded) type.LoadMembers();
+                var @event = _events.Values.FirstOrDefault(e => e.Info == eventInfo);
+                if ((@event != null) || !includeBase)
+                    return @event;
+                type = type.BaseType;
+            }
+            return null;
         }
 
         /// <summary>
@@ -952,16 +1202,16 @@ namespace WebApplications.Utilities.Reflect
             return _closedTypes.Value.GetOrAdd(
                 key,
                 k =>
+                {
+                    try
                     {
-                        try
-                        {
-                            return Get(Type.MakeGenericType(gta));
-                        }
-                        catch (ArgumentException)
-                        {
-                            return null;
-                        }
-                    });
+                        return Get(Type.MakeGenericType(gta));
+                    }
+                    catch (ArgumentException)
+                    {
+                        return null;
+                    }
+                });
         }
 
         /// <summary>
@@ -1003,22 +1253,22 @@ namespace WebApplications.Utilities.Reflect
             return _convertToCache.Value.GetOrAdd(
                 type,
                 t =>
-                    {
-                        // Get extended type information for destination type.
-                        ExtendedType dest = type;
+                {
+                    // Get extended type information for destination type.
+                    ExtendedType dest = type;
 
-                        // First we check to see if a cast is possible
-                        if ((NonNullableType == dest.NonNullableType) ||
-                            (NonNullableType.IsEquivalentTo(NonNullableType)) ||
-                            (dest.NonNullableType != typeof (bool) && IsConvertible && dest.IsConvertible) ||
-                            (ImplementsCastTo(dest)) ||
-                            (dest.ImplementsCastFrom(this)) ||
-                            (Implements(typeof (IConvertible)) && _iConvertibleMethods.ContainsKey(type)))
-                            return true;
+                    // First we check to see if a cast is possible
+                    if ((NonNullableType == dest.NonNullableType) ||
+                        (NonNullableType.IsEquivalentTo(NonNullableType)) ||
+                        (dest.NonNullableType != typeof(bool) && IsConvertible && dest.IsConvertible) ||
+                        (ImplementsCastTo(dest)) ||
+                        (dest.ImplementsCastFrom(this)) ||
+                        (Implements(typeof(IConvertible)) && _iConvertibleMethods.ContainsKey(type)))
+                        return true;
 
-                        // TODO SUPPORT TYPE CONVERTERS
-                        return false;
-                    });
+                    // TODO SUPPORT TYPE CONVERTERS
+                    return false;
+                });
         }
 
         /// <summary>
@@ -1059,7 +1309,7 @@ namespace WebApplications.Utilities.Reflect
             }
 
             // Look for IConvertible method
-            if (et.Implements(typeof (IConvertible)))
+            if (et.Implements(typeof(IConvertible)))
             {
                 string methodName;
                 IEnumerable<Method> methods;
@@ -1069,7 +1319,7 @@ namespace WebApplications.Utilities.Reflect
                     Method cm =
                         methods.FirstOrDefault(
                             m =>
-                            m.ParameterTypes.Count() == 1 && m.ParameterTypes.First() == typeof (IFormatProvider));
+                            m.ParameterTypes.Count() == 1 && m.ParameterTypes.First() == typeof(IFormatProvider));
                     if (cm != null)
                     {
                         // Call the IConvertible method on the object, passing in CultureInfo.CurrentCulture as the parameter.
@@ -1088,7 +1338,7 @@ namespace WebApplications.Utilities.Reflect
             // Look for TypeConverter on output type.
             bool useTo = false;
             TypeConverterAttribute typeConverterAttribute = Type
-                .GetCustomAttributes(typeof (TypeConverterAttribute), false)
+                .GetCustomAttributes(typeof(TypeConverterAttribute), false)
                 .OfType<TypeConverterAttribute>()
                 .FirstOrDefault();
 
@@ -1098,7 +1348,7 @@ namespace WebApplications.Utilities.Reflect
                 // Look for TypeConverter on expression type.
                 useTo = true;
                 typeConverterAttribute = expression.Type
-                    .GetCustomAttributes(typeof (TypeConverterAttribute), false)
+                    .GetCustomAttributes(typeof(TypeConverterAttribute), false)
                     .OfType<TypeConverterAttribute>()
                     .FirstOrDefault();
             }
@@ -1125,27 +1375,27 @@ namespace WebApplications.Utilities.Reflect
                                                     BindingFlags.Instance | BindingFlags.Public |
                                                     BindingFlags.FlattenHierarchy,
                                                     null,
-                                                    new[] {typeof (object), typeof (Type)},
+                                                    new[] { typeof(object), typeof(Type) },
                                                     null)
                                                 : typeConverterType.GetMethod(
                                                     "ConvertFrom",
                                                     BindingFlags.Instance | BindingFlags.Public |
                                                     BindingFlags.FlattenHierarchy,
                                                     null,
-                                                    new[] {typeof (object)},
+                                                    new[] { typeof(object) },
                                                     null);
                             if (mi != null)
                             {
                                 // The convert methods accepts the value as an object parameters, so we may need a cast.
-                                if (expression.Type != typeof (object))
-                                    expression = Expression.Convert(expression, typeof (object));
+                                if (expression.Type != typeof(object))
+                                    expression = Expression.Convert(expression, typeof(object));
 
                                 // Create an expression which creates a new instance of the type converter and passes in
                                 // the existing expression as the first parameter to ConvertTo or ConvertFrom.
                                 outputExpression = useTo
                                                        ? Expression.Call(Expression.New(typeConverterType), mi,
                                                                          expression,
-                                                                         Expression.Constant(Type, typeof (Type)))
+                                                                         Expression.Constant(Type, typeof(Type)))
                                                        : Expression.Call(Expression.New(typeConverterType), mi,
                                                                          expression);
 
@@ -1160,7 +1410,7 @@ namespace WebApplications.Utilities.Reflect
             }
 
             // Finally, if we want to output to string, call ToString() method.
-            if (Type == typeof (string))
+            if (Type == typeof(string))
             {
                 outputExpression = Expression.Call(expression, Reflection.ToStringMethodInfo);
                 return true;

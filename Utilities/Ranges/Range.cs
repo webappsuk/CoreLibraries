@@ -52,17 +52,32 @@ namespace WebApplications.Utilities.Ranges
         /// <summary>
         ///   The end of the range (inclusive).
         /// </summary>
-        public readonly TValue End;
+        private readonly TValue _end;
 
         /// <summary>
         ///   The start of the range (inclusive).
         /// </summary>
-        public readonly TValue Start;
+        private readonly TValue _start;
 
         /// <summary>
         ///   The step for enumeration
         /// </summary>
-        public readonly TStep Step;
+        private readonly TStep _step;
+
+        /// <summary>
+        ///   The start of the range (inclusive).
+        /// </summary>
+        public TValue Start { get { return _start; } }
+
+        /// <summary>
+        ///   The end of the range (inclusive).
+        /// </summary>
+        public TValue End { get { return _end; } }
+
+        /// <summary>
+        ///   The step for enumeration
+        /// </summary>
+        public TStep Step { get { return _step; } }
 
         /// <summary>
         ///   Initializes the <see cref="Range&lt;T, S&gt;"/> class.
@@ -134,8 +149,8 @@ namespace WebApplications.Utilities.Ranges
                         end,
                         typeof (TValue)));
             }
-            Start = start;
-            End = end;
+            _start = start;
+            _end = end;
         }
 
         /// <summary>
@@ -160,9 +175,9 @@ namespace WebApplications.Utilities.Ranges
                         end,
                         typeof (TValue)));
             }
-            Start = start;
-            End = end;
-            Step = step;
+            _start = start;
+            _end = end;
+            _step = step;
         }
 
         #region IEnumerable<TValue> Members
@@ -229,10 +244,10 @@ namespace WebApplications.Utilities.Ranges
         /// <returns>The bound value.</returns>
         public TValue Bind(TValue value)
         {
-            if (LessThan(value, Start))
-                return Start;
-            if (LessThan(End, value))
-                return End;
+            if (LessThan(value, _start))
+                return _start;
+            if (LessThan(_end, value))
+                return _end;
             return value;
         }
 
@@ -246,7 +261,7 @@ namespace WebApplications.Utilities.Ranges
         /// <filterpriority>1</filterpriority>
         public IEnumerator<TValue> GetEnumerator(TStep step)
         {
-            for (TValue loop = Start, next = Start; !LessThan(End, loop); loop = next)
+            for (TValue loop = _start, next = _start; !LessThan(_end, loop); loop = next)
             {
                 try
                 {
@@ -274,9 +289,9 @@ namespace WebApplications.Utilities.Ranges
             if (ReferenceEquals(this, obj)) return true;
             Range<TValue, TStep> range = obj as Range<TValue, TStep>;
             if (ReferenceEquals(null, range)) return false;
-            return EqualityComparer<TValue>.Default.Equals(End, range.End) &&
-                   EqualityComparer<TValue>.Default.Equals(Start, range.Start) &&
-                   EqualityComparer<TStep>.Default.Equals(Step, range.Step);
+            return EqualityComparer<TValue>.Default.Equals(_end, range._end) &&
+                   EqualityComparer<TValue>.Default.Equals(_start, range._start) &&
+                   EqualityComparer<TStep>.Default.Equals(_step, range._step);
         }
 
         /// <inheritDoc />
@@ -284,9 +299,9 @@ namespace WebApplications.Utilities.Ranges
         {
             unchecked
             {
-                int hashCode = EqualityComparer<TValue>.Default.GetHashCode(End);
-                hashCode = (hashCode*397) ^ EqualityComparer<TValue>.Default.GetHashCode(Start);
-                hashCode = (hashCode*397) ^ EqualityComparer<TStep>.Default.GetHashCode(Step);
+                int hashCode = EqualityComparer<TValue>.Default.GetHashCode(_end);
+                hashCode = (hashCode * 397) ^ EqualityComparer<TValue>.Default.GetHashCode(_start);
+                hashCode = (hashCode * 397) ^ EqualityComparer<TStep>.Default.GetHashCode(_step);
                 return hashCode;
             }
         }
@@ -299,7 +314,7 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public override string ToString()
         {
-            return string.Format("{0} - {1}", Start, End);
+            return string.Format("{0} - {1}", _start, _end);
         }
     }
 
