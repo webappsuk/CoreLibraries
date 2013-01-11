@@ -292,7 +292,7 @@ namespace WebApplications.Utilities.Performance
                 _elapsed = s.Elapsed;
 
                 // Increment counters.
-                PerfTimer.IncrementBy(_elapsed);
+                PerfTimer.IncrementBy(_elapsed, WarningDuration, CriticalDuration);
             }
         }
     }
