@@ -22,5 +22,5 @@ $msbuild.Xml.Imports | Where-Object {$_.Project.ToLowerInvariant().EndsWith("per
 
 # Add import to PostSharp.targets
 $import = $msbuild.Xml.AddImport($relativePath)
-$import.Condition = "Exists('$relativePath')"
+$import.Condition = "$(DefineConstants.Contains('PerfSetup')) AND Exists('$relativePath')"
 [string]::Format("Added import of '{0}'.", $relativePath )
