@@ -1073,7 +1073,7 @@ namespace WebApplications.Utilities
         {
             // We use GetValueDetail under the hood, as it caches and name building is expensive.
             ValueDetail valueDetail;
-            if (TryGetValueDetail(value, out valueDetail))
+            if (TryGetValueDetail(value, out valueDetail, includeImplicit))
             {
                 name = valueDetail.Name;
                 return true;
@@ -1098,7 +1098,7 @@ namespace WebApplications.Utilities
         {
             // We use GetValueDetail under the hood, as it caches and name building is expensive.
             ValueDetail valueDetail;
-            if (TryGetValueDetail(rawValue, out valueDetail))
+            if (TryGetValueDetail(rawValue, out valueDetail, includeImplicit))
             {
                 name = valueDetail.Name;
                 return true;

@@ -400,33 +400,7 @@ namespace WebApplications.Utilities
         ///   Gets the <see cref="long"/> value equivalent of an enum
         /// </summary>
         /// <typeparam name="TEnum">The enum type.</typeparam>
-        /// <param name="value">The enum value.</param>
-        /// <param name="includeImplicit">
-        ///   <para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
-        ///   <para>By default this is set to <see langword="false"/>.</para>
-        /// </param>
-        /// <returns>The <see cref="long"/> value.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the raw <paramref name="value"/> specified.
-        /// </exception>
-        [UsedImplicitly]
-        public static long GetLong<TEnum>(this TEnum value, bool includeImplicit = false)
-            where TEnum : struct, IComparable, IFormattable, IConvertible
-        {
-            return ExtendedEnum<TEnum>.GetLong(value, includeImplicit);
-        }
-
-        /// <summary>
-        ///   Tries to get the <see cref="long"/> value equivalent of an enum.
-        /// </summary>
-        /// <param name="value">The enum value.</param>
-        /// <param name="vLong">
-        ///   <para>The long value.</para>
-        ///   <para>If no value is found then the output is zero.</para>
-        /// </param>
-        /// <param name="includeImplicit">
-        ///   <para>If set to <see langword="true"/> includes implicit values of flag enums.</para>
-        ///   <para>By default this is set to <see langword="false"/>.</para>
+        /// <param name="value">  this is set to <see langword="false"/>.</para>
         /// </param>
         /// <returns>
         ///   Returns <see langword="true"/> if the <paramref name="value"/> was found; otherwise returns <see langword="false"/>.
