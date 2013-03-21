@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -39,9 +39,8 @@ namespace WebApplications.Utilities.Financials
     /// </summary>
     public class Financial : IEquatable<Financial>, IFormattable
     {
-        [NotNull]
-        private readonly CurrencyInfo _currency;
         private readonly decimal _amount;
+        [NotNull] private readonly CurrencyInfo _currency;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Financial"/> class.
@@ -61,13 +60,19 @@ namespace WebApplications.Utilities.Financials
         /// </summary>
         [NotNull]
         [UsedImplicitly]
-        public CurrencyInfo Currency { get { return _currency; } }
+        public CurrencyInfo Currency
+        {
+            get { return _currency; }
+        }
 
         /// <summary>
         /// Gets or sets the amount.
         /// </summary>
         [UsedImplicitly]
-        public decimal Amount { get { return _amount; } }
+        public decimal Amount
+        {
+            get { return _amount; }
+        }
 
         #region IEquatable<Financial> Members
         /// <summary>
@@ -337,7 +342,7 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator *([NotNull] Financial a, [NotNull] Financial b)
         {
-            return new Financial(a._currency, a._amount * b._amount);
+            return new Financial(a._currency, a._amount*b._amount);
         }
 
         /// <summary>
@@ -365,7 +370,7 @@ namespace WebApplications.Utilities.Financials
         {
             unchecked
             {
-                return (_currency.GetHashCode() * 397) ^ _amount.GetHashCode();
+                return (_currency.GetHashCode()*397) ^ _amount.GetHashCode();
             }
         }
 
@@ -404,7 +409,8 @@ namespace WebApplications.Utilities.Financials
             if (!_currency.Cultures.Contains(culture))
             {
                 List<CultureInfo> matchingCultures =
-                    _currency.Cultures.Where(c => c.TwoLetterISOLanguageName == culture.TwoLetterISOLanguageName).ToList();
+                    _currency.Cultures.Where(c => c.TwoLetterISOLanguageName == culture.TwoLetterISOLanguageName)
+                             .ToList();
                 if (matchingCultures.Count > 0)
                     culture = matchingCultures.First();
                 else if (_currency.Cultures.Any())

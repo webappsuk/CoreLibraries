@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -133,7 +133,7 @@ namespace WebApplications.Utilities.Reflect
             // Create lambda and compile
             return Expression.Lambda<Func<TValue>>(expression).Compile();
         }
-        
+
         /// <summary>
         /// Retrieves the lambda function equivalent of the specified instance getter method.
         /// </summary>
@@ -205,10 +205,10 @@ namespace WebApplications.Utilities.Reflect
             ParameterExpression valueParameterExpression = Expression.Parameter(
                 valueType, "value");
             Expression valueExpression = valueParameterExpression;
-            
+
             // Cast value if necessary
             if ((valueType != fieldType) &&
-                !valueExpression.TryConvert(fieldType, out valueExpression)) 
+                !valueExpression.TryConvert(fieldType, out valueExpression))
                 return null;
 
             Contract.Assert(expression != null);
@@ -277,7 +277,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Create lambda and compile
             return
-                Expression.Lambda<Action<T, TValue>>(expression, parameterExpression, valueParameterExpression).Compile();
+                Expression.Lambda<Action<T, TValue>>(expression, parameterExpression, valueParameterExpression)
+                          .Compile();
         }
     }
 }

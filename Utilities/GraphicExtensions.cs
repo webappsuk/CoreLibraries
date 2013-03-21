@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using JetBrains.Annotations;
@@ -13,8 +40,8 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Maps underlying image format GUIDs to their enumeration equivalent.
         /// </summary>
-        [NotNull]
-        private static readonly IReadOnlyDictionary<Guid, GraphicFormat> _graphicFormatsByGuid = new Dictionary<Guid, GraphicFormat>
+        [NotNull] private static readonly IReadOnlyDictionary<Guid, GraphicFormat> _graphicFormatsByGuid = new Dictionary
+            <Guid, GraphicFormat>
             {
                 // Memory Bitmap
                 {new Guid("b96b3caa-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Bmp},
@@ -33,8 +60,7 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Maps the image format enumeration to the system equivalent.
         /// </summary>
-        [NotNull]
-        private static readonly Dictionary<GraphicFormat, ImageFormat> _graphicFormats =
+        [NotNull] private static readonly Dictionary<GraphicFormat, ImageFormat> _graphicFormats =
             new Dictionary<GraphicFormat, ImageFormat>
                 {
                     {GraphicFormat.Bmp, ImageFormat.Bmp},
@@ -53,7 +79,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>ImageFormat.</returns>
-        public static GraphicFormat ToGraphicFormat([NotNull]this ImageFormat format)
+        public static GraphicFormat ToGraphicFormat([NotNull] this ImageFormat format)
         {
             GraphicFormat graphicFormat;
             Guid guid = format.Guid;
@@ -82,7 +108,7 @@ namespace WebApplications.Utilities
         /// <remarks>
         /// See (amongst others) http://www.garykessler.net/library/file_sigs.html
         /// </remarks>
-        public static GraphicFormat GetGraphicFormat([NotNull]this byte[] bytes)
+        public static GraphicFormat GetGraphicFormat([NotNull] this byte[] bytes)
         {
             int length = bytes.Length;
             if (length > 2)
@@ -101,7 +127,6 @@ namespace WebApplications.Utilities
                             (bytes[1] == 0x00) &&
                             (bytes[3] == 0x00))
                         {
-
                             if ((length > 6) &&
                                 (bytes[2] == 0x09) &&
                                 (bytes[5] == 0x03))

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -66,15 +66,15 @@ namespace WebApplications.Utilities
         /// Characters to escape for JSON (and their new value).
         /// </summary>
         private static readonly Dictionary<char, string> _jsonEscapedCharacters = new Dictionary<char, string>
-                                                                                      {
-                                                                                          {'\\', @"\\"},
-                                                                                          {'\"', @"\"""},
-                                                                                          {'\b', @"\b"},
-                                                                                          {'\f', @"\f"},
-                                                                                          {'\n', @"\n"},
-                                                                                          {'\r', @"\r"},
-                                                                                          {'\t', @"\t"}
-                                                                                      };
+            {
+                {'\\', @"\\"},
+                {'\"', @"\"""},
+                {'\b', @"\b"},
+                {'\f', @"\f"},
+                {'\n', @"\n"},
+                {'\r', @"\r"},
+                {'\t', @"\t"}
+            };
 
         /// <summary>
         ///   The Epoch date time (used by JavaScript).
@@ -82,39 +82,39 @@ namespace WebApplications.Utilities
         public static readonly DateTime EpochStart = new DateTime(1970, 1, 1);
 
         private static readonly string[] _onesMapping = new[]
-                                                            {
-                                                                "Zero", "One", "Two", "Three", "Four", "Five", "Six",
-                                                                "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
-                                                                "Thirteen", "Fourteen", "Fifteen", "Sixteen",
-                                                                "Seventeen", "Eighteen", "Nineteen"
-                                                            };
+            {
+                "Zero", "One", "Two", "Three", "Four", "Five", "Six",
+                "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
+                "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+                "Seventeen", "Eighteen", "Nineteen"
+            };
 
         private static readonly string[] _tensMapping = new[]
-                                                            {
-                                                                "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy"
-                                                                ,
-                                                                "Eighty", "Ninety"
-                                                            };
+            {
+                "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy"
+                ,
+                "Eighty", "Ninety"
+            };
 
         private static readonly string[] _groupMapping = new[]
-                                                             {
-                                                                 "Hundred", "Thousand", "Million", "Billion", "Trillion"
-                                                                 ,
-                                                                 "Quadrillion", "Quintillion", "Sextillian",
-                                                                 "Septillion",
-                                                                 "Octillion", "Nonillion", "Decillion", "Undecillion",
-                                                                 "Duodecillion", "Tredecillion", "Quattuordecillion",
-                                                                 "Quindecillion", "Sexdecillion", "Septendecillion",
-                                                                 "Octodecillion", "Novemdecillion", "Vigintillion",
-                                                                 "Unvigintillion", "Duovigintillion", "Tresvigintillion"
-                                                                 ,
-                                                                 "Quattuorvigintillion", "Quinquavigintillion",
-                                                                 "Sesvigintillion",
-                                                                 "Septemvigintillion", "Octovigintillion",
-                                                                 "Vigintinonillion",
-                                                                 "Trigintillion", "Untrigintillion", "Duotrigintillion",
-                                                                 "Trestrigintillion"
-                                                             };
+            {
+                "Hundred", "Thousand", "Million", "Billion", "Trillion"
+                ,
+                "Quadrillion", "Quintillion", "Sextillian",
+                "Septillion",
+                "Octillion", "Nonillion", "Decillion", "Undecillion",
+                "Duodecillion", "Tredecillion", "Quattuordecillion",
+                "Quindecillion", "Sexdecillion", "Septendecillion",
+                "Octodecillion", "Novemdecillion", "Vigintillion",
+                "Unvigintillion", "Duovigintillion", "Tresvigintillion"
+                ,
+                "Quattuorvigintillion", "Quinquavigintillion",
+                "Sesvigintillion",
+                "Septemvigintillion", "Octovigintillion",
+                "Vigintinonillion",
+                "Trigintillion", "Untrigintillion", "Duotrigintillion",
+                "Trestrigintillion"
+            };
 
         /// <summary>
         ///   The default split characters for splitting strings.
@@ -217,13 +217,13 @@ namespace WebApplications.Utilities
         {
             string integerString = ToEnglishProcessInteger((long) number);
             int precision = 0;
-            
-            if(number.ToString().Contains('.'))
+
+            if (number.ToString().Contains('.'))
             {
                 precision = number.ToString().Split('.')[1].Length;
             }
 
-            number = Math.Round(Math.Abs(number), precision) % 1;
+            number = Math.Round(Math.Abs(number), precision)%1;
 
             int decimalDigits = 0;
 
@@ -371,14 +371,14 @@ namespace WebApplications.Utilities
                                 BindingFlags.FlattenHierarchy | BindingFlags.Public |
                                 BindingFlags.InvokeMethod | BindingFlags.Instance |
                                 BindingFlags.Static)
-                                .Where(
-                                    mi => (mi.Name == "Equals") &&
-                                          ((pCount = (plist = mi.GetParameters()).Count()) < 3) &&
-                                          (pCount > 0) && plist[0].ParameterType.IsAssignableFrom(t) &&
-                                          (mi.IsStatic
-                                               ? (pCount == 2) &&
-                                                 plist[1].ParameterType.IsAssignableFrom(t)
-                                               : (pCount == 1))))
+                              .Where(
+                                  mi => (mi.Name == "Equals") &&
+                                        ((pCount = (plist = mi.GetParameters()).Count()) < 3) &&
+                                        (pCount > 0) && plist[0].ParameterType.IsAssignableFrom(t) &&
+                                        (mi.IsStatic
+                                             ? (pCount == 2) &&
+                                               plist[1].ParameterType.IsAssignableFrom(t)
+                                             : (pCount == 1))))
                                 .First();
 
                         return equalsMethod.Func<object, object, bool>(false);
@@ -667,8 +667,8 @@ namespace WebApplications.Utilities
                             int id;
                             return Int32.TryParse(s, out id) ? (int?) id : null;
                         }).Where(id => id.HasValue)
-                    .Distinct()
-                    .Select(id => getObject(id.Value));
+                        .Distinct()
+                        .Select(id => getObject(id.Value));
             if (!typeof (T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
@@ -707,8 +707,8 @@ namespace WebApplications.Utilities
                             Int16 id;
                             return Int16.TryParse(s, out id) ? (Int16?) id : null;
                         }).Where(id => id.HasValue)
-                    .Distinct()
-                    .Select(id => getObject(id.Value));
+                        .Distinct()
+                        .Select(id => getObject(id.Value));
             if (!typeof (T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
@@ -747,8 +747,8 @@ namespace WebApplications.Utilities
                             Int64 id;
                             return Int64.TryParse(s, out id) ? (Int64?) id : null;
                         }).Where(id => id.HasValue)
-                    .Distinct()
-                    .Select(id => getObject(id.Value));
+                        .Distinct()
+                        .Select(id => getObject(id.Value));
             if (!typeof (T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
@@ -1145,130 +1145,6 @@ namespace WebApplications.Utilities
             return CombGuid.GetDateTime(guid);
         }
 
-        #region TopologicalSort
-        /// <summary>
-        ///   Performs a topological sort on an enumeration.
-        /// </summary>
-        /// <typeparam name="T">The enumerable type.</typeparam>
-        /// <param name="enumerable">The enumerable.</param>
-        /// <param name="getDependants">
-        ///   The function to get dependants for each element of the enumeration.
-        /// </param>
-        /// <returns>
-        ///   The enumeration sorted so that all elements that have dependencies follow their dependencies.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
-        [NotNull]
-        [UsedImplicitly]
-        public static IEnumerable<T> TopologicalSortDependants<T>([NotNull] this IEnumerable<T> enumerable,
-                                                                  [NotNull] Func<T, IEnumerable<T>> getDependants)
-        {
-            // Create a dictionary of dependencies.
-            return TopologicalSortEdges(enumerable, enumerable.SelectMany(getDependants,
-                                                                          (e, d) => new KeyValuePair<T, T>(e, d)));
-        }
-
-        /// <summary>
-        ///   Performs a topological sort on an enumeration.
-        /// </summary>
-        /// <typeparam name="T">The enumerable type.</typeparam>
-        /// <param name="enumerable">The enumerable.</param>
-        /// <param name="getDependencies">
-        ///   The function to get the dependencies of the individual collection element.
-        /// </param>
-        /// <returns>
-        ///   The enumeration sorted so that all elements that have dependencies follow their dependencies.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
-        /// <exception cref="ArgumentNullException">
-        ///   <para><paramref name="enumerable"/> is <see langword="null"/>.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="getDependencies"/> is <see langword="null"/>.</para>
-        /// </exception>
-        [NotNull]
-        [UsedImplicitly]
-        public static IEnumerable<T> TopologicalSortDependencies<T>([NotNull] this IEnumerable<T> enumerable,
-                                                                    [NotNull] Func<T, IEnumerable<T>> getDependencies)
-        {
-            // Create a dictionary of dependencies.
-            return TopologicalSortEdges(enumerable, enumerable.SelectMany(getDependencies,
-                                                                          (e, d) => new KeyValuePair<T, T>(d, e)));
-        }
-
-        /// <summary>
-        ///   Performs a topological sort on an enumeration.
-        /// </summary>
-        /// <typeparam name="T">The enumerable type.</typeparam>
-        /// <param name="enumerable">The enumerable.</param>
-        /// <param name="edges">The edges.</param>
-        /// <returns>
-        ///   The enumeration sorted so that all elements that have dependencies follow their dependencies.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
-        /// <exception cref="ArgumentException">There are duplicates in <paramref name="enumerable"/>.</exception>
-        [NotNull]
-        [UsedImplicitly]
-        public static IEnumerable<T> TopologicalSortEdges<T>([NotNull] this IEnumerable<T> enumerable,
-                                                             [NotNull] IEnumerable<KeyValuePair<T, T>> edges)
-        {
-            // Create lookup dictionaries from edges
-            Dictionary<T, List<T>> dependants = new Dictionary<T, List<T>>();
-            Dictionary<T, List<T>> dependencies = new Dictionary<T, List<T>>();
-
-            // Make sure all our elements are added.
-            foreach (T t in enumerable)
-            {
-                // Add dependants and dependencies, will throw exception on duplicates in enumeration.
-                dependants.Add(t, new List<T>());
-                dependencies.Add(t, new List<T>());
-            }
-
-            // Now add edges
-            foreach (KeyValuePair<T, T> kvp in edges)
-            {
-                List<T> l;
-                if ((dependencies.TryGetValue(kvp.Value, out l)) && (!l.Contains(kvp.Key)))
-                    l.Add(kvp.Key);
-
-                if ((dependants.TryGetValue(kvp.Key, out l)) && (!l.Contains(kvp.Value)))
-                    l.Add(kvp.Value);
-            }
-
-            // Create a queue from all elements that don't have any dependencies.
-            Queue<T> outputQueue = new Queue<T>(dependencies.Where(kvp => kvp.Value.Count < 1).Select(kvp => kvp.Key));
-
-            // Process the output queue
-            while (outputQueue.Count > 0)
-            {
-                T t = outputQueue.Dequeue();
-                yield return t;
-
-                // Get dependants of the yielded element and remove the reverse reference from their depenencies
-                List<T> dependentsOfLastYield;
-                if (!dependants.TryGetValue(t, out dependentsOfLastYield)) continue;
-                dependants.Remove(t);
-
-                foreach (T dependant in dependentsOfLastYield)
-                {
-                    // Check the dependant was actually included in enumerable
-                    List<T> deps;
-                    if (!dependencies.TryGetValue(dependant, out deps)) continue;
-
-                    // Remove dependency
-                    deps.Remove(t);
-
-                    // if we have no dependencies left add to output queue for processing.
-                    if (deps.Count < 1)
-                        outputQueue.Enqueue(dependant);
-                }
-            }
-
-            // If we have any dependants left we have a cycle.
-            if (dependants.Count > 0)
-                throw new InvalidOperationException(Resources.Extensions_TopologicalSortEdges_DependencyCyclesFound);
-        }
-        #endregion
-
         /// <summary>
         ///   Wraps the specified <see cref="IAsyncResult"/> as an
         ///   <see cref="WebApplications.Utilities.Threading.ApmWrap&lt;T&gt;"/> object, allowing associated data to be attached.
@@ -1324,86 +1200,6 @@ namespace WebApplications.Utilities
         {
             return ApmWrap<T>.WrapCallback(callback, data, syncContext);
         }
-
-        #region Mod
-        /// <summary>
-        /// Calculates the modulus of the value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="modulus">The modulus.</param>
-        /// <returns>The modulus.</returns>
-        /// <remarks></remarks>
-        public static short Mod(this short value, short modulus)
-        {
-            int mod = value%modulus;
-            if (mod < 0) mod += modulus;
-            return (short) mod;
-        }
-
-        /// <summary>
-        /// Calculates the modulus of the value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="modulus">The modulus.</param>
-        /// <returns>The modulus.</returns>
-        /// <remarks></remarks>
-        public static ushort Mod(this ushort value, ushort modulus)
-        {
-            return (ushort) (value%modulus);
-        }
-
-        /// <summary>
-        /// Calculates the modulus of the value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="modulus">The modulus.</param>
-        /// <returns>The modulus.</returns>
-        /// <remarks></remarks>
-        public static int Mod(this int value, int modulus)
-        {
-            int mod = value%modulus;
-            if (mod < 0) mod += modulus;
-            return mod;
-        }
-
-        /// <summary>
-        /// Calculates the modulus of the value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="modulus">The modulus.</param>
-        /// <returns>The modulus.</returns>
-        /// <remarks></remarks>
-        public static uint Mod(this uint value, uint modulus)
-        {
-            return value%modulus;
-        }
-
-        /// <summary>
-        /// Calculates the modulus of the value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="modulus">The modulus.</param>
-        /// <returns>The modulus.</returns>
-        /// <remarks></remarks>
-        public static long Mod(this long value, long modulus)
-        {
-            long mod = value%modulus;
-            if (mod < 0) mod += modulus;
-            return mod;
-        }
-
-        /// <summary>
-        /// Calculates the modulus of the value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <param name="modulus">The modulus.</param>
-        /// <returns>The modulus.</returns>
-        /// <remarks></remarks>
-        public static ulong Mod(this ulong value, ulong modulus)
-        {
-            return value%modulus;
-        }
-        #endregion
 
         /// <summary>
         /// Splits the specified array at the selected indices.
@@ -1498,6 +1294,65 @@ namespace WebApplications.Utilities
             return number + (number*increaseByPercent)/100;
         }
 
+        /// <summary>
+        /// Gets all bytes necessary to represent an IPAddress.  See also <see cref="GetFullIPAddress"/>.
+        /// </summary>
+        /// <param name="ipAddress">The ip address.</param>
+        /// <returns>A byte[] that fully encodes an IPAddress.</returns>
+        /// <remarks>
+        /// <para>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</para>
+        /// </remarks>
+        public static byte[] GetAllBytes(this IPAddress ipAddress)
+        {
+            if (ipAddress == null) return null;
+            byte[] bytes = ipAddress.GetAddressBytes();
+            if (ipAddress.AddressFamily == AddressFamily.InterNetworkV6)
+            {
+                Contract.Assert(bytes.Length == 16);
+
+                // We need to add Scope for v6 addresses.
+                int offset = bytes.Length;
+                Array.Resize(ref bytes, offset + 4);
+
+                // Note that scope is actually a uint not a long, but uint isn't CLS compliant so the framework
+                // uses a long - we don't need to waste the extra 4 bytes though.
+                uint scope = (uint) ipAddress.ScopeId;
+                byte[] scopeBytes = BitConverter.GetBytes(scope);
+                Array.Copy(scopeBytes, 0, bytes, offset, 4);
+            }
+            else
+            {
+                Contract.Assert(bytes.Length == 4);
+            }
+            return bytes;
+        }
+
+        /// <summary>
+        /// Gets an IPAddress from a byte[] that also encode the IPv6 scope.  See also <see cref="GetAllBytes"/>.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns>A byte[] that fully encodes an IPAddress.</returns>
+        /// <remarks>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</remarks>
+        public static IPAddress GetFullIPAddress(this byte[] bytes)
+        {
+            if (bytes == null) return null;
+            int l = bytes.Length;
+            if (l > 4)
+            {
+                Contract.Assert(l == 20);
+                // This is an IPv6 address, remove the scope from the end - note we encode it as a uint32 but have to supply
+                // it to IPAddress as a long (which is CLS compliant).
+                l -= 4;
+                long scope = BitConverter.ToUInt32(bytes, l);
+                Array.Resize(ref bytes, l);
+
+                return new IPAddress(bytes, scope);
+            }
+            // We have an IP4 address.
+            Contract.Assert(l == 4);
+            return new IPAddress(bytes);
+        }
+
         #region StdDev
         /// <summary>
         /// Calculate the standard deviation of an average
@@ -1517,7 +1372,7 @@ namespace WebApplications.Utilities
             double avg = enumerable.Average();
 
             // Return standard deviation
-            return Math.Sqrt(enumerable.Sum(d => (d - avg) * (d - avg)) / count);
+            return Math.Sqrt(enumerable.Sum(d => (d - avg)*(d - avg))/count);
         }
 
         /// <summary>
@@ -1527,7 +1382,7 @@ namespace WebApplications.Utilities
         /// <param name="values">The values.</param>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>The standard deviation.</returns>
-        public static double StdDev<T>(this IEnumerable<T> values, [NotNull]Func<T, double> selector)
+        public static double StdDev<T>(this IEnumerable<T> values, [NotNull] Func<T, double> selector)
         {
             Contract.Requires(selector != null);
             if (values == null) return 0;
@@ -1541,7 +1396,7 @@ namespace WebApplications.Utilities
             double avg = enumerable.Average();
 
             // Return standard deviation
-            return Math.Sqrt(enumerable.Sum(d => (d - avg) * (d - avg)) / count);
+            return Math.Sqrt(enumerable.Sum(d => (d - avg)*(d - avg))/count);
         }
         #endregion
 
@@ -1818,6 +1673,14 @@ namespace WebApplications.Utilities
         #endregion
 
         #region ToMemorySize
+        [NotNull] private static readonly string[] _memoryUnitsLong =
+            {
+                " byte", " kilobyte", " megabyte", " gigabyte",
+                " terabyte", " petabyte", " exabyte"
+            };
+
+        [NotNull] private static readonly string[] _memoryUnitsShort = {"B", "KB", "MB", "GB", "TB", "PB", "EB"};
+
         /// <summary>
         /// Converts a number of bytes to a friendly memory size.
         /// </summary>
@@ -1826,9 +1689,10 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this short bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        public static string ToMemorySize(this short bytes, bool longUnits = false, uint decimalPlaces = 1,
+                                          double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -1839,9 +1703,10 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this ushort bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        public static string ToMemorySize(this ushort bytes, bool longUnits = false, uint decimalPlaces = 1,
+                                          double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -1852,9 +1717,10 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this int bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        public static string ToMemorySize(this int bytes, bool longUnits = false, uint decimalPlaces = 1,
+                                          double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -1865,9 +1731,10 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this uint bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        public static string ToMemorySize(this uint bytes, bool longUnits = false, uint decimalPlaces = 1,
+                                          double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -1878,9 +1745,10 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this long bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        public static string ToMemorySize(this long bytes, bool longUnits = false, uint decimalPlaces = 1,
+                                          double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -1891,15 +1759,11 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this ulong bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        public static string ToMemorySize(this ulong bytes, bool longUnits = false, uint decimalPlaces = 1,
+                                          double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
-
-        [NotNull]
-        private static readonly string[] _memoryUnitsLong = { " byte", " kilobyte", " megabyte", " gigabyte", " terabyte", " petabyte", " exabyte" };
-        [NotNull]
-        private static readonly string[] _memoryUnitsShort = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
 
         /// <summary>
         /// Converts a number of bytes to a friendly memory size.
@@ -1909,20 +1773,21 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this double bytes, bool longUnits = false, uint decimalPlaces = 1, double breakPoint = 512D)
+        public static string ToMemorySize(this double bytes, bool longUnits = false, uint decimalPlaces = 1,
+                                          double breakPoint = 512D)
         {
             if (decimalPlaces < 1) decimalPlaces = 0;
             else if (decimalPlaces > 16) decimalPlaces = 16;
 
             // 921.6 is 0.9*1024, this means that be default the breakpoint will round up the last decimal place.
-            if (breakPoint < 1) breakPoint = 921.6D * Math.Pow(10, -decimalPlaces);
+            if (breakPoint < 1) breakPoint = 921.6D*Math.Pow(10, -decimalPlaces);
             else if (breakPoint > 1023) breakPoint = 1023;
 
             uint maxDecimalPlaces = 0;
             uint unit = 0;
             double amount = bytes;
             while ((Math.Abs(amount) >= breakPoint) &&
-                (unit < 6))
+                   (unit < 6))
             {
                 amount /= 1024;
                 unit++;
@@ -1961,65 +1826,209 @@ namespace WebApplications.Utilities
             }
         }
         #endregion
-        
 
+        #region Mod
         /// <summary>
-        /// Gets all bytes necessary to represent an IPAddress.  See also <see cref="GetFullIPAddress"/>.
+        /// Calculates the modulus of the value.
         /// </summary>
-        /// <param name="ipAddress">The ip address.</param>
-        /// <returns>A byte[] that fully encodes an IPAddress.</returns>
-        /// <remarks>
-        /// <para>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</para>
-        /// </remarks>
-        public static byte[] GetAllBytes(this IPAddress ipAddress)
+        /// <param name="value">The value.</param>
+        /// <param name="modulus">The modulus.</param>
+        /// <returns>The modulus.</returns>
+        /// <remarks></remarks>
+        public static short Mod(this short value, short modulus)
         {
-            if (ipAddress == null) return null;
-            byte[] bytes = ipAddress.GetAddressBytes();
-            if (ipAddress.AddressFamily == AddressFamily.InterNetworkV6)
-            {
-                Contract.Assert(bytes.Length == 16);
-
-                // We need to add Scope for v6 addresses.
-                var offset = bytes.Length;
-                Array.Resize(ref bytes, offset + 4);
-
-                // Note that scope is actually a uint not a long, but uint isn't CLS compliant so the framework
-                // uses a long - we don't need to waste the extra 4 bytes though.
-                uint scope = (uint)ipAddress.ScopeId;
-                byte[] scopeBytes = BitConverter.GetBytes(scope);
-                Array.Copy(scopeBytes, 0, bytes, offset, 4);
-            }
-            else
-            {
-                Contract.Assert(bytes.Length == 4);
-            }
-            return bytes;
+            int mod = value%modulus;
+            if (mod < 0) mod += modulus;
+            return (short) mod;
         }
 
         /// <summary>
-        /// Gets an IPAddress from a byte[] that also encode the IPv6 scope.  See also <see cref="GetAllBytes"/>.
+        /// Calculates the modulus of the value.
         /// </summary>
-        /// <param name="bytes">The bytes.</param>
-        /// <returns>A byte[] that fully encodes an IPAddress.</returns>
-        /// <remarks>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</remarks>
-        public static IPAddress GetFullIPAddress(this byte[] bytes)
+        /// <param name="value">The value.</param>
+        /// <param name="modulus">The modulus.</param>
+        /// <returns>The modulus.</returns>
+        /// <remarks></remarks>
+        public static ushort Mod(this ushort value, ushort modulus)
         {
-            if (bytes == null) return null;
-            int l = bytes.Length;
-            if (l > 4)
-            {
-                Contract.Assert(l == 20);
-                // This is an IPv6 address, remove the scope from the end - note we encode it as a uint32 but have to supply
-                // it to IPAddress as a long (which is CLS compliant).
-                l -= 4;
-                long scope = BitConverter.ToUInt32(bytes, l);
-                Array.Resize(ref bytes, l);
-
-                return new IPAddress(bytes, scope);
-            }
-            // We have an IP4 address.
-            Contract.Assert(l == 4);
-            return new IPAddress(bytes);
+            return (ushort) (value%modulus);
         }
+
+        /// <summary>
+        /// Calculates the modulus of the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="modulus">The modulus.</param>
+        /// <returns>The modulus.</returns>
+        /// <remarks></remarks>
+        public static int Mod(this int value, int modulus)
+        {
+            int mod = value%modulus;
+            if (mod < 0) mod += modulus;
+            return mod;
+        }
+
+        /// <summary>
+        /// Calculates the modulus of the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="modulus">The modulus.</param>
+        /// <returns>The modulus.</returns>
+        /// <remarks></remarks>
+        public static uint Mod(this uint value, uint modulus)
+        {
+            return value%modulus;
+        }
+
+        /// <summary>
+        /// Calculates the modulus of the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="modulus">The modulus.</param>
+        /// <returns>The modulus.</returns>
+        /// <remarks></remarks>
+        public static long Mod(this long value, long modulus)
+        {
+            long mod = value%modulus;
+            if (mod < 0) mod += modulus;
+            return mod;
+        }
+
+        /// <summary>
+        /// Calculates the modulus of the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="modulus">The modulus.</param>
+        /// <returns>The modulus.</returns>
+        /// <remarks></remarks>
+        public static ulong Mod(this ulong value, ulong modulus)
+        {
+            return value%modulus;
+        }
+        #endregion
+
+        #region TopologicalSort
+        /// <summary>
+        ///   Performs a topological sort on an enumeration.
+        /// </summary>
+        /// <typeparam name="T">The enumerable type.</typeparam>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <param name="getDependants">
+        ///   The function to get dependants for each element of the enumeration.
+        /// </param>
+        /// <returns>
+        ///   The enumeration sorted so that all elements that have dependencies follow their dependencies.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
+        [NotNull]
+        [UsedImplicitly]
+        public static IEnumerable<T> TopologicalSortDependants<T>([NotNull] this IEnumerable<T> enumerable,
+                                                                  [NotNull] Func<T, IEnumerable<T>> getDependants)
+        {
+            // Create a dictionary of dependencies.
+            return TopologicalSortEdges(enumerable, enumerable.SelectMany(getDependants,
+                                                                          (e, d) => new KeyValuePair<T, T>(e, d)));
+        }
+
+        /// <summary>
+        ///   Performs a topological sort on an enumeration.
+        /// </summary>
+        /// <typeparam name="T">The enumerable type.</typeparam>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <param name="getDependencies">
+        ///   The function to get the dependencies of the individual collection element.
+        /// </param>
+        /// <returns>
+        ///   The enumeration sorted so that all elements that have dependencies follow their dependencies.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///   <para><paramref name="enumerable"/> is <see langword="null"/>.</para>
+        ///   <para>-or-</para>
+        ///   <para><paramref name="getDependencies"/> is <see langword="null"/>.</para>
+        /// </exception>
+        [NotNull]
+        [UsedImplicitly]
+        public static IEnumerable<T> TopologicalSortDependencies<T>([NotNull] this IEnumerable<T> enumerable,
+                                                                    [NotNull] Func<T, IEnumerable<T>> getDependencies)
+        {
+            // Create a dictionary of dependencies.
+            return TopologicalSortEdges(enumerable, enumerable.SelectMany(getDependencies,
+                                                                          (e, d) => new KeyValuePair<T, T>(d, e)));
+        }
+
+        /// <summary>
+        ///   Performs a topological sort on an enumeration.
+        /// </summary>
+        /// <typeparam name="T">The enumerable type.</typeparam>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <param name="edges">The edges.</param>
+        /// <returns>
+        ///   The enumeration sorted so that all elements that have dependencies follow their dependencies.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
+        /// <exception cref="ArgumentException">There are duplicates in <paramref name="enumerable"/>.</exception>
+        [NotNull]
+        [UsedImplicitly]
+        public static IEnumerable<T> TopologicalSortEdges<T>([NotNull] this IEnumerable<T> enumerable,
+                                                             [NotNull] IEnumerable<KeyValuePair<T, T>> edges)
+        {
+            // Create lookup dictionaries from edges
+            Dictionary<T, List<T>> dependants = new Dictionary<T, List<T>>();
+            Dictionary<T, List<T>> dependencies = new Dictionary<T, List<T>>();
+
+            // Make sure all our elements are added.
+            foreach (T t in enumerable)
+            {
+                // Add dependants and dependencies, will throw exception on duplicates in enumeration.
+                dependants.Add(t, new List<T>());
+                dependencies.Add(t, new List<T>());
+            }
+
+            // Now add edges
+            foreach (KeyValuePair<T, T> kvp in edges)
+            {
+                List<T> l;
+                if ((dependencies.TryGetValue(kvp.Value, out l)) && (!l.Contains(kvp.Key)))
+                    l.Add(kvp.Key);
+
+                if ((dependants.TryGetValue(kvp.Key, out l)) && (!l.Contains(kvp.Value)))
+                    l.Add(kvp.Value);
+            }
+
+            // Create a queue from all elements that don't have any dependencies.
+            Queue<T> outputQueue = new Queue<T>(dependencies.Where(kvp => kvp.Value.Count < 1).Select(kvp => kvp.Key));
+
+            // Process the output queue
+            while (outputQueue.Count > 0)
+            {
+                T t = outputQueue.Dequeue();
+                yield return t;
+
+                // Get dependants of the yielded element and remove the reverse reference from their depenencies
+                List<T> dependentsOfLastYield;
+                if (!dependants.TryGetValue(t, out dependentsOfLastYield)) continue;
+                dependants.Remove(t);
+
+                foreach (T dependant in dependentsOfLastYield)
+                {
+                    // Check the dependant was actually included in enumerable
+                    List<T> deps;
+                    if (!dependencies.TryGetValue(dependant, out deps)) continue;
+
+                    // Remove dependency
+                    deps.Remove(t);
+
+                    // if we have no dependencies left add to output queue for processing.
+                    if (deps.Count < 1)
+                        outputQueue.Enqueue(dependant);
+                }
+            }
+
+            // If we have any dependants left we have a cycle.
+            if (dependants.Count > 0)
+                throw new InvalidOperationException(Resources.Extensions_TopologicalSortEdges_DependencyCyclesFound);
+        }
+        #endregion
     }
 }

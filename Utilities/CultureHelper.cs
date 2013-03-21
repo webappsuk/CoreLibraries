@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,9 @@ namespace WebApplications.Utilities
             // currency and RegionInfo is only applicable to specific cultures
             CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
             int length = cultures.GetLength(0);
-            _currencyCultureInfo = new Dictionary<string, Dictionary<CultureInfo, RegionInfo>>(length, StringComparer.InvariantCultureIgnoreCase);
+            _currencyCultureInfo = new Dictionary<string, Dictionary<CultureInfo, RegionInfo>>(length,
+                                                                                               StringComparer
+                                                                                                   .InvariantCultureIgnoreCase);
             _regionNames = new Dictionary<string, RegionInfo>(length, StringComparer.InvariantCultureIgnoreCase);
             _cultureNames = new Dictionary<string, CultureInfo>(length, StringComparer.InvariantCultureIgnoreCase);
             InvariantLCID = CultureInfo.InvariantCulture.LCID;
@@ -155,7 +157,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns><see langword="true" /> if found, otherwise <see langword="false" />.</returns>
-        public static  CultureInfo GetCultureInfo(string name)
+        public static CultureInfo GetCultureInfo(string name)
         {
             CultureInfo cultureInfo;
             return _cultureNames.TryGetValue(name, out cultureInfo) ? cultureInfo : null;

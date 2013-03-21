@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace WebApplications.Utilities.Ranges
 {
@@ -63,21 +62,6 @@ namespace WebApplications.Utilities.Ranges
         ///   The step for enumeration
         /// </summary>
         private readonly TStep _step;
-
-        /// <summary>
-        ///   The start of the range (inclusive).
-        /// </summary>
-        public TValue Start { get { return _start; } }
-
-        /// <summary>
-        ///   The end of the range (inclusive).
-        /// </summary>
-        public TValue End { get { return _end; } }
-
-        /// <summary>
-        ///   The step for enumeration
-        /// </summary>
-        public TStep Step { get { return _step; } }
 
         /// <summary>
         ///   Initializes the <see cref="Range&lt;T, S&gt;"/> class.
@@ -198,6 +182,30 @@ namespace WebApplications.Utilities.Ranges
         #endregion
 
         /// <summary>
+        ///   The start of the range (inclusive).
+        /// </summary>
+        public TValue Start
+        {
+            get { return _start; }
+        }
+
+        /// <summary>
+        ///   The end of the range (inclusive).
+        /// </summary>
+        public TValue End
+        {
+            get { return _end; }
+        }
+
+        /// <summary>
+        ///   The step for enumeration
+        /// </summary>
+        public TStep Step
+        {
+            get { return _step; }
+        }
+
+        /// <summary>
         ///   Binds the specified value so that it cannot fall outside the values of the range.
         /// </summary>
         /// <param name="value">The value to bind.</param>
@@ -260,8 +268,8 @@ namespace WebApplications.Utilities.Ranges
             unchecked
             {
                 int hashCode = EqualityComparer<TValue>.Default.GetHashCode(_end);
-                hashCode = (hashCode * 397) ^ EqualityComparer<TValue>.Default.GetHashCode(_start);
-                hashCode = (hashCode * 397) ^ EqualityComparer<TStep>.Default.GetHashCode(_step);
+                hashCode = (hashCode*397) ^ EqualityComparer<TValue>.Default.GetHashCode(_start);
+                hashCode = (hashCode*397) ^ EqualityComparer<TStep>.Default.GetHashCode(_step);
                 return hashCode;
             }
         }

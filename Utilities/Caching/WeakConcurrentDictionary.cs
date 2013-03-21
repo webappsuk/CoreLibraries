@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -228,15 +228,13 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         ICollection IDictionary.Keys
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get { return (ICollection) Keys; }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection) Keys; }
         }
 
         /// <inheritdoc />
         ICollection IDictionary.Values
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get { return (ICollection) Values; }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection) Values; }
         }
 
         /// <inheritdoc />
@@ -346,16 +344,14 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         public ICollection<TKey> Keys
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get { return (ICollection<TKey>) this.Select(kvp => kvp.Key); }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection<TKey>) this.Select(kvp => kvp.Key); }
         }
 
 
         /// <inheritdoc />
         public ICollection<TValue> Values
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
-            get { return (ICollection<TValue>) this.Select(kvp => kvp.Value); }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection<TValue>) this.Select(kvp => kvp.Value); }
         }
 
         /// <inheritdoc />
@@ -438,17 +434,17 @@ namespace WebApplications.Utilities.Caching
             ObservableWeakReference<TValue> owf = weakReference as ObservableWeakReference<TValue>;
             if (owf == null) return;
             owf.Finalized += (s, e) =>
-                                 {
-                                     WeakReference<TValue> oldwr;
+                {
+                    WeakReference<TValue> oldwr;
 
-                                     if (_dictionary.TryRemove(key, out oldwr) &&
-                                         (oldwr != weakReference))
-                                     {
-                                         // If we removed something else, add it back!
-                                         _dictionary.TryAdd(key, oldwr);
-                                     }
-                                     owf.Dispose();
-                                 };
+                    if (_dictionary.TryRemove(key, out oldwr) &&
+                        (oldwr != weakReference))
+                    {
+                        // If we removed something else, add it back!
+                        _dictionary.TryAdd(key, oldwr);
+                    }
+                    owf.Dispose();
+                };
         }
 
         /// <summary>

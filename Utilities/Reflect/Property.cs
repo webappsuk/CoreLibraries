@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -396,7 +396,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Create lambda and compile
             return
-                Expression.Lambda<Action<T, TValue>>(expression, parameterExpression, valueParameterExpression).Compile();
+                Expression.Lambda<Action<T, TValue>>(expression, parameterExpression, valueParameterExpression)
+                          .Compile();
         }
     }
 }

@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,23 +40,21 @@ namespace WebApplications.Utilities
     /// </summary>
     public class HashedByteArray : IEquatable<HashedByteArray>, IEquatable<byte[]>, IEnumerable<byte>
     {
-        [NotNull]
-        private readonly byte[] _data;
+        [NotNull] private readonly byte[] _data;
+
+        [NotNull] private readonly Lazy<string> _encoded;
 
         /// <summary>
         /// Holds the hash for the associated data.
         /// </summary>
         private readonly long _hash;
 
-        [NotNull]
-        private readonly Lazy<string> _encoded; 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="HashedByteArray"/> class from a base-64 encoded string.
         /// </summary>
         /// <param name="encoded">The base-64 encoded string.</param>
-        public HashedByteArray([NotNull]string encoded)
-            :this(Convert.FromBase64String(encoded), new Lazy<string>(() => encoded, LazyThreadSafetyMode.None))
+        public HashedByteArray([NotNull] string encoded)
+            : this(Convert.FromBase64String(encoded), new Lazy<string>(() => encoded, LazyThreadSafetyMode.None))
         {
         }
 
@@ -38,7 +63,9 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="data">The data.</param>
         public HashedByteArray([NotNull] byte[] data)
-            : this (data, new Lazy<string>(() => Convert.ToBase64String(data), LazyThreadSafetyMode.ExecutionAndPublication))
+            : this(
+                data, new Lazy<string>(() => Convert.ToBase64String(data), LazyThreadSafetyMode.ExecutionAndPublication)
+                )
         {
         }
 
@@ -46,7 +73,7 @@ namespace WebApplications.Utilities
         /// Initializes a new instance of the <see cref="HashedByteArray"/> class.
         /// </summary>
         /// <param name="data">The data.</param>
-        private HashedByteArray([NotNull] byte[] data, Lazy<string> encoded)
+        private HashedByteArray([NotNull] byte[] data, [NotNull] Lazy<string> encoded)
         {
             if (data == null)
                 throw new ArgumentNullException("data");
@@ -58,7 +85,7 @@ namespace WebApplications.Utilities
             {
                 unchecked
                 {
-                    _hash = _data.Skip(data.Length - 8).Aggregate(0L, (h, b) => (b * 397) ^ h);
+                    _hash = _data.Skip(data.Length - 8).Aggregate(0L, (h, b) => (b*397) ^ h);
                 }
             }
             else if (data.Length > 4)
@@ -84,19 +111,28 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>The encoded.</value>
         [NotNull]
-        public string Encoded { get { return _encoded.Value; } }
+        public string Encoded
+        {
+            get { return _encoded.Value; }
+        }
 
         /// <summary>
         /// Gets the length.
         /// </summary>
         /// <value>The length.</value>
-        public int Length { get { return _data.Length; } }
+        public int Length
+        {
+            get { return _data.Length; }
+        }
 
         /// <summary>
         /// Gets the long length.
         /// </summary>
         /// <value>The length.</value>
-        public long LongLength { get { return _data.LongLength; } }
+        public long LongLength
+        {
+            get { return _data.LongLength; }
+        }
 
         /// <summary>
         /// Allows retrieval of the bytes from the byte array.
@@ -136,18 +172,6 @@ namespace WebApplications.Utilities
         #endregion
 
         /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (int)_hash;
-            }
-        }
-
-        /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
@@ -163,6 +187,18 @@ namespace WebApplications.Utilities
         public IEnumerator<byte> GetEnumerator()
         {
             return _data.Select(b => b).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (int) _hash;
+            }
         }
 
         /// <summary>
@@ -230,7 +266,7 @@ namespace WebApplications.Utilities
         public static implicit operator byte[](HashedByteArray hashedByteArray)
         {
             if (ReferenceEquals(null, hashedByteArray))
-            return null;
+                return null;
 
             long length = hashedByteArray._data.LongLength;
             byte[] clone = new byte[length];

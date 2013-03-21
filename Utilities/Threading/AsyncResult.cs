@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -50,12 +50,10 @@ namespace WebApplications.Utilities.Threading
         private const int StateCompletedSynchronously = 1;
         private const int StatePending = 0;
 
-        [NotNull]
-        private static readonly AsyncCallback _asyncCallbackHelper =
+        [NotNull] private static readonly AsyncCallback _asyncCallbackHelper =
             AsyncCallbackCompleteOpHelperNoReturnValue;
 
-        [NotNull]
-        private static readonly WaitCallback _waitCallbackHelper = WaitCallbackCompleteOpHelperNoReturnValue;
+        [NotNull] private static readonly WaitCallback _waitCallbackHelper = WaitCallbackCompleteOpHelperNoReturnValue;
         private readonly AsyncCallback _asyncCallback;
         private readonly object _asyncState;
         private readonly object _initiatingObject;
@@ -175,7 +173,7 @@ namespace WebApplications.Utilities.Threading
 
         private static void AsyncCallbackCompleteOpHelperNoReturnValue([NotNull] IAsyncResult otherAsyncResult)
         {
-            ((AsyncResult)otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
+            ((AsyncResult) otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
         }
 
         /// <summary>
@@ -279,15 +277,16 @@ namespace WebApplications.Utilities.Threading
         public void SetAsCompleted(Exception exception = null, bool completedSynchronously = false)
         {
             ExceptionDispatchInfo exceptionInfo = exception != null
-                ? ExceptionDispatchInfo.Capture(exception)
-                : null;
+                                                      ? ExceptionDispatchInfo.Capture(exception)
+                                                      : null;
 
             _exception = exceptionInfo != null
-                ? exceptionInfo.SourceException
-                : exception;
+                             ? exceptionInfo.SourceException
+                             : exception;
 
             if (Interlocked.Exchange(ref _completedState,
-                completedSynchronously ? StateCompletedSynchronously : StateCompletedAsynchronously) != StatePending)
+                                     completedSynchronously ? StateCompletedSynchronously : StateCompletedAsynchronously) !=
+                StatePending)
             {
                 throw new InvalidOperationException(Resources.AsyncResult_SetAsCompleted_CanOnlySetResultOnce);
             }
@@ -330,7 +329,7 @@ namespace WebApplications.Utilities.Threading
 
         private static void WaitCallbackCompleteOpHelperNoReturnValue([NotNull] object o)
         {
-            ((AsyncResult)o).CompleteOpHelper(null);
+            ((AsyncResult) o).CompleteOpHelper(null);
         }
     }
 
@@ -343,12 +342,10 @@ namespace WebApplications.Utilities.Threading
     public class AsyncResult<TResult> : AsyncResult
     {
         // ReSharper disable StaticFieldInGenericType
-        [NotNull]
-        private static readonly AsyncCallback _asyncCallbackHelper =
+        [NotNull] private static readonly AsyncCallback _asyncCallbackHelper =
             AsyncCallbackCompleteOpHelperWithReturnValue;
 
-        [NotNull]
-        private static readonly WaitCallback _waitCallbackHelper = WaitCallbackCompleteOpHelperWithReturnValue;
+        [NotNull] private static readonly WaitCallback _waitCallbackHelper = WaitCallbackCompleteOpHelperWithReturnValue;
         private TResult _result;
         // ReSharper restore StaticFieldInGenericType
 
@@ -378,7 +375,7 @@ namespace WebApplications.Utilities.Threading
 
         private static void AsyncCallbackCompleteOpHelperWithReturnValue([NotNull] IAsyncResult otherAsyncResult)
         {
-            ((AsyncResult<TResult>)otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
+            ((AsyncResult<TResult>) otherAsyncResult.AsyncState).CompleteOpHelper(otherAsyncResult);
         }
 
         /// <summary>
@@ -472,7 +469,7 @@ namespace WebApplications.Utilities.Threading
 
         private static void WaitCallbackCompleteOpHelperWithReturnValue([NotNull] object o)
         {
-            ((AsyncResult<TResult>)o).CompleteOpHelper(null);
+            ((AsyncResult<TResult>) o).CompleteOpHelper(null);
         }
     }
 }

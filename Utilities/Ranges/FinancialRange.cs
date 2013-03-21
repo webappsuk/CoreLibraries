@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Financials;
 
@@ -137,6 +136,20 @@ namespace WebApplications.Utilities.Ranges
             get { return Start.Currency; }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format style: "I" for the value followed by the ISO currency code, "C" for a culture specific currency format.</param>
+        /// <param name="provider">The format provider.</param>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
+        /// <exception cref="FormatException">The format string is not supported.</exception>
+        public string ToString(string format, IFormatProvider provider)
+        {
+            return string.Format("{0} - {1}", Start.ToString(format, provider), End.ToString(format, provider));
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -155,20 +168,6 @@ namespace WebApplications.Utilities.Ranges
         public string ToString(string format)
         {
             return string.Format("{0} - {1}", Start.ToString(format), End.ToString(format));
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format style: "I" for the value followed by the ISO currency code, "C" for a culture specific currency format.</param>
-        /// <param name="provider">The format provider.</param>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        /// <exception cref="FormatException">The format string is not supported.</exception>
-        public string ToString(string format, IFormatProvider provider)
-        {
-            return string.Format("{0} - {1}", Start.ToString(format, provider), End.ToString(format, provider));
         }
     }
 }

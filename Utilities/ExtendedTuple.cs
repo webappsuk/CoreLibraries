@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -130,7 +130,7 @@ namespace WebApplications.Utilities
                         // Get the indexer lambda and convert to a constant
                         Expression lambda = Expression.Constant(
                             extendedType.GetField("Indexer", BindingFlags.Static | BindingFlags.Public)
-                                .GetValue(null));
+                                        .GetValue(null));
 
                         return Expression.Lambda<Func<object, int, object>>(
                             Expression.Invoke(lambda, castTuple, indexParameter),
@@ -186,7 +186,7 @@ namespace WebApplications.Utilities
                         // Create extended tuple type
                         Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
                         return (Type[]) extendedType.GetProperty("Types", BindingFlags.Static | BindingFlags.Public)
-                                            .GetValue(null, null);
+                                                    .GetValue(null, null);
                     });
             // ReSharper restore AssignNullToNotNullAttribute
         }
@@ -229,7 +229,7 @@ namespace WebApplications.Utilities
                         // Create a lambda that creates a new ExtendedTuple<tupletype> and casts it to an IEnumerable.
                         return Expression.Lambda<Func<object, IEnumerable>>(
                             Expression.New(constructor, castTuple).Convert(typeof (IEnumerable)), tupleObjectParameter).
-                            Compile();
+                                          Compile();
                     });
         }
     }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,11 @@ namespace WebApplications.Utilities
     /// </summary>
     public static partial class TaskExtensions
     {
+        /// <summary>
+        /// An already completed task.
+        /// </summary>
+        public static Task Completed = Task.FromResult(true);
+
         /// <summary>
         ///   Sets the result of a <see cref="TaskCompletionSource&lt;TResult&gt;.Task"/> via a
         ///   different <see cref="Task"/>.
@@ -161,10 +166,10 @@ namespace WebApplications.Utilities
 
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>(state);
             task.ContinueWith(_ =>
-                                  {
-                                      tcs.SetFromTask(task);
-                                      if (callback != null) callback(tcs.Task);
-                                  });
+                {
+                    tcs.SetFromTask(task);
+                    if (callback != null) callback(tcs.Task);
+                });
 
             return tcs.Task;
         }
@@ -188,10 +193,10 @@ namespace WebApplications.Utilities
         {
             TaskCompletionSource<TResult> tcs = new TaskCompletionSource<TResult>(state);
             task.ContinueWith(_ =>
-                                  {
-                                      tcs.SetFromTask(task);
-                                      if (callback != null) callback(tcs.Task);
-                                  });
+                {
+                    tcs.SetFromTask(task);
+                    if (callback != null) callback(tcs.Task);
+                });
 
             return tcs.Task;
         }
@@ -712,15 +717,15 @@ namespace WebApplications.Utilities
                 callbackHandle = ThreadPool.RegisterWaitForSingleObject(
                     handle,
                     (state, timedOut) =>
-                    {
-                        tcs.SetResult(null);
-
-                        // We take a lock here to make sure the outer method has completed setting the local variable callbackHandle.
-                        lock (localVariableInitLock)
                         {
-                            callbackHandle.Unregister(null);
-                        }
-                    },
+                            tcs.SetResult(null);
+
+                            // We take a lock here to make sure the outer method has completed setting the local variable callbackHandle.
+                            lock (localVariableInitLock)
+                            {
+                                callbackHandle.Unregister(null);
+                            }
+                        },
                     null,
                     Timeout.Infinite,
                     executeOnlyOnce: true);
@@ -730,16 +735,11 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// An already completed task.
-        /// </summary>
-        public static Task Completed = Task.FromResult(true);
-
-        /// <summary>
         /// Creates a Task from an exception
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
-        public static Task ToTask([NotNull]this Exception exception)
+        public static Task ToTask([NotNull] this Exception exception)
         {
             TaskCompletionSource<Exception> source = new TaskCompletionSource<Exception>();
             source.SetException(exception);
@@ -752,7 +752,7 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the T result.</typeparam>
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
-        public static Task<TResult> ToTask<TResult>([NotNull]this Exception exception)
+        public static Task<TResult> ToTask<TResult>([NotNull] this Exception exception)
         {
             TaskCompletionSource<TResult> source = new TaskCompletionSource<TResult>();
             source.SetException(exception);

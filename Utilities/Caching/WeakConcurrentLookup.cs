@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -383,11 +383,11 @@ namespace WebApplications.Utilities.Caching
                     ObservableWeakReference<TValue> owf = new ObservableWeakReference<TValue>(value,
                                                                                               _parent._allowResurrection);
                     owf.Finalized += (s, e) =>
-                                         {
-                                             WeakReference<TValue> removedValue;
-                                             _dictionary.TryRemove(guid, out removedValue);
-                                             owf.Dispose();
-                                         };
+                        {
+                            WeakReference<TValue> removedValue;
+                            _dictionary.TryRemove(guid, out removedValue);
+                            owf.Dispose();
+                        };
                     weakReference = owf;
                 }
                 else

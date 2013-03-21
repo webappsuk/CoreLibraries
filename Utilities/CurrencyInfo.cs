@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
+// Copyright (c) 2013, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -121,7 +121,10 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>All.</value>
         /// <remarks>TODO Add remarks</remarks>
-        public static IEnumerable<CurrencyInfo> All { get { return _currencyInfos.Values; }}
+        public static IEnumerable<CurrencyInfo> All
+        {
+            get { return _currencyInfos.Values; }
+        }
 
         /// <summary>
         ///   Gets the ISO Code.
@@ -168,9 +171,12 @@ namespace WebApplications.Utilities
             CurrencyInfo currencyInfo = new CurrencyInfo(currencyCode, isoNumber, exponent, fullName);
             _currencyInfos.Add(currencyCode, currencyInfo);
 
-            foreach (RegionInfo region in currencyInfo.Regions.Where(region => !_currencyInfoRegions.ContainsKey(region)))
+            foreach (
+                RegionInfo region in currencyInfo.Regions.Where(region => !_currencyInfoRegions.ContainsKey(region)))
                 _currencyInfoRegions.Add(region, currencyInfo);
-            foreach (CultureInfo culture in currencyInfo.Cultures.Where(culture => !_currencyInfoCultures.ContainsKey(culture)))
+            foreach (
+                CultureInfo culture in
+                    currencyInfo.Cultures.Where(culture => !_currencyInfoCultures.ContainsKey(culture)))
                 _currencyInfoCultures.Add(culture, currencyInfo);
         }
 
