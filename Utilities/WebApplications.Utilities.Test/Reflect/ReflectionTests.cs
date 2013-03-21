@@ -575,5 +575,13 @@ namespace WebApplications.Utilities.Test.Reflect
             }
         }
         #endregion
+
+        [TestMethod]
+        public void TestLessThanFunc()
+        {
+            Func<string, string, bool> func = typeof(int).LessThanFunc<string>();
+            Assert.IsTrue(func("5", "6"));
+            Assert.IsFalse(func("7", "6"));
+        }
     }
 }

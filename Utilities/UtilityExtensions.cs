@@ -33,6 +33,8 @@ using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security;
@@ -1959,5 +1961,65 @@ namespace WebApplications.Utilities
             }
         }
         #endregion
+        
+
+        /// <summary>
+        /// Gets all bytes necessary to represent an IPAddress.  See also <see cref="GetFullIPAddress"/>.
+        /// </summary>
+        /// <param name="ipAddress">The ip address.</param>
+        /// <returns>A byte[] that fully encodes an IPAddress.</returns>
+        /// <remarks>
+        /// <para>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</para>
+        /// </remarks>
+        public static byte[] GetAllBytes(this IPAddress ipAddress)
+        {
+            if (ipAddress == null) return null;
+            byte[] bytes = ipAddress.GetAddressBytes();
+            if (ipAddress.AddressFamily == AddressFamily.InterNetworkV6)
+            {
+                Contract.Assert(bytes.Length == 16);
+
+                // We need to add Scope for v6 addresses.
+                var offset = bytes.Length;
+                Array.Resize(ref bytes, offset + 4);
+
+                // Note that scope is actually a uint not a long, but uint isn't CLS compliant so the framework
+                // uses a long - we don't need to waste the extra 4 bytes though.
+                uint scope = (uint)ipAddress.ScopeId;
+                byte[] scopeBytes = BitConverter.GetBytes(scope);
+                Array.Copy(scopeBytes, 0, bytes, offset, 4);
+            }
+            else
+            {
+                Contract.Assert(bytes.Length == 4);
+            }
+            return bytes;
+        }
+
+        /// <summary>
+        /// Gets an IPAddress from a byte[] that also encode the IPv6 scope.  See also <see cref="GetAllBytes"/>.
+        /// </summary>
+        /// <param name="bytes">The bytes.</param>
+        /// <returns>A byte[] that fully encodes an IPAddress.</returns>
+        /// <remarks>This is necessary as GetAddressBytes() doesn't include the IPv6 scope ID.</remarks>
+        public static IPAddress GetFullIPAddress(this byte[] bytes)
+        {
+            if (bytes == null) return null;
+            int l = bytes.Length;
+            if (l > 4)
+            {
+                Contract.Assert(l == 20);
+                // This is an IPv6 address, remove the scope from the end - note we encode it as a uint32 but have to supply
+                // it to IPAddress as a long (which is CLS compliant).
+                l -= 4;
+                long scope = BitConverter.ToUInt32(bytes, l);
+                Array.Resize(ref bytes, l);
+
+                return new IPAddress(bytes, scope);
+            }
+            // We have an IP4 address.
+            Contract.Assert(l == 4);
+            return new IPAddress(bytes);
+        }
     }
 }

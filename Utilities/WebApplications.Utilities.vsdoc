@@ -105,7 +105,10 @@
     <add key="VBdocman_comModules_Enumerations...TriState.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Enumerations...TruncateOptions.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_EqualityBuilder.cs"><![CDATA[On]]></add>
-    <add key="VBdocman_comModules_Extensions.cs"><![CDATA[On]]></add>
+    <add key="VBdocman_comModules_Graphic.cs"><![CDATA[On]]></add>
+    <add key="VBdocman_comModules_GraphicExtensions.cs"><![CDATA[On]]></add>
+    <add key="VBdocman_comModules_GraphicFormat.cs"><![CDATA[On]]></add>
+    <add key="VBdocman_comModules_HashedByteArray.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Interfaces...Caching...ICaching.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Location...DistanceCalculation.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Location...LatLng.cs"><![CDATA[On]]></add>
@@ -119,7 +122,6 @@
     <add key="VBdocman_comModules_Ranges...LongRange.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Ranges...Range.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Ranges...ShortRange.cs"><![CDATA[On]]></add>
-    <add key="VBdocman_comModules_Ranges...TimeSpanRangecs.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Reflection.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_ReflectionOverloads.cs"><![CDATA[On]]></add>
     <add key="VBdocman_comModules_Singleton.cs"><![CDATA[On]]></add>

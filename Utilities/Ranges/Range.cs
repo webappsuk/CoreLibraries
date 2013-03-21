@@ -42,12 +42,12 @@ namespace WebApplications.Utilities.Ranges
         /// <summary>
         ///   Method for performing additions.
         /// </summary>
-        public static readonly Func<TValue, TStep, TValue> Add;
+        private static readonly Func<TValue, TStep, TValue> _add;
 
         /// <summary>
         ///   Method for performing LessThan comparison.
         /// </summary>
-        public static readonly Func<TValue, TValue, bool> LessThan;
+        private static readonly Func<TValue, TValue, bool> _lessThan;
 
         /// <summary>
         ///   The end of the range (inclusive).
@@ -84,48 +84,8 @@ namespace WebApplications.Utilities.Ranges
         /// </summary>
         static Range()
         {
-            // Create input parameter expressions
-            ParameterExpression parameterAExpression = Expression.Parameter(typeof (TValue), "a");
-            ParameterExpression parameterBExpression = Expression.Parameter(typeof (TStep), "b");
-
-            // Workaround for the fact that byte types have no addition operator.
-            bool castTValueToShort = typeof (TValue) == typeof (byte) ||
-                              typeof (TValue) == typeof (sbyte);
-            bool castTStepToShort = typeof (TStep) == typeof (byte) ||
-                              typeof (TStep) == typeof (sbyte);
-
-            Expression lhs = castTValueToShort
-                                 ? Expression.Convert(parameterAExpression, typeof (short))
-                                 : (Expression)parameterAExpression;
-            Expression rhs = castTStepToShort
-                                 ? Expression.Convert(parameterBExpression, typeof(short))
-                                 : (Expression)parameterBExpression;
-
-            // Create lambda for addition and compile
-            Expression add = Expression.Add(lhs, rhs);
-            if (add.Type != typeof(TValue))
-                add = Expression.Convert(add, typeof (TValue));
-
-            Add =
-                (Func<TValue, TStep, TValue>)
-                Expression.Lambda(
-                    add,
-                    parameterAExpression,
-                    parameterBExpression).Compile();
-
-            // Create new parameter for TValue 
-            parameterBExpression = Expression.Parameter(typeof (TValue), "b");
-            rhs = castTValueToShort
-                      ? Expression.Convert(parameterBExpression, typeof (short))
-                      : (Expression) parameterBExpression;
-
-            // Create lambda for less than and compile
-            LessThan =
-                (Func<TValue, TValue, bool>)
-                Expression.Lambda(
-                    Expression.LessThan(lhs, rhs),
-                    parameterAExpression,
-                    parameterBExpression).Compile();
+            _add = Reflection.AddFunc<TValue, TStep, TValue>();
+            _lessThan = Reflection.LessThanFunc<TValue>();
         }
 
         /// <summary>
@@ -138,7 +98,7 @@ namespace WebApplications.Utilities.Ranges
         /// </exception>
         public Range(TValue start, TValue end)
         {
-            if (LessThan(end, start))
+            if (_lessThan(end, start))
             {
                 throw new ArgumentOutOfRangeException(
                     "start",
@@ -164,7 +124,7 @@ namespace WebApplications.Utilities.Ranges
         /// </exception>
         public Range(TValue start, TValue end, TStep step)
         {
-            if (LessThan(end, start))
+            if (_lessThan(end, start))
             {
                 throw new ArgumentOutOfRangeException(
                     "start",
@@ -191,11 +151,11 @@ namespace WebApplications.Utilities.Ranges
         public IEnumerator<TValue> GetEnumerator()
         {
             bool nextIsInRange = true;
-            for (TValue loop = Start, next = Start; !LessThan(End, loop) && nextIsInRange; loop = next)
+            for (TValue loop = Start, next = Start; !_lessThan(End, loop) && nextIsInRange; loop = next)
             {
                 try
                 {
-                    next = Add(loop, Step);
+                    next = _add(loop, Step);
                 }
                 catch (ArgumentOutOfRangeException) // For dates
                 {
@@ -206,7 +166,7 @@ namespace WebApplications.Utilities.Ranges
                     nextIsInRange = false;
                 }
                 // Perform checks which are normally done behind the scenes to avoid infinite loops due to interger overflows
-                if (!LessThan(loop, next) && nextIsInRange)
+                if (!_lessThan(loop, next) && nextIsInRange)
                     yield break;
                 yield return loop;
             }
@@ -244,9 +204,9 @@ namespace WebApplications.Utilities.Ranges
         /// <returns>The bound value.</returns>
         public TValue Bind(TValue value)
         {
-            if (LessThan(value, _start))
+            if (_lessThan(value, _start))
                 return _start;
-            if (LessThan(_end, value))
+            if (_lessThan(_end, value))
                 return _end;
             return value;
         }
@@ -261,11 +221,11 @@ namespace WebApplications.Utilities.Ranges
         /// <filterpriority>1</filterpriority>
         public IEnumerator<TValue> GetEnumerator(TStep step)
         {
-            for (TValue loop = _start, next = _start; !LessThan(_end, loop); loop = next)
+            for (TValue loop = _start, next = _start; !_lessThan(_end, loop); loop = next)
             {
                 try
                 {
-                    next = Add(loop, step);
+                    next = _add(loop, step);
                 }
                 catch (ArgumentOutOfRangeException)
                 {
@@ -276,7 +236,7 @@ namespace WebApplications.Utilities.Ranges
                     yield break;
                 }
                 // Perform checks avoid infinite loops due to integer overflows
-                if (!LessThan(loop, next))
+                if (!_lessThan(loop, next))
                     yield break;
                 yield return loop;
             }

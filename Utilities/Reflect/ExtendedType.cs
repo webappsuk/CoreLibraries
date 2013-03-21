@@ -598,6 +598,21 @@ namespace WebApplications.Utilities.Reflect
                         }
                         Contract.Assert(methods != null);
                         methods.Add(method);
+
+                        // If the method name is fully qualified (e.g. explicti interface implementation) then
+                        // we need to get the method name without the qualification
+                        int mdot = m.Name.LastIndexOf('.');
+                        if (mdot > -1)
+                        {
+                            string shortName = m.Name.Substring(mdot + 1);
+                            if (!_methods.TryGetValue(shortName, out methods))
+                            {
+                                methods = new List<Method>();
+                                _methods.Add(shortName, methods);
+                            }
+                            Contract.Assert(methods != null);
+                            methods.Add(method);
+                        }
                         continue;
                     }
 
@@ -877,6 +892,7 @@ namespace WebApplications.Utilities.Reflect
             {
                 if (!type._loaded) type.LoadMembers();
                 List<Method> methods;
+                // Use name lookup
                 if (type._methods.TryGetValue(name, out methods) || !includeBase)
                     return methods;
                 type = type.BaseType;
