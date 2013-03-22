@@ -576,12 +576,79 @@ namespace WebApplications.Utilities.Test.Reflect
         }
         #endregion
 
+        #region Nested type: ArithmeticFuncTests
+        [TestMethod]
+        public void TestAddFunc()
+        {
+            Func<int, int, int> func = typeof(int).AddFunc<int>();
+            Assert.IsTrue(func(6, 6) == 12);
+            Assert.IsTrue(func(12, 6) == 18);
+        }
+
+        [TestMethod]
+        public void TestSubstractFunc()
+        {
+            Func<int, int, int> func = typeof(int).SubtractFunc<int>();
+            Assert.IsTrue(func(6, 6) == 0);
+            Assert.IsTrue(func(12, 6) == 6);
+            Assert.IsTrue(func(6, 12) == -6);
+        }
+
         [TestMethod]
         public void TestLessThanFunc()
         {
             Func<string, string, bool> func = typeof(int).LessThanFunc<string>();
             Assert.IsTrue(func("5", "6"));
             Assert.IsFalse(func("7", "6"));
+            Assert.IsFalse(func("7", "7"));
         }
+
+        [TestMethod]
+        public void TestLessThanOrEqualToFunc()
+        {
+            Func<string, string, bool> func = typeof(int).LessThanOrEqualFunc<string>();
+            Assert.IsTrue(func("5", "6"));
+            Assert.IsFalse(func("7", "6"));
+            Assert.IsTrue(func("7", "7"));
+        }
+
+        [TestMethod]
+        public void TestGreaterThanFunc()
+        {
+            Func<string, string, bool> func = typeof(int).GreaterThanFunc<string>();
+            Assert.IsTrue(func("6", "5"));
+            Assert.IsFalse(func("6", "7"));
+            Assert.IsFalse(func("7", "7"));
+        }
+
+        [TestMethod]
+        public void TestGreaterThanOrEqualToFunc()
+        {
+            Func<string, string, bool> func = typeof(int).GreaterThanOrEqualFunc<string>();
+            Assert.IsTrue(func("6", "5"));
+            Assert.IsFalse(func("6", "7"));
+            Assert.IsTrue(func("7", "7"));
+        }
+
+        [TestMethod]
+        public void TestAndAlsoFunc()
+        {
+            Func<bool, bool, bool> func = typeof(bool).AndAlsoFunc<bool>();
+            Assert.IsTrue(func(true, true));
+            Assert.IsFalse(func(true, false));
+            Assert.IsFalse(func(false, true));
+            Assert.IsFalse(func(false, false));
+        }
+
+        [TestMethod]
+        public void TestOrElseFunc()
+        {
+            Func<string, string, bool> func = typeof(bool).OrElseFunc<string>();
+            Assert.IsTrue(func("True", "True"));
+            Assert.IsTrue(func("True", "False"));
+            Assert.IsTrue(func("False", "True"));
+            Assert.IsFalse(func("False", "False"));
+        }
+        #endregion
     }
 }
