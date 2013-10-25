@@ -1670,6 +1670,90 @@ namespace WebApplications.Utilities
                 return min;
             }
         }
+
+        /// <summary>
+        /// Returns the minimum value from the list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns>``0.</returns>
+        public static T Min<T>([NotNull]this IEnumerable<T> source, [NotNull]Comparer<T> comparer)
+            where T : IComparable<T>
+        {
+            Contract.Requires(source != null, "Parameter_Null");
+            Contract.Requires(source.Any());
+            Contract.Requires(comparer != null, "Parameter_Null");
+
+            T value = default(T);
+            if (ReferenceEquals(value, null))
+            {
+                foreach (T x in source)
+                {
+                    if (x != null && (value == null || comparer.Compare(x, value) < 0))
+                        value = x;
+                }
+                return value;
+            }
+
+            bool hasValue = false;
+            foreach (T x in source)
+            {
+                if (hasValue)
+                {
+                    if (comparer.Compare(x, value) < 0)
+                        value = x;
+                }
+                else
+                {
+                    value = x;
+                    hasValue = true;
+                }
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// Returns the maximum value from the list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <returns>``0.</returns>
+        public static T Max<T>([NotNull]this IEnumerable<T> source, [NotNull]Comparer<T> comparer)
+            where T : IComparable<T>
+        {
+            Contract.Requires(source != null, "Parameter_Null");
+            Contract.Requires(source.Any());
+            Contract.Requires(comparer != null, "Parameter_Null");
+
+            T value = default(T);
+            if (ReferenceEquals(value, null))
+            {
+                foreach (T x in source)
+                {
+                    if (x != null && (value == null || comparer.Compare(x, value) > 0))
+                        value = x;
+                }
+                return value;
+            }
+
+            bool hasValue = false;
+            foreach (T x in source)
+            {
+                if (hasValue)
+                {
+                    if (comparer.Compare(x, value) > 0)
+                        value = x;
+                }
+                else
+                {
+                    value = x;
+                    hasValue = true;
+                }
+            }
+            return value;
+        }
         #endregion
 
         #region ToMemorySize

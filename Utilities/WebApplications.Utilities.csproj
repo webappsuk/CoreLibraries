@@ -121,6 +121,7 @@
     <Compile Include="Configuration\ConfigurationSection.cs" />
     <Compile Include="Configuration\ParameterCollection.cs" />
     <Compile Include="Configuration\ParameterElement.cs" />
+    <Compile Include="EqualityNetwork.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
     <Compile Include="ExtendedTupleOverloads.cs">
       <DependentUpon>ExtendedTupleOverloads.tt</DependentUpon>
@@ -132,7 +133,13 @@
     <Compile Include="Graphic.cs" />
     <Compile Include="GraphicExtensions.cs" />
     <Compile Include="GraphicFormat.cs" />
+    <Compile Include="Grouping.cs" />
+    <Compile Include="HashCollection.cs" />
     <Compile Include="HashedByteArray.cs" />
+    <Compile Include="IOrderedLookup.cs" />
+    <Compile Include="ISet.cs" />
+    <Compile Include="Lookup.cs" />
+    <Compile Include="OrderedLookup.cs" />
     <Compile Include="Ranges\ByteRange.cs" />
     <Compile Include="Ranges\FinancialRange.cs" />
     <Compile Include="Ranges\TimeSpanRange.cs" />
