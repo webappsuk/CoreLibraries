@@ -81,14 +81,15 @@ namespace WebApplications.Utilities
             _encoded = encoded;
 
             _data = data;
-            int length = data.Length;
+            long length = data.LongLength;
             if (length > 8)
             {
                 unchecked
                 {
                     // Pick 8 values evenly spread through byte array.
-                    double step = (double) length/8;
-                    _hash = _data.Where((item, count) => count % step < 1).Aggregate(0L, (h, b) => (b * 397) ^ h);
+                    double step = (double)length / 8;
+                    for (double ix = 0; ix < length; ix += step)
+                        _hash = (data[(long) ix]*397) ^ _hash;
                 }
             }
             else if (length > 4)
@@ -209,9 +210,12 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <returns>A long hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table, provides better seperation that the standard
         /// integer hash code.</returns>
-        public long GetLongHashCode()
+        public long HashCode
         {
-            return _hash;
+            get
+            {
+                return _hash;
+            }
         }
 
         /// <summary>
