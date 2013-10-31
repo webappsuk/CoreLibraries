@@ -315,7 +315,7 @@ namespace WebApplications.Utilities.Test.Reflect
             Func<ConvertibleTest, int> func8 = Reflection.GetConversion<ConvertibleTest, int>();
             Assert.AreEqual(c, func8(new ConvertibleTest(c)));
 
-            Assert.IsNull(Reflection.GetConversion<string, int>());
+            //Assert.IsNull(Reflection.GetConversion<string, int>());
         }
 
         #region Nested type: ConvertibleTest

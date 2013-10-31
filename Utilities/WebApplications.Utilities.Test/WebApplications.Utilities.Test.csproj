@@ -103,6 +103,7 @@
     <Compile Include="Ranges\RangeTests.cs" />
     <Compile Include="Ranges\ShortRangeTests.cs" />
     <Compile Include="Reflect\ExtendedTypeTests.cs" />
+    <Compile Include="SemanticVersions\SemanticVersionTests.cs" />
     <Compile Include="SingletonTests.cs" />
     <Compile Include="TestCacheQueue.cs" />
     <Compile Include="TestCombGuid.cs" />

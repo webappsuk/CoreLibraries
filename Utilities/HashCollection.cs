@@ -207,7 +207,7 @@ namespace WebApplications.Utilities
         /// <returns>ISet.</returns>
         public ISet Union(IEnumerable other)
         {
-            return new HashCollection<T>(((IEnumerable<T>)this).Union(other.Cast<T>()));
+            return new HashCollection<T>(Enumerable.Union(this, other.Cast<T>()));
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace WebApplications.Utilities
         /// <returns>ISet.</returns>
         public ISet Intersect(IEnumerable other)
         {
-            return new HashCollection<T>(((IEnumerable<T>)this).Intersect(other.Cast<T>()));
+            return new HashCollection<T>(Enumerable.Intersect(this, other.Cast<T>()));
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace WebApplications.Utilities
         /// <returns>ISet.</returns>
         public ISet Except(IEnumerable other)
         {
-            return new HashCollection<T>(((IEnumerable<T>)this).Except(other.Cast<T>()));
+            return new HashCollection<T>(Enumerable.Except(this, other.Cast<T>()));
         }
 
         /// <summary>

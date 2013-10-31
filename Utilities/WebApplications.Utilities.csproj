@@ -98,6 +98,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblySemanticVersionAttribute.cs" />
     <Compile Include="BigArray.cs" />
     <Compile Include="Caching\CachingDictionaryBase.cs" />
     <Compile Include="Caching\CachingQueue.cs" />
@@ -136,9 +137,11 @@
     <Compile Include="Grouping.cs" />
     <Compile Include="HashCollection.cs" />
     <Compile Include="HashedByteArray.cs" />
+    <Compile Include="IOptional.cs" />
     <Compile Include="IOrderedLookup.cs" />
     <Compile Include="ISet.cs" />
     <Compile Include="Lookup.cs" />
+    <Compile Include="Optional.cs" />
     <Compile Include="OrderedLookup.cs" />
     <Compile Include="Ranges\ByteRange.cs" />
     <Compile Include="Ranges\FinancialRange.cs" />
@@ -160,6 +163,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SemanticVersion.cs" />
     <Compile Include="TaskExtensionsOverloads.cs">
       <DependentUpon>TaskExtensionsOverloads.tt</DependentUpon>
       <AutoGen>True</AutoGen>

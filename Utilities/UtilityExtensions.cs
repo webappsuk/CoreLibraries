@@ -1353,6 +1353,21 @@ namespace WebApplications.Utilities
             return new IPAddress(bytes);
         }
 
+        /// <summary>
+        /// Determines if all the elements of the enumerable are distinct.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <param name="equalityComparer">The equality comparer.</param>
+        /// <returns><see langword="true" /> if all the elements of the enumerable are distinct, <see langword="false" /> otherwise.</returns>
+        /// <remarks>TODO move into core library.</remarks>
+        public static bool AreDistinct<T>([NotNull]this IEnumerable<T> enumerable, [CanBeNull] IEqualityComparer<T> equalityComparer = null)
+        {
+            Contract.Requires(enumerable != null);
+            ICollection<T> collection = (enumerable as ICollection<T>) ?? enumerable.ToArray();
+            return collection.Count == collection.Distinct(equalityComparer ?? EqualityComparer<T>.Default).Count();
+        }
+
         #region StdDev
         /// <summary>
         /// Calculate the standard deviation of an average
@@ -1681,9 +1696,9 @@ namespace WebApplications.Utilities
         public static T Min<T>([NotNull]this IEnumerable<T> source, [NotNull]Comparer<T> comparer)
             where T : IComparable<T>
         {
-            Contract.Requires(source != null, "Parameter_Null");
+            Contract.Requires(source != null);
             Contract.Requires(source.Any());
-            Contract.Requires(comparer != null, "Parameter_Null");
+            Contract.Requires(comparer != null);
 
             T value = default(T);
             if (ReferenceEquals(value, null))
@@ -1723,9 +1738,9 @@ namespace WebApplications.Utilities
         public static T Max<T>([NotNull]this IEnumerable<T> source, [NotNull]Comparer<T> comparer)
             where T : IComparable<T>
         {
-            Contract.Requires(source != null, "Parameter_Null");
+            Contract.Requires(source != null);
             Contract.Requires(source.Any());
-            Contract.Requires(comparer != null, "Parameter_Null");
+            Contract.Requires(comparer != null);
 
             T value = default(T);
             if (ReferenceEquals(value, null))
@@ -2114,5 +2129,38 @@ namespace WebApplications.Utilities
                 throw new InvalidOperationException(Resources.Extensions_TopologicalSortEdges_DependencyCyclesFound);
         }
         #endregion
+
+
+        /// <summary>
+        /// Gets the semantic version of an assembly.
+        /// </summary>
+        /// <param name="assembly">The assembly.</param>
+        /// <returns></returns>
+        [NotNull]
+        public static SemanticVersion SemanticVersion([NotNull]this Assembly assembly)
+        {
+            Contract.Requires(assembly != null);
+
+            // Get the assembly version.
+            Version version = assembly.GetName().Version;
+            Contract.Assert(version != null);
+
+            // Get the semantic version attribute.
+            AssemblySemanticVersionAttribute attribute = assembly.GetCustomAttribute<AssemblySemanticVersionAttribute>();
+            
+            SemanticVersion result;
+            if ((attribute != null) &&
+                Utilities.SemanticVersion.TryParse(
+                attribute.SemanticVersion
+                        .Replace("{Major}", version.Major.ToString("D"))
+                        .Replace("{Minor}", version.Minor.ToString("D"))
+                        .Replace("{Build}", version.Build.ToString("D"))
+                        .Replace("{Revision}", version.Revision.ToString("D")),
+                        out result))
+                return result;
+
+            // Create a semantic version from the assembly version directly.
+            return new SemanticVersion(version);
+        }
     }
 }
