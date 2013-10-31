@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Web.UI;
@@ -17,13 +18,18 @@ namespace WebApplications.Utilities
     /// Stores a semantic version number for a program.
     /// </summary>
     [Serializable]
-    public sealed class SemanticVersion : IComparable, IComparable<SemanticVersion>, IEquatable<SemanticVersion>
+    public sealed class SemanticVersion : IComparable, IComparable<SemanticVersion>, IEquatable<SemanticVersion>, ISerializable
     {
         /// <summary>
-        /// The characters that are valid in the preRelease and build part strings
+        /// The characters that are valid in the prerelease and build part strings
         /// </summary>
         [NotNull]
         private static readonly HashSet<char> _validChars = new HashSet<char>("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.");
+
+        /// <summary>
+        /// The dot delimiter for splitting prerelease parts
+        /// </summary>
+        private static readonly char[] _dotDelimiter = { '.' };
 
         /// <summary>
         /// Version zero
@@ -71,6 +77,9 @@ namespace WebApplications.Utilities
             Minor = minor;
             Patch = patch;
 
+            if (preRelease.IsAssigned && preRelease.Value == null) preRelease = string.Empty;
+            if (build.IsAssigned && build.Value == null) build = string.Empty;
+
             PreRelease = preRelease;
             Build = build;
 
@@ -82,6 +91,9 @@ namespace WebApplications.Utilities
             _string = new Lazy<string>(
                 () =>
                 {
+                    Contract.Assert(!preRelease.IsAssigned || preRelease.Value != null);
+                    Contract.Assert(!build.IsAssigned || build.Value != null);
+
                     if (!isPartial)
                         return string.Format(
                             CultureInfo.InvariantCulture,
@@ -89,8 +101,8 @@ namespace WebApplications.Utilities
                             major.Value.ToString("D"),
                             minor.Value.ToString("D"),
                             patch.Value.ToString("D"),
-                            preRelease.Value != null ? "-" + preRelease.Value : string.Empty,
-                            build.Value != null ? "+" + build.Value : string.Empty);
+                            preRelease.Value.Length > 0 ? "-" + preRelease.Value : string.Empty,
+                            build.Value.Length > 0 ? "+" + build.Value : string.Empty);
 
                     StringBuilder s = new StringBuilder();
                     if (major.IsAssigned)
@@ -129,7 +141,7 @@ namespace WebApplications.Utilities
                     if (preRelease.IsAssigned)
                     {
                         s.Append('-');
-                        if (preRelease.Value != null)
+                        if (preRelease.Value.Length > 0)
                             s.Append(preRelease.Value);
                     }
                     else
@@ -142,7 +154,7 @@ namespace WebApplications.Utilities
                     s.Append('+');
                     if (build.IsAssigned)
                     {
-                        if (build.Value != null)
+                        if (build.Value.Length > 0)
                             s.Append(build.Value);
                     }
                     else
@@ -210,7 +222,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="version">The system version.</param>
         /// <param name="preRelease">The optional preRelease version.</param>
-        public SemanticVersion([NotNull] Version version, [CanBeNull] string preRelease = null)
+        public SemanticVersion([NotNull] Version version, [CanBeNull] string preRelease = "")
             : this(
             version.Major,
             version.Minor,
@@ -221,6 +233,37 @@ namespace WebApplications.Utilities
                 : null)
         {
             Contract.Requires(version != null);
+        }
+
+        /// <summary>
+        /// Deserializes a <see cref="SemanticVersion"/> class.
+        /// </summary>
+        /// <param name="info">The information.</param>
+        /// <param name="context">The context.</param>
+        private SemanticVersion([NotNull] SerializationInfo info, StreamingContext context)
+            : this(
+                info.GetInt32("Major") < 0 ? Optional<int>.Unassigned : info.GetInt32("Major"),
+                info.GetInt32("Minor") < 0 ? Optional<int>.Unassigned : info.GetInt32("Minor"),
+                info.GetInt32("Patch") < 0 ? Optional<int>.Unassigned : info.GetInt32("Patch"),
+                info.GetString("PreRelease") ?? Optional<string>.Unassigned,
+                info.GetString("Build") ?? Optional<string>.Unassigned,
+                info.GetBoolean("IsPartial"))
+        {
+        }
+
+        /// <summary>
+        /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with the data needed to serialize the target object.
+        /// </summary>
+        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> to populate with data.</param>
+        /// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext" />) for this serialization.</param>
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("Major", Major.IsAssigned ? Major.Value : -1);
+            info.AddValue("Minor", Minor.IsAssigned ? Minor.Value : -1);
+            info.AddValue("Patch", Patch.IsAssigned ? Patch.Value : -1);
+            info.AddValue("PreRelease", PreRelease.IsAssigned ? PreRelease.Value : null);
+            info.AddValue("Build", Build.IsAssigned ? Build.Value : null);
+            info.AddValue("IsPartial", IsPartial);
         }
 
         /// <summary>
@@ -299,7 +342,7 @@ namespace WebApplications.Utilities
         {
             return IsPartial
                 ? this
-                : new SemanticVersion(Major.Value, Minor.Value, Patch.Value, PreRelease.Value, Build.Value);
+                : new SemanticVersion(Major.Value, Minor.Value, Patch.Value, PreRelease.Value ?? string.Empty, Build.Value ?? string.Empty, false);
         }
 
         /// <summary>
@@ -373,7 +416,7 @@ namespace WebApplications.Utilities
 
         /// <summary>
         /// Compares two <see cref="SemanticVersion"/> object to determine if
-        /// the first object logically precedes the second object.
+        /// the first object logically follows the second object.
         /// </summary>
         /// <param name="version">
         /// The first <see cref="SemanticVersion"/> object to compare.
@@ -391,6 +434,64 @@ namespace WebApplications.Utilities
             MessageId = "0",
             Justification = "MFC3: The version argument is being validated using code contracts.")]
         public static bool operator >([CanBeNull] SemanticVersion version, [CanBeNull] SemanticVersion other)
+        {
+            if (version == null)
+                return other != null;
+            if (other == null)
+                return true;
+
+            return 0 < version.CompareTo(other);
+        }
+
+        /// <summary>
+        /// Compares two <see cref="SemanticVersion"/> objects to determine if
+        /// the first object logically precedes or is equal to the second object.
+        /// </summary>
+        /// <param name="version">
+        /// The first <see cref="SemanticVersion"/> object to compare.
+        /// </param>
+        /// <param name="other">
+        /// The second <see cref="SemanticVersion"/> object to compare.
+        /// </param>
+        /// <returns>
+        /// <b>True</b> if <paramref name="version"/> if equal to or precedes 
+        /// <paramref name="other"/>, otherwise <b>false</b>.
+        /// </returns>
+        [SuppressMessage(
+            "Microsoft.Design",
+            "CA1062:Validate arguments of public methods",
+            MessageId = "0",
+            Justification = "MFC3: The version argument is being validated using code contracts.")]
+        public static bool operator <=([CanBeNull] SemanticVersion version, [CanBeNull] SemanticVersion other)
+        {
+            if (version == null)
+                return other == null;
+            if (other == null)
+                return false;
+
+            return 0 > version.CompareTo(other);
+        }
+
+        /// <summary>
+        /// Compares two <see cref="SemanticVersion"/> object to determine if
+        /// the first object logically follows or is equal to the second object.
+        /// </summary>
+        /// <param name="version">
+        /// The first <see cref="SemanticVersion"/> object to compare.
+        /// </param>
+        /// <param name="other">
+        /// The second <see cref="SemanticVersion"/> object to compare.
+        /// </param>
+        /// <returns>
+        /// <b>True</b> if <paramref name="version"/> if equal to or follows
+        /// <paramref name="other"/>, otherwise <b>false</b>.
+        /// </returns>
+        [SuppressMessage(
+            "Microsoft.Design",
+            "CA1062:Validate arguments of public methods",
+            MessageId = "0",
+            Justification = "MFC3: The version argument is being validated using code contracts.")]
+        public static bool operator >=([CanBeNull] SemanticVersion version, [CanBeNull] SemanticVersion other)
         {
             if (version == null)
                 return other != null;
@@ -530,13 +631,9 @@ namespace WebApplications.Utilities
                 return result;
 
             result = this.Patch.CompareTo(other.Patch);
-            if (result != 0)
-                return result;
-
-            result = ComparePrereleaseVersions(PreRelease, other.PreRelease);
-            return result != 0
+            return result != 0 
                 ? result
-                : CompareBuildVersions(Build, other.Build);
+                : ComparePrereleaseVersions(PreRelease, other.PreRelease);
         }
 
         /// <summary>
@@ -561,10 +658,10 @@ namespace WebApplications.Utilities
             if (Patch.IsAssigned && other.Patch.IsAssigned && (Patch.Value != other.Patch.Value))
                 return false;
 
-            if ((Patch.IsAssigned && other.Patch.IsAssigned && (ComparePrereleaseVersions(PreRelease, other.PreRelease) != 0)))
+            if ((PreRelease.IsAssigned && other.PreRelease.IsAssigned && (PreRelease.Value != other.PreRelease.Value)))
                 return false;
 
-            return !Patch.IsAssigned || !other.Patch.IsAssigned || (CompareBuildVersions(Build, other.Build) == 0);
+            return !Build.IsAssigned || !other.Build.IsAssigned || (Build.Value == other.Build.Value);
         }
 
         /// <summary>
@@ -612,8 +709,7 @@ namespace WebApplications.Utilities
             return this.Major == other.Major
                    && this.Minor == other.Minor
                    && this.Patch == other.Patch
-                   && this.PreRelease == other.PreRelease
-                   && this.Build == other.Build;
+                   && this.PreRelease == other.PreRelease;
         }
 
         /// <summary>
@@ -629,7 +725,6 @@ namespace WebApplications.Utilities
             hashCode = (hashCode * 37) + this.Minor.GetHashCode();
             hashCode = (hashCode * 37) + this.Patch.GetHashCode();
             hashCode = (hashCode * 37) + this.PreRelease.GetHashCode();
-            hashCode = (hashCode * 37) + this.Build.GetHashCode();
             return hashCode;
         }
 
@@ -642,104 +737,6 @@ namespace WebApplications.Utilities
         public override string ToString()
         {
             return _string.Value;
-        }
-
-        /// <summary>
-        /// Compares two build version values to determine precedence.
-        /// </summary>
-        /// <param name="identifier1">
-        /// The first identifier to compare.
-        /// </param>
-        /// <param name="identifier2">
-        /// The second identifier to compare.
-        /// </param>
-        /// <returns>
-        /// Returns a value that indicates the relative order of the objects
-        /// that are being compared.
-        /// <list type="table">
-        /// <listheader>
-        /// <term>Value</term>
-        /// <description>Meaning</description>
-        /// </listheader>
-        /// <item>
-        /// <term>Less than zero</term>
-        /// <description>
-        /// <paramref name="identifier1"/> precedes 
-        /// <paramref name="identifier2"/> in the sort order.
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <term>Zero</term>
-        /// <description>
-        /// The identifiers occur in the same position in the sort order.
-        /// </description>
-        /// </item>
-        /// <item>
-        /// <term>Greater than zero</term>
-        /// <description>
-        /// <paramref name="identifier1"/> follows 
-        /// <paramref name="identifier2"/> in the sort order.
-        /// </description>
-        /// </item>
-        /// </list>
-        /// </returns>
-        private static int CompareBuildVersions(Optional<string> identifier1, Optional<string> identifier2)
-        {
-            int result = 0;
-            bool hasIdentifier1 = identifier1.IsAssigned && identifier1.Value != null;
-            bool hasIdentifier2 = identifier2.IsAssigned && identifier2.Value != null;
-
-            if (hasIdentifier1 && !hasIdentifier2)
-                result = 1;
-            else if (!hasIdentifier1 && hasIdentifier2)
-                result = -1;
-            else if (hasIdentifier1)
-            {
-                Contract.Assert(identifier1.Value != null);
-                Contract.Assert(identifier2.Value != null);
-
-                char[] dotDelimiter = { '.' };
-                string[] parts1 = identifier1.Value.Split(dotDelimiter, StringSplitOptions.RemoveEmptyEntries);
-                string[] parts2 = identifier2.Value.Split(dotDelimiter, StringSplitOptions.RemoveEmptyEntries);
-                int max = Math.Max(parts1.Length, parts2.Length);
-
-                for (int i = 0; i < max; i++)
-                {
-                    if (i == parts1.Length && i != parts2.Length)
-                    {
-                        result = -1;
-                        break;
-                    }
-
-                    if (i != parts1.Length && i == parts2.Length)
-                    {
-                        result = 1;
-                        break;
-                    }
-
-                    string part1 = parts1[i];
-                    string part2 = parts2[i];
-
-                    Contract.Assert(part1 != null);
-                    Contract.Assert(part2 != null);
-
-                    int value1, value2;
-                    if (int.TryParse(part1, NumberStyles.None, CultureInfo.InvariantCulture, out value1) &&
-                        int.TryParse(part2, NumberStyles.None, CultureInfo.InvariantCulture, out value2))
-                        result = value1.CompareTo(value2);
-                    else
-                    {
-                        result = string.Compare(part1, part2, StringComparison.Ordinal);
-                    }
-
-                    if (0 != result)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -783,57 +780,57 @@ namespace WebApplications.Utilities
         /// </returns>
         private static int ComparePrereleaseVersions(Optional<string> identifier1, Optional<string> identifier2)
         {
+            if (!identifier1.IsAssigned)
+                return identifier2.IsAssigned ? -1 : 0;
+            if (!identifier2.IsAssigned)
+                return 1;
+
+            Contract.Assert(identifier1.Value != null);
+            Contract.Assert(identifier2.Value != null);
+
+            if (identifier1.Value.Length < 1)
+                return identifier2.Value.Length < 1 ? 1 : 0;
+            if (identifier2.Value.Length < 1)
+                return -1;
+
             int result = 0;
-            bool hasIdentifier1 = identifier1.IsAssigned && identifier1.Value != null;
-            bool hasIdentifier2 = identifier2.IsAssigned && identifier2.Value != null;
 
-            if (hasIdentifier1 && !hasIdentifier2)
-                result = -1;
-            else if (!hasIdentifier1 && hasIdentifier2)
-                result = 1;
-            else if (hasIdentifier1)
+            string[] parts1 = identifier1.Value.Split(_dotDelimiter, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts2 = identifier2.Value.Split(_dotDelimiter, StringSplitOptions.RemoveEmptyEntries);
+            int max = Math.Max(parts1.Length, parts2.Length);
+
+            for (int i = 0; i < max; i++)
             {
-                Contract.Assert(identifier1.Value != null);
-                Contract.Assert(identifier2.Value != null);
-
-                char[] dotDelimiter = { '.' };
-                string[] parts1 = identifier1.Value.Split(dotDelimiter, StringSplitOptions.RemoveEmptyEntries);
-                string[] parts2 = identifier2.Value.Split(dotDelimiter, StringSplitOptions.RemoveEmptyEntries);
-                int max = Math.Max(parts1.Length, parts2.Length);
-
-                for (int i = 0; i < max; i++)
+                if (i == parts1.Length && i != parts2.Length)
                 {
-                    if (i == parts1.Length && i != parts2.Length)
-                    {
-                        result = -1;
-                        break;
-                    }
+                    result = -1;
+                    break;
+                }
 
-                    if (i != parts1.Length && i == parts2.Length)
-                    {
-                        result = 1;
-                        break;
-                    }
+                if (i != parts1.Length && i == parts2.Length)
+                {
+                    result = 1;
+                    break;
+                }
 
-                    string part1 = parts1[i];
-                    string part2 = parts2[i];
+                string part1 = parts1[i];
+                string part2 = parts2[i];
 
-                    Contract.Assert(part1 != null);
-                    Contract.Assert(part2 != null);
+                Contract.Assert(part1 != null);
+                Contract.Assert(part2 != null);
 
-                    int value1, value2;
-                    if (int.TryParse(part1, NumberStyles.None, CultureInfo.InvariantCulture, out value1) &&
-                        int.TryParse(part2, NumberStyles.None, CultureInfo.InvariantCulture, out value2))
-                        result = value1.CompareTo(value2);
-                    else
-                    {
-                        result = string.Compare(part1, part2, StringComparison.Ordinal);
-                    }
+                int value1, value2;
+                if (int.TryParse(part1, NumberStyles.None, CultureInfo.InvariantCulture, out value1) &&
+                    int.TryParse(part2, NumberStyles.None, CultureInfo.InvariantCulture, out value2))
+                    result = value1.CompareTo(value2);
+                else
+                {
+                    result = string.Compare(part1, part2, StringComparison.Ordinal);
+                }
 
-                    if (0 != result)
-                    {
-                        break;
-                    }
+                if (0 != result)
+                {
+                    break;
                 }
             }
 
@@ -844,7 +841,6 @@ namespace WebApplications.Utilities
         /// Creates a new instance of the <see cref="SemanticVersion" /> class.
         /// </summary>
         /// <param name="version">The semantic version number to be parsed.</param>
-        /// <returns><see langword="true" /> if XXXX, <see langword="false" /> otherwise.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">version;The specified semantic version string was not valid.</exception>
         [CanBeNull]
         public static SemanticVersion Parse([CanBeNull] string version)

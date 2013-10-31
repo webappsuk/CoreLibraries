@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -110,7 +111,56 @@ namespace WebApplications.Utilities.Test.SemanticVersions
             "*.*.*.*",
             "*.*.*-*--"
         };
+
+        [NotNull]
+        private readonly SemanticVersion[] _orderTests =
+        {
+            new SemanticVersion(1, 0, 0),
+            new SemanticVersion(1, 0, 0, "alpha", null),
+            new SemanticVersion(1, 0, 0, "alpha.1", null),
+            new SemanticVersion(1, 0, 0, "alpha.beta", null),
+            new SemanticVersion(1, 0, 0, "beta", null),
+            new SemanticVersion(1, 0, 0, null, null),
+            new SemanticVersion(1, 2, 0),
+            new SemanticVersion(1, 2, 0, "alpha", null),
+            new SemanticVersion(1, 2, 0, "beta", null),
+            new SemanticVersion(1, 2, 0, "beta.2", null),
+            new SemanticVersion(1, 2, 0, "beta.11", null),
+            new SemanticVersion(1, 2, 0, "rc.1", null),
+            new SemanticVersion(1, 2, 0, null, null),
+            new SemanticVersion(2),
+            new SemanticVersion(2, 0),
+            new SemanticVersion(2, 0, 0),
+            new SemanticVersion(2, 0, 0, null),
+        };
+
+        [NotNull]
+        private readonly SemanticVersion[] _ignoreBuildTests =
+        {
+            new SemanticVersion(1, 0, 0, null, null),
+            new SemanticVersion(1, 0, 0, null, "build.1"),
+            new SemanticVersion(1, 0, 0, null, "build.2"),
+        };
+
+        [NotNull] private readonly Tuple<bool, SemanticVersion, SemanticVersion>[] _matchTests =
+        {
+            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 2)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 2, 3)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 2, 3, "a")),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 2, 3, "a", "b")),
+
+            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(minor: 2)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(patch: 3)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(preRelease: "a")),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(build: "b")),
             
+            new Tuple<bool, SemanticVersion, SemanticVersion>(false, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 1)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(false, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, patch: 1)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(false, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, preRelease: "b")),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(false, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, build: "a")),
+        };
+
         [TestMethod]
         public void SemanticVersion_TryParse_Succeeds()
         {
@@ -168,6 +218,84 @@ namespace WebApplications.Utilities.Test.SemanticVersions
                 }
                 Trace.WriteLine(string.Format("The '{0}' semantic version was successfully parsed as invalid.", invalid));
             }
+            Assert.IsTrue(success, "Some tests failed.");
+        }
+
+        [TestMethod]
+        public void SemanticVersion_Ordering()
+        {
+            SemanticVersion last = _orderTests[0];
+            bool success = true;
+
+            for (int i = 1; i < _orderTests.Length; i++)
+            {
+                SemanticVersion current = _orderTests[i];
+
+                if (last < current)
+                    Trace.WriteLine(string.Format("      '{0}' < '{1}'", last, current));
+                else
+                {
+                    Trace.WriteLine(string.Format("Fail: '{0}' >= '{1}'", last, current));
+                    success = false;
+                }
+
+                last = current;
+            }
+
+            Assert.IsTrue(success, "Some tests failed.");
+        }
+
+        [TestMethod]
+        public void SemanticVersion_ComparisonIgnoresBuild()
+        {
+            SemanticVersion last = _ignoreBuildTests[0];
+            bool success = true;
+
+            for (int i = 1; i < _ignoreBuildTests.Length; i++)
+            {
+                SemanticVersion current = _ignoreBuildTests[i];
+
+                if (last.Equals(current))
+                    Trace.WriteLine(string.Format("      '{0}' == '{1}'", last, current));
+                else
+                {
+                    Trace.WriteLine(string.Format("Fail: '{0}' != '{1}'", last, current));
+                    success = false;
+                }
+
+                last = current;
+            }
+
+            Assert.IsTrue(success, "Some tests failed.");
+        }
+
+        [TestMethod]
+        public void SemanticVersion_Matches()
+        {
+            bool success = true;
+
+            foreach (Tuple<bool, SemanticVersion, SemanticVersion> pair in _matchTests)
+            {
+                bool matchExpected = pair.Item1;
+                SemanticVersion a = pair.Item2;
+                SemanticVersion b = pair.Item3;
+
+                bool matches = a.Matches(b);
+                Trace.Write(matches 
+                    ? string.Format("'{0}' matches '{1}'", a, b) 
+                    : string.Format("'{0}' does not match '{1}'", a, b));
+
+                if (matchExpected == matches)
+                {
+                    Trace.WriteLine(" as expected");
+                }
+                else
+                {
+                    Trace.WriteLine(" which is not expected");
+                    success = false;
+                }
+            }
+
             Assert.IsTrue(success, "Some tests failed.");
         }
     }
