@@ -25,12 +25,16 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using JetBrains.Annotations;
+
 namespace WebApplications.Utilities.Cryptography
 {
     public interface IEncryptorDecryptor
     {
-        string Encrypt(string input);
-        string Decrypt(string input, out bool isLatestKey);
-        bool TryDecrypt(string input, out string result, out bool? isLatestKey);
+        [CanBeNull]
+        string Encrypt([CanBeNull]string input);
+        [CanBeNull]
+        string Decrypt([CanBeNull]string input, out bool isLatestKey);
+        bool TryDecrypt([CanBeNull]string input, [CanBeNull]out string result, [CanBeNull]out bool? isLatestKey);
     }
 }

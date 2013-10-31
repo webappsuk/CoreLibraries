@@ -98,10 +98,11 @@ namespace WebApplications.Utilities.Cryptography
         /// <paramref name="input"/> is <see langword="null"/>.
         /// </exception>
         /// <seealso cref="Base32EncoderDecoder"/>
-        public string Encrypt(string input)
+        [CanBeNull]
+        public string Encrypt([CanBeNull] string input)
         {
             if (string.IsNullOrEmpty(input))
-                throw new ArgumentNullException("input");
+                return input;
 
             using (AesCryptoServiceProvider aes = new AesCryptoServiceProvider())
             {
@@ -156,12 +157,13 @@ namespace WebApplications.Utilities.Cryptography
         /// The code was unable to decrypt the provided <paramref name="input"/>.
         /// </exception>
         /// <seealso cref="Base32EncoderDecoder"/>
-        public string Decrypt(string input, out bool isLatestKey)
+        [CanBeNull]
+        public string Decrypt([CanBeNull] string input, out bool isLatestKey)
         {
             isLatestKey = false;
 
-            if (input == null || input.Length <= 0)
-                throw new ArgumentNullException("input");
+            if (string.IsNullOrEmpty(input))
+                return input;
 
             byte[] initializationVector = new byte[16];
 
@@ -222,7 +224,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <returns>
         /// <see langword="true"/> if the <paramref name="inputString"/> was decrypted successfully; otherwise <see langword="false"/>.
         /// </returns>
-        public bool TryDecrypt(string inputString, out string decryptedString, out bool? isLatestKey)
+        public bool TryDecrypt([CanBeNull] string inputString, [CanBeNull]  out string decryptedString, [CanBeNull] out bool? isLatestKey)
         {
             decryptedString = null;
             isLatestKey = null;

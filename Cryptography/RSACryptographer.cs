@@ -103,7 +103,7 @@ namespace WebApplications.Utilities.Cryptography
         /// <see langword="true"/> if the decryption was successful; otherwise <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public bool TryDecrypt([NotNull] string inputStr, out string decryptedString, out bool? isLatestKey)
+        public bool TryDecrypt([CanBeNull] string inputStr, [CanBeNull] out string decryptedString, [CanBeNull] out bool? isLatestKey)
         {
             decryptedString = null;
             isLatestKey = null;
@@ -136,14 +136,13 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="CryptographicException">
         /// None of the keys stored resulted in a successful decryption.
         /// </exception>
-        [NotNull]
+        [CanBeNull]
         [UsedImplicitly]
-        public string Decrypt([NotNull] string input, out bool isLatestKey)
+        public string Decrypt([CanBeNull] string input, out bool isLatestKey)
         {
             isLatestKey = false;
-
             if (string.IsNullOrEmpty(input))
-                throw new ArgumentNullException("input");
+                return input;
 
             foreach (Key key in _rsaEncryptionKeys)
             {
@@ -200,12 +199,12 @@ namespace WebApplications.Utilities.Cryptography
         /// <exception cref="ArgumentNullException">
         /// <paramref name="input"/> was <see langword="null"/>.
         /// </exception>
-        [NotNull]
+        [CanBeNull]
         [UsedImplicitly]
-        public string Encrypt([NotNull] string input)
+        public string Encrypt([CanBeNull] string input)
         {
             if (string.IsNullOrEmpty(input))
-                throw new ArgumentNullException("input");
+                return input;
 
             RSACryptoServiceProvider encryptionProvider = InitialiseCryptoServiceProvider();
 

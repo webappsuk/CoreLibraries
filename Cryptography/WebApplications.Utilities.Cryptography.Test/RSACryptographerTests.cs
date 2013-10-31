@@ -87,21 +87,15 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentNullException))]
         public void Encrypt_NullInput_EmptyStringResult()
         {
-            _providerWrapper.Encrypt(null);
-
-            Assert.Fail("ArgumentNullException was expected when using a null input");
+            Assert.IsNull(_providerWrapper.Encrypt(null));
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentNullException))]
-        public void Encrypt_EmptyString_ArgumentNullException()
+        public void Encrypt_EmptyString()
         {
-            _providerWrapper.Encrypt(string.Empty);
-
-            Assert.Fail("ArgumentNullException was expected when using string.Empty");
+            Assert.AreEqual(_providerWrapper.Encrypt(string.Empty), string.Empty);
         }
 
         [TestMethod]
@@ -205,35 +199,19 @@ namespace WebApplications.Utilities.Cryptography.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentNullException))]
         public void Decrypt_NullInput_ArgumentNullException()
         {
             bool isLatestKey;
-            _providerWrapper.Decrypt(null, out isLatestKey);
-
-            Assert.Fail("ArgumentNullException was expected when using a null input");
+            Assert.IsNull(_providerWrapper.Decrypt(null, out isLatestKey));
         }
 
         [TestMethod]
-        [ExpectedException(typeof (ArgumentNullException))]
-        public void Decrypt_EmptyString_ArgumentNullException()
+        public void Decrypt_EmptyString()
         {
             bool isLatestKey;
-            _providerWrapper.Decrypt(string.Empty, out isLatestKey);
-
-            Assert.Fail("ArgumentNullException was expected when using string.Empty");
+            Assert.AreEqual(_providerWrapper.Decrypt(string.Empty, out isLatestKey), string.Empty);
         }
-
-        [TestMethod]
-        [ExpectedException(typeof (ArgumentNullException))]
-        public void Decrypt_NullInput_LatestKeyIsFalse()
-        {
-            bool isLatestKey;
-            _providerWrapper.Decrypt(null, out isLatestKey);
-
-            Assert.IsFalse(isLatestKey, "For a null input string 'isLatestKey' output should be false");
-        }
-
+        
         [TestMethod]
         [ExpectedException(typeof (CryptographicException))]
         public void Decrypt_InputEncryptedWithKeyNotInConfig_CryptographicException()
@@ -266,17 +244,6 @@ namespace WebApplications.Utilities.Cryptography.Test
 
             Assert.IsTrue(decrypted, "'decrypted' should return true");
             Assert.IsFalse(isLatestKey.Value, "IsLatestKey should return false");
-        }
-
-        [TestMethod]
-        public void TryDecrypt_NullInputString_FalseReturned()
-        {
-            string decryptedString;
-            bool? isLatestKey;
-
-            bool decrypted = _providerWrapper.TryDecrypt(null, out decryptedString, out isLatestKey);
-
-            Assert.IsFalse(decrypted, "TryDecrypt should return false when using null input string");
         }
     }
 }

@@ -59,38 +59,31 @@ namespace WebApplications.Utilities.Cryptography.Configuration
 
                 foreach (ProviderElement provider in Providers)
                 {
-                    string providerString;
-
-                    if (provider.Keys.Count <= 0)
+                    xml.Append("<add name=\"")
+                        .Append(provider.Name)
+                        .Append("\" type=\"")
+                        .Append(provider.Type.SimplifiedFullName(""))
+                        .Append("\" enabled=\"")
+                        .Append(provider.IsEnabled)
+                        .Append("\" id=\"")
+                        .Append(provider.Id)
+                        .Append("\" keyLifeInDays=\"")
+                        .Append(provider.KeyLifeInDays)
+                        .Append("\"");
+                    if (provider.Keys.Count > 0)
                     {
-                        providerString =
-                            string.Format(
-                                @"<add name=""{0}"" type=""{1}, {2}"" enabled=""{3}"" id=""{4}"" keyLifeInDays=""{5}""/>",
-                                provider.Name, provider.Type.SimpleFullName(),
-                                provider.Type.Assembly.SimpleFullName(), provider.IsEnabled, provider.Id,
-                                provider.KeyLifeInDays);
+                        xml.Append("><keys>");
+                        foreach (var key in provider.Keys)
+                            xml.Append("<add value=\"")
+                                .Append(key.Value)
+                                .Append("\" expiry=\"")
+                                .Append(key.Expiry.ToString("yyyy-MM-dd HH:mm:ss"))
+                                .Append("\"/>");
+
+                        xml.Append("</keys></add>");
                     }
                     else
-                    {
-                        providerString =
-                            string.Format(
-                                @"<add name=""{0}"" type=""{1}, {2}"" enabled=""{3}"" id=""{4}"" keyLifeInDays=""{5}"">",
-                                provider.Name, provider.Type.SimpleFullName(),
-                                provider.Type.Assembly.SimpleFullName(), provider.IsEnabled, provider.Id,
-                                provider.KeyLifeInDays);
-
-                        providerString += "<keys>";
-                        providerString = provider
-                            .Keys
-                            .Aggregate(providerString, (current, key) => current +
-                                                                         string.Format(
-                                                                             @"<add value=""{0}"" expiry=""{1}""/>",
-                                                                             key.Value,
-                                                                             key.Expiry.ToString("yyyy-MM-dd HH:mm:ss")));
-                        providerString += "</keys></add>";
-                    }
-
-                    xml.Append(providerString);
+                        xml.Append("/>");
                 }
 
                 xml.Append("</providers></cryptography>");

@@ -42,9 +42,9 @@
       <HintPath>..\packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+    <Reference Include="Moq, Version=4.1.1309.1617, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+      <HintPath>..\packages\Moq.4.1.1309.1617\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -57,9 +57,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WebApplications.Testing.2.0.4673.24414\lib\net45\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities, Version=2.0.4829.27207, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.0.5052.29808, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.2.0.4829.27207\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.0.5052.29808\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
