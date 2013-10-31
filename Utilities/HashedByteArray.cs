@@ -81,28 +81,32 @@ namespace WebApplications.Utilities
             _encoded = encoded;
 
             _data = data;
-            if (data.Length > 8)
+            long length = data.LongLength;
+            if (length > 8)
             {
                 unchecked
                 {
-                    _hash = _data.Skip(data.Length - 8).Aggregate(0L, (h, b) => (b*397) ^ h);
+                    // Pick 8 values evenly spread through byte array.
+                    double step = (double)length / 8;
+                    for (double ix = 0; ix < length; ix += step)
+                        _hash = (data[(long) ix]*397) ^ _hash;
                 }
             }
-            else if (data.Length > 4)
+            else if (length > 4)
             {
-                if (data.Length != 8)
+                if (length != 8)
                     Array.Resize(ref data, 8);
                 _hash = BitConverter.ToInt64(data, 0);
             }
-            else if (data.Length > 2)
+            else if (length > 2)
             {
-                if (data.Length != 4)
+                if (length != 4)
                     Array.Resize(ref data, 4);
                 _hash = BitConverter.ToInt32(data, 0);
             }
-            else if (data.Length > 1)
+            else if (length > 1)
                 _hash = BitConverter.ToInt16(data, 0);
-            else if (data.Length > 0)
+            else if (length > 0)
                 _hash = data[0];
         }
 
@@ -198,6 +202,19 @@ namespace WebApplications.Utilities
             unchecked
             {
                 return (int) _hash;
+            }
+        }
+
+        /// <summary>
+        /// Returns a long hash code for this instance.
+        /// </summary>
+        /// <returns>A long hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table, provides better seperation that the standard
+        /// integer hash code.</returns>
+        public long HashCode
+        {
+            get
+            {
+                return _hash;
             }
         }
 
