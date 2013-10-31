@@ -1,10 +1,11 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+using WebApplications.Utilities;
+
 [assembly: AssemblyTitle("WebApplications.Utilities.Performance")]
 [assembly: AssemblyDescription("Allows easy access to instance based performance counters and timers.")]
 [assembly: AssemblyConfiguration("")]
@@ -33,3 +34,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("5.0.*")]
+[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]
