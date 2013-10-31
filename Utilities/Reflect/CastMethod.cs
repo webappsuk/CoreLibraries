@@ -65,7 +65,6 @@ namespace WebApplications.Utilities.Reflect
             : base(extendedType, info)
         {
             Contract.Requires(info.Name == "op_Explicit" || info.Name == "op_Implicit");
-            Contract.Requires(ParameterTypes.Count() == 1);
             IsExplicit = isExplicit;
             FromType = ParameterTypes.First();
             ToType = ReturnType;
