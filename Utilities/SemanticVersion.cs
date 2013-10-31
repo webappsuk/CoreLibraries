@@ -846,7 +846,7 @@ namespace WebApplications.Utilities
         /// <param name="version">The semantic version number to be parsed.</param>
         /// <returns><see langword="true" /> if XXXX, <see langword="false" /> otherwise.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">version;The specified semantic version string was not valid.</exception>
-        [CanBeNull] 
+        [CanBeNull]
         public static SemanticVersion Parse([CanBeNull] string version)
         {
             if (version == null) return null;
@@ -886,6 +886,7 @@ namespace WebApplications.Utilities
                 {
                     if (builder.Length > 0)
                         return false;
+                    isPartial = true;
                     builder.Append(c);
                 }
                 else
@@ -953,29 +954,37 @@ namespace WebApplications.Utilities
                 }
 
                 bool end = index >= version.Length;
-                if (!end && (np < 0)) continue;
+                if (!end &&
+                    (np < 0)) continue;
 
-                // We can't finish with a part seperator.
-                if (end && (np > -1))
+                // We can't finish with a '.' part seperator.
+                if (end && 
+                    (np < 3) && 
+                    (np > 0))
                     return false;
 
+                string part;
                 if (builder.Length < 1)
-                    return false;
-
-                string part = builder.ToString();
-                builder.Clear();
-                if (part[0] == '*')
                 {
-                    if (part.Length > 1)
-                        return false;
-
-                    // We have a partial semantic version (we use '*' in a part to indicate any value is acceptable).
-                    isPartial = true;
+                    if (p < 3) return false;
+                    part = null;
                 }
                 else
                 {
-                    if (np > p + 1) isPartial = true;
+                    part = builder.ToString();
+                    builder.Clear();
+                }
 
+                if (isPartial &&
+                    (part != null) &&
+                    (part[0] == '*'))
+                {
+                    // We only allow '*' on it's own.
+                    if (part.Length > 1)
+                        return false;
+                }
+                else
+                {
                     int ip;
                     switch (p)
                     {
@@ -1006,11 +1015,26 @@ namespace WebApplications.Utilities
                     }
                 }
 
+                if (np < 0) continue;
                 p = np;
                 np = -1;
-            }
 
-            if (p < 4) isPartial = true;
+                if (!end) continue;
+
+                // Deal with the case we end with a '-' or '+' to indicate null.
+                switch (p)
+                {
+                    case 3:
+                        preRelease = Optional<string>.DefaultAssigned;
+                        break;
+                    case 4:
+                        build = Optional<string>.DefaultAssigned;
+                        break;
+                    default:
+                        Contract.Assert(false);
+                        break;
+                }
+            }
 
             if (isPartial)
             {
@@ -1023,7 +1047,18 @@ namespace WebApplications.Utilities
                     semanticVersion = Any;
                     return true;
                 }
+            }
+            else
+            {
+                // Must specify at least major,minor and patch for full semantic versions.
+                if (p < 2)
+                    return false;
 
+                // For non-partial semantic versions, a missing pre-release or build is considered null not unassigned.
+                if (!preRelease.IsAssigned)
+                    preRelease = Optional<string>.DefaultAssigned;
+                if (!build.IsAssigned)
+                    build = Optional<string>.DefaultAssigned;
             }
 
             semanticVersion = new SemanticVersion(

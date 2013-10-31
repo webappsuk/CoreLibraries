@@ -91,6 +91,10 @@ namespace WebApplications.Utilities.Test.SemanticVersions
             new Tuple<string, SemanticVersion, string>("1.2.3-a", new SemanticVersion(1,2,3, "a", null), "1.2.3-a"),
             new Tuple<string, SemanticVersion, string>("1.2.3-a+b", new SemanticVersion(1,2,3, "a", "b"), "1.2.3-a+b"),
             new Tuple<string, SemanticVersion, string>("1.2.3+b", new SemanticVersion(1,2,3, null, "b"), "1.2.3+b"),
+            new Tuple<string, SemanticVersion, string>("1.2.3-", new SemanticVersion(1,2,3, null, null), "1.2.3"),
+            new Tuple<string, SemanticVersion, string>("1.2.3+",  new SemanticVersion(1,2,3, null, null), "1.2.3"),
+            new Tuple<string, SemanticVersion, string>("1.2.3-+", new SemanticVersion(1,2,3, null, null), "1.2.3"),
+            new Tuple<string, SemanticVersion, string>("1.2.3+-", new SemanticVersion(1,2,3, null, "-"), "1.2.3+-"),
         };
 
         [NotNull]
@@ -99,7 +103,9 @@ namespace WebApplications.Utilities.Test.SemanticVersions
             null,
             "",
             "1",
+            "1.",
             "1.2",
+            "1.2.",
             "*.*.*+*-*",
             "*.*.*.*",
             "*.*.*-*--"

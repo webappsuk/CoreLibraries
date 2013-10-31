@@ -13,7 +13,6 @@ namespace WebApplications.Utilities
     /// Attribute that is used to decorate assemblies with a semantic version
     /// number.
     /// </summary>
-    /// TODO This should be moved to core library
     [SuppressMessage(
         "Microsoft.Design",
         "CA1019:DefineAccessorsForAttributeArguments",
@@ -42,7 +41,6 @@ namespace WebApplications.Utilities
         /// </param>
         public AssemblySemanticVersionAttribute([NotNull] string semanticVersion)
         {
-            Contract.Requires(!string.IsNullOrEmpty(semanticVersion));
             Contract.Ensures(null != SemanticVersion);
             _semanticVersion = semanticVersion;
         }
