@@ -1,0 +1,165 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ import namespace="System.Text" #> 
+<#
+int maxParameters = 35;
+#>#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// Solution: WebApplications.Utilities 
+// Project: WebApplications.Utilities
+// File: TaskExtensionOverloads.cs
+// 
+// This software, its object code and source code and all modifications made to
+// the same (the “Software”) are, and shall at all times remain, the proprietary
+// information and intellectual property rights of Web Applications (UK) Limited. 
+// You are only entitled to use the Software as expressly permitted by Web
+// Applications (UK) Limited within the Software Customisation and
+// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
+// distribution, licensing, sale, transfer or other use of the Software other than
+// as expressly permitted in the Agreement is expressly forbidden.  Web
+// Applications (UK) Limited reserves its rights to take action against you and
+// your employer in accordance with its contractual and common law rights
+// (including injunctive relief) should you breach the terms of the Agreement or
+// otherwise infringe its copyright or other intellectual property rights in the
+// Software.
+// 
+// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
+
+namespace WebApplications.Utilities
+{
+<# 
+            StringBuilder typeParams = new StringBuilder();
+            StringBuilder tuple = new StringBuilder();
+            StringBuilder tupleEnd = new StringBuilder();
+            StringBuilder typeComments = new StringBuilder();
+            StringBuilder paramsComments = new StringBuilder();
+            StringBuilder paramsWithType = new StringBuilder();
+            StringBuilder outParamsWithType = new StringBuilder();
+            StringBuilder paramsWithoutType = new StringBuilder();
+            StringBuilder assignments = new StringBuilder();
+            for (int i = 1; i <= maxParameters; i++)
+            {
+                typeParams.Append(String.Format("{0}T{1}", i > 1 ? ", " : String.Empty, i));
+                if (i > 1)
+                {
+                    tuple.Append(", ");
+                    if ((i - 1)%7 == 0)
+                    {
+                        tuple.Append("Tuple<");
+                        tupleEnd.Append(">");
+                    }
+                }
+                tuple.Append(String.Format("T{0}", i));
+                paramsWithoutType.Clear();
+                for (int j = 1; j <= i; j++)
+                {
+                    if (j > 1)
+                    {
+                        paramsWithoutType.Append(", ");
+                        if ((j - 1)%7 == 0)
+                        {
+                            int closeCount = 1;
+                            paramsWithoutType.Append("new Tuple<");
+                            for (int k = j; k <= i; k++)
+                            {
+                                if (k > j)
+                                {
+                                    if ((k - 1)%7 == 0)
+                                    {
+                                        paramsWithoutType.Append(", Tuple<");
+                                        closeCount++;
+                                    }
+                                    else
+                                    {
+                                        paramsWithoutType.Append(", ");
+                                    }
+                                }
+                                paramsWithoutType.Append(String.Format("T{0}", k));
+                            }
+                            paramsWithoutType.Append(new string('>', closeCount));
+                            paramsWithoutType.Append("(");
+                        }
+                    }
+                    paramsWithoutType.Append(String.Format("item{0}", j));
+                }
+                paramsWithoutType.Append(new string(')', (i - 1)/7));
+                typeComments.Append(
+                    String.Format("{0}    /// <typeparam name=\"T{1}\">The type of item {1}.</typeparam>",
+                                  Environment.NewLine,
+                                  i));
+                paramsComments.Append(
+                    String.Format("{0}        /// <param name=\"item{1}\">Item {1} of the tuple.</param>",
+                                  Environment.NewLine,
+                                  i));
+                paramsWithType.Append(String.Format("{2}{0}            T{1} item{1}",
+                                                    Environment.NewLine,
+                                                    i,
+                                                    i > 1 ? "," : ""));
+                outParamsWithType.Append(String.Format("{2}{0}            out T{1} item{1}",
+                                                    Environment.NewLine,
+                                                    i,
+                                                    i > 1 ? "," : ""));
+                assignments.Append(String.Format("{0}            item{1} = tuple{2}.Item{3};",
+                                                    Environment.NewLine,
+                                                    i,
+													string.Concat(Enumerable.Repeat(".Rest", (i-1)/7)),
+                                                    (i-1)%7+1));
+                String t = tuple.ToString() + tupleEnd.ToString();
+				if (i<2) continue;
+	#>
+
+	#region Queue with <#= i #> items.
+    /// <summary>
+    /// A Queue of <see cref="Tuple{<#= typeParams #>}"/>.
+    /// </summary><#= typeComments #>
+    [UsedImplicitly]
+    public class Queue<<#= typeParams #>> : Queue<Tuple<<#= t #>>>
+    {
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="Queue{<#= typeParams #>}" />.
+        /// </summary><#= paramsComments #>
+        public void Enqueue(<#= paramsWithType #>)
+        {
+            Enqueue(new Tuple<<#= t #>>(<#= paramsWithoutType #>));
+        }
+	    
+        /// <summary>
+        /// Removes and returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/>.
+        /// </summary><#= paramsComments #>
+        public void Dequeue(<#= outParamsWithType #>)
+        {
+            Tuple<<#= t #>> tuple = Dequeue();
+            Contract.Assert(tuple != null);<#= assignments #>
+        }
+	    
+        /// <summary>
+        /// Returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/> without removing it.
+        /// </summary><#= paramsComments #>
+        public void Peek(<#= outParamsWithType #>)
+        {
+            Tuple<<#= t #>> tuple = Peek();
+            Contract.Assert(tuple != null);<#= assignments #>
+        }
+    }
+	#endregion
+<# 
+}
+#>
+}
+ 
+<#+
+  // Insert any template procedures here
+#>

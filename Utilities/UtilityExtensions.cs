@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -33,6 +34,7 @@ using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -1248,6 +1250,207 @@ namespace WebApplications.Utilities
             return arrays;
         }
 
+
+        /// <summary>
+        /// Determines whether the specified type is optional.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified type is <see cref="Optional{T}" />; otherwise, <see langword="false" />.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsOptional([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
+        }
+
+        /// <summary>
+        /// Gets the type of the non optional equivalent of a type (or the original type if already not optional).
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Type GetNonOptionalType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>)
+                ? type.GetGenericArguments()[0]
+                : type;
+        }
+
+        /// <summary>
+        /// Gets the optional type equivalent of the non optional equivalent of a type (or the original type if already optional).
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        [NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Type GetOptionalType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>)
+                ? type
+                : typeof (Optional<>).MakeGenericType(type);
+        }
+
+        /// <summary>
+        /// Holds optional nulls by type
+        /// </summary>
+        [NotNull]
+        private static readonly ConcurrentDictionary<Type, object> _optionalDefaultAssigneds =
+            new ConcurrentDictionary<Type, object>();
+
+        /// <summary>
+        /// Gets the optional default assigned value for the optional of type <paramref name="type" />
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        public static object DefaultAssigned([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            if (!type.IsGenericType || 
+                (type.GetGenericTypeDefinition() != typeof(Optional<>)))
+                return type.Default();
+
+            return _optionalDefaultAssigneds.GetOrAdd(
+                type,
+                t =>
+                {
+                    if (!t.IsOptional())
+                        t = typeof(Optional<>).MakeGenericType(t);
+                    return
+                        t.GetField(
+                            "DefaultAssigned",
+                            BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly |
+                            BindingFlags.GetField)
+                         .GetValue(null);
+                });
+        }
+
+        /// <summary>
+        /// Determines whether the specified value is an unassigned optional.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified value is unassigned; otherwise, <see langword="false" />.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsUnassigned(this object value)
+        {
+            IOptional o = value as IOptional;
+            return (o != null) && !o.IsAssigned;
+        }
+
+        /// <summary>
+        /// Whether the type can accept <see langword="null" />.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified value can accept <see langword="null" />; otherwise,
+        ///     <see langword="false" />.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullable([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = GetNonOptionalType(type);
+            return type.IsClass ||
+                   type.IsInterface ||
+                   type.IsNullableType();
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is nullable.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified type is <see cref="Nullable{T}" />; otherwise, <see langword="false" />.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullableType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = GetNonOptionalType(type);
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        /// <summary>
+        /// Gets the non-nullable version of a type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [NotNull]
+        public static Type GetNullableType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = GetNonOptionalType(type);
+            if (!type.IsClass &&
+                !type.IsInterface &&
+                !type.IsNullableType())
+                type = typeof(Nullable<>).MakeGenericType(type);
+            return type;
+        }
+
+        /// <summary>
+        /// Gets the non-nullable version of a type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>Type.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [NotNull]
+        public static Type GetNonNullableType([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = GetNonOptionalType(type);
+            if (type.IsNullableType())
+                type = type.GetGenericArguments()[0];
+            return type;
+        }
+
+        /// <summary>
+        /// Determines whether the specified type is numeric.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the specified type is numeric; otherwise, <see langword="false" />.
+        /// </returns>
+        public static bool IsNumeric([NotNull] this Type type)
+        {
+            Contract.Requires(type != null);
+
+            type = type.GetNonNullableType();
+            if (type.IsEnum)
+                return false;
+
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.SByte:
+                case TypeCode.Byte:
+                case TypeCode.Int16:
+                case TypeCode.UInt16:
+                case TypeCode.Int32:
+                case TypeCode.UInt32:
+                case TypeCode.Int64:
+                case TypeCode.UInt64:
+                case TypeCode.Single:
+                case TypeCode.Double:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         /// <summary>
         /// Determines whether the specified value is null (includes <see cref="DBNull.Value"/> and <see cref="INullable"/> support).
         /// </summary>
@@ -1259,6 +1462,57 @@ namespace WebApplications.Utilities
                 return true;
             INullable nullable = value as INullable;
             return !ReferenceEquals(nullable, null) && nullable.IsNull;
+        }
+
+        /// <summary>
+        /// Joins elements that are not null or empty with the seperator.
+        /// </summary>
+        /// <param name="seperator">The seperator.</param>
+        /// <param name="elements">The elements.</param>
+        /// <returns>The joined elements.</returns>
+        [NotNull]
+        public static string JoinNotNullOrEmpty([NotNull] this string seperator, [NotNull] params string[] elements)
+        {
+            Contract.Requires(elements != null);
+
+            StringBuilder builder = new StringBuilder();
+            bool any = false;
+            foreach (string element in elements)
+            {
+                if (String.IsNullOrEmpty(element)) continue;
+                if (any)
+                    builder.Append(seperator);
+                else
+                    any = true;
+                builder.Append(element);
+            }
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Joins elements that are not null or whitespace with the seperator.
+        /// </summary>
+        /// <param name="seperator">The seperator.</param>
+        /// <param name="elements">The elements.</param>
+        /// <returns>The joined elements.</returns>
+        [NotNull]
+        public static string JoinNotNullOrWhitespace(
+            [NotNull] this string seperator, [NotNull] params string[] elements)
+        {
+            Contract.Requires(elements != null);
+
+            StringBuilder builder = new StringBuilder();
+            bool any = false;
+            foreach (string element in elements)
+            {
+                if (String.IsNullOrWhiteSpace(element)) continue;
+                if (any)
+                    builder.Append(seperator);
+                else
+                    any = true;
+                builder.Append(element);
+            }
+            return builder.ToString();
         }
 
         /// <summary>
@@ -2161,6 +2415,327 @@ namespace WebApplications.Utilities
 
             // Create a semantic version from the assembly version directly.
             return new SemanticVersion(version);
+        }
+
+
+        [NotNull]
+        private static readonly ConcurrentDictionary<Type, Func<IEnumerable, ISet>> _hashCollectionCreators =
+            new ConcurrentDictionary<Type, Func<IEnumerable, ISet>>();
+        /// <summary>
+        /// Creates a strongly typed <see cref="HashCollection{T}" /> from the value or values.
+        /// </summary>
+        /// <param name="elementType">Type of the element.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A hash set of the values.</returns>
+        [NotNull]
+        public static ISet CreateSet([NotNull] this Type elementType, IEnumerable values = null)
+        {
+            Contract.Requires(elementType != null);
+            return _hashCollectionCreators.GetOrAdd(
+                elementType,
+                t =>
+                {
+                    Type hashCollectionType = typeof(HashCollection<>).MakeGenericType(t);
+                    Type strongEnumerableType = typeof(IEnumerable<>).MakeGenericType(t);
+
+                    ConstructorInfo constructor = hashCollectionType.GetConstructor(Type.EmptyTypes);
+                    MethodInfo addMethod = hashCollectionType.GetMethod(
+                        "Add", BindingFlags.Public | BindingFlags.Instance);
+                    Contract.Assert(addMethod != null);
+
+                    ParameterExpression valuesParameter = Expression.Parameter(typeof(IEnumerable), "values");
+                    ParameterExpression strongEnumerable = Expression.Variable(
+                        strongEnumerableType, "strongEnumarble");
+                    ParameterExpression result = Expression.Variable(hashCollectionType, "result");
+
+                    return Expression.Lambda<Func<IEnumerable, ISet>>(
+                        Expression.Block(
+                            new[] { result },
+                            Expression.Assign(result, Expression.New(constructor)),
+                            Expression.IfThen(
+                                Expression.ReferenceNotEqual(
+                                    valuesParameter, Expression.Constant(null, typeof(IEnumerable))),
+                                Expression.Block(
+                                    new[] { strongEnumerable },
+                                    Expression.Assign(
+                                        strongEnumerable, Expression.TypeAs(valuesParameter, strongEnumerableType)),
+                                    Expression.IfThenElse(
+                                        Expression.ReferenceNotEqual(
+                                            strongEnumerable, Expression.Constant(null, strongEnumerableType)),
+                                        strongEnumerable.ForEach(
+                                            item =>
+                                            Expression.Call(result, addMethod, item)),
+                                        Expression.IfThen(
+                                            Expression.ReferenceNotEqual(
+                                                valuesParameter, Expression.Constant(null, valuesParameter.Type)),
+                                            valuesParameter.ForEach(
+                                                item =>
+                                                Expression.Call(result, addMethod, Expression.Convert(item, t)))
+                                            )))),
+                            Expression.Convert(result, typeof(ISet))),
+                        valuesParameter
+                        ).Compile();
+                })(values);
+        }
+        
+        /// <summary>
+        /// The <see cref="IEnumerator.MoveNext" /> method.
+        /// </summary>
+        [NotNull]
+        private static readonly MethodInfo _enumeratorMoveNextMethod = typeof(IEnumerator).GetMethod(
+            "MoveNext", BindingFlags.Public | BindingFlags.Instance);
+
+        /// <summary>
+        /// Takes an input source enumerable expression (must be of type <see cref="IEnumerable{T}" />) and creates a foreach loop,
+        /// where the body is generated using the <see cref="getBody" /> function.
+        /// </summary>
+        /// <param name="sourceEnumerable">The source enumerable.</param>
+        /// <param name="getBody">The get body function, where the input parameter is the current item in the loop.</param>
+        /// <returns>BlockExpression.</returns>
+        /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
+        [NotNull]
+        public static Expression ForEach(
+            [NotNull] this Expression sourceEnumerable, [NotNull] Func<Expression, Expression> getBody)
+        {
+            return ForEach(sourceEnumerable, item => new[] { getBody(item) });
+        }
+
+        /// <summary>
+        /// Takes an input source enumerable expression (must be of type <see cref="IEnumerable{T}" />) and creates a foreach loop,
+        /// where the body is generated using the <see cref="getBody" /> function.
+        /// </summary>
+        /// <param name="sourceEnumerable">The source enumerable.</param>
+        /// <param name="getBody">The get body function, where the input parameter is the current item in the loop.</param>
+        /// <returns>BlockExpression.</returns>
+        /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
+        [NotNull]
+        public static Expression ForEach(
+            [NotNull] this Expression sourceEnumerable, [NotNull] Func<Expression, IEnumerable<Expression>> getBody)
+        {
+            Contract.Requires(sourceEnumerable != null);
+
+            Type enumerableType = sourceEnumerable.Type;
+            Type elementType;
+            Type enumeratorType;
+            if (enumerableType == typeof(IEnumerable))
+            {
+                elementType = typeof(object);
+                enumeratorType = typeof(IEnumerator);
+            }
+            else if ((enumerableType.IsGenericType) &&
+                     (enumerableType.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+            {
+                elementType = enumerableType.GetGenericArguments().Single();
+                enumeratorType = typeof(IEnumerator<>).MakeGenericType(elementType);
+            }
+            else
+                throw new ArgumentException("The source enumerable is not of an enumerable type", "sourceEnumerable");
+            //TODO Translate?
+
+            MethodInfo getEnumeratorMethod = enumerableType.GetMethod(
+                "GetEnumerator", BindingFlags.Public | BindingFlags.Instance);
+            PropertyInfo currentProperty = enumeratorType.GetProperty("Current", elementType);
+
+            ParameterExpression enumerator = Expression.Variable(enumeratorType, "enumerator");
+            LabelTarget exitLabel = Expression.Label();
+
+            Expression[] expressions = getBody(Expression.Property(enumerator, currentProperty)).ToArray();
+            if (expressions.Length < 1) return Expression.Empty();
+
+            return Expression.Block(
+                new[] { enumerator },
+                Expression.Assign(enumerator, Expression.Call(sourceEnumerable, getEnumeratorMethod)),
+                Expression.Loop(
+                    Expression.IfThenElse(
+                        Expression.Call(enumerator, _enumeratorMoveNextMethod),
+                        expressions.Length > 1 ? Expression.Block(expressions) : expressions.First(),
+                        Expression.Break(exitLabel)),
+                    exitLabel));
+        }
+
+        /// <summary>
+        /// Takes an enumeration of expressions (and optional a set of locals), and returns the most compact single expression.
+        /// </summary>
+        /// <param name="expressions">The expressions.</param>
+        /// <param name="locals">The locals.</param>
+        /// <returns>A single expression</returns>
+        [NotNull]
+        public static Expression Blockify(
+            this IEnumerable<Expression> expressions,
+            [NotNull]IEnumerable<ParameterExpression> locals)
+        {
+            Contract.Requires(locals != null);
+            return expressions.Blockify(locals.ToArray());
+        }
+
+        /// <summary>
+        /// Takes an enumeration of expressions (and optional a set of locals), and returns the most compact single expression.
+        /// </summary>
+        /// <param name="expressions">The expressions.</param>
+        /// <param name="locals">The locals.</param>
+        /// <returns>A single expression</returns>
+        [NotNull]
+        public static Expression Blockify(
+            this IEnumerable<Expression> expressions,
+            params ParameterExpression[] locals)
+        {
+            Contract.Ensures(Contract.Result<Expression>() != null);
+
+            Expression[] e = (expressions ?? Enumerable.Empty<Expression>()).ToArray();
+            if ((locals != null) &&
+                (locals.Length > 0))
+            {
+                return e.Length > 0
+                           ? (Expression)Expression.Block(locals, e)
+                           : Expression.Empty();
+            }
+            return e.Length > 1
+                       ? Expression.Block(e)
+                       : (e.Length > 0
+                              ? e[0]
+                              : Expression.Empty());
+        }
+
+        /// <summary>
+        /// If the expression is a block that has no local variables, then it returns an enumeration of the inner
+        /// expressions.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns>IEnumerable{Expression}.</returns>
+        [NotNull]
+        public static IEnumerable<Expression> UnBlockify([NotNull] this Expression expression)
+        {
+            Contract.Requires(expression != null);
+            Contract.Ensures(Contract.Result<IEnumerable<Expression>>() != null);
+
+            BlockExpression block = expression as BlockExpression;
+            // Check we have a block.
+            if (block == null)
+            {
+                yield return expression;
+                yield break;
+            }
+
+            Contract.Assert(block.Variables != null);
+            Contract.Assert(block.Expressions != null);
+            if (block.Variables.Count > 0)
+            {
+                // The block has local variables so we can't un-block it.
+                yield return block;
+                yield break;
+            }
+            foreach (Expression e in block.Expressions)
+                yield return e;
+        }
+
+        /// <summary>
+        /// If the expression is a block, then it returns an enumeration of the inner expressions and outputs any
+        /// variables.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <returns>IEnumerable{Expression}.</returns>
+        [NotNull]
+        public static IEnumerable<Expression> UnBlockify(
+            [NotNull] this Expression expression, [NotNull] out IEnumerable<ParameterExpression> variables)
+        {
+            Contract.Requires(expression != null);
+            Contract.Ensures(Contract.ValueAtReturn(out variables) != null);
+            Contract.Ensures(Contract.Result<IEnumerable<Expression>>() != null);
+
+            BlockExpression block = expression as BlockExpression;
+            if (block == null)
+            {
+                // We don't have a block.
+                variables = Enumerable.Empty<ParameterExpression>();
+                return new[] { expression };
+            }
+            Contract.Assert(block.Variables != null);
+            Contract.Assert(block.Expressions != null);
+            variables = block.Variables;
+            return block.Expressions;
+        }
+
+        /// <summary>
+        /// Adds the variables to an existing block.
+        /// </summary>
+        /// <param name="block">The block.</param>
+        /// <param name="variables">The variables.</param>
+        /// <returns>BlockExpression.</returns>
+        [NotNull]
+        public static Expression AddVariables(
+            [NotNull] this Expression block,
+            [NotNull] IEnumerable<ParameterExpression> variables)
+        {
+            Contract.Requires(block != null);
+            Contract.Requires(variables != null);
+            Contract.Ensures(Contract.Result<Expression>() != null);
+            return AddVariables(block, variables.ToArray());
+        }
+
+        /// <summary>
+        /// Adds the variables to an existing block.
+        /// </summary>
+        /// <param name="block">The block.</param>
+        /// <param name="variables">The variables.</param>
+        /// <returns>BlockExpression.</returns>
+        [NotNull]
+        public static Expression AddVariables(
+            [NotNull] this Expression block,
+            [NotNull] params ParameterExpression[] variables)
+        {
+            Contract.Requires(block != null);
+            Contract.Requires(variables != null);
+            Contract.Ensures(Contract.Result<Expression>() != null);
+
+            ParameterExpression[] v = variables.ToArray();
+            if (v.Length < 1)
+                return block;
+
+            BlockExpression b = block as BlockExpression;
+            return b == null
+                       ? Expression.Block(variables, block)
+                       : Expression.Block(b.Variables.Concat(v), b.Expressions);
+        }
+
+        /// <summary>
+        /// Adds the expressions to an existing block.
+        /// </summary>
+        /// <param name="block">The block.</param>
+        /// <param name="expressions">The expressions.</param>
+        /// <returns>BlockExpression.</returns>
+        [NotNull]
+        public static Expression AddExpressions(
+            [NotNull] this Expression block,
+            [NotNull] IEnumerable<Expression> expressions)
+        {
+            Contract.Requires(block != null);
+            Contract.Requires(expressions != null);
+            Contract.Ensures(Contract.Result<Expression>() != null);
+            return block.AddExpressions(expressions.ToArray());
+        }
+
+        /// <summary>
+        /// Adds the expressions to an existing block.
+        /// </summary>
+        /// <param name="block">The block.</param>
+        /// <param name="expressions">The expressions.</param>
+        /// <returns>BlockExpression.</returns>
+        [NotNull]
+        public static Expression AddExpressions(
+            [NotNull] this Expression block,
+            [NotNull] params Expression[] expressions)
+        {
+            Contract.Requires(block != null);
+            Contract.Requires(expressions != null);
+            Contract.Ensures(Contract.Result<Expression>() != null);
+
+            if (expressions.Length < 1)
+                return block;
+
+            BlockExpression b = block as BlockExpression;
+            return b == null
+                       ? Expression.Block(new[] { block }.Concat(expressions))
+                       : Expression.Block(b.Variables, b.Expressions.Concat(expressions));
         }
     }
 }

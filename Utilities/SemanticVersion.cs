@@ -193,6 +193,7 @@ namespace WebApplications.Utilities
                 throw new ArgumentOutOfRangeException("minor", minor, "The minor version number can not be negative.");
             if (patch.Value < 0)
                 throw new ArgumentOutOfRangeException("patch", patch, "The patch version number can not be negative.");
+            Contract.EndContractBlock();
             if ((preRelease.Value != null) &&
                 (!IsValidPart(preRelease.Value)))
                 throw new ArgumentOutOfRangeException("preRelease", preRelease,
@@ -200,7 +201,6 @@ namespace WebApplications.Utilities
             if ((build != null) &&
                 (!IsValidPart(build.Value)))
                 throw new ArgumentOutOfRangeException("build", build, "The build string contains invalid characters");
-            Contract.EndContractBlock();
         }
 
         /// <summary>

@@ -49,7 +49,8 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Binding flags for returning all fields/properties from a type.
         /// </summary>
-        [UsedImplicitly] public const BindingFlags AccessorBindingFlags =
+        [UsedImplicitly]
+        public const BindingFlags AccessorBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.FlattenHierarchy;
 
@@ -62,14 +63,16 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="object.ToString()"/>.
         /// </summary>
-        [NotNull] public static readonly MethodInfo ToStringMethodInfo =
-            ExtendedType.Get(typeof (object)).GetMethod("ToString", typeof (string));
+        [NotNull]
+        public static readonly MethodInfo ToStringMethodInfo =
+            ExtendedType.Get(typeof(object)).GetMethod("ToString", typeof(string));
 
         /// <summary>
         ///   The <see cref="Expression"/> to get the <see cref="CultureInfo.CurrentCulture">current CultureInfo</see>.
         /// </summary>
-        [NotNull] public static readonly Expression CurrentCultureExpression =
-            Expression.Call(ExtendedType.Get(typeof (CultureInfo)).GetProperty("CurrentCulture").GetMethod);
+        [NotNull]
+        public static readonly Expression CurrentCultureExpression =
+            Expression.Call(ExtendedType.Get(typeof(CultureInfo)).GetProperty("CurrentCulture").GetMethod);
 
         /// <summary>
         ///   <see cref="Regex"/> for matching generic types.
@@ -78,26 +81,22 @@ namespace WebApplications.Utilities
             new Regex(@"(?<FullName>\[(?<Name>\w[.+'\w]*?),\s*(?<Assembly>\w[.+\w]*?),.*?\])", RegexOptions.Compiled);
 
         /// <summary>
-        ///   Cache the simplified type names, so that when requested they can be retrieved rather than recomputed.
+        /// An empty type array.
         /// </summary>
-        private static readonly ConcurrentDictionary<string, string> _simplifications =
-            new ConcurrentDictionary<string, string>();
-
+        [NotNull]
+        public static readonly Type[] EmptyTypes = new Type[0];
 
         /// <summary>
         /// An empty type array.
         /// </summary>
-        [NotNull] public static readonly Type[] EmptyTypes = new Type[0];
-
-        /// <summary>
-        /// An empty type array.
-        /// </summary>
-        [NotNull] public static readonly bool[] EmptyBools = new bool[0];
+        [NotNull]
+        public static readonly bool[] EmptyBools = new bool[0];
 
         /// <summary>
         /// An empty generic arguments array.
         /// </summary>
-        [NotNull] public static readonly GenericArgument[] EmptyGenericArguments = new GenericArgument[0];
+        [NotNull]
+        public static readonly GenericArgument[] EmptyGenericArguments = new GenericArgument[0];
 
         /// <summary>
         /// Retrieves the lambda function equivalent of the specified property/field getter static method.
@@ -247,7 +246,7 @@ namespace WebApplications.Utilities
                 methodInfo = methodBase as MethodInfo;
                 constructorInfo = null;
                 if ((methodInfo == null) ||
-                    (methodInfo.ReturnType == typeof (void)))
+                    (methodInfo.ReturnType == typeof(void)))
                 {
                     throw new ArgumentOutOfRangeException(
                         "methodBase",
@@ -539,7 +538,7 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static Func<TIn, TOut> GetConversion<TIn, TOut>()
         {
-            return GetConversion<TIn, TOut>(typeof (TIn));
+            return GetConversion<TIn, TOut>(typeof(TIn));
         }
 
         /// <summary>
@@ -552,7 +551,7 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static Func<object, object> GetConversion()
         {
-            return GetConversion<object, object>(typeof (object));
+            return GetConversion<object, object>(typeof(object));
         }
 
         /// <summary>
@@ -585,26 +584,26 @@ namespace WebApplications.Utilities
         public static Func<TIn, TOut> GetConversion<TIn, TOut>([NotNull] this Type inputType, Type outputType = null)
         {
             if (outputType == null)
-                outputType = typeof (TOut);
+                outputType = typeof(TOut);
 
-            return (Func<TIn, TOut>) _converters.GetOrAdd(
+            return (Func<TIn, TOut>)_converters.GetOrAdd(
                 string.Format("{0}|{1}|{2}|{3}",
-                              typeof (TIn).FullName,
+                              typeof(TIn).FullName,
                               inputType.FullName,
                               outputType.FullName,
-                              typeof (TOut).FullName),
+                              typeof(TOut).FullName),
                 k =>
-                    {
-                        // Build the expression as a series of conversions.
-                        ParameterExpression parameterExpression = Expression.Parameter(typeof (TIn), "inputValue");
-                        Expression body = parameterExpression;
-                        return !body.TryConvert(inputType, out body) ||
-                               !body.TryConvert(outputType, out body) ||
-                               !body.TryConvert(typeof (TOut), out body)
-                                   ? (object) null
-                                   : Expression.Lambda<Func<TIn, TOut>>(Expression.Block(body), parameterExpression)
-                                               .Compile();
-                    });
+                {
+                    // Build the expression as a series of conversions.
+                    ParameterExpression parameterExpression = Expression.Parameter(typeof(TIn), "inputValue");
+                    Expression body = parameterExpression;
+                    return !body.TryConvert(inputType, out body) ||
+                           !body.TryConvert(outputType, out body) ||
+                           !body.TryConvert(typeof(TOut), out body)
+                               ? (object)null
+                               : Expression.Lambda<Func<TIn, TOut>>(Expression.Block(body), parameterExpression)
+                                           .Compile();
+                });
         }
 
         /// <summary>
@@ -681,18 +680,18 @@ namespace WebApplications.Utilities
                 .GetMethods(BindingFlags.Static | BindingFlags.Public)
                 .FirstOrDefault(
                     m =>
-                        {
-                            // Check for correct name, and return type
-                            if (((!includeImplicit || m.Name != "op_Implicit") &&
-                                 (!includeExplicit || m.Name != "op_Explicit")) ||
-                                (m.ReturnType != (forwards ? destinationType : type)))
-                                return false;
+                    {
+                        // Check for correct name, and return type
+                        if (((!includeImplicit || m.Name != "op_Implicit") &&
+                             (!includeExplicit || m.Name != "op_Explicit")) ||
+                            (m.ReturnType != (forwards ? destinationType : type)))
+                            return false;
 
-                            // Check parameters
-                            ParameterInfo[] parameters = m.GetParameters();
-                            return (parameters.Length == 1) &&
-                                   (parameters[0].ParameterType == (forwards ? type : destinationType));
-                        });
+                        // Check parameters
+                        ParameterInfo[] parameters = m.GetParameters();
+                        return (parameters.Length == 1) &&
+                               (parameters[0].ParameterType == (forwards ? type : destinationType));
+                    });
         }
 
         /// <summary>
@@ -757,7 +756,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static bool CanConvertTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
-            return ((ExtendedType) type).CanConvertTo(destinationType);
+            return ((ExtendedType)type).CanConvertTo(destinationType);
         }
 
         /// <summary>
@@ -821,115 +820,101 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        ///   Simplifies the full assembly qualified name for a type, excluding version and key information.
+        /// Simplifies the full name, removing the specified assemblies, version, culture info and public keys (including in nested generic types).
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>A <see cref="string"/> containing the simplified full name.</returns>
+        /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
+        /// <returns>System.String.</returns>
         [NotNull]
-        [UsedImplicitly]
-        public static string SimpleAssemblyQualifiedName([NotNull] this Type type)
+        public static string SimplifiedFullName([NotNull] this Type type, [CanBeNull] params string[] excludedAssemblies)
         {
-            return SimpleAssemblyQualifiedName(type.Assembly.FullName, type.FullName);
-        }
+            Contract.Requires(type != null);
 
-        /// <summary>
-        ///   Simplifies the type name, excluding the version and key information (works with generics).
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>A <see cref="string"/> containing the simplified type name.</returns>
-        [NotNull]
-        [UsedImplicitly]
-        public static string SimpleFullName([NotNull] this Type type)
-        {
-            return SimpleTypeFullName(type.FullName);
-        }
+            HashSet<string> exclude = (excludedAssemblies == null) ||
+                                      (excludedAssemblies.Length < 1)
+                ? new HashSet<string> {Assembly.GetCallingAssembly().GetName().Name, "mscorlib"}
+                : new HashSet<string>(excludedAssemblies);
 
-        /// <summary>
-        ///   Simplifies the full name of an assembly, excluding the version, culture and key information.
-        /// </summary>
-        /// <param name="assembly">The assembly.</param>
-        /// <returns>A <see cref="string"/> containing only the name component from the assembly's full name.</returns>
-        /// <seealso cref="System.Reflection.Assembly"/>
-        /// <seealso cref="System.Reflection.AssemblyName"/>
-        [NotNull]
-        [UsedImplicitly]
-        public static string SimpleFullName([NotNull] this Assembly assembly)
-        {
-            return SimpleAssemblyFullName(assembly.FullName);
-        }
-
-        /// <summary>
-        ///   Simplifies the full assembly qualified name of the type.
-        /// </summary>
-        /// <param name="assemblyName">The name of the assembly.</param>
-        /// <param name="typeName">The name of the type.</param>
-        /// <returns>
-        ///   <para>A <see cref="string"/> containing the simplified version of the type's full, assembly qualified name.</para>
-        ///   <para><b>Format:</b> "simpleTypeName, simpleAssemblyName"</para>
-        /// </returns>
-        [NotNull]
-        [UsedImplicitly]
-        public static string SimpleAssemblyQualifiedName([NotNull] string assemblyName, [NotNull] string typeName)
-        {
-            // ReSharper disable AssignNullToNotNullAttribute
-            return _simplifications.GetOrAdd(String.Format("{0}, {1}", assemblyName, typeName),
-                                             _ =>
-                                             String.Format("{0}, {1}", SimpleTypeFullName(typeName),
-                                                           SimpleAssemblyFullName(assemblyName)));
-            // ReSharper restore AssignNullToNotNullAttribute
-        }
-
-        /// <summary>
-        ///   Simplifies the name of an assembly excluding the version, culture and key information.
-        /// </summary>
-        /// <param name="assemblyName">The full name of the assembly.</param>
-        /// <returns>A <see cref="string"/> containing only the name component from the assembly's full name.</returns>
-        /// <seealso cref="System.Reflection.Assembly"/>
-        /// <seealso cref="System.Reflection.AssemblyName"/>
-        [NotNull]
-        [UsedImplicitly]
-        public static string SimpleAssemblyFullName([NotNull] string assemblyName)
-        {
-            return assemblyName.Split(',').First();
-        }
-
-        /// <summary>
-        ///   Simplifies a type's full name to exclude version, culture and key information by simplifying generic type parameters.
-        /// </summary>
-        /// <param name="typeName">The name of the type.</param>
-        /// <returns>A <see cref="string"/> containing the simplified type name.</returns>
-        [NotNull]
-        [UsedImplicitly]
-        public static string SimpleTypeFullName([NotNull] string typeName)
-        {
-            Match matches = _genericRegex.Match(typeName);
-            if (!matches.Success)
-                return typeName;
-
-            StringBuilder newType = new StringBuilder();
-            int p = 0;
-            while (matches.Success)
+            string typeName = type.AssemblyQualifiedName;
+            StringBuilder builder = new StringBuilder(typeName.Length);
+            StringBuilder assemblyBuilder = new StringBuilder(typeName.Length);
+            int state = 0;
+            int depth = 0;
+            foreach (char c in typeName)
             {
-                // Append string prior to match
-                Group fullNameGroup = matches.Groups["FullName"];
-                newType.Append(typeName.Substring(p, fullNameGroup.Index - p));
-                p = fullNameGroup.Index + fullNameGroup.Length;
+                switch (state)
+                {
+                    // Type name
+                    case 0:
+                        builder.Append(c);
+                        switch (c)
+                        {
+                            case '[':
+                                depth++;
+                                break;
+                            case ']':
+                                if (depth < 1)
+                                    return typeName;
+                                depth--;
+                                break;
+                            case ',':
+                                assemblyBuilder.Clear();
+                                state++;
+                                break;
+                        }
+                        break;
 
-                // Get type name
-                Group nameGroup = matches.Groups["Name"];
-                string n = nameGroup.Value;
+                    // Assembly name
+                    case 1:
+                        switch (c)
+                        {
+                            case '[':
+                                builder.Append(c);
+                                depth++;
+                                state = 0;
+                                break;
+                            case ',':
+                                string assembly = assemblyBuilder.ToString().Trim();
+                                if ((assembly.Length < 1) ||
+                                    !exclude.Contains(assembly))
+                                    builder.Append(assembly);
+                                else
+                                    builder.Remove(builder.Length - 1, 1);
+                                assemblyBuilder.Clear();
+                                state++;
+                                break;
+                            default:
+                                assemblyBuilder.Append(c);
+                                break;
+                        }
+                        break;
 
-                // Get assembly short name
-                Group assGroup = matches.Groups["Assembly"];
-                string a = assGroup.Value;
+                    // Version
+                    case 2:
+                        if (c == ',') state++;
+                        break;
 
-                newType.AppendFormat("[{0}, {1}]", n, a);
-                matches = matches.NextMatch();
+                    // Culture
+                    case 3:
+                        if (c == ',') state++;
+                        break;
+
+                    // Public Key Token
+                    case 4:
+                        if (c == ']')
+                        {
+                            if (depth < 1)
+                                return typeName;
+                            builder.Append(c);
+                            state = 0;
+                            depth--;
+                        }
+                        break;
+                }
             }
-
-            // Append remaining string
-            newType.Append(typeName.Substring(p));
-            return newType.ToString();
+            return depth > 0
+                       ? typeName
+                       : builder.ToString();
         }
 
         /// <summary>
@@ -1203,7 +1188,7 @@ namespace WebApplications.Utilities
             signatureClosures = new Type[signatureArguments.Length];
 
             // Check return type
-            Type returnType = signature.ReturnType ?? typeof (void);
+            Type returnType = signature.ReturnType ?? typeof(void);
             TypeSearch returnTypeSearch = types.Last();
             Contract.Assert(returnTypeSearch != null);
             bool requiresCast;
@@ -1230,8 +1215,8 @@ namespace WebApplications.Utilities
                     te.MoveNext();
                     Contract.Assert(pe.Current != null);
                     Contract.Assert(te.Current != null);
-                    Type t = (Type) pe.Current;
-                    TypeSearch s = ((TypeSearch) te.Current);
+                    Type t = (Type)pe.Current;
+                    TypeSearch s = ((TypeSearch)te.Current);
                     if (!t.Matches(s, out requiresCast, out closureLocation, out closurePosition, out closureType) ||
                         !UpdateSearchContext(ref castsRequired[parameter++], typeClosures, signatureClosures,
                                              requiresCast, closureLocation,
@@ -1554,11 +1539,11 @@ namespace WebApplications.Utilities
         /// <returns>An addition function.</returns>
         public static Func<T, T, T> AddFunc<T>()
         {
-            Type type = typeof (T);
+            Type type = typeof(T);
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof (byte)) ||
-                (type == typeof (sbyte)))
-                type = typeof (short);
+            if ((type == typeof(byte)) ||
+                (type == typeof(sbyte)))
+                type = typeof(short);
             return ExpressionFunc<T, T, T>((l, r) => Expression.Add(l, r), type, type);
         }
 
@@ -1571,15 +1556,15 @@ namespace WebApplications.Utilities
         /// <returns>An addition function.</returns>
         public static Func<TLHS, TRHS, TResult> AddFunc<TLHS, TRHS, TResult>()
         {
-            Type typeLHS = typeof (TLHS);
-            Type typeRHS = typeof (TRHS);
+            Type typeLHS = typeof(TLHS);
+            Type typeRHS = typeof(TRHS);
             // Workaround for the fact that bytes don't have addition operators.
-            if ((typeLHS == typeof (byte)) ||
-                (typeLHS == typeof (sbyte)))
-                typeLHS = typeof (short);
-            if ((typeRHS == typeof (byte)) ||
-                (typeRHS == typeof (sbyte)))
-                typeRHS = typeof (short);
+            if ((typeLHS == typeof(byte)) ||
+                (typeLHS == typeof(sbyte)))
+                typeLHS = typeof(short);
+            if ((typeRHS == typeof(byte)) ||
+                (typeRHS == typeof(sbyte)))
+                typeRHS = typeof(short);
             return ExpressionFunc<TLHS, TRHS, TResult>((l, r) => Expression.Add(l, r), typeLHS, typeRHS);
         }
 
@@ -1592,9 +1577,9 @@ namespace WebApplications.Utilities
         public static Func<T, T, T> AddFunc<T>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof (byte)) ||
-                (type == typeof (sbyte)))
-                type = typeof (short);
+            if ((type == typeof(byte)) ||
+                (type == typeof(sbyte)))
+                type = typeof(short);
             return ExpressionFunc<T, T, T>((l, r) => Expression.Add(l, r), type, type);
         }
 
@@ -1608,9 +1593,9 @@ namespace WebApplications.Utilities
         public static Func<TParam, TParam, TResult> AddFunc<TParam, TResult>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof (byte)) ||
-                (type == typeof (sbyte)))
-                type = typeof (short);
+            if ((type == typeof(byte)) ||
+                (type == typeof(sbyte)))
+                type = typeof(short);
             return ExpressionFunc<TParam, TParam, TResult>((l, r) => Expression.Add(l, r), type, type);
         }
 
@@ -1627,12 +1612,12 @@ namespace WebApplications.Utilities
                                                                              [NotNull] Type typeRHS)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((typeLHS == typeof (byte)) ||
-                (typeLHS == typeof (sbyte)))
-                typeLHS = typeof (short);
-            if ((typeRHS == typeof (byte)) ||
-                (typeRHS == typeof (sbyte)))
-                typeRHS = typeof (short);
+            if ((typeLHS == typeof(byte)) ||
+                (typeLHS == typeof(sbyte)))
+                typeLHS = typeof(short);
+            if ((typeRHS == typeof(byte)) ||
+                (typeRHS == typeof(sbyte)))
+                typeRHS = typeof(short);
             return ExpressionFunc<TLHS, TRHS, TResult>((l, r) => Expression.Add(l, r), typeLHS, typeRHS);
         }
 
@@ -1645,9 +1630,9 @@ namespace WebApplications.Utilities
         public static Func<T, T, T> SubtractFunc<T>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof (byte)) ||
-                (type == typeof (sbyte)))
-                type = typeof (short);
+            if ((type == typeof(byte)) ||
+                (type == typeof(sbyte)))
+                type = typeof(short);
             return ExpressionFunc<T, T, T>((l, r) => Expression.Subtract(l, r), type, type);
         }
 
@@ -1661,9 +1646,9 @@ namespace WebApplications.Utilities
         public static Func<TParam, TParam, TResult> SubtractFunc<TParam, TResult>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof (byte)) ||
-                (type == typeof (sbyte)))
-                type = typeof (short);
+            if ((type == typeof(byte)) ||
+                (type == typeof(sbyte)))
+                type = typeof(short);
             return ExpressionFunc<TParam, TParam, TResult>((l, r) => Expression.Subtract(l, r), type, type);
         }
 
@@ -1680,12 +1665,12 @@ namespace WebApplications.Utilities
                                                                                   [NotNull] Type typeRHS)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((typeLHS == typeof (byte)) ||
-                (typeLHS == typeof (sbyte)))
-                typeLHS = typeof (short);
-            if ((typeRHS == typeof (byte)) ||
-                (typeRHS == typeof (sbyte)))
-                typeRHS = typeof (short);
+            if ((typeLHS == typeof(byte)) ||
+                (typeLHS == typeof(sbyte)))
+                typeLHS = typeof(short);
+            if ((typeRHS == typeof(byte)) ||
+                (typeRHS == typeof(sbyte)))
+                typeRHS = typeof(short);
             return ExpressionFunc<TLHS, TRHS, TResult>((l, r) => Expression.Subtract(l, r), typeLHS, typeRHS);
         }
 
@@ -1696,7 +1681,7 @@ namespace WebApplications.Utilities
         /// <returns>A less than comparison function.</returns>
         public static Func<T, T, bool> LessThanFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.LessThan(l, r), typeof (T), typeof (T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.LessThan(l, r), typeof(T), typeof(T));
         }
 
         /// <summary>
@@ -1731,7 +1716,7 @@ namespace WebApplications.Utilities
         /// <returns>A less than or equal comparison function.</returns>
         public static Func<T, T, bool> LessThanOrEqualFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.LessThanOrEqual(l, r), typeof (T), typeof (T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.LessThanOrEqual(l, r), typeof(T), typeof(T));
         }
 
         /// <summary>
@@ -1766,7 +1751,7 @@ namespace WebApplications.Utilities
         /// <returns>A greater than comparison function.</returns>
         public static Func<T, T, bool> GreaterThanFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.GreaterThan(l, r), typeof (T), typeof (T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.GreaterThan(l, r), typeof(T), typeof(T));
         }
 
         /// <summary>
@@ -1801,7 +1786,7 @@ namespace WebApplications.Utilities
         /// <returns>A greater than or equal comparison function.</returns>
         public static Func<T, T, bool> GreaterThanOrEqualFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.GreaterThanOrEqual(l, r), typeof (T), typeof (T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.GreaterThanOrEqual(l, r), typeof(T), typeof(T));
         }
 
         /// <summary>
@@ -1836,7 +1821,7 @@ namespace WebApplications.Utilities
         /// <returns>A conditional AND operator function that only evaluates the second operand if the first operand evaluates true.</returns>
         public static Func<T, T, bool> AndAlsoFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.AndAlso(l, r), typeof (T), typeof (T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.AndAlso(l, r), typeof(T), typeof(T));
         }
 
         /// <summary>
@@ -1870,7 +1855,7 @@ namespace WebApplications.Utilities
         /// <returns>A conditional OR operator function that only evaluates the second operand if the first operand evaluates false.</returns>
         public static Func<T, T, bool> OrElseFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.OrElse(l, r), typeof (T), typeof (T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.OrElse(l, r), typeof(T), typeof(T));
         }
 
         /// <summary>
@@ -1911,20 +1896,20 @@ namespace WebApplications.Utilities
             this Func<Expression, Expression, Expression> binaryFunc, [NotNull] Type typeLHS, [NotNull] Type typeRHS)
         {
             // Create input parameter expressions
-            ParameterExpression parameterAExpression = Expression.Parameter(typeof (TLHS), "a");
-            ParameterExpression parameterBExpression = Expression.Parameter(typeof (TRHS), "b");
+            ParameterExpression parameterAExpression = Expression.Parameter(typeof(TLHS), "a");
+            ParameterExpression parameterBExpression = Expression.Parameter(typeof(TRHS), "b");
 
-            Expression lhs = typeLHS != typeof (TLHS)
+            Expression lhs = typeLHS != typeof(TLHS)
                                  ? Convert(parameterAExpression, typeLHS)
                                  : parameterAExpression;
-            Expression rhs = typeRHS != typeof (TRHS)
+            Expression rhs = typeRHS != typeof(TRHS)
                                  ? Convert(parameterBExpression, typeRHS)
                                  : parameterBExpression;
 
             // Create lambda for addition and compile
             Expression expression = binaryFunc(lhs, rhs);
-            if (expression.Type != typeof (TResult))
-                expression = Expression.Convert(expression, typeof (TResult));
+            if (expression.Type != typeof(TResult))
+                expression = Expression.Convert(expression, typeof(TResult));
 
             return (Func<TLHS, TRHS, TResult>)
                    Expression.Lambda(

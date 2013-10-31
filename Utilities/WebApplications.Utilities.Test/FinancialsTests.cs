@@ -42,14 +42,6 @@ namespace WebApplications.Utilities.Test
     {
         private readonly decimal _amount = Random.RandomDecimal();
         private readonly CurrencyInfo _gbp = CurrencyInfo.Get("GBP");
-
-        [TestMethod]
-        public void TestCanCreateInstance()
-        {
-            Financial financial = new Financial(null, 0);
-            Assert.IsNotNull(financial);
-        }
-
         [TestMethod]
         public void TestConstructorSetsCurrencyInfoPropertyToExpectedValue()
         {
