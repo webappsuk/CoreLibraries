@@ -27,6 +27,7 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("WebApplications.Utilities.Database")]
 [assembly: AssemblyDescription("Database tools for interacting between .NET and Databases.")]
@@ -51,3 +52,4 @@ using System.Runtime.InteropServices;
  */
 
 [assembly: AssemblyVersion("5.0.*")]
+[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

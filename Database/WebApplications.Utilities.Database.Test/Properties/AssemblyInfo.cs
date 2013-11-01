@@ -22,10 +22,10 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("Utilities.Database.Test")]
 [assembly: AssemblyDescription("Database tools for interacting between .NET and Databases.")]
@@ -59,4 +59,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("2.0.*")]
+[assembly: AssemblyVersion("5.0.*")]
+[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

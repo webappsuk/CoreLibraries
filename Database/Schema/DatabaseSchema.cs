@@ -172,8 +172,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// </remarks>
         public int GetHashCode([NotNull] DatabaseSchema obj)
         {
-            Contract.Requires(obj != null, Resources.DatabaseSchema_GetHashCode_ObjCanNotBeNull);
-
             return obj._hashCode;
         }
         #endregion
@@ -193,8 +191,6 @@ namespace WebApplications.Utilities.Database.Schema
         /// </remarks>
         public bool Equals([NotNull] DatabaseSchema other)
         {
-            Contract.Requires(other != null, "Parameter 'other' can not be null");
-
             return _hashCode == other._hashCode;
         }
         #endregion
