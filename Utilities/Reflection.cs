@@ -844,7 +844,7 @@ namespace WebApplications.Utilities
             Contract.Requires(typeAssemblyQualifiedName != null);
             HashSet<string> exclude = (excludedAssemblies == null) ||
                                       (excludedAssemblies.Length < 1)
-                ? new HashSet<string> { Assembly.GetCallingAssembly().GetName().Name, "mscorlib" }
+                ? new HashSet<string> { "mscorlib" }
                 : new HashSet<string>(excludedAssemblies);
             StringBuilder builder = new StringBuilder(typeAssemblyQualifiedName.Length);
             StringBuilder assemblyBuilder = new StringBuilder(typeAssemblyQualifiedName.Length);
