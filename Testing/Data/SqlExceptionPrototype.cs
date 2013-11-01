@@ -49,7 +49,7 @@ namespace WebApplications.Testing.Data
         /// This calls the
         /// internal static SqlException CreateException(SqlErrorCollection errorCollection, string serverVersion, Guid conId)
         /// constructor.</remarks>
-        [NotNull] private static readonly Func<SqlErrorCollection, string, Guid, SqlException> _constructor;
+        [NotNull] private static readonly Func<SqlErrorCollection, string, Guid, Exception, SqlException> _constructor;
 
         /// <summary>
         /// The equivalent <see cref="SqlException"/>.
@@ -71,7 +71,8 @@ namespace WebApplications.Testing.Data
                                                     {
                                                         typeof (SqlErrorCollection),
                                                         typeof (string),
-                                                        typeof (Guid)
+                                                        typeof (Guid),
+                                                        typeof (Exception)
                                                     }, null);
             Contract.Assert(methodInfo != null);
 
@@ -81,11 +82,12 @@ namespace WebApplications.Testing.Data
                                                            Expression.Parameter(typeof (SqlErrorCollection),
                                                                                 "errorCollection"),
                                                            Expression.Parameter(typeof (string), "serverVersion"),
-                                                           Expression.Parameter(typeof (Guid), "conId")
+                                                           Expression.Parameter(typeof (Guid), "conId"),
+                                                           Expression.Parameter(typeof (Exception), "innerException")
                                                        };
 
             // Create lambda expression.
-            _constructor = Expression.Lambda<Func<SqlErrorCollection, string, Guid, SqlException>>(
+            _constructor = Expression.Lambda<Func<SqlErrorCollection, string, Guid, Exception, SqlException>>(
                 Expression.Call(methodInfo, parameters), parameters).Compile();
         }
 
@@ -96,8 +98,8 @@ namespace WebApplications.Testing.Data
         /// <param name="serverVersion">The server version.</param>
         /// <param name="conId">The connection id.</param>
         /// <remarks></remarks>
-        public SqlExceptionPrototype(SqlErrorCollection errorCollection, string serverVersion = null, Guid conId = default(Guid))
-            : this(_constructor(errorCollection, serverVersion, conId == default(Guid) ? Guid.NewGuid() : conId))
+        public SqlExceptionPrototype(SqlErrorCollection errorCollection, string serverVersion = null, Guid conId = default(Guid), Exception innerException = null)
+            : this(_constructor(errorCollection, serverVersion, conId == default(Guid) ? Guid.NewGuid() : conId, innerException))
         {
         }
 

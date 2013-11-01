@@ -702,9 +702,10 @@ namespace WebApplications.Testing
         /// <param name="maxLength">Maximum length.</param>
         /// <param name="unicode">if set to <see langword="true" /> string is UTF16; otherwise it uses ASCII.</param>
         /// <param name="nullProbability">The probability of a null being returned (0.0 for no nulls).</param>
-        /// <returns>A random <see cref="System.String"/>.</returns>
-        public static string RandomString(this Random random, int maxLength = -1, bool unicode = true,
-                                          double nullProbability = 0.0)
+        /// <param name="minLength">The minimum length.</param>
+        /// <returns>A random <see cref="System.String" />.</returns>
+        public static string RandomString(this Random random, int maxLength = 8001, bool unicode = true,
+                                          double nullProbability = 0.0, int minLength = 0)
         {
             random = random ?? RandomGenerator;
             // Check for random nulls
@@ -713,7 +714,11 @@ namespace WebApplications.Testing
                 return null;
 
             // Get string length, if there's no maximum then use 8001 (as 8000 is max specific size in SQL Server).
-            int length = random.Next(maxLength < 0 ? 8000 : maxLength);
+            if (maxLength < 0)
+                maxLength = 8001;
+            if (minLength < 0)
+                minLength = 0;
+            int length = random.Next(maxLength - minLength) + minLength;
             if (length < 1)
                 return String.Empty;
 
