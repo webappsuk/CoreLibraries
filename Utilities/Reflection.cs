@@ -829,22 +829,7 @@ namespace WebApplications.Utilities
         public static string SimplifiedTypeFullName([NotNull] this Type type, [CanBeNull] params string[] excludedAssemblies)
         {
             Contract.Requires(type != null);
-            return SimplifiedTypeFullName(string.Format("{0}, {1}", type.AssemblyQualifiedName, type.Assembly.FullName), excludedAssemblies);
-        }
-
-        /// <summary>
-        /// Simplifies the full name, removing the specified assemblies, version, culture info and public keys (including in nested generic types).
-        /// </summary>
-        /// <param name="assemblyName">Full name of the assembly.</param>
-        /// <param name="typeName">Full name of the type.</param>
-        /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
-        /// <returns>System.String.</returns>
-        [NotNull]
-        public static string SimplifiedTypeFullName([NotNull]string assemblyName, [NotNull]string typeName, [CanBeNull] params string[] excludedAssemblies)
-        {
-            Contract.Requires(assemblyName != null);
-            Contract.Requires(typeName != null);
-            return SimplifiedTypeFullName(string.Format("{0}, {1}", typeName, assemblyName), excludedAssemblies);
+            return SimplifiedTypeFullName(type.AssemblyQualifiedName, excludedAssemblies);
         }
 
         /// <summary>
