@@ -240,7 +240,7 @@ namespace WebApplications.Utilities.Reflect
 
             _simpleFullName
                 = new Lazy<string>(
-                    () => type.SimplifiedTypeName(),
+                    () => type.SimplifiedTypeFullName(),
                     LazyThreadSafetyMode.PublicationOnly);
 
             _genericArguments = new Lazy<List<GenericArgument>>(

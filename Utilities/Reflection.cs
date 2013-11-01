@@ -826,10 +826,10 @@ namespace WebApplications.Utilities
         /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        public static string SimplifiedTypeName([NotNull] this Type type, [CanBeNull] params string[] excludedAssemblies)
+        public static string SimplifiedTypeFullName([NotNull] this Type type, [CanBeNull] params string[] excludedAssemblies)
         {
             Contract.Requires(type != null);
-            return SimplifiedTypeName(type.AssemblyQualifiedName, excludedAssemblies);
+            return SimplifiedTypeFullName(string.Format("{0}, {1}", type.AssemblyQualifiedName, type.Assembly.FullName), excludedAssemblies);
         }
 
         /// <summary>
@@ -840,11 +840,11 @@ namespace WebApplications.Utilities
         /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        public static string SimplifiedTypeName([NotNull]string assemblyName, [NotNull]string typeName, [CanBeNull] params string[] excludedAssemblies)
+        public static string SimplifiedTypeFullName([NotNull]string assemblyName, [NotNull]string typeName, [CanBeNull] params string[] excludedAssemblies)
         {
             Contract.Requires(assemblyName != null);
             Contract.Requires(typeName != null);
-            return SimplifiedTypeName(string.Format("{0}, {1}", typeName, assemblyName), excludedAssemblies);
+            return SimplifiedTypeFullName(string.Format("{0}, {1}", typeName, assemblyName), excludedAssemblies);
         }
 
         /// <summary>
@@ -854,7 +854,7 @@ namespace WebApplications.Utilities
         /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        public static string SimplifiedTypeName([NotNull] string typeAssemblyQualifiedName, [CanBeNull] params string[] excludedAssemblies)
+        public static string SimplifiedTypeFullName([NotNull] string typeAssemblyQualifiedName, [CanBeNull] params string[] excludedAssemblies)
         {
             Contract.Requires(typeAssemblyQualifiedName != null);
             HashSet<string> exclude = (excludedAssemblies == null) ||
