@@ -27,6 +27,7 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("WebApplications.Utilities.Logging")]
 [assembly: AssemblyDescription("Provides logging and performance tools via AOP.")]
@@ -39,3 +40,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: Guid("0cf0e2e5-3615-4cfc-9fa2-1b9ab99558aa")]
 [assembly: AssemblyVersion("5.0.*")]
+[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]
