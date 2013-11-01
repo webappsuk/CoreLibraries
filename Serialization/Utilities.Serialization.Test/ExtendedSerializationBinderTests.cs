@@ -50,13 +50,6 @@ namespace WebApplications.Utilities.Test.Serialization
         }
 
         [TestMethod]
-        public void BindToType_UsingOnlyTypeName_ReturnsCorrectType()
-        {
-            Type result = ExtendedSerializationBinder.Default.BindToType("", typeof (TestType).Name);
-            Assert.AreEqual(typeof (TestType), result);
-        }
-
-        [TestMethod]
         public void BindToType_UsingFullyQualifiedName_ReturnsCorrectType()
         {
             String typeName, assemblyName;
@@ -64,17 +57,7 @@ namespace WebApplications.Utilities.Test.Serialization
             Type result = ExtendedSerializationBinder.Default.BindToType(assemblyName, typeName);
             Assert.AreEqual(typeof (TestType), result);
         }
-
-        [TestMethod]
-        public void BindToType_UsingSimpleQualifiedName_ReturnsCorrectType()
-        {
-            String typeName, assemblyName;
-            GetTestTypeAndAssemblyName(out typeName, out assemblyName);
-            String simpleAssemblyName = assemblyName.Split(',').First();
-            Type result = ExtendedSerializationBinder.Default.BindToType(simpleAssemblyName, typeName);
-            Assert.AreEqual(typeof (TestType), result);
-        }
-
+        
         [TestMethod]
         public void BindToType_UsingFullyQualifiedNameOfOldVersion_ReturnsCurrentVersionCorrectType()
         {

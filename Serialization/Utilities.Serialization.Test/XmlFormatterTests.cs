@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
@@ -102,11 +103,14 @@ namespace WebApplications.Utilities.Serialization.Test
             Stream stream = new MemoryStream();
             formatter.Serialize(stream, obj);
             stream.Seek(0, SeekOrigin.Begin);
-            XmlDocument xml = new XmlDocument();
+            string xmlStr;
             using (StreamReader reader = new StreamReader(stream))
             {
-                xml.LoadXml(reader.ReadToEnd());
+                xmlStr = reader.ReadToEnd();
+                Trace.WriteLine(xmlStr);
             }
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(xmlStr);
             return xml;
         }
 
@@ -155,6 +159,7 @@ namespace WebApplications.Utilities.Serialization.Test
         }
 
         [TestMethod]
+        // TODO XML Currently uses type name as node name which causes this to fail as it will include a `1 for generics which is invalid in node name.
         public void
             Serialize_SerializableAndImplementsISerializableGenericTestClass_FirstChildHasTypeAttributeMatchingTypeName()
         {

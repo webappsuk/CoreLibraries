@@ -102,7 +102,7 @@ namespace WebApplications.Utilities.Serialization.Test
         [TestMethod]
         public void SetObjectData_EmptyXElement_ReturnsXElementWithSameName()
         {
-            String elementName = String.Format("Name{0}", Random.RandomString());
+            String elementName = String.Format("Name{0}", Random.Next());
             XElement element = new XElement(elementName);
             String data = GetDataValueFromGetObjectData(element);
             XElement result = SetObjectDataWithDataValue(data);

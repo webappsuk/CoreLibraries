@@ -46,9 +46,7 @@ namespace WebApplications.Utilities.Serialization
         public static readonly ExtendedSerializationBinder Default = new ExtendedSerializationBinder();
 
         /// <summary>
-        ///   Maps old types to new types. Stored by the
-        ///   <see cref="M:WebApplications.Utilities.Reflection.SimpleAssemblyQualifiedName(System.String,System.String)">simple
-        ///   assembly qualified name</see> as the key.
+        ///   Maps old types to new types.
         /// </summary>
         private static readonly ConcurrentDictionary<string, Type> _typeMap = new ConcurrentDictionary<string, Type>();
 
@@ -58,7 +56,7 @@ namespace WebApplications.Utilities.Serialization
         private ExtendedSerializationBinder()
         {
         }
-
+        
         /// <summary>
         ///   Overrides the default binder, firstly by using a cache of <see cref="Type"/>s based on the assembly name and type name,
         ///   speeding up type binding, but also allowing easy overrides using
@@ -78,7 +76,7 @@ namespace WebApplications.Utilities.Serialization
         /// <seealso cref="System.Reflection.AssemblyName"/>
         public override Type BindToType(string assemblyName, string typeName)
         {
-            return _typeMap.GetOrAdd(Reflection.SimpleAssemblyQualifiedName(assemblyName, typeName),
+            return _typeMap.GetOrAdd(Reflection.SimplifiedTypeFullName(",".JoinNotNullOrWhitespace(typeName, assemblyName)),
                                      sn => Type.GetType(sn));
         }
 
@@ -110,7 +108,7 @@ namespace WebApplications.Utilities.Serialization
         [UsedImplicitly]
         public static void MapType([NotNull] string assemblyName, [NotNull] string typeName, [NotNull] Type newType)
         {
-            _typeMap.AddOrUpdate(Reflection.SimpleAssemblyQualifiedName(assemblyName, typeName), newType,
+            _typeMap.AddOrUpdate(Reflection.SimplifiedTypeFullName(",".JoinNotNullOrWhitespace(typeName,assemblyName)), newType,
                                  (n, t) => newType);
         }
     }
