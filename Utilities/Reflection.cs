@@ -818,7 +818,7 @@ namespace WebApplications.Utilities
         {
             return !type.IsValueType ? null : Activator.CreateInstance(type, true);
         }
-
+        
         /// <summary>
         /// Simplifies the full name, removing the specified assemblies, version, culture info and public keys (including in nested generic types).
         /// </summary>
@@ -826,21 +826,46 @@ namespace WebApplications.Utilities
         /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        public static string SimplifiedFullName([NotNull] this Type type, [CanBeNull] params string[] excludedAssemblies)
+        public static string SimplifiedTypeName([NotNull] this Type type, [CanBeNull] params string[] excludedAssemblies)
         {
             Contract.Requires(type != null);
+            return SimplifiedTypeName(type.AssemblyQualifiedName, excludedAssemblies);
+        }
 
+        /// <summary>
+        /// Simplifies the full name, removing the specified assemblies, version, culture info and public keys (including in nested generic types).
+        /// </summary>
+        /// <param name="assemblyName">Full name of the assembly.</param>
+        /// <param name="typeName">Full name of the type.</param>
+        /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
+        /// <returns>System.String.</returns>
+        [NotNull]
+        public static string SimplifiedTypeName([NotNull]string assemblyName, [NotNull]string typeName, [CanBeNull] params string[] excludedAssemblies)
+        {
+            Contract.Requires(assemblyName != null);
+            Contract.Requires(typeName != null);
+            return SimplifiedTypeName(string.Format("{0}, {1}", typeName, assemblyName), excludedAssemblies);
+        }
+
+        /// <summary>
+        /// Simplifies the full name, removing the specified assemblies, version, culture info and public keys (including in nested generic types).
+        /// </summary>
+        /// <param name="typeAssemblyQualifiedName">The type's assembly qualified name.</param>
+        /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
+        /// <returns>System.String.</returns>
+        [NotNull]
+        public static string SimplifiedTypeName([NotNull] string typeAssemblyQualifiedName, [CanBeNull] params string[] excludedAssemblies)
+        {
+            Contract.Requires(typeAssemblyQualifiedName != null);
             HashSet<string> exclude = (excludedAssemblies == null) ||
                                       (excludedAssemblies.Length < 1)
-                ? new HashSet<string> {Assembly.GetCallingAssembly().GetName().Name, "mscorlib"}
+                ? new HashSet<string> { Assembly.GetCallingAssembly().GetName().Name, "mscorlib" }
                 : new HashSet<string>(excludedAssemblies);
-
-            string typeName = type.AssemblyQualifiedName;
-            StringBuilder builder = new StringBuilder(typeName.Length);
-            StringBuilder assemblyBuilder = new StringBuilder(typeName.Length);
+            StringBuilder builder = new StringBuilder(typeAssemblyQualifiedName.Length);
+            StringBuilder assemblyBuilder = new StringBuilder(typeAssemblyQualifiedName.Length);
             int state = 0;
             int depth = 0;
-            foreach (char c in typeName)
+            foreach (char c in typeAssemblyQualifiedName)
             {
                 switch (state)
                 {
@@ -854,7 +879,7 @@ namespace WebApplications.Utilities
                                 break;
                             case ']':
                                 if (depth < 1)
-                                    return typeName;
+                                    return typeAssemblyQualifiedName;
                                 depth--;
                                 break;
                             case ',':
@@ -904,7 +929,7 @@ namespace WebApplications.Utilities
                         if (c == ']')
                         {
                             if (depth < 1)
-                                return typeName;
+                                return typeAssemblyQualifiedName;
                             builder.Append(c);
                             state = 0;
                             depth--;
@@ -913,7 +938,7 @@ namespace WebApplications.Utilities
                 }
             }
             return depth > 0
-                       ? typeName
+                       ? typeAssemblyQualifiedName
                        : builder.ToString();
         }
 
