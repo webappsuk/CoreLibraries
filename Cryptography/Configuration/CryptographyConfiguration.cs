@@ -62,7 +62,7 @@ namespace WebApplications.Utilities.Cryptography.Configuration
                     xml.Append("<add name=\"")
                         .Append(provider.Name)
                         .Append("\" type=\"")
-                        .Append(provider.Type.SimplifiedFullName(""))
+                        .Append(provider.Type.SimplifiedTypeFullName())
                         .Append("\" enabled=\"")
                         .Append(provider.IsEnabled)
                         .Append("\" id=\"")

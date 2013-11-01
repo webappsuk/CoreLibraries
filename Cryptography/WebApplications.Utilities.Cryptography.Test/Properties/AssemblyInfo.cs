@@ -27,6 +27,7 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("WebApplications.Utilities.Cryptography.Test")]
 [assembly: AssemblyDescription("Tests for tools for hashing, encoding/decoding and encrypting/decrypting data.")]
@@ -38,4 +39,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2012")]
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.0.*")]
+[assembly: AssemblyVersion("5.0.*")]
+[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]
