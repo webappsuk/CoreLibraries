@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
@@ -62,19 +63,20 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public RecordSetDefinition([NotNull] IEnumerable<ColumnDefinition> columnDefinitions)
         {
+            Contract.Requires(columnDefinitions != null);
             _columnsArray = columnDefinitions.ToArray();
 
             if (_columnsArray.Length < 1)
                 throw new ArgumentOutOfRangeException("columnDefinitions", columnDefinitions,
-                                                      "The column definitions must have at least one column.");
+                    "The column definitions must have at least one column.");
 
             for (int c = 0; c < _columnsArray.Length; c++)
             {
                 ColumnDefinition columnDefinition = _columnsArray[c];
                 if (columnDefinition == null)
                     throw new ArgumentOutOfRangeException("columnDefinitions", columnDefinitions,
-                                                          string.Format(
-                                                              "The column definition at index '{0} must not be null.", c));
+                        string.Format(
+                            "The column definition at index '{0} must not be null.", c));
 
                 if (columnDefinition.RecordSetDefinition != null)
                     throw new InvalidOperationException(
@@ -95,6 +97,7 @@ namespace WebApplications.Testing.Data
         public RecordSetDefinition([NotNull] params ColumnDefinition[] columnDefinitions)
             : this((IEnumerable<ColumnDefinition>) columnDefinitions)
         {
+            Contract.Requires(columnDefinitions != null);
         }
 
         /// <summary>

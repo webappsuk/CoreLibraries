@@ -109,7 +109,7 @@ namespace WebApplications.Testing.Data
         /// <param name="procedure">The procedure.</param>
         /// <param name="lineNumber">The line number.</param>
         /// <param name="win32ErrorCode">The win32 error code (if this error is the first in a <see cref="SqlException">SqlException's</see> collection then
-        /// this value will create an <see cref="SqlException.InnerException">inner exception</see> of type <see cref="Win32Exception"/>.</param>
+        /// this value will create an <see cref="Exception.InnerException">inner exception</see> of type <see cref="Win32Exception"/>.</param>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
         public SqlErrorPrototype(int infoNumber, byte errorState, byte errorClass = 17,
@@ -128,7 +128,7 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public SqlErrorPrototype([NotNull] SqlError error)
         {
-            Contract.Assert(error != null);
+            Contract.Requires(error != null);
             SqlError = error;
         }
 

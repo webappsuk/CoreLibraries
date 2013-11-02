@@ -27,22 +27,52 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Testing.Data
 {
+    /// <summary>
+    /// Holds UDT information.
+    /// </summary>
     public class SqlUdtInfo
     {
         [ThreadStatic] private static Dictionary<Type, SqlUdtInfo> m_types2UdtInfo;
+        /// <summary>
+        /// The bytes are ordered.
+        /// </summary>
         public readonly bool IsByteOrdered;
+        /// <summary>
+        /// Is fixed length
+        /// </summary>
         public readonly bool IsFixedLength;
+        /// <summary>
+        /// The maximum byte size
+        /// </summary>
         public readonly int MaxByteSize;
+        /// <summary>
+        /// The name
+        /// </summary>
+        [NotNull]
         public readonly string Name;
+        /// <summary>
+        /// The serialization format
+        /// </summary>
         public readonly Format SerializationFormat;
+        /// <summary>
+        /// The validation method name
+        /// </summary>
+        [NotNull]
         public readonly string ValidationMethodName;
 
-        private SqlUdtInfo(SqlUserDefinedTypeAttribute attr)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlUdtInfo"/> class.
+        /// </summary>
+        /// <param name="attr">The attribute.</param>
+        private SqlUdtInfo([NotNull] SqlUserDefinedTypeAttribute attr)
         {
+            Contract.Requires(attr != null);
             SerializationFormat = attr.Format;
             IsByteOrdered = attr.IsByteOrdered;
             IsFixedLength = attr.IsFixedLength;
@@ -51,8 +81,16 @@ namespace WebApplications.Testing.Data
             ValidationMethodName = attr.ValidationMethodName;
         }
 
-        internal static SqlUdtInfo GetFromType(Type target)
+        /// <summary>
+        /// Gets from type.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <returns>SqlUdtInfo.</returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
+        [NotNull]
+        internal static SqlUdtInfo GetFromType([NotNull] Type target)
         {
+            Contract.Requires(target != null);
             SqlUdtInfo fromType = TryGetFromType(target);
             if (fromType == null)
                 throw new InvalidOperationException();
@@ -60,11 +98,18 @@ namespace WebApplications.Testing.Data
                 return fromType;
         }
 
-        internal static SqlUdtInfo TryGetFromType(Type target)
+        /// <summary>
+        /// Tries the type of the get from.
+        /// </summary>
+        /// <param name="target">The target.</param>
+        /// <returns>SqlUdtInfo.</returns>
+        [NotNull]
+        internal static SqlUdtInfo TryGetFromType([NotNull] Type target)
         {
+            Contract.Requires(target != null);
             if (m_types2UdtInfo == null)
                 m_types2UdtInfo = new Dictionary<Type, SqlUdtInfo>();
-            SqlUdtInfo sqlUdtInfo = (SqlUdtInfo) null;
+            SqlUdtInfo sqlUdtInfo;
             if (!m_types2UdtInfo.TryGetValue(target, out sqlUdtInfo))
             {
                 object[] customAttributes = target.GetCustomAttributes(typeof (SqlUserDefinedTypeAttribute), false);

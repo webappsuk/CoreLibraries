@@ -11,5 +11,16 @@
     <summary>Provides utilities and common functions for unit testing in the Core library.</summary>
     <description>$description$</description>
     <tags>Test Testing</tags>
+    <references>
+      <group targetFramework="net45">
+        <reference file="WebApplications.Testing.dll" />
+      </group>
+    </references>
   </metadata>
+  <files>
+    <file src="bin\WebApplications.Testing.dll" target="lib\net45" />
+    <file src="bin\WebApplications.Testing.pdb" target="lib\net45" />
+    <file src="bin\WebApplications.Testing.xml" target="lib\net45" />
+    <file src="bin\CodeContracts\*.*" target="lib\net45\CodeContracts" />
+  </files>
 </package>

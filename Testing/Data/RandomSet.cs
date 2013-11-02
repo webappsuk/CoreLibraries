@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -54,11 +55,14 @@ namespace WebApplications.Testing.Data
             int minRows = 0,
             int maxRows = 1000,
             double nullProbability = 0.1,
-            Func<int, object>[] columnGenerators = null)
+            [CanBeNull]Func<int, object>[] columnGenerators = null)
             : this(
                 Tester.RandomGenerator.RandomRecordSetDefinition(columns), minRows, maxRows, nullProbability,
                 columnGenerators)
         {
+            Contract.Requires(minRows > -1);
+            Contract.Requires(maxRows > -1);
+            Contract.Requires(minRows <= maxRows);
         }
 
         /// <summary>
@@ -74,12 +78,15 @@ namespace WebApplications.Testing.Data
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
         public RandomSet([NotNull] RecordSetDefinition recordSetDefinition, int minRows = 0, int maxRows = 1000,
-                         double nullProbability = 0.1,
-                         Func<int, object>[] columnGenerators = null)
+                         double nullProbability = 0.1, [CanBeNull] Func<int, object>[] columnGenerators = null)
             : base(
                 recordSetDefinition,
                 GenerateRecords(recordSetDefinition, minRows, maxRows, nullProbability, columnGenerators))
         {
+            Contract.Requires(recordSetDefinition != null);
+            Contract.Requires(minRows > -1);
+            Contract.Requires(maxRows > -1);
+            Contract.Requires(minRows <= maxRows);
         }
 
         /// <summary>
@@ -99,33 +106,17 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         [NotNull]
         private static IEnumerable<IObjectRecord> GenerateRecords([NotNull] RecordSetDefinition recordSetDefinition,
-                                                                  int minRows, int maxRows, double nullProbability,
-                                                                  Func<int, object>[] columnGenerators = null)
+                                                                  int minRows, int maxRows, double nullProbability, [CanBeNull] Func<int, object>[] columnGenerators = null)
         {
-            if (minRows < 0)
-                throw new ArgumentOutOfRangeException("minRows", minRows,
-                                                      String.Format(
-                                                          "The minimum number of rows '{0}' cannot be negative.",
-                                                          minRows));
-            if (maxRows < 0)
-                throw new ArgumentOutOfRangeException("maxRows", maxRows,
-                                                      String.Format(
-                                                          "The maximum number of rows '{0}' cannot be negative.",
-                                                          maxRows));
-
-            if (minRows > maxRows)
-            {
-                throw new ArgumentOutOfRangeException("minRows", minRows,
-                                                      String.Format(
-                                                          "The minimum number of rows '{0}' cannot exceed the maximum number of rows '{1}'.",
-                                                          minRows,
-                                                          maxRows));
-            }
+            Contract.Requires(recordSetDefinition != null);
+            Contract.Requires(minRows > -1);
+            Contract.Requires(maxRows > -1);
+            Contract.Requires(minRows <= maxRows);
 
             // Calculate number of rows.
             int rows = minRows == maxRows
-                           ? minRows
-                           : Tester.RandomGenerator.Next(minRows, maxRows);
+                ? minRows
+                : Tester.RandomGenerator.Next(minRows, maxRows);
 
             if (rows < 1)
                 return Enumerable.Empty<IObjectRecord>();

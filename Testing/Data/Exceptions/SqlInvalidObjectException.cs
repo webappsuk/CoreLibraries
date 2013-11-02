@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 
 namespace WebApplications.Testing.Data.Exceptions
@@ -34,7 +35,9 @@ namespace WebApplications.Testing.Data.Exceptions
         /// <param name="exception">The exception.</param>
         private SqlInvalidObjectException([NotNull] SqlException exception)
             : base(exception)
-        { }
+        {
+            Contract.Requires(exception != null);
+        }
 
         /// <summary>
         /// Implicit conversion from <see cref="SqlInvalidObjectException" /> to <see cref="SqlException" />.

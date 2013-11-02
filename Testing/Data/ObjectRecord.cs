@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using JetBrains.Annotations;
 
@@ -58,17 +59,16 @@ namespace WebApplications.Testing.Data
         /// <param name="recordSetDefinition">The table definition.</param>
         /// <param name="randomData">if set to <see langword="true" /> fills columns with random data; otherwise fills them with their default values.</param>
         /// <param name="nullProbability">The probability of a column's value being set to SQL null (0.0 for no nulls) -
-        /// this is only applicable is <see cref="randomData" /> is set to <see langword="true" /> [Defaults to 0.1 = 10%].</param>
+        /// this is only applicable is <see paramref="randomData" /> is set to <see langword="true" /> [Defaults to 0.1 = 10%].</param>
         /// <param name="columnGenerators">The column generators is an array of functions that generate a value for each column, if the function is
         /// <see langword="null" /> for a particular index then a random value is generated, if it is not null then the function is used.  The function takes
         /// the current row number as it's only parameter and must return an object of the correct type for the column.</param>
         /// <param name="rowNumber">The optional row number to pass to the generator.</param>
         /// <exception cref="System.ArgumentException">Thrown if the number of column generators exceeds the number of columns in the record set definition.</exception>
-        /// <remarks></remarks>
         public ObjectRecord([NotNull] RecordSetDefinition recordSetDefinition, bool randomData = false,
-                            double nullProbability = 0.1,
-                            Func<int, object>[] columnGenerators = null, int rowNumber = 1)
+                            double nullProbability = 0.1, [CanBeNull] Func<int, object>[] columnGenerators = null, int rowNumber = 1)
         {
+            Contract.Requires(recordSetDefinition != null);
             _recordSetDefinition = recordSetDefinition;
             int columnCount = recordSetDefinition.FieldCount;
             _columnValues = new object[columnCount];
@@ -113,6 +113,8 @@ namespace WebApplications.Testing.Data
         /// </remarks>
         public ObjectRecord([NotNull] RecordSetDefinition recordSetDefinition, [NotNull] params object[] columnValues)
         {
+            Contract.Requires(recordSetDefinition != null);
+            Contract.Requires(columnValues != null);
             int length = columnValues.Length;
             int columns = recordSetDefinition.FieldCount;
             if (length > columns)
@@ -252,7 +254,7 @@ namespace WebApplications.Testing.Data
         }
 
         /// <inhertidoc />
-        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        public long GetBytes(int i, long fieldOffset, [CanBeNull] byte[] buffer, int bufferoffset, int length)
         {
             if ((i < 0) ||
                 (i > FieldCount))
@@ -267,6 +269,7 @@ namespace WebApplications.Testing.Data
                 throw new InvalidCastException();
             byte[] bytes = (byte[])o;
             length = (bytes.Length - fieldOffset) < length ? (int)(bytes.Length - fieldOffset) : length;
+            Contract.Assert(length >= 0);
             Array.Copy(bytes, fieldOffset, buffer, bufferoffset, length);
             return length;
         }
@@ -301,6 +304,7 @@ namespace WebApplications.Testing.Data
                 throw new InvalidCastException();
             char[] chars = (char[])o;
             length = (chars.Length - fieldOffset) < length ? (int)(chars.Length - fieldOffset) : length;
+            Contract.Assert(length >= 0);
             Array.Copy(chars, fieldOffset, buffer, bufferoffset, length);
             return length;
         }

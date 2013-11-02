@@ -27,9 +27,18 @@
 
 namespace WebApplications.Testing.Data
 {
+    /// <summary>
+    /// Holds a DateTime
+    /// </summary>
     public struct TdsDateTime
     {
+        /// <summary>
+        /// The days
+        /// </summary>
         public int Days;
+        /// <summary>
+        /// The time
+        /// </summary>
         public int Time;
     }
 }

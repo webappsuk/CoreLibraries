@@ -113,7 +113,7 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public SqlErrorCollectionPrototype([NotNull] SqlErrorCollection collection)
         {
-            Contract.Assert(collection != null);
+            Contract.Requires(collection != null);
             SqlErrorCollection = collection;
         }
 

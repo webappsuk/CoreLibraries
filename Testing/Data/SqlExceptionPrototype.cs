@@ -97,7 +97,7 @@ namespace WebApplications.Testing.Data
         /// <param name="errorCollection">The error collection.</param>
         /// <param name="serverVersion">The server version.</param>
         /// <param name="conId">The connection id.</param>
-        /// <remarks></remarks>
+        /// <param name="innerException">The inner exception.</param>
         public SqlExceptionPrototype(SqlErrorCollection errorCollection, string serverVersion = null, Guid conId = default(Guid), Exception innerException = null)
             : this(_constructor(errorCollection, serverVersion, conId == default(Guid) ? Guid.NewGuid() : conId, innerException))
         {
@@ -110,7 +110,7 @@ namespace WebApplications.Testing.Data
         /// <remarks></remarks>
         public SqlExceptionPrototype([NotNull] SqlException exception)
         {
-            Contract.Assert(exception != null);
+            Contract.Requires(exception != null);
             SqlException = exception;
         }
 

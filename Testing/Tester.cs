@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -490,7 +491,11 @@ namespace WebApplications.Testing
         [NotNull]
         public static Random RandomGenerator
         {
-            get { return _randomGenerators.Value; }
+            get
+            {
+                Contract.Ensures(Contract.Result<Random>() != null);
+                return _randomGenerators.Value;
+            }
         }
 
         /// <summary>
@@ -498,7 +503,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Boolean"/>.</returns>
-        public static bool RandomBoolean(this Random random)
+        public static bool RandomBoolean([CanBeNull]this Random random)
         {
             return (random ?? RandomGenerator).Next(2) == 1;
         }
@@ -508,7 +513,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Byte"/>.</returns>
-        public static byte RandomByte(this Random random)
+        public static byte RandomByte([CanBeNull]this Random random)
         {
             return (byte) (random ?? RandomGenerator).Next(0x100);
         }
@@ -518,7 +523,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Char"/>.</returns>
-        public static char RandomChar(this Random random)
+        public static char RandomChar([CanBeNull]this Random random)
         {
             return (char) (random ?? RandomGenerator).Next(0x10000);
         }
@@ -528,7 +533,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Int16"/>.</returns>
-        public static short RandomInt16(this Random random)
+        public static short RandomInt16([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[2];
             (random ?? RandomGenerator).NextBytes(bytes);
@@ -540,7 +545,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Int32"/>.</returns>
-        public static int RandomInt32(this Random random)
+        public static int RandomInt32([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[4];
             (random ?? RandomGenerator).NextBytes(bytes);
@@ -552,7 +557,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Int64"/>.</returns>
-        public static long RandomInt64(this Random random)
+        public static long RandomInt64([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[8];
             (random ?? RandomGenerator).NextBytes(bytes);
@@ -564,7 +569,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Single"/>.</returns>
-        public static float RandomFloat(this Random random)
+        public static float RandomFloat([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[4];
             (random ?? RandomGenerator).NextBytes(bytes);
@@ -576,7 +581,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Double"/>.</returns>
-        public static double RandomDouble(this Random random)
+        public static double RandomDouble([CanBeNull]this Random random)
         {
             byte[] bytes = new byte[8];
             (random ?? RandomGenerator).NextBytes(bytes);
@@ -588,7 +593,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.Decimal"/>.</returns>
-        public static decimal RandomDecimal(this Random random)
+        public static decimal RandomDecimal([CanBeNull]this Random random)
         {
             random = random ?? RandomGenerator;
 
@@ -622,7 +627,7 @@ namespace WebApplications.Testing
         /// <param name="random">The random generator.</param>
         /// <param name="kind">The <see cref="DateTimeKind" />.</param>
         /// <returns>A random <see cref="System.DateTime"/>.</returns>
-        public static DateTime RandomDateTime(this Random random, DateTimeKind kind)
+        public static DateTime RandomDateTime([CanBeNull]this Random random, DateTimeKind kind)
         {
             // Last two bits are used internally by date time.
             long ticks = RandomInt64(random) & 0x3FFFFFFFFFFFFFFF;
@@ -640,7 +645,7 @@ namespace WebApplications.Testing
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.DateTime"/>.</returns>
         /// <remarks>Also generates a random <see cref="DateTimeKind" />.</remarks>
-        public static DateTime RandomDateTime(this Random random)
+        public static DateTime RandomDateTime([CanBeNull]this Random random)
         {
             random = random ?? RandomGenerator;
             // Last two bits are used internally by date time.
@@ -673,7 +678,7 @@ namespace WebApplications.Testing
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="System.DateTimeOffset"/>.</returns>
         /// <remarks>Also generates a random <see cref="DateTimeKind" />.</remarks>
-        public static DateTimeOffset RandomDateTimeOffset(this Random random)
+        public static DateTimeOffset RandomDateTimeOffset([CanBeNull]this Random random)
         {
             random = random ?? RandomGenerator;
             // Last two bits are used internally by date time.
@@ -704,7 +709,7 @@ namespace WebApplications.Testing
         /// <param name="nullProbability">The probability of a null being returned (0.0 for no nulls).</param>
         /// <param name="minLength">The minimum length.</param>
         /// <returns>A random <see cref="System.String" />.</returns>
-        public static string RandomString(this Random random, int maxLength = 8001, bool unicode = true,
+        public static string RandomString([CanBeNull]this Random random, int maxLength = 8001, bool unicode = true,
                                           double nullProbability = 0.0, int minLength = 0)
         {
             random = random ?? RandomGenerator;
@@ -741,11 +746,11 @@ namespace WebApplications.Testing
         /// <param name="random">The random generator.</param>
         /// <param name="supplementaryPlaneProbability">The probability of the character coming from a random supplementary plane (0.0 for a Basic Multilingual Plane character).</param>
         /// <returns>A random unicode character.</returns>
-        public static char[] RandomUnicodeCharacter(this Random random, double supplementaryPlaneProbability = 0.1)
+        public static char[] RandomUnicodeCharacter([CanBeNull]this Random random, double supplementaryPlaneProbability = 0.1)
         {
             random = random ?? RandomGenerator;
             if (supplementaryPlaneProbability > 0.0 && random.NextDouble() < supplementaryPlaneProbability)
-                return new char[]
+                return new[]
                            {
                                (char)random.Next(0xD800, 0xDBFF),
                                (char)random.Next(0xDC00, 0xDFFF)
@@ -776,7 +781,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random <see cref="SqlDbType"/>.</returns>
-        public static SqlDbType RandomSqlDbTypeForColumn(this Random random)
+        public static SqlDbType RandomSqlDbTypeForColumn([CanBeNull]this Random random)
         {
             return _sqlDbTypes[(random ?? RandomGenerator).Next(_sqlDbTypes.Length)];
         }
@@ -786,7 +791,7 @@ namespace WebApplications.Testing
         /// </summary>
         /// <param name="random">The random generator.</param>
         /// <returns>A random SRID.</returns>
-        public static int RandomSRID(this Random random)
+        public static int RandomSRID([CanBeNull]this Random random)
         {
             return _validSrids[(random ?? RandomGenerator).Next(_validSrids.Length)];
         }
@@ -802,7 +807,7 @@ namespace WebApplications.Testing
         /// <returns>A random SQL value.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks>Does not support SqlDbType.Structured.</remarks>
-        public static object RandomSqlValue(this Random random, SqlDbType sqlDbType, int length = -1,
+        public static object RandomSqlValue([CanBeNull]this Random random, SqlDbType sqlDbType, int length = -1,
                                             double nullProbability = 0.1, bool fill = false)
         {
             random = random ?? RandomGenerator;
@@ -915,7 +920,7 @@ namespace WebApplications.Testing
         /// <returns>A random <see cref="RecordSetDefinition"/>.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         [NotNull]
-        public static RecordSetDefinition RandomRecordSetDefinition(this Random random, int columns = 0)
+        public static RecordSetDefinition RandomRecordSetDefinition([CanBeNull]this Random random, int columns = 0)
         {
             random = random ?? RandomGenerator;
             if (columns < 1)
@@ -956,6 +961,8 @@ namespace WebApplications.Testing
         public static string ToString([NotNull] this Stopwatch stopwatch, [CanBeNull] string format = null,
                                       [NotNull] params object[] parameters)
         {
+            Contract.Requires(stopwatch != null);
+            Contract.Requires(parameters != null);
             if (String.IsNullOrEmpty(format))
             {
                 format = "Stopwatch";
@@ -982,8 +989,9 @@ namespace WebApplications.Testing
         /// <param name="predicate">The optional predicate.</param>
         /// <returns>A random element or default.</returns>
         [CanBeNull]
-        public static T RandomOrDefault<T>([NotNull] this IEnumerable<T> enumeration, Func<T, bool> predicate = null)
+        public static T RandomOrDefault<T>([NotNull] this IEnumerable<T> enumeration, [CanBeNull]Func<T, bool> predicate = null)
         {
+            Contract.Requires(enumeration != null);
             if (enumeration == null)
                 throw new ArgumentNullException("enumeration", "The enumeration cannot be null.");
 
@@ -1002,8 +1010,9 @@ namespace WebApplications.Testing
         /// <param name="predicate">The optional predicate.</param>
         /// <returns>A random element.</returns>
         [CanBeNull]
-        public static T Random<T>([NotNull] this IEnumerable<T> enumeration, Func<T, bool> predicate = null)
+        public static T Random<T>([NotNull] this IEnumerable<T> enumeration, [CanBeNull] Func<T, bool> predicate = null)
         {
+            Contract.Requires(enumeration != null);
             if (enumeration == null)
                 throw new ArgumentNullException("enumeration", "The enumeration cannot be null.");
 
@@ -1016,7 +1025,12 @@ namespace WebApplications.Testing
             return filtered[RandomGenerator.Next(count)];
         }
 
-        public static bool IsNull(this object value)
+        /// <summary>
+        /// Determines whether the specified value is null.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
+        public static bool IsNull([CanBeNull]this object value)
         {
             if (value == null || DBNull.Value == value)
                 return true;
@@ -1024,6 +1038,12 @@ namespace WebApplications.Testing
             return nullable != null && nullable.IsNull;
         }
 
+        /// <summary>
+        /// Converts a <see cref="DbType"/> to a <see cref="SqlDbType"/>.
+        /// </summary>
+        /// <param name="dbType">Type of the database.</param>
+        /// <returns>SqlDbType.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">dbType</exception>
         public static SqlDbType ToSqlDbType(this DbType dbType)
         {
             switch (dbType)

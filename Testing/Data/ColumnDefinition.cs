@@ -34,6 +34,9 @@ using Microsoft.SqlServer.Types;
 
 namespace WebApplications.Testing.Data
 {
+    /// <summary>
+    /// Holds information about a column.
+    /// </summary>
     public class ColumnDefinition
     {
         /// <summary>
@@ -102,9 +105,10 @@ namespace WebApplications.Testing.Data
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         ///   <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        public ColumnDefinition([NotNull] string name, DbType dbType, int length = -1, bool fill = false, bool isNullable = true, object defaultValue = null)
+        public ColumnDefinition([NotNull] string name, DbType dbType, int length = -1, bool fill = false, bool isNullable = true, [CanBeNull] object defaultValue = null)
             : this(name, dbType.ToSqlDbType(), length, fill, isNullable, defaultValue)
         {
+            Contract.Requires(name != null);
         }
 
         /// <summary>
@@ -119,8 +123,9 @@ namespace WebApplications.Testing.Data
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         /// <remarks></remarks>
-        public ColumnDefinition([NotNull] string name, SqlDbType sqlDbType, int length = -1, bool fill = false, bool isNullable = true, object defaultValue = null)
+        public ColumnDefinition([NotNull] string name, SqlDbType sqlDbType, int length = -1, bool fill = false, bool isNullable = true, [CanBeNull]object defaultValue = null)
         {
+            Contract.Requires(name != null);
             Name = name;
             SqlDbType = sqlDbType;
             Fill = fill;
@@ -352,20 +357,24 @@ namespace WebApplications.Testing.Data
                 // If we already have a fixed length, we can't set explicitly.
                 if (FixedLength > -1)
                     throw new ArgumentOutOfRangeException("length", length,
-                                                          string.Format(
-                                                              "The '{0}' sql type has a fixed length of '{1}' and so cannot be set explicitly to '{2}'.",
-                                                              SqlDbType,
-                                                              FixedLength,
-                                                              length));
+                        string.Format(
+                            "The '{0}' sql type has a fixed length of '{1}' and so cannot be set explicitly to '{2}'.",
+                            SqlDbType,
+                            FixedLength,
+                            length));
                 FixedLength = length;
             }
 
             if (!Validate(defaultValue, out DefaultValue))
                 throw new ArgumentOutOfRangeException("defaultValue", defaultValue,
-                                                      string.Format(
-                                                          "The '{0}' column's default value is not valid.", this));
+                    string.Format(
+                        "The '{0}' column's default value is not valid.", this));
         }
 
+        /// <summary>
+        /// Gets the record set definition.
+        /// </summary>
+        /// <value>The record set definition.</value>
         [NotNull]
         public RecordSetDefinition RecordSetDefinition { get; internal set; }
 

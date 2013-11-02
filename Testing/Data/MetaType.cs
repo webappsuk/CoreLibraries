@@ -32,6 +32,7 @@ using System.Data.Common;
 using System.Data.OleDb;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Xml;
 using JetBrains.Annotations;
 using Microsoft.SqlServer.Server;
@@ -488,6 +489,7 @@ namespace WebApplications.Testing.Data
         [NotNull]
         public static MetaType GetMaxMetaTypeFromMetaType([NotNull] MetaType mt)
         {
+            Contract.Requires(mt != null);
             switch (mt.SqlDbType)
             {
                 case SqlDbType.VarBinary:
@@ -515,6 +517,7 @@ namespace WebApplications.Testing.Data
         [NotNull]
         public static MetaType GetMetaTypeFromValue([NotNull] object value)
         {
+            Contract.Requires(value != null);
             return GetMetaTypeFromValue(value.GetType(), value, true);
         }
 
@@ -671,6 +674,7 @@ namespace WebApplications.Testing.Data
         [NotNull]
         public static MetaType PromoteStringType([NotNull] string s)
         {
+            Contract.Requires(s != null);
             return s.Length << 1 > 8000 ? MetaVarChar : MetaNVarChar;
         }
 
@@ -716,9 +720,11 @@ namespace WebApplications.Testing.Data
         private static void AssertIsUserDefinedTypeInstance([NotNull] object sqlValue,
                                                             [NotNull] string failedAssertMessage)
         {
+            Contract.Requires(sqlValue != null);
+            Contract.Requires(failedAssertMessage != null);
             SqlUserDefinedTypeAttribute[] definedTypeAttributeArray =
                 (SqlUserDefinedTypeAttribute[])
-                sqlValue.GetType().GetCustomAttributes(typeof (SqlUserDefinedTypeAttribute), true);
+                    sqlValue.GetType().GetCustomAttributes(typeof (SqlUserDefinedTypeAttribute), true);
         }
 
         public static object GetSqlValueFromComVariant(object comVal)
