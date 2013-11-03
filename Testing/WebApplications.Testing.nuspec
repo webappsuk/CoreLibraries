@@ -18,9 +18,6 @@
     </references>
   </metadata>
   <files>
-    <file src="bin\WebApplications.Testing.dll" target="lib\net45" />
-    <file src="bin\WebApplications.Testing.pdb" target="lib\net45" />
-    <file src="bin\WebApplications.Testing.xml" target="lib\net45" />
     <file src="bin\CodeContracts\*.*" target="lib\net45\CodeContracts" />
   </files>
 </package>
