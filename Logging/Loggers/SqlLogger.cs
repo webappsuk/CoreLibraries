@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -25,8 +26,17 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, true, validLevels)
         {
+            Contract.Requires(name != null);
+            Contract.Requires(connectionString != null);
         }
 
+        /// <summary>
+        /// Adds the specified logs to storage in batches.
+        /// </summary>
+        /// <param name="logs">The logs to add to storage.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
         public override Task Add(IEnumerable<Log> logs, CancellationToken token = new CancellationToken())
         {
             throw new NotImplementedException();

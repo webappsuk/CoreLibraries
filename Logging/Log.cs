@@ -495,8 +495,9 @@ namespace WebApplications.Utilities.Logging
         /// <returns>System.String.</returns>
         [CanBeNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string Get(string key)
+        public string Get([NotNull] string key)
         {
+            Contract.Requires(key != null);
             string value;
             return _context.TryGetValue(key, out value) ? value : null;
         }
@@ -879,8 +880,11 @@ namespace WebApplications.Utilities.Logging
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="escaped">if set to <see langword="true" /> [escaped].</param>
-        private void AddKVP(StringBuilder builder, MasterFormat masterFormat, string indent, string key, string value, bool escaped = false)
+        private void AddKVP([NotNull] StringBuilder builder, MasterFormat masterFormat, [NotNull] string indent, [NotNull] string key, [CanBeNull]string value, bool escaped = false)
         {
+            Contract.Requires(builder != null);
+            Contract.Requires(indent != null);
+            Contract.Requires(key != null);
             builder.Append(indent);
             switch (masterFormat)
             {
