@@ -26,8 +26,10 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Runtime.Serialization;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Serialization
 {
@@ -67,8 +69,9 @@ namespace WebApplications.Utilities.Serialization
         /// <example>
         ///   <code>formatter.Serialize(stream, new DelegateSerializer(info, context));</code>
         /// </example>
-        internal DelegateSerializer(SerializationInfo info, StreamingContext context)
+        internal DelegateSerializer([NotNull] SerializationInfo info, StreamingContext context)
         {
+            Contract.Requires(info != null);
             Type delType = (Type) info.GetValue("delegateType", typeof (Type));
 
             // If it's a "simple" delegate we just read it straight off
