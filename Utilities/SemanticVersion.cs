@@ -21,13 +21,13 @@ namespace WebApplications.Utilities
     public sealed class SemanticVersion : IComparable, IComparable<SemanticVersion>, IEquatable<SemanticVersion>, ISerializable
     {
         /// <summary>
-        /// The characters that are valid in the prerelease and build part strings
+        /// The characters that are valid in the pre-release and build part strings
         /// </summary>
         [NotNull]
         private static readonly HashSet<char> _validChars = new HashSet<char>("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.");
 
         /// <summary>
-        /// The dot delimiter for splitting prerelease parts
+        /// The dot delimiter for splitting pre-release parts
         /// </summary>
         private static readonly char[] _dotDelimiter = { '.' };
 
@@ -341,8 +341,8 @@ namespace WebApplications.Utilities
         public SemanticVersion GetFull()
         {
             return IsPartial
-                ? this
-                : new SemanticVersion(Major.Value, Minor.Value, Patch.Value, PreRelease.Value ?? string.Empty, Build.Value ?? string.Empty, false);
+                ? new SemanticVersion(Major.Value, Minor.Value, Patch.Value, PreRelease.Value ?? string.Empty, Build.Value ?? string.Empty, false)
+                : this;
         }
 
         /// <summary>

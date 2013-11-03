@@ -294,9 +294,28 @@ namespace WebApplications.Utilities.Test.SemanticVersions
                     Trace.WriteLine(" which is not expected");
                     success = false;
                 }
+
+                bool converse = b.Matches(a);
+                if (converse != matches)
+                {
+                    Trace.WriteLine("The converse failed");
+                    success = false;
+                }
             }
 
             Assert.IsTrue(success, "Some tests failed.");
+        }
+
+        [TestMethod]
+        public void SemanticVersion_GetFull()
+        {
+            SemanticVersion partial = new SemanticVersion(1,2,3);
+            Assert.IsNotNull(partial);
+            Assert.IsTrue(partial.IsPartial);
+            SemanticVersion full = partial.GetFull();
+            Assert.IsNotNull(full);
+            Assert.IsFalse(full.IsPartial);
+            Assert.IsTrue(partial.Matches(full));
         }
     }
 }

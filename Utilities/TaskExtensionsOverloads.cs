@@ -1,28 +1,25 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
-// All rights reserved.
+﻿ 
+ 
+#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// Solution: WebApplications.Utilities 
+// Project: WebApplications.Utilities
+// File: TaskExtensionOverloads.cs
 // 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of Web Applications UK Ltd nor the
-//       names of its contributors may be used to endorse or promote products
-//       derived from this software without specific prior written permission.
+// This software, its object code and source code and all modifications made to
+// the same (the “Software”) are, and shall at all times remain, the proprietary
+// information and intellectual property rights of Web Applications (UK) Limited. 
+// You are only entitled to use the Software as expressly permitted by Web
+// Applications (UK) Limited within the Software Customisation and
+// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
+// distribution, licensing, sale, transfer or other use of the Software other than
+// as expressly permitted in the Agreement is expressly forbidden.  Web
+// Applications (UK) Limited reserves its rights to take action against you and
+// your employer in accordance with its contractual and common law rights
+// (including injunctive relief) should you breach the terms of the Agreement or
+// otherwise infringe its copyright or other intellectual property rights in the
+// Software.
 // 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
-// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
 #endregion
 
 using System;
@@ -37,7 +34,8 @@ namespace WebApplications.Utilities
     ///</summary>
     public static partial class TaskExtensions
     {
-        #region 0 parameters.
+		
+		#region 0 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -53,12 +51,12 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TResult>(
-            [NotNull] this Func<AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -67,9 +65,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 1 parameters.
+		#endregion
+		
+		#region 1 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -87,13 +85,13 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TArg1, TResult>(
-            [NotNull] this Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -102,9 +100,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 2 parameters.
+		#endregion
+		
+		#region 2 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -124,14 +122,14 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TArg1, TArg2, TResult>(
-            [NotNull] this Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -140,9 +138,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 3 parameters.
+		#endregion
+		
+		#region 3 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -164,15 +162,15 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(
-            [NotNull] this Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -181,9 +179,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 4 parameters.
+		#endregion
+		
+		#region 4 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -207,16 +205,16 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TResult>(
-            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
             TArg4 arg4,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -225,9 +223,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 5 parameters.
+		#endregion
+		
+		#region 5 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -253,17 +251,17 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TResult>(
-            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
             TArg4 arg4,
             TArg5 arg5,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -272,9 +270,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 6 parameters.
+		#endregion
+		
+		#region 6 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -302,9 +300,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TResult>(
-            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, AsyncCallback, object, IAsyncResult>
-                beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -312,9 +309,9 @@ namespace WebApplications.Utilities
             TArg5 arg5,
             TArg6 arg6,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -323,9 +320,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 7 parameters.
+		#endregion
+		
+		#region 7 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -355,9 +352,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TResult>(
-            [NotNull] this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, AsyncCallback, object, IAsyncResult>
-                beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -366,9 +362,9 @@ namespace WebApplications.Utilities
             TArg6 arg6,
             TArg7 arg7,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -377,9 +373,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 8 parameters.
+		#endregion
+		
+		#region 8 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -411,10 +407,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TResult>(
-            [NotNull] this
-                Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, AsyncCallback, object, IAsyncResult>
-                beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -424,9 +418,9 @@ namespace WebApplications.Utilities
             TArg7 arg7,
             TArg8 arg8,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -435,9 +429,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 9 parameters.
+		#endregion
+		
+		#region 9 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -471,10 +465,8 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         [UsedImplicitly]
         public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TResult>(
-            [NotNull] this
-                Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, AsyncCallback, object, IAsyncResult>
-                beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -485,9 +477,9 @@ namespace WebApplications.Utilities
             TArg8 arg8,
             TArg9 arg9,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -496,9 +488,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 10 parameters.
+		#endregion
+		
+		#region 10 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -533,13 +525,9 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <remarks></remarks>
         [UsedImplicitly]
-        public static Task<TResult> FromAsync
-            <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TResult>(
-            [NotNull] this
-                Func
-                <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, AsyncCallback, object,
-                IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+        public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TResult>(
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -551,9 +539,9 @@ namespace WebApplications.Utilities
             TArg9 arg9,
             TArg10 arg10,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -562,9 +550,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 11 parameters.
+		#endregion
+		
+		#region 11 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -601,13 +589,9 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <remarks></remarks>
         [UsedImplicitly]
-        public static Task<TResult> FromAsync
-            <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TResult>(
-            [NotNull] this
-                Func
-                <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, AsyncCallback, object,
-                IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+        public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TResult>(
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -620,9 +604,9 @@ namespace WebApplications.Utilities
             TArg10 arg10,
             TArg11 arg11,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
@@ -631,9 +615,9 @@ namespace WebApplications.Utilities
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 12 parameters.
+		#endregion
+		
+		#region 12 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -672,13 +656,9 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <remarks></remarks>
         [UsedImplicitly]
-        public static Task<TResult> FromAsync
-            <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TResult>(
-            [NotNull] this
-                Func
-                <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, AsyncCallback,
-                object, IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+        public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TResult>(
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -692,21 +672,20 @@ namespace WebApplications.Utilities
             TArg11 arg11,
             TArg12 arg12,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
-            return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, null,
-                               asyncState)
+            return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 13 parameters.
+		#endregion
+		
+		#region 13 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -747,13 +726,9 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <remarks></remarks>
         [UsedImplicitly]
-        public static Task<TResult> FromAsync
-            <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TResult>(
-            [NotNull] this
-                Func
-                <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13,
-                AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+        public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TResult>(
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -768,21 +743,20 @@ namespace WebApplications.Utilities
             TArg12 arg12,
             TArg13 arg13,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
-            return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, null,
-                               asyncState)
+            return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
-        #region 14 parameters.
+		#endregion
+		
+		#region 14 parameters.
         /// <summary>
         /// Converts APM to TPL, but supports cancellation.
         /// </summary>
@@ -825,14 +799,9 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <remarks></remarks>
         [UsedImplicitly]
-        public static Task<TResult> FromAsync
-            <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TArg14,
-             TResult>(
-            [NotNull] this
-                Func
-                <TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TArg14,
-                AsyncCallback, object, IAsyncResult> beginMethod,
-            [NotNull] Func<IAsyncResult, TResult> endMethod,
+        public static Task<TResult> FromAsync<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TArg14, TResult>(
+            [NotNull]this Func<TArg1, TArg2, TArg3, TArg4, TArg5, TArg6, TArg7, TArg8, TArg9, TArg10, TArg11, TArg12, TArg13, TArg14, AsyncCallback, object, IAsyncResult> beginMethod,
+            [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -848,20 +817,18 @@ namespace WebApplications.Utilities
             TArg13 arg13,
             TArg14 arg14,
             object asyncState = null,
-            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            [CanBeNull]Action<IAsyncResult> cancellationMethod = null,
             TaskCreationOptions creationOptions = TaskCreationOptions.None,
-            [CanBeNull] TaskScheduler scheduler = null,
+            [CanBeNull]TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             // ReSharper disable AssignNullToNotNullAttribute
-            return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14,
-                               null, asyncState)
+            return beginMethod(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, null, asyncState)
                 .FromAsync(endMethod, cancellationMethod, creationOptions, scheduler,
                            cancellationToken);
             // ReSharper restore AssignNullToNotNullAttribute
         }
-        #endregion
-
+		#endregion
 /*
 
         /// <summary>
@@ -898,5 +865,6 @@ namespace WebApplications.Utilities
             // ReSharper restore AssignNullToNotNullAttribute
         }
 */
-    }
+	}
 }
+ 

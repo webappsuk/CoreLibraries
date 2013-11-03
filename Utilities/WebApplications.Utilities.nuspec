@@ -11,11 +11,17 @@
     <summary>The core library of .NET utilities that are commonly required in projects.</summary>
     <description>$description$</description>
     <tags>Utility Utilities</tags>
+    <references>
+      <group targetFramework="net45">
+        <reference file="WebApplications.Utilities.dll" />
+      </group>
+    </references>
   </metadata>
   <files>
     <file src="WebApplications.PowerShell.Utilities.ps1" target="tools\WebApplications.PowerShell.Utilities.ps1" />
     <file src="WebApplications.Utilities.PowerShell\bin\Release\WebApplications.Utilities.PowerShell.dll" target="tools\WebApplications.Utilities.PowerShell.dll" />
     <file src="bin\Release\JetBrains.Annotations.dll" target="tools\JetBrains.Annotations.dll" />
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
     <file src="Publish.ps1" target="tools\Publish.ps1" />
   </files>
 </package>

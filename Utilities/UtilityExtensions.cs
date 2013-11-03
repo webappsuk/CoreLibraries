@@ -1265,6 +1265,17 @@ namespace WebApplications.Utilities
 
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
         }
+        /// <summary>
+        /// Determines whether the specified value is optional.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns><see langword="true" /> if the specified type is <see cref="Optional{T}" />; otherwise, <see langword="false" />.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsOptional(this object value)
+        {
+            IOptional optional = value as IOptional;
+            return optional != null;
+        }
 
         /// <summary>
         /// Gets the type of the non optional equivalent of a type (or the original type if already not optional).
@@ -1345,6 +1356,25 @@ namespace WebApplications.Utilities
         {
             IOptional o = value as IOptional;
             return (o != null) && !o.IsAssigned;
+        }
+
+        /// <summary>
+        /// Converts a value to an Optional assigned value, unless it is already Optional, in which case it gives a
+        /// non-type specific version of the optional.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>System.Object.</returns>
+        public static Optional<object> ToOptional(this object value)
+        {
+            IOptional o = value as IOptional;
+            if (o != null)
+                return o.IsAssigned
+                    ? new Optional<object>(o.Value)
+                    : Optional<object>.Unassigned;
+
+            return ReferenceEquals(value, null)
+                ? Optional<object>.DefaultAssigned
+                : new Optional<object>(value);
         }
 
         /// <summary>
@@ -1452,7 +1482,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Determines whether the specified value is null (includes <see cref="DBNull.Value"/> and <see cref="INullable"/> support).
+        /// Determines whether the specified value is null (includes <see cref="DBNull.Value"/>, <see cref="Optional{T}"/> and <see cref="INullable"/> support).
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
@@ -1465,13 +1495,38 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Joins elements that are not null or empty with the seperator.
+        /// Joins elements that are not null or empty with the separator.
         /// </summary>
-        /// <param name="seperator">The seperator.</param>
         /// <param name="elements">The elements.</param>
+        /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        public static string JoinNotNullOrEmpty([NotNull] this string seperator, [NotNull] params string[] elements)
+        public static string JoinNotNull([NotNull] this IEnumerable<string> elements, string separator = "")
+        {
+            Contract.Requires(elements != null);
+
+            StringBuilder builder = new StringBuilder();
+            bool any = false;
+            foreach (string element in elements)
+            {
+                if (element == null) continue;
+                if (any)
+                    builder.Append(separator);
+                else
+                    any = true;
+                builder.Append(element);
+            }
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Joins elements that are not null or empty with the separator.
+        /// </summary>
+        /// <param name="elements">The elements.</param>
+        /// <param name="separator">The separator.</param>
+        /// <returns>The joined elements.</returns>
+        [NotNull]
+        public static string JoinNotNullOrEmpty([NotNull] this IEnumerable<string> elements, string separator = "")
         {
             Contract.Requires(elements != null);
 
@@ -1481,7 +1536,7 @@ namespace WebApplications.Utilities
             {
                 if (String.IsNullOrEmpty(element)) continue;
                 if (any)
-                    builder.Append(seperator);
+                    builder.Append(separator);
                 else
                     any = true;
                 builder.Append(element);
@@ -1490,14 +1545,13 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Joins elements that are not null or whitespace with the seperator.
+        /// Joins elements that are not null or whitespace with the separator.
         /// </summary>
-        /// <param name="seperator">The seperator.</param>
         /// <param name="elements">The elements.</param>
+        /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        public static string JoinNotNullOrWhitespace(
-            [NotNull] this string seperator, [NotNull] params string[] elements)
+        public static string JoinNotNullOrWhitespace([NotNull] this IEnumerable<string> elements, string separator = "")
         {
             Contract.Requires(elements != null);
 
@@ -1507,7 +1561,7 @@ namespace WebApplications.Utilities
             {
                 if (String.IsNullOrWhiteSpace(element)) continue;
                 if (any)
-                    builder.Append(seperator);
+                    builder.Append(separator);
                 else
                     any = true;
                 builder.Append(element);

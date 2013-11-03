@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void TestWeakConcurrentDictionaryReferences()
         {
-            const int elements = 1000000;
+            const int elements = 100000;
             Random random = new Random();
             WeakConcurrentDictionary<int, TestClass> weakConcurrentDictionary =
                 new WeakConcurrentDictionary<int, TestClass>(allowResurrection: false);
@@ -127,9 +127,10 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
+        [Timeout(5000)]
         public void TestWeakConcurrentDictionaryReferencesObservable()
         {
-            const int elements = 1000000;
+            const int elements = 100000;
             Random random = new Random();
             WeakConcurrentDictionary<int, ObservableTestClass> weakConcurrentDictionary =
                 new WeakConcurrentDictionary<int, ObservableTestClass>(allowResurrection: false);
