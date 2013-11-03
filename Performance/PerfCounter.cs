@@ -26,6 +26,7 @@
 #endregion
 
 using System.Collections.Concurrent;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
 using System.Collections.Generic;
@@ -56,6 +57,7 @@ namespace WebApplications.Utilities.Performance
         private PerfCounter([NotNull]string categoryName)
             : base(categoryName, _counterData)
         {
+            Contract.Requires(categoryName != null);
         }
 
         /// <summary>

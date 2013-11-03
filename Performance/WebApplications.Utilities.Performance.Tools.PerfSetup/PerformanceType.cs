@@ -52,8 +52,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// </summary>
         /// <param name="typeReference">The type reference.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        private PerformanceType(TypeReference typeReference)
+        private PerformanceType([NotNull] TypeReference typeReference)
         {
+            Contract.Requires(typeReference != null);
             TypeReference = typeReference;
             try
             {
@@ -64,14 +65,14 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 do
                 {
                     baseType = baseType.BaseType != null
-                                   ? baseType.BaseType.Resolve()
-                                   : null;
+                        ? baseType.BaseType.Resolve()
+                        : null;
 
                     if (baseType == null)
                     {
                         Logger.Add(Level.Error,
-                                   "The '{0}' type does not descend from 'WebApplications.Utilities.Performance.PerfCategory' and so cannot be used.",
-                                   typeDefinition.FullName);
+                            "The '{0}' type does not descend from 'WebApplications.Utilities.Performance.PerfCategory' and so cannot be used.",
+                            typeDefinition.FullName);
                         IsValid = false;
                         return;
                     }
@@ -86,14 +87,16 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 FieldDefinition creationField = typeDefinition
                     .Fields
                     .SingleOrDefault(
-                        fd => fd.IsStatic && fd.FieldType.FullName == "System.Diagnostics.CounterCreationData[]" && fd.IsInitOnly
+                        fd =>
+                            fd.IsStatic && fd.FieldType.FullName == "System.Diagnostics.CounterCreationData[]" &&
+                            fd.IsInitOnly
                     );
 
                 if (creationField == null)
                 {
                     Logger.Add(Level.Error,
-                               "The '{0}' type does not contains a single readonly static field of type 'System.Diagnostics.CounterCreationData[]' so counters cannot be created.",
-                               typeDefinition.FullName);
+                        "The '{0}' type does not contains a single readonly static field of type 'System.Diagnostics.CounterCreationData[]' so counters cannot be created.",
+                        typeDefinition.FullName);
                     IsValid = false;
                     return;
                 }
@@ -105,9 +108,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     !staticConstructor.HasBody)
                 {
                     Logger.Add(Level.Error,
-                               "The '{0}' type does not contain a static constructor so the initial values for the '{1}' field cannot be parsed.",
-                               typeDefinition.FullName,
-                               creationField.FullName);
+                        "The '{0}' type does not contain a static constructor so the initial values for the '{1}' field cannot be parsed.",
+                        typeDefinition.FullName,
+                        creationField.FullName);
                     IsValid = false;
                     return;
                 }
@@ -145,7 +148,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     if (instr.OpCode.Code == Code.Ldc_I4)
                     {
                         // If the int is not a valid performance counter type, clear strings (as this isn't the right data).
-                        if (!_performanceCounterTypes.TryGetValue((int)instr.Operand, out lastCounterType))
+                        if (!_performanceCounterTypes.TryGetValue((int) instr.Operand, out lastCounterType))
                             lastStrings.Clear();
                         continue;
                     }
@@ -164,7 +167,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         (methodReference.Parameters.Count != 3) ||
                         (methodReference.Parameters[0].ParameterType.FullName != "System.String") ||
                         (methodReference.Parameters[1].ParameterType.FullName != "System.String") ||
-                        (methodReference.Parameters[2].ParameterType.FullName != "System.Diagnostics.PerformanceCounterType"))
+                        (methodReference.Parameters[2].ParameterType.FullName !=
+                         "System.Diagnostics.PerformanceCounterType"))
                         continue;
 
                     // Check this is a constructor for CounterCreationData.
@@ -191,8 +195,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     else
                     {
                         Logger.Add(Level.Warning,
-                                   "Performance counter creation data construction was found for the '{0}' type, but the parameters were not literals and so could not be decoded.",
-                                   typeDefinition.FullName);
+                            "Performance counter creation data construction was found for the '{0}' type, but the parameters were not literals and so could not be decoded.",
+                            typeDefinition.FullName);
                         IsValid = false;
                         return;
                     }
@@ -203,9 +207,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 if (data.Count < 1)
                 {
                     Logger.Add(Level.Warning,
-                               "The '{0}' type does not appear to contain any initialisation data for the '{1}' field.",
-                               typeDefinition.FullName,
-                               creationField.FullName);
+                        "The '{0}' type does not appear to contain any initialisation data for the '{1}' field.",
+                        typeDefinition.FullName,
+                        creationField.FullName);
                     IsValid = false;
                     return;
                 }
@@ -213,9 +217,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 // We have valid creation data for the type.
                 CounterCreationData = data.ToArray();
                 Logger.Add(Level.Normal,
-                           "The '{0}' type defines '{1}' performance counters.",
-                           typeDefinition.FullName,
-                           CounterCreationData.Length);
+                    "The '{0}' type defines '{1}' performance counters.",
+                    typeDefinition.FullName,
+                    CounterCreationData.Length);
                 IsValid = true;
             }
             catch (Exception e)
@@ -235,8 +239,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <param name="typeReference">The type reference.</param>
         /// <returns>PerformanceType.</returns>
         [NotNull]
-        public static PerformanceType Get(TypeReference typeReference)
+        public static PerformanceType Get([NotNull] TypeReference typeReference)
         {
+            Contract.Requires(typeReference != null);
             return _types.GetOrAdd(typeReference.FullName, t => new PerformanceType(typeReference));
         }
 

@@ -13,15 +13,50 @@
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CONTRACTS_FULL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +65,41 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <DocumentationFile>bin\Release\WebApplications.Utilities.Performance.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -48,9 +118,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Utilities, Version=5.0.5053.22982, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.0.5055.25525, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.5.0.5053.22982\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.5.0.5055.25525\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

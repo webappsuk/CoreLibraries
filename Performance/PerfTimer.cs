@@ -71,6 +71,7 @@ namespace WebApplications.Utilities.Performance
         private PerfTimer([NotNull] string categoryName)
             : base(categoryName, _counterData)
         {
+            Contract.Requires(categoryName != null);
         }
 
         /// <summary>
@@ -83,6 +84,7 @@ namespace WebApplications.Utilities.Performance
         /// <param name="warningDuration">Duration before a warning is counted (defaults to infinite).</param>
         /// <param name="criticalDuration">Duration before a critical is counted (defaults to infinite).</param>
         /// <returns>IDisposable.</returns>
+        [NotNull]
         public Timer Region(TimeSpan warningDuration = default (TimeSpan),
                             TimeSpan criticalDuration = default (TimeSpan))
         {
