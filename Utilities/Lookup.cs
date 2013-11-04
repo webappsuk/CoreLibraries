@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 
 namespace WebApplications.Utilities
 {
-
     /// <summary>
     /// Implements <see cref="ILookup{TKey, TElement}" />, and supports adding elements individually.
     /// </summary>
@@ -166,6 +165,27 @@ namespace WebApplications.Utilities
         {
             foreach (KeyValuePair<TKey, TElement> kvp in elements)
                 Add(kvp);
+        }
+
+        /// <summary>
+        /// Removes all elements corresponding to a given key.
+        /// </summary>
+        /// <param name="key">The key</param>
+        public void Remove([NotNull] TKey key)
+        {
+            _valuesCount -= _data[key].Count;
+            _data.Remove(key);
+        }
+
+        /// <summary>
+        /// Removes the first occurrence of a specified element corresponding to a given key.
+        /// </summary>
+        /// <param name="key">The key</param>
+        /// <param name="element">The element</param>
+        public void Remove([NotNull] TKey key, [NotNull] TElement element)
+        {
+            _data[key].Remove(element);
+            _valuesCount--;
         }
     }
 }
