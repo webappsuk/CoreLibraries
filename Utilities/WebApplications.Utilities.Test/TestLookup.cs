@@ -157,5 +157,45 @@ namespace WebApplications.Utilities.Test
             Assert.IsTrue(foundOne, "Did not enumerate 'one'.");
             Assert.IsTrue(foundTwo, "Did not enumerate 'two'.");
         }
+
+        [TestMethod]
+        public void TestRemoveKey()
+        {
+            Lookup<string, int> lookup = new Lookup<string, int>
+                                         {
+                                             {"one", 1},
+                                             {"one", 2}
+                                         };
+
+            Assert.IsFalse(lookup.Remove("two"));
+            Assert.AreEqual(2, lookup.ValuesCount);
+            Assert.AreEqual(2, lookup["one"].Count());
+
+            Assert.IsTrue(lookup.Remove("one"));
+            Assert.AreEqual(0, lookup.ValuesCount);
+            Assert.IsFalse(lookup.Contains("one"));
+        }
+
+        [TestMethod]
+        public void TestRemoveElement()
+        {
+            Lookup<string, int> lookup = new Lookup<string, int>
+                                         {
+                                             {"one", 1},
+                                             {"one", 2}
+                                         };
+
+            Assert.IsFalse(lookup.Remove("one", 0));
+            Assert.AreEqual(2, lookup.ValuesCount);
+            Assert.AreEqual(2, lookup["one"].Count());
+
+            Assert.IsTrue(lookup.Remove("one", 1));
+            Assert.AreEqual(1, lookup.ValuesCount);
+            Assert.AreEqual(1, lookup["one"].Count());
+
+            Assert.IsTrue(lookup.Remove("one", 2));
+            Assert.AreEqual(0, lookup.ValuesCount);
+            Assert.IsFalse(lookup.Contains("one"));
+        }
     }
 }

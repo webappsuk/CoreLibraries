@@ -199,7 +199,7 @@ namespace WebApplications.Utilities
             if (list.Count == 0)
                 _data.Remove(key);
 
-            return false;
+            return true;
         }
     }
 }
