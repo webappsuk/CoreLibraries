@@ -171,10 +171,15 @@ namespace WebApplications.Utilities
         /// Removes all elements corresponding to a given key.
         /// </summary>
         /// <param name="key">The key</param>
-        public void Remove([NotNull] TKey key)
+        public bool Remove([NotNull] TKey key)
         {
-            _valuesCount -= _data[key].Count;
+            List<TElement> list;
+            if (!_data.TryGetValue(key, out list))
+                return false;
+
+            _valuesCount -= list.Count;
             _data.Remove(key);
+            return true;
         }
 
         /// <summary>
@@ -182,10 +187,19 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key</param>
         /// <param name="element">The element</param>
-        public void Remove([NotNull] TKey key, [NotNull] TElement element)
+        public bool Remove([NotNull] TKey key, [NotNull] TElement element)
         {
-            _data[key].Remove(element);
+            List<TElement> list;
+            if (!_data.TryGetValue(key, out list) ||
+                !list.Remove(element))
+                return false;
+
             _valuesCount--;
+
+            if (list.Count == 0)
+                _data.Remove(key);
+
+            return false;
         }
     }
 }
