@@ -11,7 +11,6 @@ namespace WebApplications.Utilities
     /// </summary>
     /// <typeparam name="TKey">The type of the T key.</typeparam>
     /// <typeparam name="TElement">The type of the T element.</typeparam>
-    /// <remarks>TODO This needs to be in the core libraries.</remarks>
     public class Lookup<TKey, TElement> : ILookup<TKey, TElement>
     {
         /// <summary>

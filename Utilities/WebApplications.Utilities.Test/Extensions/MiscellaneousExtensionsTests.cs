@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -1023,6 +1024,353 @@ namespace WebApplications.Utilities.Test.Extensions
         {
             MiscellaneousExtensionsTests reference = new MiscellaneousExtensionsTests();
             Assert.IsFalse(reference.IsNull());
+        }
+
+        [TestMethod]
+        public void Join()
+        {
+            string[] stringsToJoin = { "string1", null, " ", string.Empty, "string2" };
+
+            Assert.AreEqual("string1, ,,string2",
+                stringsToJoin.JoinNotNull(","),
+                "JoinNotNull as string extension has failed.");
+            Assert.AreEqual("string1, ,string2",
+                stringsToJoin.JoinNotNullOrEmpty(","),
+                "JoinNotNullOrEmpty as string extension has failed.");
+            Assert.AreEqual("string1,string2",
+                stringsToJoin.JoinNotNullOrWhitespace(","),
+                "JoinNotNullOrWhitespace as string extension has failed.");
+        }
+
+
+        [TestMethod]
+        [Owner("craig.dean@webappuk.com")]
+        public void CreateSet_MultipleValues()
+        {
+            HashCollection<string> set = (HashCollection<string>)typeof(string).CreateSet(new[] { "a", "b" });
+            Assert.AreEqual(2, set.Count);
+            Assert.IsTrue(set.Contains("a"));
+            Assert.IsTrue(set.Contains("b"));
+        }
+
+        [TestMethod]
+        [Owner("craig.dean@webappuk.com")]
+        public void CreateSet_NullValue()
+        {
+            HashCollection<string> set = (HashCollection<string>)typeof(string).CreateSet(null);
+            Assert.AreEqual(0, set.Count);
+        }
+
+        [TestMethod]
+        [Owner("craig.dean@webappuk.com")]
+        public void CreateSet_EmptyValue()
+        {
+            HashCollection<string> set = (HashCollection<string>)typeof(string).CreateSet(Enumerable.Empty<string>());
+            Assert.AreEqual(0, set.Count);
+        }
+
+        [TestMethod]
+        [Owner("craig.dean@webappuk.com")]
+        public void CreateSet_MultipleValuesCast()
+        {
+            HashCollection<string> set = (HashCollection<string>)typeof(string).CreateSet(new object[] { "a", "b" });
+            Assert.AreEqual(2, set.Count);
+            Assert.IsTrue(set.Contains("a"));
+            Assert.IsTrue(set.Contains("b"));
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void IsUnassigned_Unassigned_ReturnsTrue()
+        {
+            object o = new Optional<int?>();
+            Assert.IsTrue(o.IsUnassigned(), "Unassigned int was not detected.");
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void IsUnassigned_Assigned_ReturnsFalse()
+        {
+            object o = new Optional<int?>(6);
+            Assert.IsFalse(o.IsUnassigned(), "Assigned Optional<int> was not detected.");
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void IsUnassigned_NotOptional_ReturnsFalse()
+        {
+            object o = 12;
+            Assert.IsFalse(o.IsUnassigned(), "Non-optional int was detected as unassigned.");
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void SimplifiedFullName_NoAssemblyNameSupplied()
+        {
+            Assert.AreEqual(
+                "WebApplications.Utilities.Test.Extensions.MiscellaneousExtensionsTests,WebApplications.Utilities.Test",
+                typeof(MiscellaneousExtensionsTests).SimplifiedTypeFullName());
+        }
+
+        [TestMethod]
+        [Owner("andrew.billings@webappuk.com")]
+        public void SimplifiedFullName_AssemblyNameSupplied()
+        {
+            Assert.AreEqual(
+                "WebApplications.Utilities.Test.Extensions.MiscellaneousExtensionsTests",
+                typeof(MiscellaneousExtensionsTests).SimplifiedTypeFullName("WebApplications.Utilities.Test"));
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void DefaultAssigned()
+        {
+            Assert.AreEqual(0, typeof(int).DefaultAssigned());
+            Assert.AreEqual(new Optional<int>(0), typeof(Optional<int>).DefaultAssigned());
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void Expression_Unblockify()
+        {
+            Expression expression = Expression.Multiply(
+                Expression.Constant(1), Expression.Constant(2));
+
+            Assert.AreSame(expression, expression.UnBlockify().Single());
+
+            IEnumerable<ParameterExpression> variables;
+            Assert.AreSame(expression, expression.UnBlockify(out variables).Single());
+            Assert.IsFalse(variables.Any());
+
+            Assert.AreSame(
+                expression,
+                Expression.Block(new[] { expression }).UnBlockify().Single());
+
+            Assert.AreSame(
+                expression,
+                Expression.Block(new[] { expression }).UnBlockify(out variables).Single());
+            Assert.IsFalse(variables.Any());
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void Expression_AddExpressions()
+        {
+            BlockExpression expression = Expression.Block(
+                new Expression[]
+                    {
+                        Expression.Multiply(Expression.Constant(1), Expression.Constant(2))
+                    });
+            Assert.IsNotNull(expression.Expressions);
+            Assert.AreEqual(1, expression.Expressions.Count);
+
+            Assert.AreSame(expression, expression.AddExpressions(new Expression[0]));
+
+            expression = expression.AddExpressions(
+                new Expression[]
+                    {
+                        Expression.Multiply(Expression.Constant(2), Expression.Constant(3))
+                    }) as BlockExpression;
+            Assert.IsNotNull(expression);
+            Assert.IsNotNull(expression.Expressions);
+            Assert.AreEqual(2, expression.Expressions.Count);
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void Expression_AddVariables()
+        {
+            BlockExpression expression = Expression.Block(
+                new Expression[]
+                    {
+                        Expression.Multiply(Expression.Constant(1), Expression.Constant(2))
+                    });
+            Assert.IsNotNull(expression.Variables);
+            Assert.AreEqual(0, expression.Variables.Count);
+
+            Assert.AreSame(expression, expression.AddVariables(new ParameterExpression[0]));
+
+            expression = expression.AddVariables(
+                new[]
+                    {
+                        Expression.Parameter(typeof(int), "x")
+                    }) as BlockExpression;
+            Assert.IsNotNull(expression);
+            Assert.IsNotNull(expression.Variables);
+            Assert.AreEqual(1, expression.Variables.Count);
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_BasicSignedIntTypes_ReturnTrue()
+        {
+            Assert.IsTrue(typeof(short).IsNumeric());
+            Assert.IsTrue(typeof(int).IsNumeric());
+            Assert.IsTrue(typeof(long).IsNumeric());
+
+            Assert.IsTrue(typeof(short?).IsNumeric());
+            Assert.IsTrue(typeof(int?).IsNumeric());
+            Assert.IsTrue(typeof(long?).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_BasicUnsignedIntTypes_ReturnTrue()
+        {
+            Assert.IsTrue(typeof(ushort).IsNumeric());
+            Assert.IsTrue(typeof(uint).IsNumeric());
+            Assert.IsTrue(typeof(ulong).IsNumeric());
+
+            Assert.IsTrue(typeof(ushort?).IsNumeric());
+            Assert.IsTrue(typeof(uint?).IsNumeric());
+            Assert.IsTrue(typeof(ulong?).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_NonBasicSignedIntTypes_ReturnTrue()
+        {
+            Assert.IsTrue(typeof(Int16).IsNumeric());
+            Assert.IsTrue(typeof(Int32).IsNumeric());
+            Assert.IsTrue(typeof(Int64).IsNumeric());
+
+            Assert.IsTrue(typeof(Int16?).IsNumeric());
+            Assert.IsTrue(typeof(Int32?).IsNumeric());
+            Assert.IsTrue(typeof(Int64?).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_NonBasicUnsignedIntTypes_ReturnTrue()
+        {
+            Assert.IsTrue(typeof(UInt16).IsNumeric());
+            Assert.IsTrue(typeof(UInt32).IsNumeric());
+            Assert.IsTrue(typeof(UInt64).IsNumeric());
+
+            Assert.IsTrue(typeof(UInt16?).IsNumeric());
+            Assert.IsTrue(typeof(UInt32?).IsNumeric());
+            Assert.IsTrue(typeof(UInt64?).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_BasicFloatTypes_ReturnTrue()
+        {
+            Assert.IsTrue(typeof(float).IsNumeric());
+            Assert.IsTrue(typeof(double).IsNumeric());
+
+            Assert.IsTrue(typeof(float?).IsNumeric());
+            Assert.IsTrue(typeof(double?).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_NonBasicFloatTypes_ReturnTrue()
+        {
+            Assert.IsTrue(typeof(Single).IsNumeric());
+            Assert.IsTrue(typeof(Double).IsNumeric());
+
+            Assert.IsTrue(typeof(Single?).IsNumeric());
+            Assert.IsTrue(typeof(Double?).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_BasicByteTypes_ReturnTrue()
+        {
+            Assert.IsTrue(typeof(sbyte).IsNumeric());
+            Assert.IsTrue(typeof(byte).IsNumeric());
+
+            Assert.IsTrue(typeof(sbyte?).IsNumeric());
+            Assert.IsTrue(typeof(byte?).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_NonBasicByteTypes_ReturnTrue()
+        {
+            Assert.IsTrue(typeof(SByte).IsNumeric());
+            Assert.IsTrue(typeof(Byte).IsNumeric());
+
+            Assert.IsTrue(typeof(SByte?).IsNumeric());
+            Assert.IsTrue(typeof(Byte?).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_NonNumericNumberTypes_ReturnFalse()
+        {
+            Assert.IsFalse(typeof(char).IsNumeric());
+            Assert.IsFalse(typeof(Char).IsNumeric());
+            Assert.IsFalse(typeof(char?).IsNumeric());
+            Assert.IsFalse(typeof(Char?).IsNumeric());
+
+            Assert.IsFalse(typeof(decimal).IsNumeric());
+            Assert.IsFalse(typeof(Decimal).IsNumeric());
+            Assert.IsFalse(typeof(decimal?).IsNumeric());
+            Assert.IsFalse(typeof(Decimal?).IsNumeric());
+
+            Assert.IsFalse(typeof(Enum).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_BooleanTypes_ReturnFalse()
+        {
+            Assert.IsFalse(typeof(bool).IsNumeric());
+            Assert.IsFalse(typeof(bool?).IsNumeric());
+            Assert.IsFalse(typeof(Boolean).IsNumeric());
+            Assert.IsFalse(typeof(Boolean?).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("giles.smart@webappuk.com")]
+        public void IsNumeric_ObjectTypes_ReturnFalse()
+        {
+            Assert.IsFalse(typeof(string).IsNumeric());
+            Assert.IsFalse(typeof(String).IsNumeric());
+
+            Assert.IsFalse(typeof(object).IsNumeric());
+            Assert.IsFalse(typeof(Object).IsNumeric());
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ForEach_FailsWithNonEnumerableExpression()
+        {
+            Expression.Constant(4).ForEach(x => x);
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void ForEach_ReturnsEmptyExpressionWithEmptyEnumerables()
+        {
+            Expression expression =
+                Expression.Constant(new int[0], typeof(IEnumerable<int>))
+                          .ForEach(x => new Expression[0]);
+            Assert.AreEqual("default(Void)", expression.ToString());
+        }
+
+        [TestMethod]
+        [Owner("andrew.taylor@webappuk.com")]
+        public void ValueComparer()
+        {
+            ValueComparer<int, string> defaultComparer = ValueComparer<int, string>.Default;
+            KeyValuePair<int, string> a10 = new KeyValuePair<int, string>(10, "A");
+            KeyValuePair<int, string> b1 = new KeyValuePair<int, string>(1, "B");
+            KeyValuePair<int, string> b10 = new KeyValuePair<int, string>(10, "B");
+            KeyValuePair<int, string> null10 = new KeyValuePair<int, string>(10, null);
+
+            Assert.IsFalse(defaultComparer.Equals(a10, b1));
+            Assert.IsTrue(defaultComparer.Equals(b10, b1));
+
+            Assert.IsFalse(defaultComparer.Equals(a10, null10));
+            Assert.IsTrue(defaultComparer.Equals(null10, null10));
+            Assert.IsFalse(defaultComparer.Equals(null10, b10));
+
+            Assert.AreEqual(defaultComparer.GetHashCode(b1), defaultComparer.GetHashCode(b10));
+            Assert.AreNotEqual(defaultComparer.GetHashCode(a10), defaultComparer.GetHashCode(null10));
         }
     }
 }

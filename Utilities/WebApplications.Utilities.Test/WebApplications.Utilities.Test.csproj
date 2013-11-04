@@ -139,7 +139,10 @@
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestCulture.cs" />
     <Compile Include="TestExtendedEnum.cs" />
+    <Compile Include="TestHashCollection.cs" />
     <Compile Include="TestHashing.cs" />
+    <Compile Include="TestLookup.cs" />
+    <Compile Include="TestOptional.cs" />
     <Compile Include="TestPowerShell.cs" />
     <Compile Include="TestRange.cs" />
     <Compile Include="Reflect\ReflectionTests.cs" />
