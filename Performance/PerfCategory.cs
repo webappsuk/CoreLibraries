@@ -208,7 +208,8 @@ namespace WebApplications.Utilities.Performance
         public static T GetOrAdd<T>([NotNull]string categoryName, string categoryHelp = null)
             where T : PerfCategory
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(categoryHelp));
+            // NOTE: Cant have Requires here as contract re-writing might change the method name and we need the name to be kept
+            Contract.Assert(!string.IsNullOrWhiteSpace(categoryHelp));
             PerfCategoryType pct = _counterTypes.GetOrAdd(typeof(T), t => new PerfCategoryType(t));
             if (pct.Exception != null)
                 throw pct.Exception;
