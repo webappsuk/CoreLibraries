@@ -150,13 +150,15 @@ namespace WebApplications.Utilities
 
         #region IEquatable<byte[]> Members
         /// <summary>
-        /// Equalses the specified other.
+        /// Indicates whether the current hashed byte array is equal to a given <paramref name="other"/> byte array.
         /// </summary>
         /// <param name="other">The other.</param>
-        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise</returns>
+        /// <returns><c>true</c> if this hashed byte array is equal to the <paramref name="other"/> byte array, <c>false</c> otherwise</returns>
         public bool Equals(byte[] other)
         {
-            return !ReferenceEquals(other, null) && _data.SequenceEqual(other);
+            return !ReferenceEquals(other, null) &&
+                _data.LongLength == other.LongLength && 
+                _data.SequenceEqual(other);
         }
         #endregion
 
@@ -170,8 +172,8 @@ namespace WebApplications.Utilities
         {
             if (ReferenceEquals(other, null)) return false;
             return (_hash == other._hash) &&
-                   (_data.Length == other._data.Length) &&
-                   ((_data.Length < 9) || _data.SequenceEqual(other._data));
+                   (_data.LongLength == other._data.LongLength) &&
+                   ((_data.LongLength < 9) || _data.SequenceEqual(other._data));
         }
         #endregion
 
@@ -230,12 +232,14 @@ namespace WebApplications.Utilities
             if (!ReferenceEquals(other, null))
             {
                 return (_hash == other._hash) &&
-                       (_data.Length == other._data.Length) &&
-                       ((_data.Length < 9) || _data.SequenceEqual(other._data));
+                       (_data.LongLength == other._data.LongLength) &&
+                       ((_data.LongLength < 9) || _data.SequenceEqual(other._data));
             }
 
             byte[] bytes = obj as byte[];
-            return !ReferenceEquals(bytes, null) && _data.SequenceEqual(bytes);
+            return !ReferenceEquals(bytes, null) &&
+                   _data.LongLength == bytes.LongLength &&
+                   _data.SequenceEqual(bytes);
         }
 
         /// <summary>
@@ -250,8 +254,8 @@ namespace WebApplications.Utilities
                 return ReferenceEquals(b, null);
             if (ReferenceEquals(b, null)) return false;
             return (a._hash == b._hash) &&
-                   (a._data.Length == b._data.Length) &&
-                   ((a._data.Length < 9) || a._data.SequenceEqual(b._data));
+                   (a._data.LongLength == b._data.LongLength) &&
+                   ((a._data.LongLength < 9) || a._data.SequenceEqual(b._data));
         }
 
         /// <summary>
