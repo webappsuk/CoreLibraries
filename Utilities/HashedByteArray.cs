@@ -73,9 +73,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="data">The data.</param>
         public HashedByteArray([NotNull] byte[] data)
-            : this(
-                data, new Lazy<string>(() => Convert.ToBase64String(data), LazyThreadSafetyMode.ExecutionAndPublication)
-                )
+            : this(data, new Lazy<string>(() => Convert.ToBase64String(data), LazyThreadSafetyMode.ExecutionAndPublication))
         {
         }
 
@@ -103,7 +101,7 @@ namespace WebApplications.Utilities
                     double step = (double)length / 32;
                     _hash = LargePrime;
                     for (double ix = 0; ix < length; ix += step)
-                        _hash = (data[(long) ix]*SmallPrime) ^ _hash;
+                        _hash = (_hash * SmallPrime) + data[(long) ix];
                 }
             }
             else if (length > 8)
@@ -113,7 +111,7 @@ namespace WebApplications.Utilities
                     // Create a long hash of the bytes.
                     _hash = LargePrime;
                     for (int ix = 0; ix < length; ix++)
-                        _hash = (data[ix] * SmallPrime) ^ _hash;
+                        _hash = (_hash * SmallPrime) + data[ix];
                 }
             }
             else if (length > 4)
@@ -294,7 +292,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.Byte[][]"/> to <see cref="HashedByteArray"/>.
+        /// Performs an implicit conversion from <see cref="System.Byte[]"/> to <see cref="HashedByteArray"/>.
         /// </summary>
         /// <param name="bytes">The bytes.</param>
         /// <returns>The result of the conversion.</returns>
@@ -304,7 +302,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="HashedByteArray"/> to <see cref="System.Byte[][]"/>.
+        /// Performs an implicit conversion from <see cref="HashedByteArray"/> to <see cref="System.Byte[]"/>.
         /// </summary>
         /// <param name="hashedByteArray">The hashed byte array.</param>
         /// <returns>The result of the conversion.</returns>
