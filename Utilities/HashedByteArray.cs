@@ -45,6 +45,16 @@ namespace WebApplications.Utilities
         [NotNull] private readonly Lazy<string> _encoded;
 
         /// <summary>
+        /// A large prime number.
+        /// </summary>
+        private const long LargePrime = 1125899906842597L;
+
+        /// <summary>
+        /// A large prime number.
+        /// </summary>
+        private const long SmallPrime = 397L;
+
+        /// <summary>
         /// Holds the hash for the associated data.
         /// </summary>
         private readonly long _hash;
@@ -82,14 +92,28 @@ namespace WebApplications.Utilities
 
             _data = data;
             long length = data.LongLength;
-            if (length > 8)
+            if (length > 32)
             {
                 unchecked
                 {
-                    // Pick 8 values evenly spread through byte array.
-                    double step = (double)length / 8;
+                    // Pick 32 values evenly spread through byte array,
+                    // hashing based on every byte would take too long,
+                    // as a hash doesn't guarantee equality we're only trying
+                    // to minimize collisions without compromising speed.
+                    double step = (double)length / 32;
+                    _hash = LargePrime;
                     for (double ix = 0; ix < length; ix += step)
-                        _hash = (data[(long) ix]*397) ^ _hash;
+                        _hash = (data[(long) ix]*SmallPrime) ^ _hash;
+                }
+            }
+            else if (length > 8)
+            {
+                unchecked
+                {
+                    // Create a long hash of the bytes.
+                    _hash = LargePrime;
+                    for (int ix = 0; ix < length; ix++)
+                        _hash = (data[ix] * SmallPrime) ^ _hash;
                 }
             }
             else if (length > 4)
