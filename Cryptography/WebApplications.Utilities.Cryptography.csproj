@@ -125,9 +125,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Utilities, Version=5.0.5055.25525, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.5.0.5055.25525\lib\net45\WebApplications.Utilities.dll</HintPath>
+    <Reference Include="WebApplications.Utilities">
+      <HintPath>packages\WebApplications.Utilities.5.0.5192.19907\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
