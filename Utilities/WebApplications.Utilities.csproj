@@ -263,6 +263,7 @@
     <Compile Include="Ranges\DoubleRange.cs" />
     <Compile Include="Enumerations\TriState.cs" />
     <Compile Include="EqualityBuilder.cs" />
+    <Compile Include="TaskResult.cs" />
     <Compile Include="Threading\AsyncLock.cs" />
     <Compile Include="Threading\AsyncReaderWriterLock.cs" />
     <Compile Include="Threading\AsyncSemaphore.cs" />
