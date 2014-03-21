@@ -123,11 +123,13 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebApplications.Testing">
-      <HintPath>..\packages\WebApplications.Testing.5.0.5192.19740\lib\net45\WebApplications.Testing.dll</HintPath>
+    <Reference Include="WebApplications.Testing, Version=5.0.5193.19270, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Testing.5.0.5193.19270\lib\net45\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.5.0.5192.19907\lib\net45\WebApplications.Utilities.dll</HintPath>
+    <Reference Include="WebApplications.Utilities, Version=5.0.5193.19510, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.5.0.5193.19510\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
