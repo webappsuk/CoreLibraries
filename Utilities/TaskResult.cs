@@ -94,7 +94,7 @@ namespace WebApplications.Utilities
     public static class TaskResult<T>
     {
         /// <summary>
-        /// A task that returns the <see langword="default"/> value for the type <see cref="T"/>.
+        /// A task that returns the <see langword="default"/> value for the type <typeparamref name="T"/>.
         /// </summary>
         [NotNull, PublicAPI]
         public static readonly Task<T> Default;
