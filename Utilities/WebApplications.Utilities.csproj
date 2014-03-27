@@ -264,6 +264,7 @@
     <Compile Include="Enumerations\TriState.cs" />
     <Compile Include="EqualityBuilder.cs" />
     <Compile Include="TaskResult.cs" />
+    <Compile Include="Threading\AsyncDebouncedAction.cs" />
     <Compile Include="Threading\AsyncDebouncedFunction.cs" />
     <Compile Include="Threading\AsyncLock.cs" />
     <Compile Include="Threading\AsyncReaderWriterLock.cs" />
