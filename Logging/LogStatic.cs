@@ -43,6 +43,7 @@ using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -472,15 +473,63 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Ensure we only have one flush running at once.
+        /// Flushes the queues asynchronously, note that only one instance is run at a time.
         /// </summary>
-        [NonSerialized]
-        private static Task _flushTask;
-        [NonSerialized]
-        private static CancellationToken _flushToken;
         [NotNull]
-        [NonSerialized]
-        private static readonly object _flushLock = new object();
+        private static readonly AsyncConcurrencyLimiter _doFlush = new AsyncConcurrencyLimiter(
+            token =>
+            {
+                // Grab batch.
+                Log[] batch;
+                int batchCount = 0;
+                lock (_queue)
+                {
+                    batch = new Log[_queue.Count];
+                    while (_queue.Count > 0 &&
+                           !token.IsCancellationRequested)
+                    {
+                        Log l = _queue.Dequeue();
+                        if (l.Level.IsValid(ValidLevels))
+                            batch[batchCount++] = l;
+                    }
+                }
+
+                if ((ValidLevels == LoggingLevels.None) ||
+                    (batch.Length < 1))
+                    return;
+
+                // Grab valid loggers
+                List<ILogger> loggers;
+                lock (_loggers)
+                    loggers = _loggers
+                        .Where(l => (((byte) l.ValidLevels) & ((byte) ValidLevels)) > 0)
+                        .ToList();
+
+                // Add memory logger.
+                loggers.Add(_defaultMemoryLogger);
+
+                // Next bit we can run in parallel.
+                Parallel.ForEach(loggers, l =>
+                {
+                    try
+                    {
+                        l.Add(batch.Where(log => log.Level.IsValid(l.ValidLevels)));
+                    }
+                    catch (Exception e)
+                    {
+                        // Disable this logger as it threw an exception
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new LoggingException(
+                            e,
+                            LoggingLevel.Critical,
+                            Resources.LogStatic_LogBatch_FatalErrorOccured,
+                            l.Name);
+
+                        // Stop logger running again.
+                        l.ValidLevels = LoggingLevels.None;
+                    }
+                });
+            });
 
         /// <summary>
         ///   Flushes all outstanding logs asynchronously.
@@ -488,96 +537,11 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   Note: If more logs are added whilst the system is flushing this will continue to block until there are no outstanding logs.
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
+        [NotNull]
         public static Task Flush(CancellationToken token = default(CancellationToken))
         {
-            lock (_flushLock)
-            {
-                // Check for existing task.
-                if (_flushTask != null)
-                {
-                    // Combine tokens if necessary.
-                    if (token != default(CancellationToken))
-                    {
-                        _flushToken = _flushToken != default(CancellationToken)
-                                          ? CancellationTokenSource.CreateLinkedTokenSource(_flushToken, token).Token
-                                          : token;
-                    }
-                    // Return existing task.
-                    return _flushTask;
-                }
-
-                // Create new task.
-                _flushToken = token;
-                var ft = new Task(DoFlush, _flushToken);
-                _flushTask = ft
-                    .ContinueWith(t =>
-                        {
-                            lock (_flushTask)
-                            {
-                                _flushTask = null;
-                                _flushToken = default(CancellationToken);
-                            }
-                        });
-                ft.Start();
-                return _flushTask;
-            }
-        }
-
-        /// <summary>
-        /// Does the flush (not re-entrant).
-        /// </summary>
-        private static void DoFlush()
-        {
-            // Grab batch.
-            Log[] batch;
-            int batchCount = 0;
-            lock (_queue)
-            {
-                batch = new Log[_queue.Count];
-                while (_queue.Count > 0 &&
-                    !_flushToken.IsCancellationRequested)
-                {
-                    Log l = _queue.Dequeue();
-                    if (l.Level.IsValid(ValidLevels))
-                        batch[batchCount++] = l;
-                }
-            }
-
-            if ((ValidLevels == LoggingLevels.None) || 
-                (batch.Length < 1))
-                return;
-
-            // Grab valid loggers
-            List<ILogger> loggers;
-            lock (_loggers)
-                loggers = _loggers
-                    .Where(l => (((byte)l.ValidLevels) & ((byte)ValidLevels)) > 0)
-                    .ToList();
-
-            // Add memory logger.
-            loggers.Add(_defaultMemoryLogger);
-
-            // Next bit we can run in parallel.
-            Parallel.ForEach(loggers, l =>
-            {
-                try
-                {
-                    l.Add(batch.Where(log => log.Level.IsValid(l.ValidLevels)));
-                }
-                catch (Exception e)
-                {
-                    // Disable this logger as it threw an exception
-                    new LoggingException(
-                        e, 
-                        LoggingLevel.Critical,
-                        Resources.LogStatic_LogBatch_FatalErrorOccured,
-                        l.Name);
-
-                    // Stop logger running again.
-                    l.ValidLevels = LoggingLevels.None;
-                }
-            });
+            return _doFlush.Run(token);
         }
 
         /// <summary>
@@ -592,6 +556,11 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         private static readonly Queue<Log> _queue = new Queue<Log>();
+
+        /// <summary>
+        /// The last time a flush was sucecessfully completed.
+        /// </summary>
+        private static long _lastFlushedTicks;
 
         /// <summary>
         /// Cleanups this instance.

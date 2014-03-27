@@ -220,7 +220,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
+        [StringFormatMethod("format")]
         private Log(
             CombGuid logGroup,
             [CanBeNull] LogContext context,
