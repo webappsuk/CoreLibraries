@@ -15,14 +15,12 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// The semaphore controls concurrent access to function execution.
         /// </summary>
-        [NotNull]
-        private readonly AsyncSemaphore _semaphore;
+        [NotNull] private readonly AsyncLock _lock = new AsyncLock();
 
         /// <summary>
         /// The asynchronous function to run.
         /// </summary>
-        [NotNull]
-        private readonly Func<CancellationToken, Task> _function;
+        [NotNull] private readonly Func<CancellationToken, Task> _function;
 
         /// <summary>
         /// The gap ticks is the number of ticks to leave after a successfully completed function invocation.
@@ -56,7 +54,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="minimumGap">The minimum gap, is the time left after a successful execution before the function can be run again.</param>
         [PublicAPI]
         public AsyncDebouncedFunction(
-            [NotNull]Func<CancellationToken, Task> function,
+            [NotNull] Func<CancellationToken, Task> function,
             TimeSpan minimumGap = default(TimeSpan))
         {
             Contract.Requires(function != null);
@@ -64,8 +62,6 @@ namespace WebApplications.Utilities.Threading
 
             // Calculate the gap ticks, based on stopwatch frequency.
             _gapTicks = minimumGap.Ticks;
-
-            _semaphore = new AsyncSemaphore();
             _function = function;
         }
 
@@ -87,9 +83,7 @@ namespace WebApplications.Utilities.Threading
             long requested = DateTime.UtcNow.Ticks;
 
             // Wait until the semaphore says we can go.
-            await _semaphore.WaitAsync(token);
-
-            try
+            using (await _lock.LockAsync(token))
             {
                 // If we're cancelled, or we were requested before the next run date we're done.
                 token.ThrowIfCancellationRequested();
@@ -106,11 +100,6 @@ namespace WebApplications.Utilities.Threading
                 // Set the next time you can run the function.
                 _nextRun = DateTime.UtcNow.Ticks + _gapTicks;
             }
-            finally
-            {
-                // Release the semaphore.
-                _semaphore.Release();
-            }
         }
     }
 
@@ -123,7 +112,7 @@ namespace WebApplications.Utilities.Threading
         /// The semaphore controls concurrent access to function execution.
         /// </summary>
         [NotNull]
-        private readonly AsyncSemaphore _semaphore;
+        private readonly AsyncLock _lock = new AsyncLock();
 
         /// <summary>
         /// The asynchronous function to run.
@@ -176,8 +165,6 @@ namespace WebApplications.Utilities.Threading
 
             // Calculate the gap ticks, based on stopwatch frequency.
             _gapTicks = minimumGap.Ticks;
-
-            _semaphore = new AsyncSemaphore();
             _function = function;
         }
 
@@ -199,9 +186,7 @@ namespace WebApplications.Utilities.Threading
             long requested = DateTime.UtcNow.Ticks;
 
             // Wait until the semaphore says we can go.
-            await _semaphore.WaitAsync(token);
-
-            try
+            using (await _lock.LockAsync(token))
             {
                 // If we're cancelled, or we were requested before the next run date we're done.
                 token.ThrowIfCancellationRequested();
@@ -219,11 +204,6 @@ namespace WebApplications.Utilities.Threading
                 _lastresult = lastResult;
                 _nextRun = DateTime.UtcNow.Ticks + _gapTicks;
                 return lastResult;
-            }
-            finally
-            {
-                // Release the semaphore.
-                _semaphore.Release();
             }
         }
     }
