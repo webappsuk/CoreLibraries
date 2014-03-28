@@ -476,8 +476,8 @@ namespace WebApplications.Utilities.Logging
         /// Flushes the queues asynchronously, note that only one instance is run at a time.
         /// </summary>
         [NotNull]
-        private static readonly AsyncConcurrencyLimiter _doFlush = new AsyncConcurrencyLimiter(
-            token =>
+        private static readonly AsyncDebouncedAction _doFlush = new AsyncDebouncedAction(
+            async token =>
             {
                 // Grab batch.
                 Log[] batch;
