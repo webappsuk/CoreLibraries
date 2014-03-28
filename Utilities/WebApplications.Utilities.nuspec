@@ -23,5 +23,6 @@
     <file src="bin\Release\JetBrains.Annotations.dll" target="tools\JetBrains.Annotations.dll" />
     <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
     <file src="Publish.ps1" target="tools\Publish.ps1" />
+    <file src="Commit.ps1" target="tools\Commit.ps1" />
   </files>
 </package>
