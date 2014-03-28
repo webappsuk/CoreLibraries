@@ -739,6 +739,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
+        [PublicAPI]
         public static Task ToTask([NotNull] this Exception exception)
         {
             TaskCompletionSource<Exception> source = new TaskCompletionSource<Exception>();
@@ -752,11 +753,77 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the T result.</typeparam>
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
+        [PublicAPI]
         public static Task<TResult> ToTask<TResult>([NotNull] this Exception exception)
         {
             TaskCompletionSource<TResult> source = new TaskCompletionSource<TResult>();
             source.SetException(exception);
             return source.Task;
+        }
+
+        /// <summary>
+        /// Adds cancellation support to a task that is otherwise not cancellable.
+        /// </summary>
+        /// <param name="task">The task.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task</returns>
+        /// <remarks><para>This should be used with caution, as it doesn't stop the underlying task, which continues to execute, instead it stops you waiting for it.
+        /// This can be desirable behaviour when used properly, but it must be understood that the underlying task is still running and so care should be
+        /// taken to not make use of any shared resources, etc.</para>
+        /// <para>See http://blogs.msdn.com/b/pfxteam/archive/2012/10/05/how-do-i-cancel-non-cancelable-async-operations.aspx for more information.</para></remarks>
+        [NotNull]
+        public static Task WithCancellation([NotNull] this Task task, CancellationToken cancellationToken)
+        {
+            Contract.Requires(task != null);
+            if (task.IsCompleted || !cancellationToken.CanBeCanceled)
+                return task;
+
+            return cancellationToken.IsCancellationRequested
+                ? new Task(() => {}, cancellationToken)
+                : WithCancellationInternal(task, cancellationToken);
+        }
+
+        private static async Task WithCancellationInternal([NotNull] Task task, CancellationToken cancellationToken)
+        {
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+                if (task != await Task.WhenAny(task, tcs.Task))
+                    throw new OperationCanceledException(cancellationToken);
+            await task;
+        }
+
+        /// <summary>
+        /// Adds cancellation support to a task that is otherwise not cancellable.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="task">The task.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>An awaitable task</returns>
+        /// <remarks>
+        /// <para>This should be used with caution, as it doesn't stop the underlying task, which continues to execute, instead it stops you waiting for it.
+        /// This can be desirable behaviour when used properly, but it must be understood that the underlying task is still running and so care should be
+        /// taken to not make use of any shared resources, etc.</para>
+        /// <para>See http://blogs.msdn.com/b/pfxteam/archive/2012/10/05/how-do-i-cancel-non-cancelable-async-operations.aspx for more information.</para>
+        /// </remarks>
+        [NotNull]
+        public static Task<T> WithCancellation<T>([NotNull] this Task<T> task, CancellationToken cancellationToken)
+        {
+            Contract.Requires(task != null);
+            if (task.IsCompleted || !cancellationToken.CanBeCanceled)
+                return task;
+
+            return cancellationToken.IsCancellationRequested
+                ? new Task<T>(() => default(T), cancellationToken)
+                : WithCancellationInternal(task, cancellationToken);
+        }
+
+        private static async Task<T> WithCancellationInternal<T>([NotNull] Task<T> task, CancellationToken cancellationToken)
+        {
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+                if (task != await Task.WhenAny(task, tcs.Task))
+                    throw new OperationCanceledException(cancellationToken);
+            return await task; 
         }
     }
 }
