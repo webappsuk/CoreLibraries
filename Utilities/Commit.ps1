@@ -1,7 +1,7 @@
 #*=============================================
-#* FileName: Publish.ps1
+#* FileName: Commit.ps1
 #*=============================================
-#* Script Name: [Publish]
+#* Script Name: [Commit]
 #* Company: Web Applications UK Ltd
 #* Web: http://www.webapplicationsuk.com
 #* Reqrmnts:
