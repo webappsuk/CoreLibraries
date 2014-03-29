@@ -1057,7 +1057,7 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="KeyValuePair{System.StringSystem.Object}[][]" /> to <see cref="LogContext" />.
+        /// Performs an implicit conversion from <see cref="KeyValuePair{System.StringSystem.Object}[]" /> to <see cref="LogContext" />.
         /// </summary>
         /// <param name="enumerable">The enumerable.</param>
         /// <returns>The result of the conversion.</returns>

@@ -85,23 +85,19 @@ namespace WebApplications.Utilities.Logging.Loggers
         }
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="EventLogger"/> class.
+        /// Initializes a new instance of the <see cref="EventLogger" /> class.
         /// </summary>
         /// <param name="name">The name of the logger.</param>
-        /// <param name="eventLog">
-        ///   <para>The <see cref="System.Diagnostics.EventLog.Log">name</see> of the <see cref="EventLog">event log</see> to read/write to.</para>
-        ///   <para>By default this is set to "Application".</para>
-        /// </param>
-        /// <param name="validLevels">
-        ///   <para>The valid log levels.</para>
-        ///   <para>By default this is set to <see cref="LoggingLevels">LogLevels.AtLeastInformation</see>.</para>
-        /// </param>
-        /// <remarks>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="name"/> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="eventLog"/> to not be a null value.</para>
-        /// </remarks>
+        /// <param name="eventLog"><para>The <see cref="System.Diagnostics.EventLog.Log">name</see> of the <see cref="EventLog">event log</see> to read/write to.</para>
+        /// <para>By default this is set to "Application".</para></param>
+        /// <param name="validLevels"><para>The valid log levels.</para>
+        /// <para>By default this is set to <see cref="LoggingLevels">LogLevels.AtLeastInformation</see>.</para></param>
+        /// <param name="format">The format.</param>
+        /// <param name="machineName">Name of the machine.</param>
+        /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
+        /// <paramref name="name" /> to not be a null value.</para>
+        /// <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
+        /// <paramref name="eventLog" /> to not be a null value.</para></remarks>
         public EventLogger(
             [NotNull] string name,
             [NotNull] string eventLog = "Application",
@@ -147,8 +143,6 @@ namespace WebApplications.Utilities.Logging.Loggers
                     (a < logStr.Length))
                 {
                     char c = logStr[a++];
-                    // Can't log nulls
-                    if (c == null) continue;
 
                     // We cannot have a digit after a '%'.
                     if (percChar && char.IsDigit(c))

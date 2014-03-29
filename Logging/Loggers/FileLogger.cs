@@ -444,7 +444,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             public readonly string FileName;
             [NotNull]
             public readonly string Format;
-            public readonly uint Buffer;
 
             [NotNull]
             private FileStream _fileStream;

@@ -76,22 +76,21 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Holds lookup for logging levels.
         /// </summary>
-        [NotNull]
-        private static readonly Dictionary<string, LoggingLevel> _levels =
+        [NotNull] private static readonly Dictionary<string, LoggingLevel> _levels =
             ExtendedEnum<LoggingLevel>.ValueDetails
-                            .SelectMany(
-                                vd => vd.Select(v => new KeyValuePair<string, LoggingLevel>(v.ToLower(), vd.Value)))
-                            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                .SelectMany(
+                    vd => vd.Select(v => new KeyValuePair<string, LoggingLevel>(v.ToLower(), vd.Value)))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
-        /// Holds lookup for logging levels.
+        /// Holds lookup for formats.
         /// </summary>
         [NotNull]
         private static readonly Dictionary<string, LogFormat> _formats =
             ExtendedEnum<LogFormat>.ValueDetails
                                       .SelectMany(
                                           vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
-                                      .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                                      .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// The log reservation.
@@ -477,7 +476,9 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         private static readonly AsyncDebouncedAction _doFlush = new AsyncDebouncedAction(
+#pragma warning disable 1998
             async token =>
+#pragma warning restore 1998
             {
                 // Grab batch.
                 Log[] batch;
@@ -502,7 +503,7 @@ namespace WebApplications.Utilities.Logging
                 List<ILogger> loggers;
                 lock (_loggers)
                     loggers = _loggers
-                        .Where(l => (((byte) l.ValidLevels) & ((byte) ValidLevels)) > 0)
+                        .Where(l => (((byte)l.ValidLevels) & ((byte)ValidLevels)) > 0)
                         .ToList();
 
                 // Add memory logger.
@@ -556,11 +557,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         private static readonly Queue<Log> _queue = new Queue<Log>();
-
-        /// <summary>
-        /// The last time a flush was sucecessfully completed.
-        /// </summary>
-        private static long _lastFlushedTicks;
 
         /// <summary>
         /// Cleanups this instance.

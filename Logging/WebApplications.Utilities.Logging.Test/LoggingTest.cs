@@ -53,7 +53,7 @@ namespace WebApplications.Utilities.Logging.Test
             fileLogger.Format = "Verbose,Xml";
 
             string message = "Test message " + Guid.NewGuid();
-            Log.Add(new LogContext("My data", 1, "Some more", "Test"), message);
+            Log.Add(new LogContext("My data", 1, "Some more", "Test"), LoggingLevel.Notification, message);
             await Log.Flush();
 
             List<Log> logs = Log.AllCached.ToList();

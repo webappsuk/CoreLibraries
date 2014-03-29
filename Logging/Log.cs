@@ -52,8 +52,14 @@ namespace WebApplications.Utilities.Logging
     /// </summary>
     [Serializable]
     [DebuggerDisplay("{Message} @ {TimeStamp}")]
+    [PublicAPI]
     public partial class Log : IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
+        /// <summary>
+        /// Cached level as used so frequently
+        /// </summary>
+        private readonly LoggingLevel _level;
+
         /// <summary>
         /// The context (holds all log data).
         /// </summary>
@@ -97,16 +103,7 @@ namespace WebApplications.Utilities.Logging
         ///   The <see cref="LoggingLevel">log level</see>.
         /// </summary>
         [UsedImplicitly]
-        public LoggingLevel Level
-        {
-            get
-            {
-                string lStr = Get(LevelKey);
-                if (lStr == null) return LoggingLevel.Information;
-                LoggingLevel l;
-                return _levels.TryGetValue(lStr, out l) ? l : LoggingLevel.Information;
-            }
-        }
+        public LoggingLevel Level { get { return _level; }}
 
         /// <summary>
         ///   The formatted log message.
@@ -196,10 +193,13 @@ namespace WebApplications.Utilities.Logging
                 !CombGuid.TryParse(s, out guid))
                 throw new LoggingException("The log deserialization supplied an invalid Group.");
 
-            LoggingLevel level;
+            LoggingLevel level = LoggingLevel.Information;
             if (_context.TryGetValue(LevelKey, out s) &&
-                !_levels.ContainsKey(s.ToLower()))
+                !_levels.TryGetValue(s, out level))
                 throw new LoggingException("The log deserialization supplied an invalid Level.");
+
+            // We cache the level as it is checked so frequently.
+            _level = level;
 
             int i;
             if (_context.TryGetValue(ThreadIDKey, out s) &&
@@ -250,6 +250,8 @@ namespace WebApplications.Utilities.Logging
 
             // We can safely add our data due to the way LogContext protects reservations.
             _context.Add(LevelKey, level.ToString());
+            _level = level;
+
             _context.Add(GuidKey, CombGuid.NewCombGuid().ToString());
             // Only add group if specified.
             if (!logGroup.Equals(CombGuid.Empty))
@@ -581,7 +583,7 @@ namespace WebApplications.Utilities.Logging
 
             // Try to get the actual format if specified as an enum.
             LogFormat logFormat;
-            if (_formats.TryGetValue(format.ToLower(), out logFormat) || Enum.TryParse(format, true, out logFormat))
+            if (_formats.TryGetValue(format, out logFormat) || Enum.TryParse(format, true, out logFormat))
                 return ToString(logFormat);
 
             // Parse format
@@ -628,7 +630,7 @@ namespace WebApplications.Utilities.Logging
                             if (_context.TryGetValue(t, out cv))
                                 // We have a context key.
                                 builder.Append(cv);
-                            else if (_formats.TryGetValue(t.ToLower(), out logFormat) ||
+                            else if (_formats.TryGetValue(t, out logFormat) ||
                                      Enum.TryParse(t, true, out logFormat))
                                 // We have a standard formatter.
                                 builder.Append(ToString(logFormat));
@@ -666,7 +668,6 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         public string ToString(LogFormat format)
         {
-            const int headerSize = 120;
             if (format == LogFormat.None)
                 return String.Empty;
 
