@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Odbc;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -46,8 +47,7 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Calculates whether we have a console available.
         /// </summary>
-        [NotNull]
-        private static readonly Lazy<bool> _isConsole = new Lazy<bool>(
+        [NotNull] private static readonly Lazy<bool> _isConsole = new Lazy<bool>(
             () =>
             {
                 if (!Environment.UserInteractive) return false;
@@ -65,21 +65,17 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The lock object allows grouping of writes together, use with caution.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public static readonly object Lock = new object();
+        [NotNull] [PublicAPI] public static readonly object Lock = new object();
 
         /// <summary>
         /// An empty objects array.
         /// </summary>
-        [NotNull]
-        private static readonly object[] _emptyArgs = new object[0];
+        [NotNull] private static readonly object[] _emptyArgs = new object[0];
 
         /// <summary>
         /// The custom colour names.
         /// </summary>
-        [NotNull]
-        private static readonly Dictionary<string, ConsoleColor> _customColors =
+        [NotNull] private static readonly Dictionary<string, ConsoleColor> _customColors =
             new Dictionary<string, ConsoleColor>();
 
         /// <summary>
@@ -366,106 +362,76 @@ namespace WebApplications.Utilities
                 ConsoleColor currentFore = Console.ForegroundColor;
                 ConsoleColor currentBack = Console.BackgroundColor;
 
-                StringBuilder chunk = new StringBuilder((int)(str.Length * 1.2));
-                ParseState state = ParseState.Text;
-                int i = 0;
-                while (i < str.Length)
+                foreach (Tuple<string, string, string> tuple in str.FormatChunks())
                 {
-                    char c = str[i++];
-                    switch (state)
+                    Contract.Assert(tuple != null);
+
+                    if (string.IsNullOrEmpty(tuple.Item1))
                     {
-                        case ParseState.Text:
-                            if (c == '{')
-                            {
-                                if (chunk.Length > 0)
-                                {
-                                    Console.Write(chunk.ToString());
-                                    chunk.Clear();
-                                }
-                                state = ParseState.FillPoint;
-                                break;
-                            }
-                            chunk.Append(c);
-                            break;
-                        case ParseState.FillPoint:
-                            if (c != '}')
-                            {
-                                chunk.Append(c);
-                                break;
-                            }
-
-                            string argument = "{" + chunk + "}";
-                            chunk.Clear();
-
-                            if (argument.Length < 3)
-                            {
-                                Console.Write(argument);
-                                break;
-                            }
-
-                            // Check if we start with +/-
-                            bool back = argument[1] == '-';
-                            if (!back && chunk[1] != '+')
-                            {
-                                // Maybe we have an argument e.g. {0}?
-
-                                // Safe format
-                                try
-                                {
-                                    Console.Write(argument, args);
-                                }
-                                catch
-                                {
-                                    // Could not format argument
-                                    Console.Write(argument);
-                                }
-                                break;
-                            }
-
-                            // Get colour portion
-                            string cStr = argument.Substring(2, argument.Length - 3);
-                            ConsoleColor colour;
-                            if (cStr == "_")
-                            {
-                                colour = back ? currentBack : currentFore;
-                            }
-                            else if (!_customColors.TryGetValue(cStr, out colour) &&
-                                     !Enum.TryParse(cStr, true, out colour))
-                            {
-                                Console.Write(argument);
-                                break;
-                            }
-
-                            // Set the relevant console colour
-                            if (back)
-                                Console.BackgroundColor = colour;
-                            else
-                                Console.ForegroundColor = colour;
-
-                            state = ParseState.Text;
-                            break;
+                        Console.Write(tuple.Item3);
+                        continue;
                     }
-                }
 
-                if (chunk.Length > 0)
-                {
-                    Console.Write(chunk.ToString());
-                    chunk.Clear();
+                    if (args.Length > 0)
+                    {
+                        int arg;
+                        if (int.TryParse(tuple.Item1, out arg))
+                        {
+                            if ((arg < 0) || (arg >= args.Length))
+                            {
+                                Console.Write(tuple.Item3);
+                                continue;
+                            }
+                            if (string.IsNullOrEmpty(tuple.Item2))
+                            {
+                                Console.Write(args[arg]);
+                                continue;
+                            }
+
+                            Contract.Assert(!string.IsNullOrEmpty(tuple.Item3));
+                            try
+                            {
+                                Console.Write(tuple.Item3, args);
+                            }
+                            catch
+                            {
+                                Console.Write(tuple.Item3);
+                            }
+                            continue;
+                        }
+                    }
+
+                    bool back = tuple.Item1[0] == '-';
+                    if (!back && (tuple.Item1[0] != '+'))
+                    {
+                        Console.Write(tuple.Item3);
+                        continue;
+                    }
+
+                    string cStr = tuple.Item1.Substring(1);
+                    ConsoleColor colour;
+                    if (cStr == "_")
+                    {
+                        colour = back ? currentBack : currentFore;
+                    }
+                    else if (!_customColors.TryGetValue(cStr, out colour) &&
+                             !Enum.TryParse(cStr, true, out colour))
+                    {
+                        Console.Write(tuple.Item3);
+                        continue;
+                    }
+
+                    // Set the relevant console colour
+                    if (back)
+                        Console.BackgroundColor = colour;
+                    else
+                        Console.ForegroundColor = colour;
                 }
 
                 // Restore colours
                 Console.BackgroundColor = currentBack;
                 Console.ForegroundColor = currentFore;
             }
-        }
-
-        /// <summary>
-        /// The current parser state, used to colour messages.
-        /// </summary>
-        private enum ParseState
-        {
-            Text,
-            FillPoint
         }
     }
 }

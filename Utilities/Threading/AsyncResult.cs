@@ -339,6 +339,7 @@ namespace WebApplications.Utilities.Threading
     /// <typeparam name="TResult">The type of the value returned.</typeparam>
     [DebuggerStepThrough]
     [UsedImplicitly]
+    [Obsolete("Consider using TPL or Async.")]
     public class AsyncResult<TResult> : AsyncResult
     {
         // ReSharper disable StaticFieldInGenericType

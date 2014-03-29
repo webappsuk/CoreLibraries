@@ -121,13 +121,14 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   The default split characters for splitting strings.
         /// </summary>
-        public static readonly char[] DefaultSplitChars = new[] {' ', ',', '\t', '\r', '\n', '|'};
+        public static readonly char[] DefaultSplitChars = new[] { ' ', ',', '\t', '\r', '\n', '|' };
 
         private static readonly Regex _htmlRegex = new Regex(@"<[^<>]*>",
                                                              RegexOptions.Compiled | RegexOptions.IgnoreCase |
                                                              RegexOptions.Multiline);
 
-        [NotNull] private static readonly Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
+        [NotNull]
+        private static readonly Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
 
         /// <summary>
         ///   Gets the ordinal representation of an <see cref="int">integer</see> ('1st', '2nd', etc.) as a <see cref="string"/>.
@@ -137,9 +138,9 @@ namespace WebApplications.Utilities
         public static string ToOrdinal(this int number)
         {
             string suf = "th";
-            if (((number%100)/10) != 1)
+            if (((number % 100) / 10) != 1)
             {
-                switch (number%10)
+                switch (number % 10)
                 {
                     case 1:
                         suf = "st";
@@ -163,9 +164,9 @@ namespace WebApplications.Utilities
         public static string GetOrdinal(this int number)
         {
             string suf = "th";
-            if (((number%100)/10) != 1)
+            if (((number % 100) / 10) != 1)
             {
-                switch (number%10)
+                switch (number % 10)
                 {
                     case 1:
                         suf = "st";
@@ -217,7 +218,7 @@ namespace WebApplications.Utilities
         /// </returns>
         public static string ToEnglish(this double number)
         {
-            string integerString = ToEnglishProcessInteger((long) number);
+            string integerString = ToEnglishProcessInteger((long)number);
             int precision = 0;
 
             if (number.ToString().Contains('.'))
@@ -225,7 +226,7 @@ namespace WebApplications.Utilities
                 precision = number.ToString().Split('.')[1].Length;
             }
 
-            number = Math.Round(Math.Abs(number), precision)%1;
+            number = Math.Round(Math.Abs(number), precision) % 1;
 
             int decimalDigits = 0;
 
@@ -242,7 +243,7 @@ namespace WebApplications.Utilities
             string decimalString = null;
             while (decimalDigits-- > 0)
             {
-                int digit = (int) (number%10);
+                int digit = (int)(number % 10);
                 number /= 10;
                 decimalString = _onesMapping[digit] + " " + decimalString;
             }
@@ -272,8 +273,8 @@ namespace WebApplications.Utilities
             {
                 while (number >= 1)
                 {
-                    int numberToProcess = (number >= 1e16) ? 0 : (int) (number%1000);
-                    number = number/1000;
+                    int numberToProcess = (number >= 1e16) ? 0 : (int)(number % 1000);
+                    number = number / 1000;
 
                     string groupDescription = ToEnglishProcessGroup(numberToProcess);
                     if (groupDescription != null)
@@ -297,8 +298,8 @@ namespace WebApplications.Utilities
 
         private static string ToEnglishProcessGroup(int number)
         {
-            int tens = number%100;
-            int hundreds = number/100;
+            int tens = number % 100;
+            int hundreds = number / 100;
 
             string retVal = null;
             if (hundreds > 0)
@@ -311,8 +312,8 @@ namespace WebApplications.Utilities
                     retVal += ((retVal != null) ? " " : "") + _onesMapping[tens];
                 else
                 {
-                    int ones = tens%10;
-                    tens = (tens/10) - 2; // 20's offset
+                    int ones = tens % 10;
+                    tens = (tens / 10) - 2; // 20's offset
 
                     retVal += ((retVal != null) ? " " : "") + _tensMapping[tens];
 
@@ -364,27 +365,27 @@ namespace WebApplications.Utilities
             return _equalityFunctions.GetOrAdd(
                 type,
                 t =>
-                    {
-                        ParameterInfo[] plist;
-                        int pCount = 0;
-                        // Grab the most relevant equals method
-                        MethodInfo equalsMethod =
-                            (t.GetMethods(
-                                BindingFlags.FlattenHierarchy | BindingFlags.Public |
-                                BindingFlags.InvokeMethod | BindingFlags.Instance |
-                                BindingFlags.Static)
-                              .Where(
-                                  mi => (mi.Name == "Equals") &&
-                                        ((pCount = (plist = mi.GetParameters()).Count()) < 3) &&
-                                        (pCount > 0) && plist[0].ParameterType.IsAssignableFrom(t) &&
-                                        (mi.IsStatic
-                                             ? (pCount == 2) &&
-                                               plist[1].ParameterType.IsAssignableFrom(t)
-                                             : (pCount == 1))))
-                                .First();
+                {
+                    ParameterInfo[] plist;
+                    int pCount = 0;
+                    // Grab the most relevant equals method
+                    MethodInfo equalsMethod =
+                        (t.GetMethods(
+                            BindingFlags.FlattenHierarchy | BindingFlags.Public |
+                            BindingFlags.InvokeMethod | BindingFlags.Instance |
+                            BindingFlags.Static)
+                          .Where(
+                              mi => (mi.Name == "Equals") &&
+                                    ((pCount = (plist = mi.GetParameters()).Count()) < 3) &&
+                                    (pCount > 0) && plist[0].ParameterType.IsAssignableFrom(t) &&
+                                    (mi.IsStatic
+                                         ? (pCount == 2) &&
+                                           plist[1].ParameterType.IsAssignableFrom(t)
+                                         : (pCount == 1))))
+                            .First();
 
-                        return equalsMethod.Func<object, object, bool>(false);
-                    });
+                    return equalsMethod.Func<object, object, bool>(false);
+                });
         }
 
 
@@ -578,7 +579,7 @@ namespace WebApplications.Utilities
             if (input == null)
                 return "null";
             // TODO establish approx. increase in length of JSON encoding.
-            StringBuilder stringBuilder = new StringBuilder((int) (input.Length*1.3) + 2);
+            StringBuilder stringBuilder = new StringBuilder((int)(input.Length * 1.3) + 2);
             stringBuilder.AppendJSON(input);
             return stringBuilder.ToString();
         }
@@ -665,13 +666,13 @@ namespace WebApplications.Utilities
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
-                        {
-                            int id;
-                            return Int32.TryParse(s, out id) ? (int?) id : null;
-                        }).Where(id => id.HasValue)
+                    {
+                        int id;
+                        return Int32.TryParse(s, out id) ? (int?)id : null;
+                    }).Where(id => id.HasValue)
                         .Distinct()
                         .Select(id => getObject(id.Value));
-            if (!typeof (T).IsValueType)
+            if (!typeof(T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -705,13 +706,13 @@ namespace WebApplications.Utilities
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
-                        {
-                            Int16 id;
-                            return Int16.TryParse(s, out id) ? (Int16?) id : null;
-                        }).Where(id => id.HasValue)
+                    {
+                        Int16 id;
+                        return Int16.TryParse(s, out id) ? (Int16?)id : null;
+                    }).Where(id => id.HasValue)
                         .Distinct()
                         .Select(id => getObject(id.Value));
-            if (!typeof (T).IsValueType)
+            if (!typeof(T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -745,13 +746,13 @@ namespace WebApplications.Utilities
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
-                        {
-                            Int64 id;
-                            return Int64.TryParse(s, out id) ? (Int64?) id : null;
-                        }).Where(id => id.HasValue)
+                    {
+                        Int64 id;
+                        return Int64.TryParse(s, out id) ? (Int64?)id : null;
+                    }).Where(id => id.HasValue)
                         .Distinct()
                         .Select(id => getObject(id.Value));
-            if (!typeof (T).IsValueType)
+            if (!typeof(T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -952,7 +953,7 @@ namespace WebApplications.Utilities
         /// </remarks>
         public static Int64 GetEpochTime(this DateTime dateTime)
         {
-            return (Int64) (dateTime - EpochStart).TotalMilliseconds;
+            return (Int64)(dateTime - EpochStart).TotalMilliseconds;
         }
 
         /// <summary>
@@ -1075,7 +1076,7 @@ namespace WebApplications.Utilities
         /// <returns>The value (<paramref name="d"/>) in radians.</returns>
         public static double ToRadians(this double d)
         {
-            return (Math.PI/180)*d;
+            return (Math.PI / 180) * d;
         }
 
         /// <summary>
@@ -1085,7 +1086,7 @@ namespace WebApplications.Utilities
         /// <returns>The value (<paramref name="r"/>) in degrees.</returns>
         public static double ToDegrees(this double r)
         {
-            return r*(180.0/Math.PI);
+            return r * (180.0 / Math.PI);
         }
 
         /// <summary>
@@ -1096,8 +1097,8 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   Returns the formatted <see cref="string"/> if successful; otherwise returns the <paramref name="format"/> string.
         /// </returns>
-        [NotNull]
-        public static string SafeFormat(this string format, params object[] parameters)
+        [CanBeNull]
+        public static string SafeFormat([CanBeNull]this string format, [CanBeNull]params object[] parameters)
         {
             if (format == null) return null;
             if (parameters == null || parameters.Length < 1)
@@ -1119,8 +1120,8 @@ namespace WebApplications.Utilities
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="parameters">The values used in the format string.</param>
         /// <returns>Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.</returns>
-        [NotNull]
-        public static string SafeFormat(this string format, IFormatProvider formatProvider, params object[] parameters)
+        [CanBeNull]
+        public static string SafeFormat([CanBeNull]this string format, [CanBeNull]IFormatProvider formatProvider, [CanBeNull]params object[] parameters)
         {
             if (format == null) return null;
             if (parameters == null || parameters.Length < 1)
@@ -1134,6 +1135,91 @@ namespace WebApplications.Utilities
             {
                 return format;
             }
+        }
+
+        /// <summary>
+        /// Chunks a format string safely.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="open">The open character.</param>
+        /// <param name="close">The close character.</param>
+        /// <param name="formatSplit">The format splitter character.</param>
+        /// <returns>An enumeration of tuples.</returns>
+        /// <remarks><para>if <see cref="Tuple{T1,T2,T3}.Item1"/> is <see langword="null"/> then the block isn't a fill point; otherwise
+        /// it contains the tag (e.g. '0')</para>
+        /// <para>
+        ///   <see cref="Tuple{T1,T2,T3}.Item2"/> contains the format (if any); otherwise <see langword="null"/>.</para>
+        /// <para>
+        ///   <see cref="Tuple{T1,T2,T3}.Item3"/> contains the raw text.</para>
+        /// <para>
+        ///   <see cref="Tuple{T1,T2,T3}.Item3"/> contains the raw text.</para></remarks>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<Tuple<string, string, string>> FormatChunks([CanBeNull] this string format, char open = '{', char close = '}', char formatSplit = ':')
+        {
+            if (string.IsNullOrEmpty(format))
+                yield break;
+
+            StringBuilder chunk = new StringBuilder((int)(format.Length * 1.2));
+            bool inFillPoint = false;
+            int i = 0;
+            while (i < format.Length)
+            {
+                char c = format[i++];
+                if (!inFillPoint)
+                {
+                    if (c != open)
+                    {
+                        if (c != close || 
+                            (chunk.Length < 1) ||
+                            (chunk[chunk.Length - 1] != close))
+                            chunk.Append(c);
+                        continue;
+                    }
+
+                    if (chunk.Length > 0)
+                    {
+                        // Yield block of text.
+                        yield return new Tuple<string, string, string>(null, null, chunk.ToString());
+                        chunk.Clear();
+                    }
+
+                    chunk.Append(c);
+                    inFillPoint = true;
+                    continue;
+                }
+
+                chunk.Append(c);
+                if (c != close)
+                {
+                    if (c == open)
+                        inFillPoint = false;
+                    continue;
+                }
+
+                // Reached end of fill point
+                inFillPoint = false;
+
+                string raw = chunk.ToString();
+                string tag = chunk.ToString(1, chunk.Length - 2);
+                chunk.Clear();
+
+                if (tag.Length < 1)
+                {
+                    yield return new Tuple<string, string, string>(null, null, raw);
+                    continue;
+                }
+
+                int fs = tag.IndexOf(formatSplit);
+                if (fs < 0)
+                    yield return new Tuple<string, string, string>(tag, null, raw);
+                else if (fs < 1)
+                    yield return new Tuple<string, string, string>(null, null, raw);
+                else
+                    yield return new Tuple<string, string, string>(tag.Substring(0, fs), tag.Substring(fs+1), raw);
+            }
+
+            yield return new Tuple<string, string, string>(null, null, chunk.ToString());
         }
 
         /// <summary>
@@ -1155,6 +1241,7 @@ namespace WebApplications.Utilities
         /// <param name="result">The result to wrap.</param>
         /// <param name="data">The data to embed.</param>
         /// <returns>The wrapped result.</returns>
+        [Obsolete("Consider using TPL or Async.")]
         [NotNull]
         public static IAsyncResult Wrap<T>([NotNull] this IAsyncResult result, T data)
         {
@@ -1168,6 +1255,7 @@ namespace WebApplications.Utilities
         /// <param name="result">The result to unwrap.</param>
         /// <returns>The embedded data.</returns>
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
+        [Obsolete("Consider using TPL or Async.")]
         public static T Unwrap<T>([NotNull] this IAsyncResult result)
         {
             return ApmWrap<T>.Unwrap(ref result);
@@ -1181,6 +1269,7 @@ namespace WebApplications.Utilities
         /// <param name="unwrappedResult">The unwrapped result.</param>
         /// <returns>The embedded data.</returns>
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
+        [Obsolete("Consider using TPL or Async.")]
         public static T Unwrap<T>([NotNull] this IAsyncResult result, out IAsyncResult unwrappedResult)
         {
             unwrappedResult = result;
@@ -1196,6 +1285,7 @@ namespace WebApplications.Utilities
         /// <param name="syncContext">The synchronization context.</param>
         /// <returns>The wrapped result.</returns>
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
+        [Obsolete("Consider using TPL or Async.")]
         [NotNull]
         public static AsyncCallback WrapCallback<T>([NotNull] this AsyncCallback callback, T data,
                                                     SynchronizationContext syncContext = null)
@@ -1220,13 +1310,13 @@ namespace WebApplications.Utilities
             int[] orderedIndices = indices
                 .Where(i => i < length && i > -1)
                 .OrderBy(i => i)
-                .Concat(new[] {length})
+                .Concat(new[] { length })
                 .ToArray();
 
             // If there is only one index we return the original
             // aray in a single element enumeration.
             if (orderedIndices.Length < 2)
-                return new[] {array};
+                return new[] { array };
 
             T[][] arrays = new T[orderedIndices.Length][];
             int start = 0;
@@ -1288,7 +1378,7 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>)
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
                 ? type.GetGenericArguments()[0]
                 : type;
         }
@@ -1304,9 +1394,9 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>)
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
                 ? type
-                : typeof (Optional<>).MakeGenericType(type);
+                : typeof(Optional<>).MakeGenericType(type);
         }
 
         /// <summary>
@@ -1325,7 +1415,7 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
-            if (!type.IsGenericType || 
+            if (!type.IsGenericType ||
                 (type.GetGenericTypeDefinition() != typeof(Optional<>)))
                 return type.Default();
 
@@ -1599,7 +1689,7 @@ namespace WebApplications.Utilities
         /// <returns>The number increased by given percentage.</returns>
         public static double AddPercentage(this double number, double increaseByPercent)
         {
-            return number + (number*increaseByPercent)/100;
+            return number + (number * increaseByPercent) / 100;
         }
 
         /// <summary>
@@ -1624,7 +1714,7 @@ namespace WebApplications.Utilities
 
                 // Note that scope is actually a uint not a long, but uint isn't CLS compliant so the framework
                 // uses a long - we don't need to waste the extra 4 bytes though.
-                uint scope = (uint) ipAddress.ScopeId;
+                uint scope = (uint)ipAddress.ScopeId;
                 byte[] scopeBytes = BitConverter.GetBytes(scope);
                 Array.Copy(scopeBytes, 0, bytes, offset, 4);
             }
@@ -1695,7 +1785,7 @@ namespace WebApplications.Utilities
             double avg = enumerable.Average();
 
             // Return standard deviation
-            return Math.Sqrt(enumerable.Sum(d => (d - avg)*(d - avg))/count);
+            return Math.Sqrt(enumerable.Sum(d => (d - avg) * (d - avg)) / count);
         }
 
         /// <summary>
@@ -1719,7 +1809,7 @@ namespace WebApplications.Utilities
             double avg = enumerable.Average();
 
             // Return standard deviation
-            return Math.Sqrt(enumerable.Sum(d => (d - avg)*(d - avg))/count);
+            return Math.Sqrt(enumerable.Sum(d => (d - avg) * (d - avg)) / count);
         }
         #endregion
 
@@ -2080,13 +2170,15 @@ namespace WebApplications.Utilities
         #endregion
 
         #region ToMemorySize
-        [NotNull] private static readonly string[] _memoryUnitsLong =
+        [NotNull]
+        private static readonly string[] _memoryUnitsLong =
             {
                 " byte", " kilobyte", " megabyte", " gigabyte",
                 " terabyte", " petabyte", " exabyte"
             };
 
-        [NotNull] private static readonly string[] _memoryUnitsShort = {"B", "KB", "MB", "GB", "TB", "PB", "EB"};
+        [NotNull]
+        private static readonly string[] _memoryUnitsShort = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
 
         /// <summary>
         /// Converts a number of bytes to a friendly memory size.
@@ -2099,7 +2191,7 @@ namespace WebApplications.Utilities
         public static string ToMemorySize(this short bytes, bool longUnits = false, uint decimalPlaces = 1,
                                           double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2113,7 +2205,7 @@ namespace WebApplications.Utilities
         public static string ToMemorySize(this ushort bytes, bool longUnits = false, uint decimalPlaces = 1,
                                           double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2127,7 +2219,7 @@ namespace WebApplications.Utilities
         public static string ToMemorySize(this int bytes, bool longUnits = false, uint decimalPlaces = 1,
                                           double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2141,7 +2233,7 @@ namespace WebApplications.Utilities
         public static string ToMemorySize(this uint bytes, bool longUnits = false, uint decimalPlaces = 1,
                                           double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2155,7 +2247,7 @@ namespace WebApplications.Utilities
         public static string ToMemorySize(this long bytes, bool longUnits = false, uint decimalPlaces = 1,
                                           double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2169,7 +2261,7 @@ namespace WebApplications.Utilities
         public static string ToMemorySize(this ulong bytes, bool longUnits = false, uint decimalPlaces = 1,
                                           double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2187,7 +2279,7 @@ namespace WebApplications.Utilities
             else if (decimalPlaces > 16) decimalPlaces = 16;
 
             // 921.6 is 0.9*1024, this means that be default the breakpoint will round up the last decimal place.
-            if (breakPoint < 1) breakPoint = 921.6D*Math.Pow(10, -decimalPlaces);
+            if (breakPoint < 1) breakPoint = 921.6D * Math.Pow(10, -decimalPlaces);
             else if (breakPoint > 1023) breakPoint = 1023;
 
             uint maxDecimalPlaces = 0;
@@ -2244,9 +2336,9 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static short Mod(this short value, short modulus)
         {
-            int mod = value%modulus;
+            int mod = value % modulus;
             if (mod < 0) mod += modulus;
-            return (short) mod;
+            return (short)mod;
         }
 
         /// <summary>
@@ -2258,7 +2350,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ushort Mod(this ushort value, ushort modulus)
         {
-            return (ushort) (value%modulus);
+            return (ushort)(value % modulus);
         }
 
         /// <summary>
@@ -2270,7 +2362,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static int Mod(this int value, int modulus)
         {
-            int mod = value%modulus;
+            int mod = value % modulus;
             if (mod < 0) mod += modulus;
             return mod;
         }
@@ -2284,7 +2376,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static uint Mod(this uint value, uint modulus)
         {
-            return value%modulus;
+            return value % modulus;
         }
 
         /// <summary>
@@ -2296,7 +2388,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static long Mod(this long value, long modulus)
         {
-            long mod = value%modulus;
+            long mod = value % modulus;
             if (mod < 0) mod += modulus;
             return mod;
         }
@@ -2310,7 +2402,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ulong Mod(this ulong value, ulong modulus)
         {
-            return value%modulus;
+            return value % modulus;
         }
         #endregion
 
@@ -2455,7 +2547,7 @@ namespace WebApplications.Utilities
 
             // Get the semantic version attribute.
             AssemblySemanticVersionAttribute attribute = assembly.GetCustomAttribute<AssemblySemanticVersionAttribute>();
-            
+
             SemanticVersion result;
             if ((attribute != null) &&
                 Utilities.SemanticVersion.TryParse(
@@ -2531,7 +2623,7 @@ namespace WebApplications.Utilities
                         ).Compile();
                 })(values);
         }
-        
+
         /// <summary>
         /// The <see cref="IEnumerator.MoveNext" /> method.
         /// </summary>
