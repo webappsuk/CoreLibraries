@@ -378,8 +378,10 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
         [PublicAPI]
-        public static void SetTrace(string format, LoggingLevels validLevels = LoggingLevels.All)
+        public static void SetTrace([CanBeNull]string format = null, LoggingLevels validLevels = LoggingLevels.All)
         {
+            if (format == null)
+                format = TraceLogger.DefaultFormat;
             TraceLogger traceLogger = _loggers.OfType<TraceLogger>().SingleOrDefault();
             if (traceLogger != null)
             {
@@ -409,9 +411,11 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
         [PublicAPI]
-        public static void SetConsole([NotNull] string format, LoggingLevels validLevels = LoggingLevels.All)
+        public static void SetConsole([CanBeNull] string format = null, LoggingLevels validLevels = LoggingLevels.All)
         {
-            Contract.Requires(format != null);
+            if (format == null)
+                format = ConsoleLogger.DefaultFormat;
+
             ConsoleLogger consoleLogger = _loggers.OfType<ConsoleLogger>().SingleOrDefault();
             if (consoleLogger != null)
             {

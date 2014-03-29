@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,9 +41,10 @@ namespace WebApplications.Utilities.Logging.Loggers
     /// </summary>
     public abstract class LoggerBase : ILogger
     {
+        private readonly bool _allowMultiple;
+        [NotNull]
         private readonly string _name;
         private readonly bool _queryable;
-        private readonly bool _allowMultiple;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerBase" /> class.
@@ -53,7 +53,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="queryable">if set to <see langword="true" /> [queryable].</param>
         /// <param name="allowMultiple">if set to <see langword="true" /> [allow multiple].</param>
         /// <param name="validLevels">The valid levels.</param>
-        protected LoggerBase([NotNull] string name, bool queryable = false, bool allowMultiple = true, LoggingLevels validLevels = LoggingLevels.All)
+        protected LoggerBase([NotNull] string name, bool queryable = false, bool allowMultiple = true,
+            LoggingLevels validLevels = LoggingLevels.All)
         {
             Contract.Requires(name != null);
             _name = name;
@@ -74,13 +75,19 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// A <see cref="bool" /> value indicating whether the logger supports multiple instances.
         /// </summary>
         /// <value>Returns <see langword="true" /> if the logger supports multiple instances; otherwise returns <see langword="false" />.</value>
-        public bool AllowMultiple { get { return _allowMultiple; } }
+        public bool AllowMultiple
+        {
+            get { return _allowMultiple; }
+        }
 
         /// <summary>
         /// A <see cref="bool" /> value indicating whether the logger is queryable.
         /// </summary>
         /// <value>Returns <see langword="true" /> if this instance can retrieve historic logs; otherwise returns <see langword="false" />.</value>
-        public bool Queryable { get { return _queryable; } }
+        public bool Queryable
+        {
+            get { return _queryable; }
+        }
 
         /// <summary>
         /// The valid <see cref="LoggingLevels">log levels</see> for this log level.
@@ -92,7 +99,10 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets the logger name.
         /// </summary>
         /// <value>The logger name.</value>
-        public string Name { get { return _name; } }
+        public string Name
+        {
+            get { return _name; }
+        }
 
         /// <summary>
         /// Adds the specified logs to storage in batches.
@@ -101,7 +111,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public abstract Task Add([NotNull]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
+        public abstract Task Add([NotNull] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Gets the Qbservable allowing asynchronous querying of log data.
@@ -112,8 +122,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             get
             {
                 if (_queryable)
-                    throw new NotImplementedException();
-                throw new NotSupportedException();
+                    throw new NotImplementedException("Qbserve has not been implemented by the logger.");
+                throw new NotSupportedException("Qbserve is not supported by the logger.");
             }
         }
 
@@ -125,7 +135,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         public virtual Task Flush(CancellationToken token = default(CancellationToken))
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            return Task.FromResult(true);
+            return TaskResult.Completed;
         }
     }
 }

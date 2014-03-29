@@ -42,12 +42,18 @@ namespace WebApplications.Utilities.Logging.Loggers
     public class TraceLogger : LoggerBase
     {
         /// <summary>
+        /// The default format.
+        /// </summary>
+        [NotNull]
+        public const string DefaultFormat = "Verbose,Header";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="TraceLogger" /> class.
         /// </summary>
         /// <param name="name">The logger name.</param>
         /// <param name="validLevels">The valid log levels.</param>
         /// <param name="format">The format.</param>
-        public TraceLogger([NotNull] string name, [NotNull] string format = "Verbose,Header",
+        public TraceLogger([NotNull] string name, [NotNull] string format = DefaultFormat,
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, false, validLevels)
         {
@@ -74,6 +80,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             Contract.Requires(logs != null);
             string format = Format;
+            // ReSharper disable once PossibleNullReferenceException
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {
                 Contract.Assert(log != null);
@@ -83,7 +90,7 @@ namespace WebApplications.Utilities.Logging.Loggers
 
             // We always complete synchronously.
             // ReSharper disable once AssignNullToNotNullAttribute
-            return Task.FromResult(true);
+            return TaskResult.Completed;
         }
     }
 }

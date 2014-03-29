@@ -11,7 +11,10 @@ namespace WebApplications.Utilities.Logging.Loggers
 {
     /// <summary>
     /// Allows logging to a database.
+    /// TODO This still needs to be implemented!
     /// </summary>
+#if false
+    [PublicAPI]
     public class SqlLogger : LoggerBase
     {
         /// <summary>
@@ -42,4 +45,5 @@ namespace WebApplications.Utilities.Logging.Loggers
             throw new NotImplementedException();
         }
     }
+#endif
 }

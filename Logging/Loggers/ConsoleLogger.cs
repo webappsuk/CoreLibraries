@@ -36,11 +36,17 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities.Logging.Loggers
 {
     /// <summary>
-    /// Class ConsoleLogger.
+    ///   Allows coloured logging to the console window, using an extended <see cref="Format"/> syntax.
     /// </summary>
     [PublicAPI]
     public class ConsoleLogger : LoggerBase
     {
+        /// <summary>
+        /// The default format.
+        /// </summary>
+        [NotNull]
+        public const string DefaultFormat = "{+Cyan}[{TimeStamp}] {+?}{Level}{+White}\t{Message}{+Gray}{StackTrace}\r\n";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleLogger"/> class.
         /// </summary>
@@ -48,7 +54,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="format">The format (see <see cref="Format"/> for more information on usage).</param>
         /// <param name="validLevels">The valid levels.</param>
         public ConsoleLogger([NotNull] string name,
-            [NotNull] string format = "{+Cyan}[{TimeStamp}] {+?}{Level}{+White}\t{Message}{+Gray}{StackTrace}\r\n",
+            [NotNull] string format = DefaultFormat,
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, false, validLevels)
         {

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -36,7 +37,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
 
 namespace WebApplications.Utilities.Logging.Loggers
@@ -54,8 +54,29 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         /// The default logging directory.
         /// </summary>
+        [PublicAPI]
         [NotNull]
-        private static readonly string DefaultDirectory;
+        public static readonly string DefaultDirectory;
+
+        private uint _buffer;
+        [NotNull]
+        private string _directory;
+        [NotNull]
+        private string _extension;
+        [NotNull]
+        private string _fileNameFormat;
+        [NotNull]
+        private string _format;
+
+        /// <summary>
+        ///   The current log file being written to.
+        /// </summary>
+        private LogFile _logFile;
+
+        private TimeSpan _maxDuration;
+        private long _maxLog;
+        [NotNull]
+        private string _pathFormat;
 
         /// <summary>
         /// Initializes static members of the <see cref="FileLogger" /> class.
@@ -64,25 +85,88 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             // Grab the entry point assembly, or this assembly if the process is unmanaged.
             Assembly a = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-            DefaultDirectory = Path.GetDirectoryName(a.Location);
+            DefaultDirectory = Path.GetDirectoryName(a.Location) ?? Path.GetTempPath();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileLogger" /> class.
+        /// </summary>
+        /// <param name="name">The filename.</param>
+        /// <param name="directory">The directory to log to (default to entry assembly directory).</param>
+        /// <param name="maxLog"><para>The maximum number of log items in a single log file.</para>
+        /// <para>By default this is set to 1,000.</para></param>
+        /// <param name="maxDuration">The maximum time period that a single log file can cover.</param>
+        /// <param name="validLevels"><para>The valid log levels.</para>
+        /// <para>By default allows <see cref="LoggingLevels">all log levels</see>.</para></param>
+        /// <param name="format">The log format (default to "Verbose,Xml").</param>
+        /// <param name="fileNameFormat"><para>The filename format - where {DateTime} is the creation date time.</para>
+        /// <para>By default the format is "{ApplicationName}-{DateTime:yyMMddHHmmssffff}".</para></param>
+        /// <param name="extension"><para>The file extension.</para>
+        /// <para>By default this is set to use "log".</para></param>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="autoFlush">if set to <see langword="true" /> [auto flush].</param>
+        /// <exception cref="LoggingException"><para>
+        ///   <paramref name="maxLog" /> was less than 10, which would result in too many log files to be created.</para>
+        /// <para>-or-</para>
+        /// <para>
+        ///   <paramref name="maxDuration" /> was less than 10 seconds, which would result in too many log files to be created.</para>
+        /// <para>-or-</para>
+        /// <para>
+        ///   <paramref name="directory" /> was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
+        /// <para>-or-</para>
+        /// <para>The <paramref name="fileNameFormat" /> string was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
+        /// <para>-or-</para>
+        /// <para>An error occurred trying to access the <paramref name="directory" />.</para>
+        /// <para>-or-</para>
+        /// <para>
+        ///   <paramref name="extension" /> was more than 5 characters long.</para>
+        /// <para>-or-</para>
+        /// <para>The <paramref name="fileNameFormat" /> led to an invalid path or created a path that references the wrong <paramref name="directory" />.</para>
+        /// <para>-or-</para>
+        /// <para>File path contained <see cref="Path.GetInvalidPathChars">invalid characters</see>.</para></exception>
+        public FileLogger(
+            [NotNull] string name,
+            [CanBeNull] string directory = null,
+            Int64 maxLog = 1000,
+            TimeSpan maxDuration = default(TimeSpan),
+            LoggingLevels validLevels = LoggingLevels.All,
+            [NotNull] string format = "Verbose,Xml",
+            [NotNull] string fileNameFormat = "{ApplicationName}-{DateTime:yyMMddHHmmssffff}",
+            [CanBeNull] string extension = null,
+            uint buffer = 65536,
+            bool autoFlush = false)
+            : base(name, false, true, validLevels)
+        {
+            Contract.Requires(name != null);
+            Contract.Requires(format != null);
+            Contract.Requires(fileNameFormat != null);
+            MaxLog = maxLog;
+            MaxDuration = maxDuration == default(TimeSpan) ? TimeSpan.FromDays(1) : maxDuration;
+            _directory = directory ?? DefaultDirectory;
+            _fileNameFormat = fileNameFormat;
+            _extension = extension ?? string.Empty;
+            _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, _extension);
+            Format = format;
+            Buffer = buffer;
+            AutoFlush = autoFlush;
         }
 
 
         /// <summary>
         ///   The directory being logged to.
         /// </summary>
+        [CanBeNull]
         [UsedImplicitly]
         public string Directory
         {
             get { return _directory; }
             set
             {
+                if (value == null) value = DefaultDirectory;
                 if (_directory == value) return;
                 _pathFormat = ValidatePathFormat(value, _fileNameFormat, _extension);
                 _directory = value;
-#pragma warning disable 4014
                 CloseFile();
-#pragma warning restore 4014
             }
         }
 
@@ -90,17 +174,17 @@ namespace WebApplications.Utilities.Logging.Loggers
         ///   The format string used for naming log files.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public string FileNameFormat
         {
             get { return _fileNameFormat; }
             set
             {
+                Contract.Requires(value != null);
                 if (_fileNameFormat == value) return;
                 _pathFormat = ValidatePathFormat(_directory, value, _extension);
                 _fileNameFormat = value;
-#pragma warning disable 4014
                 CloseFile();
-#pragma warning restore 4014
             }
         }
 
@@ -108,18 +192,18 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets or sets the extension.
         /// </summary>
         /// <value>The extension.</value>
-        [NotNull]
+        [PublicAPI]
+        [CanBeNull]
         public string Extension
         {
             get { return _extension; }
             set
             {
+                if (value == null) value = string.Empty;
                 if (_extension == value) return;
                 _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, value);
                 _extension = value;
-#pragma warning disable 4014
                 CloseFile();
-#pragma warning restore 4014
             }
         }
 
@@ -134,7 +218,9 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 if (_maxDuration == value) return;
                 if (value < TimeSpan.FromSeconds(10))
-                    throw new LoggingException(LoggingLevel.Critical, Resources.FileLogger_FileDurationLessThanTenSeconds, value);
+                    throw new LoggingException(LoggingLevel.Critical,
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        Resources.FileLogger_FileDurationLessThanTenSeconds, value);
                 _maxDuration = value;
             }
         }
@@ -153,6 +239,7 @@ namespace WebApplications.Utilities.Logging.Loggers
 
                 if (value < 10)
                     throw new LoggingException(LoggingLevel.Critical,
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.FileLogger_MaximumLogsLessThanTen, value);
                 _maxLog = value;
             }
@@ -162,16 +249,17 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets or sets the log format.
         /// </summary>
         /// <value>The format.</value>
+        [NotNull]
+        [PublicAPI]
         public string Format
         {
             get { return _format; }
             set
             {
+                Contract.Requires(value != null);
                 if (_format == value) return;
                 _format = value;
-#pragma warning disable 4014
                 CloseFile();
-#pragma warning restore 4014
             }
         }
 
@@ -179,6 +267,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets or sets the buffer size in bytes.
         /// </summary>
         /// <value>The buffer.</value>
+        [PublicAPI]
         public uint Buffer
         {
             get { return _buffer; }
@@ -187,15 +276,15 @@ namespace WebApplications.Utilities.Logging.Loggers
                 if (_buffer == value) return;
                 if (value < 128)
                     throw new LoggingException(LoggingLevel.Critical,
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.FileLogger_BufferSize_Too_Small, value.ToMemorySize());
                 if (value > int.MaxValue)
                     throw new LoggingException(LoggingLevel.Critical,
+// ReSharper disable once AssignNullToNotNullAttribute
                         Resources.FileLogger_BufferSize_Too_Big, value.ToMemorySize());
 
                 _buffer = value;
-#pragma warning disable 4014
                 CloseFile();
-#pragma warning restore 4014
             }
         }
 
@@ -203,79 +292,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets or sets a value indicating whether to auto flush the file.
         /// </summary>
         /// <value><see langword="true" /> if auto flush; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
         public bool AutoFlush { get; set; }
-
-        /// <summary>
-        ///   The current log file being written to.
-        /// </summary>
-        private LogFile _logFile;
-
-        private long _maxLog;
-        private TimeSpan _maxDuration;
-        private string _directory;
-        private string _fileNameFormat;
-        private string _extension;
-
-        private string _pathFormat;
-        private string _format;
-        private uint _buffer;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileLogger" /> class.
-        /// </summary>
-        /// <param name="name">The filename.</param>
-        /// <param name="directory">The directory to log to (default to entry assembly directory).</param>
-        /// <param name="maxLog"><para>The maximum number of log items in a single log file.</para>
-        ///   <para>By default this is set to 1,000.</para></param>
-        /// <param name="maxDuration">The maximum time period that a single log file can cover.</param>
-        /// <param name="validLevels"><para>The valid log levels.</para>
-        ///   <para>By default allows <see cref="LoggingLevels">all log levels</see>.</para></param>
-        /// <param name="format">The log format (default to "Verbose,Xml").</param>
-        /// <param name="fileNameFormat"><para>The filename format - where {DateTime} is the creation date time.</para>
-        ///   <para>By default the format is "{ApplicationName}-{DateTime:yyMMddHHmmssffff}".</para></param>
-        /// <param name="extension"><para>The file extension.</para>
-        ///   <para>By default this is set to use "log".</para></param>
-        /// <param name="excludeKeys">The comma seperated list of keys to exclude.</param>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="autoFlush">if set to <see langword="true" /> [auto flush].</param>
-        /// <exception cref="LoggingException"><para><paramref name="maxLog" /> was less than 10, which would result in too many log files to be created.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="maxDuration" /> was less than 10 seconds, which would result in too many log files to be created.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="directory" /> was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para>The <paramref name="fileNameFormat" /> string was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
-        ///   <para>-or-</para>
-        ///   <para>An error occurred trying to access the <paramref name="directory" />.</para>
-        ///   <para>-or-</para>
-        ///   <para><paramref name="extension" /> was more than 5 characters long.</para>
-        ///   <para>-or-</para>
-        ///   <para>The <paramref name="fileNameFormat" /> led to an invalid path or created a path that references the wrong <paramref name="directory" />.</para>
-        ///   <para>-or-</para>
-        ///   <para>File path contained <see cref="Path.GetInvalidPathChars">invalid characters</see>.</para></exception>
-        public FileLogger(
-            [NotNull] string name,
-            [NotNull] string directory = null,
-            Int64 maxLog = 1000,
-            TimeSpan maxDuration = default(TimeSpan),
-            LoggingLevels validLevels = LoggingLevels.All,
-            string format = "Verbose,Xml",
-            string fileNameFormat = "{ApplicationName}-{DateTime:yyMMddHHmmssffff}",
-            string extension = null,
-            uint buffer = 65536,
-            bool autoFlush = false)
-            : base(name, false, true, validLevels)
-        {
-            MaxLog = maxLog;
-            MaxDuration = maxDuration == default(TimeSpan) ? TimeSpan.FromDays(1) : maxDuration;
-            _directory = directory;
-            _fileNameFormat = fileNameFormat;
-            _extension = extension;
-            _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, _extension);
-            Format = format;
-            Buffer = buffer;
-            AutoFlush = autoFlush;
-        }
 
         /// <summary>
         /// Validates the path format.
@@ -285,8 +303,14 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="extension">The extension.</param>
         /// <returns>System.String.</returns>
         /// <exception cref="LoggingException"></exception>
-        private static string ValidatePathFormat(string directory, string fileNameFormat, string extension)
+        [NotNull]
+        private static string ValidatePathFormat([NotNull] string directory, [NotNull] string fileNameFormat,
+            [NotNull] string extension)
         {
+            Contract.Requires(directory != null);
+            Contract.Requires(fileNameFormat != null);
+            Contract.Requires(extension != null);
+
             if (string.IsNullOrWhiteSpace(directory))
                 directory = DefaultDirectory;
 
@@ -298,11 +322,13 @@ namespace WebApplications.Utilities.Logging.Loggers
             }
             catch (Exception e)
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 throw new LoggingException(e, LoggingLevel.Critical, Resources.FileLogger_DirectoryAccessOrCreationError,
                     directory);
             }
 
             if (string.IsNullOrWhiteSpace(fileNameFormat))
+                // ReSharper disable once AssignNullToNotNullAttribute
                 throw new LoggingException(LoggingLevel.Critical, Resources.FileLogger_FileNameFormatNotSpecified);
 
 
@@ -315,17 +341,19 @@ namespace WebApplications.Utilities.Logging.Loggers
                 extension = extension.Trim();
                 if (extension.Any(c => !Char.IsLetterOrDigit(c)))
                     throw new LoggingException(LoggingLevel.Critical,
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.FileLogger_Extension_Invalid_Char, extension);
                 if (extension.Length > 5)
                     throw new LoggingException(LoggingLevel.Critical,
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.FileLogger_ExtensionLongerThanFiveCharacters, extension);
                 extension = "." + extension;
             }
 
             string fullFormat = directory + @"\" +
                                 fileNameFormat.Replace("DateTime", "0")
-                                              .Replace("ApplicationName", "2")
-                                              .Replace("ApplicationGuid", "3")
+                                    .Replace("ApplicationName", "2")
+                                    .Replace("ApplicationGuid", "3")
                                 + "{1}" + extension;
 
             // Test the format string
@@ -337,7 +365,9 @@ namespace WebApplications.Utilities.Logging.Loggers
                 Log.ApplicationGuid);
 
             if (testFormat.IndexOfAny(Path.GetInvalidPathChars()) > -1)
-                throw new LoggingException(LoggingLevel.Critical, Resources.FileLogger_FileNameFormatInvalid, fileNameFormat);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                throw new LoggingException(LoggingLevel.Critical, Resources.FileLogger_FileNameFormatInvalid,
+                    fileNameFormat);
 
             try
             {
@@ -345,11 +375,15 @@ namespace WebApplications.Utilities.Logging.Loggers
             }
             catch (Exception e)
             {
-                throw new LoggingException(e, LoggingLevel.Critical, Resources.FileLogger_InvalidPathCreation, fileNameFormat);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                throw new LoggingException(e, LoggingLevel.Critical, Resources.FileLogger_InvalidPathCreation,
+                    fileNameFormat);
             }
 
             if (!testFormat.StartsWith(directory))
-                throw new LoggingException(LoggingLevel.Critical, Resources.FileLogger_PathCreatedOutsideDirectory, fileNameFormat);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                throw new LoggingException(LoggingLevel.Critical, Resources.FileLogger_PathCreatedOutsideDirectory,
+                    fileNameFormat);
 
             return fullFormat;
         }
@@ -370,10 +404,11 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <returns>Task.</returns>
         public override async Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
+            Contract.Requires(logs != null);
             LogFile logFile = null;
             foreach (Log log in logs)
             {
-                if (log == null) continue;
+                Contract.Assert(log != null);
 
                 logFile = _logFile;
 
@@ -384,7 +419,7 @@ namespace WebApplications.Utilities.Logging.Loggers
 #pragma warning disable 4014
                     LogFile lf = logFile;
                     if (lf != null)
-                        Task.Run(() => lf.Dispose());
+                        Task.Run(() => lf.Dispose(), token);
 #pragma warning restore 4014
 
                     int dedupe = 1;
@@ -418,13 +453,13 @@ namespace WebApplications.Utilities.Logging.Loggers
         public override Task Flush(CancellationToken token = default(CancellationToken))
         {
             LogFile lf = _logFile;
-            return lf == null ? Task.FromResult(true) : lf.FlushAsync(token);
+            return lf == null ? TaskResult.Completed : lf.FlushAsync(token);
         }
 
         /// <summary>
-        /// Closes the currnet log file.
+        /// Closes the current log file.
         /// </summary>
-        /// <returns>An awaitable task.</returns>
+        [PublicAPI]
         public void CloseFile()
         {
             LogFile logFile = Interlocked.Exchange(ref _logFile, null);
@@ -441,17 +476,21 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// The file name
             /// </summary>
             [NotNull]
+            [PublicAPI]
             public readonly string FileName;
+
             [NotNull]
+            [PublicAPI]
             public readonly string Format;
 
-            [NotNull]
-            private FileStream _fileStream;
-            public readonly bool IsXml;
+            [PublicAPI]
             public readonly bool IsJson;
-            public int Logs { get; private set; }
+            [PublicAPI]
+            public readonly bool IsXml;
 
             public readonly DateTime Start;
+            [NotNull]
+            private FileStream _fileStream;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="LogFile" /> class.
@@ -460,8 +499,10 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <param name="format">The format.</param>
             /// <param name="buffer">The buffer.</param>
             /// <param name="start">The start.</param>
-            public LogFile(string fileName, string format, uint buffer, DateTime start)
+            public LogFile([NotNull] string fileName, [NotNull] string format, uint buffer, DateTime start)
             {
+                Contract.Requires(fileName != null);
+                Contract.Requires(format != null);
                 Format = format;
                 Start = start;
                 int b = (int)buffer;
@@ -482,7 +523,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                         fileName += ".xml";
                     else if (IsJson)
                         fileName += ".json";
-                    else 
+                    else
                         fileName += ".log";
                 }
                 FileName = fileName;
@@ -499,7 +540,24 @@ namespace WebApplications.Utilities.Logging.Loggers
                 else
                     Write(Format + Environment.NewLine + Environment.NewLine).Wait();
 
+                // ReSharper disable once AssignNullToNotNullAttribute
                 Trace.WriteLine(string.Format(Resources.FileLogger_Started_File, FileName, b.ToMemorySize()));
+            }
+
+            public int Logs { get; private set; }
+
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
+            public void Dispose()
+            {
+                FileStream fileStream = Interlocked.Exchange(ref _fileStream, null);
+                if (fileStream == null) return;
+
+                fileStream.Flush();
+                fileStream.Dispose();
+                // ReSharper disable once AssignNullToNotNullAttribute
+                Trace.WriteLine(string.Format(Resources.FileLogger_Ended_File, FileName));
             }
 
             /// <summary>
@@ -510,9 +568,9 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <returns>Task.</returns>
             [NotNull]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public async Task Write(Log log, CancellationToken token = default(CancellationToken))
+            public async Task Write([NotNull] Log log, CancellationToken token = default(CancellationToken))
             {
-                if (log == null) return;
+                Contract.Requires(log != null);
                 string logStr = log.ToString(Format) + Environment.NewLine;
                 Logs++;
 
@@ -546,9 +604,11 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <returns>Task.</returns>
             [NotNull]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public Task WriteLine(string text, CancellationToken token = default(CancellationToken))
+            [PublicAPI]
+            public Task WriteLine([NotNull] string text, CancellationToken token = default(CancellationToken))
             {
-                return Write(text + Environment.NewLine);
+                Contract.Requires(text != null);
+                return Write(text + Environment.NewLine, token);
             }
 
             /// <summary>
@@ -559,10 +619,13 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <returns>Task.</returns>
             [NotNull]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public Task Write(string text, CancellationToken token = default(CancellationToken))
+            [PublicAPI]
+            public Task Write([CanBeNull] string text, CancellationToken token = default(CancellationToken))
             {
-                if (text == null) return Task.FromResult(true);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                if (text == null) return TaskResult.Completed;
                 byte[] bytes = Encoding.Unicode.GetBytes(text);
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return _fileStream.WriteAsync(bytes, 0, bytes.Length, token);
             }
 
@@ -575,18 +638,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Task FlushAsync(CancellationToken token = default(CancellationToken))
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return _fileStream.FlushAsync(token);
-            }
-
-            /// <summary>
-            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            /// </summary>
-            public void Dispose()
-            {
-                FileStream fileStream = Interlocked.Exchange(ref _fileStream, null);
-                fileStream.Flush();
-                fileStream.Dispose();
-                Trace.WriteLine(string.Format(Resources.FileLogger_Ended_File, FileName));
             }
         }
     }

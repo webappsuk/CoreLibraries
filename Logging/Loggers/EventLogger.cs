@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Logging.Configuration;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -42,47 +41,17 @@ namespace WebApplications.Utilities.Logging.Loggers
     [UsedImplicitly]
     public class EventLogger : LoggerBase
     {
-        private string _eventLog;
-        private string _machineName;
-
         /// <summary>
-        ///   The <see cref="System.Diagnostics.EventLog.Log">name</see> of the <see cref="EventLog">event log</see>.
+        /// The default format.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
-        public string EventLog
-        {
-            get { return _eventLog; }
-            set
-            {
-                if (_eventLog == value) return;
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new LoggingException(Resources.EventLogger_EventLogCannotBeNull);
-                _eventLog = value;
-            }
-        }
+        public const string DefaultFormat = "Verbose";
 
-        /// <summary>
-        /// Gets or sets the format for trace messages.
-        /// </summary>
-        /// <value>The format.</value>
-        public string Format { get; set; }
-
-        /// <summary>
-        /// Gets or sets the format for trace messages.
-        /// </summary>
-        /// <value>The format.</value>
-        public string MachineName
-        {
-            get { return _machineName; }
-            set
-            {
-                if (_machineName == value) return;
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new LoggingException(Resources.EventLogger_MachineNameCannotBeNull);
-                _machineName = value;
-            }
-        }
+        [NotNull]
+        private string _eventLog;
+        [NotNull]
+        private string _machineName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventLogger" /> class.
@@ -102,15 +71,66 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] string name,
             [NotNull] string eventLog = "Application",
             LoggingLevels validLevels = LoggingLevels.AtLeastInformation,
-            string format = "Verbose",
-            string machineName = "."
+            [NotNull] string format = DefaultFormat,
+            [NotNull] string machineName = "."
             )
             : base(name, false, false, validLevels)
         {
+            Contract.Requires(name != null);
+            Contract.Requires(eventLog != null);
+            Contract.Requires(format != null);
+            Contract.Requires(machineName != null);
             Contract.Requires(name != null, Resources.EventLogger_NameCannotBeNull);
             EventLog = eventLog;
             MachineName = machineName;
             Format = format;
+        }
+
+        /// <summary>
+        ///   The <see cref="System.Diagnostics.EventLog.Log">name</see> of the <see cref="EventLog">event log</see>.
+        /// </summary>
+        [UsedImplicitly]
+        [NotNull]
+        public string EventLog
+        {
+            get { return _eventLog; }
+            set
+            {
+                Contract.Requires(value != null);
+                if (_eventLog == value) return;
+                if (string.IsNullOrWhiteSpace(value))
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    throw new LoggingException(Resources.EventLogger_EventLogCannotBeNull);
+                _eventLog = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the format for trace messages.
+        /// </summary>
+        /// <value>The format.</value>
+        [PublicAPI]
+        [NotNull]
+        public string Format { get; set; }
+
+        /// <summary>
+        /// Gets or sets the format for trace messages.
+        /// </summary>
+        /// <value>The format.</value>
+        [NotNull]
+        [PublicAPI]
+        public string MachineName
+        {
+            get { return _machineName; }
+            set
+            {
+                Contract.Requires(value != null);
+                if (_machineName == value) return;
+                if (string.IsNullOrWhiteSpace(value))
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    throw new LoggingException(Resources.EventLogger_MachineNameCannotBeNull);
+                _machineName = value;
+            }
         }
 
         /// <summary>
@@ -121,6 +141,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <returns>Task.</returns>
         public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
+            Contract.Requires(logs != null);
             string source = Log.ApplicationName;
             if (string.IsNullOrWhiteSpace(source))
                 source = "Application";
@@ -128,10 +149,10 @@ namespace WebApplications.Utilities.Logging.Loggers
                 source = source.Substring(0, 254);
 
             EventLog eventLog = new EventLog { Source = source, MachineName = MachineName, Log = EventLog };
-            EventLogEntryType entryType;
             string format = Format;
             foreach (Log log in logs)
             {
+                Contract.Assert(log != null);
                 token.ThrowIfCancellationRequested();
                 string logStr = log.ToString(format);
                 StringBuilder builder = new StringBuilder(logStr.Length);
@@ -139,8 +160,8 @@ namespace WebApplications.Utilities.Logging.Loggers
 
                 // Maximum event log size is 31839
                 bool percChar = false;
-                while ((builder.Length < 31839) && 
-                    (a < logStr.Length))
+                while ((builder.Length < 31839) &&
+                       (a < logStr.Length))
                 {
                     char c = logStr[a++];
 
@@ -153,6 +174,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                     builder.Append(c);
                 }
 
+                EventLogEntryType entryType;
                 switch (log.Level)
                 {
                     case LoggingLevel.Emergency:
@@ -174,7 +196,8 @@ namespace WebApplications.Utilities.Logging.Loggers
 
                 eventLog.WriteEntry(builder.ToString(), entryType, id, (short)log.Level, log.Guid.ToByteArray());
             }
-            return Task.FromResult(true);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return TaskResult.Completed;
         }
     }
 }

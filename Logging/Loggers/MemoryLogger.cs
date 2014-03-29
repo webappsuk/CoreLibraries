@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,18 +26,13 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Reactive.Joins;
-using System.Reactive.Subjects;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Caching;
-using WebApplications.Utilities.Logging.Interfaces;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -49,49 +44,9 @@ namespace WebApplications.Utilities.Logging.Loggers
     internal class MemoryLogger : LoggerBase
     {
         /// <summary>
-        ///   The length of time log items are cached for.
-        ///   <see cref="TimeSpan.Zero"/> is used for infinity.
+        /// The cleaner subscription.
         /// </summary>
-        public TimeSpan CacheExpiry
-        {
-            get { return _cacheExpiry; }
-            set
-            {
-                if (_cacheExpiry == value) return;
-
-                if (value == default(TimeSpan))
-                    value = TimeSpan.MaxValue;
-                else if (value < TimeSpan.FromSeconds(10))
-                    throw new LoggingException(LoggingLevel.Critical, Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
-                       value);
-
-                _cacheExpiry = value;
-                Clean();
-            }
-        }
-
-        /// <summary>
-        /// The oldest queue item.
-        /// </summary>
-        private DateTime _oldest = DateTime.MaxValue;
-
-        /// <summary>
-        ///   The maximum number of log entries to store.
-        /// </summary>
-        public int MaximumLogEntries
-        {
-            get { return _maximumLogEntries; }
-            set
-            {
-                if (_maximumLogEntries == value) return;
-
-                if (value < 1)
-                    throw new LoggingException(LoggingLevel.Critical, Resources.MemoryLogger_MaximumLogsLessThanOne,
-                        value);
-                _maximumLogEntries = value;
-                Clean();
-            }
-        }
+        private IDisposable _cleaner;
 
         /// <summary>
         ///   The cache that stores the logs.
@@ -99,13 +54,13 @@ namespace WebApplications.Utilities.Logging.Loggers
         [NotNull]
         private readonly Queue<Log> _queue = new Queue<Log>();
 
-        /// <summary>
-        /// The cleaner subscription.
-        /// </summary>
-        private readonly IDisposable _cleaner;
-
-        private int _maximumLogEntries;
         private TimeSpan _cacheExpiry;
+        /// <summary>
+        /// The synchronization lock.
+        /// </summary>
+        [NotNull]
+        private readonly object _lock = new object();
+        private int _maximumLogEntries;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="MemoryLogger"/> class.
@@ -136,43 +91,53 @@ namespace WebApplications.Utilities.Logging.Loggers
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, true, false, validLevels)
         {
+            Contract.Requires(name != null);
             MaximumLogEntries = maximumLogEntries;
             CacheExpiry = cacheExpiry;
             _cleaner = Log.Tick.Subscribe(t => Clean());
         }
 
         /// <summary>
-        /// Adds the specified logs to storage in batches.
+        ///   The length of time log items are cached for.
+        ///   <see cref="TimeSpan.Zero"/> is used for infinity.
         /// </summary>
-        /// <param name="logs">The logs to add to storage.</param>
-        /// <param name="token">The token.</param>
-        /// <returns>Task.</returns>
-        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public TimeSpan CacheExpiry
         {
-            lock (_lock)
+            get { return _cacheExpiry; }
+            set
             {
-                foreach (Log log in logs
-                    .Where(log => log.Level.IsValid(ValidLevels) &&
-                                  CacheExpiry > (DateTime.UtcNow - log.TimeStamp)))
-                {
-                    token.ThrowIfCancellationRequested();
-                    _queue.Enqueue(log);
-                }
-            }
+                if (_cacheExpiry == value) return;
 
-            // We always complete synchronously.
-            return Task.FromResult(true);
+                if (value == default(TimeSpan))
+                    value = TimeSpan.MaxValue;
+                else if (value < TimeSpan.FromSeconds(10))
+                    throw new LoggingException(LoggingLevel.Critical,
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
+                        value);
+
+                _cacheExpiry = value;
+                Clean();
+            }
         }
 
         /// <summary>
-        /// Force a flush of this logger.
+        ///   The maximum number of log entries to store.
         /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns>Task.</returns>
-        public override Task Flush(CancellationToken token = default(CancellationToken))
+        public int MaximumLogEntries
         {
-            Clean();
-            return base.Flush(token);
+            get { return _maximumLogEntries; }
+            set
+            {
+                if (_maximumLogEntries == value) return;
+
+                if (value < 1)
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    throw new LoggingException(LoggingLevel.Critical, Resources.MemoryLogger_MaximumLogsLessThanOne,
+                        value);
+                _maximumLogEntries = value;
+                Clean();
+            }
         }
 
         /// <summary>
@@ -191,6 +156,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 // Combine cache with any added in future.
                 return snapshot
                     .Skip(snapshot.Length > MaximumLogEntries ? snapshot.Length - MaximumLogEntries : 0)
+                    // ReSharper disable once PossibleNullReferenceException
                     .Where(log => CacheExpiry > (DateTime.UtcNow - log.TimeStamp));
             }
         }
@@ -199,11 +165,11 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets the Qbservable allowing asynchronous querying of log data.
         /// </summary>
         /// <value>The query.</value>
-        [NotNull]
         public override IQbservable<IEnumerable<KeyValuePair<string, string>>> Qbserve
         {
             get
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return All
                     .ToObservable()
                     .AsQbservable();
@@ -211,16 +177,52 @@ namespace WebApplications.Utilities.Logging.Loggers
         }
 
         /// <summary>
+        /// Adds the specified logs to storage in batches.
+        /// </summary>
+        /// <param name="logs">The logs to add to storage.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        {
+            Contract.Requires(logs != null);
+            lock (_lock)
+            {
+                foreach (Log log in logs
+                    // ReSharper disable once PossibleNullReferenceException
+                    .Where(log => log.Level.IsValid(ValidLevels) &&
+                                  CacheExpiry > (DateTime.UtcNow - log.TimeStamp)))
+                {
+                    token.ThrowIfCancellationRequested();
+                    _queue.Enqueue(log);
+                }
+            }
+
+            // We always complete synchronously.
+            return TaskResult.Completed;
+        }
+
+        /// <summary>
+        /// Force a flush of this logger.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        public override Task Flush(CancellationToken token = default(CancellationToken))
+        {
+            Clean();
+            return base.Flush(token);
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public override void Dispose()
         {
-            _cleaner.Dispose();
+            IDisposable cleaner = Interlocked.Exchange(ref _cleaner, null);
+            if (cleaner == null) return;
+            cleaner.Dispose();
             lock (_lock)
                 _queue.Clear();
         }
-
-        private object _lock = new object();
 
         /// <summary>
         /// Cleans this instance.
@@ -232,6 +234,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 while ((_queue.Count > 0) &&
                        ((_queue.Count > MaximumLogEntries) ||
+                    // ReSharper disable once PossibleNullReferenceException
                         (CacheExpiry > (DateTime.UtcNow - _queue.Peek().TimeStamp))))
                     _queue.Dequeue();
             }
