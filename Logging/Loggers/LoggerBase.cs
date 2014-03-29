@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
@@ -52,8 +53,9 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="queryable">if set to <see langword="true" /> [queryable].</param>
         /// <param name="allowMultiple">if set to <see langword="true" /> [allow multiple].</param>
         /// <param name="validLevels">The valid levels.</param>
-        protected LoggerBase(string name, bool queryable = false, bool allowMultiple = true, LoggingLevels validLevels = LoggingLevels.All)
+        protected LoggerBase([NotNull] string name, bool queryable = false, bool allowMultiple = true, LoggingLevels validLevels = LoggingLevels.All)
         {
+            Contract.Requires(name != null);
             _name = name;
             _queryable = queryable;
             _allowMultiple = allowMultiple;
@@ -99,13 +101,12 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public abstract Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
+        public abstract Task Add([NotNull]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Gets the Qbservable allowing asynchronous querying of log data.
         /// </summary>
         /// <value>The query.</value>
-        [NotNull]
         public virtual IQbservable<IEnumerable<KeyValuePair<string, string>>> Qbserve
         {
             get
@@ -121,9 +122,9 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        [NotNull]
         public virtual Task Flush(CancellationToken token = default(CancellationToken))
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Task.FromResult(true);
         }
     }

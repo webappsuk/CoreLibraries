@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,13 +27,11 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
-using WebApplications.Utilities.Logging.Interfaces;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -49,11 +47,22 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="name">The logger name.</param>
         /// <param name="validLevels">The valid log levels.</param>
         /// <param name="format">The format.</param>
-        public TraceLogger([NotNull] string name, string format = "Verbose,Header", LoggingLevels validLevels = LoggingLevels.All)
-            :base(name, false, false, validLevels)
+        public TraceLogger([NotNull] string name, [NotNull] string format = "Verbose,Header",
+            LoggingLevels validLevels = LoggingLevels.All)
+            : base(name, false, false, validLevels)
         {
+            Contract.Requires(name != null);
+            Contract.Requires(format != null);
             Format = format;
         }
+
+        /// <summary>
+        /// Gets or sets the format for trace messages.
+        /// </summary>
+        /// <value>The format.</value>
+        [PublicAPI]
+        [NotNull]
+        public string Format { get; set; }
 
         /// <summary>
         /// Adds the specified logs to storage in batches.
@@ -63,21 +72,18 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <returns>Task.</returns>
         public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
+            Contract.Requires(logs != null);
             string format = Format;
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {
+                Contract.Assert(log != null);
                 token.ThrowIfCancellationRequested();
                 Trace.WriteLine(log.ToString(format));
             }
 
             // We always complete synchronously.
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Task.FromResult(true);
         }
-
-        /// <summary>
-        /// Gets or sets the format for trace messages.
-        /// </summary>
-        /// <value>The format.</value>
-        public string Format { get; set; }
     }
 }

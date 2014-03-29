@@ -29,6 +29,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -365,6 +366,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
         public static void SetTrace(LogFormat format, LoggingLevels validLevels = LoggingLevels.All)
         {
             SetTrace(format.ToString(), validLevels);
@@ -375,6 +377,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
+        [PublicAPI]
         public static void SetTrace(string format, LoggingLevels validLevels = LoggingLevels.All)
         {
             TraceLogger traceLogger = _loggers.OfType<TraceLogger>().SingleOrDefault();
@@ -386,6 +389,38 @@ namespace WebApplications.Utilities.Logging
             }
 
             AddLogger(new TraceLogger("Trace logger", format, validLevels), _defaultMemoryLogger);
+        }
+
+        /// <summary>
+        /// Sets a console logger (if running in a console).
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="validLevels">The valid levels.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static void SetConsole(LogFormat format, LoggingLevels validLevels = LoggingLevels.All)
+        {
+            SetConsole(format.ToString(), validLevels);
+        }
+
+        /// <summary>
+        /// Sets a console logger (if running in a console).
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="validLevels">The valid levels.</param>
+        [PublicAPI]
+        public static void SetConsole([NotNull] string format, LoggingLevels validLevels = LoggingLevels.All)
+        {
+            Contract.Requires(format != null);
+            ConsoleLogger consoleLogger = _loggers.OfType<ConsoleLogger>().SingleOrDefault();
+            if (consoleLogger != null)
+            {
+                consoleLogger.Format = format;
+                consoleLogger.ValidLevels = validLevels;
+                return;
+            }
+
+            AddLogger(new ConsoleLogger("Console logger", format, validLevels), _defaultMemoryLogger);
         }
 
         /// <summary>
@@ -476,9 +511,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         private static readonly AsyncDebouncedAction _doFlush = new AsyncDebouncedAction(
-#pragma warning disable 1998
-            async token =>
-#pragma warning restore 1998
+            token =>
             {
                 // Grab batch.
                 Log[] batch;
@@ -497,7 +530,7 @@ namespace WebApplications.Utilities.Logging
 
                 if ((ValidLevels == LoggingLevels.None) ||
                     (batch.Length < 1))
-                    return;
+                    return TaskResult.Completed;
 
                 // Grab valid loggers
                 List<ILogger> loggers;
@@ -530,6 +563,7 @@ namespace WebApplications.Utilities.Logging
                         l.ValidLevels = LoggingLevels.None;
                     }
                 });
+                return TaskResult.Completed;
             });
 
         /// <summary>
