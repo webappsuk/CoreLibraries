@@ -191,6 +191,7 @@
     <Compile Include="Configuration\ConfigurationSection.cs" />
     <Compile Include="Configuration\ParameterCollection.cs" />
     <Compile Include="Configuration\ParameterElement.cs" />
+    <Compile Include="ConsoleHelper.cs" />
     <Compile Include="EqualityNetwork.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
     <Compile Include="Queue.cs">
@@ -264,6 +265,8 @@
     <Compile Include="Enumerations\TriState.cs" />
     <Compile Include="EqualityBuilder.cs" />
     <Compile Include="TaskResult.cs" />
+    <Compile Include="Threading\PauseToken.cs" />
+    <Compile Include="Threading\PauseTokenSource.cs" />
     <Compile Include="Threading\AsyncDebouncedAction.cs" />
     <Compile Include="Threading\AsyncDebouncedFunction.cs" />
     <Compile Include="Threading\AsyncLock.cs" />
