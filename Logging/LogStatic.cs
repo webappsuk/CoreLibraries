@@ -72,36 +72,44 @@ namespace WebApplications.Utilities.Logging
         [NotNull] private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(
             () =>
             {
+                Assembly assembly = null;
                 /*
                  * Scan call stack for assemblies that we can query
                  */
-                // Create a hash set of known public keys that we don't want to match.
-                HashSet<HashedByteArray> publicKeys = new HashSet<HashedByteArray>
+                try
                 {
-                    typeof (int).Assembly.GetName().GetPublicKey(),
-                    typeof (Observable).Assembly.GetName().GetPublicKey(),
-                    typeof (UtilityExtensions).Assembly.GetName().GetPublicKey()
-                };
-
-                Assembly assembly = null;
-                // Get the assembly name from the lowest point on the stack that does not have a
-                // 'known' public key.
-                StackFrame[] frames = new StackTrace().GetFrames();
-                if (!ReferenceEquals(frames, null))
-                {
-                    // ReSharper disable PossibleNullReferenceException
-                    assembly = frames
-                        .Select(f => f.GetMethod())
-                        .Where(m => m != null)
-                        .Select(m => m.DeclaringType)
-                        .Where(t => t != null)
-                        .Select(t => new {t.Assembly, Name = t.Assembly.GetName()})
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        .Where(n => (n.Name != null) && !publicKeys.Contains(n.Name.GetPublicKey()))
-                        .Select(n => n.Assembly)
-                        .FirstOrDefault();
-                    // ReSharper restore PossibleNullReferenceException
+                    // Create a hash set of known public keys that we don't want to match.
+                    HashSet<HashedByteArray> publicKeys = new HashSet<HashedByteArray>
+                    {
+                        typeof (int).Assembly.GetName().GetPublicKey(),
+                        typeof (Observable).Assembly.GetName().GetPublicKey(),
+                        typeof (UtilityExtensions).Assembly.GetName().GetPublicKey()
+                    };
+                    // Get the assembly name from the lowest point on the stack that does not have a
+                    // 'known' public key.
+                    StackFrame[] frames = new StackTrace().GetFrames();
+                    if (!ReferenceEquals(frames, null))
+                    {
+                        // ReSharper disable PossibleNullReferenceException
+                        assembly = frames
+                            .Select(f => f.GetMethod())
+                            .Where(m => m != null)
+                            .Select(m => m.DeclaringType)
+                            .Where(t => t != null)
+                            .Select(t => new {t.Assembly, Name = t.Assembly.GetName()})
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            .Where(n => (n.Name != null) && !publicKeys.Contains(n.Name.GetPublicKey()))
+                            .Select(n => n.Assembly)
+                            .FirstOrDefault();
+                        // ReSharper restore PossibleNullReferenceException
+                    }
                 }
+                catch
+                {
+                    assembly = null;
+                }
+
+                // If we failed to get an assembly the fancy way, try a less subtle approach.
                 return assembly ?? Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
             }, LazyThreadSafetyMode.PublicationOnly);
 
