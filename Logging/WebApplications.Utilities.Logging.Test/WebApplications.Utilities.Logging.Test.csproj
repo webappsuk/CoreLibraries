@@ -149,13 +149,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WebApplications.Testing.5.0.5198.18897\lib\net45\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities, Version=5.0.5201.36333, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.0.5202.1725, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.5.0.5201.36333\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.0.5202.1725\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Performance, Version=5.0.5201.36391, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Performance, Version=5.0.5202.1789, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.0.5201.36391\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.0.5202.1789\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -182,7 +182,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.0.5201.36391\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.0.5201.36391\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.0.5202.1789\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.0.5202.1789\tools\PerfSetup.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
