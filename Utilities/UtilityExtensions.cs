@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -1220,6 +1221,226 @@ namespace WebApplications.Utilities
             }
 
             yield return new Tuple<string, string, string>(null, null, chunk.ToString());
+        }
+
+        /// <summary>
+        /// The lower-case hexadecimal digits.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly char[] HexDigitsLower = "0123456789abcdef".ToCharArray();
+
+        /// <summary>
+        /// Unescapes the specified string.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static string Unescape([CanBeNull] this string str)
+        {
+            if (string.IsNullOrEmpty(str)) return str ?? string.Empty;
+            StringBuilder builder = new StringBuilder(str.Length);
+            builder.AddUnescaped(str);
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Unescapes the specified string.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static string Escape([CanBeNull] this string str)
+        {
+            if (string.IsNullOrEmpty(str)) return str ?? string.Empty;
+            StringBuilder builder = new StringBuilder(str.Length + 10);
+            builder.AddEscaped(str);
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Adds the string, removing unescaping.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="str">The string.</param>
+        [PublicAPI]
+        public static void AddUnescaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
+        {
+            Contract.Requires(builder != null);
+            if (string.IsNullOrEmpty(str)) return;
+            int i = 0;
+            bool escaped = false;
+            while (i < str.Length)
+            {
+                char c = str[i++];
+                if (!escaped)
+                {
+                    if (c == '\\')
+                    {
+                        escaped = true;
+                        continue;
+                    }
+                    builder.Append(c);
+                    continue;
+                }
+
+                escaped = false;
+                switch (c)
+                {
+                    case '0':
+                        builder.Append('\0');
+                        break;
+                    case 'a':
+                        builder.Append('\a');
+                        break;
+                    case 'b':
+                        builder.Append('\b');
+                        break;
+                    case 'f':
+                        builder.Append('\f');
+                        break;
+                    case 'n':
+                        builder.Append('\n');
+                        break;
+                    case 'r':
+                        builder.Append('\r');
+                        break;
+                    case 't':
+                        builder.Append('\t');
+                        break;
+                    case 'v':
+                        builder.Append('\v');
+                        break;
+                    case 'u':
+                        if (i + 4 > str.Length)
+                        {
+                            builder.Append(c);
+                            continue;
+                        }
+                        string d4 = str.Substring(i, i + 4);
+                        int n4;
+                        if (!int.TryParse(d4, NumberStyles.HexNumber, null, out n4))
+                        {
+                            builder.Append(c);
+                            continue;
+                        }
+                        builder.Append((Char)n4);
+                        i += 4;
+                        break;
+                    case 'U':
+                        if (i + 8 > str.Length)
+                        {
+                            builder.Append(c);
+                            continue;
+                        }
+                        string d8 = str.Substring(i, i + 8);
+                        int n8;
+                        if (!int.TryParse(d8, NumberStyles.HexNumber, null, out n8))
+                        {
+                            builder.Append(c);
+                            continue;
+                        }
+                        builder.Append(Char.ConvertFromUtf32(n8));
+                        i += 8;
+                        break;
+                    case 'x':
+                        if (i + 1 > str.Length)
+                        {
+                            builder.Append(c);
+                            continue;
+                        }
+                        int j = 0;
+                        StringBuilder dx = new StringBuilder(4);
+                        while ((i + j) < str.Length && (j < 4))
+                        {
+                            char h = str[i + j++];
+                            if (!HexDigitsLower.Contains(h)) break;
+                            dx.Append(h);
+                        }
+                        int nx;
+                        if ((dx.Length < 1) ||
+                            !int.TryParse(dx.ToString(), NumberStyles.HexNumber, null, out nx))
+                        {
+                            builder.Append(c);
+                            continue;
+                        }
+                        builder.Append((Char)nx);
+                        i += j;
+                        break;
+                    default:
+                        builder.Append(c);
+                        break;
+                }
+            }
+            if (escaped)
+                builder.Append('\\');
+        }
+
+        /// <summary>
+        /// Adds the string, escaping characters.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="str">The string.</param>
+        [PublicAPI]
+        public static void AddEscaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
+        {
+            Contract.Requires(builder != null);
+            if (string.IsNullOrEmpty(str)) return;
+            int i = 0;
+            while (i < str.Length)
+            {
+                char c = str[i++];
+                switch (c)
+                {
+                    case '\'':
+                        builder.Append(@"\'");
+                        break;
+                    case '\"':
+                        builder.Append("\\\"");
+                        break;
+                    case '\\':
+                        builder.Append(@"\\");
+                        break;
+                    case '\0':
+                        builder.Append(@"\0");
+                        break;
+                    case '\a':
+                        builder.Append(@"\a");
+                        break;
+                    case '\b':
+                        builder.Append(@"\b");
+                        break;
+                    case '\f':
+                        builder.Append(@"\f");
+                        break;
+                    case '\n':
+                        builder.Append(@"\n");
+                        break;
+                    case '\r':
+                        builder.Append(@"\r");
+                        break;
+                    case '\t':
+                        builder.Append(@"\t");
+                        break;
+                    case '\v':
+                        builder.Append(@"\v");
+                        break;
+                    default:
+                        if (Char.GetUnicodeCategory(c) != UnicodeCategory.Control)
+                            builder.Append(c);
+                        else
+                        {
+                            builder.Append(@"\u")
+                                .Append(HexDigitsLower[c >> 12 & 0x0F])
+                                .Append(HexDigitsLower[c >> 8 & 0x0F])
+                                .Append(HexDigitsLower[c >> 4 & 0x0F])
+                                .Append(HexDigitsLower[c & 0x0F]);
+                        }
+                        break;
+                }
+            }
         }
 
         /// <summary>
