@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,9 @@
 
 using System;
 using System.Configuration;
+using System.Diagnostics.Contracts;
+using System.Reflection;
+using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Loggers;
@@ -38,6 +41,46 @@ namespace WebApplications.Utilities.Logging.Configuration
     /// </summary>
     public class LoggingConfiguration : ConfigurationSection<LoggingConfiguration>
     {
+        /// <summary>
+        /// The default name, based on the description of the executing assembly.
+        /// </summary>
+        [NotNull] private static readonly Lazy<string> _defaultName = new Lazy<string>(
+            () =>
+            {
+                Assembly assembly = Log.EntryAssembly;
+                if (assembly.IsDefined(typeof (AssemblyTitleAttribute), false))
+                {
+                    AssemblyTitleAttribute t =
+                        Attribute.GetCustomAttribute(assembly, typeof (AssemblyTitleAttribute)) as
+                            AssemblyTitleAttribute;
+                    if ((t != null) &&
+                        !string.IsNullOrWhiteSpace(t.Title))
+                        return t.Title;
+                }
+
+                if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
+                {
+                    AssemblyDescriptionAttribute a =
+                        Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
+                            AssemblyDescriptionAttribute;
+                    if ((a != null) &&
+                        !string.IsNullOrWhiteSpace(a.Description))
+                        return a.Description;
+                }
+
+                return assembly.GetName().Name ?? "Unknown";
+            }, LazyThreadSafetyMode.PublicationOnly);
+
+        /// <summary>
+        /// Gets the default name.
+        /// </summary>
+        /// <value>The default name.</value>
+        [NotNull]
+        public static string DefaultName
+        {
+            get { return _defaultName.Value; }
+        }
+
         /// <summary>
         ///   Gets a value indicating whether logging is enabled.
         /// </summary>
@@ -52,12 +95,24 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// <summary>
         ///   Gets or sets the name of the application.
         /// </summary>
+        [NotNull]
         [ConfigurationProperty("applicationName", DefaultValue = "", IsRequired = false)]
         [UsedImplicitly]
         public string ApplicationName
         {
-            get { return GetProperty<string>("applicationName"); }
-            set { SetProperty("applicationName", value); }
+            get
+            {
+                string name = GetProperty<string>("applicationName");
+                if (string.IsNullOrWhiteSpace(name))
+                    name = _defaultName.Value;
+                Contract.Assert(name != null);
+                return name;
+            }
+            set
+            {
+                Contract.Requires(value != null);
+                SetProperty("applicationName", value);
+            }
         }
 
         /// <summary>
@@ -81,7 +136,7 @@ namespace WebApplications.Utilities.Logging.Configuration
             get { return GetProperty<LoggingLevels>("validLevels"); }
             set { SetProperty("validLevels", value); }
         }
-        
+
         /// <summary>
         ///   Gets the log cache's expiry.
         /// </summary>
@@ -134,12 +189,12 @@ namespace WebApplications.Utilities.Logging.Configuration
 
             // Add a trace logger.
             Loggers.Add(new LoggerElement
-                {
-                    Name = "Trace Logger",
-                    Type = typeof (TraceLogger),
-                    Enabled = true,
-                    ValidLevels = LoggingLevels.All
-                });
+            {
+                Name = "Trace Logger",
+                Type = typeof (TraceLogger),
+                Enabled = true,
+                ValidLevels = LoggingLevels.All
+            });
 
             ApplicationGuid = Guid.NewGuid();
             base.InitializeDefault();

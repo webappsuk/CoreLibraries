@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,20 +31,13 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml.Linq;
-using System.Xml.Serialization;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Performance;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -57,118 +50,14 @@ namespace WebApplications.Utilities.Logging
     public partial class Log : IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
         /// <summary>
+        /// The context (holds all log data).
+        /// </summary>
+        [NotNull] private readonly Dictionary<string, string> _context;
+
+        /// <summary>
         /// Cached level as used so frequently
         /// </summary>
         private readonly LoggingLevel _level;
-
-        /// <summary>
-        /// The context (holds all log data).
-        /// </summary>
-        [NotNull]
-        private readonly Dictionary<string, string> _context;
-
-        /// <summary>
-        ///   A Guid used to uniquely identify a log item.
-        /// </summary>
-        [UsedImplicitly]
-        public CombGuid Guid
-        {
-            get
-            {
-                string gStr = Get(GuidKey);
-                if (gStr == null) return CombGuid.Empty;
-                CombGuid g;
-                return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
-            }
-        }
-
-        /// <summary>
-        ///   A Guid used to group log items together.
-        /// </summary>
-        /// <remarks>
-        /// <para>If the log item is not part of a group this always return <see cref="Guid"/>.</para>
-        /// </remarks>
-        [UsedImplicitly]
-        public CombGuid Group
-        {
-            get
-            {
-                string gStr = Get(GroupKey);
-                if (gStr == null) return CombGuid.Empty;
-                CombGuid g;
-                return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
-            }
-        }
-
-        /// <summary>
-        ///   The <see cref="LoggingLevel">log level</see>.
-        /// </summary>
-        [UsedImplicitly]
-        public LoggingLevel Level { get { return _level; } }
-
-        /// <summary>
-        ///   The formatted log message.
-        /// </summary>
-        [UsedImplicitly]
-        public virtual string Message { get { return MessageFormat == null ? null : MessageFormat.SafeFormat(Parameters.Cast<object>().ToArray()); } }
-
-        /// <summary>
-        ///   Gets a <see cref="bool"/> value indicating whether this instance was generated from an exception.
-        /// </summary>
-        /// <value>
-        ///   Returns <see langword="true"/> if this instance was an exception; otherwise <see langword="false"/>.
-        /// </value>
-        [UsedImplicitly]
-        public bool IsException { get { return _context.ContainsKey(ExceptionTypeFullNameKey); } }
-
-        /// <summary>
-        ///   The time stamp of when the log item was created.
-        /// </summary>
-        [UsedImplicitly]
-        public DateTime TimeStamp
-        {
-            get { return Guid.Created; }
-        }
-
-        /// <summary>
-        /// Gets the parameters.
-        /// </summary>
-        /// <value>The parameters.</value>
-        [NotNull]
-        public IEnumerable<string> Parameters { get { return _context.Where(kvp => kvp.Key.StartsWith(ParameterKeyPrefix)).Select(kvp => kvp.Value); } }
-
-        /// <summary>
-        /// Gets the stack trace.
-        /// </summary>
-        /// <value>The stack trace.</value>
-        public string StackTrace { get { return Get(StackTraceKey); } }
-
-        /// <summary>
-        /// Gets the message format.
-        /// </summary>
-        /// <value>The message format.</value>
-        public string MessageFormat { get { return Get(MessageFormatKey); } }
-
-        /// <summary>
-        /// Gets the thread ID (or -1 if not known).
-        /// </summary>
-        /// <value>The thread ID.</value>
-        public int ThreadID
-        {
-            get
-            {
-                string iStr = Get(ThreadIDKey);
-                if (iStr == null) return -1;
-                int i;
-                return Int32.TryParse(iStr, out i) ? i : -1;
-            }
-        }
-
-        /// <summary>
-        /// Gets the name of the thread.
-        /// </summary>
-        /// <value>The name of the thread.</value>
-        public string ThreadName { get { return Get(ThreadNameKey); } }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Log" /> class.
@@ -181,8 +70,9 @@ namespace WebApplications.Utilities.Logging
         /// <see cref="GuidKey">Guid key</see>, and be a valid <see cref="CombGuid"/>.</para>
         /// <para>Typed keys must also be valid if supplied otherwise an exception will be thrown.</para>
         /// </remarks>
-        public Log(IEnumerable<KeyValuePair<string, string>> context)
+        public Log([NotNull] IEnumerable<KeyValuePair<string, string>> context)
         {
+            Contract.Requires(context != null);
             _context = context.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             string s;
             CombGuid guid;
@@ -230,7 +120,7 @@ namespace WebApplications.Utilities.Logging
             [NotNull] string format,
             [NotNull] params object[] parameters)
         {
-            var guid = CombGuid.NewCombGuid();
+            CombGuid guid = CombGuid.NewCombGuid();
 
             // Dictionary size
             int size = parameters.Length + 9 + (context == null ? 0 : context.Count);
@@ -241,7 +131,7 @@ namespace WebApplications.Utilities.Logging
             if (context != null)
             {
                 // Copy supplied context into our context.
-                foreach (var kvp in context)
+                foreach (KeyValuePair<string, string> kvp in context)
                     _context.Add(kvp.Key, kvp.Value);
             }
 
@@ -253,12 +143,12 @@ namespace WebApplications.Utilities.Logging
             _context.Add(LevelKey, level.ToString());
             _level = level;
 
-            _context.Add(GuidKey, CombGuid.NewCombGuid().ToString());
+            _context.Add(GuidKey, guid.ToString());
             // Only add group if specified.
             if (!logGroup.Equals(CombGuid.Empty))
                 _context.Add(GroupKey, logGroup.ToString());
             _context.Add(ThreadIDKey, threadId.ToString());
-            if (!string.IsNullOrWhiteSpace(currentThread.Name))
+            if (!String.IsNullOrWhiteSpace(currentThread.Name))
                 _context.Add(ThreadNameKey, currentThread.Name);
             _context.Add(MessageFormatKey, format);
 
@@ -285,17 +175,17 @@ namespace WebApplications.Utilities.Logging
                     if (sqlException != null)
                     {
                         _context.Add(StoredProcedureKey,
-                                     String.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure);
+                            String.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure);
                         _context.Add(StoredProcedureLineKey, sqlException.LineNumber.ToString());
                     }
                 }
             }
 
             // Add stack trace.
-            if (string.IsNullOrWhiteSpace(stackTrace))
+            if (String.IsNullOrWhiteSpace(stackTrace))
                 stackTrace = FormatStackTrace(new StackTrace(2, true));
 
-            if (!string.IsNullOrWhiteSpace(stackTrace))
+            if (!String.IsNullOrWhiteSpace(stackTrace))
 
                 _context.Add(StackTraceKey, stackTrace);
 
@@ -304,6 +194,467 @@ namespace WebApplications.Utilities.Logging
 
             // Increment performance counter.
             _perfCounterNewItem.Increment();
+        }
+
+        /// <summary>
+        ///   A Guid used to uniquely identify a log item.
+        /// </summary>
+        [UsedImplicitly]
+        public CombGuid Guid
+        {
+            get
+            {
+                string gStr = Get(GuidKey);
+                if (gStr == null) return CombGuid.Empty;
+                CombGuid g;
+                return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
+            }
+        }
+
+        /// <summary>
+        ///   A Guid used to group log items together.
+        /// </summary>
+        /// <remarks>
+        /// <para>If the log item is not part of a group this always return <see cref="Guid"/>.</para>
+        /// </remarks>
+        [UsedImplicitly]
+        public CombGuid Group
+        {
+            get
+            {
+                string gStr = Get(GroupKey);
+                if (gStr == null) return CombGuid.Empty;
+                CombGuid g;
+                return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
+            }
+        }
+
+        /// <summary>
+        ///   The <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        [UsedImplicitly]
+        public LoggingLevel Level
+        {
+            get { return _level; }
+        }
+
+        /// <summary>
+        ///   The formatted log message.
+        /// </summary>
+        [UsedImplicitly]
+        public virtual string Message
+        {
+            get { return MessageFormat == null ? null : MessageFormat.SafeFormat(Parameters.Cast<object>().ToArray()); }
+        }
+
+        /// <summary>
+        ///   Gets a <see cref="bool"/> value indicating whether this instance was generated from an exception.
+        /// </summary>
+        /// <value>
+        ///   Returns <see langword="true"/> if this instance was an exception; otherwise <see langword="false"/>.
+        /// </value>
+        [UsedImplicitly]
+        public bool IsException
+        {
+            get { return _context.ContainsKey(ExceptionTypeFullNameKey); }
+        }
+
+        /// <summary>
+        ///   The time stamp of when the log item was created.
+        /// </summary>
+        [UsedImplicitly]
+        public DateTime TimeStamp
+        {
+            get { return Guid.Created; }
+        }
+
+        /// <summary>
+        /// Gets the parameters.
+        /// </summary>
+        /// <value>The parameters.</value>
+        [NotNull]
+        public IEnumerable<string> Parameters
+        {
+            get { return _context.Where(kvp => kvp.Key.StartsWith(ParameterKeyPrefix)).Select(kvp => kvp.Value); }
+        }
+
+        /// <summary>
+        /// Gets the stack trace.
+        /// </summary>
+        /// <value>The stack trace.</value>
+        public string StackTrace
+        {
+            get { return Get(StackTraceKey); }
+        }
+
+        /// <summary>
+        /// Gets the message format.
+        /// </summary>
+        /// <value>The message format.</value>
+        public string MessageFormat
+        {
+            get { return Get(MessageFormatKey); }
+        }
+
+        /// <summary>
+        /// Gets the thread ID (or -1 if not known).
+        /// </summary>
+        /// <value>The thread ID.</value>
+        public int ThreadID
+        {
+            get
+            {
+                string iStr = Get(ThreadIDKey);
+                if (iStr == null) return -1;
+                int i;
+                return Int32.TryParse(iStr, out i) ? i : -1;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the thread.
+        /// </summary>
+        /// <value>The name of the thread.</value>
+        public string ThreadName
+        {
+            get { return Get(ThreadNameKey); }
+        }
+
+        /// <summary>
+        /// Gets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The value associated with the specified key. If the specified key is not found, throws a <see cref="T:System.Collections.Generic.KeyNotFoundException" />.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
+        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> does not exist in the collection.</exception>
+        [CanBeNull]
+        public string this[[NotNull] string key]
+        {
+            get { return _context[key]; }
+        }
+
+        #region ToString overloads
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
+        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (format == null) format = LogFormat.General.ToString();
+
+            if (formatProvider != null)
+            {
+                ICustomFormatter formatter = formatProvider.GetFormat(typeof (Log)) as ICustomFormatter;
+
+                if (formatter != null)
+                    return formatter.Format(format, this, formatProvider) ?? String.Empty;
+            }
+
+            // Try to get the actual format if specified as an enum.
+            LogFormat logFormat;
+            if (_formats.TryGetValue(format, out logFormat) || Enum.TryParse(format, true, out logFormat))
+                return ToString(logFormat);
+
+            // Get format chunks
+            StringBuilder builder = new StringBuilder(format.Length*2);
+            foreach (Tuple<string, string, string> tuple in format.FormatChunks())
+            {
+                Contract.Assert(tuple != null);
+                if (String.IsNullOrEmpty(tuple.Item1) ||
+                    (!_formats.TryGetValue(tuple.Item1, out logFormat) &&
+                     !Enum.TryParse(tuple.Item1, true, out logFormat)))
+                {
+                    // We didn't recognise the format string (if there was one), so we just output the chunk un-escaoed.
+                    builder.AddUnescaped(tuple.Item3);
+                    continue;
+                }
+
+                // Append the formatted options.
+                AppendFormatted(
+                    builder,
+                    logFormat,
+                    tuple.Item2 != null
+                        ? tuple.Item2.Unescape()
+                        : null);
+            }
+
+            // Output our formatted string.
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return ToString(LogFormat.General);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        public string ToString([CanBeNull] IFormatProvider formatProvider)
+        {
+            return ToString(null, formatProvider);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="options">The optional options for the format.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        /// <exception cref="System.FormatException">
+        /// </exception>
+        [NotNull]
+        public string ToString(LogFormat format, [CanBeNull] string options = null)
+        {
+            if (format == LogFormat.None)
+                return String.Empty;
+            StringBuilder builder = new StringBuilder();
+            AppendFormatted(builder, format, options);
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Appends the the formatted information.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="options">The options.</param>
+        /// <exception cref="System.FormatException">
+        /// </exception>
+        private void AppendFormatted([NotNull] StringBuilder builder, LogFormat format,
+            [CanBeNull] string options = null)
+        {
+            Contract.Requires(builder != null);
+            if (format == LogFormat.None)
+                return;
+
+            // Get option flags
+            bool includeMissing = format.HasFlag(LogFormat.IncludeMissing);
+            bool includeHeader = format.HasFlag(LogFormat.Header);
+            bool asXml = format.HasFlag(LogFormat.Xml);
+            bool asJson = format.HasFlag(LogFormat.Json);
+
+            // Remove option flags
+            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
+
+            if (asXml && asJson)
+                throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
+
+            MasterFormat masterFormat;
+            bool includeKey;
+            string indent;
+            if (asXml)
+            {
+                masterFormat = MasterFormat.Xml;
+                includeKey = true;
+                indent = "   ";
+            }
+            else if (asJson)
+            {
+                masterFormat = MasterFormat.JSON;
+                includeKey = true;
+                indent = "   ";
+            }
+            else
+            {
+                masterFormat = MasterFormat.Text;
+
+                // Only include the key if we're a combination of keys.
+                includeKey = format.IsCombinationFlag(true);
+                indent = String.Empty;
+            }
+
+            // Otherwise always include value.
+            if (!includeKey)
+                includeMissing = true;
+
+            if (includeHeader)
+            {
+                switch (masterFormat)
+                {
+                    case MasterFormat.Xml:
+                        builder.AppendLine("<Log>");
+                        break;
+                    case MasterFormat.JSON:
+                        builder.AppendLine("{");
+                        break;
+                    default:
+                        builder.AppendLine(Header);
+                        break;
+                }
+            }
+
+            bool first = true;
+            LogFormat[] flags = format.SplitFlags(true).ToArray();
+            if (flags.Length < 1) return;
+
+            // Ignore options if we have multiple flags
+            if (flags.Length > 1) options = null;
+            foreach (LogFormat flag in flags)
+            {
+                string key;
+                string value;
+
+                // This is a single value format, just output the value directly
+                switch (flag)
+                {
+                    case LogFormat.Message:
+                        key = "Message";
+                        value = Message;
+                        break;
+                    case LogFormat.TimeStamp:
+                        key = "TimeStamp";
+                        value = TimeStamp.ToString(options ?? "o");
+                        break;
+                    case LogFormat.Level:
+                        key = "Level";
+                        value = Level.ToString();
+                        break;
+                    case LogFormat.Guid:
+                        key = "Guid";
+                        CombGuid guid = Guid;
+                        value = guid == CombGuid.Empty ? null : guid.ToString(options ?? "D");
+                        break;
+                    case LogFormat.Group:
+                        key = "Group";
+                        CombGuid group = Group;
+                        value = group == CombGuid.Empty ? null : group.ToString(options ?? "D");
+                        break;
+                    case LogFormat.Exception:
+                        key = "Exception Type";
+                        value = Get(ExceptionTypeFullNameKey) ?? null;
+                        break;
+                    case LogFormat.SQLException:
+                        key = "Stored Procedure";
+                        value = Get(StoredProcedureKey);
+                        if (value != null)
+                        {
+                            string sline = Get(StoredProcedureLineKey);
+                            int sl;
+                            if (!String.IsNullOrWhiteSpace(sline) &&
+                                (Int32.TryParse(sline, out sl)))
+                                value += " at line " + sl.ToString();
+                        }
+                        break;
+                    case LogFormat.StackTrace:
+                        key = "Stack Trace";
+                        value = StackTrace;
+                        break;
+                    case LogFormat.ThreadID:
+                        key = "Thread ID";
+                        int threadID = ThreadID;
+                        value = threadID < 0 ? null : threadID.ToString(options ?? "G");
+                        break;
+                    case LogFormat.ThreadName:
+                        key = "Thread Name";
+                        value = ThreadName;
+                        break;
+                    case LogFormat.ApplicationName:
+                        key = "Application Name";
+                        value = ApplicationName;
+                        break;
+                    case LogFormat.ApplicationGuid:
+                        key = "Application Guid";
+                        value = ApplicationGuid.ToString(options ?? "D");
+                        break;
+                    case LogFormat.Context:
+                        KeyValuePair<string, string>[] remainingContext =
+                            this.Where(kvp => !kvp.Key.StartsWith(LogKeyPrefix)).ToArray();
+                        key = "Context";
+
+                        if (remainingContext.Length < 1)
+                            value = null;
+                        else
+                        {
+                            StringBuilder cv = new StringBuilder();
+                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty);
+
+                            string i = indent + "   ";
+                            bool cvf = true;
+                            foreach (KeyValuePair<string, string> kvp in remainingContext)
+                            {
+                                if (!cvf)
+                                    cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
+                                cvf = false;
+                                AddKVP(cv, masterFormat, i, kvp.Key, kvp.Value);
+                            }
+                            switch (masterFormat)
+                            {
+                                case MasterFormat.Xml:
+                                    cv.AppendLine();
+                                    cv.Append(indent);
+                                    break;
+                                case MasterFormat.JSON:
+                                    cv.Append("}");
+                                    break;
+                            }
+                            value = cv.ToString();
+                        }
+                        break;
+
+                    default:
+                        throw new FormatException(String.Format(Resources.Log_Invalid_Format_Singular, flag));
+                }
+                if (value == null && !includeMissing)
+                    continue;
+
+                if (includeKey)
+                {
+                    if (!first)
+                        builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
+
+                    AddKVP(builder, masterFormat, indent, key, value, flag == LogFormat.Context);
+
+                    first = false;
+                }
+                else
+                    builder.Append(value);
+            }
+
+            if (includeHeader)
+            {
+                builder.AppendLine();
+                switch (masterFormat)
+                {
+                    case MasterFormat.Xml:
+                        builder.AppendLine("</Log>");
+                        break;
+                    case MasterFormat.JSON:
+                        builder.AppendLine("}");
+                        break;
+                    default:
+                        builder.AppendLine(Header);
+                        break;
+                }
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        /// <returns>IEnumerator{KeyValuePair{System.StringSystem.String}}.</returns>
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            return _context.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -374,13 +725,13 @@ namespace WebApplications.Utilities.Logging
 
                         // Look for inheritance from log or logging exception.
                         baseType = declaringType;
-                        while ((baseType != typeof(object)) &&
-                               (baseType != typeof(LoggingException)) &&
-                               (baseType != typeof(Log)))
+                        while ((baseType != typeof (object)) &&
+                               (baseType != typeof (LoggingException)) &&
+                               (baseType != typeof (Log)))
                             baseType = baseType.BaseType;
 
-                        if ((baseType == typeof(LoggingException)) ||
-                            (baseType == typeof(Log)))
+                        if ((baseType == typeof (LoggingException)) ||
+                            (baseType == typeof (Log)))
                         {
                             // We are descended from LoggingException or Log so skip frame.
                             baseType = declaringType;
@@ -483,15 +834,6 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        /// <returns>IEnumerator{KeyValuePair{System.StringSystem.String}}.</returns>
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
-        {
-            return _context.GetEnumerator();
-        }
-
-        /// <summary>
         /// Gets the value of the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -517,326 +859,6 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Gets the value associated with the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>The value associated with the specified key. If the specified key is not found, throws a <see cref="T:System.Collections.Generic.KeyNotFoundException" />.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
-        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> does not exist in the collection.</exception>
-        [CanBeNull]
-        public string this[[NotNull]string key]
-        {
-            get
-            {
-                return _context[key];
-            }
-        }
-
-        #region ToString overloads
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public override string ToString()
-        {
-            return ToString(LogFormat.General);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [NotNull]
-        public string ToString([CanBeNull]IFormatProvider formatProvider)
-        {
-            return ToString(null, formatProvider);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
-        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public string ToString([CanBeNull]string format, [CanBeNull]IFormatProvider formatProvider = null)
-        {
-            if (format == null) format = LogFormat.General.ToString();
-
-            if (formatProvider != null)
-            {
-                ICustomFormatter formatter = formatProvider.GetFormat(typeof(Log)) as ICustomFormatter;
-
-                if (formatter != null)
-                    return formatter.Format(format, this, formatProvider) ?? string.Empty;
-            }
-
-            // Try to get the actual format if specified as an enum.
-            LogFormat logFormat;
-            if (_formats.TryGetValue(format, out logFormat) || Enum.TryParse(format, true, out logFormat))
-                return ToString(logFormat);
-
-            // Get format chunks
-            StringBuilder builder = new StringBuilder(format.Length*2);
-            foreach (Tuple<string, string, string> tuple in format.FormatChunks())
-            {
-                Contract.Assert(tuple != null);
-                if (string.IsNullOrEmpty(tuple.Item1) ||
-                    (!_formats.TryGetValue(tuple.Item1, out logFormat) && !Enum.TryParse(tuple.Item1, true, out logFormat)))
-                {
-                    // We didn't recognise the format string (if there was one), so we just output the chunk un-escaoed.
-                    builder.AddUnescaped(tuple.Item3);
-                    continue;
-                }
-
-                // Append the formatted options.
-                AppendFormatted(
-                    builder,
-                    logFormat,
-                    tuple.Item2 != null
-                        ? tuple.Item2.Unescape()
-                        : null);
-            }
-
-            // Output our formatted string.
-            return builder.ToString();
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="options">The optional options for the format.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        /// <exception cref="System.FormatException">
-        /// </exception>
-        [NotNull]
-        public string ToString(LogFormat format, [CanBeNull]string options = null)
-        {
-            if (format == LogFormat.None)
-                return String.Empty;
-            StringBuilder builder = new StringBuilder();
-            AppendFormatted(builder, format, options);
-            return builder.ToString();
-        }
-
-        /// <summary>
-        /// Appends the the formatted information.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="options">The options.</param>
-        /// <exception cref="System.FormatException">
-        /// </exception>
-        private void AppendFormatted([NotNull]StringBuilder builder, LogFormat format, [CanBeNull]string options = null)
-        {
-            Contract.Requires(builder != null);
-            if (format == LogFormat.None)
-                return;
-
-            // Get option flags
-            bool includeMissing = format.HasFlag(LogFormat.IncludeMissing);
-            bool includeHeader = format.HasFlag(LogFormat.Header);
-            bool asXml = format.HasFlag(LogFormat.Xml);
-            bool asJson = format.HasFlag(LogFormat.Json);
-
-            // Remove option flags
-            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
-
-            if (asXml && asJson)
-                throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
-
-            MasterFormat masterFormat;
-            bool includeKey;
-            string indent;
-            if (asXml)
-            {
-                masterFormat = MasterFormat.Xml;
-                includeKey = true;
-                indent = "   ";
-            }
-            else if (asJson)
-            {
-                masterFormat = MasterFormat.JSON;
-                includeKey = true;
-                indent = "   ";
-            }
-            else
-            {
-                masterFormat = MasterFormat.Text;
-
-                // Only include the key if we're a combination of keys.
-                includeKey = format.IsCombinationFlag(true);
-                indent = string.Empty;
-            }
-
-            // Otherwise always include value.
-            if (!includeKey)
-                includeMissing = true;
-
-            if (includeHeader)
-            {
-                switch (masterFormat)
-                {
-                    case MasterFormat.Xml:
-                        builder.AppendLine("<Log>");
-                        break;
-                    case MasterFormat.JSON:
-                        builder.AppendLine("{");
-                        break;
-                    default:
-                        builder.AppendLine(Header);
-                        break;
-                }
-            }
-
-            bool first = true;
-            LogFormat[] flags = format.SplitFlags(true).ToArray();
-            if (flags.Length < 1) return;
-
-            // Ignore options if we have multiple flags
-            if (flags.Length > 1) options = null;
-            foreach (LogFormat flag in flags)
-            {
-                string key;
-                string value;
-
-                // This is a single value format, just output the value directly
-                switch (flag)
-                {
-                    case LogFormat.Message:
-                        key = "Message";
-                        value = Message;
-                        break;
-                    case LogFormat.TimeStamp:
-                        key = "TimeStamp";
-                        value = TimeStamp.ToString(options ?? "o");
-                        break;
-                    case LogFormat.Level:
-                        key = "Level";
-                        value = Level.ToString();
-                        break;
-                    case LogFormat.Guid:
-                        key = "Guid";
-                        var guid = Guid;
-                        value = guid == CombGuid.Empty ? null : guid.ToString(options ?? "D");
-                        break;
-                    case LogFormat.Group:
-                        key = "Group";
-                        var group = Group;
-                        value = group == CombGuid.Empty ? null : group.ToString(options ?? "D");
-                        break;
-                    case LogFormat.Exception:
-                        key = "Exception Type";
-                        value = Get(ExceptionTypeFullNameKey) ?? null;
-                        break;
-                    case LogFormat.SQLException:
-                        key = "Stored Procedure";
-                        value = Get(StoredProcedureKey);
-                        if (value != null)
-                        {
-                            string sline = Get(StoredProcedureLineKey);
-                            int sl;
-                            if (!string.IsNullOrWhiteSpace(sline) &&
-                                (int.TryParse(sline, out sl)))
-                                value += " at line " + sl.ToString();
-                        }
-                        break;
-                    case LogFormat.StackTrace:
-                        key = "Stack Trace";
-                        value = StackTrace;
-                        break;
-                    case LogFormat.ThreadID:
-                        key = "Thread ID";
-                        int threadID = ThreadID;
-                        value = threadID < 0 ? null : threadID.ToString(options ?? "G");
-                        break;
-                    case LogFormat.ThreadName:
-                        key = "Thread Name";
-                        value = ThreadName;
-                        break;
-                    case LogFormat.ApplicationName:
-                        key = "Application Name";
-                        value = ApplicationName;
-                        break;
-                    case LogFormat.ApplicationGuid:
-                        key = "Application Guid";
-                        value = ApplicationGuid.ToString(options ?? "D");
-                        break;
-                    case LogFormat.Context:
-                        KeyValuePair<string, string>[] remainingContext =
-                            this.Where(kvp => !kvp.Key.StartsWith(LogKeyPrefix)).ToArray();
-                        key = "Context";
-
-                        if (remainingContext.Length < 1)
-                            value = null;
-                        else
-                        {
-                            StringBuilder cv = new StringBuilder();
-                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : string.Empty);
-
-                            string i = indent + "   ";
-                            bool cvf = true;
-                            foreach (var kvp in remainingContext)
-                            {
-                                if (!cvf)
-                                    cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : string.Empty);
-                                cvf = false;
-                                AddKVP(cv, masterFormat, i, kvp.Key, kvp.Value);
-                            }
-                            switch (masterFormat)
-                            {
-                                case MasterFormat.Xml:
-                                    cv.AppendLine();
-                                    cv.Append(indent);
-                                    break;
-                                case MasterFormat.JSON:
-                                    cv.Append("}");
-                                    break;
-                            }
-                            value = cv.ToString();
-                        }
-                        break;
-
-                    default:
-                        throw new FormatException(String.Format(Resources.Log_Invalid_Format_Singular, flag));
-                }
-                if (value == null && !includeMissing)
-                    continue;
-
-                if (includeKey)
-                {
-                    if (!first)
-                        builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : string.Empty);
-
-                    AddKVP(builder, masterFormat, indent, key, value, flag == LogFormat.Context);
-
-                    first = false;
-                }
-                else
-                    builder.Append(value);
-            }
-
-            if (includeHeader)
-            {
-                builder.AppendLine();
-                switch (masterFormat)
-                {
-                    case MasterFormat.Xml:
-                        builder.AppendLine("</Log>");
-                        break;
-                    case MasterFormat.JSON:
-                        builder.AppendLine("}");
-                        break;
-                    default:
-                        builder.AppendLine(Header);
-                        break;
-                }
-            }
-        }
-        #endregion
-
-        /// <summary>
         /// Adds the KVP.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -845,7 +867,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="escaped">if set to <see langword="true" /> [escaped].</param>
-        private void AddKVP([NotNull] StringBuilder builder, MasterFormat masterFormat, [NotNull] string indent, [NotNull] string key, [CanBeNull]string value, bool escaped = false)
+        private void AddKVP([NotNull] StringBuilder builder, MasterFormat masterFormat, [NotNull] string indent,
+            [NotNull] string key, [CanBeNull] string value, bool escaped = false)
         {
             Contract.Requires(builder != null);
             Contract.Requires(indent != null);
@@ -892,15 +915,6 @@ namespace WebApplications.Utilities.Logging
             Text,
             Xml,
             JSON
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

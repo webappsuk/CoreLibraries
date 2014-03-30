@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,17 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using JetBrains.Annotations;
-using System.Diagnostics.Contracts;
-using WebApplications.Utilities.Performance;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -42,17 +46,12 @@ namespace WebApplications.Utilities.Logging
     public static class LoggingExtensions
     {
         /// <summary>
-        /// The escape character.
+        /// The lower-case hexadecimal digits.
         /// </summary>
         [NotNull]
-        public const char EscapeChar = '\\';
-
-        /// <summary>
-        /// The lowercase hexadecimal digits.
-        /// </summary>
-        [NotNull]
+        [PublicAPI]
         public static readonly char[] HexDigitsLower = "0123456789abcdef".ToCharArray();
-  
+
         /// <summary>
         /// TODO Move to utilities
         /// Unescapes the specified string.
@@ -92,7 +91,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="builder">The builder.</param>
         /// <param name="str">The string.</param>
         [PublicAPI]
-        public static void AddUnescaped([NotNull] this StringBuilder builder, [CanBeNull]string str)
+        public static void AddUnescaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
             Contract.Requires(builder != null);
             if (string.IsNullOrEmpty(str)) return;
@@ -115,14 +114,30 @@ namespace WebApplications.Utilities.Logging
                 escaped = false;
                 switch (c)
                 {
-                    case '0': builder.Append('\0'); break;
-                    case 'a': builder.Append('\a'); break;
-                    case 'b': builder.Append('\b'); break;
-                    case 'f': builder.Append('\f'); break;
-                    case 'n': builder.Append('\n'); break;
-                    case 'r': builder.Append('\r'); break;
-                    case 't': builder.Append('\t'); break;
-                    case 'v': builder.Append('\v'); break;
+                    case '0':
+                        builder.Append('\0');
+                        break;
+                    case 'a':
+                        builder.Append('\a');
+                        break;
+                    case 'b':
+                        builder.Append('\b');
+                        break;
+                    case 'f':
+                        builder.Append('\f');
+                        break;
+                    case 'n':
+                        builder.Append('\n');
+                        break;
+                    case 'r':
+                        builder.Append('\r');
+                        break;
+                    case 't':
+                        builder.Append('\t');
+                        break;
+                    case 'v':
+                        builder.Append('\v');
+                        break;
                     case 'u':
                         if (i + 4 > str.Length)
                         {
@@ -195,7 +210,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="builder">The builder.</param>
         /// <param name="str">The string.</param>
         [PublicAPI]
-        public static void AddEscaped([NotNull] this StringBuilder builder, [CanBeNull]string str)
+        public static void AddEscaped([NotNull] this StringBuilder builder, [CanBeNull] string str)
         {
             Contract.Requires(builder != null);
             if (string.IsNullOrEmpty(str)) return;
@@ -205,27 +220,49 @@ namespace WebApplications.Utilities.Logging
                 char c = str[i++];
                 switch (c)
                 {
-                    case '\'': builder.Append(@"\'"); break;
-                    case '\"': builder.Append("\\\""); break;
-                    case '\\': builder.Append(@"\\"); break;
-                    case '\0': builder.Append(@"\0"); break;
-                    case '\a': builder.Append(@"\a"); break;
-                    case '\b': builder.Append(@"\b"); break;
-                    case '\f': builder.Append(@"\f"); break;
-                    case '\n': builder.Append(@"\n"); break;
-                    case '\r': builder.Append(@"\r"); break;
-                    case '\t': builder.Append(@"\t"); break;
-                    case '\v': builder.Append(@"\v"); break;
+                    case '\'':
+                        builder.Append(@"\'");
+                        break;
+                    case '\"':
+                        builder.Append("\\\"");
+                        break;
+                    case '\\':
+                        builder.Append(@"\\");
+                        break;
+                    case '\0':
+                        builder.Append(@"\0");
+                        break;
+                    case '\a':
+                        builder.Append(@"\a");
+                        break;
+                    case '\b':
+                        builder.Append(@"\b");
+                        break;
+                    case '\f':
+                        builder.Append(@"\f");
+                        break;
+                    case '\n':
+                        builder.Append(@"\n");
+                        break;
+                    case '\r':
+                        builder.Append(@"\r");
+                        break;
+                    case '\t':
+                        builder.Append(@"\t");
+                        break;
+                    case '\v':
+                        builder.Append(@"\v");
+                        break;
                     default:
                         if (Char.GetUnicodeCategory(c) != UnicodeCategory.Control)
                             builder.Append(c);
                         else
                         {
                             builder.Append(@"\u")
-                              .Append(HexDigitsLower[c >> 12 & 0x0F])
-                              .Append(HexDigitsLower[c >> 8 & 0x0F])
-                              .Append(HexDigitsLower[c >> 4 & 0x0F])
-                              .Append(HexDigitsLower[c & 0x0F]);
+                                .Append(HexDigitsLower[c >> 12 & 0x0F])
+                                .Append(HexDigitsLower[c >> 8 & 0x0F])
+                                .Append(HexDigitsLower[c >> 4 & 0x0F])
+                                .Append(HexDigitsLower[c & 0x0F]);
                         }
                         break;
                 }
@@ -246,7 +283,7 @@ namespace WebApplications.Utilities.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValid(this LoggingLevel level, LoggingLevels validLevels)
         {
-            LoggingLevels l = (LoggingLevels) level;
+            LoggingLevels l = (LoggingLevels)level;
             return l == (l & validLevels);
         }
     }
