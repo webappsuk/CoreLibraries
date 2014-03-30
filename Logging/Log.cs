@@ -39,6 +39,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -103,7 +104,7 @@ namespace WebApplications.Utilities.Logging
         ///   The <see cref="LoggingLevel">log level</see>.
         /// </summary>
         [UsedImplicitly]
-        public LoggingLevel Level { get { return _level; }}
+        public LoggingLevel Level { get { return _level; } }
 
         /// <summary>
         ///   The formatted log message.
@@ -544,21 +545,10 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <param name="format">The format.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [NotNull]
-        public string ToString(string format)
-        {
-            return ToString(format, null);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
-        public string ToString(IFormatProvider formatProvider)
+        public string ToString([CanBeNull]IFormatProvider formatProvider)
         {
             return ToString(null, formatProvider);
         }
@@ -569,7 +559,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
         /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public string ToString(string format, IFormatProvider formatProvider)
+        public string ToString([CanBeNull]string format, [CanBeNull]IFormatProvider formatProvider = null)
         {
             if (format == null) format = LogFormat.General.ToString();
 
@@ -578,7 +568,7 @@ namespace WebApplications.Utilities.Logging
                 ICustomFormatter formatter = formatProvider.GetFormat(typeof(Log)) as ICustomFormatter;
 
                 if (formatter != null)
-                    return formatter.Format(format, this, formatProvider);
+                    return formatter.Format(format, this, formatProvider) ?? string.Empty;
             }
 
             // Try to get the actual format if specified as an enum.
@@ -586,73 +576,26 @@ namespace WebApplications.Utilities.Logging
             if (_formats.TryGetValue(format, out logFormat) || Enum.TryParse(format, true, out logFormat))
                 return ToString(logFormat);
 
-            // Parse format
-            StringBuilder builder = new StringBuilder(format.Length);
-            int i = 0;
-            bool inTag = false;
-            bool escape = false;
-            StringBuilder tag = new StringBuilder(16);
-            while (i < format.Length)
+            // Get format chunks
+            StringBuilder builder = new StringBuilder(format.Length*2);
+            foreach (Tuple<string, string, string> tuple in format.FormatChunks())
             {
-                char c = format[i++];
-
-                switch (c)
+                Contract.Assert(tuple != null);
+                if (string.IsNullOrEmpty(tuple.Item1) ||
+                    (!_formats.TryGetValue(tuple.Item1, out logFormat) && !Enum.TryParse(tuple.Item1, true, out logFormat)))
                 {
-                    case '\\':
-                        if (!escape)
-                        {
-                            escape = true;
-                            continue;
-                        }
-                        break;
-                    case '{':
-                        if (!escape)
-                        {
-                            // If we're already in a tag start a new tag, and dump out previous one as not a tag.
-                            if (inTag)
-                            {
-                                builder.Append('{');
-                                builder.Append(tag);
-                                tag.Clear();
-                            }
-                            inTag = true;
-                            continue;
-                        }
-                        break;
-                    case '}':
-                        if (!escape && inTag)
-                        {
-                            // Finished a tag.
-                            string t = tag.ToString();
-                            tag.Clear();
-
-                            string cv;
-                            if (_context.TryGetValue(t, out cv))
-                                // We have a context key.
-                                builder.Append(cv);
-                            else if (_formats.TryGetValue(t, out logFormat) ||
-                                     Enum.TryParse(t, true, out logFormat))
-                                // We have a standard formatter.
-                                builder.Append(ToString(logFormat));
-                            else
-                            {
-                                // We didn't match anything
-                                builder.Append('{');
-                                builder.Append(t);
-                                builder.Append('}');
-                            }
-                            inTag = false;
-                            continue;
-                        }
-                        break;
+                    // We didn't recognise the format string (if there was one), so we just output the chunk un-escaoed.
+                    builder.AddUnescaped(tuple.Item3);
+                    continue;
                 }
 
-                // Output the character to the current tag or the builder.
-                if (inTag)
-                    tag.Append(c);
-                else
-                    builder.Append(c);
-                escape = false;
+                // Append the formatted options.
+                AppendFormatted(
+                    builder,
+                    logFormat,
+                    tuple.Item2 != null
+                        ? tuple.Item2.Unescape()
+                        : null);
             }
 
             // Output our formatted string.
@@ -663,13 +606,33 @@ namespace WebApplications.Utilities.Logging
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
+        /// <param name="options">The optional options for the format.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        /// <exception cref="System.FormatException"></exception>
+        /// <exception cref="System.FormatException">
+        /// </exception>
         [NotNull]
-        public string ToString(LogFormat format)
+        public string ToString(LogFormat format, [CanBeNull]string options = null)
         {
             if (format == LogFormat.None)
                 return String.Empty;
+            StringBuilder builder = new StringBuilder();
+            AppendFormatted(builder, format, options);
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// Appends the the formatted information.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="options">The options.</param>
+        /// <exception cref="System.FormatException">
+        /// </exception>
+        private void AppendFormatted([NotNull]StringBuilder builder, LogFormat format, [CanBeNull]string options = null)
+        {
+            Contract.Requires(builder != null);
+            if (format == LogFormat.None)
+                return;
 
             // Get option flags
             bool includeMissing = format.HasFlag(LogFormat.IncludeMissing);
@@ -678,7 +641,7 @@ namespace WebApplications.Utilities.Logging
             bool asJson = format.HasFlag(LogFormat.Json);
 
             // Remove option flags
-            format = ((LogFormat)(((int)format) & 0x0FFFFFFF));
+            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
 
             if (asXml && asJson)
                 throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
@@ -707,11 +670,10 @@ namespace WebApplications.Utilities.Logging
                 indent = string.Empty;
             }
 
-            // Otherwise always inclue value.
+            // Otherwise always include value.
             if (!includeKey)
                 includeMissing = true;
 
-            StringBuilder builder = new StringBuilder();
             if (includeHeader)
             {
                 switch (masterFormat)
@@ -729,7 +691,12 @@ namespace WebApplications.Utilities.Logging
             }
 
             bool first = true;
-            foreach (LogFormat flag in format.SplitFlags(true))
+            LogFormat[] flags = format.SplitFlags(true).ToArray();
+            if (flags.Length < 1) return;
+
+            // Ignore options if we have multiple flags
+            if (flags.Length > 1) options = null;
+            foreach (LogFormat flag in flags)
             {
                 string key;
                 string value;
@@ -743,7 +710,7 @@ namespace WebApplications.Utilities.Logging
                         break;
                     case LogFormat.TimeStamp:
                         key = "TimeStamp";
-                        value = TimeStamp.ToString("o");
+                        value = TimeStamp.ToString(options ?? "o");
                         break;
                     case LogFormat.Level:
                         key = "Level";
@@ -752,12 +719,12 @@ namespace WebApplications.Utilities.Logging
                     case LogFormat.Guid:
                         key = "Guid";
                         var guid = Guid;
-                        value = guid == CombGuid.Empty ? null : guid.ToString();
+                        value = guid == CombGuid.Empty ? null : guid.ToString(options ?? "D");
                         break;
                     case LogFormat.Group:
                         key = "Group";
                         var group = Group;
-                        value = group == CombGuid.Empty ? null : group.ToString();
+                        value = group == CombGuid.Empty ? null : group.ToString(options ?? "D");
                         break;
                     case LogFormat.Exception:
                         key = "Exception Type";
@@ -782,7 +749,7 @@ namespace WebApplications.Utilities.Logging
                     case LogFormat.ThreadID:
                         key = "Thread ID";
                         int threadID = ThreadID;
-                        value = threadID < 0 ? null : threadID.ToString();
+                        value = threadID < 0 ? null : threadID.ToString(options ?? "G");
                         break;
                     case LogFormat.ThreadName:
                         key = "Thread Name";
@@ -794,7 +761,7 @@ namespace WebApplications.Utilities.Logging
                         break;
                     case LogFormat.ApplicationGuid:
                         key = "Application Guid";
-                        value = ApplicationGuid.ToString();
+                        value = ApplicationGuid.ToString(options ?? "D");
                         break;
                     case LogFormat.Context:
                         KeyValuePair<string, string>[] remainingContext =
@@ -802,9 +769,7 @@ namespace WebApplications.Utilities.Logging
                         key = "Context";
 
                         if (remainingContext.Length < 1)
-                        {
                             value = null;
-                        }
                         else
                         {
                             StringBuilder cv = new StringBuilder();
@@ -868,7 +833,6 @@ namespace WebApplications.Utilities.Logging
                         break;
                 }
             }
-            return builder.ToString();
         }
         #endregion
 
