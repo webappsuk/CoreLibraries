@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Threading;
@@ -38,15 +39,22 @@ using WebApplications.Utilities.Threading;
 namespace WebApplications.Utilities
 {
     /// <summary>
-    /// Helpful functions for initializing a console.
+    /// Helpful functions for initializing and using a console safely.
     /// </summary>
+    /// <remarks>
+    /// <para>The <see cref="ConsoleHelper"/> provides a <see cref="SynchronizationContext"/> that ensures all write methods occur in a synchronized fashion.
+    /// This prevents colour changes, etc. from being interleaved, so long as you only access the Console through the Helper methods.</para>
+    /// <para>The overloads for <see cref="Write(string)"/> and <see cref="WriteLine()"/>, as well as being synchronized, also fallback to their equivalents
+    /// in the <see cref="Trace"/> class, if a Console is not actually available.</para>
+    /// </remarks>
     [PublicAPI]
     public static class ConsoleHelper
     {
         /// <summary>
         /// Calculates whether we have a console available.
         /// </summary>
-        [NotNull] private static readonly Lazy<bool> _isConsole = new Lazy<bool>(
+        [NotNull]
+        private static readonly Lazy<bool> _isConsole = new Lazy<bool>(
             () =>
             {
                 if (!Environment.UserInteractive) return false;
@@ -64,18 +72,22 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The console synchronization context is respected by all write methods in the helper, and should be used anywhere you wish to synchronize writes.
         /// </summary>
-        [NotNull] [PublicAPI] public static readonly SynchronizationContext SynchronizationContext =
+        [NotNull]
+        [PublicAPI]
+        public static readonly SynchronizationContext SynchronizationContext =
             new SerializingSynchronizationContext();
 
         /// <summary>
         /// An empty objects array.
         /// </summary>
-        [NotNull] private static readonly object[] _emptyArgs = new object[0];
+        [NotNull]
+        private static readonly object[] _emptyArgs = new object[0];
 
         /// <summary>
         /// The custom colour names.
         /// </summary>
-        [NotNull] private static readonly Dictionary<string, ConsoleColor> _customColors =
+        [NotNull]
+        private static readonly Dictionary<string, ConsoleColor> _customColors =
             new Dictionary<string, ConsoleColor>();
 
         /// <summary>
@@ -125,6 +137,7 @@ namespace WebApplications.Utilities
         public static void SetCustomColourName([NotNull] string name, ConsoleColor colour)
         {
             Contract.Requires(name != null);
+            if (!IsConsole) return;
             SynchronizationContext.Invoke(() => _customColors[name] = colour);
         }
 
@@ -133,12 +146,19 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="colour">The colour.</param>
-        /// <returns><see langword="true" /> if XXXX, <see langword="false" /> otherwise.</returns>
+        /// <returns><see langword="true" /> if found, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
         public static bool TryGetCustomColour([NotNull] string name, out ConsoleColor colour)
         {
             Contract.Requires(name != null);
-            ConsoleColor c = ConsoleColor.White;
+            if (!IsConsole)
+            {
+                colour = default(ConsoleColor);
+                return false;
+            }
+
+            ConsoleColor c = default(ConsoleColor);
+
             bool result = SynchronizationContext.Invoke(() => _customColors.TryGetValue(name, out c));
             colour = c;
             return result;
@@ -153,7 +173,7 @@ namespace WebApplications.Utilities
         public static bool RemoveCustomColour([NotNull] string name)
         {
             Contract.Requires(name != null);
-            return SynchronizationContext.Invoke(() => _customColors.Remove(name));
+            return IsConsole && SynchronizationContext.Invoke(() => _customColors.Remove(name));
         }
 
         /// <summary>
@@ -162,11 +182,6 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void WriteLine()
         {
-            if (!IsConsole)
-            {
-                Trace.WriteLine(string.Empty);
-                return;
-            }
             Write(string.Empty, true, _emptyArgs);
         }
 
@@ -177,11 +192,6 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void WriteLine([CanBeNull] char[] buffer)
         {
-            if (!IsConsole)
-            {
-                Trace.WriteLine(buffer != null ? new string(buffer) : string.Empty);
-                return;
-            }
             Write(buffer != null ? new string(buffer) : string.Empty, true, _emptyArgs);
         }
 
@@ -194,11 +204,6 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void WriteLine([CanBeNull] char[] buffer, int index, int count)
         {
-            if (!IsConsole)
-            {
-                Trace.WriteLine(buffer != null ? new string(buffer, index, count) : string.Empty);
-                return;
-            }
             Write(buffer != null ? new string(buffer, index, count) : string.Empty, true, _emptyArgs);
         }
 
@@ -209,11 +214,6 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void WriteLine([CanBeNull] object value)
         {
-            if (!IsConsole)
-            {
-                Trace.WriteLine(value != null ? value.ToString() : string.Empty);
-                return;
-            }
             Write(value != null ? value.ToString() : string.Empty, true, _emptyArgs);
         }
 
@@ -224,11 +224,6 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void WriteLine([CanBeNull] string value)
         {
-            if (!IsConsole)
-            {
-                Trace.WriteLine(value ?? string.Empty);
-                return;
-            }
             Write(value ?? string.Empty, true, _emptyArgs);
         }
 
@@ -240,11 +235,6 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static void WriteLine([CanBeNull] string str, [CanBeNull] params object[] args)
         {
-            if (!IsConsole)
-            {
-                Trace.WriteLine(str != null ? string.Format(str, args ?? _emptyArgs) : string.Empty);
-                return;
-            }
             Write(str ?? string.Empty, true, args);
         }
 
@@ -256,11 +246,6 @@ namespace WebApplications.Utilities
         public static void Write([CanBeNull] char[] buffer)
         {
             if (buffer == null) return;
-            if (!IsConsole)
-            {
-                Trace.Write(new string(buffer));
-                return;
-            }
             Write(new string(buffer), false, _emptyArgs);
         }
 
@@ -275,11 +260,6 @@ namespace WebApplications.Utilities
         public static void Write([CanBeNull] char[] buffer, int index, int count)
         {
             if (buffer == null) return;
-            if (!IsConsole)
-            {
-                Trace.Write(new string(buffer, index, count));
-                return;
-            }
             Write(new string(buffer, index, count), false, _emptyArgs);
         }
 
@@ -292,11 +272,6 @@ namespace WebApplications.Utilities
         public static void Write([CanBeNull] object value)
         {
             if (value == null) return;
-            if (!IsConsole)
-            {
-                Trace.Write(value.ToString());
-                return;
-            }
             Write(value.ToString(), false, _emptyArgs);
         }
 
@@ -308,11 +283,6 @@ namespace WebApplications.Utilities
         public static void Write([CanBeNull] string value)
         {
             if (string.IsNullOrEmpty(value)) return;
-            if (!IsConsole)
-            {
-                Trace.Write(value);
-                return;
-            }
             Write(value, false, _emptyArgs);
         }
 
@@ -339,18 +309,14 @@ namespace WebApplications.Utilities
         {
             if (string.IsNullOrEmpty(str) && !addNewLine) return;
             if (args == null) args = _emptyArgs;
-            if (!IsConsole)
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                Trace.Write(string.Format(str, args));
-                return;
-            }
 
             // Invoke on the synchronization context
             SynchronizationContext.Invoke(() =>
             {
                 ConsoleColor currentFore = Console.ForegroundColor;
                 ConsoleColor currentBack = Console.BackgroundColor;
+                TextWriter writer = IsConsole ? Console.Out : new StringWriter();
+                Contract.Assert(writer != null);
 
                 foreach (Tuple<string, string, string> tuple in str.FormatChunks())
                 {
@@ -358,7 +324,7 @@ namespace WebApplications.Utilities
 
                     if (string.IsNullOrEmpty(tuple.Item1))
                     {
-                        Console.Write(tuple.Item3);
+                        writer.Write(tuple.Item3);
                         continue;
                     }
 
@@ -369,12 +335,12 @@ namespace WebApplications.Utilities
                         {
                             if ((arg < 0) || (arg >= args.Length))
                             {
-                                Console.Write(tuple.Item3);
+                                writer.Write(tuple.Item3);
                                 continue;
                             }
                             if (string.IsNullOrEmpty(tuple.Item2))
                             {
-                                Console.Write(args[arg]);
+                                writer.Write(args[arg]);
                                 continue;
                             }
 
@@ -382,11 +348,11 @@ namespace WebApplications.Utilities
                             try
                             {
                                 // ReSharper disable once AssignNullToNotNullAttribute
-                                Console.Write(tuple.Item3, args);
+                                writer.Write(tuple.Item3, args);
                             }
                             catch
                             {
-                                Console.Write(tuple.Item3);
+                                writer.Write(tuple.Item3);
                             }
                             continue;
                         }
@@ -396,7 +362,7 @@ namespace WebApplications.Utilities
                     bool back = tuple.Item1[0] == '-';
                     if (!back && (tuple.Item1[0] != '+'))
                     {
-                        Console.Write(tuple.Item3);
+                        writer.Write(tuple.Item3);
                         continue;
                     }
 
@@ -409,11 +375,13 @@ namespace WebApplications.Utilities
                     else if (!_customColors.TryGetValue(cStr, out colour) &&
                              !Enum.TryParse(cStr, true, out colour))
                     {
-                        Console.Write(tuple.Item3);
+                        writer.Write(tuple.Item3);
                         continue;
                     }
 
-                    // Set the relevant console colour
+                    // Set the relevant console colour, if we're running in a console.
+                    if (!IsConsole) continue;
+
                     if (back)
                         Console.BackgroundColor = colour;
                     else
@@ -421,11 +389,20 @@ namespace WebApplications.Utilities
                 }
 
                 // Restore colours
-                Console.BackgroundColor = currentBack;
-                Console.ForegroundColor = currentFore;
+                if (IsConsole)
+                {
+                    Console.BackgroundColor = currentBack;
+                    Console.ForegroundColor = currentFore;
+                }
 
                 if (addNewLine)
-                    Console.WriteLine();
+                    writer.WriteLine();
+
+                if (IsConsole) return;
+
+                // Write the StringWriter out to trace.
+                Trace.Write(writer.ToString());
+                writer.Dispose();
             });
         }
     }

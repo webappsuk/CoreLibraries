@@ -72,5 +72,13 @@ namespace WebApplications.Utilities.Threading
             Contract.Requires(action != null);
             _context.Post(_executor, action);
         }
+
+        /// <summary>
+        /// Gets the result.
+        /// </summary>
+        [UsedImplicitly]
+        public void GetResult()
+        {
+        }
     }
 }

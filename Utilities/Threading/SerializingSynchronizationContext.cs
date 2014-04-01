@@ -37,7 +37,7 @@ namespace WebApplications.Utilities.Threading
     /// <summary>
     /// Allows serialization of actions.
     /// </summary>
-    /// <remarks>See https://github.com/revane/SerializingSynchronizationContex.
+    /// <remarks>See https://github.com/revane/SerializingSynchronizationContext.
     /// </remarks>
     [PublicAPI]
     public sealed class SerializingSynchronizationContext : SynchronizationContext
