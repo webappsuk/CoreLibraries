@@ -58,7 +58,7 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   The base UTC date time used during new <see cref="System.DateTime"/> calculations.
         /// </summary>
-        private static readonly DateTimeOffset _baseDate = new DateTimeOffset(1900, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        private static readonly DateTime _baseDate = new DateTime(1900, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         ///   The UTC <see cref="System.DateTime"/> encoded into the <see cref="CombGuid"/>.
@@ -520,7 +520,19 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static CombGuid NewCombGuid()
         {
-            return NewCombGuid(DateTimeOffset.UtcNow);
+            return NewCombGuid(DateTime.UtcNow);
+        }
+
+        /// <summary>
+        ///   Creates a new <see cref="CombGuid"/> based on the <see cref="System.DateTimeOffset">date time</see> specified.
+        /// </summary>
+        /// <param name="dateTime">The date time.</param>
+        /// <returns>A new <see cref="CombGuid"/> instance.</returns>
+        [SecuritySafeCritical]
+        [UsedImplicitly]
+        public static CombGuid NewCombGuid(DateTimeOffset dateTime)
+        {
+            return NewCombGuid(dateTime.UtcDateTime);
         }
 
         /// <summary>
@@ -531,18 +543,6 @@ namespace WebApplications.Utilities
         [SecuritySafeCritical]
         [UsedImplicitly]
         public static CombGuid NewCombGuid(DateTime dateTime)
-        {
-            return NewCombGuid((DateTimeOffset) dateTime);
-        }
-
-        /// <summary>
-        ///   Creates a new <see cref="CombGuid"/> based on the <see cref="System.DateTime">date time</see> specified.
-        /// </summary>
-        /// <param name="dateTime">The date time.</param>
-        /// <returns>A new <see cref="CombGuid"/> instance.</returns>
-        [SecuritySafeCritical]
-        [UsedImplicitly]
-        public static CombGuid NewCombGuid(DateTimeOffset dateTime)
         {
             // Always convert to universal time.
             dateTime = dateTime.ToUniversalTime();
@@ -604,8 +604,7 @@ namespace WebApplications.Utilities
             daysArray[1] = guidArray[10];
 
             return _baseDate.AddDays(BitConverter.ToInt32(daysArray, 0))
-                            .AddMilliseconds(BitConverter.ToInt64(msecsArray, 0)*3.333333)
-                            .UtcDateTime;
+                            .AddMilliseconds(BitConverter.ToInt64(msecsArray, 0)*3.333333);
         }
 
         /// <summary>

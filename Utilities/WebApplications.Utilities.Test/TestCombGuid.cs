@@ -77,5 +77,25 @@ namespace WebApplications.Utilities.Test
 
             Trace.WriteLine(string.Format("The maximum delta for SQL CombGuids was {0}ms.", maxDelta.TotalMilliseconds));
         }
+
+        /// <summary>
+        /// Tests that the <see cref="CombGuid.Created"/> timestamp is a UTC datetime and is equal to the time it was created with.
+        /// </summary>
+        [TestMethod]
+        public void TestCreated()
+        {
+            DateTime now = DateTime.UtcNow;
+
+            CombGuid guid = CombGuid.NewCombGuid(now);
+
+            Assert.AreEqual(DateTimeKind.Utc, guid.Created.Kind);
+
+            TimeSpan delta = now - guid.Created;
+            if (delta < TimeSpan.Zero)
+                delta = TimeSpan.Zero - delta;
+
+            Assert.IsTrue(delta < TimeSpan.FromMilliseconds(10), "The loss of precision was greater than 10ms - {0}",
+                          delta.TotalMilliseconds);
+        }
     }
 }
