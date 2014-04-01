@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -287,8 +288,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The global logging queue.
         /// </summary>
-        [NotNull]
-        private static readonly Queue<Log> _queue = new Queue<Log>();
+        [NotNull] private static readonly ConcurrentBag<Log> _buffer = new ConcurrentBag<Log>();
 
         /// <summary>
         ///   Initializes static members of the <see cref="Log" /> class.
@@ -800,24 +800,43 @@ namespace WebApplications.Utilities.Logging
         {
             DateTime requested = DateTime.UtcNow;
             int batchCount = 0;
-            Log[] batch;
+
+            List<Log> ready;
             using (await _queueLock.LockAsync(token))
             {
-                batch = new Log[_queue.Count];
-                while (_queue.Count > 0)
-                {
-                    if (token.IsCancellationRequested) break;
-                    // Check if head of queue is in past.
-                    Log l = _queue.Peek();
-                    if (l == null) continue;
-                    if (l.TimeStamp > requested) break;
+                ready = new List<Log>(_buffer.Count);
+                List<Log> notReady = new List<Log>(_buffer.Count);
 
-                    l = _queue.Dequeue();
-                    batch[batchCount++] = l;
+                // Grab all the elements in the buffer, as bags are not ordered in anyway we have to scan all available logs.
+                while (!_buffer.IsEmpty)
+                {
+                    // We stop scanning if the token is cancelled.
+                    if (token.IsCancellationRequested)
+                    {
+                        // Put everything back first!
+                        foreach (Log rLog in ready)
+                            _buffer.Add(rLog);
+                        foreach (Log nrLog in notReady)
+                            _buffer.Add(nrLog);
+
+                        return;
+                    }
+
+                    Log log;
+                    if (!_buffer.TryTake(out log)) break;
+                    if (log.TimeStamp > requested)
+                        notReady.Add(log);
+                    else 
+                        ready.Add(log);
                 }
+
+                // Anything that isn't ready yet we stick back in the bag.
+                foreach(Log log in notReady)
+                    _buffer.Add(log);
             }
 
-            if (batchCount < 1)
+            // Check if we have anything ready to log.
+            if (ready.Count < 1)
                 return;
 
             // Grab valid loggers
@@ -827,8 +846,22 @@ namespace WebApplications.Utilities.Logging
                     .Where(kvp => (((byte)kvp.Key.ValidLevels) & ((byte)ValidLevels)) > 0)
                     .ToList();
 
+            // Order the logs
+            Log[] orderedLogs = ready.OrderBy(l => l.TimeStamp).ToArray();
+            ready.Clear();
+
+            // Last chance to cancel
+            if (token.IsCancellationRequested)
+            {
+                // Put the logs back first
+                foreach(var log in orderedLogs)
+                    _buffer.Add(log);
+
+                return;
+            }
+
             // Create tasks
-            // Note we don't use the supplied cancellation token as we always write out logs once they're removed from the queue.
+            // Note we don't use the supplied cancellation token as we always write out logs once they're removed from the buffer.
             await Task.WhenAll(loggers.Select(
                 // ReSharper disable once PossibleNullReferenceException
                 kvp => kvp.Value.Lock
@@ -837,8 +870,7 @@ namespace WebApplications.Utilities.Logging
                     {
                         try
                         {
-                            kvp.Key.Add(batch.Take(batchCount).Where(log => log.Level.IsValid(kvp.Key.ValidLevels)),
-                                CancellationToken.None);
+                            kvp.Key.Add(orderedLogs.Where(log => log.Level.IsValid(kvp.Key.ValidLevels)), CancellationToken.None);
                         }
                         finally
                         {

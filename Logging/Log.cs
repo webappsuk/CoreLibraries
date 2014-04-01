@@ -197,9 +197,7 @@ namespace WebApplications.Utilities.Logging
             _perfCounterNewItem.Increment();
 
             // Post log onto queue (can happen asycnhronously)
-#pragma warning disable 4014
             ReLog();
-#pragma warning restore 4014
         }
 
         /// <summary>
@@ -672,18 +670,14 @@ namespace WebApplications.Utilities.Logging
         /// stores, etc.</para>
         /// <para>That said, this method should be used with extreme caution to avoid duplicate logging.</para>
         /// </remarks>
-        [NotNull]
-        public async Task ReLog(CancellationToken token = new CancellationToken())
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReLog()
         {
             // Post the log if the level is valid
             // We check here as exceptions always create a log (even if the level isn't valid).
             // It also reduces the race when the ValidLevels is changed.
-            if (!Level.IsValid(ValidLevels)) return;
-            using (await _queueLock.LockAsync(token))
-            {
-                if (Level.IsValid(ValidLevels))
-                    _queue.Enqueue(this);
-            }
+            if (Level.IsValid(ValidLevels))
+                _buffer.Add(this);
         }
 
         /// <summary>
