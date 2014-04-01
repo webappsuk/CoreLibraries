@@ -882,7 +882,7 @@ namespace WebApplications.Utilities.Logging
                     builder.Append(key);
                     if (value == null)
                     {
-                        builder.AppendLine(" />");
+                        builder.Append(" />");
                         return;
                     }
                     builder.Append('>');
@@ -894,7 +894,7 @@ namespace WebApplications.Utilities.Logging
                 case MasterFormat.JSON:
                     builder.Append(key.ToJSON());
                     builder.Append(": ");
-                    builder.Append(escaped ? value : value.ToJSON());
+                    builder.Append(escaped ? (value ?? "null") : value.ToJSON());
                     return;
                 default:
                     builder.Append(key);
