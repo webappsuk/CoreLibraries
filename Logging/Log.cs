@@ -34,6 +34,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Threading;
@@ -59,23 +60,26 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Cached level as used so frequently
         /// </summary>
-        private readonly LoggingLevel _level;
+        [NonSerialized]
+        private LoggingLevel _level;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Log" /> class.
+        /// Called when deserializing.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <remarks>
-        /// <para>This is used for deserializing Log entries - it does not result in logs being added!</para>
-        /// <para>To add logs use <see cref="Log.Add(string, object[])" /> instead.</para>
-        /// <para>You can create partial logs, however the context must contain at least the 
-        /// <see cref="GuidKey">Guid key</see>, and be a valid <see cref="CombGuid"/>.</para>
-        /// <para>Typed keys must also be valid if supplied otherwise an exception will be thrown.</para>
-        /// </remarks>
-        public Log([NotNull] IEnumerable<KeyValuePair<string, string>> context)
+        /// <exception cref="LoggingException">
+        /// The log deserialization did not supply a valid GUID.
+        /// or
+        /// The log deserialization supplied an invalid Group.
+        /// or
+        /// The log deserialization supplied an invalid Level.
+        /// or
+        /// The log deserialization supplied an invalid Thread ID.
+        /// or
+        /// The log deserialization supplied an invalid Stored Procedure line number.
+        /// </exception>
+        [OnDeserialized]
+        private void OnDeserialize(StreamingContext context)
         {
-            Contract.Requires(context != null);
-            _context = context.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             string s;
             CombGuid guid;
             if (!_context.TryGetValue(GuidKey, out s) ||
@@ -102,6 +106,24 @@ namespace WebApplications.Utilities.Logging
             if (_context.TryGetValue(StoredProcedureLineKey, out s) &&
                 !Int32.TryParse(s, out i))
                 throw new LoggingException("The log deserialization supplied an invalid Stored Procedure line number.");
+        }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Log" /> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <remarks>
+        /// <para>This is used for deserializing Log entries - it does not result in logs being added!</para>
+        /// <para>To add logs use <see cref="Log.Add(string, object[])" /> instead.</para>
+        /// <para>You can create partial logs, however the context must contain at least the 
+        /// <see cref="GuidKey">Guid key</see>, and be a valid <see cref="CombGuid"/>.</para>
+        /// <para>Typed keys must also be valid if supplied otherwise an exception will be thrown.</para>
+        /// </remarks>
+        public Log([NotNull] IEnumerable<KeyValuePair<string, string>> context)
+        {
+            Contract.Requires(context != null);
+            _context = context.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            OnDeserialize(default(StreamingContext));
         }
 
         /// <summary>

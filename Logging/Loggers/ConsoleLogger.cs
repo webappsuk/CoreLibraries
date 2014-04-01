@@ -85,27 +85,25 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public override async Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
             // Check we're actually in a console!
-            if (!ConsoleHelper.IsConsole) return TaskResult.Completed;
+            if (!ConsoleHelper.IsConsole) return;
 
-            lock (ConsoleHelper.Lock)
+            // Write out the logs on the synchronization context which will prevent 'interleaving'.
+            await ConsoleHelper.SynchronizationContext;
+
+            string format = Format;
+            // ReSharper disable once PossibleNullReferenceException
+            foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {
-                string format = Format;
-                foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
-                {
-                    Contract.Assert(log != null);
-                    token.ThrowIfCancellationRequested();
-                    ConsoleHelper.SetCustomColourName("?", LevelColour(log.Level));
-                    ConsoleHelper.WriteLine(log.ToString(format));
-                }
-                ConsoleHelper.RemoveCustomColour("?");
+                token.ThrowIfCancellationRequested();
+                // ReSharper disable once PossibleNullReferenceException
+                ConsoleHelper.SetCustomColourName("?", LevelColour(log.Level));
+                ConsoleHelper.WriteLine(log.ToString(format));
             }
-
-            // We always complete synchronously.
-            return TaskResult.Completed;
+            ConsoleHelper.RemoveCustomColour("?");
         }
 
         /// <summary>
