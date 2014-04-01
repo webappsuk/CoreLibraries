@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     ///   Allows logging to the debug window.
     /// </summary>
     [UsedImplicitly]
-    public class TraceLogger : LoggerBase
+    public sealed class TraceLogger : LoggerBase
     {
         /// <summary>
         /// The default format.

@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     ///   Allows coloured logging to the console window, using an extended <see cref="Format"/> syntax.
     /// </summary>
     [PublicAPI]
-    public class ConsoleLogger : LoggerBase
+    public sealed class ConsoleLogger : LoggerBase
     {
         /// <summary>
         /// The default format.
