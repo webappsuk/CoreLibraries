@@ -48,7 +48,7 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public async Task TestMemoryLogger()
         {
-            FileLogger fileLogger = Log.Loggers.OfType<FileLogger>().First();
+            FileLogger fileLogger = Log.GetLoggers<FileLogger>().First();
             Assert.IsNotNull(fileLogger);
             fileLogger.Format = "Verbose,Xml";
 

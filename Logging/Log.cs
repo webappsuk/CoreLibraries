@@ -37,6 +37,7 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Logging
@@ -52,7 +53,8 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The context (holds all log data).
         /// </summary>
-        [NotNull] private readonly Dictionary<string, string> _context;
+        [NotNull]
+        private readonly Dictionary<string, string> _context;
 
         /// <summary>
         /// Cached level as used so frequently
@@ -120,6 +122,8 @@ namespace WebApplications.Utilities.Logging
             [NotNull] string format,
             [NotNull] params object[] parameters)
         {
+            Contract.Requires(format != null);
+            Contract.Requires(parameters != null);
             CombGuid guid = CombGuid.NewCombGuid();
 
             // Dictionary size
@@ -189,11 +193,13 @@ namespace WebApplications.Utilities.Logging
 
                 _context.Add(StackTraceKey, stackTrace);
 
-            // Post log onto queue.
-            ReLog();
-
             // Increment performance counter.
             _perfCounterNewItem.Increment();
+
+            // Post log onto queue (can happen asycnhronously)
+#pragma warning disable 4014
+            ReLog();
+#pragma warning restore 4014
         }
 
         /// <summary>
@@ -346,7 +352,7 @@ namespace WebApplications.Utilities.Logging
 
             if (formatProvider != null)
             {
-                ICustomFormatter formatter = formatProvider.GetFormat(typeof (Log)) as ICustomFormatter;
+                ICustomFormatter formatter = formatProvider.GetFormat(typeof(Log)) as ICustomFormatter;
 
                 if (formatter != null)
                     return formatter.Format(format, this, formatProvider) ?? String.Empty;
@@ -358,7 +364,7 @@ namespace WebApplications.Utilities.Logging
                 return ToString(logFormat);
 
             // Get format chunks
-            StringBuilder builder = new StringBuilder(format.Length*2);
+            StringBuilder builder = new StringBuilder(format.Length * 2);
             foreach (Tuple<string, string, string> tuple in format.FormatChunks())
             {
                 Contract.Assert(tuple != null);
@@ -444,7 +450,7 @@ namespace WebApplications.Utilities.Logging
             bool asJson = format.HasFlag(LogFormat.Json);
 
             // Remove option flags
-            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
+            format = ((LogFormat)(((int)format) & 0x0FFFFFFF));
 
             if (asXml && asJson)
                 throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
@@ -666,14 +672,18 @@ namespace WebApplications.Utilities.Logging
         /// stores, etc.</para>
         /// <para>That said, this method should be used with extreme caution to avoid duplicate logging.</para>
         /// </remarks>
-        public void ReLog()
+        [NotNull]
+        public async Task ReLog(CancellationToken token = new CancellationToken())
         {
             // Post the log if the level is valid
             // We check here as exceptions always create a log (even if the level isn't valid).
             // It also reduces the race when the ValidLevels is changed.
-            if (Level.IsValid(ValidLevels))
-                lock (_queue)
+            if (!Level.IsValid(ValidLevels)) return;
+            using (await _queueLock.LockAsync(token))
+            {
+                if (Level.IsValid(ValidLevels))
                     _queue.Enqueue(this);
+            }
         }
 
         /// <summary>
@@ -725,13 +735,13 @@ namespace WebApplications.Utilities.Logging
 
                         // Look for inheritance from log or logging exception.
                         baseType = declaringType;
-                        while ((baseType != typeof (object)) &&
-                               (baseType != typeof (LoggingException)) &&
-                               (baseType != typeof (Log)))
+                        while ((baseType != typeof(object)) &&
+                               (baseType != typeof(LoggingException)) &&
+                               (baseType != typeof(Log)))
                             baseType = baseType.BaseType;
 
-                        if ((baseType == typeof (LoggingException)) ||
-                            (baseType == typeof (Log)))
+                        if ((baseType == typeof(LoggingException)) ||
+                            (baseType == typeof(Log)))
                         {
                             // We are descended from LoggingException or Log so skip frame.
                             baseType = declaringType;

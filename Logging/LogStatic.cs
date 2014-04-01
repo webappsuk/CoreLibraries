@@ -26,10 +26,12 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -41,7 +43,7 @@ using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
-using WebApplications.Utilities.Threading;
+using AsyncLock = WebApplications.Utilities.Threading.AsyncLock;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -53,23 +55,29 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The Header/Footer string
         /// </summary>
-        [NotNull] private const string Header =
+        [NotNull]
+        private const string Header =
             "====================================================================================================";
 
         /// <summary>
         /// The new log item performance counter.
         /// </summary>
-        [NotNull] [NonSerialized] private static readonly PerfCounter _perfCounterNewItem;
+        [NotNull]
+        [NonSerialized]
+        private static readonly PerfCounter _perfCounterNewItem;
 
         /// <summary>
         /// The exception performance counter.
         /// </summary>
-        [NotNull] [NonSerialized] internal static readonly PerfCounter PerfCounterException;
+        [NotNull]
+        [NonSerialized]
+        internal static readonly PerfCounter PerfCounterException;
 
         /// <summary>
         /// Calculates the most likely candidate for an assembly that serves as an entry point.
         /// </summary>
-        [NotNull] private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(
+        [NotNull]
+        private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(
             () =>
             {
                 Assembly assembly = null;
@@ -96,7 +104,7 @@ namespace WebApplications.Utilities.Logging
                             .Where(m => m != null)
                             .Select(m => m.DeclaringType)
                             .Where(t => t != null)
-                            .Select(t => new {t.Assembly, Name = t.Assembly.GetName()})
+                            .Select(t => new { t.Assembly, Name = t.Assembly.GetName() })
                             // ReSharper disable once AssignNullToNotNullAttribute
                             .Where(n => (n.Name != null) && !publicKeys.Contains(n.Name.GetPublicKey()))
                             .Select(n => n.Assembly)
@@ -116,186 +124,171 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Holds lookup for logging levels.
         /// </summary>
-        [NotNull] private static readonly Dictionary<string, LoggingLevel> _levels =
+        [NotNull]
+        private static readonly Dictionary<string, LoggingLevel> _levels =
             ExtendedEnum<LoggingLevel>.ValueDetails
-                .SelectMany(
-                    vd => vd.Select(v => new KeyValuePair<string, LoggingLevel>(v.ToLower(), vd.Value)))
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
+            .SelectMany(
+          vd => vd.Select(v => new KeyValuePair<string, LoggingLevel>(v.ToLower(), vd.Value)))
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Holds lookup for formats.
         /// </summary>
-        [NotNull] private static readonly Dictionary<string, LogFormat> _formats =
+        [NotNull]
+        private static readonly Dictionary<string, LogFormat> _formats =
             ExtendedEnum<LogFormat>.ValueDetails
-                .SelectMany(
-                    vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
+            .SelectMany(
+          vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// The log reservation.
         /// </summary>
-        [NonSerialized] private static readonly Guid _logReservation = System.Guid.NewGuid();
+        [NonSerialized]
+        private static readonly Guid _logReservation = System.Guid.NewGuid();
 
         /// <summary>
         /// The parameter key prefix.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string LogKeyPrefix = LogContext.ReservePrefix("Log ",
+        [NotNull]
+        [NonSerialized]
+        public static readonly string LogKeyPrefix = LogContext.ReservePrefix("Log ",
             _logReservation);
 
         /// <summary>
         /// The parameter key prefix.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string ParameterKeyPrefix =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ParameterKeyPrefix =
             LogContext.ReservePrefix("Log Parameter ", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string GuidKey = LogContext.ReserveKey("Log GUID",
+        [NotNull]
+        [NonSerialized]
+        public static readonly string GuidKey = LogContext.ReserveKey("Log GUID",
             _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string GroupKey = LogContext.ReserveKey("Log Group",
+        [NotNull]
+        [NonSerialized]
+        public static readonly string GroupKey = LogContext.ReserveKey("Log Group",
             _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string LevelKey = LogContext.ReserveKey("Log Level",
+        [NotNull]
+        [NonSerialized]
+        public static readonly string LevelKey = LogContext.ReserveKey("Log Level",
             _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string MessageFormatKey =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string MessageFormatKey =
             LogContext.ReserveKey("Log Message Format", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string ExceptionTypeFullNameKey =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ExceptionTypeFullNameKey =
             LogContext.ReserveKey("Log Exception Type", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string StackTraceKey = LogContext.ReserveKey(
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StackTraceKey = LogContext.ReserveKey(
             "Log Stack Trace", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string ThreadIDKey = LogContext.ReserveKey("Log Thread ID",
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadIDKey = LogContext.ReserveKey("Log Thread ID",
             _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string ThreadNameKey = LogContext.ReserveKey(
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadNameKey = LogContext.ReserveKey(
             "Log Thread Name", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string StoredProcedureKey =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StoredProcedureKey =
             LogContext.ReserveKey("Log Stored Procedure", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string StoredProcedureLineKey =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StoredProcedureLineKey =
             LogContext.ReserveKey("Log Stored Procedure Line", _logReservation);
 
         /// <summary>
         /// The logging assembly
         /// </summary>
-        [NotNull] [NonSerialized] internal static readonly Assembly LoggingAssembly = typeof (Log).Assembly;
+        [NotNull]
+        [NonSerialized]
+        internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
 
         /// <summary>
         /// The global tick, ticks once a second and is used for batching, etc.
         /// </summary>
-        [NonSerialized] [NotNull] public static readonly IObservable<long> Tick;
+        [NonSerialized]
+        [NotNull]
+        public static readonly IObservable<long> Tick;
 
         /// <summary>
         /// Loggers collection.
         /// </summary>
-        [NonSerialized] [NotNull] private static readonly List<ILogger> _loggers;
+        [NonSerialized]
+        [NotNull]
+        private static readonly Dictionary<ILogger, LoggerInfo> _loggers;
 
         /// <summary>
         /// The default memory logger always exists and ensures we're always capturing at least the last minutes worth of logs.
         /// </summary>
-        [NonSerialized] [NotNull] private static readonly MemoryLogger _defaultMemoryLogger;
+        [NonSerialized]
+        [NotNull]
+        private static readonly MemoryLogger _defaultMemoryLogger;
 
         /// <summary>
         /// The tick subscription.
         /// </summary>
-        [NonSerialized] [NotNull] private static readonly IDisposable _tickSubscription;
+        [NonSerialized]
+        [NotNull]
+        private static readonly IDisposable _tickSubscription;
 
         /// <summary>
-        /// Flushes the queues asynchronously, note that only one instance is run at a time.
+        /// The queue lock.
         /// </summary>
-        [NotNull] private static readonly AsyncDebouncedAction _doFlush = new AsyncDebouncedAction(
-            token =>
-            {
-                // Grab batch.
-                Log[] batch;
-                int batchCount = 0;
-                lock (_queue)
-                {
-                    batch = new Log[_queue.Count];
-                    while (_queue.Count > 0 &&
-                           !token.IsCancellationRequested)
-                    {
-                        Log l = _queue.Dequeue();
-                        if (l.Level.IsValid(ValidLevels))
-                            batch[batchCount++] = l;
-                    }
-                }
-
-                if ((ValidLevels == LoggingLevels.None) ||
-                    (batch.Length < 1))
-                    return TaskResult.Completed;
-
-                // Grab valid loggers
-                List<ILogger> loggers;
-                lock (_loggers)
-                    loggers = _loggers
-                        .Where(l => (((byte) l.ValidLevels) & ((byte) ValidLevels)) > 0)
-                        .ToList();
-
-                // Add memory logger.
-                loggers.Add(_defaultMemoryLogger);
-
-                // Next bit we can run in parallel.
-                Parallel.ForEach(loggers, l =>
-                {
-                    try
-                    {
-                        l.Add(batch.Where(log => log.Level.IsValid(l.ValidLevels)));
-                    }
-                    catch (Exception e)
-                    {
-                        // Disable this logger as it threw an exception
-                        // ReSharper disable once ObjectCreationAsStatement
-                        new LoggingException(
-                            e,
-                            LoggingLevel.Critical,
-                            Resources.LogStatic_LogBatch_FatalErrorOccured,
-                            l.Name);
-
-                        // Stop logger running again.
-                        l.ValidLevels = LoggingLevels.None;
-                    }
-                });
-                return TaskResult.Completed;
-            });
+        [NotNull]
+        private static readonly AsyncLock _queueLock = new AsyncLock();
 
         /// <summary>
         /// The global logging queue.
         /// </summary>
-        [NotNull] private static readonly Queue<Log> _queue = new Queue<Log>();
+        [NotNull]
+        private static readonly Queue<Log> _queue = new Queue<Log>();
 
         /// <summary>
         ///   Initializes static members of the <see cref="Log" /> class.
@@ -314,8 +307,10 @@ namespace WebApplications.Utilities.Logging
             // Create tick
             Tick = Observable.Timer(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
 
-            _loggers = new List<ILogger>();
+            // Create loggers and add default memory logger.
+            _loggers = new Dictionary<ILogger, LoggerInfo>();
             _defaultMemoryLogger = new MemoryLogger("Default memory logger", TimeSpan.FromMinutes(1));
+            _loggers[_defaultMemoryLogger] = new LoggerInfo(false);
 
             // Flush on tick.
             _tickSubscription = Tick.Subscribe(l => Flush());
@@ -371,10 +366,8 @@ namespace WebApplications.Utilities.Logging
         {
             get
             {
-                ILogger[] copy;
                 lock (_loggers)
-                    copy = _loggers.ToArray();
-                return copy;
+                    return _loggers.Keys;
             }
         }
 
@@ -430,22 +423,33 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         internal static void LoadConfiguration()
         {
+            // Ensure we only run one load at a time.
             lock (_loggers)
             {
                 // Get the active configuration
                 LoggingConfiguration configuration = ConfigurationSection<LoggingConfiguration>.Active;
+                Contract.Assert(configuration != null);
 
                 ApplicationName = configuration.ApplicationName;
                 ApplicationGuid = configuration.ApplicationGuid;
 
-                // Get all loggers
-                ILogger[] loggers = _loggers.ToArray();
-                // Remove all loggers
-                _loggers.Clear();
+                // Grab all loggers that came from the configuration.
+                // ReSharper disable once PossibleNullReferenceException
+                KeyValuePair<ILogger, LoggerInfo>[] loggers = _loggers.Where(kvp => kvp.Value.IsFromConfiguration).ToArray();
+                foreach (ILogger l in loggers.Select(l => l.Key))
+                {
+                    Contract.Assert(l != null);
+                    _loggers.Remove(l);
+                }
 
-                // Dispose loggers
-                foreach (ILogger logger in loggers.Where(logger => logger != null))
-                    logger.Dispose();
+                // Dispose existing configuration loggers
+                Parallel.ForEach(loggers, kvp =>
+                {
+                    Contract.Assert(kvp.Key != null);
+                    Contract.Assert(kvp.Value != null);
+                    using (kvp.Value.Lock.LockAsync().Result)
+                        kvp.Key.Dispose();
+                });
 
                 // Update default memory logger values
                 if (configuration.LogCacheExpiry > TimeSpan.Zero)
@@ -453,19 +457,20 @@ namespace WebApplications.Utilities.Logging
                 if (configuration.LogCacheMaximumEntries > 0)
                     _defaultMemoryLogger.MaximumLogEntries = configuration.LogCacheMaximumEntries;
 
-
                 // If we're enabled add specified loggers that are also enabled.
                 if (configuration.Enabled)
                 {
                     ValidLevels = configuration.ValidLevels;
                     foreach (LoggerElement loggerElement in configuration.Loggers.Where(l => l != null && l.Enabled))
                     {
+                        Contract.Assert(loggerElement != null);
                         try
                         {
-                            AddLogger(loggerElement.GetInstance<ILogger>(), _defaultMemoryLogger);
+                            AddLogger(loggerElement.GetInstance<ILogger>(), _defaultMemoryLogger, int.MaxValue, true);
                         }
                         catch (Exception exception)
                         {
+                            // ReSharper disable once ObjectCreationAsStatement
                             new LoggingException(exception,
                                 LoggingLevel.Critical,
                                 Resources.LogStatic_LoadConfiguration_ErrorCreatingLogger,
@@ -505,7 +510,10 @@ namespace WebApplications.Utilities.Logging
         {
             if (format == null)
                 format = TraceLogger.DefaultFormat;
-            TraceLogger traceLogger = _loggers.OfType<TraceLogger>().SingleOrDefault();
+            TraceLogger traceLogger;
+            lock (_loggers)
+                traceLogger = _loggers.Keys.OfType<TraceLogger>().FirstOrDefault();
+
             if (traceLogger != null)
             {
                 traceLogger.Format = format;
@@ -539,7 +547,9 @@ namespace WebApplications.Utilities.Logging
             if (format == null)
                 format = ConsoleLogger.DefaultFormat;
 
-            ConsoleLogger consoleLogger = _loggers.OfType<ConsoleLogger>().SingleOrDefault();
+            ConsoleLogger consoleLogger;
+            lock (_loggers)
+                consoleLogger = _loggers.OfType<ConsoleLogger>().FirstOrDefault();
             if (consoleLogger != null)
             {
                 consoleLogger.Format = format;
@@ -551,26 +561,41 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        ///   Adds a new logger and copies over log items from the source logger.
+        /// Adds a new logger and copies over log items from the source logger.
         /// </summary>
         /// <param name="logger">The logger to add.</param>
-        /// <param name="sourceLogger">
-        ///   <para>The source logger to copy log items from defaults to the cache.</para>
-        /// </param>
-        /// <param name="limit">
-        ///   <para>The maximum number of logs to copy.</para>
-        ///   <para>By default this is set to <see cref="int.MaxValue"/>.</para>
-        /// </param>
-        /// <returns>The logger with the specified logger name.</returns>
-        /// <exception cref="LoggingException">
-        ///   <see cref="LoggerBase.Queryable">retrieval</see> is not supported.
-        /// </exception>
-        [UsedImplicitly]
+        /// <param name="sourceLogger">The source logger to copy log items from defaults to the cache.</param>
+        /// <param name="limit"><para>The maximum number of logs to copy.</para>
+        /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
+        /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
+        /// <exception cref="LoggingException"><see cref="LoggerBase.Queryable">retrieval</see> is not supported.</exception>
+        [NotNull, UsedImplicitly]
         public static ILogger AddLogger(
             [NotNull] ILogger logger,
             [CanBeNull] ILogger sourceLogger = null,
             int limit = Int32.MaxValue)
         {
+            Contract.Requires(logger != null);
+            return AddLogger(logger, sourceLogger, limit, false);
+        }
+
+        /// <summary>
+        /// Adds the logger.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
+        /// <param name="sourceLogger">The source logger.</param>
+        /// <param name="limit">The limit.</param>
+        /// <param name="isFromConfiguration">if set to <see langword="true" /> [is from configuration].</param>
+        /// <returns>ILogger.</returns>
+        /// <exception cref="LoggingException"></exception>
+        [NotNull, UsedImplicitly]
+        private static ILogger AddLogger(
+            [NotNull] ILogger logger,
+            [CanBeNull] ILogger sourceLogger,
+            int limit,
+            bool isFromConfiguration)
+        {
+            Contract.Requires(logger != null);
             if (sourceLogger == null)
                 sourceLogger = _defaultMemoryLogger;
 
@@ -579,27 +604,157 @@ namespace WebApplications.Utilities.Logging
             {
                 throw new LoggingException(
                     Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
-                    logger.Name);
+                    sourceLogger.Name);
             }
 
-            // Add logs
-            logger.Add(sourceLogger.Qbserve.TakeLast(limit).ToEnumerable().Select(l => new Log(l)));
-
-            lock (_loggers)
+            IDisposable loggerLock = null;
+            try
             {
-                _loggers.Add(logger);
-
-                // Check for collisions on singletons.
-                Type lType = _loggers.GetType();
-                if (_loggers.Any(l => !l.AllowMultiple && l.GetType() == lType))
+                lock (_loggers)
                 {
-                    _loggers.Remove(logger);
-                    throw new LoggingException(
-                        Resources.Log_Logger_Multiple_Instances,
-                        logger.Name);
+                    if (!logger.AllowMultiple)
+                    {
+                        Type loggerType = logger.GetType();
+                        // Check for existing logger of same type.
+                        KeyValuePair<ILogger, LoggerInfo> existing =
+                            _loggers.FirstOrDefault(i => loggerType.IsInstanceOfType(i.Key));
+                        if (existing.Key != null)
+                            return existing.Key;
+                    }
+
+                    // Create the logger info
+                    LoggerInfo info = new LoggerInfo(false);
+
+                    // Grab the logger lock, this ensures we get to add log entries first!
+                    loggerLock = info.Lock.LockAsync().Result;
+
+                    // We can add logger and release _loggers lock.
+                    _loggers.Add(logger, info);
+                }
+
+                // Add logs, we already have the lock, so we go first.
+                logger.Add(sourceLogger.Qbserve.TakeLast(limit).ToEnumerable());
+            }
+            finally
+            {
+                if (loggerLock != null)
+                {
+                    loggerLock.Dispose();
                 }
             }
+            return logger;
+        }
 
+        /// <summary>
+        /// Adds a new logger and copies over log items from the source logger.
+        /// </summary>
+        /// <typeparam name="T">The logger type.</typeparam>
+        /// <param name="logger">The logger to add.</param>
+        /// <param name="sourceLogger">The source logger to copy log items from defaults to the cache.</param>
+        /// <param name="limit"><para>The maximum number of logs to copy.</para>
+        /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
+        /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
+        /// <exception cref="LoggingException"><see cref="LoggerBase.Queryable">retrieval</see> is not supported.</exception>
+        [NotNull, UsedImplicitly]
+        public static T AddLogger<T>(
+            [NotNull] T logger,
+            [CanBeNull] ILogger sourceLogger = null,
+            int limit = Int32.MaxValue)
+            where T : ILogger
+        {
+            Contract.Requires(logger != null);
+            return AddLogger(() => logger, sourceLogger, limit, false);
+        }
+
+        /// <summary>
+        /// Adds a new logger and copies over log items from the source logger.
+        /// </summary>
+        /// <typeparam name="T">The logger type.</typeparam>
+        /// <param name="loggerCreator">The logger creator.</param>
+        /// <param name="sourceLogger">The source logger to copy log items from defaults to the cache.</param>
+        /// <param name="limit"><para>The maximum number of logs to copy.</para>
+        /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
+        /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
+        /// <exception cref="LoggingException"><see cref="LoggerBase.Queryable">retrieval</see> is not supported.</exception>
+        [NotNull, UsedImplicitly]
+        public static T AddLogger<T>(
+            [NotNull] Func<T> loggerCreator,
+            [CanBeNull] ILogger sourceLogger = null,
+            int limit = Int32.MaxValue)
+            where T : ILogger
+        {
+            Contract.Requires(loggerCreator != null);
+            return AddLogger(loggerCreator, sourceLogger, limit, false);
+        }
+
+        /// <summary>
+        /// Adds a new logger and copies over log items from the source logger.
+        /// </summary>
+        /// <typeparam name="T">The logger type.</typeparam>
+        /// <param name="loggerCreator">The logger creator.</param>
+        /// <param name="sourceLogger">The source logger.</param>
+        /// <param name="limit">The limit.</param>
+        /// <param name="isFromConfiguration">if set to <see langword="true" /> [is from configuration].</param>
+        /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
+        /// <exception cref="LoggingException">
+        /// </exception>
+        [NotNull, UsedImplicitly]
+        private static T AddLogger<T>(
+            [NotNull] Func<T> loggerCreator,
+            [CanBeNull] ILogger sourceLogger,
+            int limit,
+            bool isFromConfiguration)
+            where T : ILogger
+        {
+            Contract.Requires(loggerCreator != null);
+            if (sourceLogger == null)
+                sourceLogger = _defaultMemoryLogger;
+
+            // Check for source logger can retrieve logs
+            if (!sourceLogger.Queryable)
+            {
+                throw new LoggingException(
+                    Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
+                    sourceLogger.Name);
+            }
+
+            T logger;
+            IDisposable loggerLock = null;
+            try
+            {
+                lock (_loggers)
+                {
+                    // Check for existing logger of same type.
+                    KeyValuePair<ILogger, LoggerInfo> existing =
+                        _loggers.FirstOrDefault(i => i.Key is T);
+                    if ((existing.Key != null) && !existing.Key.AllowMultiple)
+                        return (T)existing.Key;
+
+                    logger = loggerCreator();
+                    if (ReferenceEquals(logger, null))
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        return default(T);
+
+                    // Create the logger info
+                    LoggerInfo info = new LoggerInfo(false);
+
+                    // Grab the logger lock, this ensures we get to add log entries first!
+                    loggerLock = info.Lock.LockAsync().Result;
+
+                    // We can add logger and release _loggers lock.
+                    _loggers.Add(logger, info);
+                }
+
+                // Add logs, we already have the lock, so we go first.
+                logger.Add(sourceLogger.Qbserve.TakeLast(limit).ToEnumerable());
+            }
+            finally
+            {
+                if (loggerLock != null)
+                {
+                    loggerLock.Dispose();
+                }
+            }
             return logger;
         }
 
@@ -611,8 +766,26 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public static bool RemoveLogger([NotNull] ILogger logger)
         {
+            Contract.Requires(logger != null);
+            // Sanity check - should be impossibel to get reference to _defaultMemoryLoger anyway.
+            if (ReferenceEquals(logger, _defaultMemoryLogger))
+                return false;
+
             lock (_loggers)
                 return _loggers.Remove(logger);
+        }
+
+        /// <summary>
+        /// Gets the loggers of the <see typeref="T">specified type</see>.
+        /// </summary>
+        /// <typeparam name="T">The logger type</typeparam>
+        /// <returns>All loggers matching the type</returns>
+        [NotNull]
+        public static IEnumerable<T> GetLoggers<T>()
+            where T : ILogger
+        {
+            lock (_loggers)
+                return _loggers.Keys.OfType<T>();
         }
 
         /// <summary>
@@ -623,13 +796,66 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [PublicAPI]
         [NotNull]
-        public static Task Flush(CancellationToken token = default(CancellationToken))
+        public static async Task Flush(CancellationToken token = new CancellationToken())
         {
-            return _doFlush.Run(token);
+            DateTime requested = DateTime.UtcNow;
+            int batchCount = 0;
+            Log[] batch;
+            using (await _queueLock.LockAsync(token))
+            {
+                batch = new Log[_queue.Count];
+                while (_queue.Count > 0)
+                {
+                    if (token.IsCancellationRequested) break;
+                    // Check if head of queue is in past.
+                    Log l = _queue.Peek();
+                    if (l == null) continue;
+                    if (l.TimeStamp > requested) break;
+
+                    l = _queue.Dequeue();
+                    batch[batchCount++] = l;
+                }
+            }
+
+            if (batchCount < 1)
+                return;
+
+            // Grab valid loggers
+            List<KeyValuePair<ILogger, LoggerInfo>> loggers;
+            lock (_loggers)
+                loggers = _loggers
+                    .Where(kvp => (((byte)kvp.Key.ValidLevels) & ((byte)ValidLevels)) > 0)
+                    .ToList();
+
+            // Create tasks
+            // Note we don't use the supplied cancellation token as we always write out logs once they're removed from the queue.
+            await Task.WhenAll(loggers.Select(
+                // ReSharper disable once PossibleNullReferenceException
+                kvp => kvp.Value.Lock
+                    .LockAsync(CancellationToken.None)
+                    .ContinueWith(t =>
+                    {
+                        try
+                        {
+                            kvp.Key.Add(batch.Take(batchCount).Where(log => log.Level.IsValid(kvp.Key.ValidLevels)),
+                                CancellationToken.None);
+                        }
+                        finally
+                        {
+                            if (t.Result != null)
+                                t.Result.Dispose();
+                        }
+                    },
+                        CancellationToken.None,
+                        TaskContinuationOptions.LongRunning,
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                        TaskScheduler.Default)))
+                // We do support cancelling the wait though, this doesn't stop the actual writes occurring.
+                .WithCancellation(token);
         }
 
         /// <summary>
-        /// Cleanups this instance.
+        /// Attempts to clean up the logs on unloading of an app domain.
         /// </summary>
         private static void Cleanup()
         {
@@ -638,13 +864,9 @@ namespace WebApplications.Utilities.Logging
             Add(LoggingLevel.Notification, Resources.Log_Application_Exiting, ApplicationName, ApplicationGuid);
 
             Flush().Wait();
-            ILogger[] loggers = _loggers.ToArray();
-
+            ILogger[] loggers = _loggers.Keys.ToArray();
             _loggers.Clear();
-            foreach (ILogger logger in _loggers)
-                logger.Dispose();
-
-            _defaultMemoryLogger.Dispose();
+            Parallel.ForEach(loggers, l => l.Dispose());
             Thread.EndCriticalRegion();
             Trace.WriteLine(Resources.Log_Cleanup_Finished);
         }

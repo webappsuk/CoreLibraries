@@ -41,7 +41,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     /// Is used by the core logger to hold log items temporarily, and for caching.
     /// </summary>
     [UsedImplicitly]
-    internal class MemoryLogger : LoggerBase
+    internal sealed class MemoryLogger : LoggerBase
     {
         /// <summary>
         /// The cleaner subscription.
@@ -84,7 +84,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         ///   <para>-or-</para>
         ///   <para><paramref name="cacheExpiry"/> cannot be less than 10 seconds.</para>
         /// </exception>
-        public MemoryLogger(
+        internal MemoryLogger(
             [NotNull] string name,
             TimeSpan cacheExpiry = default(TimeSpan),
             int maximumLogEntries = 10000,
@@ -165,7 +165,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets the Qbservable allowing asynchronous querying of log data.
         /// </summary>
         /// <value>The query.</value>
-        public override IQbservable<IEnumerable<KeyValuePair<string, string>>> Qbserve
+        public override IQbservable<Log> Qbserve
         {
             get
             {

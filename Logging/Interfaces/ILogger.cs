@@ -83,7 +83,7 @@ namespace WebApplications.Utilities.Logging.Interfaces
         /// </summary>
         /// <value>The query.</value>
         [NotNull]
-        IQbservable<IEnumerable<KeyValuePair<string, string>>> Qbserve { get; }
+        IQbservable<Log> Qbserve { get; }
         
         /// <summary>
         /// Force a flush of this logger.

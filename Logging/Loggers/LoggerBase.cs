@@ -117,7 +117,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets the Qbservable allowing asynchronous querying of log data.
         /// </summary>
         /// <value>The query.</value>
-        public virtual IQbservable<IEnumerable<KeyValuePair<string, string>>> Qbserve
+        public virtual IQbservable<Log> Qbserve
         {
             get
             {
