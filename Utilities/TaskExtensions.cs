@@ -33,6 +33,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
 {
@@ -41,11 +42,6 @@ namespace WebApplications.Utilities
     /// </summary>
     public static partial class TaskExtensions
     {
-        /// <summary>
-        /// An already completed task.
-        /// </summary>
-        public static Task Completed = Task.FromResult(true);
-
         /// <summary>
         ///   Sets the result of a <see cref="TaskCompletionSource&lt;TResult&gt;.Task"/> via a
         ///   different <see cref="Task"/>.
@@ -248,6 +244,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Task<TResult> Safe<TResult>([NotNull] this Func<Task<TResult>> taskCreator)
         {
+            Contract.Requires(taskCreator != null);
             try
             {
                 return taskCreator();
@@ -824,6 +821,50 @@ namespace WebApplications.Utilities
                 if (task != await Task.WhenAny(task, tcs.Task))
                     throw new OperationCanceledException(cancellationToken);
             return await task; 
+        }
+
+        /// <summary>
+        /// Gets the awaiter for a <see cref="SynchronizationContext"/>.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <returns>SynchronizationContextAwaiter.</returns>
+        [PublicAPI]
+        [NotNull]
+        public static SynchronizationContextAwaiter GetAwaiter([NotNull]this SynchronizationContext context)
+        {
+            Contract.Requires(context != null);
+            return new SynchronizationContextAwaiter(context);
+        }
+
+        /// <summary>
+        /// Invokes the action on the specified context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="callback">The callback.</param>
+        [PublicAPI]
+        public static void Invoke([NotNull] this SynchronizationContext context, [NotNull] Action callback)
+        {
+            Contract.Requires(context != null);
+            Contract.Requires(callback != null);
+            context.Send(_ => callback(), null);
+        }
+
+        /// <summary>
+        /// Invokes the function on the specified context.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="context">The context.</param>
+        /// <param name="callback">The callback.</param>
+        /// <returns>T.</returns>
+        [PublicAPI]
+        public static T Invoke<T>([NotNull] this SynchronizationContext context, [NotNull] Func<T> callback)
+        {
+            Contract.Requires(context != null);
+            Contract.Requires(callback != null);
+            T result = default(T);
+            context.Send(_ => result = callback(), null);
+
+            return result;
         }
     }
 }
