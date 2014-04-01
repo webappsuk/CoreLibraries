@@ -27,14 +27,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Odbc;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
 {
@@ -63,9 +62,10 @@ namespace WebApplications.Utilities
             }, LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
-        /// The lock object allows grouping of writes together, use with caution.
+        /// The console synchronization context is respected by all write methods in the helper, and should be used anywhere you wish to synchronize writes.
         /// </summary>
-        [NotNull] [PublicAPI] public static readonly object Lock = new object();
+        [NotNull] [PublicAPI] public static readonly SynchronizationContext SynchronizationContext =
+            new SerializingSynchronizationContext();
 
         /// <summary>
         /// An empty objects array.
@@ -125,8 +125,7 @@ namespace WebApplications.Utilities
         public static void SetCustomColourName([NotNull] string name, ConsoleColor colour)
         {
             Contract.Requires(name != null);
-            lock (Lock)
-                _customColors[name] = colour;
+            SynchronizationContext.Invoke(() => _customColors[name] = colour);
         }
 
         /// <summary>
@@ -139,8 +138,10 @@ namespace WebApplications.Utilities
         public static bool TryGetCustomColour([NotNull] string name, out ConsoleColor colour)
         {
             Contract.Requires(name != null);
-            lock (Lock)
-                return _customColors.TryGetValue(name, out colour);
+            ConsoleColor c = ConsoleColor.White;
+            bool result = SynchronizationContext.Invoke(() => _customColors.TryGetValue(name, out c));
+            colour = c;
+            return result;
         }
 
         /// <summary>
@@ -152,8 +153,7 @@ namespace WebApplications.Utilities
         public static bool RemoveCustomColour([NotNull] string name)
         {
             Contract.Requires(name != null);
-            lock (Lock)
-                return _customColors.Remove(name);
+            return SynchronizationContext.Invoke(() => _customColors.Remove(name));
         }
 
         /// <summary>
@@ -167,8 +167,7 @@ namespace WebApplications.Utilities
                 Trace.WriteLine(string.Empty);
                 return;
             }
-            lock (Lock)
-                Console.WriteLine();
+            Write(string.Empty, true, _emptyArgs);
         }
 
         /// <summary>
@@ -183,12 +182,7 @@ namespace WebApplications.Utilities
                 Trace.WriteLine(buffer != null ? new string(buffer) : string.Empty);
                 return;
             }
-            lock (Lock)
-            {
-                if (buffer != null)
-                    Write(new string(buffer), _emptyArgs);
-                Console.WriteLine();
-            }
+            Write(buffer != null ? new string(buffer) : string.Empty, true, _emptyArgs);
         }
 
         /// <summary>
@@ -205,12 +199,7 @@ namespace WebApplications.Utilities
                 Trace.WriteLine(buffer != null ? new string(buffer, index, count) : string.Empty);
                 return;
             }
-            lock (Lock)
-            {
-                if (buffer != null)
-                    Write(new string(buffer, index, count), _emptyArgs);
-                Console.WriteLine();
-            }
+            Write(buffer != null ? new string(buffer, index, count) : string.Empty, true, _emptyArgs);
         }
 
         /// <summary>
@@ -225,12 +214,7 @@ namespace WebApplications.Utilities
                 Trace.WriteLine(value != null ? value.ToString() : string.Empty);
                 return;
             }
-            lock (Lock)
-            {
-                if (value != null)
-                    Write(value.ToString(), _emptyArgs);
-                Console.WriteLine();
-            }
+            Write(value != null ? value.ToString() : string.Empty, true, _emptyArgs);
         }
 
         /// <summary>
@@ -245,12 +229,7 @@ namespace WebApplications.Utilities
                 Trace.WriteLine(value ?? string.Empty);
                 return;
             }
-            lock (Lock)
-            {
-                if (value != null)
-                    Write(value, _emptyArgs);
-                Console.WriteLine();
-            }
+            Write(value ?? string.Empty, true, _emptyArgs);
         }
 
         /// <summary>
@@ -266,11 +245,7 @@ namespace WebApplications.Utilities
                 Trace.WriteLine(str != null ? string.Format(str, args ?? _emptyArgs) : string.Empty);
                 return;
             }
-            lock (Lock)
-            {
-                Write(str, args);
-                Console.WriteLine();
-            }
+            Write(str ?? string.Empty, true, args);
         }
 
         /// <summary>
@@ -286,7 +261,7 @@ namespace WebApplications.Utilities
                 Trace.Write(new string(buffer));
                 return;
             }
-            Write(new string(buffer), _emptyArgs);
+            Write(new string(buffer), false, _emptyArgs);
         }
 
 
@@ -305,7 +280,7 @@ namespace WebApplications.Utilities
                 Trace.Write(new string(buffer, index, count));
                 return;
             }
-            Write(new string(buffer, index, count), _emptyArgs);
+            Write(new string(buffer, index, count), false, _emptyArgs);
         }
 
 
@@ -322,7 +297,7 @@ namespace WebApplications.Utilities
                 Trace.Write(value.ToString());
                 return;
             }
-            Write(value.ToString(), _emptyArgs);
+            Write(value.ToString(), false, _emptyArgs);
         }
 
         /// <summary>
@@ -338,7 +313,7 @@ namespace WebApplications.Utilities
                 Trace.Write(value);
                 return;
             }
-            Write(value, _emptyArgs);
+            Write(value, false, _emptyArgs);
         }
 
         /// <summary>
@@ -351,13 +326,28 @@ namespace WebApplications.Utilities
         public static void Write([CanBeNull] string str, [CanBeNull] params object[] args)
         {
             if (string.IsNullOrEmpty(str)) return;
+            Write(str, false, args);
+        }
+
+        /// <summary>
+        /// Writes the specified string on the synchronization context.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <param name="addNewLine">if set to <see langword="true" /> [add new line].</param>
+        /// <param name="args">The arguments.</param>
+        private static void Write([CanBeNull] string str, bool addNewLine, [CanBeNull] params object[] args)
+        {
+            if (string.IsNullOrEmpty(str) && !addNewLine) return;
             if (args == null) args = _emptyArgs;
             if (!IsConsole)
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 Trace.Write(string.Format(str, args));
                 return;
             }
-            lock (Lock)
+
+            // Invoke on the synchronization context
+            SynchronizationContext.Invoke(() =>
             {
                 ConsoleColor currentFore = Console.ForegroundColor;
                 ConsoleColor currentBack = Console.BackgroundColor;
@@ -391,6 +381,7 @@ namespace WebApplications.Utilities
                             Contract.Assert(!string.IsNullOrEmpty(tuple.Item3));
                             try
                             {
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 Console.Write(tuple.Item3, args);
                             }
                             catch
@@ -401,6 +392,7 @@ namespace WebApplications.Utilities
                         }
                     }
 
+                    // ReSharper disable once PossibleNullReferenceException
                     bool back = tuple.Item1[0] == '-';
                     if (!back && (tuple.Item1[0] != '+'))
                     {
@@ -431,7 +423,10 @@ namespace WebApplications.Utilities
                 // Restore colours
                 Console.BackgroundColor = currentBack;
                 Console.ForegroundColor = currentFore;
-            }
+
+                if (addNewLine)
+                    Console.WriteLine();
+            });
         }
     }
 }
