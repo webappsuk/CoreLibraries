@@ -26,26 +26,23 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
-using AsyncLock = WebApplications.Utilities.Threading.AsyncLock;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -57,29 +54,23 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The Header/Footer string
         /// </summary>
-        [NotNull]
-        private const string Header =
+        [NotNull] private const string Header =
             "====================================================================================================";
 
         /// <summary>
         /// The new log item performance counter.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        private static readonly PerfCounter _perfCounterNewItem;
+        [NotNull] [NonSerialized] private static readonly PerfCounter _perfCounterNewItem;
 
         /// <summary>
         /// The exception performance counter.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        internal static readonly PerfCounter PerfCounterException;
+        [NotNull] [NonSerialized] internal static readonly PerfCounter PerfCounterException;
 
         /// <summary>
         /// Calculates the most likely candidate for an assembly that serves as an entry point.
         /// </summary>
-        [NotNull]
-        private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(
+        [NotNull] private static readonly Lazy<Assembly> _entryAssembly = new Lazy<Assembly>(
             () =>
             {
                 Assembly assembly = null;
@@ -106,7 +97,7 @@ namespace WebApplications.Utilities.Logging
                             .Where(m => m != null)
                             .Select(m => m.DeclaringType)
                             .Where(t => t != null)
-                            .Select(t => new { t.Assembly, Name = t.Assembly.GetName() })
+                            .Select(t => new {t.Assembly, Name = t.Assembly.GetName()})
                             // ReSharper disable once AssignNullToNotNullAttribute
                             .Where(n => (n.Name != null) && !publicKeys.Contains(n.Name.GetPublicKey()))
                             .Select(n => n.Assembly)
@@ -126,178 +117,144 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Holds lookup for logging levels.
         /// </summary>
-        [NotNull]
-        private static readonly Dictionary<string, LoggingLevel> _levels =
+        [NotNull] private static readonly Dictionary<string, LoggingLevel> _levels =
             ExtendedEnum<LoggingLevel>.ValueDetails
-            .SelectMany(
-          vd => vd.Select(v => new KeyValuePair<string, LoggingLevel>(v.ToLower(), vd.Value)))
-            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
+                .SelectMany(
+                    vd => vd.Select(v => new KeyValuePair<string, LoggingLevel>(v.ToLower(), vd.Value)))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// Holds lookup for formats.
         /// </summary>
-        [NotNull]
-        private static readonly Dictionary<string, LogFormat> _formats =
+        [NotNull] private static readonly Dictionary<string, LogFormat> _formats =
             ExtendedEnum<LogFormat>.ValueDetails
-            .SelectMany(
-          vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
-            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
+                .SelectMany(
+                    vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// The log reservation.
         /// </summary>
-        [NonSerialized]
-        private static readonly Guid _logReservation = System.Guid.NewGuid();
+        [NonSerialized] private static readonly Guid _logReservation = System.Guid.NewGuid();
 
         /// <summary>
         /// The parameter key prefix.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string LogKeyPrefix = LogContext.ReservePrefix("Log ",
+        [NotNull] [NonSerialized] public static readonly string LogKeyPrefix = LogContext.ReservePrefix("Log ",
             _logReservation);
 
         /// <summary>
         /// The parameter key prefix.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ParameterKeyPrefix =
+        [NotNull] [NonSerialized] public static readonly string ParameterCountKey =
+            LogContext.ReservePrefix("Log Parameter Count", _logReservation);
+
+        /// <summary>
+        /// The parameter key prefix.
+        /// </summary>
+        [NotNull] [NonSerialized] public static readonly string ParameterPrefix =
             LogContext.ReservePrefix("Log Parameter ", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string GuidKey = LogContext.ReserveKey("Log GUID",
-            _logReservation);
-        
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string LevelKey = LogContext.ReserveKey("Log Level",
+        [NotNull] [NonSerialized] public static readonly string GuidKey = LogContext.ReserveKey("Log GUID",
             _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string MessageFormatKey =
+        [NotNull] [NonSerialized] public static readonly string LevelKey = LogContext.ReserveKey("Log Level",
+            _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull] [NonSerialized] public static readonly string MessageFormatKey =
             LogContext.ReserveKey("Log Message Format", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ExceptionTypeFullNameKey =
+        [NotNull] [NonSerialized] public static readonly string ExceptionTypeFullNameKey =
             LogContext.ReserveKey("Log Exception Type", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string InnerExceptionGuidKey =
+        [NotNull] [NonSerialized] public static readonly string InnerExceptionGuidKey =
             LogContext.ReserveKey("Log Inner Exception", _logReservation);
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string InnerExceptionGuidsPrefix =
-            LogContext.ReservePrefix("Log Inner Exceptions", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string StackTraceKey = LogContext.ReserveKey(
+        [NotNull] [NonSerialized] public static readonly string InnerExceptionGuidsPrefix =
+            LogContext.ReservePrefix("Log Inner Exception ", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull] [NonSerialized] public static readonly string StackTraceKey = LogContext.ReserveKey(
             "Log Stack Trace", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ThreadIDKey = LogContext.ReserveKey("Log Thread ID",
+        [NotNull] [NonSerialized] public static readonly string ThreadIDKey = LogContext.ReserveKey("Log Thread ID",
             _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string ThreadNameKey = LogContext.ReserveKey(
+        [NotNull] [NonSerialized] public static readonly string ThreadNameKey = LogContext.ReserveKey(
             "Log Thread Name", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string StoredProcedureKey =
+        [NotNull] [NonSerialized] public static readonly string StoredProcedureKey =
             LogContext.ReserveKey("Log Stored Procedure", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string StoredProcedureLineKey =
+        [NotNull] [NonSerialized] public static readonly string StoredProcedureLineKey =
             LogContext.ReserveKey("Log Stored Procedure Line", _logReservation);
 
         /// <summary>
         /// The logging assembly
         /// </summary>
-        [NotNull]
-        [NonSerialized]
-        internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
+        [NotNull] [NonSerialized] internal static readonly Assembly LoggingAssembly = typeof (Log).Assembly;
 
         /// <summary>
         /// The global tick, ticks once a second and is used for batching, etc.
         /// </summary>
-        [NonSerialized]
-        [NotNull]
-        public static readonly IObservable<long> Tick;
+        [NonSerialized] [NotNull] public static readonly IObservable<long> Tick;
 
         /// <summary>
         /// Loggers collection.
         /// </summary>
-        [NonSerialized]
-        [NotNull]
-        private static readonly Dictionary<ILogger, LoggerInfo> _loggers;
+        [NonSerialized] [NotNull] private static readonly Dictionary<ILogger, LoggerInfo> _loggers;
 
         /// <summary>
         /// The default memory logger always exists and ensures we're always capturing at least the last minutes worth of logs.
         /// </summary>
-        [NonSerialized]
-        [NotNull]
-        private static readonly MemoryLogger _defaultMemoryLogger;
+        [NonSerialized] [NotNull] private static readonly MemoryLogger _defaultMemoryLogger;
 
         /// <summary>
         /// The tick subscription.
         /// </summary>
-        [NonSerialized]
-        [NotNull]
-        private static readonly IDisposable _tickSubscription;
+        [NonSerialized] [NotNull] private static readonly IDisposable _tickSubscription;
 
         /// <summary>
         /// The queue lock.
         /// </summary>
-        [NotNull]
-        private static readonly AsyncLock _queueLock = new AsyncLock();
+        [NotNull] private static readonly AsyncLock _queueLock = new AsyncLock();
 
         /// <summary>
         /// The global logging queue.
         /// </summary>
-        [NotNull]
-        private static readonly ConcurrentBag<Log> _buffer = new ConcurrentBag<Log>();
+        [NotNull] private static readonly ConcurrentBag<Log> _buffer = new ConcurrentBag<Log>();
 
         /// <summary>
         ///   Initializes static members of the <see cref="Log" /> class.
@@ -444,7 +401,8 @@ namespace WebApplications.Utilities.Logging
 
                 // Grab all loggers that came from the configuration.
                 // ReSharper disable once PossibleNullReferenceException
-                KeyValuePair<ILogger, LoggerInfo>[] loggers = _loggers.Where(kvp => kvp.Value.IsFromConfiguration).ToArray();
+                KeyValuePair<ILogger, LoggerInfo>[] loggers =
+                    _loggers.Where(kvp => kvp.Value.IsFromConfiguration).ToArray();
                 foreach (ILogger l in loggers.Select(l => l.Key))
                 {
                     Contract.Assert(l != null);
@@ -578,7 +536,8 @@ namespace WebApplications.Utilities.Logging
         /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
         /// <exception cref="LoggingException"><see cref="LoggerBase.Queryable">retrieval</see> is not supported.</exception>
-        [NotNull, UsedImplicitly]
+        [NotNull]
+        [UsedImplicitly]
         public static ILogger AddLogger(
             [NotNull] ILogger logger,
             [CanBeNull] ILogger sourceLogger = null,
@@ -597,7 +556,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="isFromConfiguration">if set to <see langword="true" /> the logger was added from the configuration.</param>
         /// <returns>ILogger.</returns>
         /// <exception cref="LoggingException"></exception>
-        [NotNull, UsedImplicitly]
+        [NotNull]
+        [UsedImplicitly]
         private static ILogger AddLogger(
             [NotNull] ILogger logger,
             [CanBeNull] ILogger sourceLogger,
@@ -664,7 +624,8 @@ namespace WebApplications.Utilities.Logging
         /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
         /// <exception cref="LoggingException"><see cref="LoggerBase.Queryable">retrieval</see> is not supported.</exception>
-        [NotNull, UsedImplicitly]
+        [NotNull]
+        [UsedImplicitly]
         public static T AddLogger<T>(
             [NotNull] T logger,
             [CanBeNull] ILogger sourceLogger = null,
@@ -685,7 +646,8 @@ namespace WebApplications.Utilities.Logging
         /// <para>By default this is set to <see cref="int.MaxValue" />.</para></param>
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
         /// <exception cref="LoggingException"><see cref="LoggerBase.Queryable">retrieval</see> is not supported.</exception>
-        [NotNull, UsedImplicitly]
+        [NotNull]
+        [UsedImplicitly]
         public static T AddLogger<T>(
             [NotNull] Func<T> loggerCreator,
             [CanBeNull] ILogger sourceLogger = null,
@@ -707,7 +669,8 @@ namespace WebApplications.Utilities.Logging
         /// <returns>The existing logger if duplicates not allowed; otherwise the supplied logger.</returns>
         /// <exception cref="LoggingException">
         /// </exception>
-        [NotNull, UsedImplicitly]
+        [NotNull]
+        [UsedImplicitly]
         private static T AddLogger<T>(
             [NotNull] Func<T> loggerCreator,
             [CanBeNull] ILogger sourceLogger,
@@ -737,7 +700,7 @@ namespace WebApplications.Utilities.Logging
                     KeyValuePair<ILogger, LoggerInfo> existing =
                         _loggers.FirstOrDefault(i => i.Key is T);
                     if ((existing.Key != null) && !existing.Key.AllowMultiple)
-                        return (T)existing.Key;
+                        return (T) existing.Key;
 
                     logger = loggerCreator();
                     if (ReferenceEquals(logger, null))
@@ -851,7 +814,7 @@ namespace WebApplications.Utilities.Logging
             List<KeyValuePair<ILogger, LoggerInfo>> loggers;
             lock (_loggers)
                 loggers = _loggers
-                    .Where(kvp => (((byte)kvp.Key.ValidLevels) & ((byte)ValidLevels)) > 0)
+                    .Where(kvp => (((byte) kvp.Key.ValidLevels) & ((byte) ValidLevels)) > 0)
                     .ToList();
 
             // Order the logs
@@ -862,7 +825,7 @@ namespace WebApplications.Utilities.Logging
             if (token.IsCancellationRequested)
             {
                 // Put the logs back first
-                foreach (var log in orderedLogs)
+                foreach (Log log in orderedLogs)
                     _buffer.Add(log);
 
                 return;
@@ -878,7 +841,8 @@ namespace WebApplications.Utilities.Logging
                     {
                         try
                         {
-                            kvp.Key.Add(orderedLogs.Where(log => log.Level.IsValid(kvp.Key.ValidLevels)), CancellationToken.None);
+                            kvp.Key.Add(orderedLogs.Where(log => log.Level.IsValid(kvp.Key.ValidLevels)),
+                                CancellationToken.None);
                         }
                         finally
                         {
@@ -888,7 +852,7 @@ namespace WebApplications.Utilities.Logging
                     },
                         CancellationToken.None,
                         TaskContinuationOptions.LongRunning,
-                    // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         TaskScheduler.Default)))
                 // We do support cancelling the wait though, this doesn't stop the actual writes occurring.
                 .WithCancellation(token);
@@ -922,11 +886,10 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add([NotNull] string message, [NotNull] params object[] parameters)
+        public static void Add([CanBeNull] string message, [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                // ReSharper disable once ObjectCreationAsStatement
                 new Log(null, null, LoggingLevel.Information, message, parameters);
         }
 
@@ -941,12 +904,11 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add([NotNull] LogContext context, [NotNull] string message,
-            [NotNull] params object[] parameters)
+        public static void Add([CanBeNull] LogContext context, [CanBeNull] string message,
+            [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                // ReSharper disable once ObjectCreationAsStatement
                 new Log(context, null, LoggingLevel.Information, message, parameters);
         }
 
@@ -961,11 +923,10 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add(LoggingLevel level, [NotNull] string message, [NotNull] params object[] parameters)
+        public static void Add(LoggingLevel level, [CanBeNull] string message, [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                // ReSharper disable once ObjectCreationAsStatement
                 new Log(null, null, level, message, parameters);
         }
 
@@ -979,34 +940,28 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public static void Add([NotNull] LogContext context, LoggingLevel level, [NotNull] string message,
-            [NotNull] params object[] parameters)
+        public static void Add([CanBeNull] LogContext context, LoggingLevel level, [CanBeNull] string message,
+            [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                // ReSharper disable once ObjectCreationAsStatement
                 new Log(context, null, level, message, parameters);
         }
-        
+
         /// <summary>
-        ///   Logs an exception.
+        /// Logs an exception.
         /// </summary>
-        /// <param name="exception">
-        ///   <para>The exception to log.</para>
-        ///   <para><see cref="LoggingException"/>'s add themselves and so this method ignores them.</para>
-        /// </param>
-        /// <param name="level">
-        ///   <para>The log level.</para>
-        ///   <para>By default this uses the error log level.</para>
-        /// </param>
-        /// <remarks>
-        ///   If the log <paramref name="level"/> is invalid then the log won't be added.
-        /// </remarks>
+        /// <param name="exception"><para>The exception to log.</para>
+        /// <para>
+        ///   <see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        /// <para>By default this uses the error log level.</para></param>
+        /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [UsedImplicitly]
-        public static void Add([NotNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
+        public static void Add([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
         {
-            Contract.Requires(exception != null);
-            AddExceptionLog(null, exception, level, false, null);
+            if (level.IsValid(ValidLevels))
+                new Log(null, exception, level, null);
         }
 
         /// <summary>
@@ -1025,12 +980,11 @@ namespace WebApplications.Utilities.Logging
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
         [UsedImplicitly]
-        public static void Add([NotNull] LogContext context, [NotNull] Exception exception,
+        public static void Add([CanBeNull] LogContext context, [CanBeNull] Exception exception,
             LoggingLevel level = LoggingLevel.Error)
         {
-            Contract.Requires(context != null);
-            Contract.Requires(exception != null);
-            AddExceptionLog(context, exception, level, false, null);
+            if (level.IsValid(ValidLevels))
+                new Log(context, exception, level, null);
         }
 
         /// <summary>
@@ -1045,13 +999,13 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [UsedImplicitly,StringFormatMethod("format")]
-        public static void Add([NotNull] Exception exception, LoggingLevel level, [NotNull]  string format, [NotNull]  params object[] parameters)
+        [UsedImplicitly]
+        [StringFormatMethod("format")]
+        public static void Add([CanBeNull] Exception exception, LoggingLevel level, [CanBeNull] string format,
+            [CanBeNull] params object[] parameters)
         {
-            Contract.Requires(exception != null);
-            Contract.Requires(format != null);
-            Contract.Requires(parameters != null);
-            AddExceptionLog(null, exception, level, false, format, parameters);
+            if (level.IsValid(ValidLevels))
+                new Log(null, exception, level, format, parameters);
         }
 
         /// <summary>
@@ -1067,125 +1021,14 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
-        [UsedImplicitly, StringFormatMethod("format")]
-        public static void Add([NotNull] LogContext context, [NotNull] Exception exception,
-            LoggingLevel level, [NotNull] string format, [NotNull] params object[] parameters)
+        [UsedImplicitly]
+        [StringFormatMethod("format")]
+        public static void Add([CanBeNull] LogContext context, [CanBeNull] Exception exception, LoggingLevel level,
+            [CanBeNull] string format, [CanBeNull] params object[] parameters)
         {
-            Contract.Requires(context != null);
-            Contract.Requires(exception != null);
-            Contract.Requires(format != null);
-            Contract.Requires(parameters != null);
-            AddExceptionLog(context, exception, level, false, format, parameters);
+            if (level.IsValid(ValidLevels))
+                new Log(context, exception, level, format, parameters);
         }
         #endregion
-
-        /// <summary>
-        /// Logs an exception and all internal exceptions.
-        /// </summary>
-        /// <param name="context">The context information.</param>
-        /// <param name="exception">The exception. If none then pass <see langword="null" />.</param>
-        /// <param name="level">The log level.</param>
-        /// <param name="forceAdd">if set to <see langword="true" /> the exception will be logged regardless of the <paramref name="level"/>. 
-        /// Inner exceptions will still be ignored.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns></returns>
-        [CanBeNull, StringFormatMethod("format")]
-        internal static Log AddExceptionLog([CanBeNull] LogContext context,
-            [NotNull] Exception exception,
-            LoggingLevel level,
-            bool forceAdd,
-            [CanBeNull] string format,
-            [CanBeNull] params object[] parameters)
-        {
-            Contract.Requires(exception != null);
-            Contract.Requires((format == null) || (parameters != null));
-            Contract.Ensures(forceAdd == (Contract.Result<Log>() != null));
-
-            if (!forceAdd && !level.IsValid(ValidLevels))
-                return null;
-
-            Stack<Exception> exceptions = new Stack<Exception>();
-            Stack<Exception> stack = new Stack<Exception>();
-            stack.Push(exception);
-
-            while (stack.Count > 0)
-            {
-                Exception e = stack.Pop();
-                Contract.Assert(e != null);
-
-                LoggingException le = e as LoggingException;
-
-                // If the inner exception is a logging exception stop, as it will have logged itself
-                // and it's inner exceptions, already.
-                if (le != null && !ReferenceEquals(exception, le))
-                {
-                    // Reuse the log group from the inner exception
-                    // Very Cool - this groups future exceptions
-                    // into the same group, if they correctly
-                    // pass the inner exception...
-                    if (logGroup != CombGuid.Empty)
-                        ;
-
-                    continue;
-                }
-
-                exceptions.Push(e);
-
-                // Check to see if we are an aggregate exception
-                AggregateException ae = e as AggregateException;
-                if (ae != null)
-                {
-                    // Push all inner exceptions 
-                    // ReSharper disable once PossibleNullReferenceException
-                    foreach (Exception aee in ae.InnerExceptions)
-                        stack.Push(aee);
-                }
-                else if (e.InnerException != null)
-                    // Push the inner exception
-                    stack.Push(e.InnerException);
-            }
-
-            // If there were multiple exceptions and got a group yet, we need to create our own group.
-            if (exceptions.Count > 1 && logGroup == CombGuid.Empty)
-                CombGuid.NewCombGuid();
-
-            // We now take items back off stack (starting with deepest first, hence maintaining
-            // order based on when exception occurred) and log each independently.
-            while (exceptions.Count > 0)
-            {
-                Exception e = exceptions.Pop();
-                Contract.Assert(e != null);
-
-                if (ReferenceEquals(e, exception))
-                {
-                    Contract.Assert(exceptions.Count < 1);
-                    break;
-                }
-
-                // Add to queue for logging if we are a valid level.
-                if (level.IsValid(ValidLevels))
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new Log(null, e, level, e.Message);
-            }
-
-            // If no format was given, log the exception giving its message
-            if (format == null)
-                return new Log(context, exception, level, exception.Message);
-
-            Contract.Assert(parameters != null);
-
-            // If the exception is a LoggingException then its message comes from format
-            if (exception is LoggingException)
-                return new Log(context, exception, level, format, parameters);
-
-            // Log the exceptions message then the message passed in
-            Log l = new Log(context, exception, level, exception.Message);
-
-            // ReSharper disable once ObjectCreationAsStatement
-            new Log(null, null, level, format, parameters);
-
-            return l;
-        }
     }
 }

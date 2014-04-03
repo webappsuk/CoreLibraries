@@ -117,15 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LoggingException_InnerExceptionCannotBeNull" xml:space="preserve">
-    <value>Parameter 'innerException' can not be null</value>
-  </data>
-  <data name="LoggingException_MessageCannotBeNull" xml:space="preserve">
-    <value>Parameter 'message' can not be null</value>
-  </data>
-  <data name="LoggingException_ParametersCannotBeNull" xml:space="preserve">
-    <value>Parameter 'parameters' can not be null</value>
-  </data>
   <data name="LogStatic_AddOrUpdateLogger_RetrievalNotSupported" xml:space="preserve">
     <value>Can not copy logs over from {0} logger as log retrieval is not supported!</value>
   </data>
@@ -308,5 +299,20 @@
   </data>
   <data name="EventLogger_MachineNameCannotBeNull" xml:space="preserve">
     <value>The machine name can not be null</value>
+  </data>
+  <data name="LogContext_Invalid_Reservation" xml:space="preserve">
+    <value>The LogContext reservation cannot be Guid.Empty.</value>
+  </data>
+  <data name="LogContext_Locked" xml:space="preserve">
+    <value>Cannot change the values in a locked LogContext.</value>
+  </data>
+  <data name="LoggingException_InnerExceptionCannotBeNull" xml:space="preserve">
+    <value>Parameter 'innerException' can not be null</value>
+  </data>
+  <data name="LoggingException_MessageCannotBeNull" xml:space="preserve">
+    <value>Parameter 'message' can not be null</value>
+  </data>
+  <data name="LoggingException_ParametersCannotBeNull" xml:space="preserve">
+    <value>Parameter 'parameters' can not be null</value>
   </data>
 </root>

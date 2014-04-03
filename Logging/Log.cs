@@ -39,6 +39,7 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Logging
@@ -103,7 +104,7 @@ namespace WebApplications.Utilities.Logging
                 !Int32.TryParse(s, out i))
                 throw new LoggingException("The log deserialization supplied an invalid Stored Procedure line number.");
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Log" /> class.
         /// </summary>
@@ -130,76 +131,132 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// <para>
+        /// If you don't need the <see cref="Log"/> you should use <see cref="Log.Add(LogContext, Exception, LoggingLevel, string, object[])"/> instead
+        /// as it won't create the <see cref="Log"/> object if the <see paramref="level"/> isn't a <see cref="ValidLevels">valid level</see>.
+        /// </para></remarks>
         [StringFormatMethod("format")]
-        private Log([CanBeNull] LogContext context,
+        public Log(
+            [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
             LoggingLevel level,
-            [NotNull] string format,
-            [NotNull] params object[] parameters)
+            [CanBeNull] string format,
+            [CanBeNull] params object[] parameters)
         {
-            Contract.Requires(format != null);
-            Contract.Requires(parameters != null);
             CombGuid guid = CombGuid.NewCombGuid();
 
-            // Dictionary size
-            int size = parameters.Length + 9 + (context == null ? 0 : context.Count);
+            // Estimate dictionary size
+            int size = 9 +
+                (parameters == null ? 0 : parameters.Length) +
+                (context == null ? 0 : context.Count);
 
             // Build context.
             _context = new Dictionary<string, string>(size);
-
             if (context != null)
             {
+                // Lock the context to prevent changes after it is locked.
+                context.Lock();
+
                 // Copy supplied context into our context.
                 foreach (KeyValuePair<string, string> kvp in context)
                     _context.Add(kvp.Key, kvp.Value);
             }
-
-            // Get the current thread information
-            Thread currentThread = Thread.CurrentThread;
-            int threadId = currentThread.ManagedThreadId;
 
             // We can safely add our data due to the way LogContext protects reservations.
             _context.Add(LevelKey, level.ToString());
             _level = level;
 
             _context.Add(GuidKey, guid.ToString());
-            _context.Add(ThreadIDKey, threadId.ToString());
-            if (!String.IsNullOrWhiteSpace(currentThread.Name))
-                _context.Add(ThreadNameKey, currentThread.Name);
-            _context.Add(MessageFormatKey, format);
 
-            for (int p = 0; p < parameters.Length; p++)
-            {
-                object v = parameters[p];
-                _context.Add(ParameterKeyPrefix + " " + p, v == null ? null : v.ToString());
-            }
+            // Get the current thread information
+            Thread currentThread = Thread.CurrentThread;
+            int threadId = currentThread.ManagedThreadId;
+            _context.Add(ThreadIDKey, threadId.ToString());
+            if (!string.IsNullOrEmpty(currentThread.Name))
+                _context.Add(ThreadNameKey, currentThread.Name);
 
             string stackTrace = null;
+            bool hasMessage = false;
+
+            // If we have a formatted message add it now
+            if (!string.IsNullOrEmpty(format))
+            {
+                hasMessage = true;
+                _context.Add(MessageFormatKey, format);
+
+                if ((parameters == null) || (parameters.Length < 1))
+                    _context.Add(ParameterCountKey, "0");
+                else
+                {
+                    _context.Add(ParameterCountKey, parameters.Length.ToString());
+                    for (int p = 0; p < parameters.Length; p++)
+                    {
+                        object v = parameters[p];
+                        if (v == null) continue;
+                        _context.Add(ParameterPrefix + " " + p, v.ToString());
+                    }
+                }
+
+                // Grab the current stack trace
+                stackTrace = FormatStackTrace(new StackTrace(2, true));
+            }
+
+            Exception[] innerExceptions = null;
             if (exception != null)
             {
-                _context.Add(ExceptionTypeFullNameKey, exception.GetType().ToString());
-
-                // If we're a logging exception we're being called from the constructor, so we
-                // use our own stack trace formatter which is superior.
-                if (!(exception is LoggingException))
+                if (hasMessage)
                 {
-                    // Use exception stack trace if available
+                    innerExceptions = new[] { exception };
+                }
+                else
+                {
+                    // Add the exception type.
+                    _context.Add(ExceptionTypeFullNameKey, exception.GetType().ToString());
+                    _context.Add(MessageFormatKey, exception.Message);
+                    _context.Add(ParameterCountKey, "0");
+
                     stackTrace = exception.StackTrace;
 
-                    // If this is a SQL exception, then log the stored proc.
-                    SqlException sqlException = exception as SqlException;
-                    if (sqlException != null)
+                    // Check for aggregate exception
+                    AggregateException aggregateException = exception as AggregateException;
+                    if (aggregateException != null)
                     {
-                        _context.Add(StoredProcedureKey,
-                            String.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure);
-                        _context.Add(StoredProcedureLineKey, sqlException.LineNumber.ToString());
+                        innerExceptions = aggregateException.InnerExceptions != null
+                            ? aggregateException.InnerExceptions.ToArray()
+                            : null;
+                    }
+                    else
+                    {
+                        if (exception.InnerException != null)
+                            innerExceptions = new[] { exception.InnerException };
+
+                        // If this is a SQL exception, then log the stored proc.
+                        SqlException sqlException = exception as SqlException;
+                        if (sqlException != null)
+                        {
+                            _context.Add(StoredProcedureKey,
+                                String.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure);
+                            _context.Add(StoredProcedureLineKey, sqlException.LineNumber.ToString());
+                        }
                     }
                 }
             }
 
-            // Add stack trace.
-            if (String.IsNullOrWhiteSpace(stackTrace))
-                stackTrace = FormatStackTrace(new StackTrace(2, true));
+            if (innerExceptions != null)
+            {
+                // Link to inner exceptions
+                foreach (var innerException in innerExceptions)
+                {
+                    LoggingException le = innerException as LoggingException;
+
+                    _context.Add(InnerExceptionGuidKey,
+                        le != null
+                            ? le.Guid.ToString()
+                            : new Log(new LogContext().Set(_logReservation, InnerExceptionGuidKey, guid),
+                                innerException, LoggingLevel.Error, null).Guid.ToString());
+                }
+            }
 
             if (!String.IsNullOrWhiteSpace(stackTrace))
                 _context.Add(StackTraceKey, stackTrace);
@@ -207,7 +264,7 @@ namespace WebApplications.Utilities.Logging
             // Increment performance counter.
             _perfCounterNewItem.Increment();
 
-            // Post log onto queue (can happen asycnhronously)
+            // Post log onto queue
             ReLog();
         }
 
@@ -225,7 +282,7 @@ namespace WebApplications.Utilities.Logging
                 return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
             }
         }
-        
+
         /// <summary>
         ///   The <see cref="LoggingLevel">log level</see>.
         /// </summary>
@@ -273,7 +330,13 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         public IEnumerable<string> Parameters
         {
-            get { return _context.Where(kvp => kvp.Key.StartsWith(ParameterKeyPrefix)).Select(kvp => kvp.Value); }
+            get
+            {
+                return _context
+                    .Where(kvp => kvp.Key.StartsWith(ParameterPrefix))
+                    // TODO ORDERING!
+                    .Select(kvp => kvp.Value);
+            }
         }
 
         /// <summary>
@@ -849,8 +912,9 @@ namespace WebApplications.Utilities.Logging
         /// <param name="prefix">The prefix.</param>
         /// <returns>IEnumerable{KeyValuePair{System.StringSystem.String}}.</returns>
         [NotNull]
-        public IEnumerable<KeyValuePair<string, string>> GetPrefixed(string prefix)
+        public IEnumerable<KeyValuePair<string, string>> GetPrefixed([NotNull] string prefix)
         {
+            Contract.Requires(prefix != null);
             return _context.Where(kvp => kvp.Key.StartsWith(prefix));
         }
 

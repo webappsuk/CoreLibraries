@@ -60,7 +60,10 @@ namespace WebApplications.Utilities.Logging.Test
             fileLogger.Format = "Verbose,Xml";
 
             string message = "Test message " + Guid.NewGuid();
-            Log.Add(new LogContext("My data", 1, "Some more", "Test"), LoggingLevel.Notification, message);
+            LogContext context = new LogContext();
+            context.Set("My data", 1);
+            context.Set("Some more", "Test");
+            Log.Add(context, LoggingLevel.Notification, message);
             await Log.Flush();
 
             List<Log> logs = Log.AllCached.ToList();
@@ -87,7 +90,6 @@ namespace WebApplications.Utilities.Logging.Test
             Log partialLog = new Log(new[]
                 {
                     new KeyValuePair<string, string>(Log.GuidKey, CombGuid.NewCombGuid().ToString()),
-                    new KeyValuePair<string, string>(Log.GroupKey, CombGuid.NewCombGuid().ToString()),
                     new KeyValuePair<string, string>(Log.LevelKey, LoggingLevel.SystemNotification.ToString()),
                     new KeyValuePair<string, string>(Log.ThreadIDKey, "1"),
                     new KeyValuePair<string, string>(Log.ExceptionTypeFullNameKey, "System.Data.SqlException"),
@@ -122,7 +124,7 @@ namespace WebApplications.Utilities.Logging.Test
 
             private TestException(string message, params object[] parameters)
                 : base(
-                new LogContext("My data", "Was here"),
+                new LogContext().Set("My data", "Was here"),
                 (new SqlInvalidSyntaxException()).SqlException,
                 LoggingLevel.Error,
                 message,

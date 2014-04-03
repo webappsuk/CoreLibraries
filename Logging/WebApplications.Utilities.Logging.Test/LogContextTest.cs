@@ -48,7 +48,8 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.IsTrue(_keyReservations.TryGetValue(key, out r2));
             Assert.AreEqual(reservation, r2);
             string value = Tester.RandomGenerator.RandomString();
-            LogContext context = new LogContext(reservation, key, value);
+            LogContext context = new LogContext();
+            context.Set(reservation, key, value);
             Assert.IsNotNull(context);
             string value2 = context.Get(key);
             Assert.AreEqual(value, value2);
@@ -68,7 +69,8 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.IsTrue(_keyReservations.TryGetValue(key, out r2));
             Assert.AreEqual(reservation, r2);
             string value = Tester.RandomGenerator.RandomString();
-            LogContext context = new LogContext(key, value);
+            LogContext context = new LogContext();
+            context.Set(key,value);
         }
     }
 }
