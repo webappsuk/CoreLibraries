@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [PublicAPI]
-        protected readonly Log Log;
+        protected internal readonly Log Log;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingException" /> class.
@@ -70,7 +70,6 @@ namespace WebApplications.Utilities.Logging
 
             // Log the exception
             Log = new Log(null, this, LoggingLevel.Error, message, parameters);
-            Contract.Assert(Log != null);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -97,7 +96,6 @@ namespace WebApplications.Utilities.Logging
 
             // Log the exception
             Log = new Log(context, this, LoggingLevel.Error, message, parameters);
-            Contract.Assert(Log != null);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -122,7 +120,6 @@ namespace WebApplications.Utilities.Logging
 
             // Log the exception
             Log = new Log(null, this, level, message, parameters);
-            Contract.Assert(Log != null);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -151,7 +148,6 @@ namespace WebApplications.Utilities.Logging
 
             // Log the exception
             Log = new Log(context, this, level, message, parameters);
-            Contract.Assert(Log != null);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -172,7 +168,6 @@ namespace WebApplications.Utilities.Logging
 
             // Log the exception
             Log = new Log(null, this, level, exception.Message);
-            Contract.Assert(Log != null);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -200,7 +195,6 @@ namespace WebApplications.Utilities.Logging
 
             // Log the exception
             Log = new Log(null, this, LoggingLevel.Error, message, parameters);
-            Contract.Assert(Log != null);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -230,7 +224,6 @@ namespace WebApplications.Utilities.Logging
 
             // Log the exception
             Log = new Log(null, this, level, message, parameters);
-            Contract.Assert(Log != null);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -262,7 +255,6 @@ namespace WebApplications.Utilities.Logging
 
             // Log the exception
             Log = new Log(context, this, level, message, parameters);
-            Contract.Assert(Log != null);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();

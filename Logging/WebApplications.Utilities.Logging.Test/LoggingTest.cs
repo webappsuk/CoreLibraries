@@ -137,13 +137,28 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public async Task TestInnerExceptions()
         {
-            Exception e = new Exception("Exception 1", 
-                new InvalidOperationException("Exception 2",
-                    new AggregateException("Exception 3",
-                        new Exception("Exception 4.1"),
-                        new Exception("Exception 4.2"),
-                        new Exception("Exception 4.3"))));
-            Log.Add(e);
+            try
+            {
+                try
+                {
+                    try
+                    {
+                        throw new AggregateException("Exception 3",
+                            new object[3].Select((o,i) =>
+                            {
+                                try { throw new Exception("Exception 4." + (i+1)); }
+                                catch (Exception e) { return e; }
+                            }));
+                    }
+                    catch (Exception e)
+                    { throw new InvalidOperationException("Exception 2", e); }
+                }
+                catch (Exception e)
+                { throw new Exception("Exception 1", e); }
+            }
+            catch (Exception e)
+            { Log.Add(e); }
+
             await Log.Flush();
         }
 

@@ -194,25 +194,35 @@ namespace WebApplications.Utilities.Logging
                     {
                         object v = parameters[p];
                         if (v == null) continue;
-                        _context.Add(ParameterPrefix + " " + p, v.ToString());
+                        _context.Add(ParameterPrefix + (p + 1), v.ToString());
                     }
                 }
-
-                // Grab the current stack trace
-                stackTrace = FormatStackTrace(new StackTrace(2, true));
             }
 
             Exception[] innerExceptions = null;
             if (exception != null)
             {
-                if (hasMessage)
+                LoggingException logException = exception as LoggingException;
+
+                // NOTE: If this is a logging exception and Log has not been set yet, then this has been called from the LoggingException constructor
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                bool isLogException = (logException != null && logException.Log == null);
+
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                if (!isLogException && hasMessage)
                     innerExceptions = new[] {exception};
                 else
                 {
                     // Add the exception type.
                     _context.Add(ExceptionTypeFullNameKey, exception.GetType().ToString());
-                    _context.Add(MessageFormatKey, exception.Message);
-                    _context.Add(ParameterCountKey, "0");
+
+                    // ReSharper disable ConditionIsAlwaysTrueOrFalse
+                    if (!isLogException)
+                        // ReSharper restore ConditionIsAlwaysTrueOrFalse
+                    {
+                        _context.Add(MessageFormatKey, exception.Message);
+                        _context.Add(ParameterCountKey, "0");
+                    }
 
                     stackTrace = exception.StackTrace;
 
@@ -241,21 +251,37 @@ namespace WebApplications.Utilities.Logging
                 }
             }
 
-            if (innerExceptions != null)
+            if (innerExceptions != null && innerExceptions.Length > 0)
             {
-
                 // Link to inner exceptions
-                foreach (var innerException in innerExceptions)
+                if (innerExceptions.Length == 1)
                 {
-                    LoggingException le = innerException as LoggingException;
+                    LoggingException le = innerExceptions[0] as LoggingException;
 
                     _context.Add(InnerExceptionGuidKey,
-                        le != null
-                            ? le.Guid.ToString()
-                            : new Log(new LogContext().Set(_logReservation, InnerExceptionGuidKey, guid),
-                                innerException, LoggingLevel.Error, null).Guid.ToString());
+                        le == null || ReferenceEquals(le, exception)
+                            ? new Log(null, innerExceptions[0]).Guid.ToString()
+                            : le.Guid.ToString());
+                }
+                else
+                {
+                    for (int i = 0; i < innerExceptions.Length; )
+                    {
+                        Exception innerException = innerExceptions[i++];
+                        LoggingException le = innerException as LoggingException;
+
+                        _context.Add(InnerExceptionGuidsPrefix + i,
+                        le == null || ReferenceEquals(le, exception)
+                                ? new Log(null, innerException).Guid.ToString()
+                                : le.Guid.ToString());
+                    }
                 }
             }
+
+            // If there was a message and no stack trace was added for an exception, get the current stack trace
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (hasMessage && stackTrace == null)
+                stackTrace = FormatStackTrace(new StackTrace(2, true));
 
             if (!String.IsNullOrWhiteSpace(stackTrace))
                 _context.Add(StackTraceKey, stackTrace);
@@ -601,6 +627,47 @@ namespace WebApplications.Utilities.Logging
                             if (!String.IsNullOrWhiteSpace(sline) &&
                                 (Int32.TryParse(sline, out sl)))
                                 value += " at line " + sl.ToString();
+                        }
+                        break;
+                    case LogFormat.InnerException:
+                        value = Get(InnerExceptionGuidKey);
+                        if (value != null)
+                            key = "Inner Exception";
+                        else
+                        {
+                            KeyValuePair<string, string>[] inner = 
+                                this.Where(kvp => kvp.Key.StartsWith(InnerExceptionGuidsPrefix)).ToArray();
+
+                            key = "Inner Exceptions";
+
+                            if (inner.Length < 1)
+                                value = null;
+                            else
+                            {
+                                StringBuilder cv = new StringBuilder();
+                                cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty);
+
+                                string i = indent + "   ";
+                                bool cvf = true;
+                                foreach (KeyValuePair<string, string> kvp in inner)
+                                {
+                                    if (!cvf)
+                                        cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
+                                    cvf = false;
+                                    AddKVP(cv, masterFormat, i, kvp.Key.Substring(LogKeyPrefix.Length), kvp.Value);
+                                }
+                                switch (masterFormat)
+                                {
+                                    case MasterFormat.Xml:
+                                        cv.AppendLine();
+                                        cv.Append(indent);
+                                        break;
+                                    case MasterFormat.JSON:
+                                        cv.Append("}");
+                                        break;
+                                }
+                                value = cv.ToString();
+                            }
                         }
                         break;
                     case LogFormat.StackTrace:

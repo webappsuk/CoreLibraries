@@ -96,10 +96,19 @@ namespace WebApplications.Utilities.Logging
         [Description("Include the GUID.")]
         [PublicAPI]
         I = Guid,
-        
-        /*
-         * 1 << 6 Used to be used by Group
-         */
+
+        /// <summary>
+        /// Include the inner exceptions.
+        /// </summary>
+        [Description("Include the inner exceptions.")]
+        [PublicAPI]
+        InnerException = 1 << 6,
+        /// <summary>
+        /// Include the inner exceptions.
+        /// </summary>
+        [Description("Include the inner exceptions.")]
+        [PublicAPI]
+        IE = InnerException,
 
         /// <summary>
         /// Include the thread ID.
@@ -247,7 +256,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [Description("Includes everything (except missing elements).")]
         [PublicAPI]
-        Verbose = Message | TimeStamp | Level | Guid | ThreadID | ThreadName | Context | Exception | SQLException | StackTrace,
+        Verbose = Message | TimeStamp | Level | Guid | ThreadID | ThreadName | Context | Exception | SQLException | InnerException | StackTrace,
         /// <summary>
         /// Includes everything (except missing elements).
         /// </summary>
@@ -260,7 +269,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [Description("Includes main information.")]
         [PublicAPI]
-        General = Message | TimeStamp | Level | ThreadName | Exception | SQLException,
+        General = Message | TimeStamp | Level | ThreadName | Exception | SQLException | InnerException,
         /// <summary>
         /// Includes essential information.
         /// </summary>
@@ -273,7 +282,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [Description("Includes essential information.")]
         [PublicAPI]
-        Basic = Message | TimeStamp | Level | Exception | SQLException,
+        Basic = Message | TimeStamp | Level | Exception | SQLException | InnerException,
         /// <summary>
         /// Includes essential information.
         /// </summary>
