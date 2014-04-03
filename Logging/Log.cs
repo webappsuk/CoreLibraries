@@ -138,10 +138,10 @@ namespace WebApplications.Utilities.Logging
         /// </para></remarks>
         [StringFormatMethod("format")]
         public Log(
-            [CanBeNull] LogContext context,
-            [CanBeNull] Exception exception,
-            LoggingLevel level,
-            [CanBeNull] string format,
+            [CanBeNull] LogContext context = null,
+            [CanBeNull] Exception exception = null,
+            LoggingLevel level = LoggingLevel.Error,
+            [CanBeNull] string format = null,
             [CanBeNull] params object[] parameters)
         {
             CombGuid guid = CombGuid.NewCombGuid();
@@ -206,9 +206,7 @@ namespace WebApplications.Utilities.Logging
             if (exception != null)
             {
                 if (hasMessage)
-                {
-                    innerExceptions = new[] { exception };
-                }
+                    innerExceptions = new[] {exception};
                 else
                 {
                     // Add the exception type.
@@ -229,7 +227,7 @@ namespace WebApplications.Utilities.Logging
                     else
                     {
                         if (exception.InnerException != null)
-                            innerExceptions = new[] { exception.InnerException };
+                            innerExceptions = new[] {exception.InnerException};
 
                         // If this is a SQL exception, then log the stored proc.
                         SqlException sqlException = exception as SqlException;
@@ -245,6 +243,7 @@ namespace WebApplications.Utilities.Logging
 
             if (innerExceptions != null)
             {
+
                 // Link to inner exceptions
                 foreach (var innerException in innerExceptions)
                 {

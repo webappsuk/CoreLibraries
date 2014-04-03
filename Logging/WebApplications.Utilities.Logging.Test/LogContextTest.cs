@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,13 +16,13 @@ namespace WebApplications.Utilities.Logging.Test
         /// Points directly to LogContext._keyReservations
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<string, Guid> _keyReservations;
+        private static readonly Dictionary<string, Guid> _keyReservations;
 
         /// <summary>
         /// Points directly to LogContext._prefixReservations
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<string, Guid> _prefixReservations;
+        private static readonly Dictionary<string, Guid> _prefixReservations;
 
         static LogContextTest()
         {
@@ -29,17 +30,20 @@ namespace WebApplications.Utilities.Logging.Test
             ExtendedType et = ExtendedType.Get(typeof (LogContext));
             _keyReservations =
                 et.Fields.Single(f => f.Info.IsStatic && f.Info.IsInitOnly && f.Info.Name == "_keyReservations")
-                  .Getter<ConcurrentDictionary<string, Guid>>()();
+                  .Getter<Dictionary<string, Guid>>()();
             _prefixReservations =
                 et.Fields.Single(f => f.Info.IsStatic && f.Info.IsInitOnly && f.Info.Name == "_prefixReservations")
-                  .Getter<ConcurrentDictionary<string, Guid>>()();
+                  .Getter<Dictionary<string, Guid>>()();
         }
 
         [TestMethod]
         public void TestKeyReservation()
         {
-            _keyReservations.Clear();
-            _prefixReservations.Clear();
+            lock (_keyReservations)
+            {
+                _keyReservations.Clear();
+                _prefixReservations.Clear();
+            }
             Guid reservation = Guid.NewGuid();
             string key = "My test key";
             string key2 = LogContext.ReserveKey(key, reservation);
@@ -59,8 +63,11 @@ namespace WebApplications.Utilities.Logging.Test
         [ExpectedException(typeof(LoggingException), "Using a reserved key without the reservation should throw an error.")]
         public void TestKeyReservationErrors()
         {
-            _keyReservations.Clear();
-            _prefixReservations.Clear();
+            lock (_keyReservations)
+            {
+                _keyReservations.Clear();
+                _prefixReservations.Clear();
+            }
             Guid reservation = Guid.NewGuid();
             string key = Tester.RandomGenerator.RandomString();
             string key2 = LogContext.ReserveKey(key, reservation);
