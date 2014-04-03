@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
@@ -45,6 +46,12 @@ namespace WebApplications.Utilities.Logging.Test
     [TestClass]
     public class LoggingTests : TestBase
     {
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
+        {
+            Log.Flush().Wait();
+        }
+
         [TestMethod]
         public async Task TestMemoryLogger()
         {
@@ -124,6 +131,19 @@ namespace WebApplications.Utilities.Logging.Test
             }
         }
         #endregion
+
+        [TestMethod]
+        public async Task TestInnerExceptions()
+        {
+            Exception e = new Exception("Exception 1", 
+                new InvalidOperationException("Exception 2",
+                    new AggregateException("Exception 3",
+                        new Exception("Exception 4.1"),
+                        new Exception("Exception 4.2"),
+                        new Exception("Exception 4.3"))));
+            Log.Add(e);
+            await Log.Flush();
+        }
 
         [TestMethod]
         public async Task TestDataContractSerialization()

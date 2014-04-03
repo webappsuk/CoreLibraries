@@ -38,6 +38,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Logging.Configuration;
@@ -171,15 +172,7 @@ namespace WebApplications.Utilities.Logging
         [NonSerialized]
         public static readonly string GuidKey = LogContext.ReserveKey("Log GUID",
             _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        public static readonly string GroupKey = LogContext.ReserveKey("Log Group",
-            _logReservation);
-
+        
         /// <summary>
         /// Reserved context key.
         /// </summary>
@@ -203,6 +196,21 @@ namespace WebApplications.Utilities.Logging
         [NonSerialized]
         public static readonly string ExceptionTypeFullNameKey =
             LogContext.ReserveKey("Log Exception Type", _logReservation);
+
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string InnerExceptionGuidKey =
+            LogContext.ReserveKey("Log Inner Exception", _logReservation);
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string InnerExceptionGuidsPrefix =
+            LogContext.ReservePrefix("Log Inner Exceptions", _logReservation);
 
         /// <summary>
         /// Reserved context key.
@@ -288,7 +296,8 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The global logging queue.
         /// </summary>
-        [NotNull] private static readonly ConcurrentBag<Log> _buffer = new ConcurrentBag<Log>();
+        [NotNull]
+        private static readonly ConcurrentBag<Log> _buffer = new ConcurrentBag<Log>();
 
         /// <summary>
         ///   Initializes static members of the <see cref="Log" /> class.
@@ -585,7 +594,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="logger">The logger.</param>
         /// <param name="sourceLogger">The source logger.</param>
         /// <param name="limit">The limit.</param>
-        /// <param name="isFromConfiguration">if set to <see langword="true" /> [is from configuration].</param>
+        /// <param name="isFromConfiguration">if set to <see langword="true" /> the logger was added from the configuration.</param>
         /// <returns>ILogger.</returns>
         /// <exception cref="LoggingException"></exception>
         [NotNull, UsedImplicitly]
@@ -767,7 +776,7 @@ namespace WebApplications.Utilities.Logging
         public static bool RemoveLogger([NotNull] ILogger logger)
         {
             Contract.Requires(logger != null);
-            // Sanity check - should be impossibel to get reference to _defaultMemoryLoger anyway.
+            // Sanity check - should be impossible to get reference to _defaultMemoryLoger anyway.
             if (ReferenceEquals(logger, _defaultMemoryLogger))
                 return false;
 
@@ -799,7 +808,6 @@ namespace WebApplications.Utilities.Logging
         public static async Task Flush(CancellationToken token = new CancellationToken())
         {
             DateTime requested = DateTime.UtcNow;
-            int batchCount = 0;
 
             List<Log> ready;
             using (await _queueLock.LockAsync(token))
@@ -826,12 +834,12 @@ namespace WebApplications.Utilities.Logging
                     if (!_buffer.TryTake(out log)) break;
                     if (log.TimeStamp > requested)
                         notReady.Add(log);
-                    else 
+                    else
                         ready.Add(log);
                 }
 
                 // Anything that isn't ready yet we stick back in the bag.
-                foreach(Log log in notReady)
+                foreach (Log log in notReady)
                     _buffer.Add(log);
             }
 
@@ -854,7 +862,7 @@ namespace WebApplications.Utilities.Logging
             if (token.IsCancellationRequested)
             {
                 // Put the logs back first
-                foreach(var log in orderedLogs)
+                foreach (var log in orderedLogs)
                     _buffer.Add(log);
 
                 return;
@@ -918,7 +926,8 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(CombGuid.Empty, null, null, LoggingLevel.Information, message, parameters);
+                // ReSharper disable once ObjectCreationAsStatement
+                new Log(null, null, LoggingLevel.Information, message, parameters);
         }
 
         /// <summary>
@@ -937,45 +946,8 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(CombGuid.Empty, context, null, LoggingLevel.Information, message, parameters);
-        }
-
-        /// <summary>
-        ///   Logs a message at the information <see cref="LoggingLevel">log level</see>.
-        /// </summary>
-        /// <param name="logGroup">The unique ID that groups log items together.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        /// <remarks>
-        ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
-        /// </remarks>
-        [StringFormatMethod("message")]
-        [UsedImplicitly]
-        public static void Add(CombGuid logGroup, [NotNull] string message, [NotNull] params object[] parameters)
-        {
-            // Add to queue for logging if we are a valid level.
-            if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(logGroup, null, null, LoggingLevel.Information, message, parameters);
-        }
-
-        /// <summary>
-        ///   Logs a message at the information <see cref="LoggingLevel">log level</see>.
-        /// </summary>
-        /// <param name="logGroup">The unique ID that groups log items together.</param>
-        /// <param name="context">The log context.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        /// <remarks>
-        ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
-        /// </remarks>
-        [StringFormatMethod("message")]
-        [UsedImplicitly]
-        public static void Add(CombGuid logGroup, [NotNull] LogContext context, [NotNull] string message,
-            [NotNull] params object[] parameters)
-        {
-            // Add to queue for logging if we are a valid level.
-            if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(logGroup, context, null, LoggingLevel.Information, message, parameters);
+                // ReSharper disable once ObjectCreationAsStatement
+                new Log(context, null, LoggingLevel.Information, message, parameters);
         }
 
         /// <summary>
@@ -993,7 +965,8 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(CombGuid.Empty, null, null, level, message, parameters);
+                // ReSharper disable once ObjectCreationAsStatement
+                new Log(null, null, level, message, parameters);
         }
 
         /// <summary>
@@ -1011,47 +984,10 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(CombGuid.Empty, context, null, level, message, parameters);
+                // ReSharper disable once ObjectCreationAsStatement
+                new Log(context, null, level, message, parameters);
         }
-
-        /// <summary>
-        /// Logs a message at the specified <see cref="LoggingLevel" />.
-        /// </summary>
-        /// <param name="logGroup">The unique ID that groups log items together.</param>
-        /// <param name="level">The log level.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
-        [StringFormatMethod("message")]
-        [UsedImplicitly]
-        public static void Add(CombGuid logGroup, LoggingLevel level, [NotNull] string message,
-            [NotNull] params object[] parameters)
-        {
-            // Add to queue for logging if we are a valid level.
-            if (level.IsValid(ValidLevels))
-                new Log(logGroup, null, null, level, message, parameters);
-        }
-
-        /// <summary>
-        /// Logs a message at the specified <see cref="LoggingLevel" />.
-        /// </summary>
-        /// <param name="logGroup">The unique ID that groups log items together.</param>
-        /// <param name="context">The log context.</param>
-        /// <param name="level">The log level.</param>
-        /// <param name="message">The log message.</param>
-        /// <param name="parameters">The optional parameters, for formatting the message.</param>
-        /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
-        [StringFormatMethod("message")]
-        [UsedImplicitly]
-        public static void Add(CombGuid logGroup, [NotNull] LogContext context, LoggingLevel level,
-            [NotNull] string message,
-            [NotNull] params object[] parameters)
-        {
-            // Add to queue for logging if we are a valid level.
-            if (level.IsValid(ValidLevels))
-                new Log(logGroup, context, null, level, message, parameters);
-        }
-
+        
         /// <summary>
         ///   Logs an exception.
         /// </summary>
@@ -1069,13 +1005,8 @@ namespace WebApplications.Utilities.Logging
         [UsedImplicitly]
         public static void Add([NotNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
         {
-            // Don't re-add logging exception, as they add themselves.
-            if (exception is LoggingException)
-                return;
-
-            // Add to queue for logging if we are a valid level.
-            if (level.IsValid(ValidLevels))
-                new Log(CombGuid.Empty, null, exception, level, exception.Message);
+            Contract.Requires(exception != null);
+            AddExceptionLog(null, exception, level, false, null);
         }
 
         /// <summary>
@@ -1097,90 +1028,164 @@ namespace WebApplications.Utilities.Logging
         public static void Add([NotNull] LogContext context, [NotNull] Exception exception,
             LoggingLevel level = LoggingLevel.Error)
         {
-            // Don't re-add logging exception, as they add themselves.
-            if (exception is LoggingException)
-                return;
-
-            // Add to queue for logging if we are a valid level.
-            if (level.IsValid(ValidLevels))
-                new Log(CombGuid.Empty, context, exception, level, exception.Message);
+            Contract.Requires(context != null);
+            Contract.Requires(exception != null);
+            AddExceptionLog(context, exception, level, false, null);
         }
 
         /// <summary>
-        ///   Logs an exception.
+        /// Logs an exception.
         /// </summary>
-        /// <param name="logGroup">The unique ID that groups log items together.</param>
-        /// <param name="exception">
-        ///   <para>The exception to log.</para>
-        ///   <para><see cref="LoggingException"/>'s add themselves and so this method ignores them.</para>
-        /// </param>
-        /// <param name="level">
-        ///   <para>The log level.</para>
-        ///   <para>By default this uses the error log level.</para>
-        /// </param>
-        /// <remarks>
-        ///   If the log <paramref name="level"/> is invalid then the log won't be added.
-        /// </remarks>
-        [UsedImplicitly]
-        public static void Add(CombGuid logGroup, [NotNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
-        {
-            // Don't re-add logging exception, as they add themselves.
-            if (exception is LoggingException)
-                return;
-
-            // Add to queue for logging if we are a valid level.
-            if (level.IsValid(ValidLevels))
-                new Log(logGroup, null, exception, level, exception.Message);
-        }
-
-        /// <summary>
-        ///   Logs an exception.
-        /// </summary>
-        /// <param name="logGroup">The unique ID that groups log items together.</param>
-        /// <param name="context">The log context.</param>
-        /// <param name="exception">
-        ///   <para>The exception to log.</para>
-        ///   <para><see cref="LoggingException"/>'s add themselves and so this method ignores them.</para>
-        /// </param>
-        /// <param name="level">
-        ///   <para>The log level.</para>
-        ///   <para>By default this uses the error log level.</para>
-        /// </param>
-        /// <remarks>
-        ///   If the log <paramref name="level"/> is invalid then the log won't be added.
-        /// </remarks>
-        [UsedImplicitly]
-        public static void Add(CombGuid logGroup, [NotNull] LogContext context, [NotNull] Exception exception,
-            LoggingLevel level = LoggingLevel.Error)
-        {
-            // Don't re-add logging exception, as they add themselves.
-            if (exception is LoggingException)
-                return;
-
-            // Add to queue for logging if we are a valid level.
-            if (level.IsValid(ValidLevels))
-                new Log(logGroup, context, exception, level, exception.Message);
-        }
-
-
-        /// <summary>
-        /// Logs a logging exception.
-        /// </summary>
-        /// <param name="logGroup">The unique ID that groups log items together.</param>
-        /// <param name="context">The log context.</param>
-        /// <param name="exception">The exception to log.</param>
-        /// <param name="level">The level.</param>
-        /// <param name="message">The message.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <remarks>If the error <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.</remarks>
-        [UsedImplicitly]
-        [NotNull]
-        internal static Log Add(CombGuid logGroup, [CanBeNull] LogContext context, [NotNull] LoggingException exception,
-            LoggingLevel level, [NotNull] string message,
-            [NotNull] params object[] parameters)
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [UsedImplicitly,StringFormatMethod("format")]
+        public static void Add([NotNull] Exception exception, LoggingLevel level, [NotNull]  string format, [NotNull]  params object[] parameters)
         {
-            return new Log(logGroup, context, exception, level, message, parameters);
+            Contract.Requires(exception != null);
+            Contract.Requires(format != null);
+            Contract.Requires(parameters != null);
+            AddExceptionLog(null, exception, level, false, format, parameters);
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="format">The format.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [UsedImplicitly, StringFormatMethod("format")]
+        public static void Add([NotNull] LogContext context, [NotNull] Exception exception,
+            LoggingLevel level, [NotNull] string format, [NotNull] params object[] parameters)
+        {
+            Contract.Requires(context != null);
+            Contract.Requires(exception != null);
+            Contract.Requires(format != null);
+            Contract.Requires(parameters != null);
+            AddExceptionLog(context, exception, level, false, format, parameters);
         }
         #endregion
+
+        /// <summary>
+        /// Logs an exception and all internal exceptions.
+        /// </summary>
+        /// <param name="context">The context information.</param>
+        /// <param name="exception">The exception. If none then pass <see langword="null" />.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="forceAdd">if set to <see langword="true" /> the exception will be logged regardless of the <paramref name="level"/>. 
+        /// Inner exceptions will still be ignored.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
+        [CanBeNull, StringFormatMethod("format")]
+        internal static Log AddExceptionLog([CanBeNull] LogContext context,
+            [NotNull] Exception exception,
+            LoggingLevel level,
+            bool forceAdd,
+            [CanBeNull] string format,
+            [CanBeNull] params object[] parameters)
+        {
+            Contract.Requires(exception != null);
+            Contract.Requires((format == null) || (parameters != null));
+            Contract.Ensures(forceAdd == (Contract.Result<Log>() != null));
+
+            if (!forceAdd && !level.IsValid(ValidLevels))
+                return null;
+
+            Stack<Exception> exceptions = new Stack<Exception>();
+            Stack<Exception> stack = new Stack<Exception>();
+            stack.Push(exception);
+
+            while (stack.Count > 0)
+            {
+                Exception e = stack.Pop();
+                Contract.Assert(e != null);
+
+                LoggingException le = e as LoggingException;
+
+                // If the inner exception is a logging exception stop, as it will have logged itself
+                // and it's inner exceptions, already.
+                if (le != null && !ReferenceEquals(exception, le))
+                {
+                    // Reuse the log group from the inner exception
+                    // Very Cool - this groups future exceptions
+                    // into the same group, if they correctly
+                    // pass the inner exception...
+                    if (logGroup != CombGuid.Empty)
+                        ;
+
+                    continue;
+                }
+
+                exceptions.Push(e);
+
+                // Check to see if we are an aggregate exception
+                AggregateException ae = e as AggregateException;
+                if (ae != null)
+                {
+                    // Push all inner exceptions 
+                    // ReSharper disable once PossibleNullReferenceException
+                    foreach (Exception aee in ae.InnerExceptions)
+                        stack.Push(aee);
+                }
+                else if (e.InnerException != null)
+                    // Push the inner exception
+                    stack.Push(e.InnerException);
+            }
+
+            // If there were multiple exceptions and got a group yet, we need to create our own group.
+            if (exceptions.Count > 1 && logGroup == CombGuid.Empty)
+                CombGuid.NewCombGuid();
+
+            // We now take items back off stack (starting with deepest first, hence maintaining
+            // order based on when exception occurred) and log each independently.
+            while (exceptions.Count > 0)
+            {
+                Exception e = exceptions.Pop();
+                Contract.Assert(e != null);
+
+                if (ReferenceEquals(e, exception))
+                {
+                    Contract.Assert(exceptions.Count < 1);
+                    break;
+                }
+
+                // Add to queue for logging if we are a valid level.
+                if (level.IsValid(ValidLevels))
+                    // ReSharper disable once ObjectCreationAsStatement
+                    new Log(null, e, level, e.Message);
+            }
+
+            // If no format was given, log the exception giving its message
+            if (format == null)
+                return new Log(context, exception, level, exception.Message);
+
+            Contract.Assert(parameters != null);
+
+            // If the exception is a LoggingException then its message comes from format
+            if (exception is LoggingException)
+                return new Log(context, exception, level, format, parameters);
+
+            // Log the exceptions message then the message passed in
+            Log l = new Log(context, exception, level, exception.Message);
+
+            // ReSharper disable once ObjectCreationAsStatement
+            new Log(null, null, level, format, parameters);
+
+            return l;
+        }
     }
 }

@@ -86,10 +86,6 @@ namespace WebApplications.Utilities.Logging
                 !CombGuid.TryParse(s, out guid))
                 throw new LoggingException("The log deserialization did not supply a valid GUID.");
 
-            if (_context.TryGetValue(GroupKey, out s) &&
-                !CombGuid.TryParse(s, out guid))
-                throw new LoggingException("The log deserialization supplied an invalid Group.");
-
             LoggingLevel level = LoggingLevel.Information;
             if (_context.TryGetValue(LevelKey, out s) &&
                 !_levels.TryGetValue(s, out level))
@@ -129,16 +125,13 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Initializes a new instance of the <see cref="Log" /> class.
         /// </summary>
-        /// <param name="logGroup">The unique ID that groups log items together.</param>
         /// <param name="context">The context information.</param>
         /// <param name="exception">The exception. If none then pass <see langword="null" />.</param>
         /// <param name="level">The log level.</param>
         /// <param name="format">The format.</param>
         /// <param name="parameters">The parameters.</param>
         [StringFormatMethod("format")]
-        private Log(
-            CombGuid logGroup,
-            [CanBeNull] LogContext context,
+        private Log([CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
             LoggingLevel level,
             [NotNull] string format,
@@ -170,9 +163,6 @@ namespace WebApplications.Utilities.Logging
             _level = level;
 
             _context.Add(GuidKey, guid.ToString());
-            // Only add group if specified.
-            if (!logGroup.Equals(CombGuid.Empty))
-                _context.Add(GroupKey, logGroup.ToString());
             _context.Add(ThreadIDKey, threadId.ToString());
             if (!String.IsNullOrWhiteSpace(currentThread.Name))
                 _context.Add(ThreadNameKey, currentThread.Name);
@@ -212,7 +202,6 @@ namespace WebApplications.Utilities.Logging
                 stackTrace = FormatStackTrace(new StackTrace(2, true));
 
             if (!String.IsNullOrWhiteSpace(stackTrace))
-
                 _context.Add(StackTraceKey, stackTrace);
 
             // Increment performance counter.
@@ -236,25 +225,7 @@ namespace WebApplications.Utilities.Logging
                 return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
             }
         }
-
-        /// <summary>
-        ///   A Guid used to group log items together.
-        /// </summary>
-        /// <remarks>
-        /// <para>If the log item is not part of a group this always return <see cref="Guid"/>.</para>
-        /// </remarks>
-        [UsedImplicitly]
-        public CombGuid Group
-        {
-            get
-            {
-                string gStr = Get(GroupKey);
-                if (gStr == null) return CombGuid.Empty;
-                CombGuid g;
-                return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
-            }
-        }
-
+        
         /// <summary>
         ///   The <see cref="LoggingLevel">log level</see>.
         /// </summary>
@@ -267,7 +238,8 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The formatted log message.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
+        [CanBeNull]
         public virtual string Message
         {
             get { return MessageFormat == null ? null : MessageFormat.SafeFormat(Parameters.Cast<object>().ToArray()); }
@@ -308,6 +280,7 @@ namespace WebApplications.Utilities.Logging
         /// Gets the stack trace.
         /// </summary>
         /// <value>The stack trace.</value>
+        [CanBeNull]
         public string StackTrace
         {
             get { return Get(StackTraceKey); }
@@ -317,6 +290,7 @@ namespace WebApplications.Utilities.Logging
         /// Gets the message format.
         /// </summary>
         /// <value>The message format.</value>
+        [CanBeNull]
         public string MessageFormat
         {
             get { return Get(MessageFormatKey); }
@@ -341,6 +315,7 @@ namespace WebApplications.Utilities.Logging
         /// Gets the name of the thread.
         /// </summary>
         /// <value>The name of the thread.</value>
+        [CanBeNull]
         public string ThreadName
         {
             get { return Get(ThreadNameKey); }
@@ -549,11 +524,6 @@ namespace WebApplications.Utilities.Logging
                         key = "Guid";
                         CombGuid guid = Guid;
                         value = guid == CombGuid.Empty ? null : guid.ToString(options ?? "D");
-                        break;
-                    case LogFormat.Group:
-                        key = "Group";
-                        CombGuid group = Group;
-                        value = group == CombGuid.Empty ? null : group.ToString(options ?? "D");
                         break;
                     case LogFormat.Exception:
                         key = "Exception Type";

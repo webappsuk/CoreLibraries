@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Logging
@@ -71,7 +72,13 @@ namespace WebApplications.Utilities.Logging
         /// The context dictionary.
         /// </summary>
         [NotNull]
-        private readonly Dictionary<string, string> _context;
+        private readonly ConcurrentDictionary<string, string> _context;
+
+        /// <summary>
+        /// Whether the context is locked.
+        /// </summary>
+        private bool _locked;
+        public bool IsLocked { get { return _locked; } }
 
         #region Constructors
         /// <summary>
@@ -760,13 +767,29 @@ namespace WebApplications.Utilities.Logging
         #endregion
 
         /// <summary>
+        /// Locks this instance.
+        /// </summary>
+        internal void Lock()
+        {
+            _locked = true;
+        }
+
+        /// <summary>
         /// Sets the value of the key.
         /// </summary>
         /// <param name="reservation">The reservation.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Set(Guid reservation, string key, string value)
+        public void SetKey(Guid reservation, string key, object value)
+        {
+            key = Validate(reservation, key);
+            if (_context.ContainsKey(key))
+                _context[key] = value;
+            else
+                _context.Add(key, value);
+        }
+        public void SetPrefix(Guid reservation, string key, params object[] values)
         {
             key = Validate(reservation, key);
             if (_context.ContainsKey(key))

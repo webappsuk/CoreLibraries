@@ -96,19 +96,10 @@ namespace WebApplications.Utilities.Logging
         [Description("Include the GUID.")]
         [PublicAPI]
         I = Guid,
-
-        /// <summary>
-        /// Include the Group.
-        /// </summary>
-        [Description("Include the Group.")]
-        [PublicAPI]
-        Group = 1 << 6,
-        /// <summary>
-        /// Include the Group.
-        /// </summary>
-        [Description("Include the Group.")]
-        [PublicAPI]
-        G = Group,
+        
+        /*
+         * 1 << 6 Used to be used by Group
+         */
 
         /// <summary>
         /// Include the thread ID.
@@ -256,7 +247,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [Description("Includes everything (except missing elements).")]
         [PublicAPI]
-        Verbose = Message | TimeStamp | Level | Guid | Group | ThreadID | ThreadName | Context | Exception | SQLException | StackTrace,
+        Verbose = Message | TimeStamp | Level | Guid | ThreadID | ThreadName | Context | Exception | SQLException | StackTrace,
         /// <summary>
         /// Includes everything (except missing elements).
         /// </summary>
@@ -269,7 +260,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [Description("Includes main information.")]
         [PublicAPI]
-        General = Message | TimeStamp | Level | Group | ThreadName | Exception | SQLException,
+        General = Message | TimeStamp | Level | ThreadName | Exception | SQLException,
         /// <summary>
         /// Includes essential information.
         /// </summary>

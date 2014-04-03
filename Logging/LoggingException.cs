@@ -68,12 +68,6 @@ namespace WebApplications.Utilities.Logging
         /// Gets the log group.
         /// </summary>
         /// <value>The log group.</value>
-        public CombGuid Group { get { return Log.Group; } }
-
-        /// <summary>
-        /// Gets the log group.
-        /// </summary>
-        /// <value>The log group.</value>
         public LoggingLevel Level { get { return Log.Level; } }
 
         /// <summary>
@@ -247,7 +241,7 @@ namespace WebApplications.Utilities.Logging
         ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
         ///   <paramref name="context" /> to not be a null value.</para></remarks>
         [StringFormatMethod("message")]
-        public LoggingException([CanBeNull] LogContext context, LoggingLevel level, [NotNull] string message, 
+        public LoggingException([CanBeNull] LogContext context, LoggingLevel level, [NotNull] string message,
                                 [NotNull] params object[] parameters)
             : this(context, null, level, message, parameters)
         {
@@ -323,9 +317,7 @@ namespace WebApplications.Utilities.Logging
         /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
         ///   <paramref name="message" /> to not be a null value.</para>
         ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="parameters" /> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="context" /> to not be a null value.</para></remarks>
+        ///   <paramref name="parameters" /> to not be a null value.</para></remarks>
         [StringFormatMethod("message")]
         public LoggingException(
             [CanBeNull] LogContext context,
@@ -337,65 +329,11 @@ namespace WebApplications.Utilities.Logging
         {
             Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
             Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
-            
-            // Create an inner exception stack of all inner exceptions until the last logging exception
-            Stack<Exception> innerExceptions = new Stack<Exception>();
-            CombGuid group = CombGuid.Empty;
-            if (innerException != null)
-            {
-                Stack<Exception> currentStack = new Stack<Exception>();
-                currentStack.Push(innerException);
-                while (currentStack.Count > 0)
-                {
-                    Exception e = currentStack.Pop();
-                    LoggingException le = e as LoggingException;
 
-                    // If the inner exception is a logging exception stop, as it will have logged itself
-                    // and it's inner exceptions, already.
-                    if (le != null)
-                    {
-                        // Reuse the log group from the inner exception
-                        // Very Cool - this groups future exceptions
-                        // into the same group, if they correctly
-                        // pass the inner exception...
-                        group = le.Group;
-                        break;
-                    }
-
-                    // Push the exception onto our stack
-                    innerExceptions.Push(e);
-
-                    // Check to see if we are an aggregate exception
-                    AggregateException ae = e as AggregateException;
-                    if (ae != null)
-                    {
-                        // Push all inner exceptions
-                        foreach (Exception aee in ae.InnerExceptions)
-                            currentStack.Push(aee);
-                    }
-                    else if (e.InnerException != null)
-                        // Push the inner exception
-                        currentStack.Push(e.InnerException);
-                }
-            }
-
-            if (innerExceptions.Count > 0)
-            {
-                // If we haven't found a base logging exception, we need to create our own group.
-                if (group == CombGuid.Empty)
-                    group = CombGuid.NewCombGuid();
-
-                // We now take items back off stack (starting with deepest first, hence maintaining
-                // order based on when exception occurred) and log each independently.
-                while (innerExceptions.Count > 0)
-                {
-                    Exception e = innerExceptions.Pop();
-                    Log.Add(group, e, LoggingLevel.Information);
-                }
-            }
-
-            // Now we can create the associated log item for this exception.
-            Log = Log.Add(group, context, this, level, message, parameters);
+            // Log the exception
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Log = Log.AddExceptionLog(context, this, level, true, message, parameters);
+            Contract.Assert(Log != null);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
