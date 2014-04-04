@@ -52,75 +52,153 @@ namespace WebApplications.Utilities.Logging
     [PublicAPI]
     public partial class Log : IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
+
         /// <summary>
         /// The context (holds all log data).
         /// </summary>
+        [CanBeNull]
+        private readonly LogContext _context;
+
+        private readonly LoggingLevel _level;
+
+        private readonly CombGuid _guid;
+
+        private readonly string _messageFormat;
+
+        private readonly string[] _parameters;
+
         [NotNull]
-        private readonly Dictionary<string, string> _context;
+        private readonly Lazy<string> _message;
 
-        /// <summary>
-        /// Cached level as used so frequently
-        /// </summary>
-        [NonSerialized]
-        private LoggingLevel _level;
+        private readonly string _stackTrace;
 
-        /// <summary>
-        /// Called when deserializing.
-        /// </summary>
-        /// <exception cref="LoggingException">
-        /// The log deserialization did not supply a valid GUID.
-        /// or
-        /// The log deserialization supplied an invalid Group.
-        /// or
-        /// The log deserialization supplied an invalid Level.
-        /// or
-        /// The log deserialization supplied an invalid Thread ID.
-        /// or
-        /// The log deserialization supplied an invalid Stored Procedure line number.
-        /// </exception>
-        [OnDeserialized]
-        private void OnDeserialize(StreamingContext context)
+        private readonly int _threadID;
+
+        private readonly string _threadName;
+
+        [CanBeNull]
+        private readonly string _exceptionType;
+
+        [CanBeNull]
+        private readonly CombGuid[] _innerExceptinoGuids;
+
+        private readonly string _storedProcedure;
+
+        private readonly int _storedProcedureLine;
+
+        private Log()
         {
-            string s;
-            CombGuid guid;
-            if (!_context.TryGetValue(GuidKey, out s) ||
-                !CombGuid.TryParse(s, out guid))
-                throw new LoggingException("The log deserialization did not supply a valid GUID.");
-
-            LoggingLevel level = LoggingLevel.Information;
-            if (_context.TryGetValue(LevelKey, out s) &&
-                !_levels.TryGetValue(s, out level))
-                throw new LoggingException("The log deserialization supplied an invalid Level.");
-
-            // We cache the level as it is checked so frequently.
-            _level = level;
-
-            int i;
-            if (_context.TryGetValue(ThreadIDKey, out s) &&
-                !Int32.TryParse(s, out i))
-                throw new LoggingException("The log deserialization supplied an invalid Thread ID.");
-
-            if (_context.TryGetValue(StoredProcedureLineKey, out s) &&
-                !Int32.TryParse(s, out i))
-                throw new LoggingException("The log deserialization supplied an invalid Stored Procedure line number.");
+            _message =
+                new Lazy<string>(
+                    () =>
+                        _messageFormat == null
+                            ? null
+                            : _messageFormat.SafeFormat(_parameters == null
+                                ? null
+                                : _parameters.Cast<object>().ToArray()),
+                    LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Log" /> class.
+        /// Initializes a new instance of the <see cref="Log"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <remarks>
-        /// <para>This is used for deserializing Log entries - it does not result in logs being added!</para>
-        /// <para>To add logs use <see cref="Log.Add(string, object[])" /> instead.</para>
+        /// <param name="dictionary">The key value pairs.</param>
+        /// <remarks><para>This is used for deserializing Log entries - it does not result in logs being added!</para>
+        /// <para>To add logs use <see cref="Log.Add(string, object[])"/> instead.</para>
         /// <para>You can create partial logs, however the context must contain at least the 
         /// <see cref="GuidKey">Guid key</see>, and be a valid <see cref="CombGuid"/>.</para>
-        /// <para>Typed keys must also be valid if supplied otherwise an exception will be thrown.</para>
-        /// </remarks>
-        public Log([NotNull] IEnumerable<KeyValuePair<string, string>> context)
+        /// <para>Typed keys must also be valid if supplied otherwise an exception will be thrown.</para></remarks>
+        public Log([NotNull] IEnumerable<KeyValuePair<string, string>> dictionary)
+            : this()
         {
-            Contract.Requires(context != null);
-            _context = context.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            OnDeserialize(default(StreamingContext));
+            Dictionary<string, string> context = new Dictionary<string, string>();
+            SortedDictionary<int, string> parameters = new SortedDictionary<int, string>();
+            SortedDictionary<int, CombGuid> ieGuids = new SortedDictionary<int, CombGuid>();
+
+            foreach (KeyValuePair<string, string> kvp in dictionary)
+            {
+                string key = kvp.Key;
+                string value = kvp.Value;
+                if (string.IsNullOrEmpty(key)) continue;
+
+                if (string.Equals(key, GuidKey))
+                {
+                    CombGuid guid;
+                    _guid = CombGuid.TryParse(value, out guid) ? guid : CombGuid.Empty;
+                    continue;
+                }
+                if (string.Equals(key, LevelKey))
+                {
+                    LoggingLevel level;
+                    _level = Enum.TryParse(value, out level) ? level : LoggingLevel.Information;
+                    continue;
+                }
+                if (string.Equals(key, GuidKey))
+                {
+
+                    continue;
+                }
+                if (string.Equals(key, GuidKey))
+                {
+
+                    continue;
+                }
+                if (string.Equals(key, GuidKey))
+                {
+
+                    continue;
+                }
+                if (string.Equals(key, GuidKey))
+                {
+
+                    continue;
+                }
+                if (string.Equals(key, GuidKey))
+                {
+
+                    continue;
+                }
+                if (string.Equals(key, GuidKey))
+                {
+
+                    continue;
+                }
+                if (string.Equals(key, GuidKey))
+                {
+
+                    continue;
+                }
+                if (string.Equals(key, GuidKey))
+                {
+
+                    continue;
+                }
+                if (string.Equals(key, GuidKey))
+                {
+
+                    continue;
+                }
+                if (key.StartsWith(ParameterPrefix))
+                {
+
+                    continue;
+                }
+                if (key.StartsWith(InnerExceptionGuidsPrefix))
+                {
+
+                    continue;
+                }
+
+                // Add to the context.
+                context[key] = kvp.Value;
+            }
+
+            if (context.Count > 0)
+                _context = new LogContext(context);
+            if (parameters.Count > 0)
+                _parameters = parameters.Values.ToArray();
+            if (ieGuids.Count > 0)
+                _innerExceptinoGuids = ieGuids.Values.ToArray();
         }
 
         /// <summary>
@@ -143,59 +221,34 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level = LoggingLevel.Error,
             [CanBeNull] string format = null,
             [CanBeNull] params object[] parameters)
+            : this()
         {
-            CombGuid guid = CombGuid.NewCombGuid();
-
-            // Estimate dictionary size
-            int size = 9 +
-                (parameters == null ? 0 : parameters.Length) +
-                (context == null ? 0 : context.Count);
-
-            // Build context.
-            _context = new Dictionary<string, string>(size);
-            if (context != null)
-            {
-                // Lock the context to prevent changes after it is locked.
-                context.Lock();
-
-                // Copy supplied context into our context.
-                foreach (KeyValuePair<string, string> kvp in context)
-                    _context.Add(kvp.Key, kvp.Value);
-            }
-
-            // We can safely add our data due to the way LogContext protects reservations.
-            _context.Add(LevelKey, level.ToString());
+            _guid = CombGuid.NewCombGuid();
             _level = level;
 
-            _context.Add(GuidKey, guid.ToString());
+            // Lock the context to prevent changes after it is locked.
+            if (context != null)
+            {
+                context.Lock();
+                _context = context;
+            }
 
             // Get the current thread information
             Thread currentThread = Thread.CurrentThread;
-            int threadId = currentThread.ManagedThreadId;
-            _context.Add(ThreadIDKey, threadId.ToString());
-            if (!string.IsNullOrEmpty(currentThread.Name))
-                _context.Add(ThreadNameKey, currentThread.Name);
+            _threadID = currentThread.ManagedThreadId;
+            _threadName = currentThread.Name;
 
-            string stackTrace = null;
             bool hasMessage = false;
 
             // If we have a formatted message add it now
             if (!string.IsNullOrEmpty(format))
             {
                 hasMessage = true;
-                _context.Add(MessageFormatKey, format);
+                _messageFormat = format;
 
-                if ((parameters == null) || (parameters.Length < 1))
-                    _context.Add(ParameterCountKey, "0");
-                else
+                if ((parameters != null) && (parameters.Length >= 1))
                 {
-                    _context.Add(ParameterCountKey, parameters.Length.ToString());
-                    for (int p = 0; p < parameters.Length; p++)
-                    {
-                        object v = parameters[p];
-                        if (v == null) continue;
-                        _context.Add(ParameterPrefix + (p + 1), v.ToString());
-                    }
+                    _parameters = parameters.Select(p => p.ToString()).ToArray();
                 }
             }
 
@@ -210,21 +263,20 @@ namespace WebApplications.Utilities.Logging
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (!isLogException && hasMessage)
-                    innerExceptions = new[] {exception};
+                    innerExceptions = new[] { exception };
                 else
                 {
                     // Add the exception type.
-                    _context.Add(ExceptionTypeFullNameKey, exception.GetType().ToString());
+                    _exceptionType = exception.GetType().ToString();
 
                     // ReSharper disable ConditionIsAlwaysTrueOrFalse
                     if (!isLogException)
-                        // ReSharper restore ConditionIsAlwaysTrueOrFalse
+                    // ReSharper restore ConditionIsAlwaysTrueOrFalse
                     {
-                        _context.Add(MessageFormatKey, exception.Message);
-                        _context.Add(ParameterCountKey, "0");
+                        _messageFormat = exception.Message;
                     }
 
-                    stackTrace = exception.StackTrace;
+                    _stackTrace = exception.StackTrace;
 
                     // Check for aggregate exception
                     AggregateException aggregateException = exception as AggregateException;
@@ -237,15 +289,16 @@ namespace WebApplications.Utilities.Logging
                     else
                     {
                         if (exception.InnerException != null)
-                            innerExceptions = new[] {exception.InnerException};
+                            innerExceptions = new[] { exception.InnerException };
 
                         // If this is a SQL exception, then log the stored proc.
                         SqlException sqlException = exception as SqlException;
                         if (sqlException != null)
                         {
-                            _context.Add(StoredProcedureKey,
-                                String.IsNullOrEmpty(sqlException.Procedure) ? "<Unknown>" : sqlException.Procedure);
-                            _context.Add(StoredProcedureLineKey, sqlException.LineNumber.ToString());
+                            _storedProcedure = string.IsNullOrEmpty(sqlException.Procedure)
+                                ? "<Unknown>"
+                                : sqlException.Procedure;
+                            _storedProcedureLine = sqlException.LineNumber;
                         }
                     }
                 }
@@ -253,38 +306,20 @@ namespace WebApplications.Utilities.Logging
 
             if (innerExceptions != null && innerExceptions.Length > 0)
             {
-                // Link to inner exceptions
-                if (innerExceptions.Length == 1)
-                {
-                    LoggingException le = innerExceptions[0] as LoggingException;
-
-                    _context.Add(InnerExceptionGuidKey,
-                        le == null || ReferenceEquals(le, exception)
-                            ? new Log(null, innerExceptions[0]).Guid.ToString()
-                            : le.Guid.ToString());
-                }
-                else
-                {
-                    for (int i = 0; i < innerExceptions.Length; )
+                _innerExceptinoGuids = innerExceptions
+                    .Select(e =>
                     {
-                        Exception innerException = innerExceptions[i++];
-                        LoggingException le = innerException as LoggingException;
-
-                        _context.Add(InnerExceptionGuidsPrefix + i,
-                        le == null || ReferenceEquals(le, exception)
-                                ? new Log(null, innerException).Guid.ToString()
-                                : le.Guid.ToString());
-                    }
-                }
+                        LoggingException le = e as LoggingException;
+                        return le == null || ReferenceEquals(le, exception)
+                            ? new Log(null, e).Guid
+                            : le.Guid;
+                    }).ToArray();
             }
 
             // If there was a message and no stack trace was added for an exception, get the current stack trace
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (hasMessage && stackTrace == null)
-                stackTrace = FormatStackTrace(new StackTrace(2, true));
-
-            if (!String.IsNullOrWhiteSpace(stackTrace))
-                _context.Add(StackTraceKey, stackTrace);
+            if (hasMessage && _stackTrace == null)
+                _stackTrace = FormatStackTrace(new StackTrace(2, true));
 
             // Increment performance counter.
             _perfCounterNewItem.Increment();
@@ -296,22 +331,16 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   A Guid used to uniquely identify a log item.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public CombGuid Guid
         {
-            get
-            {
-                string gStr = Get(GuidKey);
-                if (gStr == null) return CombGuid.Empty;
-                CombGuid g;
-                return CombGuid.TryParse(gStr, out g) ? g : CombGuid.Empty;
-            }
+            get { return _guid; }
         }
 
         /// <summary>
         ///   The <see cref="LoggingLevel">log level</see>.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public LoggingLevel Level
         {
             get { return _level; }
@@ -324,7 +353,7 @@ namespace WebApplications.Utilities.Logging
         [CanBeNull]
         public virtual string Message
         {
-            get { return MessageFormat == null ? null : MessageFormat.SafeFormat(Parameters.Cast<object>().ToArray()); }
+            get { return _message.Value; }
         }
 
         /// <summary>
@@ -333,16 +362,32 @@ namespace WebApplications.Utilities.Logging
         /// <value>
         ///   Returns <see langword="true"/> if this instance was an exception; otherwise <see langword="false"/>.
         /// </value>
-        [UsedImplicitly]
+        [PublicAPI]
         public bool IsException
         {
-            get { return _context.ContainsKey(ExceptionTypeFullNameKey); }
+            get { return !string.IsNullOrWhiteSpace(_exceptionType); }
         }
+
+        /// <summary>
+        /// Gets the type of the exception (if any).
+        /// </summary>
+        /// <value>The type of the exception.</value>
+        [PublicAPI]
+        [CanBeNull]
+        public string ExceptionType { get { return _exceptionType; } }
+
+        /// <summary>
+        /// Gets the inner exceptions unique identifiers, if any.
+        /// </summary>
+        /// <value>The inner exceptions unique identifiers.</value>
+        [PublicAPI]
+        [NotNull]
+        public IEnumerable<CombGuid> InnerExceptionGuids { get { return _innerExceptinoGuids ?? _emptyCombGuidArray; } }
 
         /// <summary>
         ///   The time stamp of when the log item was created.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public DateTime TimeStamp
         {
             get { return Guid.Created; }
@@ -352,16 +397,11 @@ namespace WebApplications.Utilities.Logging
         /// Gets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
+        [PublicAPI]
         [NotNull]
         public IEnumerable<string> Parameters
         {
-            get
-            {
-                return _context
-                    .Where(kvp => kvp.Key.StartsWith(ParameterPrefix))
-                    // TODO ORDERING!
-                    .Select(kvp => kvp.Value);
-            }
+            get { return _parameters ?? _emptyStringArray; }
         }
 
         /// <summary>
@@ -369,9 +409,10 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The stack trace.</value>
         [CanBeNull]
+        [PublicAPI]
         public string StackTrace
         {
-            get { return Get(StackTraceKey); }
+            get { return _stackTrace; }
         }
 
         /// <summary>
@@ -379,24 +420,20 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The message format.</value>
         [CanBeNull]
+        [PublicAPI]
         public string MessageFormat
         {
-            get { return Get(MessageFormatKey); }
+            get { return _messageFormat; }
         }
 
         /// <summary>
         /// Gets the thread ID (or -1 if not known).
         /// </summary>
         /// <value>The thread ID.</value>
+        [PublicAPI]
         public int ThreadID
         {
-            get
-            {
-                string iStr = Get(ThreadIDKey);
-                if (iStr == null) return -1;
-                int i;
-                return Int32.TryParse(iStr, out i) ? i : -1;
-            }
+            get { return _threadID; }
         }
 
         /// <summary>
@@ -404,22 +441,44 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The name of the thread.</value>
         [CanBeNull]
+        [PublicAPI]
         public string ThreadName
         {
-            get { return Get(ThreadNameKey); }
+            get { return _threadName; }
+        }
+
+
+        /// <summary>
+        /// Gets the stored procedure (if any).
+        /// </summary>
+        /// <value>The stored procedure.</value>
+        [CanBeNull]
+        [PublicAPI]
+        public string StoredProcedure
+        {
+            get { return _storedProcedure; }
+        }
+
+        /// <summary>
+        /// Gets the stored procedure line (if any); otherwise 0.
+        /// </summary>
+        /// <value>The stored procedure line.</value>
+        [PublicAPI]
+        public int StoredProcedureLine
+        {
+            get { return _storedProcedureLine; }
         }
 
         /// <summary>
         /// Gets the value associated with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns>The value associated with the specified key. If the specified key is not found, throws a <see cref="T:System.Collections.Generic.KeyNotFoundException" />.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
-        /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> does not exist in the collection.</exception>
+        /// <returns>The value associated with the specified key; otherwise null.</returns>
         [CanBeNull]
+        [PublicAPI]
         public string this[[NotNull] string key]
         {
-            get { return _context[key]; }
+            get { return this.FirstOrDefault(kvp => string.Equals(kvp.Key, key)).Value; }
         }
 
         #region ToString overloads
@@ -635,7 +694,7 @@ namespace WebApplications.Utilities.Logging
                             key = "Inner Exception";
                         else
                         {
-                            KeyValuePair<string, string>[] inner = 
+                            KeyValuePair<string, string>[] inner =
                                 this.Where(kvp => kvp.Key.StartsWith(InnerExceptionGuidsPrefix)).ToArray();
 
                             key = "Inner Exceptions";
@@ -767,10 +826,47 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Gets the enumerator.
         /// </summary>
-        /// <returns>IEnumerator{KeyValuePair{System.StringSystem.String}}.</returns>
+        /// <returns>A set of key value pairs.</returns>
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            return _context.GetEnumerator();
+            // We have to manually yield our fields, as we don't hold everything in the context for performance.
+            yield return new KeyValuePair<string, string>(GuidKey, _guid.ToString());
+            yield return new KeyValuePair<string, string>(LevelKey, _level.ToString());
+            if (_messageFormat != null)
+                yield return new KeyValuePair<string, string>(MessageFormatKey, _messageFormat);
+            yield return new KeyValuePair<string, string>(ThreadIDKey, _threadID.ToString());
+            if (_threadName != null)
+                yield return new KeyValuePair<string, string>(ThreadNameKey, _threadName);
+            if (_stackTrace != null)
+                yield return new KeyValuePair<string, string>(StackTraceKey, _stackTrace);
+            if (_exceptionType != null)
+                yield return new KeyValuePair<string, string>(ExceptionTypeFullNameKey, _exceptionType);
+            if (_storedProcedure != null)
+            {
+                yield return new KeyValuePair<string, string>(StoredProcedureKey, _storedProcedure);
+                yield return new KeyValuePair<string, string>(StoredProcedureLineKey, _storedProcedureLine.ToString());
+            }
+
+            int count = 0;
+            if (_parameters != null)
+            {
+                foreach (string parameter in _parameters)
+                    yield return new KeyValuePair<string, string>(ParameterPrefix + count++, parameter);
+            }
+
+            count = 0;
+            if (_innerExceptinoGuids != null)
+            {
+                foreach (CombGuid ieg in _innerExceptinoGuids)
+                    yield return new KeyValuePair<string, string>(InnerExceptionGuidsPrefix + count++, ieg.ToString());
+            }
+
+            count = 0;
+            if (_context != null)
+            {
+                foreach (KeyValuePair<string, string> kvp in _context)
+                    yield return kvp;
+            }
         }
 
         /// <summary>
@@ -968,8 +1064,7 @@ namespace WebApplications.Utilities.Logging
         public string Get([NotNull] string key)
         {
             Contract.Requires(key != null);
-            string value;
-            return _context.TryGetValue(key, out value) ? value : null;
+            return this.FirstOrDefault(kvp => string.Equals(kvp.Key, key)).Value;
         }
 
         /// <summary>
@@ -981,7 +1076,7 @@ namespace WebApplications.Utilities.Logging
         public IEnumerable<KeyValuePair<string, string>> GetPrefixed([NotNull] string prefix)
         {
             Contract.Requires(prefix != null);
-            return _context.Where(kvp => kvp.Key.StartsWith(prefix));
+            return this.Where(kvp => kvp.Key.StartsWith(prefix));
         }
 
         /// <summary>

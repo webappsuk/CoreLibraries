@@ -49,12 +49,21 @@ namespace WebApplications.Utilities.Logging
         /// The minimum key length (note also minimum prefix length).
         /// </summary>
         [PublicAPI]
+        [NonSerialized]
         public const int MinimumKeyLength = 3;
         /// <summary>
         /// The maximum key length (note maximum prefix length is this minus <see cref="MinimumKeyLength"/>.
         /// </summary>
         [PublicAPI]
+        [NonSerialized]
         public const int MaximumKeyLength = 200;
+
+        /// <summary>
+        /// An empty, locked, <see cref="LogContext"/>.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly LogContext Empty = new LogContext().Lock();
 
         /// <summary>
         /// The Key reservations.
@@ -73,13 +82,30 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The context dictionary.
         /// </summary>
-        [NotNull]
-        private readonly ConcurrentDictionary<string, string> _context = new ConcurrentDictionary<string, string>();
+        [NotNull] private readonly ConcurrentDictionary<string, string> _context;
 
         /// <summary>
         /// Whether the context is locked.
         /// </summary>
         private bool _locked;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext"/> class.
+        /// </summary>
+        public LogContext()
+        {
+            _context = new ConcurrentDictionary<string, string>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogContext"/> class.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        internal LogContext([NotNull] IEnumerable<KeyValuePair<string, string>> dictionary)
+        {
+            Contract.Requires(dictionary != null);
+            _context = new ConcurrentDictionary<string, string>(dictionary);
+        }
 
         /// <summary>
         /// Reserves a key.
@@ -269,9 +295,11 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Locks this instance.
         /// </summary>
-        internal void Lock()
+        [NotNull]
+        internal LogContext Lock()
         {
             _locked = true;
+            return this;
         }
 
         /// <summary>

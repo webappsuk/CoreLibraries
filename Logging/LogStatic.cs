@@ -115,13 +115,18 @@ namespace WebApplications.Utilities.Logging
             }, LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
-        /// Holds lookup for logging levels.
+        /// An empty string array.
         /// </summary>
-        [NotNull] private static readonly Dictionary<string, LoggingLevel> _levels =
-            ExtendedEnum<LoggingLevel>.ValueDetails
-                .SelectMany(
-                    vd => vd.Select(v => new KeyValuePair<string, LoggingLevel>(v.ToLower(), vd.Value)))
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
+        [NotNull]
+        [NonSerialized]
+        private static readonly string[] _emptyStringArray = new string[0];
+
+        /// <summary>
+        /// An empty <see cref="CombGuid"/> array.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        private static readonly CombGuid[] _emptyCombGuidArray = new CombGuid[0];
 
         /// <summary>
         /// Holds lookup for formats.
@@ -135,90 +140,103 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The log reservation.
         /// </summary>
-        [NonSerialized] private static readonly Guid _logReservation = System.Guid.NewGuid();
+        [NonSerialized]
+        private static readonly Guid _logReservation = System.Guid.NewGuid();
 
         /// <summary>
         /// The parameter key prefix.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string LogKeyPrefix = LogContext.ReservePrefix("Log ",
+        [NotNull]
+        [NonSerialized]
+        public static readonly string LogKeyPrefix = LogContext.ReservePrefix("Log ",
             _logReservation);
-
+        
         /// <summary>
         /// The parameter key prefix.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string ParameterCountKey =
-            LogContext.ReservePrefix("Log Parameter Count", _logReservation);
-
-        /// <summary>
-        /// The parameter key prefix.
-        /// </summary>
-        [NotNull] [NonSerialized] public static readonly string ParameterPrefix =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ParameterPrefix =
             LogContext.ReservePrefix("Log Parameter ", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string GuidKey = LogContext.ReserveKey("Log GUID",
+        [NotNull]
+        [NonSerialized]
+        public static readonly string GuidKey = LogContext.ReserveKey("Log GUID",
             _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string LevelKey = LogContext.ReserveKey("Log Level",
+        [NotNull]
+        [NonSerialized]
+        public static readonly string LevelKey = LogContext.ReserveKey("Log Level",
             _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string MessageFormatKey =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string MessageFormatKey =
             LogContext.ReserveKey("Log Message Format", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string ExceptionTypeFullNameKey =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ExceptionTypeFullNameKey =
             LogContext.ReserveKey("Log Exception Type", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string InnerExceptionGuidKey =
-            LogContext.ReserveKey("Log Inner Exception", _logReservation);
-
-        /// <summary>
-        /// Reserved context key.
-        /// </summary>
-        [NotNull] [NonSerialized] public static readonly string InnerExceptionGuidsPrefix =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string InnerExceptionGuidsPrefix =
             LogContext.ReservePrefix("Log Inner Exception ", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string StackTraceKey = LogContext.ReserveKey(
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StackTraceKey = LogContext.ReserveKey(
             "Log Stack Trace", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string ThreadIDKey = LogContext.ReserveKey("Log Thread ID",
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadIDKey = LogContext.ReserveKey("Log Thread ID",
             _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string ThreadNameKey = LogContext.ReserveKey(
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ThreadNameKey = LogContext.ReserveKey(
             "Log Thread Name", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string StoredProcedureKey =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StoredProcedureKey =
             LogContext.ReserveKey("Log Stored Procedure", _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
-        [NotNull] [NonSerialized] public static readonly string StoredProcedureLineKey =
+        [NotNull]
+        [NonSerialized]
+        public static readonly string StoredProcedureLineKey =
             LogContext.ReserveKey("Log Stored Procedure Line", _logReservation);
 
         /// <summary>
