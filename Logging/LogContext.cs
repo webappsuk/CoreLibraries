@@ -32,8 +32,10 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
 using JetBrains.Annotations;
+using ProtoBuf;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -42,6 +44,7 @@ namespace WebApplications.Utilities.Logging
     /// </summary>
     /// <remarks>As well as constructing a <see cref="LogContext" /> directly, it is equally valid to use one of the
     /// implicit casts, or the static <see cref="Empty">new LogContext()</see>.</remarks>
+    [ProtoContract(SkipConstructor = true, UseProtoMembersOnly = true, IgnoreListHandling = true)]
     [Serializable]
     public class LogContext : IEnumerable<KeyValuePair<string, string>>
     {
@@ -82,12 +85,25 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The context dictionary.
         /// </summary>
-        [NotNull] private readonly ConcurrentDictionary<string, string> _context;
+        [NotNull]
+        [ProtoMember(1)]
+        private readonly ConcurrentDictionary<string, string> _context;
 
         /// <summary>
         /// Whether the context is locked.
         /// </summary>
+        [NonSerialized]
         private bool _locked;
+
+        /// <summary>
+        /// Called when deserialized.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        [OnDeserialized]
+        private void OnDeserialize(StreamingContext context)
+        {
+            _locked = true;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LogContext"/> class.

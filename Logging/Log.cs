@@ -28,6 +28,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -41,52 +43,68 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using JetBrains.Annotations;
+using ProtoBuf;
+using ProtoBuf.Meta;
 
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
     /// Holds information about a single log item.
     /// </summary>
+    [ProtoContract(SkipConstructor = true, UseProtoMembersOnly = true, IgnoreListHandling = true)]
     [Serializable]
     [DebuggerDisplay("{Message} @ {TimeStamp}")]
     [PublicAPI]
-    public partial class Log : IEnumerable<KeyValuePair<string, string>>, IFormattable
+    public sealed partial class Log : IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
-        /// <summary>
-        /// The context (holds all log data).
-        /// </summary>
+        [ProtoMember(1, IsRequired = true)]
+        // TODO Allow direct serialization of CombGuid.
+        private readonly Guid _guid;
+
+        [ProtoMember(2)] // TODO Debug why default value fails on deserialization
+        [DefaultValue(LoggingLevel.Information)]
+        private LoggingLevel _level;
         [CanBeNull]
-        private readonly LogContext _context;
-
-        private readonly LoggingLevel _level = LoggingLevel.Information;
-
-        private readonly CombGuid _guid;
-
+        [ProtoMember(3)]
         private readonly string _messageFormat;
-
+        [ProtoMember(4)]
+        [DefaultValue(0)]
+        private readonly int _threadID;
+        [CanBeNull]
+        [ProtoMember(5)]
+        private readonly string _threadName;
+        [CanBeNull]
+        [ProtoMember(6)]
+        private readonly string _stackTrace;
+        [CanBeNull]
+        [ProtoMember(7)]
+        private readonly string _exceptionType;
+        [CanBeNull]
+        [ProtoMember(8)]
+        private readonly string _storedProcedure;
+        [ProtoMember(9)]
+        [DefaultValue(0)]
+        private readonly int _storedProcedureLine;
+        [CanBeNull]
+        [ProtoMember(10)]
         private readonly string[] _parameters;
+        [CanBeNull]
+        [ProtoMember(11)]
+        private readonly CombGuid[] _innerExceptionGuids;
+        [CanBeNull]
+        [ProtoMember(12)]
+        private readonly LogContext _context;
 
         [NotNull]
         [NonSerialized]
         private Lazy<string> _message;
 
-        private readonly string _stackTrace;
-
-        private readonly int _threadID;
-
-        private readonly string _threadName;
-
-        [CanBeNull]
-        private readonly string _exceptionType;
-
-        [CanBeNull]
-        private readonly CombGuid[] _innerExceptinoGuids;
-
-        private readonly string _storedProcedure;
-
-        private readonly int _storedProcedureLine;
+        [NotNull]
+        [NonSerialized]
+        private Lazy<string> _protoSchema;
 
         [OnDeserialized]
+        [ProtoAfterDeserialization]
         private void OnDeserialize(StreamingContext context)
         {
             _message =
@@ -98,6 +116,13 @@ namespace WebApplications.Utilities.Logging
                                 ? null
                                 : _parameters.Cast<object>().ToArray()),
                     LazyThreadSafetyMode.PublicationOnly);
+
+            _protoSchema = new Lazy<string>(
+                () => RuntimeTypeModel.Default.GetSchema(typeof(Log)),
+                LazyThreadSafetyMode.PublicationOnly);
+
+            // Fix bug when deserializing using proto-buffers!
+            if (_level == 0) _level = LoggingLevel.Information;
         }
 
         private Log()
@@ -117,6 +142,7 @@ namespace WebApplications.Utilities.Logging
         public Log([NotNull] IEnumerable<KeyValuePair<string, string>> dictionary)
             : this()
         {
+            Contract.Requires(dictionary != null);
             Dictionary<string, string> context = new Dictionary<string, string>();
             SortedDictionary<int, string> parameters = new SortedDictionary<int, string>();
             SortedDictionary<int, CombGuid> ieGuids = new SortedDictionary<int, CombGuid>();
@@ -211,7 +237,7 @@ namespace WebApplications.Utilities.Logging
             if (parameters.Count > 0)
                 _parameters = parameters.Values.ToArray();
             if (ieGuids.Count > 0)
-                _innerExceptinoGuids = ieGuids.Values.ToArray();
+                _innerExceptionGuids = ieGuids.Values.ToArray();
         }
 
         /// <summary>
@@ -319,7 +345,7 @@ namespace WebApplications.Utilities.Logging
 
             if (innerExceptions != null && innerExceptions.Length > 0)
             {
-                _innerExceptinoGuids = innerExceptions
+                _innerExceptionGuids = innerExceptions
                     .Select(e =>
                     {
                         LoggingException le = e as LoggingException;
@@ -340,6 +366,16 @@ namespace WebApplications.Utilities.Logging
             // Post log onto queue
             ReLog();
         }
+
+        /// <summary>
+        /// Gets the Protobuf schema (.proto) used for Protobuf serialization.
+        /// </summary>
+        /// <value>The proto schema.</value>
+        /// <remarks><para>See https://code.google.com/p/protobuf/.
+        /// </para></remarks>
+        [PublicAPI]
+        [NotNull]
+        public string ProtoSchema { get { return _protoSchema.Value; } }
 
         /// <summary>
         ///   A Guid used to uniquely identify a log item.
@@ -364,7 +400,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [PublicAPI]
         [CanBeNull]
-        public virtual string Message
+        public string Message
         {
             get { return _message.Value; }
         }
@@ -395,7 +431,7 @@ namespace WebApplications.Utilities.Logging
         /// <value>The inner exceptions unique identifiers.</value>
         [PublicAPI]
         [NotNull]
-        public IEnumerable<CombGuid> InnerExceptionGuids { get { return _innerExceptinoGuids ?? _emptyCombGuidArray; } }
+        public IEnumerable<CombGuid> InnerExceptionGuids { get { return _innerExceptionGuids ?? _emptyCombGuidArray; } }
 
         /// <summary>
         ///   The time stamp of when the log item was created.
@@ -698,15 +734,15 @@ namespace WebApplications.Utilities.Logging
                     case LogFormat.InnerException:
                         key = "Inner Exceptions";
 
-                        if ((_innerExceptinoGuids == null) ||
-                            (_innerExceptinoGuids.Length < 1))
+                        if ((_innerExceptionGuids == null) ||
+                            (_innerExceptionGuids.Length < 1))
                             value = null;
                         else
                         {
                             StringBuilder cv = new StringBuilder();
 
                             AddKVPs(cv, masterFormat, indent,
-                                _innerExceptinoGuids, 
+                                _innerExceptionGuids,
                                 g => "Exception",
                                 g => g.ToString(options ?? "D"));
 
@@ -822,9 +858,9 @@ namespace WebApplications.Utilities.Logging
             }
 
             count = 0;
-            if (_innerExceptinoGuids != null)
+            if (_innerExceptionGuids != null)
             {
-                foreach (CombGuid ieg in _innerExceptinoGuids)
+                foreach (CombGuid ieg in _innerExceptionGuids)
                     yield return new KeyValuePair<string, string>(InnerExceptionGuidsPrefix + count++, ieg.ToString());
             }
 
@@ -1054,7 +1090,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="values">The values.</param>
         /// <param name="keySelector">The key selector.</param>
         /// <param name="valueSelector">The value selector.</param>
-        private void AddKVPs<T>([NotNull] StringBuilder builder, MasterFormat masterFormat, [NotNull] string indent, 
+        private void AddKVPs<T>([NotNull] StringBuilder builder, MasterFormat masterFormat, [NotNull] string indent,
             [NotNull] IEnumerable<T> values, [NotNull] Func<T, string> keySelector, [CanBeNull] Func<T, string> valueSelector = null)
         {
             builder.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty);

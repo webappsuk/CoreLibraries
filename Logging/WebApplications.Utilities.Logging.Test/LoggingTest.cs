@@ -38,6 +38,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ProtoBuf;
+using ProtoBuf.Meta;
 using WebApplications.Testing;
 using WebApplications.Testing.Data;
 using WebApplications.Testing.Data.Exceptions;
@@ -231,15 +233,16 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public async Task TestDataContractSerialization()
         {
-            for (int m = 0; m < 5; m++)
-                Log.Add(new LogContext().Set("Test No", m), "Test Message {0} - {1}", m, Guid.NewGuid());
+            const int testCount = 5;
+
+            Log[] logs = new Log[testCount];
+            for (int m = 0; m < testCount; m++)
+                logs[m] = new Log(new LogContext().Set("Test No", m), null, LoggingLevel.Information, "Test Message {0} - {1}", m, Guid.NewGuid());
 
             await Log.Flush();
-            List<Log> logs = Log.AllCached.ToList();
-            Assert.IsNotNull(logs);
-            Assert.IsTrue(logs.Any(), "No logs found!");
-            Assert.IsTrue(logs.Any(l => l.MessageFormat == "Test Message {0} - {1}"), "No log with the message format found");
-            await Log.Flush();
+
+            CollectionAssert.AllItemsAreNotNull(logs);
+            Assert.IsTrue(logs.All(l => l.MessageFormat == "Test Message {0} - {1}"), "Logs contain incorrect message format.");
 
             DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Log>));
             IEnumerable<Log> logs2;
@@ -257,8 +260,43 @@ namespace WebApplications.Utilities.Logging.Test
             }
             Assert.IsNotNull(logs2);
             List<Log> result = logs2.ToList();
-            Assert.AreEqual(logs.Count, result.Count);
-            for (int i = 0; i < logs.Count; i++)
+            Assert.AreEqual(logs.Length, result.Count);
+            for (int i = 0; i < logs.Length; i++)
+                Assert.AreEqual(logs[i].ToString(), result[i].ToString());
+        }
+
+        [TestMethod]
+        public async Task TestProtoBufSerialization()
+        {
+            Trace.WriteLine(RuntimeTypeModel.Default.GetSchema(typeof(Log)));
+            const int testCount = 5;
+
+            Log[] logs = new Log[testCount];
+            for (int m = 0; m < testCount; m++)
+                logs[m] = new Log(new LogContext().Set("Test No", m), null, LoggingLevel.Information, "Test Message {0} - {1}", m, Guid.NewGuid());
+
+            await Log.Flush();
+
+            CollectionAssert.AllItemsAreNotNull(logs);
+            Assert.IsTrue(logs.All(l => l.MessageFormat == "Test Message {0} - {1}"), "Logs contain incorrect message format.");
+
+            DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Log>));
+            List<Log> logs2 = new List<Log>();
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                foreach (Log log in logs)
+                    Serializer.SerializeWithLengthPrefix(memoryStream, log, PrefixStyle.Base128);
+
+                Trace.WriteLine(string.Format("Serialized logs took up {0} bytes.", memoryStream.Position));
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                while (memoryStream.Position < memoryStream.Length)
+                    logs2.Add(Serializer.DeserializeWithLengthPrefix<Log>(memoryStream, PrefixStyle.Base128));
+            }
+            Assert.IsNotNull(logs2);
+            List<Log> result = logs2.ToList();
+            Assert.AreEqual(logs.Length, result.Count);
+            for (int i = 0; i < logs.Length; i++)
                 Assert.AreEqual(logs[i].ToString(), result[i].ToString());
         }
 
