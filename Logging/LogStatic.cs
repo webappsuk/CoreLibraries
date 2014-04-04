@@ -34,6 +34,8 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -240,6 +242,14 @@ namespace WebApplications.Utilities.Logging
             LogContext.ReserveKey("Log Stored Procedure Line", _logReservation);
 
         /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string IsTerminatingKey =
+            LogContext.ReserveKey("Is Terminating", _logReservation);
+
+        /// <summary>
         /// The logging assembly
         /// </summary>
         [NotNull] [NonSerialized] internal static readonly Assembly LoggingAssembly = typeof (Log).Assembly;
@@ -301,8 +311,9 @@ namespace WebApplications.Utilities.Logging
 
             ConfigurationSection<LoggingConfiguration>.Changed += (o, e) => LoadConfiguration();
 
-            // Flush logs on domain unload.
+            // Flush logs on domain unload and unhandled exceptions.
             AppDomain.CurrentDomain.DomainUnload += (s, e) => Cleanup();
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
             if (PerfCategory.HasAccess)
             {
@@ -874,6 +885,24 @@ namespace WebApplications.Utilities.Logging
                         TaskScheduler.Default)))
                 // We do support cancelling the wait though, this doesn't stop the actual writes occurring.
                 .WithCancellation(token);
+        }
+
+        /// <summary>
+        /// Called when an unhandled exception occurs..
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="UnhandledExceptionEventArgs"/> instance containing the event data.</param>
+        [HandleProcessCorruptedStateExceptions,SecurityCritical]
+        private static void OnUnhandledException([CanBeNull]object sender, [CanBeNull]UnhandledExceptionEventArgs e)
+        {
+            Exception exception = e.ExceptionObject as Exception;
+            Add(new LogContext().Set(_logReservation, IsTerminatingKey, e.IsTerminating), exception,
+                e.IsTerminating ? LoggingLevel.Critical : LoggingLevel.Error, "An unhandled exception has occured. See inner exception for details.");
+            
+            if (e.IsTerminating)
+                Cleanup();
+            else
+                Flush().Wait();
         }
 
         /// <summary>

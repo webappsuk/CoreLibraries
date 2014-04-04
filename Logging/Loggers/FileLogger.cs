@@ -145,8 +145,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             _directory = directory ?? DefaultDirectory;
             _fileNameFormat = fileNameFormat;
             _extension = extension ?? string.Empty;
-            _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, _extension);
-            Format = format;
+            _format = format;
+            _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, ref _extension, _format);
             Buffer = buffer;
             AutoFlush = autoFlush;
         }
@@ -164,7 +164,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 if (value == null) value = DefaultDirectory;
                 if (_directory == value) return;
-                _pathFormat = ValidatePathFormat(value, _fileNameFormat, _extension);
+                _pathFormat = ValidatePathFormat(value, _fileNameFormat, ref _extension, _format);
                 _directory = value;
                 CloseFile();
             }
@@ -182,7 +182,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 Contract.Requires(value != null);
                 if (_fileNameFormat == value) return;
-                _pathFormat = ValidatePathFormat(_directory, value, _extension);
+                _pathFormat = ValidatePathFormat(_directory, value, ref _extension, _format);
                 _fileNameFormat = value;
                 CloseFile();
             }
@@ -201,7 +201,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 if (value == null) value = string.Empty;
                 if (_extension == value) return;
-                _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, value);
+                _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, ref value, _format);
                 _extension = value;
                 CloseFile();
             }
@@ -259,6 +259,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 Contract.Requires(value != null);
                 if (_format == value) return;
                 _format = value;
+                _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, ref _extension, _format);
                 CloseFile();
             }
         }
@@ -301,11 +302,11 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="directory">The directory.</param>
         /// <param name="fileNameFormat">The format.</param>
         /// <param name="extension">The extension.</param>
+        /// <param name="format"></param>
         /// <returns>System.String.</returns>
         /// <exception cref="LoggingException"></exception>
         [NotNull]
-        private static string ValidatePathFormat([NotNull] string directory, [NotNull] string fileNameFormat,
-            [NotNull] string extension)
+        private static string ValidatePathFormat([NotNull] string directory, [NotNull] string fileNameFormat, [NotNull] ref string extension, [NotNull] string format)
         {
             Contract.Requires(directory != null);
             Contract.Requires(fileNameFormat != null);
@@ -334,7 +335,23 @@ namespace WebApplications.Utilities.Logging.Loggers
 
             if (string.IsNullOrWhiteSpace(extension))
             {
-                extension = string.Empty;
+                bool isXml = false, isJson = false;
+                LogFormat logFormat;
+                if (Enum.TryParse(format, true, out logFormat))
+                {
+                    if (logFormat.HasFlag(LogFormat.Xml))
+                        isXml = true;
+                    else if (logFormat.HasFlag(LogFormat.Json))
+                        isJson = true;
+                }
+                Contract.Assert(!(isXml && isJson));
+
+                if (isXml)
+                    extension = ".xml";
+                else if (isJson)
+                    extension = ".json";
+                else
+                    extension = ".log";
             }
             else
             {
@@ -473,6 +490,24 @@ namespace WebApplications.Utilities.Logging.Loggers
         private class LogFile : IDisposable
         {
             /// <summary>
+            /// The XML seek offset
+            /// </summary>
+            private static readonly int _xmlSeekOffset;
+
+            /// <summary>
+            /// The JSON seek offset
+            /// </summary>
+            private static readonly int _jsonSeekOffset;
+
+            static LogFile()
+            {
+                // Sets how far from the end of the stream to seek when writing out a new log
+                // It is -(length + 1), which is the same as ~length (bitwise not)
+                _xmlSeekOffset = ~("</Log></Logs>".Length + (Environment.NewLine.Length*2));
+                _jsonSeekOffset = ~(",".Length + (Environment.NewLine.Length*2));
+            }
+
+            /// <summary>
             /// The file name
             /// </summary>
             [NotNull]
@@ -517,15 +552,6 @@ namespace WebApplications.Utilities.Logging.Loggers
                         IsJson = true;
                 }
 
-                if (Path.GetExtension(fileName) == string.Empty)
-                {
-                    if (IsXml)
-                        fileName += ".xml";
-                    else if (IsJson)
-                        fileName += ".json";
-                    else
-                        fileName += ".log";
-                }
                 FileName = fileName;
                 _fileStream = File.Create(fileName, b, FileOptions.Asynchronous | FileOptions.SequentialScan);
 
@@ -571,12 +597,12 @@ namespace WebApplications.Utilities.Logging.Loggers
             public async Task Write([NotNull] Log log, CancellationToken token = default(CancellationToken))
             {
                 Contract.Requires(log != null);
-                string logStr = log.ToString(Format) + Environment.NewLine;
+                string logStr = log.ToString(Format);
                 Logs++;
 
                 if (IsXml)
                 {
-                    _fileStream.Seek(-18, SeekOrigin.End);
+                    _fileStream.Seek(_xmlSeekOffset, SeekOrigin.End);
                     await Write(logStr, token);
                     await WriteLine("</Logs>", token);
                     return;
@@ -584,7 +610,7 @@ namespace WebApplications.Utilities.Logging.Loggers
 
                 if (IsJson)
                 {
-                    _fileStream.Seek(-8, SeekOrigin.End);
+                    _fileStream.Seek(_jsonSeekOffset, SeekOrigin.End);
                     if (Logs > 1)
                         await WriteLine(",", token);
 
@@ -593,7 +619,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                     return;
                 }
 
-                await Write(logStr, token);
+                await WriteLine(logStr, token);
             }
 
             /// <summary>

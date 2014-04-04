@@ -80,7 +80,7 @@ namespace WebApplications.Utilities.Logging
         private readonly string _exceptionType;
 
         [CanBeNull]
-        private readonly CombGuid[] _innerExceptinoGuids;
+        private readonly CombGuid[] _innerExceptionGuids;
 
         private readonly string _storedProcedure;
 
@@ -211,7 +211,7 @@ namespace WebApplications.Utilities.Logging
             if (parameters.Count > 0)
                 _parameters = parameters.Values.ToArray();
             if (ieGuids.Count > 0)
-                _innerExceptinoGuids = ieGuids.Values.ToArray();
+                _innerExceptionGuids = ieGuids.Values.ToArray();
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace WebApplications.Utilities.Logging
 
             if (innerExceptions != null && innerExceptions.Length > 0)
             {
-                _innerExceptinoGuids = innerExceptions
+                _innerExceptionGuids = innerExceptions
                     .Select(e =>
                     {
                         LoggingException le = e as LoggingException;
@@ -395,7 +395,7 @@ namespace WebApplications.Utilities.Logging
         /// <value>The inner exceptions unique identifiers.</value>
         [PublicAPI]
         [NotNull]
-        public IEnumerable<CombGuid> InnerExceptionGuids { get { return _innerExceptinoGuids ?? _emptyCombGuidArray; } }
+        public IEnumerable<CombGuid> InnerExceptionGuids { get { return _innerExceptionGuids ?? _emptyCombGuidArray; } }
 
         /// <summary>
         ///   The time stamp of when the log item was created.
@@ -696,17 +696,21 @@ namespace WebApplications.Utilities.Logging
                             value += " at line " + _storedProcedureLine.ToString(options ?? "D");
                         break;
                     case LogFormat.InnerException:
-                        key = "Inner Exceptions";
+                        key = "Inner Exception";
 
-                        if ((_innerExceptinoGuids == null) ||
-                            (_innerExceptinoGuids.Length < 1))
+                        if ((_innerExceptionGuids == null) ||
+                            (_innerExceptionGuids.Length < 1))
                             value = null;
+                        else if (_innerExceptionGuids.Length == 1)
+                            value = _innerExceptionGuids[0].ToString(options ?? "D");
                         else
                         {
+                            key = "Inner Exceptions";
+
                             StringBuilder cv = new StringBuilder();
 
                             AddKVPs(cv, masterFormat, indent,
-                                _innerExceptinoGuids, 
+                                _innerExceptionGuids,
                                 g => "Exception",
                                 g => g.ToString(options ?? "D"));
 
@@ -780,7 +784,7 @@ namespace WebApplications.Utilities.Logging
                         builder.AppendLine("</Log>");
                         break;
                     case MasterFormat.JSON:
-                        builder.AppendLine("}");
+                        builder.Append("}");
                         break;
                     default:
                         builder.AppendLine(Header);
@@ -822,9 +826,9 @@ namespace WebApplications.Utilities.Logging
             }
 
             count = 0;
-            if (_innerExceptinoGuids != null)
+            if (_innerExceptionGuids != null)
             {
-                foreach (CombGuid ieg in _innerExceptinoGuids)
+                foreach (CombGuid ieg in _innerExceptionGuids)
                     yield return new KeyValuePair<string, string>(InnerExceptionGuidsPrefix + count++, ieg.ToString());
             }
 
@@ -1123,7 +1127,7 @@ namespace WebApplications.Utilities.Logging
                     return;
                 default:
                     builder.Append(key);
-                    int len = key.Length;
+                    int len = key.Length + indent.Length;
                     if (len < 17)
                         builder.Append(' ', 17 - len);
                     builder.Append(": ");

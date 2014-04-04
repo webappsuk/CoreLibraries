@@ -137,13 +137,6 @@ namespace WebApplications.Utilities.Logging.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(LoggingException))]
-        public void TestPartialLogRequiresGUID()
-        {
-            Log partialLog = new Log(new List<KeyValuePair<string, string>>());
-        }
-
-        [TestMethod]
         public void TestToFromDictionary()
         {
             Log initialLog = new Log(_logDictionary);
