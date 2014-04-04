@@ -52,14 +52,13 @@ namespace WebApplications.Utilities.Logging
     [PublicAPI]
     public partial class Log : IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
-
         /// <summary>
         /// The context (holds all log data).
         /// </summary>
         [CanBeNull]
         private readonly LogContext _context;
 
-        private readonly LoggingLevel _level;
+        private readonly LoggingLevel _level = LoggingLevel.Information;
 
         private readonly CombGuid _guid;
 
@@ -68,7 +67,8 @@ namespace WebApplications.Utilities.Logging
         private readonly string[] _parameters;
 
         [NotNull]
-        private readonly Lazy<string> _message;
+        [NonSerialized]
+        private Lazy<string> _message;
 
         private readonly string _stackTrace;
 
@@ -86,7 +86,8 @@ namespace WebApplications.Utilities.Logging
 
         private readonly int _storedProcedureLine;
 
-        private Log()
+        [OnDeserialized]
+        private void OnDeserialize(StreamingContext context)
         {
             _message =
                 new Lazy<string>(
@@ -97,6 +98,11 @@ namespace WebApplications.Utilities.Logging
                                 ? null
                                 : _parameters.Cast<object>().ToArray()),
                     LazyThreadSafetyMode.PublicationOnly);
+        }
+
+        private Log()
+        {
+            OnDeserialize(default(StreamingContext));
         }
 
         /// <summary>
@@ -114,6 +120,8 @@ namespace WebApplications.Utilities.Logging
             Dictionary<string, string> context = new Dictionary<string, string>();
             SortedDictionary<int, string> parameters = new SortedDictionary<int, string>();
             SortedDictionary<int, CombGuid> ieGuids = new SortedDictionary<int, CombGuid>();
+            int maxParamIndex = 0;
+            int maxIeIndex = 0;
 
             foreach (KeyValuePair<string, string> kvp in dictionary)
             {
@@ -133,59 +141,64 @@ namespace WebApplications.Utilities.Logging
                     _level = Enum.TryParse(value, out level) ? level : LoggingLevel.Information;
                     continue;
                 }
-                if (string.Equals(key, GuidKey))
+                if (string.Equals(key, MessageFormatKey))
                 {
-
+                    _messageFormat = value;
                     continue;
                 }
-                if (string.Equals(key, GuidKey))
+                if (string.Equals(key, ExceptionTypeFullNameKey))
                 {
-
+                    _exceptionType = value;
                     continue;
                 }
-                if (string.Equals(key, GuidKey))
+                if (string.Equals(key, StackTraceKey))
                 {
-
+                    _stackTrace = value;
                     continue;
                 }
-                if (string.Equals(key, GuidKey))
+                if (string.Equals(key, ThreadIDKey))
                 {
-
+                    int threadId;
+                    _threadID = int.TryParse(value, out threadId) ? threadId : -1;
                     continue;
                 }
-                if (string.Equals(key, GuidKey))
+                if (string.Equals(key, ThreadNameKey))
                 {
-
+                    _threadName = value;
                     continue;
                 }
-                if (string.Equals(key, GuidKey))
+                if (string.Equals(key, StoredProcedureKey))
                 {
-
+                    _storedProcedure = value;
                     continue;
                 }
-                if (string.Equals(key, GuidKey))
+                if (string.Equals(key, StoredProcedureLineKey))
                 {
-
-                    continue;
-                }
-                if (string.Equals(key, GuidKey))
-                {
-
-                    continue;
-                }
-                if (string.Equals(key, GuidKey))
-                {
-
+                    int spline;
+                    _storedProcedureLine = int.TryParse(value, out spline) ? spline : 0;
                     continue;
                 }
                 if (key.StartsWith(ParameterPrefix))
                 {
+                    int index;
+                    if (!int.TryParse(key.Substring(ParameterPrefix.Length), out index))
+                        index = ++maxParamIndex;
+                    else if (index > maxParamIndex)
+                        maxParamIndex = index;
 
+                    parameters.Add(index, value);
                     continue;
                 }
                 if (key.StartsWith(InnerExceptionGuidsPrefix))
                 {
+                    int index;
+                    if (!int.TryParse(key.Substring(InnerExceptionGuidsPrefix.Length), out index))
+                        index = ++maxIeIndex;
+                    else if (index > maxIeIndex)
+                        maxIeIndex = index;
 
+                    CombGuid guid;
+                    ieGuids.Add(index, CombGuid.TryParse(value, out guid) ? guid : CombGuid.Empty);
                     continue;
                 }
 
@@ -674,59 +687,30 @@ namespace WebApplications.Utilities.Logging
                         break;
                     case LogFormat.Exception:
                         key = "Exception Type";
-                        value = Get(ExceptionTypeFullNameKey) ?? null;
+                        value = _exceptionType;
                         break;
                     case LogFormat.SQLException:
                         key = "Stored Procedure";
-                        value = Get(StoredProcedureKey);
+                        value = _storedProcedure;
                         if (value != null)
-                        {
-                            string sline = Get(StoredProcedureLineKey);
-                            int sl;
-                            if (!String.IsNullOrWhiteSpace(sline) &&
-                                (Int32.TryParse(sline, out sl)))
-                                value += " at line " + sl.ToString();
-                        }
+                            value += " at line " + _storedProcedureLine.ToString(options ?? "D");
                         break;
                     case LogFormat.InnerException:
-                        value = Get(InnerExceptionGuidKey);
-                        if (value != null)
-                            key = "Inner Exception";
+                        key = "Inner Exceptions";
+
+                        if ((_innerExceptinoGuids == null) ||
+                            (_innerExceptinoGuids.Length < 1))
+                            value = null;
                         else
                         {
-                            KeyValuePair<string, string>[] inner =
-                                this.Where(kvp => kvp.Key.StartsWith(InnerExceptionGuidsPrefix)).ToArray();
+                            StringBuilder cv = new StringBuilder();
 
-                            key = "Inner Exceptions";
+                            AddKVPs(cv, masterFormat, indent,
+                                _innerExceptinoGuids, 
+                                g => "Exception",
+                                g => g.ToString(options ?? "D"));
 
-                            if (inner.Length < 1)
-                                value = null;
-                            else
-                            {
-                                StringBuilder cv = new StringBuilder();
-                                cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty);
-
-                                string i = indent + "   ";
-                                bool cvf = true;
-                                foreach (KeyValuePair<string, string> kvp in inner)
-                                {
-                                    if (!cvf)
-                                        cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
-                                    cvf = false;
-                                    AddKVP(cv, masterFormat, i, kvp.Key.Substring(LogKeyPrefix.Length), kvp.Value);
-                                }
-                                switch (masterFormat)
-                                {
-                                    case MasterFormat.Xml:
-                                        cv.AppendLine();
-                                        cv.Append(indent);
-                                        break;
-                                    case MasterFormat.JSON:
-                                        cv.Append("}");
-                                        break;
-                                }
-                                value = cv.ToString();
-                            }
+                            value = cv.ToString();
                         }
                         break;
                     case LogFormat.StackTrace:
@@ -735,8 +719,7 @@ namespace WebApplications.Utilities.Logging
                         break;
                     case LogFormat.ThreadID:
                         key = "Thread ID";
-                        int threadID = ThreadID;
-                        value = threadID < 0 ? null : threadID.ToString(options ?? "G");
+                        value = _threadID < 0 ? null : _threadID.ToString(options ?? "G");
                         break;
                     case LogFormat.ThreadName:
                         key = "Thread Name";
@@ -751,36 +734,20 @@ namespace WebApplications.Utilities.Logging
                         value = ApplicationGuid.ToString(options ?? "D");
                         break;
                     case LogFormat.Context:
-                        KeyValuePair<string, string>[] remainingContext =
-                            this.Where(kvp => !kvp.Key.StartsWith(LogKeyPrefix)).ToArray();
                         key = "Context";
 
-                        if (remainingContext.Length < 1)
+                        if ((_context == null) ||
+                            (_context.Count < 1))
                             value = null;
                         else
                         {
                             StringBuilder cv = new StringBuilder();
-                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty);
 
-                            string i = indent + "   ";
-                            bool cvf = true;
-                            foreach (KeyValuePair<string, string> kvp in remainingContext)
-                            {
-                                if (!cvf)
-                                    cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
-                                cvf = false;
-                                AddKVP(cv, masterFormat, i, kvp.Key, kvp.Value);
-                            }
-                            switch (masterFormat)
-                            {
-                                case MasterFormat.Xml:
-                                    cv.AppendLine();
-                                    cv.Append(indent);
-                                    break;
-                                case MasterFormat.JSON:
-                                    cv.Append("}");
-                                    break;
-                            }
+                            AddKVPs(cv, masterFormat, indent,
+                                _context,
+                                kvp => kvp.Key,
+                                kvp => kvp.Value);
+
                             value = cv.ToString();
                         }
                         break;
@@ -861,7 +828,6 @@ namespace WebApplications.Utilities.Logging
                     yield return new KeyValuePair<string, string>(InnerExceptionGuidsPrefix + count++, ieg.ToString());
             }
 
-            count = 0;
             if (_context != null)
             {
                 foreach (KeyValuePair<string, string> kvp in _context)
@@ -1077,6 +1043,44 @@ namespace WebApplications.Utilities.Logging
         {
             Contract.Requires(prefix != null);
             return this.Where(kvp => kvp.Key.StartsWith(prefix));
+        }
+
+        /// <summary>
+        /// Adds multiple values to the <paramref name="builder"/> given.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="masterFormat">The master format.</param>
+        /// <param name="indent">The indent.</param>
+        /// <param name="values">The values.</param>
+        /// <param name="keySelector">The key selector.</param>
+        /// <param name="valueSelector">The value selector.</param>
+        private void AddKVPs<T>([NotNull] StringBuilder builder, MasterFormat masterFormat, [NotNull] string indent, 
+            [NotNull] IEnumerable<T> values, [NotNull] Func<T, string> keySelector, [CanBeNull] Func<T, string> valueSelector = null)
+        {
+            builder.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty);
+
+            string i = indent + "   ";
+            bool cvf = true;
+            foreach (T value in values)
+            {
+                Contract.Assert(value != null);
+                if (!cvf)
+                    builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
+                cvf = false;
+                // ReSharper disable once AssignNullToNotNullAttribute
+                AddKVP(builder, masterFormat, i, keySelector(value), valueSelector == null ? value.ToString() : valueSelector(value));
+            }
+
+            switch (masterFormat)
+            {
+                case MasterFormat.Xml:
+                    builder.AppendLine();
+                    builder.Append(indent);
+                    break;
+                case MasterFormat.JSON:
+                    builder.Append("}");
+                    break;
+            }
         }
 
         /// <summary>

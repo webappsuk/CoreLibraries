@@ -30,11 +30,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Testing.Data;
@@ -46,6 +48,39 @@ namespace WebApplications.Utilities.Logging.Test
     [TestClass]
     public class LoggingTests : TestBase
     {
+        [NotNull]
+        private static readonly Dictionary<string, string> _logDictionary;
+
+        static LoggingTests()
+        {
+            Exception ex;
+            try
+            { throw new Exception(); }
+            catch (Exception e)
+            { ex = e; }
+
+            _logDictionary = new Dictionary<string, string>
+            {
+                {Log.GuidKey, CombGuid.NewCombGuid().ToString()},
+                {Log.LevelKey, LoggingLevel.Emergency.ToString()},
+                {Log.ExceptionTypeFullNameKey, "TestException"},
+                {Log.InnerExceptionGuidsPrefix + 0, CombGuid.NewCombGuid().ToString()},
+                {Log.InnerExceptionGuidsPrefix + 1, CombGuid.NewCombGuid().ToString()},
+                {Log.InnerExceptionGuidsPrefix + 2, CombGuid.NewCombGuid().ToString()},
+                {Log.MessageFormatKey, "A test log: {0}, {1}, {2}"},
+                {Log.ParameterPrefix + 0, "Parameter 1"},
+                {Log.ParameterPrefix + 1, "Parameter 2"},
+                {Log.ParameterPrefix + 2, "Parameter 3"},
+                {Log.StackTraceKey, ex.StackTrace},
+                {Log.StoredProcedureKey, "spTestLog"},
+                {Log.StoredProcedureLineKey, "123"},
+                {Log.ThreadIDKey, "343"},
+                {Log.ThreadNameKey, "Log Test Thread"},
+                {"Some key", "Some value"},
+                {"Some other key", "Some other value"},
+            };
+        }
+
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
@@ -109,6 +144,37 @@ namespace WebApplications.Utilities.Logging.Test
         }
 
         [TestMethod]
+        public void TestToFromDictionary()
+        {
+            Log initialLog = new Log(_logDictionary);
+            Trace.WriteLine(initialLog.ToString(LogFormat.All));
+            Trace.WriteLine(string.Empty);
+
+            Dictionary<string, string> resultDictionary = initialLog.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            Log resultLog = new Log(initialLog);
+            Trace.WriteLine(resultLog.ToString(LogFormat.All));
+            Trace.WriteLine(string.Empty);
+
+            Log.Flush().Wait();
+            CollectionAssert.AreEquivalent(_logDictionary, resultDictionary);
+        }
+
+        [TestMethod]
+        public void TestGet()
+        {
+            Log log = new Log(_logDictionary);
+            Log.Flush().Wait();
+
+            foreach (KeyValuePair<string, string> kvp in _logDictionary)
+            {
+                Contract.Assert(kvp.Key != null);
+                Assert.AreEqual(kvp.Value, log.Get(kvp.Key), "The value for the key {0} did not match the expected", kvp.Key);
+                Assert.AreEqual(kvp.Value, log[kvp.Key], "The value for the key {0} did not match the expected", kvp.Key);
+            }
+        }
+
+        [TestMethod]
         public void TestExceptions()
         {
             var t = new TestException();
@@ -144,9 +210,9 @@ namespace WebApplications.Utilities.Logging.Test
                     try
                     {
                         throw new AggregateException("Exception 3",
-                            new object[3].Select((o,i) =>
+                            new object[3].Select((o, i) =>
                             {
-                                try { throw new Exception("Exception 4." + (i+1)); }
+                                try { throw new Exception("Exception 4." + (i + 1)); }
                                 catch (Exception e) { return e; }
                             }));
                     }
@@ -157,7 +223,7 @@ namespace WebApplications.Utilities.Logging.Test
                 { throw new Exception("Exception 1", e); }
             }
             catch (Exception e)
-            { Log.Add(e); }
+            { Log.Add(e, LoggingLevel.Information, "An exception occured!"); }
 
             await Log.Flush();
         }
@@ -166,7 +232,7 @@ namespace WebApplications.Utilities.Logging.Test
         public async Task TestDataContractSerialization()
         {
             for (int m = 0; m < 5; m++)
-                Log.Add("Test Message {0} - {1}", m, Guid.NewGuid());
+                Log.Add(new LogContext().Set("Test No", m), "Test Message {0} - {1}", m, Guid.NewGuid());
 
             await Log.Flush();
             List<Log> logs = Log.AllCached.ToList();
