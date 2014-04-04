@@ -51,7 +51,7 @@ namespace WebApplications.Utilities.Logging
     /// <summary>
     ///   Defines <see langword="static"/> members of the <see cref="Log"/> class.
     /// </summary>
-    public partial class Log
+    public sealed partial class Log
     {
         /// <summary>
         /// The Header/Footer string

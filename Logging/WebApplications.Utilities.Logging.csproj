@@ -117,6 +117,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -162,6 +165,7 @@
     <Compile Include="Configuration\LoggingConfiguration.cs" />
     <Compile Include="LogFormat.cs" />
     <Compile Include="Loggers\ConsoleLogger.cs" />
+    <Compile Include="Loggers\GlobalLogger.cs" />
     <Compile Include="Loggers\LoggerBase.cs" />
     <Compile Include="Loggers\SqlLogger.cs" />
     <Compile Include="LoggingExtensions.cs" />

@@ -26,53 +26,80 @@
 #endregion
 
 using System.ComponentModel;
+using System.Runtime.Serialization;
+using ProtoBuf;
 
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
     ///   The severity of a Log Entry.
     /// </summary>
+    [ProtoContract]
     public enum LoggingLevel : byte
     {
         /// <summary>
         ///   Used for critical, unrecoverable errors that can cause damage. The system should be stopped immediately.
         /// </summary>
-        [Description("Used for critical, unrecoverable errors that can cause damage.")] Emergency = 1 << 7,
+        [Description("Used for critical, unrecoverable errors that can cause damage.")]
+        [EnumMember]
+        [ProtoEnum(Name = "Emergency", Value = 1 << 7)]
+        Emergency = 1 << 7,
 
         /// <summary>
         ///   Used for critical, unrecoverable errors that don't cause damage.
         ///   You should stop the system and repair the error, but it may be capable of continuing in some capacity.
         /// </summary>
-        [Description("Used for critical, unrecoverable errors that don't cause damage.")] Critical = 1 << 6,
+        [Description("Used for critical, unrecoverable errors that don't cause damage.")]
+        [EnumMember]
+        [ProtoEnum(Name = "Critical", Value = 1 << 6)]
+        Critical = 1 << 6,
 
         /// <summary>
         ///   Used for errors.
         /// </summary>
-        [Description("Used for errors.")] Error = 1 << 5,
+        [Description("Used for errors.")]
+        [EnumMember]
+        [ProtoEnum(Name = "Error", Value = 1 << 5)]
+        Error = 1 << 5,
 
         /// <summary>
         ///   Used to indicate potential problems that should be addressed.
         /// </summary>
-        [Description("Used to indicate potential problems that should be addressed.")] Warning = 1 << 4,
+        [Description("Used to indicate potential problems that should be addressed.")]
+        [EnumMember]
+        [ProtoEnum(Name = "Warning", Value = 1 << 4)]
+        Warning = 1 << 4,
 
         /// <summary>
         ///   Used by system to notify key events.
         /// </summary>
-        [Description("Used by system to notify key events.")] SystemNotification = 1 << 3,
+        [Description("Used by system to notify key events.")]
+        [EnumMember]
+        [ProtoEnum(Name = "SystemNotification", Value = 1 << 3)]
+        SystemNotification = 1 << 3,
 
         /// <summary>
         ///   Used by modules to notify key events.
         /// </summary>
-        [Description("Used by modules to notify key events.")] Notification = 1 << 2,
+        [Description("Used by modules to notify key events.")]
+        [EnumMember]
+        [ProtoEnum(Name = "Notification", Value = 1 << 2)]
+        Notification = 1 << 2,
 
         /// <summary>
         ///   Informational use.
         /// </summary>
-        [Description("Informational use.")] Information = 1 << 1,
+        [Description("Informational use.")]
+        [EnumMember]
+        [ProtoEnum(Name = "Information", Value = 1 << 1)]
+        Information = 1 << 1,
 
         /// <summary>
         ///   Debugging information.
         /// </summary>
-        [Description("Debugging information.")] Debugging = 1 << 0
+        [Description("Debugging information.")]
+        [EnumMember]
+        [ProtoEnum(Name = "Debugging", Value = 1 << 0)]
+        Debugging = 1 << 0
     }
 }
