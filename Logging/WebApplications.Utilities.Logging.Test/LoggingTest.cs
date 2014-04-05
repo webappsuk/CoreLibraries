@@ -31,6 +31,7 @@ using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -230,7 +231,7 @@ namespace WebApplications.Utilities.Logging.Test
 
             Log[] logs = new Log[testCount];
             for (int m = 0; m < testCount; m++)
-                logs[m] = new Log(new LogContext().Set("Test No", m), null, LoggingLevel.Information, "Test Message {0} - {1}", m, Guid.NewGuid());
+                logs[m] = new Log(new LogContext().Set("Test No", m), LoggingLevel.Information,"Test Message {0} - {1}", m, Guid.NewGuid());
 
             await Log.Flush();
 
@@ -291,6 +292,16 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.AreEqual(logs.Length, result.Count);
             for (int i = 0; i < logs.Length; i++)
                 Assert.AreEqual(logs[i].ToString(), result[i].ToString());
+        }
+
+        [TestMethod]
+        public void TestResource()
+        {
+            Log log = new Log(() => Resources.TestString, "p0");
+            Assert.AreEqual(typeof(Resources).FullName, log.ResourceNamespace);
+            Assert.AreEqual("TestString", log.Tag);
+            Assert.AreEqual(CultureInfo.CurrentCulture, log.MessageCulture);
+            Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.Message);
         }
 
         [TestCleanup]

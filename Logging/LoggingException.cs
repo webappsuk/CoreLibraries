@@ -69,7 +69,7 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
 
             // Log the exception
-            Log = new Log(null, this, LoggingLevel.Error, message, parameters);
+            Log = new Log(LoggingLevel.Error, message, parameters);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -119,7 +119,7 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
 
             // Log the exception
-            Log = new Log(null, this, level, message, parameters);
+            Log = new Log(this, level, message, parameters);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -167,7 +167,7 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(exception != null, Resources.LoggingException_InnerExceptionCannotBeNull);
 
             // Log the exception
-            Log = new Log(null, this, level, exception.Message);
+            Log = new Log(this, level, exception.Message);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -194,7 +194,7 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
 
             // Log the exception
-            Log = new Log(null, this, LoggingLevel.Error, message, parameters);
+            Log = new Log(this, LoggingLevel.Error, message, parameters);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -223,7 +223,7 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
 
             // Log the exception
-            Log = new Log(null, this, level, message, parameters);
+            Log = new Log(this, level, message, parameters);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
