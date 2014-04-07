@@ -1140,6 +1140,7 @@ namespace WebApplications.Utilities.Logging
             {
                 string key;
                 string value;
+                bool escaped = false;
 
                 // This is a single value format, just output the value directly
                 switch (flag)
@@ -1193,15 +1194,49 @@ namespace WebApplications.Utilities.Logging
 
                             StringBuilder cv = new StringBuilder();
 
-                            AddKVPs(
-                                cv,
-                                masterFormat,
-                                indent,
-                                _innerExceptionGuids,
-                                g => "Exception",
-                                g => g.ToString(options ?? "D"));
+                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "[" : String.Empty);
 
+                            string i = indent + "   ";
+                            bool cvf = true;
+                            foreach (CombGuid ieg in _innerExceptionGuids)
+                            {
+                                if (!cvf)
+                                    cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
+                                cvf = false;
+
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                if (masterFormat == MasterFormat.JSON)
+                                {
+                                    // Write out as array
+                                    cv.Append(i)
+                                        .Append('"')
+                                        .Append(ieg.ToString(options ?? "D"))
+                                        .Append('"');
+                                }
+                                else
+                                    AddKVP(
+                                        cv,
+                                        masterFormat,
+                                        i,
+                                        "Inner Exception",
+                                        ieg.ToString(options ?? "D"));
+                            }
+
+                            switch (masterFormat)
+                            {
+                                case MasterFormat.Xml:
+                                    cv.AppendLine()
+                                        .Append(indent);
+                                    break;
+                                case MasterFormat.JSON:
+                                    cv.AppendLine()
+                                        .Append(indent)
+                                        .Append("]");
+                                    break;
+                            }
+                            
                             value = cv.ToString();
+                            escaped = true;
                         }
                         break;
                     case LogFormat.StackTrace:
@@ -1234,15 +1269,41 @@ namespace WebApplications.Utilities.Logging
                         {
                             StringBuilder cv = new StringBuilder();
 
-                            AddKVPs(
-                                cv,
-                                masterFormat,
-                                indent,
-                                _context,
-                                kvp => kvp.Key,
-                                kvp => kvp.Value);
+                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty);
+
+                            string i = indent + "   ";
+                            bool cvf = true;
+                            foreach (KeyValuePair<string, string> kvp in (IEnumerable<KeyValuePair<string, string>>) _context)
+                            {
+                                Contract.Assert(kvp.Key != null);
+                                if (!cvf)
+                                    cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
+                                cvf = false;
+
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                AddKVP(
+                                    cv,
+                                    masterFormat,
+                                    i,
+                                    kvp.Key,
+                                    kvp.Value);
+                            }
+
+                            switch (masterFormat)
+                            {
+                                case MasterFormat.Xml:
+                                    cv.AppendLine()
+                                        .Append(indent);
+                                    break;
+                                case MasterFormat.JSON:
+                                    cv.AppendLine()
+                                        .Append(indent)
+                                        .Append("]");
+                                    break;
+                            }
 
                             value = cv.ToString();
+                            escaped = true;
                         }
                         break;
 
@@ -1258,7 +1319,7 @@ namespace WebApplications.Utilities.Logging
                     if (!first)
                         builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
 
-                    AddKVP(builder, masterFormat, indent, key, value, flag == LogFormat.Context);
+                    AddKVP(builder, masterFormat, indent, key, value, escaped);
 
                     first = false;
                 }
@@ -1537,54 +1598,6 @@ namespace WebApplications.Utilities.Logging
         {
             Contract.Requires(prefix != null);
             return this.Where(kvp => kvp.Key.StartsWith(prefix));
-        }
-
-        /// <summary>
-        /// Adds multiple values to the <paramref name="builder"/> given.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="masterFormat">The master format.</param>
-        /// <param name="indent">The indent.</param>
-        /// <param name="values">The values.</param>
-        /// <param name="keySelector">The key selector.</param>
-        /// <param name="valueSelector">The value selector.</param>
-        private void AddKVPs<T>(
-            [NotNull] StringBuilder builder,
-            MasterFormat masterFormat,
-            [NotNull] string indent,
-            [NotNull] IEnumerable<T> values,
-            [NotNull] Func<T, string> keySelector,
-            [CanBeNull] Func<T, string> valueSelector = null)
-        {
-            builder.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty);
-
-            string i = indent + "   ";
-            bool cvf = true;
-            foreach (T value in values)
-            {
-                Contract.Assert(value != null);
-                if (!cvf)
-                    builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
-                cvf = false;
-                // ReSharper disable once AssignNullToNotNullAttribute
-                AddKVP(
-                    builder,
-                    masterFormat,
-                    i,
-                    keySelector(value),
-                    valueSelector == null ? value.ToString() : valueSelector(value));
-            }
-
-            switch (masterFormat)
-            {
-                case MasterFormat.Xml:
-                    builder.AppendLine();
-                    builder.Append(indent);
-                    break;
-                case MasterFormat.JSON:
-                    builder.Append("}");
-                    break;
-            }
         }
 
         /// <summary>
