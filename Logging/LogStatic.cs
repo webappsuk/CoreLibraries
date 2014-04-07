@@ -69,6 +69,13 @@ namespace WebApplications.Utilities.Logging
         private static readonly PerfCounter _perfCounterNewItem;
 
         /// <summary>
+        /// Holds all resource types seen by the logger.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        private static readonly ConcurrentDictionary<string, Type> _resourceTypes = new ConcurrentDictionary<string, Type>();
+
+        /// <summary>
         /// The exception performance counter.
         /// </summary>
         [NotNull]
@@ -192,6 +199,14 @@ namespace WebApplications.Utilities.Logging
         [NonSerialized]
         public static readonly string MessageFormatKey =
             LogContext.ReserveKey("Log Message Format", _logReservation);
+        
+        /// <summary>
+        /// Reserved context key.
+        /// </summary>
+        [NotNull]
+        [NonSerialized]
+        public static readonly string ResourcePropertyKey =
+            LogContext.ReserveKey("Log Resource Property", _logReservation);
 
         /// <summary>
         /// Reserved context key.
@@ -364,6 +379,18 @@ namespace WebApplications.Utilities.Logging
                 Contract.Assert(_entryAssembly.Value != null);
                 return _entryAssembly.Value;
             }
+        }
+
+        /// <summary>
+        /// Registers the type for resource retrieval.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        [PublicAPI]
+        public static void RegisterResourceType([NotNull] Type type)
+        {
+            Contract.Requires(type != null);
+            Contract.Requires(type.FullName != null);
+            _resourceTypes.AddOrUpdate(type.FullName, type, (n, e) => type);
         }
 
         /// <summary>

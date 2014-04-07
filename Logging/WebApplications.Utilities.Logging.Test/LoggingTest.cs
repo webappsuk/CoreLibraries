@@ -267,12 +267,12 @@ namespace WebApplications.Utilities.Logging.Test
 
             Log[] logs = new Log[testCount];
             for (int m = 0; m < testCount; m++)
-                logs[m] = new Log(new LogContext().Set("Test No", m), null, LoggingLevel.Information, "Test Message {0} - {1}", m, Guid.NewGuid());
+                logs[m] = new Log(new LogContext().Set("Test No", m), null, LoggingLevel.Information, () => Resources.TestString, m, Guid.NewGuid());
 
             await Log.Flush();
 
             CollectionAssert.AllItemsAreNotNull(logs);
-            Assert.IsTrue(logs.All(l => l.MessageFormat == "Test Message {0} - {1}"), "Logs contain incorrect message format.");
+            Assert.IsTrue(logs.All(l => l.MessageFormat == Resources.TestString), "Logs contain incorrect message format.");
 
             DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Log>));
             List<Log> logs2 = new List<Log>();
@@ -298,9 +298,8 @@ namespace WebApplications.Utilities.Logging.Test
         public void TestResource()
         {
             Log log = new Log(() => Resources.TestString, "p0");
-            Assert.AreEqual(typeof(Resources).FullName, log.ResourceNamespace);
-            Assert.AreEqual("TestString", log.Tag);
-            Assert.AreEqual(CultureInfo.CurrentCulture, log.MessageCulture);
+            Assert.AreEqual(typeof(Resources).FullName +".TestString", log.ResourceProperty);
+            Assert.AreEqual(CultureInfo.CurrentCulture, log.Culture);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.Message);
         }
 
