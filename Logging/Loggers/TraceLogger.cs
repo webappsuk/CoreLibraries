@@ -53,7 +53,9 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="name">The logger name.</param>
         /// <param name="validLevels">The valid log levels.</param>
         /// <param name="format">The format.</param>
-        public TraceLogger([NotNull] string name, [NotNull] string format = DefaultFormat,
+        public TraceLogger(
+            [NotNull] string name,
+            [NotNull] string format = DefaultFormat,
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, false, validLevels)
         {

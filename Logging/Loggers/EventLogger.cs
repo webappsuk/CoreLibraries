@@ -50,6 +50,7 @@ namespace WebApplications.Utilities.Logging.Loggers
 
         [NotNull]
         private string _eventLog;
+
         [NotNull]
         private string _machineName;
 
@@ -148,7 +149,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             else if (source.Length > 254)
                 source = source.Substring(0, 254);
 
-            EventLog eventLog = new EventLog { Source = source, MachineName = MachineName, Log = EventLog };
+            EventLog eventLog = new EventLog {Source = source, MachineName = MachineName, Log = EventLog};
             string format = Format;
             foreach (Log log in logs)
             {
@@ -192,9 +193,9 @@ namespace WebApplications.Utilities.Logging.Loggers
                 }
 
                 // Create an id based on time of day.
-                int id = (int)(log.TimeStamp.TimeOfDay.TotalSeconds / 1.32);
+                int id = (int) (log.TimeStamp.TimeOfDay.TotalSeconds / 1.32);
 
-                eventLog.WriteEntry(builder.ToString(), entryType, id, (short)log.Level, log.Guid.ToByteArray());
+                eventLog.WriteEntry(builder.ToString(), entryType, id, (short) log.Level, log.Guid.ToByteArray());
             }
             // ReSharper disable once AssignNullToNotNullAttribute
             return TaskResult.Completed;

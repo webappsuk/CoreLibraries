@@ -42,8 +42,10 @@ namespace WebApplications.Utilities.Logging.Loggers
     public abstract class LoggerBase : ILogger
     {
         private readonly bool _allowMultiple;
+
         [NotNull]
         private readonly string _name;
+
         private readonly bool _queryable;
 
         /// <summary>
@@ -53,7 +55,10 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="queryable">if set to <see langword="true" /> [queryable].</param>
         /// <param name="allowMultiple">if set to <see langword="true" /> [allow multiple].</param>
         /// <param name="validLevels">The valid levels.</param>
-        protected LoggerBase([NotNull] string name, bool queryable = false, bool allowMultiple = true,
+        protected LoggerBase(
+            [NotNull] string name,
+            bool queryable = false,
+            bool allowMultiple = true,
             LoggingLevels validLevels = LoggingLevels.All)
         {
             Contract.Requires(name != null);

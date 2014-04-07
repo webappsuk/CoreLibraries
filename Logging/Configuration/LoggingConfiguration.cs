@@ -44,7 +44,8 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// <summary>
         /// The default name, based on the description of the executing assembly.
         /// </summary>
-        [NotNull] private static readonly Lazy<string> _defaultName = new Lazy<string>(
+        [NotNull]
+        private static readonly Lazy<string> _defaultName = new Lazy<string>(
             () =>
             {
                 Assembly assembly = Log.EntryAssembly;
@@ -69,7 +70,8 @@ namespace WebApplications.Utilities.Logging.Configuration
                 }
 
                 return assembly.GetName().Name ?? "Unknown";
-            }, LazyThreadSafetyMode.PublicationOnly);
+            },
+            LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// Gets the default name.
@@ -188,13 +190,14 @@ namespace WebApplications.Utilities.Logging.Configuration
             // ReSharper restore ConstantNullCoalescingCondition
 
             // Add a trace logger.
-            Loggers.Add(new LoggerElement
-            {
-                Name = "Trace Logger",
-                Type = typeof (TraceLogger),
-                Enabled = true,
-                ValidLevels = LoggingLevels.All
-            });
+            Loggers.Add(
+                new LoggerElement
+                {
+                    Name = "Trace Logger",
+                    Type = typeof (TraceLogger),
+                    Enabled = true,
+                    ValidLevels = LoggingLevels.All
+                });
 
             ApplicationGuid = Guid.NewGuid();
             base.InitializeDefault();

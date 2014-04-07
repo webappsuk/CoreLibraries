@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         [NonSerialized]
         public const int MinimumKeyLength = 3;
+
         /// <summary>
         /// The maximum key length (note maximum prefix length is this minus <see cref="MinimumKeyLength"/>.
         /// </summary>
@@ -135,7 +136,7 @@ namespace WebApplications.Utilities.Logging
         /// anyone else modifying a reserved key for a context.</para>
         ///   <para>Trying to reserve a key when it has already been reserved with a different GUID will throw an exception.</para></remarks>
         [NotNull]
-        public static string ReserveKey([NotNull]string key, Guid reservation)
+        public static string ReserveKey([NotNull] string key, Guid reservation)
         {
             Contract.Requires(key != null);
             Contract.Requires(reservation != Guid.Empty);
@@ -167,7 +168,10 @@ namespace WebApplications.Utilities.Logging
                 if (rKvp.Key != null)
                 {
                     if (rKvp.Value != reservation)
-                        throw new LoggingException(Resources.LogContext_Key_Reservation_Failed_Prefix_Match, key, rKvp.Key);
+                        throw new LoggingException(
+                            Resources.LogContext_Key_Reservation_Failed_Prefix_Match,
+                            key,
+                            rKvp.Key);
 
                     return key;
                 }
@@ -205,7 +209,9 @@ namespace WebApplications.Utilities.Logging
             if (prefix.Length < MinimumKeyLength)
                 throw new LoggingException(Resources.LogContext_Prefix_Too_Short, prefix, MinimumKeyLength);
             if (prefix.Length > (MaximumKeyLength - MinimumKeyLength))
-                throw new LoggingException(Resources.LogContext_Prefix_Too_Long, prefix,
+                throw new LoggingException(
+                    Resources.LogContext_Prefix_Too_Long,
+                    prefix,
                     (MaximumKeyLength - MinimumKeyLength));
             if (reservation == Guid.Empty)
                 throw new LoggingException(Resources.LogContext_Empty_Reservation);
@@ -217,7 +223,10 @@ namespace WebApplications.Utilities.Logging
                 if (rKvp.Key != null)
                 {
                     if (rKvp.Value != reservation)
-                        throw new LoggingException(Resources.LogContext_Prefix_Reservation_Failed_Prefix_Match, prefix, rKvp.Key);
+                        throw new LoggingException(
+                            Resources.LogContext_Prefix_Reservation_Failed_Prefix_Match,
+                            prefix,
+                            rKvp.Key);
 
                     return prefix;
                 }
@@ -228,13 +237,16 @@ namespace WebApplications.Utilities.Logging
                 foreach (KeyValuePair<string, Guid> kvp in _keyReservations.Where(kvp => kvp.Key.StartsWith(prefix)))
                 {
                     if (kvp.Value != reservation)
-                        throw new LoggingException(Resources.LogContext_Prefix_Reservation_Failed_Key_Match, prefix, kvp.Key);
+                        throw new LoggingException(
+                            Resources.LogContext_Prefix_Reservation_Failed_Key_Match,
+                            prefix,
+                            kvp.Key);
 
                     existingKeys.Add(kvp.Key);
                 }
 
                 // Remove existing keys, we now have a single prefix reservation.
-                foreach (var existingKey in existingKeys)
+                foreach (string existingKey in existingKeys)
                     _keyReservations.Remove(existingKey);
 
                 _prefixReservations.Add(prefix, reservation);
@@ -295,7 +307,7 @@ namespace WebApplications.Utilities.Logging
                 if (r != reservation)
                     throw new LoggingException(Resources.LogContext_Reserved_Key, key);
             }
-            // Remaining checks are for un-reserved keys.
+                // Remaining checks are for un-reserved keys.
             else if (key.Length < MinimumKeyLength)
                 throw new LoggingException(Resources.LogContext_Key_Too_Short, key, MinimumKeyLength);
             else if (key.Length > MaximumKeyLength)
@@ -323,7 +335,10 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value><see langword="true" /> if this instance is locked; otherwise, <see langword="false" />.</value>
         [PublicAPI]
-        public bool IsLocked { get { return _locked; } }
+        public bool IsLocked
+        {
+            get { return _locked; }
+        }
 
         /// <summary>
         /// Gets the count.
@@ -342,7 +357,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="value">The value.</param>
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext" /> is <see cref="IsLocked">locked</see>.</exception>
-        [NotNull,PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public LogContext Set([NotNull] string key, [CanBeNull] object value)
         {
             Contract.Requires(key != null);
@@ -356,11 +372,12 @@ namespace WebApplications.Utilities.Logging
         /// <param name="values">The values.</param>
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext" /> is <see cref="IsLocked">locked</see>.</exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public LogContext SetPrefixed([NotNull] string prefix, [CanBeNull] params object[] values)
         {
             Contract.Requires(prefix != null);
-            return SetPrefixed(Guid.Empty, prefix, (IEnumerable<object>)values);
+            return SetPrefixed(Guid.Empty, prefix, (IEnumerable<object>) values);
         }
 
         /// <summary>
@@ -370,7 +387,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="values">The values.</param>
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext" /> is <see cref="IsLocked">locked</see>.</exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public LogContext SetPrefixed([NotNull] string prefix, [CanBeNull] IEnumerable<object> values)
         {
             Contract.Requires(prefix != null);
@@ -385,11 +403,12 @@ namespace WebApplications.Utilities.Logging
         /// <param name="values">The values.</param>
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext"/> is <see cref="IsLocked">locked</see>.</exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public LogContext SetPrefixed(Guid reservation, [NotNull] string prefix, [CanBeNull] params object[] values)
         {
             Contract.Requires(prefix != null);
-            return SetPrefixed(reservation, prefix, (IEnumerable<object>)values);
+            return SetPrefixed(reservation, prefix, (IEnumerable<object>) values);
         }
 
         /// <summary>
@@ -400,7 +419,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="value">The value.</param>
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext"/> is <see cref="IsLocked">locked</see>.</exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public LogContext Set(Guid reservation, [NotNull] string key, [CanBeNull] object value)
         {
             Contract.Requires(key != null);
@@ -418,7 +438,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="values">The values.</param>
         /// <returns>This <see cref="LogContext"/> to allow fluent syntax.</returns>
         /// <exception cref="LoggingException">The <see cref="LogContext"/> is <see cref="IsLocked">locked</see>.</exception>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public LogContext SetPrefixed(Guid reservation, [NotNull] string prefix, [CanBeNull] IEnumerable<object> values)
         {
             Contract.Requires(prefix != null);
@@ -427,7 +448,9 @@ namespace WebApplications.Utilities.Logging
             if (values == null) return this;
             int suffix = 1;
             foreach (object value in values)
-                _context.GetOrAdd(Validate(reservation, prefix + suffix++), k => value != null ? value.ToString() : null);
+                _context.GetOrAdd(
+                    Validate(reservation, prefix + suffix++),
+                    k => value != null ? value.ToString() : null);
             return this;
         }
 
@@ -438,7 +461,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns>The value associated with the specified key. If the specified key is not found, throws a <see cref="T:System.Collections.Generic.KeyNotFoundException" />.</returns>
         [CanBeNull]
         [PublicAPI]
-        public string this[[NotNull]string key]
+        public string this[[NotNull] string key]
         {
             get
             {

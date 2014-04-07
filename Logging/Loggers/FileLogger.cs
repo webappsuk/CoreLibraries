@@ -59,12 +59,16 @@ namespace WebApplications.Utilities.Logging.Loggers
         public static readonly string DefaultDirectory;
 
         private uint _buffer;
+
         [NotNull]
         private string _directory;
+
         [NotNull]
         private string _extension;
+
         [NotNull]
         private string _fileNameFormat;
+
         [NotNull]
         private string _format;
 
@@ -75,6 +79,7 @@ namespace WebApplications.Utilities.Logging.Loggers
 
         private TimeSpan _maxDuration;
         private long _maxLog;
+
         [NotNull]
         private string _pathFormat;
 
@@ -218,9 +223,11 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 if (_maxDuration == value) return;
                 if (value < TimeSpan.FromSeconds(10))
-                    throw new LoggingException(LoggingLevel.Critical,
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_FileDurationLessThanTenSeconds, value);
+                        Resources.FileLogger_FileDurationLessThanTenSeconds,
+                        value);
                 _maxDuration = value;
             }
         }
@@ -238,9 +245,11 @@ namespace WebApplications.Utilities.Logging.Loggers
                     return;
 
                 if (value < 10)
-                    throw new LoggingException(LoggingLevel.Critical,
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_MaximumLogsLessThanTen, value);
+                        Resources.FileLogger_MaximumLogsLessThanTen,
+                        value);
                 _maxLog = value;
             }
         }
@@ -276,13 +285,17 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 if (_buffer == value) return;
                 if (value < 128)
-                    throw new LoggingException(LoggingLevel.Critical,
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_BufferSize_Too_Small, value.ToMemorySize());
+                        Resources.FileLogger_BufferSize_Too_Small,
+                        value.ToMemorySize());
                 if (value > int.MaxValue)
-                    throw new LoggingException(LoggingLevel.Critical,
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
 // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_BufferSize_Too_Big, value.ToMemorySize());
+                        Resources.FileLogger_BufferSize_Too_Big,
+                        value.ToMemorySize());
 
                 _buffer = value;
                 CloseFile();
@@ -306,7 +319,11 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <returns>System.String.</returns>
         /// <exception cref="LoggingException"></exception>
         [NotNull]
-        private static string ValidatePathFormat([NotNull] string directory, [NotNull] string fileNameFormat, [NotNull] ref string extension, [NotNull] string format)
+        private static string ValidatePathFormat(
+            [NotNull] string directory,
+            [NotNull] string fileNameFormat,
+            [NotNull] ref string extension,
+            [NotNull] string format)
         {
             Contract.Requires(directory != null);
             Contract.Requires(fileNameFormat != null);
@@ -324,7 +341,10 @@ namespace WebApplications.Utilities.Logging.Loggers
             catch (Exception e)
             {
                 // ReSharper disable once AssignNullToNotNullAttribute
-                throw new LoggingException(e, LoggingLevel.Critical, Resources.FileLogger_DirectoryAccessOrCreationError,
+                throw new LoggingException(
+                    e,
+                    LoggingLevel.Critical,
+                    Resources.FileLogger_DirectoryAccessOrCreationError,
                     directory);
             }
 
@@ -338,12 +358,10 @@ namespace WebApplications.Utilities.Logging.Loggers
                 bool isXml = false, isJson = false;
                 LogFormat logFormat;
                 if (Enum.TryParse(format, true, out logFormat))
-                {
                     if (logFormat.HasFlag(LogFormat.Xml))
                         isXml = true;
                     else if (logFormat.HasFlag(LogFormat.Json))
                         isJson = true;
-                }
                 Contract.Assert(!(isXml && isJson));
 
                 if (isXml)
@@ -357,13 +375,17 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 extension = extension.Trim();
                 if (extension.Any(c => !Char.IsLetterOrDigit(c)))
-                    throw new LoggingException(LoggingLevel.Critical,
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_Extension_Invalid_Char, extension);
+                        Resources.FileLogger_Extension_Invalid_Char,
+                        extension);
                 if (extension.Length > 5)
-                    throw new LoggingException(LoggingLevel.Critical,
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_ExtensionLongerThanFiveCharacters, extension);
+                        Resources.FileLogger_ExtensionLongerThanFiveCharacters,
+                        extension);
                 extension = "." + extension;
             }
 
@@ -383,7 +405,9 @@ namespace WebApplications.Utilities.Logging.Loggers
 
             if (testFormat.IndexOfAny(Path.GetInvalidPathChars()) > -1)
                 // ReSharper disable once AssignNullToNotNullAttribute
-                throw new LoggingException(LoggingLevel.Critical, Resources.FileLogger_FileNameFormatInvalid,
+                throw new LoggingException(
+                    LoggingLevel.Critical,
+                    Resources.FileLogger_FileNameFormatInvalid,
                     fileNameFormat);
 
             try
@@ -393,13 +417,18 @@ namespace WebApplications.Utilities.Logging.Loggers
             catch (Exception e)
             {
                 // ReSharper disable once AssignNullToNotNullAttribute
-                throw new LoggingException(e, LoggingLevel.Critical, Resources.FileLogger_InvalidPathCreation,
+                throw new LoggingException(
+                    e,
+                    LoggingLevel.Critical,
+                    Resources.FileLogger_InvalidPathCreation,
                     fileNameFormat);
             }
 
             if (!testFormat.StartsWith(directory))
                 // ReSharper disable once AssignNullToNotNullAttribute
-                throw new LoggingException(LoggingLevel.Critical, Resources.FileLogger_PathCreatedOutsideDirectory,
+                throw new LoggingException(
+                    LoggingLevel.Critical,
+                    Resources.FileLogger_PathCreatedOutsideDirectory,
                     fileNameFormat);
 
             return fullFormat;
@@ -430,7 +459,9 @@ namespace WebApplications.Utilities.Logging.Loggers
                 logFile = _logFile;
 
                 // Check if the current file is OK.
-                if ((logFile == null) || (logFile.Logs > MaxLog) || (log.TimeStamp - logFile.Start >= MaxDuration))
+                if ((logFile == null) ||
+                    (logFile.Logs > MaxLog) ||
+                    (log.TimeStamp - logFile.Start >= MaxDuration))
                 {
                     // Close out the last logfile.
 #pragma warning disable 4014
@@ -443,7 +474,8 @@ namespace WebApplications.Utilities.Logging.Loggers
                     string fileName;
                     do
                     {
-                        fileName = string.Format(_pathFormat,
+                        fileName = string.Format(
+                            _pathFormat,
                             log.TimeStamp,
                             dedupe > 1
                                 ? string.Format(" ({0})", dedupe)
@@ -503,8 +535,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 // Sets how far from the end of the stream to seek when writing out a new log
                 // It is -(length + 1), which is the same as ~length (bitwise not)
-                _xmlSeekOffset = ~("</Log></Logs>".Length + (Environment.NewLine.Length*2));
-                _jsonSeekOffset = ~(",".Length + (Environment.NewLine.Length*2));
+                _xmlSeekOffset = ~("</Log></Logs>".Length + (Environment.NewLine.Length * 2));
+                _jsonSeekOffset = ~(",".Length + (Environment.NewLine.Length * 2));
             }
 
             /// <summary>
@@ -520,10 +552,12 @@ namespace WebApplications.Utilities.Logging.Loggers
 
             [PublicAPI]
             public readonly bool IsJson;
+
             [PublicAPI]
             public readonly bool IsXml;
 
             public readonly DateTime Start;
+
             [NotNull]
             private FileStream _fileStream;
 
@@ -540,29 +574,23 @@ namespace WebApplications.Utilities.Logging.Loggers
                 Contract.Requires(format != null);
                 Format = format;
                 Start = start;
-                int b = (int)buffer;
+                int b = (int) buffer;
 
                 // Parse format to see if we're outputting XML / JSON.  Note - this only works for LogFormat formats.
                 LogFormat logFormat;
                 if (Enum.TryParse(format, true, out logFormat))
-                {
                     if (logFormat.HasFlag(LogFormat.Xml))
                         IsXml = true;
                     else if (logFormat.HasFlag(LogFormat.Json))
                         IsJson = true;
-                }
 
                 FileName = fileName;
                 _fileStream = File.Create(fileName, b, FileOptions.Asynchronous | FileOptions.SequentialScan);
 
                 if (IsXml)
-                {
                     WriteLine("<Logs>" + Environment.NewLine + "</Logs>").Wait();
-                }
                 else if (IsJson)
-                {
                     WriteLine("[" + Environment.NewLine + "]").Wait();
-                }
                 else
                     Write(Format + Environment.NewLine + Environment.NewLine).Wait();
 

@@ -25,18 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Globalization;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -59,7 +48,7 @@ namespace WebApplications.Utilities.Logging
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValid(this LoggingLevel level, LoggingLevels validLevels)
         {
-            LoggingLevels l = (LoggingLevels)level;
+            LoggingLevels l = (LoggingLevels) level;
             return l == (l & validLevels);
         }
     }

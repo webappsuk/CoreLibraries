@@ -53,7 +53,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="name">The name.</param>
         /// <param name="format">The format (see <see cref="Format"/> for more information on usage).</param>
         /// <param name="validLevels">The valid levels.</param>
-        public ConsoleLogger([NotNull] string name,
+        public ConsoleLogger(
+            [NotNull] string name,
             [NotNull] string format = DefaultFormat,
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, false, validLevels)

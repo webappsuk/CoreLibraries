@@ -55,11 +55,13 @@ namespace WebApplications.Utilities.Logging.Loggers
         private readonly Queue<Log> _queue = new Queue<Log>();
 
         private TimeSpan _cacheExpiry;
+
         /// <summary>
         /// The synchronization lock.
         /// </summary>
         [NotNull]
         private readonly object _lock = new object();
+
         private int _maximumLogEntries;
 
         /// <summary>
@@ -111,7 +113,8 @@ namespace WebApplications.Utilities.Logging.Loggers
                 if (value == default(TimeSpan))
                     value = TimeSpan.MaxValue;
                 else if (value < TimeSpan.FromSeconds(10))
-                    throw new LoggingException(LoggingLevel.Critical,
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
                         Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
                         value);
@@ -133,7 +136,9 @@ namespace WebApplications.Utilities.Logging.Loggers
 
                 if (value < 1)
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    throw new LoggingException(LoggingLevel.Critical, Resources.MemoryLogger_MaximumLogsLessThanOne,
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
+                        Resources.MemoryLogger_MaximumLogsLessThanOne,
                         value);
                 _maximumLogEntries = value;
                 Clean();
@@ -189,8 +194,9 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 foreach (Log log in logs
                     // ReSharper disable once PossibleNullReferenceException
-                    .Where(log => log.Level.IsValid(ValidLevels) &&
-                                  CacheExpiry > (DateTime.UtcNow - log.TimeStamp)))
+                    .Where(
+                        log => log.Level.IsValid(ValidLevels) &&
+                               CacheExpiry > (DateTime.UtcNow - log.TimeStamp)))
                 {
                     token.ThrowIfCancellationRequested();
                     _queue.Enqueue(log);
@@ -234,7 +240,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             {
                 while ((_queue.Count > 0) &&
                        ((_queue.Count > MaximumLogEntries) ||
-                    // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                         (CacheExpiry > (DateTime.UtcNow - _queue.Peek().TimeStamp))))
                     _queue.Dequeue();
             }
