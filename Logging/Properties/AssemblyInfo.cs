@@ -39,5 +39,5 @@ using WebApplications.Utilities;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("0cf0e2e5-3615-4cfc-9fa2-1b9ab99558aa")]
-[assembly: AssemblyVersion("5.0.*")]
+[assembly: AssemblyVersion("5.1.*")]
 [assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

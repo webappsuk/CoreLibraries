@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Logging
                             .Where(n => (n.Name != null) && !publicKeys.Contains(n.Name.GetPublicKey()))
                             .Select(n => n.Assembly)
                             .FirstOrDefault();
-                        // ReSharper restore PossibleNullReferenceException
+                    // ReSharper restore PossibleNullReferenceException
                 }
                 catch
                 {
@@ -983,9 +983,11 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [StringFormatMethod("message")]
+        [StringFormatMethod("format")]
         [PublicAPI]
-        public static void Add([CanBeNull] string format, [CanBeNull] params object[] parameters)
+        public static void Add(
+            [LocalizationRequired] [CanBeNull] string format,
+            [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
@@ -1001,11 +1003,11 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [StringFormatMethod("message")]
+        [StringFormatMethod("format")]
         [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
-            [CanBeNull] string format,
+            [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
@@ -1022,9 +1024,12 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
-        [StringFormatMethod("message")]
+        [StringFormatMethod("format")]
         [PublicAPI]
-        public static void Add(LoggingLevel level, [CanBeNull] string format, [CanBeNull] params object[] parameters)
+        public static void Add(
+            LoggingLevel level,
+            [LocalizationRequired] [CanBeNull] string format,
+            [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
@@ -1039,12 +1044,12 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The log message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
-        [StringFormatMethod("message")]
+        [StringFormatMethod("format")]
         [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
             LoggingLevel level,
-            [CanBeNull] string format,
+            [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
@@ -1110,7 +1115,7 @@ namespace WebApplications.Utilities.Logging
         public static void Add(
             [CanBeNull] Exception exception,
             LoggingLevel level,
-            [CanBeNull] string format,
+            [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
@@ -1136,7 +1141,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
             LoggingLevel level,
-            [CanBeNull] string format,
+            [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
@@ -1150,7 +1155,9 @@ namespace WebApplications.Utilities.Logging
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.</remarks>
         [PublicAPI]
-        public static void Add([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+        public static void Add(
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
@@ -1166,7 +1173,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
         /// </remarks>
-        [StringFormatMethod("message")]
         [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
@@ -1187,7 +1193,6 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
-        [StringFormatMethod("message")]
         [PublicAPI]
         public static void Add(
             LoggingLevel level,
@@ -1207,7 +1212,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
-        [StringFormatMethod("message")]
         [PublicAPI]
         public static void Add(
             [CanBeNull] LogContext context,
@@ -1233,7 +1237,6 @@ namespace WebApplications.Utilities.Logging
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
         [PublicAPI]
-        [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] Exception exception,
             LoggingLevel level,
@@ -1258,7 +1261,6 @@ namespace WebApplications.Utilities.Logging
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
         [PublicAPI]
-        [StringFormatMethod("format")]
         public static void Add(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,

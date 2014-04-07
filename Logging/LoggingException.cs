@@ -43,7 +43,7 @@ namespace WebApplications.Utilities.Logging
     public class LoggingException : ApplicationException, IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
         /// <summary>
-        /// Set's the underlying exception message, not strictly necessary but easily doable.
+        /// Set's the underlying exception format, not strictly necessary but easily doable.
         /// </summary>
         [NotNull]
         private static readonly Action<Exception, string> _setMessage =
@@ -60,35 +60,35 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
-        /// <param name="message">The exception message.</param>
+        /// <param name="format">The exception format.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
-        [UsedImplicitly]
-        public LoggingException([CanBeNull] string message, [CanBeNull] params object[] parameters)
-        {
-            // Log the exception
-            Log = new Log(LoggingLevel.Error, message, parameters);
-            _setMessage(this, Log.Message);
-
-            // Finally increment performance counter.
-            Log.PerfCounterException.Increment();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoggingException" /> class.
-        /// </summary>
-        /// <param name="context">The log context.</param>
-        /// <param name="message">The exception message.</param>
-        /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
-        [UsedImplicitly]
+        [StringFormatMethod("format")]
         public LoggingException(
-            [CanBeNull] LogContext context,
-            [CanBeNull] string message,
+            [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
         {
             // Log the exception
-            Log = new Log(context, this, LoggingLevel.Error, message, parameters);
+            Log = new Log(LoggingLevel.Error, format, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="format">The exception format.</param>
+        /// <param name="parameters">The parameters.</param>
+        [StringFormatMethod("format")]
+        public LoggingException(
+            [CanBeNull] LogContext context,
+            [LocalizationRequired] [CanBeNull] string format,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(context, this, LoggingLevel.Error, format, parameters);
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -99,13 +99,16 @@ namespace WebApplications.Utilities.Logging
         /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
         /// <param name="level">The log level.</param>
-        /// <param name="message">The exception message.</param>
+        /// <param name="format">The exception format.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
-        public LoggingException(LoggingLevel level, [CanBeNull] string message, [CanBeNull] params object[] parameters)
+        [StringFormatMethod("format")]
+        public LoggingException(
+            LoggingLevel level,
+            [LocalizationRequired] [CanBeNull] string format,
+            [CanBeNull] params object[] parameters)
         {
             // Log the exception
-            Log = new Log(this, level, message, parameters);
+            Log = new Log(this, level, format, parameters);
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -117,17 +120,17 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="context">The log context.</param>
         /// <param name="level">The log level.</param>
-        /// <param name="message">The exception message.</param>
+        /// <param name="format">The exception format.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
+        [StringFormatMethod("format")]
         public LoggingException(
             [CanBeNull] LogContext context,
             LoggingLevel level,
-            [CanBeNull] string message,
+            [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
         {
             // Log the exception
-            Log = new Log(context, this, level, message, parameters);
+            Log = new Log(context, this, level, format, parameters);
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -154,17 +157,17 @@ namespace WebApplications.Utilities.Logging
         /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
         /// <param name="exception">The inner exception.</param>
-        /// <param name="message">The exception message.</param>
+        /// <param name="format">The exception format.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
+        [StringFormatMethod("format")]
         public LoggingException(
             [CanBeNull] Exception exception,
-            [CanBeNull] string message,
+            [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
             : base(exception == null ? string.Empty : exception.Message, exception)
         {
             // Log the exception
-            Log = new Log(this, LoggingLevel.Error, message, parameters);
+            Log = new Log(this, LoggingLevel.Error, format, parameters);
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -176,18 +179,18 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="exception">The inner exception.</param>
         /// <param name="level">The log level.</param>
-        /// <param name="message">The exception message.</param>
+        /// <param name="format">The exception format.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
+        [StringFormatMethod("format")]
         public LoggingException(
             [CanBeNull] Exception exception,
             LoggingLevel level,
-            [CanBeNull] string message,
+            [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
             : base(exception == null ? string.Empty : exception.Message, exception)
         {
             // Log the exception
-            Log = new Log(this, level, message, parameters);
+            Log = new Log(this, level, format, parameters);
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -200,19 +203,19 @@ namespace WebApplications.Utilities.Logging
         /// <param name="context">The log context.</param>
         /// <param name="exception">The exception.</param>
         /// <param name="level">The log level.</param>
-        /// <param name="message">The exception message.</param>
+        /// <param name="format">The exception format.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
+        [StringFormatMethod("format")]
         public LoggingException(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
             LoggingLevel level,
-            [CanBeNull] string message,
+            [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
             : base(exception == null ? string.Empty : exception.Message, exception)
         {
             // Log the exception
-            Log = new Log(context, this, level, message, parameters);
+            Log = new Log(context, this, level, format, parameters);
             _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
@@ -224,8 +227,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
-        [UsedImplicitly]
         public LoggingException([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
         {
             // Log the exception
@@ -242,8 +243,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="context">The log context.</param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
-        [UsedImplicitly]
         public LoggingException(
             [CanBeNull] LogContext context,
             [CanBeNull] Expression<Func<string>> resource,
@@ -263,7 +262,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
         public LoggingException(
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
@@ -284,7 +282,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
         public LoggingException(
             [CanBeNull] LogContext context,
             LoggingLevel level,
@@ -305,7 +302,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="exception">The inner exception.</param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
         public LoggingException(
             [CanBeNull] Exception exception,
             [CanBeNull] Expression<Func<string>> resource,
@@ -327,7 +323,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
         public LoggingException(
             [CanBeNull] Exception exception,
             LoggingLevel level,
@@ -351,7 +346,6 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
-        [StringFormatMethod("message")]
         public LoggingException(
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
@@ -411,9 +405,9 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Gets the message format.
+        /// Gets the format format.
         /// </summary>
-        /// <value>The message format.</value>
+        /// <value>The format format.</value>
         [CanBeNull]
         [PublicAPI]
         public string MessageFormat
@@ -451,7 +445,7 @@ namespace WebApplications.Utilities.Logging
         public string ExceptionTypeFullName
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            get { return Log.Get(Log.ExceptionTypeFullNameKey) ?? GetType().FullName; }
+            get { return Log.ExceptionType ?? GetType().FullName; }
         }
 
         /// <summary>
@@ -462,7 +456,7 @@ namespace WebApplications.Utilities.Logging
         [CanBeNull]
         public string StoredProcedure
         {
-            get { return Log.Get(Log.StoredProcedureKey); }
+            get { return Log.StoredProcedure; }
         }
 
         /// <summary>
@@ -472,14 +466,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public int StoredProcedureLine
         {
-            get
-            {
-                string line = Log.Get(Log.StoredProcedureLineKey);
-                if (string.IsNullOrWhiteSpace(line))
-                    return -1;
-                int l;
-                return int.TryParse(line, out l) ? l : -1;
-            }
+            get { return Log.StoredProcedureLine; }
         }
 
         /// <summary>
@@ -490,16 +477,18 @@ namespace WebApplications.Utilities.Logging
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
         /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> does not exist in the collection.</exception>
         [CanBeNull]
+        [PublicAPI]
         public string this[[NotNull] string key]
         {
             get { return Log[key]; }
         }
 
         /// <summary>
-        /// Gets a message that describes the current exception.
+        /// Gets a format that describes the current exception.
         /// </summary>
-        /// <value>The message.</value>
-        /// <returns>The error message that explains the reason for the exception, or an empty string("").</returns>
+        /// <value>The format.</value>
+        /// <returns>The error format that explains the reason for the exception, or an empty string("").</returns>
+        [PublicAPI]
         public override string Message
         {
             get { return Log.Message ?? string.Empty; }
@@ -511,10 +500,10 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <value>The safe stack trace.</value>
         [NotNull]
-        [UsedImplicitly]
+        [PublicAPI]
         public new string StackTrace
         {
-            get { return Log.StackTrace ?? string.Empty; }
+            get { return Log.StackTrace ?? base.StackTrace ?? string.Empty; }
         }
 
         /// <summary>
@@ -568,7 +557,7 @@ namespace WebApplications.Utilities.Logging
         /// <PermissionSet>
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" PathDiscovery="*AllFiles*"/>
         /// </PermissionSet>
-        [UsedImplicitly]
+        [PublicAPI]
         public override string ToString()
         {
             return Log.ToString(LogFormat.General);
@@ -580,6 +569,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
+        [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider)
         {
             return Log.ToString(null, formatProvider);
@@ -592,6 +582,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         /// <exception cref="System.FormatException"></exception>
         [NotNull]
+        [PublicAPI]
         public string ToString(LogFormat format)
         {
             return Log.ToString(format);
@@ -603,6 +594,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
         /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [PublicAPI]
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             if (format == null) format = LogFormat.General.ToString();
