@@ -73,7 +73,8 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        private static readonly ConcurrentDictionary<string, Type> _resourceTypes = new ConcurrentDictionary<string, Type>();
+        private static readonly ConcurrentDictionary<string, Type> _resourceTypes =
+            new ConcurrentDictionary<string, Type>();
 
         /// <summary>
         /// The exception performance counter.
@@ -106,20 +107,18 @@ namespace WebApplications.Utilities.Logging
                     // 'known' public key.
                     StackFrame[] frames = new StackTrace().GetFrames();
                     if (!ReferenceEquals(frames, null))
-                    {
                         // ReSharper disable PossibleNullReferenceException
                         assembly = frames
                             .Select(f => f.GetMethod())
                             .Where(m => m != null)
                             .Select(m => m.DeclaringType)
                             .Where(t => t != null)
-                            .Select(t => new { t.Assembly, Name = t.Assembly.GetName() })
+                            .Select(t => new {t.Assembly, Name = t.Assembly.GetName()})
                             // ReSharper disable once AssignNullToNotNullAttribute
                             .Where(n => (n.Name != null) && !publicKeys.Contains(n.Name.GetPublicKey()))
                             .Select(n => n.Assembly)
                             .FirstOrDefault();
                         // ReSharper restore PossibleNullReferenceException
-                    }
                 }
                 catch
                 {
@@ -128,7 +127,8 @@ namespace WebApplications.Utilities.Logging
 
                 // If we failed to get an assembly the fancy way, try a less subtle approach.
                 return assembly ?? Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
-            }, LazyThreadSafetyMode.PublicationOnly);
+            },
+            LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// An empty string array.
@@ -150,9 +150,9 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         private static readonly Dictionary<string, LogFormat> _formats =
             ExtendedEnum<LogFormat>.ValueDetails
-            .SelectMany(
-          vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
-            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
+                .SelectMany(
+                    vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// The log reservation.
@@ -165,7 +165,8 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        public static readonly string LogKeyPrefix = LogContext.ReservePrefix("Log ",
+        public static readonly string LogKeyPrefix = LogContext.ReservePrefix(
+            "Log ",
             _logReservation);
 
         /// <summary>
@@ -181,7 +182,8 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        public static readonly string GuidKey = LogContext.ReserveKey("Log GUID",
+        public static readonly string GuidKey = LogContext.ReserveKey(
+            "Log GUID",
             _logReservation);
 
         /// <summary>
@@ -189,7 +191,8 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        public static readonly string LevelKey = LogContext.ReserveKey("Log Level",
+        public static readonly string LevelKey = LogContext.ReserveKey(
+            "Log Level",
             _logReservation);
 
         /// <summary>
@@ -199,7 +202,7 @@ namespace WebApplications.Utilities.Logging
         [NonSerialized]
         public static readonly string MessageFormatKey =
             LogContext.ReserveKey("Log Message Format", _logReservation);
-        
+
         /// <summary>
         /// Reserved context key.
         /// </summary>
@@ -230,14 +233,16 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [NonSerialized]
         public static readonly string StackTraceKey = LogContext.ReserveKey(
-            "Log Stack Trace", _logReservation);
+            "Log Stack Trace",
+            _logReservation);
 
         /// <summary>
         /// Reserved context key.
         /// </summary>
         [NotNull]
         [NonSerialized]
-        public static readonly string ThreadIDKey = LogContext.ReserveKey("Log Thread ID",
+        public static readonly string ThreadIDKey = LogContext.ReserveKey(
+            "Log Thread ID",
             _logReservation);
 
         /// <summary>
@@ -246,7 +251,8 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [NonSerialized]
         public static readonly string ThreadNameKey = LogContext.ReserveKey(
-            "Log Thread Name", _logReservation);
+            "Log Thread Name",
+            _logReservation);
 
         /// <summary>
         /// Reserved context key.
@@ -277,7 +283,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
+        internal static readonly Assembly LoggingAssembly = typeof (Log).Assembly;
 
         /// <summary>
         /// The global tick, ticks once a second and is used for batching, etc.
@@ -355,12 +361,10 @@ namespace WebApplications.Utilities.Logging
                 Add(LoggingLevel.Notification, Resources.Log_PerfCategory_Enabled, PerfCategory.InstanceGuid);
 
                 foreach (PerfCategory pc in PerfCategory.All)
-                {
                     if (pc.IsValid)
                         Add(LoggingLevel.Debugging, Resources.Log_PerfCategory_Initialized, pc.CategoryName);
                     else
                         Add(LoggingLevel.Warning, Resources.Log_PerfCategory_Missing, pc.CategoryName);
-                }
             }
             else
                 Add(LoggingLevel.Warning, Resources.Log_PerfCategory_Access_Denied);
@@ -486,13 +490,15 @@ namespace WebApplications.Utilities.Logging
                 }
 
                 // Dispose existing configuration loggers
-                Parallel.ForEach(loggers, kvp =>
-                {
-                    Contract.Assert(kvp.Key != null);
-                    Contract.Assert(kvp.Value != null);
-                    using (kvp.Value.Lock.LockAsync().Result)
-                        kvp.Key.Dispose();
-                });
+                Parallel.ForEach(
+                    loggers,
+                    kvp =>
+                    {
+                        Contract.Assert(kvp.Key != null);
+                        Contract.Assert(kvp.Value != null);
+                        using (kvp.Value.Lock.LockAsync().Result)
+                            kvp.Key.Dispose();
+                    });
 
                 // Update default memory logger values
                 if (configuration.LogCacheExpiry > TimeSpan.Zero)
@@ -514,7 +520,8 @@ namespace WebApplications.Utilities.Logging
                         catch (Exception exception)
                         {
                             // ReSharper disable once ObjectCreationAsStatement
-                            new LoggingException(exception,
+                            new LoggingException(
+                                exception,
                                 LoggingLevel.Critical,
                                 Resources.LogStatic_LoadConfiguration_ErrorCreatingLogger,
                                 loggerElement.Name);
@@ -524,10 +531,8 @@ namespace WebApplications.Utilities.Logging
                     Add(LoggingLevel.Notification, Resources.Log_Configured, ApplicationName, ApplicationGuid);
                 }
                 else
-                {
                     // Disable logging.
                     ValidLevels = LoggingLevels.None;
-                }
             }
         }
 
@@ -646,11 +651,9 @@ namespace WebApplications.Utilities.Logging
 
             // Check for source logger can retrieve logs
             if (!sourceLogger.Queryable)
-            {
                 throw new LoggingException(
                     Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
                     sourceLogger.Name);
-            }
 
             IDisposable loggerLock = null;
             try
@@ -683,9 +686,7 @@ namespace WebApplications.Utilities.Logging
             finally
             {
                 if (loggerLock != null)
-                {
                     loggerLock.Dispose();
-                }
             }
             return logger;
         }
@@ -760,11 +761,9 @@ namespace WebApplications.Utilities.Logging
 
             // Check for source logger can retrieve logs
             if (!sourceLogger.Queryable)
-            {
                 throw new LoggingException(
                     Resources.LogStatic_AddOrUpdateLogger_RetrievalNotSupported,
                     sourceLogger.Name);
-            }
 
             T logger;
             IDisposable loggerLock = null;
@@ -775,8 +774,9 @@ namespace WebApplications.Utilities.Logging
                     // Check for existing logger of same type.
                     KeyValuePair<ILogger, LoggerInfo> existing =
                         _loggers.FirstOrDefault(i => i.Key is T);
-                    if ((existing.Key != null) && !existing.Key.AllowMultiple)
-                        return (T)existing.Key;
+                    if ((existing.Key != null) &&
+                        !existing.Key.AllowMultiple)
+                        return (T) existing.Key;
 
                     logger = loggerCreator();
                     if (ReferenceEquals(logger, null))
@@ -799,9 +799,7 @@ namespace WebApplications.Utilities.Logging
             finally
             {
                 if (loggerLock != null)
-                {
                     loggerLock.Dispose();
-                }
             }
             return logger;
         }
@@ -890,7 +888,7 @@ namespace WebApplications.Utilities.Logging
             List<KeyValuePair<ILogger, LoggerInfo>> loggers;
             lock (_loggers)
                 loggers = _loggers
-                    .Where(kvp => (((byte)kvp.Key.ValidLevels) & ((byte)ValidLevels)) > 0)
+                    .Where(kvp => (((byte) kvp.Key.ValidLevels) & ((byte) ValidLevels)) > 0)
                     .ToList();
 
             // Order the logs
@@ -909,27 +907,30 @@ namespace WebApplications.Utilities.Logging
 
             // Create tasks
             // Note we don't use the supplied cancellation token as we always write out logs once they're removed from the buffer.
-            await Task.WhenAll(loggers.Select(
-                // ReSharper disable once PossibleNullReferenceException
-                kvp => kvp.Value.Lock
-                    .LockAsync(CancellationToken.None)
-                    .ContinueWith(t =>
-                    {
-                        try
-                        {
-                            kvp.Key.Add(orderedLogs.Where(log => log.Level.IsValid(kvp.Key.ValidLevels)),
-                                CancellationToken.None);
-                        }
-                        finally
-                        {
-                            if (t.Result != null)
-                                t.Result.Dispose();
-                        }
-                    },
-                        CancellationToken.None,
-                        TaskContinuationOptions.LongRunning,
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                        TaskScheduler.Default)))
+            await Task.WhenAll(
+                loggers.Select(
+                    // ReSharper disable once PossibleNullReferenceException
+                    kvp => kvp.Value.Lock
+                        .LockAsync(CancellationToken.None)
+                        .ContinueWith(
+                            t =>
+                            {
+                                try
+                                {
+                                    kvp.Key.Add(
+                                        orderedLogs.Where(log => log.Level.IsValid(kvp.Key.ValidLevels)),
+                                        CancellationToken.None);
+                                }
+                                finally
+                                {
+                                    if (t.Result != null)
+                                        t.Result.Dispose();
+                                }
+                            },
+                            CancellationToken.None,
+                            TaskContinuationOptions.LongRunning,
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            TaskScheduler.Default)))
                 // We do support cancelling the wait though, this doesn't stop the actual writes occurring.
                 .WithCancellation(token);
         }
@@ -939,12 +940,16 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="UnhandledExceptionEventArgs"/> instance containing the event data.</param>
-        [HandleProcessCorruptedStateExceptions, SecurityCritical]
-        private static void OnUnhandledException([CanBeNull]object sender, [CanBeNull]UnhandledExceptionEventArgs e)
+        [HandleProcessCorruptedStateExceptions]
+        [SecurityCritical]
+        private static void OnUnhandledException([CanBeNull] object sender, [CanBeNull] UnhandledExceptionEventArgs e)
         {
             Exception exception = e.ExceptionObject as Exception;
-            Add(new LogContext().Set(_logReservation, IsTerminatingKey, e.IsTerminating), exception,
-                e.IsTerminating ? LoggingLevel.Critical : LoggingLevel.Error, "An unhandled exception has occured. See inner exception for details.");
+            Add(
+                new LogContext().Set(_logReservation, IsTerminatingKey, e.IsTerminating),
+                exception,
+                e.IsTerminating ? LoggingLevel.Critical : LoggingLevel.Error,
+                "An unhandled exception has occured. See inner exception for details.");
 
             if (e.IsTerminating)
                 Cleanup();
@@ -998,7 +1003,9 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("message")]
         [PublicAPI]
-        public static void Add([CanBeNull] LogContext context, [CanBeNull] string format,
+        public static void Add(
+            [CanBeNull] LogContext context,
+            [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
@@ -1034,7 +1041,10 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [StringFormatMethod("message")]
         [PublicAPI]
-        public static void Add([CanBeNull] LogContext context, LoggingLevel level, [CanBeNull] string format,
+        public static void Add(
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
@@ -1074,7 +1084,9 @@ namespace WebApplications.Utilities.Logging
         ///   If the log <paramref name="level"/> is invalid then the log won't be added.
         /// </remarks>
         [PublicAPI]
-        public static void Add([CanBeNull] LogContext context, [CanBeNull] Exception exception,
+        public static void Add(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
             LoggingLevel level = LoggingLevel.Error)
         {
             if (level.IsValid(ValidLevels))
@@ -1095,7 +1107,10 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [PublicAPI]
         [StringFormatMethod("format")]
-        public static void Add([CanBeNull] Exception exception, LoggingLevel level, [CanBeNull] string format,
+        public static void Add(
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
@@ -1117,8 +1132,12 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [PublicAPI]
         [StringFormatMethod("format")]
-        public static void Add([CanBeNull] LogContext context, [CanBeNull] Exception exception, LoggingLevel level,
-            [CanBeNull] string format, [CanBeNull] params object[] parameters)
+        public static void Add(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] string format,
+            [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
                 new Log(context, exception, level, format, null, parameters);
@@ -1149,7 +1168,9 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("message")]
         [PublicAPI]
-        public static void Add([CanBeNull] LogContext context, [CanBeNull]  Expression<Func<string>> resource,
+        public static void Add(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
@@ -1168,7 +1189,10 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("message")]
         [PublicAPI]
-        public static void Add(LoggingLevel level, [CanBeNull]  Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+        public static void Add(
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
@@ -1185,7 +1209,10 @@ namespace WebApplications.Utilities.Logging
         /// <remarks>If the log <paramref name="level" /> is invalid then the log won't be added.</remarks>
         [StringFormatMethod("message")]
         [PublicAPI]
-        public static void Add([CanBeNull] LogContext context, LoggingLevel level, [CanBeNull]  Expression<Func<string>> resource,
+        public static void Add(
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
         {
             // Add to queue for logging if we are a valid level.
@@ -1207,7 +1234,10 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [PublicAPI]
         [StringFormatMethod("format")]
-        public static void Add([CanBeNull] Exception exception, LoggingLevel level, [CanBeNull] Expression<Func<string>> resource,
+        public static void Add(
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
@@ -1229,8 +1259,12 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [PublicAPI]
         [StringFormatMethod("format")]
-        public static void Add([CanBeNull] LogContext context, [CanBeNull] Exception exception, LoggingLevel level,
-            [CanBeNull]  Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+        public static void Add(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
                 new Log(context, exception, level, null, resource, parameters);

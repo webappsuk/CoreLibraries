@@ -30,46 +30,45 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Threading;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Logging
 {
     /// <summary>
-    ///   Implements a specialised Exception handler used throughout Babel, automatically logs errors
-    ///   and the context in which they occurred. Also makes use of Babel's late-binding translation.
-    ///   BabelException should always be used where exceptions are thrown.
+    ///   Implements a specialised Exception handler that is automatically logged and supports late translation of resources.
     /// </summary>
     [Serializable]
     [DebuggerDisplay("[{ExceptionTypeFullName}] {Message} @ {TimeStamp}")]
     public class LoggingException : ApplicationException, IEnumerable<KeyValuePair<string, string>>, IFormattable
     {
         /// <summary>
+        /// Set's the underlying exception message, not strictly necessary but easily doable.
+        /// </summary>
+        [NotNull]
+        private static readonly Action<Exception, string> _setMessage =
+            typeof (Exception).GetSetter<Exception, string>("_message");
+
+        /// <summary>
         /// The associated log item.
         /// </summary>
         [NotNull]
         [PublicAPI]
-        protected internal readonly Log Log;
+        public readonly Log Log;
 
+        #region Non-resource constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
         /// <param name="message">The exception message.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="message" /> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="parameters" /> to not be a null value.</para></remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public LoggingException([NotNull] string message, [NotNull] params object[] parameters)
-            : base(message.SafeFormat(Thread.CurrentThread.CurrentUICulture, parameters))
+        public LoggingException([CanBeNull] string message, [CanBeNull] params object[] parameters)
         {
-            Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
-            Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
-
             // Log the exception
             Log = new Log(LoggingLevel.Error, message, parameters);
+            _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -81,21 +80,16 @@ namespace WebApplications.Utilities.Logging
         /// <param name="context">The log context.</param>
         /// <param name="message">The exception message.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="message" /> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="parameters" /> to not be a null value.</para></remarks>
         [StringFormatMethod("message")]
         [UsedImplicitly]
-        public LoggingException([CanBeNull] LogContext context, [NotNull] string message,
-            [NotNull] params object[] parameters)
-            : base(message.SafeFormat(Thread.CurrentThread.CurrentUICulture, parameters))
+        public LoggingException(
+            [CanBeNull] LogContext context,
+            [CanBeNull] string message,
+            [CanBeNull] params object[] parameters)
         {
-            Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
-            Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
-
             // Log the exception
             Log = new Log(context, this, LoggingLevel.Error, message, parameters);
+            _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -107,19 +101,12 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="message">The exception message.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="message" /> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="parameters" /> to not be a null value.</para></remarks>
         [StringFormatMethod("message")]
-        public LoggingException(LoggingLevel level, [NotNull] string message, [NotNull] params object[] parameters)
-            : base(message.SafeFormat(Thread.CurrentThread.CurrentUICulture, parameters))
+        public LoggingException(LoggingLevel level, [CanBeNull] string message, [CanBeNull] params object[] parameters)
         {
-            Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
-            Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
-
             // Log the exception
             Log = new Log(this, level, message, parameters);
+            _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -132,22 +119,16 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="message">The exception message.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="message" /> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="parameters" /> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="context" /> to not be a null value.</para></remarks>
         [StringFormatMethod("message")]
-        public LoggingException([CanBeNull] LogContext context, LoggingLevel level, [NotNull] string message,
-            [NotNull] params object[] parameters)
-            : base(message.SafeFormat(Thread.CurrentThread.CurrentUICulture, parameters))
+        public LoggingException(
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] string message,
+            [CanBeNull] params object[] parameters)
         {
-            Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
-            Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
-
             // Log the exception
             Log = new Log(context, this, level, message, parameters);
+            _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -158,16 +139,12 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <param name="level">The log level.</param>
-        /// <remarks>There is a 
-        /// <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        /// <paramref name="exception" /> to not be a non null value.</remarks>
-        public LoggingException([NotNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
-            : base(exception.Message)
+        public LoggingException([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
+            : base(exception == null ? string.Empty : exception.Message, exception)
         {
-            Contract.Requires(exception != null, Resources.LoggingException_InnerExceptionCannotBeNull);
-
             // Log the exception
-            Log = new Log(this, level, exception.Message);
+            Log = new Log(this, level);
+            _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -179,22 +156,16 @@ namespace WebApplications.Utilities.Logging
         /// <param name="exception">The inner exception.</param>
         /// <param name="message">The exception message.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="message" /> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="parameters" /> to not be a null value.</para></remarks>
         [StringFormatMethod("message")]
         public LoggingException(
             [CanBeNull] Exception exception,
-            [NotNull] string message,
-            [NotNull] params object[] parameters)
-            : base(message.SafeFormat(Thread.CurrentThread.CurrentUICulture, parameters), exception)
+            [CanBeNull] string message,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
         {
-            Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
-            Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
-
             // Log the exception
             Log = new Log(this, LoggingLevel.Error, message, parameters);
+            _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -207,23 +178,17 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level">The log level.</param>
         /// <param name="message">The exception message.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="message" /> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="parameters" /> to not be a null value.</para></remarks>
         [StringFormatMethod("message")]
         public LoggingException(
             [CanBeNull] Exception exception,
             LoggingLevel level,
-            [NotNull] string message,
-            [NotNull] params object[] parameters)
-            : base(message.SafeFormat(Thread.CurrentThread.CurrentUICulture, parameters), exception)
+            [CanBeNull] string message,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
         {
-            Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
-            Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
-
             // Log the exception
             Log = new Log(this, level, message, parameters);
+            _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
@@ -233,32 +198,176 @@ namespace WebApplications.Utilities.Logging
         /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
         /// <param name="context">The log context.</param>
-        /// <param name="innerException">The inner exception.</param>
+        /// <param name="exception">The exception.</param>
         /// <param name="level">The log level.</param>
         /// <param name="message">The exception message.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <remarks><para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="message" /> to not be a null value.</para>
-        ///   <para>There is a <see cref="System.Diagnostics.Contracts.Contract">contract</see> on this method requiring the
-        ///   <paramref name="parameters" /> to not be a null value.</para></remarks>
         [StringFormatMethod("message")]
         public LoggingException(
             [CanBeNull] LogContext context,
-            [CanBeNull] Exception innerException,
+            [CanBeNull] Exception exception,
             LoggingLevel level,
-            [NotNull] string message,
-            [NotNull] params object[] parameters)
-            : base(message.SafeFormat(Thread.CurrentThread.CurrentUICulture, parameters), innerException)
+            [CanBeNull] string message,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
         {
-            Contract.Requires(message != null, Resources.LoggingException_MessageCannotBeNull);
-            Contract.Requires(parameters != null, Resources.LoggingException_ParametersCannotBeNull);
-
             // Log the exception
             Log = new Log(context, this, level, message, parameters);
+            _setMessage(this, Log.Message);
 
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        [StringFormatMethod("message")]
+        [UsedImplicitly]
+        public LoggingException([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(LoggingLevel.Error, resource, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        [StringFormatMethod("message")]
+        [UsedImplicitly]
+        public LoggingException(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(context, this, LoggingLevel.Error, resource, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="level">The log level.</param>
+        /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        [StringFormatMethod("message")]
+        public LoggingException(
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(this, level, resource, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        [StringFormatMethod("message")]
+        public LoggingException(
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(context, this, level, resource, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="exception">The inner exception.</param>
+        /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        [StringFormatMethod("message")]
+        public LoggingException(
+            [CanBeNull] Exception exception,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
+        {
+            // Log the exception
+            Log = new Log(this, LoggingLevel.Error, resource, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="exception">The inner exception.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        [StringFormatMethod("message")]
+        public LoggingException(
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
+        {
+            // Log the exception
+            Log = new Log(this, level, resource, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception">The exception.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resource">The resource expression, e.g. ()=> Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
+        [StringFormatMethod("message")]
+        public LoggingException(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
+        {
+            // Log the exception
+            Log = new Log(context, this, level, resource, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+        #endregion
 
         /// <summary>
         /// Gets the GUID.
@@ -342,7 +451,7 @@ namespace WebApplications.Utilities.Logging
         public string ExceptionTypeFullName
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            get { return Log.Get(Log.ExceptionTypeFullNameKey) ?? this.GetType().FullName; }
+            get { return Log.Get(Log.ExceptionTypeFullNameKey) ?? GetType().FullName; }
         }
 
         /// <summary>
@@ -494,7 +603,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
         /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public string ToString([CanBeNull]string format, [CanBeNull] IFormatProvider formatProvider = null)
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             if (format == null) format = LogFormat.General.ToString();
 
