@@ -534,9 +534,8 @@ namespace WebApplications.Utilities.Logging.Loggers
             static LogFile()
             {
                 // Sets how far from the end of the stream to seek when writing out a new log
-                // It is -(length + 1), which is the same as ~length (bitwise not)
-                _xmlSeekOffset = ~("</Log></Logs>".Length + (Environment.NewLine.Length * 2));
-                _jsonSeekOffset = ~(",".Length + (Environment.NewLine.Length * 2));
+                _xmlSeekOffset = -Encoding.Unicode.GetByteCount("</Logs>" + Environment.NewLine);
+                _jsonSeekOffset = -Encoding.Unicode.GetByteCount("]" + Environment.NewLine);
             }
 
             /// <summary>
