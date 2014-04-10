@@ -315,4 +315,10 @@
   <data name="LoggingException_ParametersCannotBeNull" xml:space="preserve">
     <value>Parameter 'parameters' can not be null</value>
   </data>
+  <data name="Log_GetResourceManager_FatalError" xml:space="preserve">
+    <value>Fatal error trying to retrieve resource manager for the '{0}' type</value>
+  </data>
+  <data name="Log_OnUnhandledException" xml:space="preserve">
+    <value>An unhandled exception has occured. See inner exception for details.</value>
+  </data>
 </root>

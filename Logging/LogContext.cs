@@ -142,15 +142,15 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(reservation != Guid.Empty);
             // ReSharper disable AssignNullToNotNullAttribute
             if (reservation == Guid.Empty)
-                throw new LoggingException(Resources.LogContext_Invalid_Reservation);
+                throw new LoggingException(() => Resources.LogContext_Invalid_Reservation);
             if (key == null)
-                throw new LoggingException(Resources.LogContext_Null_Key);
+                throw new LoggingException(() => Resources.LogContext_Null_Key);
             if (reservation == Guid.Empty)
-                throw new LoggingException(Resources.LogContext_Empty_Reservation);
+                throw new LoggingException(() => Resources.LogContext_Empty_Reservation);
             if (key.Length < MinimumKeyLength)
-                throw new LoggingException(Resources.LogContext_Key_Too_Short, key, MinimumKeyLength);
+                throw new LoggingException(() => Resources.LogContext_Key_Too_Short, key, MinimumKeyLength);
             if (key.Length > MaximumKeyLength)
-                throw new LoggingException(Resources.LogContext_Key_Too_Long, key, MaximumKeyLength);
+                throw new LoggingException(() => Resources.LogContext_Key_Too_Long, key, MaximumKeyLength);
 
             lock (_keyReservations)
             {
@@ -159,7 +159,7 @@ namespace WebApplications.Utilities.Logging
                 if (_keyReservations.TryGetValue(key, out r))
                 {
                     if (r != reservation)
-                        throw new LoggingException(Resources.LogContext_Key_Already_Reserved, key);
+                        throw new LoggingException(() => Resources.LogContext_Key_Already_Reserved, key);
                     return key;
                 }
 
@@ -169,7 +169,7 @@ namespace WebApplications.Utilities.Logging
                 {
                     if (rKvp.Value != reservation)
                         throw new LoggingException(
-                            Resources.LogContext_Key_Reservation_Failed_Prefix_Match,
+                            () => Resources.LogContext_Key_Reservation_Failed_Prefix_Match,
                             key,
                             rKvp.Key);
 
@@ -203,18 +203,18 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(reservation != Guid.Empty);
             // ReSharper disable AssignNullToNotNullAttribute
             if (reservation == Guid.Empty)
-                throw new LoggingException(Resources.LogContext_Invalid_Reservation);
+                throw new LoggingException(() => Resources.LogContext_Invalid_Reservation);
             if (prefix == null)
-                throw new LoggingException(Resources.LogContext_Null_Prefix);
+                throw new LoggingException(() => Resources.LogContext_Null_Prefix);
             if (prefix.Length < MinimumKeyLength)
-                throw new LoggingException(Resources.LogContext_Prefix_Too_Short, prefix, MinimumKeyLength);
+                throw new LoggingException(() => Resources.LogContext_Prefix_Too_Short, prefix, MinimumKeyLength);
             if (prefix.Length > (MaximumKeyLength - MinimumKeyLength))
                 throw new LoggingException(
-                    Resources.LogContext_Prefix_Too_Long,
+                    () => Resources.LogContext_Prefix_Too_Long,
                     prefix,
                     (MaximumKeyLength - MinimumKeyLength));
             if (reservation == Guid.Empty)
-                throw new LoggingException(Resources.LogContext_Empty_Reservation);
+                throw new LoggingException(() => Resources.LogContext_Empty_Reservation);
 
             lock (_keyReservations)
             {
@@ -224,7 +224,7 @@ namespace WebApplications.Utilities.Logging
                 {
                     if (rKvp.Value != reservation)
                         throw new LoggingException(
-                            Resources.LogContext_Prefix_Reservation_Failed_Prefix_Match,
+                            () => Resources.LogContext_Prefix_Reservation_Failed_Prefix_Match,
                             prefix,
                             rKvp.Key);
 
@@ -238,7 +238,7 @@ namespace WebApplications.Utilities.Logging
                 {
                     if (kvp.Value != reservation)
                         throw new LoggingException(
-                            Resources.LogContext_Prefix_Reservation_Failed_Key_Match,
+                            () => Resources.LogContext_Prefix_Reservation_Failed_Key_Match,
                             prefix,
                             kvp.Key);
 
@@ -305,17 +305,17 @@ namespace WebApplications.Utilities.Logging
             {
                 // We have a reservation so must match.
                 if (r != reservation)
-                    throw new LoggingException(Resources.LogContext_Reserved_Key, key);
+                    throw new LoggingException(() => Resources.LogContext_Reserved_Key, key);
             }
                 // Remaining checks are for un-reserved keys.
             else if (key.Length < MinimumKeyLength)
-                throw new LoggingException(Resources.LogContext_Key_Too_Short, key, MinimumKeyLength);
+                throw new LoggingException(() => Resources.LogContext_Key_Too_Short, key, MinimumKeyLength);
             else if (key.Length > MaximumKeyLength)
-                throw new LoggingException(Resources.LogContext_Key_Too_Long, key, MaximumKeyLength);
+                throw new LoggingException(() => Resources.LogContext_Key_Too_Long, key, MaximumKeyLength);
             else if (!Char.IsLetter(key[0]))
-                throw new LoggingException(Resources.LogContext_Key_Invalid_First_Char, key);
+                throw new LoggingException(() => Resources.LogContext_Key_Invalid_First_Char, key);
             else if (key.Any(c => !Char.IsLetterOrDigit(c) && (c != ' ')))
-                throw new LoggingException(Resources.LogContext_Key_Invalid_Char, key);
+                throw new LoggingException(() => Resources.LogContext_Key_Invalid_Char, key);
             // ReSharper restore AssignNullToNotNullAttribute
             return key;
         }
@@ -425,7 +425,7 @@ namespace WebApplications.Utilities.Logging
         {
             Contract.Requires(key != null);
             // ReSharper disable once AssignNullToNotNullAttribute
-            if (IsLocked) throw new LoggingException(Resources.LogContext_Locked);
+            if (IsLocked) throw new LoggingException(() => Resources.LogContext_Locked);
             _context.GetOrAdd(Validate(reservation, key), k => value != null ? value.ToString() : null);
             return this;
         }
@@ -444,7 +444,7 @@ namespace WebApplications.Utilities.Logging
         {
             Contract.Requires(prefix != null);
             // ReSharper disable once AssignNullToNotNullAttribute
-            if (IsLocked) throw new LoggingException(Resources.LogContext_Locked);
+            if (IsLocked) throw new LoggingException(() => Resources.LogContext_Locked);
             if (values == null) return this;
             int suffix = 1;
             foreach (object value in values)

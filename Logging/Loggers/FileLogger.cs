@@ -226,7 +226,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_FileDurationLessThanTenSeconds,
+                        () => Resources.FileLogger_FileDurationLessThanTenSeconds,
                         value);
                 _maxDuration = value;
             }
@@ -248,7 +248,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_MaximumLogsLessThanTen,
+                        () => Resources.FileLogger_MaximumLogsLessThanTen,
                         value);
                 _maxLog = value;
             }
@@ -288,13 +288,13 @@ namespace WebApplications.Utilities.Logging.Loggers
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_BufferSize_Too_Small,
+                        () => Resources.FileLogger_BufferSize_Too_Small,
                         value.ToMemorySize());
                 if (value > int.MaxValue)
                     throw new LoggingException(
                         LoggingLevel.Critical,
 // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_BufferSize_Too_Big,
+                        () => Resources.FileLogger_BufferSize_Too_Big,
                         value.ToMemorySize());
 
                 _buffer = value;
@@ -344,13 +344,13 @@ namespace WebApplications.Utilities.Logging.Loggers
                 throw new LoggingException(
                     e,
                     LoggingLevel.Critical,
-                    Resources.FileLogger_DirectoryAccessOrCreationError,
+                    () => Resources.FileLogger_DirectoryAccessOrCreationError,
                     directory);
             }
 
             if (string.IsNullOrWhiteSpace(fileNameFormat))
                 // ReSharper disable once AssignNullToNotNullAttribute
-                throw new LoggingException(LoggingLevel.Critical, Resources.FileLogger_FileNameFormatNotSpecified);
+                throw new LoggingException(LoggingLevel.Critical, () => Resources.FileLogger_FileNameFormatNotSpecified);
 
 
             if (string.IsNullOrWhiteSpace(extension))
@@ -378,13 +378,13 @@ namespace WebApplications.Utilities.Logging.Loggers
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_Extension_Invalid_Char,
+                        () => Resources.FileLogger_Extension_Invalid_Char,
                         extension);
                 if (extension.Length > 5)
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.FileLogger_ExtensionLongerThanFiveCharacters,
+                        () => Resources.FileLogger_ExtensionLongerThanFiveCharacters,
                         extension);
                 extension = "." + extension;
             }
@@ -407,7 +407,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 // ReSharper disable once AssignNullToNotNullAttribute
                 throw new LoggingException(
                     LoggingLevel.Critical,
-                    Resources.FileLogger_FileNameFormatInvalid,
+                    () => Resources.FileLogger_FileNameFormatInvalid,
                     fileNameFormat);
 
             try
@@ -420,7 +420,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 throw new LoggingException(
                     e,
                     LoggingLevel.Critical,
-                    Resources.FileLogger_InvalidPathCreation,
+                    () => Resources.FileLogger_InvalidPathCreation,
                     fileNameFormat);
             }
 
@@ -428,7 +428,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 // ReSharper disable once AssignNullToNotNullAttribute
                 throw new LoggingException(
                     LoggingLevel.Critical,
-                    Resources.FileLogger_PathCreatedOutsideDirectory,
+                    () => Resources.FileLogger_PathCreatedOutsideDirectory,
                     fileNameFormat);
 
             return fullFormat;

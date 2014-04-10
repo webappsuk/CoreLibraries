@@ -274,7 +274,6 @@ namespace WebApplications.Utilities.Logging.Test
             CollectionAssert.AllItemsAreNotNull(logs);
             Assert.IsTrue(logs.All(l => l.MessageFormat == Resources.TestString), "Logs contain incorrect message format.");
 
-            DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Log>));
             List<Log> logs2 = new List<Log>();
             using (MemoryStream memoryStream = new MemoryStream())
             {
@@ -297,10 +296,33 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public void TestResource()
         {
+            Contract.Assert(Resources.TestString != null);
+
             Log log = new Log(() => Resources.TestString, "p0");
             Assert.AreEqual(typeof(Resources).FullName +".TestString", log.ResourceProperty);
-            Assert.AreEqual(CultureInfo.CurrentCulture, log.Culture);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.Message);
+        }
+
+        [TestMethod]
+        public void TestTranslations()
+        {
+            Contract.Assert(Resources.TestString != null);
+
+            Log log = new Log(() => Resources.TestString, "p0");
+
+            var culture = Resources.Culture;
+
+            Resources.Culture = new CultureInfo("fr-FR");
+            string message = log.GetMessage(Resources.Culture);
+            Trace.WriteLine(Resources.Culture.Name + " - " + message);
+            Assert.AreEqual(string.Format(Resources.TestString, "p0"), message);
+
+            Resources.Culture = new CultureInfo("de-DE");
+            message = log.GetMessage(Resources.Culture);
+            Trace.WriteLine(Resources.Culture.Name + " - " + message);
+            Assert.AreEqual(string.Format(Resources.TestString, "p0"), message);
+
+            Resources.Culture = culture;
         }
 
         [TestCleanup]

@@ -116,7 +116,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
+                        () => Resources.MemoryLogger_CacheExpiryLessThanTenSeconds,
                         value);
 
                 _cacheExpiry = value;
@@ -138,7 +138,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                     // ReSharper disable once AssignNullToNotNullAttribute
                     throw new LoggingException(
                         LoggingLevel.Critical,
-                        Resources.MemoryLogger_MaximumLogsLessThanOne,
+                  () => Resources.MemoryLogger_MaximumLogsLessThanOne,
                         value);
                 _maximumLogEntries = value;
                 Clean();

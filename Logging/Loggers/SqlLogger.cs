@@ -27,11 +27,11 @@
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
+#if false
     /// <summary>
     /// Allows logging to a database.
     /// TODO This still needs to be implemented!
     /// </summary>
-#if false
     [PublicAPI]
     public class SqlLogger : LoggerBase
     {

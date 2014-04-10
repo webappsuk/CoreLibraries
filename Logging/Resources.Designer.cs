@@ -232,6 +232,15 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fatal error trying to retrieve resource manager for the &apos;{0}&apos; type.
+        /// </summary>
+        internal static string Log_GetResourceManager_FatalError {
+            get {
+                return ResourceManager.GetString("Log_GetResourceManager_FatalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected singular format &apos;{0}&apos;..
         /// </summary>
         internal static string Log_Invalid_Format_Singular {
@@ -255,6 +264,15 @@ namespace WebApplications.Utilities.Logging {
         internal static string Log_Logger_Multiple_Instances {
             get {
                 return ResourceManager.GetString("Log_Logger_Multiple_Instances", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unhandled exception has occured. See inner exception for details..
+        /// </summary>
+        internal static string Log_OnUnhandledException {
+            get {
+                return ResourceManager.GetString("Log_OnUnhandledException", resourceCulture);
             }
         }
         

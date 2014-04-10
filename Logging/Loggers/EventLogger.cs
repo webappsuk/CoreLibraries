@@ -101,7 +101,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 if (_eventLog == value) return;
                 if (string.IsNullOrWhiteSpace(value))
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    throw new LoggingException(Resources.EventLogger_EventLogCannotBeNull);
+                    throw new LoggingException(() => Resources.EventLogger_EventLogCannotBeNull);
                 _eventLog = value;
             }
         }
@@ -129,7 +129,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 if (_machineName == value) return;
                 if (string.IsNullOrWhiteSpace(value))
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    throw new LoggingException(Resources.EventLogger_MachineNameCannotBeNull);
+                    throw new LoggingException(() => Resources.EventLogger_MachineNameCannotBeNull);
                 _machineName = value;
             }
         }
