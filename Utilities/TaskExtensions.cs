@@ -780,10 +780,18 @@ namespace WebApplications.Utilities
                 : WithCancellationInternal(task, cancellationToken);
         }
 
+        /// <summary>
+        /// Adds cancellation support to a task that is otherwise not cancellable.
+        /// </summary>
+        /// <param name="task">The task.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.OperationCanceledException"></exception>
+        [NotNull]
         private static async Task WithCancellationInternal([NotNull] Task task, CancellationToken cancellationToken)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>) s).TrySetResult(true), tcs))
                 if (task != await Task.WhenAny(task, tcs.Task))
                     throw new OperationCanceledException(cancellationToken);
             await task;
@@ -792,7 +800,7 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Adds cancellation support to a task that is otherwise not cancellable.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The task result.</typeparam>
         /// <param name="task">The task.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>An awaitable task</returns>
@@ -814,13 +822,22 @@ namespace WebApplications.Utilities
                 : WithCancellationInternal(task, cancellationToken);
         }
 
+        /// <summary>
+        /// Adds cancellation support to a task that is otherwise not cancellable.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="task">The task.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="System.OperationCanceledException"></exception>
+        [NotNull]
         private static async Task<T> WithCancellationInternal<T>([NotNull] Task<T> task, CancellationToken cancellationToken)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>) s).TrySetResult(true), tcs))
                 if (task != await Task.WhenAny(task, tcs.Task))
                     throw new OperationCanceledException(cancellationToken);
-            return await task; 
+            return await task;
         }
 
         /// <summary>

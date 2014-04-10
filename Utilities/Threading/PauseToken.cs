@@ -26,6 +26,7 @@
 #endregion
 
 using System.Diagnostics.Contracts;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
@@ -41,12 +42,15 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// The default PauseToken never pauses.
         /// </summary>
+        [PublicAPI]
         public static readonly PauseToken None = default(PauseToken);
 
         /// <summary>
         /// The source <see cref="PauseTokenSource"/>, if any.
         /// </summary>
-        [CanBeNull] private readonly PauseTokenSource _source;
+        [PublicAPI]
+        [CanBeNull]
+        private readonly PauseTokenSource _source;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PauseToken"/> struct.
@@ -62,6 +66,7 @@ namespace WebApplications.Utilities.Threading
         /// Gets a value indicating whether this instance can pause.
         /// </summary>
         /// <value><see langword="true" /> if this instance can pause; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
         public bool CanPause
         {
             get { return _source != null; }
@@ -83,10 +88,11 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task.</returns>
         [PublicAPI]
         [NotNull]
-        public Task WaitWhilePausedAsync()
+        [JetBrains.Annotations.Pure,System.Diagnostics.Contracts.Pure]
+        public Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))
         {
             return _source != null && _source.IsPaused
-                ? _source.WaitWhilePausedAsync()
+                ? _source.WaitWhilePausedAsync(token)
                 : TaskResult.Completed;
         }
     }

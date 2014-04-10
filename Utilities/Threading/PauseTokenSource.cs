@@ -48,10 +48,10 @@ namespace WebApplications.Utilities.Threading
         /// Gets or sets a value indicating whether this instance is paused.
         /// </summary>
         /// <value><see langword="true" /> if this instance is paused; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
         public bool IsPaused
         {
-            [PublicAPI] get { return _paused != null; }
-            [PublicAPI]
+            get { return _paused != null; }
             set
             {
                 if (value)
@@ -86,11 +86,17 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task.</returns>
         [PublicAPI]
         [NotNull]
-        internal Task WaitWhilePausedAsync()
+        [Pure, System.Diagnostics.Contracts.Pure]
+        internal Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))
         {
             TaskCompletionSource<bool> cur = _paused;
             // ReSharper disable once AssignNullToNotNullAttribute
-            return cur != null ? cur.Task : TaskResult.Completed;
+            if ((cur == null) ||
+                (cur.Task == null) ||
+                (cur.Task.IsCompleted))
+                return TaskResult.Completed;
+
+            return token.CanBeCanceled ? cur.Task.WithCancellation(token) : cur.Task;
         }
     }
 }
