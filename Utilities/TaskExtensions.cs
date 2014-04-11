@@ -846,7 +846,6 @@ namespace WebApplications.Utilities
         /// <param name="context">The context.</param>
         /// <returns>SynchronizationContextAwaiter.</returns>
         [PublicAPI]
-        [NotNull]
         public static SynchronizationContextAwaiter GetAwaiter([NotNull]this SynchronizationContext context)
         {
             Contract.Requires(context != null);
