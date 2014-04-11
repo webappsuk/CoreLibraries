@@ -78,12 +78,14 @@ namespace WebApplications.Utilities.Performance
         /// Gets all known counters.
         /// </summary>
         /// <value>All.</value>
+        [NotNull]
         public static IEnumerable<PerfCategory> All { get { return _counters.Values; } }
 
         /// <summary>
         /// Gets all known counter types.
         /// </summary>
         /// <value>All.</value>
+        [NotNull]
         public static IEnumerable<Type> AllTypes { get { return _counterTypes.Keys; } }
 
         /// <summary>
