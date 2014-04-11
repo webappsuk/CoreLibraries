@@ -38,7 +38,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     /// <summary>
     ///   Allows logging to the debug window.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public sealed class TraceLogger : LoggerBase
     {
         /// <summary>
@@ -78,7 +78,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public override Task Add([InstantHandle]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
             string format = Format;

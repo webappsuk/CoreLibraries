@@ -32,7 +32,7 @@ namespace WebApplications.Utilities.Logging
     /// <summary>
     ///   This type cannot be private, as it must be callable from the actual Module Initializer.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     internal static class ModuleInitializer
     {
         /// <summary>
@@ -43,7 +43,7 @@ namespace WebApplications.Utilities.Logging
         ///   Include initialization code here that will run when the library is first loaded,
         ///   and before any element of the library is used.
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         internal static void Initialize()
         {
             Log.LoadConfiguration();

@@ -78,8 +78,10 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// </summary>
         /// <value>The default name.</value>
         [NotNull]
+        [PublicAPI]
         public static string DefaultName
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return _defaultName.Value; }
         }
 
@@ -87,7 +89,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         ///   Gets a value indicating whether logging is enabled.
         /// </summary>
         [ConfigurationProperty("enabled", DefaultValue = true, IsRequired = false)]
-        [UsedImplicitly]
+        [PublicAPI]
         public bool Enabled
         {
             get { return GetProperty<bool>("enabled"); }
@@ -99,7 +101,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// </summary>
         [NotNull]
         [ConfigurationProperty("applicationName", DefaultValue = "", IsRequired = false)]
-        [UsedImplicitly]
+        [PublicAPI]
         public string ApplicationName
         {
             get
@@ -121,7 +123,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         ///   Gets or sets the application <see cref="Guid"/>.
         /// </summary>
         [ConfigurationProperty("applicationGuid", IsRequired = false)]
-        [UsedImplicitly]
+        [PublicAPI]
         public Guid ApplicationGuid
         {
             get { return GetProperty<Guid>("applicationGuid"); }
@@ -132,7 +134,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         ///   Gets the valid <see cref="LoggingLevels">logging levels</see>.
         /// </summary>
         [ConfigurationProperty("validLevels", DefaultValue = LoggingLevels.All, IsRequired = false)]
-        [UsedImplicitly]
+        [PublicAPI]
         public LoggingLevels ValidLevels
         {
             get { return GetProperty<LoggingLevels>("validLevels"); }
@@ -144,7 +146,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// </summary>
         [ConfigurationProperty("logCacheExpiry", DefaultValue = "00:10:00", IsRequired = false)]
         [TimeSpanValidator(MinValueString = "00:00:00", MaxValueString = "1.00:00:00")]
-        [UsedImplicitly]
+        [PublicAPI]
         public TimeSpan LogCacheExpiry
         {
             get { return GetProperty<TimeSpan>("logCacheExpiry"); }
@@ -156,7 +158,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// </summary>
         [ConfigurationProperty("logCacheMaximumEntries", DefaultValue = "10000", IsRequired = false)]
         [IntegerValidator(MinValue = 0, MaxValue = int.MaxValue)]
-        [UsedImplicitly]
+        [PublicAPI]
         public int LogCacheMaximumEntries
         {
             get { return GetProperty<int>("logCacheMaximumEntries"); }
@@ -172,9 +174,10 @@ namespace WebApplications.Utilities.Logging.Configuration
             ClearItemsName = "clear",
             RemoveItemName = "remove")]
         [NotNull]
-        [UsedImplicitly]
+        [PublicAPI]
         public LoggersCollection Loggers
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<LoggersCollection>("loggers"); }
             set { SetProperty("loggers", value); }
         }

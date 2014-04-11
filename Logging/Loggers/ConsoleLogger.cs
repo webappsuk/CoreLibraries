@@ -69,7 +69,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         /// <value>The format.</value>
         /// <remarks>
-        /// <para>Along with the <see cref="Log.ToString(string)">standard formats supported by the logger</see>, also supports colouration using colour formats.</para>
+        /// <para>Along with the <see cref="Log.ToString(string, IFormatProvider)">standard formats supported by the logger</see>, also supports colouration using colour formats.</para>
         /// <para>To change colour use a '+' or '-' followed by a <see cref="ConsoleColor"/> e.g. <code>{+White}</code>. '+' indicates a foreground colour change, whilst
         /// '-' will change the background colour.</para>
         /// <para>The '?' colour will pick a colour based on the current log level, e.g. <code>{+?}</code> for an <see cref="LoggingLevel.Error">error</see> will
@@ -86,7 +86,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override async Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public override async Task Add([InstantHandle] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
             // Check we're actually in a console!

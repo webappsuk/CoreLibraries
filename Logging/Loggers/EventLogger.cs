@@ -38,7 +38,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     /// <summary>
     ///   Allows logging to Windows <see cref="EventLog">event logs</see>.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     public class EventLogger : LoggerBase
     {
         /// <summary>
@@ -90,8 +90,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         ///   The <see cref="System.Diagnostics.EventLog.Log">name</see> of the <see cref="EventLog">event log</see>.
         /// </summary>
-        [UsedImplicitly]
         [NotNull]
+        [PublicAPI]
         public string EventLog
         {
             get { return _eventLog; }
@@ -110,8 +110,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets or sets the format for trace messages.
         /// </summary>
         /// <value>The format.</value>
-        [PublicAPI]
         [NotNull]
+        [PublicAPI]
         public string Format { get; set; }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public override Task Add([InstantHandle]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
             string source = Log.ApplicationName;

@@ -48,14 +48,14 @@ namespace WebApplications.Utilities.Logging.Loggers
     ///   TODO It should be possible to turn this into a logger that sets <see cref="ILogger.Queryable"/> to <see langword="true"/>.
     ///   That is that supports log retrieval.
     /// </remarks>
-    [UsedImplicitly]
+    [PublicAPI]
     public class FileLogger : LoggerBase
     {
         /// <summary>
         /// The default logging directory.
         /// </summary>
-        [PublicAPI]
         [NotNull]
+        [PublicAPI]
         public static readonly string DefaultDirectory;
 
         private uint _buffer;
@@ -161,7 +161,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         ///   The directory being logged to.
         /// </summary>
         [CanBeNull]
-        [UsedImplicitly]
+        [PublicAPI]
         public string Directory
         {
             get { return _directory; }
@@ -215,7 +215,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         ///   The maximum time period that a single log file can cover.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public TimeSpan MaxDuration
         {
             get { return _maxDuration; }
@@ -235,7 +235,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <summary>
         ///   The maximum number of log items in a single log file.
         /// </summary>
-        [UsedImplicitly]
+        [PublicAPI]
         public Int64 MaxLog
         {
             get { return _maxLog; }
@@ -448,7 +448,9 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override async Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public override async Task Add(
+            [InstantHandle] IEnumerable<Log> logs,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
             LogFile logFile = null;

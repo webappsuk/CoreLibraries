@@ -40,7 +40,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     /// A logger that stores logs solely in memory.
     /// Is used by the core logger to hold log items temporarily, and for caching.
     /// </summary>
-    [UsedImplicitly]
+    [PublicAPI]
     internal sealed class MemoryLogger : LoggerBase
     {
         /// <summary>
@@ -187,7 +187,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public override Task Add([InstantHandle]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
             lock (_lock)

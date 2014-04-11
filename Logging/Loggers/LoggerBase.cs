@@ -115,7 +115,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
         public abstract Task Add([NotNull] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
 
         /// <summary>

@@ -312,8 +312,13 @@ namespace WebApplications.Utilities.Logging.Test
 
             var culture = Resources.Culture;
 
-            Resources.Culture = new CultureInfo("fr-FR");
+            Resources.Culture = CultureInfo.InvariantCulture;
             string message = log.GetMessage(Resources.Culture);
+            Trace.WriteLine("Invariant - " + message);
+            Assert.AreEqual(string.Format(Resources.TestString, "p0"), message);
+
+            Resources.Culture = new CultureInfo("fr-FR");
+            message = log.GetMessage(Resources.Culture);
             Trace.WriteLine(Resources.Culture.Name + " - " + message);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), message);
 

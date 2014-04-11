@@ -41,8 +41,7 @@ namespace WebApplications.Utilities.Logging
         ///   All Levels.
         /// </summary>
         [Description("All Levels.")]
-        All =
-            Emergency | Critical | Error | Warning | SystemNotification | Notification | Information | Debugging,
+        All = Emergency | Critical | Error | Warning | SystemNotification | Notification | Information | Debugging,
 
         /// <summary>
         ///   No Levels.
@@ -54,28 +53,28 @@ namespace WebApplications.Utilities.Logging
         ///   At least critical.
         /// </summary>
         [Description("At least critical.")]
-        [UsedImplicitly]
+        [PublicAPI]
         AtLeastCritical = Emergency | Critical,
 
         /// <summary>
         ///   At least an error.
         /// </summary>
         [Description("At least an error.")]
-        [UsedImplicitly]
+        [PublicAPI]
         AtLeastError = Emergency | Critical | Error,
 
         /// <summary>
         ///   At least a warning.
         /// </summary>
         [Description("At least a warning.")]
-        [UsedImplicitly]
+        [PublicAPI]
         AtLeastWarning = Emergency | Critical | Error | Warning,
 
         /// <summary>
         ///   At least a system notification.
         /// </summary>
         [Description("At least a system notification.")]
-        [UsedImplicitly]
+        [PublicAPI]
         AtLeastSystemNotification =
             Emergency | Critical | Error | Warning | SystemNotification,
 
@@ -83,7 +82,7 @@ namespace WebApplications.Utilities.Logging
         ///   At least a notification.
         /// </summary>
         [Description("At least a notification.")]
-        [UsedImplicitly]
+        [PublicAPI]
         AtLeastNotification =
             Emergency | Critical | Error | Warning | SystemNotification | Notification,
 
@@ -91,6 +90,7 @@ namespace WebApplications.Utilities.Logging
         ///   At least information.
         /// </summary>
         [Description("At least information.")]
+        [PublicAPI]
         AtLeastInformation =
             Emergency | Critical | Error | Warning | SystemNotification | Notification | Information,
 

@@ -67,6 +67,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly LogContext Empty = new LogContext().Lock();
 
         /// <summary>
@@ -136,6 +137,7 @@ namespace WebApplications.Utilities.Logging
         /// anyone else modifying a reserved key for a context.</para>
         ///   <para>Trying to reserve a key when it has already been reserved with a different GUID will throw an exception.</para></remarks>
         [NotNull]
+        [PublicAPI]
         public static string ReserveKey([NotNull] string key, Guid reservation)
         {
             Contract.Requires(key != null);
@@ -197,6 +199,7 @@ namespace WebApplications.Utilities.Logging
         /// for a key that matches the prefix has already been reserved will throw an exception.</para>
         /// </remarks>
         [NotNull]
+        [PublicAPI]
         public static string ReservePrefix([NotNull] string prefix, Guid reservation)
         {
             Contract.Requires(prefix != null);
@@ -262,7 +265,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="key">The key.</param>
         /// <returns><see langword="true" /> if the specified key is a reserved key; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [UsedImplicitly]
+        [PublicAPI]
         public static bool IsReservedKey([NotNull] string key)
         {
             // Check for reservation.
@@ -389,7 +392,7 @@ namespace WebApplications.Utilities.Logging
         /// <exception cref="LoggingException">The <see cref="LogContext" /> is <see cref="IsLocked">locked</see>.</exception>
         [NotNull]
         [PublicAPI]
-        public LogContext SetPrefixed([NotNull] string prefix, [CanBeNull] IEnumerable<object> values)
+        public LogContext SetPrefixed([NotNull] string prefix, [CanBeNull][InstantHandle] IEnumerable<object> values)
         {
             Contract.Requires(prefix != null);
             return SetPrefixed(Guid.Empty, prefix, values);
@@ -440,7 +443,7 @@ namespace WebApplications.Utilities.Logging
         /// <exception cref="LoggingException">The <see cref="LogContext"/> is <see cref="IsLocked">locked</see>.</exception>
         [NotNull]
         [PublicAPI]
-        public LogContext SetPrefixed(Guid reservation, [NotNull] string prefix, [CanBeNull] IEnumerable<object> values)
+        public LogContext SetPrefixed(Guid reservation, [NotNull] string prefix, [CanBeNull][InstantHandle] IEnumerable<object> values)
         {
             Contract.Requires(prefix != null);
             // ReSharper disable once AssignNullToNotNullAttribute

@@ -42,7 +42,6 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Threading;
-using System.Web.UI;
 using JetBrains.Annotations;
 using ProtoBuf;
 using ProtoBuf.Meta;
@@ -154,7 +153,8 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [NonSerialized]
         private static readonly Lazy<string> _protobufSchema = new Lazy<string>(
-            () => RuntimeTypeModel.Default.GetSchema(typeof(Log)),
+            // ReSharper disable once PossibleNullReferenceException
+            () => RuntimeTypeModel.Default.GetSchema(typeof (Log)),
             LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace WebApplications.Utilities.Logging
         /// <para>To add logs use <see cref="Log.Add(string, object[])"/> instead.</para>
         /// <para>You can create partial logs, however the context must contain at least the 
         /// <see cref="GuidKey">Guid key</see>, and be a valid <see cref="CombGuid"/>.</para></remarks>
-        public Log([NotNull] IEnumerable<KeyValuePair<string, string>> dictionary)
+        public Log([NotNull] [InstantHandle] IEnumerable<KeyValuePair<string, string>> dictionary)
             : this()
         {
             Contract.Requires(dictionary != null);
@@ -387,7 +387,7 @@ namespace WebApplications.Utilities.Logging
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (!isLogException && hasMessage)
-                    innerExceptions = new[] { exception };
+                    innerExceptions = new[] {exception};
                 else
                 {
                     // Add the exception type.
@@ -409,7 +409,7 @@ namespace WebApplications.Utilities.Logging
                     else
                     {
                         if (exception.InnerException != null)
-                            innerExceptions = new[] { exception.InnerException };
+                            innerExceptions = new[] {exception.InnerException};
 
                         // If this is a SQL exception, then log the stored proc.
                         SqlException sqlException = exception as SqlException;
@@ -701,7 +701,10 @@ namespace WebApplications.Utilities.Logging
         /// </remarks>
         [StringFormatMethod("format")]
         [PublicAPI]
-        public Log([CanBeNull] CultureInfo culture, [LocalizationRequired] [CanBeNull] string format, [CanBeNull] params object[] parameters)
+        public Log(
+            [CanBeNull] CultureInfo culture,
+            [LocalizationRequired] [CanBeNull] string format,
+            [CanBeNull] params object[] parameters)
             : this(culture, null, null, LoggingLevel.Information, format, null, parameters)
         {
         }
@@ -772,7 +775,10 @@ namespace WebApplications.Utilities.Logging
         /// <param name="level"><para>The log level.</para>
         ///   <para>By default this uses the error log level.</para></param>
         [PublicAPI]
-        public Log([CanBeNull] CultureInfo culture, [CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
+        public Log(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Exception exception,
+            LoggingLevel level = LoggingLevel.Error)
             : this(culture, null, exception, level, null, null, null)
         {
         }
@@ -849,7 +855,10 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [PublicAPI]
-        public Log([CanBeNull] CultureInfo culture, [CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+        public Log(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
             : this(culture, null, null, LoggingLevel.Information, null, resource, parameters)
         {
         }
@@ -978,10 +987,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public bool IsTranslatable
         {
-            get
-            {
-                return _resourceProperty != null;
-            }
+            get { return _resourceProperty != null; }
         }
 
         /// <summary>
@@ -1019,7 +1025,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns></returns>
         [CanBeNull]
         [PublicAPI]
-        public string GetMessage([CanBeNull]CultureInfo culture)
+        public string GetMessage([CanBeNull] CultureInfo culture)
         {
             lock (_lock)
             {
@@ -1046,7 +1052,7 @@ namespace WebApplications.Utilities.Logging
         /// <returns></returns>
         [CanBeNull]
         [PublicAPI]
-        public string GetMessageFormat([CanBeNull]CultureInfo culture)
+        public string GetMessageFormat([CanBeNull] CultureInfo culture)
         {
             lock (_lock)
             {
@@ -1054,7 +1060,7 @@ namespace WebApplications.Utilities.Logging
                 return _latestMessageFormat;
             }
         }
-        
+
         /// <summary>
         ///   Gets a <see cref="bool"/> value indicating whether this instance was generated from an exception.
         /// </summary>
@@ -1284,7 +1290,10 @@ namespace WebApplications.Utilities.Logging
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString([CanBeNull] string format, [NotNull] CultureInfo culture, [CanBeNull] IFormatProvider formatProvider = null)
+        public string ToString(
+            [CanBeNull] string format,
+            [NotNull] CultureInfo culture,
+            [CanBeNull] IFormatProvider formatProvider = null)
         {
             if (format == null) format = LogFormat.General.ToString();
 
@@ -1427,7 +1436,7 @@ namespace WebApplications.Utilities.Logging
             bool asJson = format.HasFlag(LogFormat.Json);
 
             // Remove option flags
-            format = ((LogFormat)(((int)format) & 0x0FFFFFFF));
+            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
 
             if (asXml && asJson)
                 throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
@@ -1616,7 +1625,7 @@ namespace WebApplications.Utilities.Logging
                             string i = indent + "   ";
                             bool cvf = true;
                             foreach (
-                                KeyValuePair<string, string> kvp in (IEnumerable<KeyValuePair<string, string>>)_context
+                                KeyValuePair<string, string> kvp in (IEnumerable<KeyValuePair<string, string>>) _context
                                 )
                             {
                                 Contract.Assert(kvp.Key != null);
@@ -1703,7 +1712,8 @@ namespace WebApplications.Utilities.Logging
                 yield return new KeyValuePair<string, string>(MessageFormatKey, _messageFormat);
             if (_resourceProperty != null)
                 yield return new KeyValuePair<string, string>(ResourcePropertyKey, _resourceProperty);
-            yield return new KeyValuePair<string, string>(ThreadIDKey, _threadID.ToString(CultureInfo.InvariantCulture));
+            yield return new KeyValuePair<string, string>(ThreadIDKey, _threadID.ToString(CultureInfo.InvariantCulture))
+                ;
             if (_threadName != null)
                 yield return new KeyValuePair<string, string>(ThreadNameKey, _threadName);
             if (_stackTrace != null)
@@ -1713,7 +1723,10 @@ namespace WebApplications.Utilities.Logging
             if (_storedProcedure != null)
             {
                 yield return new KeyValuePair<string, string>(StoredProcedureKey, _storedProcedure);
-                yield return new KeyValuePair<string, string>(StoredProcedureLineKey, _storedProcedureLine.ToString(CultureInfo.InvariantCulture));
+                yield return
+                    new KeyValuePair<string, string>(
+                        StoredProcedureLineKey,
+                        _storedProcedureLine.ToString(CultureInfo.InvariantCulture));
             }
 
             int count = 0;
@@ -1764,7 +1777,8 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="trace">The stack trace to format.</param>
         /// <returns>The formatted stack <paramref name="trace" />.</returns>
-        private static String FormatStackTrace(StackTrace trace)
+        [CanBeNull]
+        private static String FormatStackTrace([CanBeNull] StackTrace trace)
         {
             // Check for stack trace frames.
             if (trace == null)
@@ -1777,13 +1791,15 @@ namespace WebApplications.Utilities.Logging
 
             bool checkSkip = true;
             bool displayFilenames = true; // we'll try, but demand may fail
-            const string word_At = "at";
+            const string wordAt = "at";
             const string inFileLineNum = "in {0}:line {1}";
             Type baseType = null;
 
             StringBuilder sb = new StringBuilder(255);
             foreach (StackFrame sf in frames)
             {
+                Contract.Assert(sf != null);
+
                 MethodBase mb = sf.GetMethod();
                 if (mb == null)
                 {
@@ -1809,13 +1825,16 @@ namespace WebApplications.Utilities.Logging
 
                         // Look for inheritance from log or logging exception.
                         baseType = declaringType;
-                        while ((baseType != typeof(object)) &&
-                               (baseType != typeof(LoggingException)) &&
-                               (baseType != typeof(Log)))
+                        while ((baseType != typeof (object)) &&
+                               (baseType != typeof (LoggingException)) &&
+                               (baseType != typeof (Log)))
+                        {
+                            Contract.Assert(baseType != null);
                             baseType = baseType.BaseType;
+                        }
 
-                        if ((baseType == typeof(LoggingException)) ||
-                            (baseType == typeof(Log)))
+                        if ((baseType == typeof (LoggingException)) ||
+                            (baseType == typeof (Log)))
                         {
                             // We are descended from LoggingException or Log so skip frame.
                             baseType = declaringType;
@@ -1831,12 +1850,13 @@ namespace WebApplications.Utilities.Logging
                 // Add newline if this isn't the first new line.
                 sb.Append(Environment.NewLine);
 
-                sb.AppendFormat("   {0} ", word_At);
+                sb.AppendFormat("   {0} ", wordAt);
 
                 Type t = mb.DeclaringType;
                 // if there is a type (non global method) print it
                 if (t != null)
                 {
+                    // ReSharper disable once PossibleNullReferenceException
                     sb.Append(t.FullName.Replace('+', '.'));
                     sb.Append(".");
                 }
@@ -1857,6 +1877,7 @@ namespace WebApplications.Utilities.Logging
                         else
                             fFirstTyParam = false;
 
+                        Contract.Assert(typars[k] != null);
                         sb.Append(typars[k].Name);
                         k++;
                     }
@@ -1869,12 +1890,15 @@ namespace WebApplications.Utilities.Logging
                 bool fFirstParam = true;
                 foreach (ParameterInfo t1 in pi)
                 {
+                    Contract.Assert(t1 != null);
+
                     if (fFirstParam == false)
                         sb.Append(", ");
                     else
                         fFirstParam = false;
 
                     String typeName = "<UnknownType>";
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                     if (t1.ParameterType != null)
                         typeName = t1.ParameterType.Name;
                     sb.Append(typeName + " " + t1.Name);

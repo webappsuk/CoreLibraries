@@ -44,10 +44,12 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// </summary>
         /// <value>The logger type.</value>
         [ConfigurationProperty("type")]
-        [TypeConverter(typeof (TypeNameConverter))]
-        [SubclassTypeValidator(typeof (ILogger))]
+        [TypeConverter(typeof(TypeNameConverter))]
+        [SubclassTypeValidator(typeof(ILogger))]
+        [PublicAPI]
         public override Type Type
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<Type>("type"); }
             set { SetProperty("type", value); }
         }
@@ -58,8 +60,10 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// <value>The logger name.</value>
         [ConfigurationProperty("name", IsRequired = true, IsKey = true)]
         [NotNull]
+        [PublicAPI]
         public string Name
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             get { return GetProperty<string>("name"); }
             set { SetProperty("name", value); }
         }
@@ -68,6 +72,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         ///   Gets a value indicating whether logging is enabled.
         /// </summary>
         [ConfigurationProperty("enabled", DefaultValue = true, IsRequired = false)]
+        [PublicAPI]
         public bool Enabled
         {
             get { return GetProperty<bool>("enabled"); }
@@ -78,6 +83,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         ///   Gets the valid <see cref="LoggingLevels">logging levels</see>.
         /// </summary>
         [ConfigurationProperty("validLevels", DefaultValue = LoggingLevels.All, IsRequired = false)]
+        [PublicAPI]
         public LoggingLevels ValidLevels
         {
             get { return GetProperty<LoggingLevels>("validLevels"); }

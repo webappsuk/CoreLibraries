@@ -48,7 +48,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         private static readonly Action<Exception, string> _setMessage =
-            typeof(Exception).GetSetter<Exception, string>("_message");
+            typeof (Exception).GetSetter<Exception, string>("_message");
 
         /// <summary>
         /// The associated log item.
@@ -458,7 +458,9 @@ namespace WebApplications.Utilities.Logging
         /// <param name="exception">The exception.</param>
         /// <param name="level">The log level.</param>
         public LoggingException(
-            [CanBeNull] CultureInfo culture, [CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Exception exception,
+            LoggingLevel level = LoggingLevel.Error)
             : base(exception == null ? string.Empty : exception.Message, exception)
         {
             // Log the exception
@@ -551,7 +553,9 @@ namespace WebApplications.Utilities.Logging
         /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
         /// <param name="parameters">The parameters.</param>
         public LoggingException(
-            [CanBeNull] CultureInfo culture, [CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
         {
             // Log the exception
             Log = new Log(culture, LoggingLevel.Error, resource, parameters);

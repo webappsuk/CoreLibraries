@@ -96,10 +96,5 @@ namespace WebApplications.Utilities.Logging.Loggers
             Contract.Requires(logs != null);
             throw new NotImplementedException();
         }
-
-        public override IQbservable<Log> Qbserve
-        {
-            get { return base.Qbserve; }
-        }
     }
 }

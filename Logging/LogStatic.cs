@@ -68,6 +68,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private static readonly PerfCounter _perfCounterNewItem;
 
         /// <summary>
@@ -115,7 +116,7 @@ namespace WebApplications.Utilities.Logging
                             .Where(m => m != null)
                             .Select(m => m.DeclaringType)
                             .Where(t => t != null)
-                            .Select(t => new { t.Assembly, Name = t.Assembly.GetName() })
+                            .Select(t => new {t.Assembly, Name = t.Assembly.GetName()})
                             // ReSharper disable once AssignNullToNotNullAttribute
                             .Where(n => (n.Name != null) && !publicKeys.Contains(n.Name.GetPublicKey()))
                             .Select(n => n.Assembly)
@@ -177,7 +178,11 @@ namespace WebApplications.Utilities.Logging
         public static CultureInfo DefaultCulture
         {
             get { return _defaultCulture; }
-            set { _defaultCulture = value ?? CultureInfo.CurrentCulture; }
+            set
+            {
+                Contract.Requires(value != null);
+                _defaultCulture = value;
+            }
         }
 
         /// <summary>
@@ -185,6 +190,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string LogKeyPrefix = LogContext.ReservePrefix(
             "Log ",
             _logReservation);
@@ -194,6 +200,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string ParameterPrefix =
             LogContext.ReservePrefix("Log Parameter ", _logReservation);
 
@@ -202,6 +209,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string GuidKey = LogContext.ReserveKey(
             "Log GUID",
             _logReservation);
@@ -211,6 +219,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string LevelKey = LogContext.ReserveKey(
             "Log Level",
             _logReservation);
@@ -220,6 +229,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string MessageFormatKey =
             LogContext.ReserveKey("Log Message Format", _logReservation);
 
@@ -228,6 +238,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string ResourcePropertyKey =
             LogContext.ReserveKey("Log Resource Property", _logReservation);
 
@@ -236,6 +247,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string ExceptionTypeFullNameKey =
             LogContext.ReserveKey("Log Exception Type", _logReservation);
 
@@ -244,6 +256,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string InnerExceptionGuidsPrefix =
             LogContext.ReservePrefix("Log Inner Exception ", _logReservation);
 
@@ -252,6 +265,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string StackTraceKey = LogContext.ReserveKey(
             "Log Stack Trace",
             _logReservation);
@@ -261,6 +275,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string ThreadIDKey = LogContext.ReserveKey(
             "Log Thread ID",
             _logReservation);
@@ -270,6 +285,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string ThreadNameKey = LogContext.ReserveKey(
             "Log Thread Name",
             _logReservation);
@@ -279,6 +295,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string StoredProcedureKey =
             LogContext.ReserveKey("Log Stored Procedure", _logReservation);
 
@@ -287,6 +304,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string StoredProcedureLineKey =
             LogContext.ReserveKey("Log Stored Procedure Line", _logReservation);
 
@@ -295,6 +313,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
+        [PublicAPI]
         public static readonly string IsTerminatingKey =
             LogContext.ReserveKey("Is Terminating", _logReservation);
 
@@ -303,7 +322,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
+        internal static readonly Assembly LoggingAssembly = typeof (Log).Assembly;
 
         /// <summary>
         /// The global tick, ticks once a second and is used for batching, etc.
@@ -367,6 +386,7 @@ namespace WebApplications.Utilities.Logging
                 PerfCategory.GetOrAdd<PerfCounter>("Logged new item", "Tracks every time a log entry is logged.");
 
             // Create tick
+            // ReSharper disable once AssignNullToNotNullAttribute
             Tick = Observable.Timer(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
 
             // Create loggers and add default memory logger.
@@ -374,7 +394,8 @@ namespace WebApplications.Utilities.Logging
             _defaultMemoryLogger = new MemoryLogger("Default memory logger", TimeSpan.FromMinutes(1));
             _loggers[_defaultMemoryLogger] = new LoggerInfo(false);
 
-            // Flush on tick.
+            // Flush on tick. 
+            // ReSharper disable once AssignNullToNotNullAttribute
             _tickSubscription = Tick.Subscribe(l => Flush());
 
             ConfigurationSection<LoggingConfiguration>.Changed += (o, e) => LoadConfiguration();
@@ -430,7 +451,8 @@ namespace WebApplications.Utilities.Logging
                     {
                         PropertyInfo resourceInfo = type.GetProperty(
                             "ResourceManager",
-                            BindingFlags.GetProperty | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+                            BindingFlags.GetProperty | BindingFlags.NonPublic | BindingFlags.Public |
+                            BindingFlags.Static);
 
                         return resourceInfo == null
                             ? null
@@ -495,6 +517,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The maximum number of log entries to store in the memory cache.
         /// </summary>
+        [PublicAPI]
         public static int CacheMaximum
         {
             get { return _defaultMemoryLogger.MaximumLogEntries; }
@@ -504,6 +527,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         ///   The maximum length of time to hold items in the memory cache.
         /// </summary>
+        [PublicAPI]
         public static TimeSpan CacheExpiry
         {
             get { return _defaultMemoryLogger.CacheExpiry; }
@@ -771,7 +795,7 @@ namespace WebApplications.Utilities.Logging
             int limit = Int32.MaxValue)
             where T : ILogger
         {
-            Contract.Requires(logger != null);
+            Contract.Requires(!ReferenceEquals(logger, null));
             return AddLogger(() => logger, sourceLogger, limit, false);
         }
 
@@ -788,7 +812,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public static T AddLogger<T>(
-            [NotNull] Func<T> loggerCreator,
+            [NotNull] [InstantHandle] Func<T> loggerCreator,
             [CanBeNull] ILogger sourceLogger = null,
             int limit = Int32.MaxValue)
             where T : ILogger
@@ -811,7 +835,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         private static T AddLogger<T>(
-            [NotNull] Func<T> loggerCreator,
+            [NotNull] [InstantHandle] Func<T> loggerCreator,
             [CanBeNull] ILogger sourceLogger,
             int limit,
             bool isFromConfiguration)
@@ -838,7 +862,7 @@ namespace WebApplications.Utilities.Logging
                         _loggers.FirstOrDefault(i => i.Key is T);
                     if ((existing.Key != null) &&
                         !existing.Key.AllowMultiple)
-                        return (T)existing.Key;
+                        return (T) existing.Key;
 
                     logger = loggerCreator();
                     if (ReferenceEquals(logger, null))
@@ -931,6 +955,8 @@ namespace WebApplications.Utilities.Logging
 
                     Log log;
                     if (!_buffer.TryTake(out log)) break;
+                    Contract.Assert(log != null);
+
                     if (log.TimeStamp > requested)
                         notReady.Add(log);
                     else
@@ -950,7 +976,7 @@ namespace WebApplications.Utilities.Logging
             List<KeyValuePair<ILogger, LoggerInfo>> loggers;
             lock (_loggers)
                 loggers = _loggers
-                    .Where(kvp => (((byte)kvp.Key.ValidLevels) & ((byte)ValidLevels)) > 0)
+                    .Where(kvp => (((byte) kvp.Key.ValidLevels) & ((byte) ValidLevels)) > 0)
                     .ToList();
 
             // Order the logs
@@ -971,7 +997,7 @@ namespace WebApplications.Utilities.Logging
             // Note we don't use the supplied cancellation token as we always write out logs once they're removed from the buffer.
             await Task.WhenAll(
                 loggers.Select(
-                // ReSharper disable once PossibleNullReferenceException
+                    // ReSharper disable once PossibleNullReferenceException
                     kvp => kvp.Value.Lock
                         .LockAsync(CancellationToken.None)
                         .ContinueWith(
@@ -979,6 +1005,7 @@ namespace WebApplications.Utilities.Logging
                             {
                                 try
                                 {
+                                    Contract.Assert(kvp.Key != null);
                                     kvp.Key.Add(
                                         orderedLogs.Where(log => log.Level.IsValid(kvp.Key.ValidLevels)),
                                         CancellationToken.None);
@@ -991,7 +1018,7 @@ namespace WebApplications.Utilities.Logging
                             },
                             CancellationToken.None,
                             TaskContinuationOptions.LongRunning,
-                        // ReSharper disable once AssignNullToNotNullAttribute
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             TaskScheduler.Default)))
                 // We do support cancelling the wait though, this doesn't stop the actual writes occurring.
                 .WithCancellation(token);
@@ -1441,7 +1468,10 @@ namespace WebApplications.Utilities.Logging
         /// If the log <paramref name="level" /> is invalid then the log won't be added.
         /// </remarks>
         [PublicAPI]
-        public static void Add([CanBeNull] CultureInfo culture, [CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
+        public static void Add(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Exception exception,
+            LoggingLevel level = LoggingLevel.Error)
         {
             if (level.IsValid(ValidLevels))
                 new Log(culture, null, exception, level, null, null, null);

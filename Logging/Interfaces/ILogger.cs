@@ -47,6 +47,7 @@ namespace WebApplications.Utilities.Logging.Interfaces
         /// A <see cref="bool" /> value indicating whether the logger supports multiple instances.
         /// </summary>
         /// <value>Returns <see langword="true" /> if the logger supports multiple instances; otherwise returns <see langword="false" />.</value>
+        [PublicAPI]
         bool AllowMultiple { get; }
 
         /// <summary>
@@ -55,11 +56,13 @@ namespace WebApplications.Utilities.Logging.Interfaces
         /// <value>
         ///   Returns <see langword="true"/> if this instance can retrieve historic logs; otherwise returns <see langword="false"/>.
         /// </value>
+        [PublicAPI]
         bool Queryable { get; }
 
         /// <summary>
         ///   The valid <see cref="LoggingLevels">log levels</see> for this log level.
         /// </summary>
+        [PublicAPI]
         LoggingLevels ValidLevels { get; set; }
 
         /// <summary>
@@ -67,6 +70,7 @@ namespace WebApplications.Utilities.Logging.Interfaces
         /// </summary>
         /// <value>The logger name.</value>
         [NotNull]
+        [PublicAPI]
         string Name { get; }
 
         /// <summary>
@@ -76,19 +80,22 @@ namespace WebApplications.Utilities.Logging.Interfaces
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
         [NotNull]
-        Task Add(IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
+        [PublicAPI]
+        Task Add([NotNull] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Gets the Qbservable allowing asynchronous querying of log data.
         /// </summary>
         /// <value>The query.</value>
         [NotNull]
+        [PublicAPI]
         IQbservable<Log> Qbserve { get; }
 
         /// <summary>
         /// Force a flush of this logger.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         Task Flush(CancellationToken token = default(CancellationToken));
     }
 }
