@@ -90,13 +90,19 @@ namespace WebApplications.Utilities.Logging.Test
             Log.Flush().Wait();
         }
 
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Log.ValidLevels = LoggingLevels.All;
+            Translation.DefaultCulture = Resources.Culture = CultureInfo.InvariantCulture;
+        }
+
         [TestMethod]
         public async Task TestMemoryLogger()
         {
             FileLogger fileLogger = Log.GetLoggers<FileLogger>().First();
             Assert.IsNotNull(fileLogger);
             fileLogger.Format = "Verbose,Xml";
-
             string message = "Test message " + Guid.NewGuid();
             LogContext context = new LogContext();
             context.Set("My data", 1);
@@ -307,27 +313,51 @@ namespace WebApplications.Utilities.Logging.Test
         public void TestTranslations()
         {
             Contract.Assert(Resources.TestString != null);
-
             Log log = new Log(() => Resources.TestString, "p0");
 
             var culture = Resources.Culture;
 
+            Resources.Culture = Translation.DefaultCulture;
+            Trace.WriteLine(log.ToString(LogFormat.Verbose) + Environment.NewLine);
+            Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.Message);
+
             Resources.Culture = CultureInfo.InvariantCulture;
-            string message = log.GetMessage(Resources.Culture);
-            Trace.WriteLine("Invariant - " + message);
-            Assert.AreEqual(string.Format(Resources.TestString, "p0"), message);
+            Trace.WriteLine(log.ToString(LogFormat.Verbose, Resources.Culture) + Environment.NewLine);
+            Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.GetMessage(Resources.Culture));
 
-            Resources.Culture = new CultureInfo("fr-FR");
-            message = log.GetMessage(Resources.Culture);
-            Trace.WriteLine(Resources.Culture.Name + " - " + message);
-            Assert.AreEqual(string.Format(Resources.TestString, "p0"), message);
+            Resources.Culture = CultureHelper.GetCultureInfo("fr-FR");
+            Trace.WriteLine(log.ToString(LogFormat.Verbose, Resources.Culture) + Environment.NewLine);
+            Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.GetMessage(Resources.Culture));
 
-            Resources.Culture = new CultureInfo("de-DE");
-            message = log.GetMessage(Resources.Culture);
-            Trace.WriteLine(Resources.Culture.Name + " - " + message);
-            Assert.AreEqual(string.Format(Resources.TestString, "p0"), message);
+            Resources.Culture = CultureHelper.GetCultureInfo("de-DE");
+            Trace.WriteLine(log.ToString(LogFormat.Verbose, Resources.Culture) + Environment.NewLine);
+            Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.GetMessage(Resources.Culture));
 
             Resources.Culture = culture;
+        }
+
+        private class ExecutionCounter
+        {
+            public int Count;
+
+            public string Increment()
+            {
+                Count++;
+                return "Incremented counter";
+            }
+        }
+
+        [TestMethod]
+        public void TestDeferredExecution()
+        {
+            Contract.Assert(Resources.TestString != null);
+            ExecutionCounter ec = new ExecutionCounter();
+            Assert.AreEqual(0, ec.Count, "Execution Counter incorrectly initialized.");
+            Log.ValidLevels = LoggingLevels.AtLeastError;
+            Log.Add(LoggingLevel.Error, () => ec.Increment());
+            Assert.AreEqual(1, ec.Count, "The resource lambda was not executed.");
+            Log.Add(LoggingLevel.Debugging, () => ec.Increment());
+            Assert.AreEqual(1, ec.Count, "The resource lambda was executed when the logging level was too low.");
         }
 
         [TestCleanup]

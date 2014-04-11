@@ -175,6 +175,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="TranslationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

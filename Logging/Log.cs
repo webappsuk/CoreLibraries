@@ -154,7 +154,7 @@ namespace WebApplications.Utilities.Logging
         [NonSerialized]
         private static readonly Lazy<string> _protobufSchema = new Lazy<string>(
             // ReSharper disable once PossibleNullReferenceException
-            () => RuntimeTypeModel.Default.GetSchema(typeof (Log)),
+            () => RuntimeTypeModel.Default.GetSchema(typeof(Log)),
             LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
@@ -343,7 +343,7 @@ namespace WebApplications.Utilities.Logging
                             {
                                 Type dt = mi.DeclaringType;
                                 Contract.Assert(dt != null);
-                                _resourceManager = GetResourceManager(dt);
+                                _resourceManager = Translation.GetResourceManager(dt);
 
                                 if (_resourceManager != null)
                                 {
@@ -387,7 +387,7 @@ namespace WebApplications.Utilities.Logging
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (!isLogException && hasMessage)
-                    innerExceptions = new[] {exception};
+                    innerExceptions = new[] { exception };
                 else
                 {
                     // Add the exception type.
@@ -409,7 +409,7 @@ namespace WebApplications.Utilities.Logging
                     else
                     {
                         if (exception.InnerException != null)
-                            innerExceptions = new[] {exception.InnerException};
+                            innerExceptions = new[] { exception.InnerException };
 
                         // If this is a SQL exception, then log the stored proc.
                         SqlException sqlException = exception as SqlException;
@@ -461,7 +461,7 @@ namespace WebApplications.Utilities.Logging
         [StringFormatMethod("format")]
         [PublicAPI]
         public Log([LocalizationRequired] [CanBeNull] string format, [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, null, null, LoggingLevel.Information, format, null, parameters)
+            : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, format, null, parameters)
         {
         }
 
@@ -477,7 +477,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, context, null, LoggingLevel.Information, format, null, parameters)
+            : this(Translation.DefaultCulture, context, null, LoggingLevel.Information, format, null, parameters)
         {
         }
 
@@ -493,7 +493,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, null, null, level, format, null, parameters)
+            : this(Translation.DefaultCulture, null, null, level, format, null, parameters)
         {
         }
 
@@ -511,7 +511,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, context, null, level, format, null, parameters)
+            : this(Translation.DefaultCulture, context, null, level, format, null, parameters)
         {
         }
 
@@ -525,7 +525,7 @@ namespace WebApplications.Utilities.Logging
         /// <para>By default this uses the error log level.</para></param>
         [PublicAPI]
         public Log([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
-            : this(DefaultCulture, null, exception, level, null, null, null)
+            : this(Translation.DefaultCulture, null, exception, level, null, null, null)
         {
         }
 
@@ -546,7 +546,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
             LoggingLevel level = LoggingLevel.Error)
-            : this(DefaultCulture, context, exception, level, null, null, null)
+            : this(Translation.DefaultCulture, context, exception, level, null, null, null)
         {
         }
 
@@ -566,7 +566,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, null, exception, level, format, null, parameters)
+            : this(Translation.DefaultCulture, null, exception, level, format, null, parameters)
         {
         }
 
@@ -588,7 +588,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, context, exception, level, format, null, parameters)
+            : this(Translation.DefaultCulture, context, exception, level, format, null, parameters)
         {
         }
 
@@ -599,7 +599,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [PublicAPI]
         public Log([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, null, null, LoggingLevel.Information, null, resource, parameters)
+            : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, resource, parameters)
         {
         }
 
@@ -614,7 +614,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, context, null, LoggingLevel.Information, null, resource, parameters)
+            : this(Translation.DefaultCulture, context, null, LoggingLevel.Information, null, resource, parameters)
         {
         }
 
@@ -629,7 +629,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, null, null, level, null, resource, parameters)
+            : this(Translation.DefaultCulture, null, null, level, null, resource, parameters)
         {
         }
 
@@ -646,7 +646,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, context, null, level, null, resource, parameters)
+            : this(Translation.DefaultCulture, context, null, level, null, resource, parameters)
         {
         }
 
@@ -665,7 +665,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, null, exception, level, null, resource, parameters)
+            : this(Translation.DefaultCulture, null, exception, level, null, resource, parameters)
         {
         }
 
@@ -686,7 +686,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(DefaultCulture, context, exception, level, null, resource, parameters)
+            : this(Translation.DefaultCulture, context, exception, level, null, resource, parameters)
         {
         }
 
@@ -1015,7 +1015,7 @@ namespace WebApplications.Utilities.Logging
         [CanBeNull]
         public string Message
         {
-            get { return GetMessage(DefaultCulture); }
+            get { return GetMessage(Translation.DefaultCulture); }
         }
 
         /// <summary>
@@ -1029,20 +1029,20 @@ namespace WebApplications.Utilities.Logging
         {
             lock (_lock)
             {
-                CalculateMessage(culture ?? DefaultCulture);
+                CalculateMessage(culture ?? Translation.DefaultCulture);
                 return _latestMessage;
             }
         }
 
         /// <summary>
-        /// Gets the message format for the <see cref="DefaultCulture"/>.
+        /// Gets the message format for the <see cref="Translation.DefaultCulture"/>.
         /// </summary>
         /// <value>The message format.</value>
         [CanBeNull]
         [PublicAPI]
         public string MessageFormat
         {
-            get { return GetMessageFormat(DefaultCulture); }
+            get { return GetMessageFormat(Translation.DefaultCulture); }
         }
 
         /// <summary>
@@ -1056,7 +1056,7 @@ namespace WebApplications.Utilities.Logging
         {
             lock (_lock)
             {
-                CalculateMessage(culture ?? DefaultCulture);
+                CalculateMessage(culture ?? Translation.DefaultCulture);
                 return _latestMessageFormat;
             }
         }
@@ -1212,14 +1212,12 @@ namespace WebApplications.Utilities.Logging
         {
             Contract.Requires(culture != null);
 
-            string messageFormat;
+            string messageFormat = _messageFormat;
             // Check if we have a resource property.
             if (_resourceProperty == null)
             {
                 if (_latestMessage != null)
                     return;
-
-                messageFormat = _messageFormat;
             }
             else
                 try
@@ -1233,22 +1231,18 @@ namespace WebApplications.Utilities.Logging
                     if (_resourceManager == null)
                     {
                         int lastDot = _resourceProperty.LastIndexOf('.');
-                        ResourceManager rm;
-                        if (_resourceManagers.TryGetValue(_resourceProperty.Substring(0, lastDot), out rm))
-                        {
-                            Contract.Assert(rm != null);
-                            _resourceManager = rm;
-                        }
+                        _resourceManager = Translation.GetResourceManager(
+                            _resourceProperty.Substring(0, lastDot));
 
-                        _tag = _resourceProperty.Substring(lastDot + 1);
+                        if (_resourceManager != null)
+                            _tag = _resourceProperty.Substring(lastDot + 1);
                     }
                     else
                         Contract.Assert(_tag != null);
 
                     // Grab the format
-                    messageFormat = _resourceManager != null
-                        ? _resourceManager.GetString(_tag, culture)
-                        : _messageFormat;
+                    if (_resourceManager != null)
+                        messageFormat = _resourceManager.GetString(_tag, culture);
                 }
                 catch
                 {
@@ -1299,7 +1293,7 @@ namespace WebApplications.Utilities.Logging
 
             if (formatProvider != null)
             {
-                ICustomFormatter formatter = formatProvider.GetFormat(typeof (Log)) as ICustomFormatter;
+                ICustomFormatter formatter = formatProvider.GetFormat(typeof(Log)) as ICustomFormatter;
 
                 if (formatter != null)
                     return formatter.Format(format, this, formatProvider) ?? String.Empty;
@@ -1435,8 +1429,11 @@ namespace WebApplications.Utilities.Logging
             bool asXml = format.HasFlag(LogFormat.Xml);
             bool asJson = format.HasFlag(LogFormat.Json);
 
+            if (culture == null)
+                culture = Translation.DefaultCulture;
+
             // Remove option flags
-            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
+            format = ((LogFormat)(((int)format) & 0x0FFFFFFF));
 
             if (asXml && asJson)
                 throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
@@ -1508,7 +1505,7 @@ namespace WebApplications.Utilities.Logging
                         break;
                     case LogFormat.Culture:
                         key = "Culture";
-                        value = culture == null ? null : culture.Name;
+                        value = culture.Name;
                         break;
                     case LogFormat.TimeStamp:
                         key = "TimeStamp";
@@ -1625,7 +1622,7 @@ namespace WebApplications.Utilities.Logging
                             string i = indent + "   ";
                             bool cvf = true;
                             foreach (
-                                KeyValuePair<string, string> kvp in (IEnumerable<KeyValuePair<string, string>>) _context
+                                KeyValuePair<string, string> kvp in (IEnumerable<KeyValuePair<string, string>>)_context
                                 )
                             {
                                 Contract.Assert(kvp.Key != null);
@@ -1825,16 +1822,16 @@ namespace WebApplications.Utilities.Logging
 
                         // Look for inheritance from log or logging exception.
                         baseType = declaringType;
-                        while ((baseType != typeof (object)) &&
-                               (baseType != typeof (LoggingException)) &&
-                               (baseType != typeof (Log)))
+                        while ((baseType != typeof(object)) &&
+                               (baseType != typeof(LoggingException)) &&
+                               (baseType != typeof(Log)))
                         {
                             Contract.Assert(baseType != null);
                             baseType = baseType.BaseType;
                         }
 
-                        if ((baseType == typeof (LoggingException)) ||
-                            (baseType == typeof (Log)))
+                        if ((baseType == typeof(LoggingException)) ||
+                            (baseType == typeof(Log)))
                         {
                             // We are descended from LoggingException or Log so skip frame.
                             baseType = declaringType;

@@ -35,7 +35,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reflection;
-using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Security;
@@ -70,14 +69,6 @@ namespace WebApplications.Utilities.Logging
         [NonSerialized]
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private static readonly PerfCounter _perfCounterNewItem;
-
-        /// <summary>
-        /// Holds all resource types seen by the logger.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        private static readonly ConcurrentDictionary<string, ResourceManager> _resourceManagers =
-            new ConcurrentDictionary<string, ResourceManager>();
 
         /// <summary>
         /// The exception performance counter.
@@ -116,7 +107,7 @@ namespace WebApplications.Utilities.Logging
                             .Where(m => m != null)
                             .Select(m => m.DeclaringType)
                             .Where(t => t != null)
-                            .Select(t => new {t.Assembly, Name = t.Assembly.GetName()})
+                            .Select(t => new { t.Assembly, Name = t.Assembly.GetName() })
                             // ReSharper disable once AssignNullToNotNullAttribute
                             .Where(n => (n.Name != null) && !publicKeys.Contains(n.Name.GetPublicKey()))
                             .Select(n => n.Assembly)
@@ -162,28 +153,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NonSerialized]
         private static readonly Guid _logReservation = System.Guid.NewGuid();
-
-        /// <summary>
-        /// Gets or sets the default culture information.
-        /// </summary>
-        /// <value>
-        /// The default culture information.
-        /// </value>
-        /// <remarks>
-        /// <para>
-        /// This is the culture that logs will use when added to the system.
-        /// </para></remarks>
-        [NotNull]
-        [PublicAPI]
-        public static CultureInfo DefaultCulture
-        {
-            get { return _defaultCulture; }
-            set
-            {
-                Contract.Requires(value != null);
-                _defaultCulture = value;
-            }
-        }
 
         /// <summary>
         /// The parameter key prefix.
@@ -322,7 +291,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        internal static readonly Assembly LoggingAssembly = typeof (Log).Assembly;
+        internal static readonly Assembly LoggingAssembly = typeof(Log).Assembly;
 
         /// <summary>
         /// The global tick, ticks once a second and is used for batching, etc.
@@ -363,13 +332,6 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         private static readonly ConcurrentBag<Log> _buffer = new ConcurrentBag<Log>();
-
-        /// <summary>
-        /// The default culture information.
-        /// </summary>
-        [NotNull]
-        [NonSerialized]
-        private static CultureInfo _defaultCulture = CultureInfo.CurrentCulture;
 
         /// <summary>
         ///   Initializes static members of the <see cref="Log" /> class.
@@ -433,53 +395,8 @@ namespace WebApplications.Utilities.Logging
             }
         }
 
-        /// <summary>
-        /// Registers the type for resource retrieval.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        [PublicAPI]
-        [CanBeNull]
-        public static ResourceManager GetResourceManager([NotNull] Type type)
-        {
-            Contract.Requires(type != null);
-            Contract.Requires(type.FullName != null);
-            return _resourceManagers.GetOrAdd(
-                type.FullName,
-                t =>
-                {
-                    try
-                    {
-                        PropertyInfo resourceInfo = type.GetProperty(
-                            "ResourceManager",
-                            BindingFlags.GetProperty | BindingFlags.NonPublic | BindingFlags.Public |
-                            BindingFlags.Static);
-
-                        return resourceInfo == null
-                            ? null
-                            : resourceInfo.GetValue(null) as ResourceManager;
-                    }
-                    catch (Exception e)
-                    {
-                        Add(e, LoggingLevel.Error, () => Resources.Log_GetResourceManager_FatalError, t);
-                        return null;
-                    }
-                });
-        }
-
-        /// <summary>
-        /// Gets the resource manager, by the type's full name.
-        /// </summary>
-        /// <param name="typeFullName">Full name of the type.</param>
-        /// <returns>A resource manager, if the type has already been registered.</returns>
-        /// <remarks>This will only retrieve <see cref="ResourceManager">resource managers</see> for previously registered types.</remarks>
-        [PublicAPI]
-        [CanBeNull]
-        public static ResourceManager GetResourceManager([NotNull] string typeFullName)
-        {
-            Contract.Requires(typeFullName != null);
-            ResourceManager resourceManager;
-            return _resourceManagers.TryGetValue(typeFullName, out resourceManager) ? resourceManager : null;
-        }
+        #region GetResource overloads
+        #endregion
 
         /// <summary>
         ///   Gets the valid <see cref="LoggingLevel">log levels</see>.
@@ -862,7 +779,7 @@ namespace WebApplications.Utilities.Logging
                         _loggers.FirstOrDefault(i => i.Key is T);
                     if ((existing.Key != null) &&
                         !existing.Key.AllowMultiple)
-                        return (T) existing.Key;
+                        return (T)existing.Key;
 
                     logger = loggerCreator();
                     if (ReferenceEquals(logger, null))
@@ -976,7 +893,7 @@ namespace WebApplications.Utilities.Logging
             List<KeyValuePair<ILogger, LoggerInfo>> loggers;
             lock (_loggers)
                 loggers = _loggers
-                    .Where(kvp => (((byte) kvp.Key.ValidLevels) & ((byte) ValidLevels)) > 0)
+                    .Where(kvp => (((byte)kvp.Key.ValidLevels) & ((byte)ValidLevels)) > 0)
                     .ToList();
 
             // Order the logs
@@ -997,7 +914,7 @@ namespace WebApplications.Utilities.Logging
             // Note we don't use the supplied cancellation token as we always write out logs once they're removed from the buffer.
             await Task.WhenAll(
                 loggers.Select(
-                    // ReSharper disable once PossibleNullReferenceException
+                // ReSharper disable once PossibleNullReferenceException
                     kvp => kvp.Value.Lock
                         .LockAsync(CancellationToken.None)
                         .ContinueWith(
@@ -1018,7 +935,7 @@ namespace WebApplications.Utilities.Logging
                             },
                             CancellationToken.None,
                             TaskContinuationOptions.LongRunning,
-                            // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                             TaskScheduler.Default)))
                 // We do support cancelling the wait though, this doesn't stop the actual writes occurring.
                 .WithCancellation(token);
@@ -1082,7 +999,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(DefaultCulture, null, null, LoggingLevel.Information, format, null, parameters);
+                new Log(Translation.DefaultCulture, null, null, LoggingLevel.Information, format, null, parameters);
         }
 
         /// <summary>
@@ -1103,7 +1020,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(DefaultCulture, context, null, LoggingLevel.Information, format, null, parameters);
+                new Log(Translation.DefaultCulture, context, null, LoggingLevel.Information, format, null, parameters);
         }
 
         /// <summary>
@@ -1124,7 +1041,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, null, null, level, format, null, parameters);
+                new Log(Translation.DefaultCulture, null, null, level, format, null, parameters);
         }
 
         /// <summary>
@@ -1145,7 +1062,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, context, null, level, format, null, parameters);
+                new Log(Translation.DefaultCulture, context, null, level, format, null, parameters);
         }
 
         /// <summary>
@@ -1161,7 +1078,7 @@ namespace WebApplications.Utilities.Logging
         public static void Add([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
         {
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, null, exception, level, null, null, null);
+                new Log(Translation.DefaultCulture, null, exception, level, null, null, null);
         }
 
         /// <summary>
@@ -1186,7 +1103,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level = LoggingLevel.Error)
         {
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, context, exception, level, null, null, null);
+                new Log(Translation.DefaultCulture, context, exception, level, null, null, null);
         }
 
         /// <summary>
@@ -1210,7 +1127,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, null, exception, level, format, null, parameters);
+                new Log(Translation.DefaultCulture, null, exception, level, format, null, parameters);
         }
 
         /// <summary>
@@ -1236,7 +1153,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, context, exception, level, format, null, parameters);
+                new Log(Translation.DefaultCulture, context, exception, level, format, null, parameters);
         }
 
         /// <summary>
@@ -1252,7 +1169,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(DefaultCulture, null, null, LoggingLevel.Information, null, resource, parameters);
+                new Log(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, resource, parameters);
         }
 
         /// <summary>
@@ -1272,7 +1189,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(DefaultCulture, context, null, LoggingLevel.Information, null, resource, parameters);
+                new Log(Translation.DefaultCulture, context, null, LoggingLevel.Information, null, resource, parameters);
         }
 
         /// <summary>
@@ -1292,7 +1209,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, null, null, level, null, resource, parameters);
+                new Log(Translation.DefaultCulture, null, null, level, null, resource, parameters);
         }
 
         /// <summary>
@@ -1312,7 +1229,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, context, null, level, null, resource, parameters);
+                new Log(Translation.DefaultCulture, context, null, level, null, resource, parameters);
         }
 
         /// <summary>
@@ -1335,7 +1252,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, null, exception, level, null, resource, parameters);
+                new Log(Translation.DefaultCulture, null, exception, level, null, resource, parameters);
         }
 
         /// <summary>
@@ -1360,7 +1277,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(DefaultCulture, context, exception, level, null, resource, parameters);
+                new Log(Translation.DefaultCulture, context, exception, level, null, resource, parameters);
         }
 
         /// <summary>
