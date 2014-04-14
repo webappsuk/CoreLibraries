@@ -701,6 +701,332 @@ namespace WebApplications.Utilities.Logging
             // Finally increment performance counter.
             Log.PerfCounterException.Increment();
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(LoggingLevel.Error, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(context, this, LoggingLevel.Error, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(this, level, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(context, this, level, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="exception">The inner exception.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] Exception exception,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
+        {
+            // Log the exception
+            Log = new Log(this, LoggingLevel.Error, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="exception">The inner exception.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
+        {
+            // Log the exception
+            Log = new Log(this, level, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception">The exception.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
+        {
+            // Log the exception
+            Log = new Log(context, this, level, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(culture, LoggingLevel.Error, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(culture, context, this, LoggingLevel.Error, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] CultureInfo culture,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(culture, this, level, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Log the exception
+            Log = new Log(culture, context, this, level, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="exception">The inner exception.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Exception exception,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
+        {
+            // Log the exception
+            Log = new Log(culture, this, LoggingLevel.Error, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="exception">The inner exception.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
+        {
+            // Log the exception
+            Log = new Log(culture, this, level, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException" /> class.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception">The exception.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        public LoggingException(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : base(exception == null ? string.Empty : exception.Message, exception)
+        {
+            // Log the exception
+            Log = new Log(culture, context, this, level, resourceType, resourceProperty, parameters);
+            _setMessage(this, Log.Message);
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
         #endregion
 
         /// <summary>

@@ -29,6 +29,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
@@ -39,7 +40,7 @@ namespace WebApplications.Utilities.Logging
     /// <summary>
     /// Handles resource translation for logs.
     /// </summary>
-    public static class Translation
+    public class Translation
     {
         /// <summary>
         /// Holds all resource types seen by the logger.
@@ -86,6 +87,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         [CanBeNull]
         public static ResourceManager GetResourceManager<TResource>()
+            where TResource : class
         {
             return GetResourceManager(typeof (TResource));
         }
@@ -150,6 +152,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         [CanBeNull]
         public static string GetResource<TResource>([NotNull] string property)
+            where TResource : class
         {
             string translation;
             return TryGetResource(typeof (TResource), property, DefaultCulture, out translation) ? translation : null;
@@ -183,6 +186,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         [CanBeNull]
         public static string GetResource<TResource>([NotNull] string property, [CanBeNull] CultureInfo culture)
+            where TResource : class
         {
             string translation;
             return TryGetResource(typeof (TResource), property, culture, out translation) ? translation : null;
@@ -217,6 +221,7 @@ namespace WebApplications.Utilities.Logging
         /// </returns>
         [PublicAPI]
         public static bool TryGetResource<TResource>([NotNull] string property, out string translation)
+            where TResource : class
         {
             return TryGetResource(typeof (TResource), property, DefaultCulture, out translation);
         }
@@ -254,6 +259,7 @@ namespace WebApplications.Utilities.Logging
             [NotNull] string property,
             [CanBeNull] CultureInfo culture,
             out string translation)
+            where TResource : class
         {
             return TryGetResource(typeof (TResource), property, culture, out translation);
         }
@@ -386,6 +392,360 @@ namespace WebApplications.Utilities.Logging
                 translation = null;
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Gets the expression.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static Expression<Func<string>> GetExpression<TResource>([NotNull] string property)
+            where TResource : class
+        {
+            return GetExpression(typeof (TResource), property);
+        }
+
+        /// <summary>
+        /// Gets a resource expression from the type and property name.
+        /// </summary>
+        /// <param name="resourceType">Type of the resource.</param>
+        /// <param name="property">The property.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static Expression<Func<string>> GetExpression([NotNull] Type resourceType, [NotNull] string property)
+        {
+            try
+            {
+                return GetResourceManager(resourceType) == null
+                    ? null
+                    : Expression.Lambda<Func<string>>(Expression.Property(null, resourceType, property));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets a resource expression from the type name and property name.
+        /// </summary>
+        /// <param name="typeFullName">Full name of the type.</param>
+        /// <param name="property">The property.</param>
+        /// <returns>An <see cref="Expression{T}"/> that represents the resource property; otherwise <see langword="null"/>.</returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static Expression<Func<string>> GetExpression([NotNull] string typeFullName, [NotNull] string property)
+        {
+            try
+            {
+                return Expression.Lambda<Func<string>>(Expression.Property(null, Type.GetType(typeFullName), property));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get a translation for a resource property.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        public static bool TryGet<TResource>(
+            [NotNull] string property,
+            out Translation value,
+            [NotNull] CultureInfo culture = null)
+            where TResource : class
+        {
+            Contract.Requires(property != null);
+            return TryGet(typeof (TResource), property, out value, culture);
+        }
+
+        /// <summary>
+        /// Tries to get a translation for a resource property.
+        /// </summary>
+        /// <param name="resourceType">Type of the resource class.</param>
+        /// <param name="property">The property.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        public static bool TryGet(
+            [NotNull] Type resourceType,
+            [NotNull] string property,
+            out Translation value,
+            [CanBeNull] CultureInfo culture = null)
+        {
+            Contract.Requires(resourceType != null);
+            Contract.Requires(property != null);
+            ResourceManager resourceManager = GetResourceManager(resourceType);
+            if (resourceManager == null)
+            {
+                value = null;
+                return false;
+            }
+
+            try
+            {
+                if (culture == null)
+                    culture = DefaultCulture;
+
+                string str = resourceManager.GetString(property, culture);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                value = new Translation(resourceType.FullName, property, str ?? string.Empty, culture, resourceManager);
+                return true;
+            }
+            catch
+            {
+                value = null;
+                return false;
+            }
+        }
+
+
+        /// <summary>
+        /// Tries to get a translation for a resource property.
+        /// </summary>
+        /// <param name="typeFullName">Full name of the type.</param>
+        /// <param name="property">The property.</param>
+        /// <param name="value">The translation value.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        public static bool TryGet(
+            [NotNull] string typeFullName,
+            [NotNull] string property,
+            out Translation value,
+            [CanBeNull] CultureInfo culture = null)
+        {
+            Contract.Requires(typeFullName != null);
+            Contract.Requires(property != null);
+            ResourceManager resourceManager = GetResourceManager(typeFullName);
+            if (resourceManager == null)
+            {
+                value = null;
+                return false;
+            }
+
+            try
+            {
+                if (culture == null)
+                    culture = DefaultCulture;
+
+                string str = resourceManager.GetString(property, culture);
+                value = new Translation(typeFullName, property, str ?? string.Empty, culture, resourceManager);
+                return true;
+            }
+            catch
+            {
+                value = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get a translation for a resource property.
+        /// </summary>
+        /// <param name="resource">The resource.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        public static bool TryGet(
+            [NotNull] Expression<Func<string>> resource,
+            out Translation value,
+            [CanBeNull] CultureInfo culture = null)
+        {
+            Contract.Requires(resource != null);
+
+            try
+            {
+                // See if we can get the resource property.
+                MemberExpression me = resource.Body as MemberExpression;
+                if (me != null)
+                {
+                    PropertyInfo pi = me.Member as PropertyInfo;
+                    if (pi != null)
+                    {
+                        MethodInfo mi = pi.GetMethod;
+                        if (mi != null)
+                        {
+                            Type dt = mi.DeclaringType;
+                            Contract.Assert(dt != null);
+
+                            return TryGet(dt, pi.Name, out value, culture);
+                        }
+                    }
+                }
+            }
+                // ReSharper disable once EmptyGeneralCatchClause
+            catch
+            {
+            }
+
+            value = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the translation for a resource property.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="property">The property.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static Translation Get<TResource>([NotNull] string property, [CanBeNull] CultureInfo culture = null)
+            where TResource : class
+        {
+            Translation value;
+            return TryGet(typeof (TResource), property, out value, culture)
+                ? value
+                : null;
+        }
+
+        /// <summary>
+        /// Gets the translation for a resource property.
+        /// </summary>
+        /// <param name="resourceType">Type of the resource.</param>
+        /// <param name="property">The property.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static Translation Get(
+            [NotNull] Type resourceType,
+            [NotNull] string property,
+            [CanBeNull] CultureInfo culture = null)
+        {
+            Translation value;
+            return TryGet(resourceType, property, out value, culture)
+                ? value
+                : null;
+        }
+
+
+        /// <summary>
+        /// Gets a translation for a resource property.
+        /// </summary>
+        /// <param name="typeFullName">Full name of the type.</param>
+        /// <param name="property">The property.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static Translation Get(
+            [NotNull] string typeFullName,
+            [NotNull] string property,
+            [CanBeNull] CultureInfo culture = null)
+        {
+            Translation value;
+            return TryGet(typeFullName, property, out value, culture)
+                ? value
+                : null;
+        }
+
+        /// <summary>
+        /// Gets a translation for a resource property.
+        /// </summary>
+        /// <param name="resource">The resource.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static Translation Get(
+            [NotNull] Expression<Func<string>> resource,
+            [CanBeNull] CultureInfo culture = null)
+        {
+            Translation value;
+            return TryGet(resource, out value, culture)
+                ? value
+                : null;
+        }
+
+        /// <summary>
+        /// The resource manager
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly ResourceManager ResourceManager;
+
+        /// <summary>
+        /// The resource type full name
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly string ResourceTypeFullName;
+
+        /// <summary>
+        /// The resource tag
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly string ResourceTag;
+
+        /// <summary>
+        /// The message format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly string MessageFormat;
+
+        /// <summary>
+        /// The culture
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly CultureInfo Culture;
+
+        /// <summary>
+        /// Gets the resource property.
+        /// </summary>
+        /// <value>
+        /// The resource property.
+        /// </value>
+        [NotNull]
+        [PublicAPI]
+        public string ResourceProperty
+        {
+            get { return string.Join(".", ResourceTypeFullName, ResourceTag); }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Translation" /> class.
+        /// </summary>
+        /// <param name="resourceTypeFullName">Full name of the resource type.</param>
+        /// <param name="resourceTag">The resource tag.</param>
+        /// <param name="messageFormat">The message format.</param>
+        /// <param name="culture">The culture.</param>
+        /// <param name="resourceManager">The resource manager.</param>
+        private Translation(
+            [NotNull] string resourceTypeFullName,
+            [NotNull] string resourceTag,
+            [NotNull] string messageFormat,
+            [NotNull] CultureInfo culture,
+            [NotNull] ResourceManager resourceManager)
+        {
+            Contract.Requires(resourceTypeFullName != null);
+            Contract.Requires(resourceTag != null);
+            Contract.Requires(messageFormat != null);
+            Contract.Requires(culture != null);
+            Contract.Requires(resourceManager != null);
+
+            ResourceTypeFullName = resourceTypeFullName;
+            ResourceTag = resourceTag;
+            MessageFormat = messageFormat;
+            Culture = culture;
+            ResourceManager = resourceManager;
         }
     }
 }

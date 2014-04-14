@@ -163,6 +163,7 @@
     <Compile Include="Configuration\LoggerElement.cs" />
     <Compile Include="Configuration\LoggersCollection.cs" />
     <Compile Include="Configuration\LoggingConfiguration.cs" />
+    <Compile Include="ContractException.cs" />
     <Compile Include="LogFormat.cs" />
     <Compile Include="Loggers\ConsoleLogger.cs" />
     <Compile Include="Loggers\GlobalLogger.cs" />

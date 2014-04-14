@@ -286,20 +286,24 @@ namespace WebApplications.Utilities.Logging
         /// <param name="context">The context information.</param>
         /// <param name="exception">The exception. If none then pass <see langword="null" />.</param>
         /// <param name="level">The log level.</param>
+        /// <param name="resourceType">Type of the resource.</param>
         /// <param name="format">The format.</param>
         /// <param name="resource">The resource.</param>
         /// <param name="parameters">The parameters.</param>
         private Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
-            [CanBeNull] Exception exception,
+            [CanBeNull] Exception exception, 
             LoggingLevel level,
-            [LocalizationRequired] [CanBeNull] string format,
-            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] Type resourceType, 
+            [LocalizationRequired, CanBeNull] string format, 
+            [CanBeNull] Expression<Func<string>> resource, 
             [CanBeNull] params object[] parameters)
             : this()
         {
             Contract.Requires(format == null || resource == null);
+            Contract.Requires(resourceType == null || format != null);
+
             _guid = CombGuid.NewCombGuid();
             _level = level;
 
@@ -322,8 +326,32 @@ namespace WebApplications.Utilities.Logging
             // If we have a formatted message add it now
             if (!string.IsNullOrEmpty(format))
             {
-                hasMessage = true;
-                _messageFormat = format;
+                if (resourceType != null)
+                {
+                    try
+                    {
+                        _resourceManager = Translation.GetResourceManager(resourceType);
+
+                        if (_resourceManager != null)
+                        {
+                            _tag = format;
+                            _resourceProperty = string.Join(".", resourceType.FullName, _tag);
+
+                            _messageFormat = _resourceManager.GetString(_tag, culture);
+                            hasMessage = true;
+                        }
+                    }
+                    catch
+                    {
+                        _messageFormat = null;
+                        hasMessage = false;
+                    }
+                }
+                else
+                {
+                    hasMessage = true;
+                    _messageFormat = format;
+                }
             }
             else if (resource != null)
                 // Try to evaluate the resource
@@ -432,7 +460,7 @@ namespace WebApplications.Utilities.Logging
                         {
                             LoggingException le = e as LoggingException;
                             return le == null || ReferenceEquals(le, exception)
-                                ? new Log(culture, null, e, LoggingLevel.Error, null, null, null).Guid
+                                ? new Log(culture, null, e, LoggingLevel.Error, resourceType, null, null, null).Guid
                                 : le.Guid;
                         }).ToArray();
 
@@ -461,7 +489,7 @@ namespace WebApplications.Utilities.Logging
         [StringFormatMethod("format")]
         [PublicAPI]
         public Log([LocalizationRequired] [CanBeNull] string format, [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, format, null, parameters)
+            : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, format, null, parameters)
         {
         }
 
@@ -477,7 +505,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, context, null, LoggingLevel.Information, format, null, parameters)
+            : this(Translation.DefaultCulture, context, null, LoggingLevel.Information, null, format, null, parameters)
         {
         }
 
@@ -493,7 +521,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, null, null, level, format, null, parameters)
+            : this(Translation.DefaultCulture, null, null, level, null, format, null, parameters)
         {
         }
 
@@ -511,7 +539,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, context, null, level, format, null, parameters)
+            : this(Translation.DefaultCulture, context, null, level, null, format, null, parameters)
         {
         }
 
@@ -525,7 +553,7 @@ namespace WebApplications.Utilities.Logging
         /// <para>By default this uses the error log level.</para></param>
         [PublicAPI]
         public Log([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
-            : this(Translation.DefaultCulture, null, exception, level, null, null, null)
+            : this(Translation.DefaultCulture, null, exception, level, null, null, null, null)
         {
         }
 
@@ -546,7 +574,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
             LoggingLevel level = LoggingLevel.Error)
-            : this(Translation.DefaultCulture, context, exception, level, null, null, null)
+            : this(Translation.DefaultCulture, context, exception, level, null, null, null, null)
         {
         }
 
@@ -566,7 +594,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, null, exception, level, format, null, parameters)
+            : this(Translation.DefaultCulture, null, exception, level, null, format, null, parameters)
         {
         }
 
@@ -588,7 +616,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, context, exception, level, format, null, parameters)
+            : this(Translation.DefaultCulture, context, exception, level, null, format, null, parameters)
         {
         }
 
@@ -599,7 +627,7 @@ namespace WebApplications.Utilities.Logging
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [PublicAPI]
         public Log([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, resource, parameters)
+            : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, null, resource, parameters)
         {
         }
 
@@ -614,7 +642,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, context, null, LoggingLevel.Information, null, resource, parameters)
+            : this(Translation.DefaultCulture, context, null, LoggingLevel.Information, null, null, resource, parameters)
         {
         }
 
@@ -629,7 +657,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, null, null, level, null, resource, parameters)
+            : this(Translation.DefaultCulture, null, null, level, null, null, resource, parameters)
         {
         }
 
@@ -646,7 +674,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, context, null, level, null, resource, parameters)
+            : this(Translation.DefaultCulture, context, null, level, null, null, resource, parameters)
         {
         }
 
@@ -665,7 +693,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, null, exception, level, null, resource, parameters)
+            : this(Translation.DefaultCulture, null, exception, level, null, null, resource, parameters)
         {
         }
 
@@ -686,7 +714,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, context, exception, level, null, resource, parameters)
+            : this(Translation.DefaultCulture, context, exception, level, null, null, resource, parameters)
         {
         }
 
@@ -705,7 +733,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] CultureInfo culture,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(culture, null, null, LoggingLevel.Information, format, null, parameters)
+            : this(culture, null, null, LoggingLevel.Information, null, format, null, parameters)
         {
         }
 
@@ -723,7 +751,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(culture, context, null, LoggingLevel.Information, format, null, parameters)
+            : this(culture, context, null, LoggingLevel.Information, null, format, null, parameters)
         {
         }
 
@@ -741,7 +769,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(culture, null, null, level, format, null, parameters)
+            : this(culture, null, null, level, null, format, null, parameters)
         {
         }
 
@@ -761,7 +789,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(culture, context, null, level, format, null, parameters)
+            : this(culture, context, null, level, null, format, null, parameters)
         {
         }
 
@@ -779,7 +807,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Exception exception,
             LoggingLevel level = LoggingLevel.Error)
-            : this(culture, null, exception, level, null, null, null)
+            : this(culture, null, exception, level, null, null, null, null)
         {
         }
 
@@ -798,7 +826,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [CanBeNull] Exception exception,
             LoggingLevel level = LoggingLevel.Error)
-            : this(culture, context, exception, level, null, null, null)
+            : this(culture, context, exception, level, null, null, null, null)
         {
         }
 
@@ -820,7 +848,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(culture, null, exception, level, format, null, parameters)
+            : this(culture, null, exception, level, null, format, null, parameters)
         {
         }
 
@@ -844,7 +872,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [LocalizationRequired] [CanBeNull] string format,
             [CanBeNull] params object[] parameters)
-            : this(culture, context, exception, level, format, null, parameters)
+            : this(culture, context, exception, level, null, format, null, parameters)
         {
         }
 
@@ -859,7 +887,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] CultureInfo culture,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(culture, null, null, LoggingLevel.Information, null, resource, parameters)
+            : this(culture, null, null, LoggingLevel.Information, null, null, resource, parameters)
         {
         }
 
@@ -876,7 +904,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] LogContext context,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(culture, context, null, LoggingLevel.Information, null, resource, parameters)
+            : this(culture, context, null, LoggingLevel.Information, null, null, resource, parameters)
         {
         }
 
@@ -893,7 +921,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(culture, null, null, level, null, resource, parameters)
+            : this(culture, null, null, level, null, null, resource, parameters)
         {
         }
 
@@ -912,7 +940,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(culture, context, null, level, null, resource, parameters)
+            : this(culture, context, null, level, null, null, resource, parameters)
         {
         }
 
@@ -933,7 +961,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(culture, null, exception, level, null, resource, parameters)
+            : this(culture, null, exception, level, null, null, resource, parameters)
         {
         }
 
@@ -956,7 +984,243 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
-            : this(culture, context, exception, level, null, resource, parameters)
+            : this(culture, context, exception, level, null, null, resource, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] Type resourceType, 
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        ///   Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(Translation.DefaultCulture, context, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        ///   Logs a message at the specified <see cref="LoggingLevel"/>.
+        /// </summary>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        [PublicAPI]
+        public Log(
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(Translation.DefaultCulture, null, null, level, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(Translation.DefaultCulture, context, null, level, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The parameters.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(Translation.DefaultCulture, null, exception, level, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The parameters.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(Translation.DefaultCulture, context, exception, level, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(culture, null, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(culture, context, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] CultureInfo culture,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(culture, null, null, level, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(culture, context, null, level, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The parameters.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(culture, null, exception, level, resourceType, resourceProperty, null, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The parameters.</param>
+        [PublicAPI]
+        public Log(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            : this(culture, context, exception, level, resourceType, resourceProperty, null, parameters)
         {
         }
         #endregion

@@ -61,6 +61,15 @@ namespace WebApplications.Utilities.Logging.Test {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Contract failed. {0}.
+        /// </summary>
+        internal static string TestContractFailed {
+            get {
+                return ResourceManager.GetString("TestContractFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to My test string, &apos;{0}&apos;..
         /// </summary>
         internal static string TestString {

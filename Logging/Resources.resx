@@ -321,4 +321,10 @@
   <data name="Log_OnUnhandledException" xml:space="preserve">
     <value>An unhandled exception has occured. See inner exception for details.</value>
   </data>
+  <data name="Contract_Failed" xml:space="preserve">
+    <value>Contract failed. {0}</value>
+  </data>
+  <data name="Contract_Failed_Message" xml:space="preserve">
+    <value>{1}. {0}</value>
+  </data>
 </root>

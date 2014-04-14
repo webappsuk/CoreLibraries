@@ -26,6 +26,7 @@
 #endregion
 
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -46,10 +47,29 @@ namespace WebApplications.Utilities.Logging
         ///   provided; otherwise returns <see langword="false"/>.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
         public static bool IsValid(this LoggingLevel level, LoggingLevels validLevels)
         {
             LoggingLevels l = (LoggingLevels) level;
             return l == (l & validLevels);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="bool" /> value indicating whether the specified
+        /// <see cref="LoggingLevel">log level</see> is within the valid
+        /// <see cref="Log.ValidLevels">levels</see>.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <returns>
+        /// Returns <see langword="true" /> if the specified <paramref name="level" /> is within the <see cref="Log.ValidLevels" />;
+        /// provided; otherwise returns <see langword="false" />.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static bool IsValid(this LoggingLevel level)
+        {
+            LoggingLevels l = (LoggingLevels)level;
+            return l == (l & Log.ValidLevels);
         }
     }
 }

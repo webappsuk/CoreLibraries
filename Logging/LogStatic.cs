@@ -999,7 +999,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, null, null, LoggingLevel.Information, format, null, parameters);
+                new Log(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1020,7 +1020,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, context, null, LoggingLevel.Information, format, null, parameters);
+                new Log(Translation.DefaultCulture, context, null, LoggingLevel.Information, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1041,7 +1041,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, null, null, level, format, null, parameters);
+                new Log(Translation.DefaultCulture, null, null, level, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1062,7 +1062,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, context, null, level, format, null, parameters);
+                new Log(Translation.DefaultCulture, context, null, level, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1078,7 +1078,7 @@ namespace WebApplications.Utilities.Logging
         public static void Add([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
         {
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, null, exception, level, null, null, null);
+                new Log(Translation.DefaultCulture, null, exception, level, null, null, null, null);
         }
 
         /// <summary>
@@ -1103,7 +1103,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level = LoggingLevel.Error)
         {
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, context, exception, level, null, null, null);
+                new Log(Translation.DefaultCulture, context, exception, level, null, null, null, null);
         }
 
         /// <summary>
@@ -1127,7 +1127,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, null, exception, level, format, null, parameters);
+                new Log(Translation.DefaultCulture, null, exception, level, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1153,7 +1153,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, context, exception, level, format, null, parameters);
+                new Log(Translation.DefaultCulture, context, exception, level, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1169,7 +1169,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, resource, parameters);
+                new Log(Translation.DefaultCulture, null, null, LoggingLevel.Information, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1189,7 +1189,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, context, null, LoggingLevel.Information, null, resource, parameters);
+                new Log(Translation.DefaultCulture, context, null, LoggingLevel.Information, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1209,7 +1209,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, null, null, level, null, resource, parameters);
+                new Log(Translation.DefaultCulture, null, null, level, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1229,7 +1229,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, context, null, level, null, resource, parameters);
+                new Log(Translation.DefaultCulture, context, null, level, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1252,7 +1252,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, null, exception, level, null, resource, parameters);
+                new Log(Translation.DefaultCulture, null, exception, level, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1277,7 +1277,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(Translation.DefaultCulture, context, exception, level, null, resource, parameters);
+                new Log(Translation.DefaultCulture, context, exception, level, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1298,7 +1298,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(culture, null, null, LoggingLevel.Information, format, null, parameters);
+                new Log(culture, null, null, LoggingLevel.Information, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1321,7 +1321,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(culture, context, null, LoggingLevel.Information, format, null, parameters);
+                new Log(culture, context, null, LoggingLevel.Information, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1344,7 +1344,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(culture, null, null, level, format, null, parameters);
+                new Log(culture, null, null, level, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1369,7 +1369,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(culture, context, null, level, format, null, parameters);
+                new Log(culture, context, null, level, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1391,7 +1391,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level = LoggingLevel.Error)
         {
             if (level.IsValid(ValidLevels))
-                new Log(culture, null, exception, level, null, null, null);
+                new Log(culture, null, exception, level, null, null, null, null);
         }
 
         /// <summary>
@@ -1414,7 +1414,7 @@ namespace WebApplications.Utilities.Logging
             LoggingLevel level = LoggingLevel.Error)
         {
             if (level.IsValid(ValidLevels))
-                new Log(culture, context, exception, level, null, null, null);
+                new Log(culture, context, exception, level, null, null, null, null);
         }
 
         /// <summary>
@@ -1440,7 +1440,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(culture, null, exception, level, format, null, parameters);
+                new Log(culture, null, exception, level, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1468,7 +1468,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(culture, context, exception, level, format, null, parameters);
+                new Log(culture, context, exception, level, null, format, null, parameters);
         }
 
         /// <summary>
@@ -1488,7 +1488,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(culture, null, null, LoggingLevel.Information, null, resource, parameters);
+                new Log(culture, null, null, LoggingLevel.Information, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1510,7 +1510,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (LoggingLevel.Information.IsValid(ValidLevels))
-                new Log(culture, context, null, LoggingLevel.Information, null, resource, parameters);
+                new Log(culture, context, null, LoggingLevel.Information, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1532,7 +1532,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(culture, null, null, level, null, resource, parameters);
+                new Log(culture, null, null, level, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1556,7 +1556,7 @@ namespace WebApplications.Utilities.Logging
         {
             // Add to queue for logging if we are a valid level.
             if (level.IsValid(ValidLevels))
-                new Log(culture, context, null, level, null, resource, parameters);
+                new Log(culture, context, null, level, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1581,7 +1581,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(culture, null, exception, level, null, resource, parameters);
+                new Log(culture, null, exception, level, null, null, resource, parameters);
         }
 
         /// <summary>
@@ -1608,7 +1608,589 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
         {
             if (level.IsValid(ValidLevels))
-                new Log(culture, context, exception, level, null, resource, parameters);
+                new Log(culture, context, exception, level, null, null, resource, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.</remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Add to queue for logging if we are a valid level.
+            if (LoggingLevel.Information.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, null, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        ///   Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        ///   If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Add to queue for logging if we are a valid level.
+            if (LoggingLevel.Information.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, context, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        ///   Logs a message at the specified <see cref="LoggingLevel"/>.
+        /// </summary>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        ///   If the log <paramref name="level"/> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Add to queue for logging if we are a valid level.
+            if (level.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, null, null, level, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType" />.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Add to queue for logging if we are a valid level.
+            if (level.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, context, null, level, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            if (level.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, null, exception, level, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            if (level.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, context, exception, level, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Add to queue for logging if we are a valid level.
+            if (LoggingLevel.Information.IsValid(ValidLevels))
+                new Log(culture, null, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Add to queue for logging if we are a valid level.
+            if (LoggingLevel.Information.IsValid(ValidLevels))
+                new Log(culture, context, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] CultureInfo culture,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Add to queue for logging if we are a valid level.
+            if (level.IsValid(ValidLevels))
+                new Log(culture, null, null, level, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            // Add to queue for logging if we are a valid level.
+            if (level.IsValid(ValidLevels))
+                new Log(culture, context, null, level, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            if (level.IsValid(ValidLevels))
+                new Log(culture, null, exception, level, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceType">The resource class type.</param>
+        /// <param name="resourceProperty">The name of the resource property in <paramref name="resourceType"/>.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] Type resourceType,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+        {
+            if (level.IsValid(ValidLevels))
+                new Log(culture, context, exception, level, resourceType, resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            // Add to queue for logging if we are a valid level.
+            if (LoggingLevel.Information.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, null, null, LoggingLevel.Information, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="context">The log context.</param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] LogContext context,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            // Add to queue for logging if we are a valid level.
+            if (LoggingLevel.Information.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, context, null, LoggingLevel.Information, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            LoggingLevel level,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            // Add to queue for logging if we are a valid level.
+            if (level.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, null, null, level, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="context">The log context.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            // Add to queue for logging if we are a valid level.
+            if (level.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, context, null, level, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            if (level.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, null, exception, level, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            if (level.IsValid(ValidLevels))
+                new Log(Translation.DefaultCulture, context, exception, level, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="culture">The culture.</param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            // Add to queue for logging if we are a valid level.
+            if (LoggingLevel.Information.IsValid(ValidLevels))
+                new Log(culture, null, null, LoggingLevel.Information, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the information <see cref="LoggingLevel">log level</see>.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the information <see cref="LoggingLevel">log level</see> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            // Add to queue for logging if we are a valid level.
+            if (LoggingLevel.Information.IsValid(ValidLevels))
+                new Log(culture, context, null, LoggingLevel.Information, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="culture">The culture.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] CultureInfo culture,
+            LoggingLevel level,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            // Add to queue for logging if we are a valid level.
+            if (level.IsValid(ValidLevels))
+                new Log(culture, null, null, level, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs a message at the specified <see cref="LoggingLevel" />.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The optional parameters, for formatting the message.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            LoggingLevel level,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            // Add to queue for logging if we are a valid level.
+            if (level.IsValid(ValidLevels))
+                new Log(culture, context, null, level, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource.</typeparam>
+        /// <param name="culture">The culture.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            if (level.IsValid(ValidLevels))
+                new Log(culture, null, exception, level, typeof(TResource), resourceProperty, null, parameters);
+        }
+
+        /// <summary>
+        /// Logs an exception.
+        /// </summary>
+        /// <typeparam name="TResource">The type of the resource class.</typeparam>
+        /// <param name="culture">The culture.</param>
+        /// <param name="context">The log context.</param>
+        /// <param name="exception"><para>The exception to log.</para>
+        ///   <para><see cref="LoggingException" />'s add themselves and so this method ignores them.</para></param>
+        /// <param name="level"><para>The log level.</para>
+        ///   <para>By default this uses the error log level.</para></param>
+        /// <param name="resourceProperty">The name of the resource property in <typeparamref name="TResource" />.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <remarks>
+        /// If the log <paramref name="level" /> is invalid then the log won't be added.
+        /// </remarks>
+        [PublicAPI]
+        public static void Add<TResource>(
+            [CanBeNull] CultureInfo culture,
+            [CanBeNull] LogContext context,
+            [CanBeNull] Exception exception,
+            LoggingLevel level,
+            [CanBeNull] string resourceProperty,
+            [CanBeNull] params object[] parameters)
+            where TResource : class
+        {
+            if (level.IsValid(ValidLevels))
+                new Log(culture, context, exception, level, typeof(TResource), resourceProperty, null, parameters);
         }
 
         // ReSharper restore ObjectCreationAsStatement
