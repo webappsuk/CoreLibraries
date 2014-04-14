@@ -49,6 +49,7 @@ namespace WebApplications.Utilities.Logging.Test
             string tfn = typeof(Resources).FullName;
             // We do this to ensure the resource type has been seen before.
             Assert.IsNotNull(Translation.GetResourceManager<Resources>());
+
             Resources.Culture = Translation.DefaultCulture;
             Assert.AreEqual(Resources.TestString, Translation.GetResource(tfn, "TestString"));
             Resources.Culture = CultureInfo.InvariantCulture;

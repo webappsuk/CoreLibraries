@@ -36,7 +36,6 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Security;
@@ -117,11 +116,7 @@ namespace WebApplications.Utilities.Logging
 
         [CanBeNull]
         [NonSerialized]
-        private ResourceManager _resourceManager;
-
-        [CanBeNull]
-        [NonSerialized]
-        private string _tag;
+        private Translation _translation;
 
         [CanBeNull]
         [NonSerialized]
@@ -154,7 +149,7 @@ namespace WebApplications.Utilities.Logging
         [NonSerialized]
         private static readonly Lazy<string> _protobufSchema = new Lazy<string>(
             // ReSharper disable once PossibleNullReferenceException
-            () => RuntimeTypeModel.Default.GetSchema(typeof(Log)),
+            () => RuntimeTypeModel.Default.GetSchema(typeof (Log)),
             LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
@@ -293,15 +288,15 @@ namespace WebApplications.Utilities.Logging
         private Log(
             [CanBeNull] CultureInfo culture,
             [CanBeNull] LogContext context,
-            [CanBeNull] Exception exception, 
+            [CanBeNull] Exception exception,
             LoggingLevel level,
-            [CanBeNull] Type resourceType, 
-            [LocalizationRequired, CanBeNull] string format, 
-            [CanBeNull] Expression<Func<string>> resource, 
+            [CanBeNull] Type resourceType,
+            [LocalizationRequired] [CanBeNull] string format,
+            [CanBeNull] Expression<Func<string>> resource,
             [CanBeNull] params object[] parameters)
             : this()
         {
-            Contract.Requires(format == null || resource == null);
+            Contract.Requires((format == null) ^ (resource == null));
             Contract.Requires(resourceType == null || format != null);
 
             _guid = CombGuid.NewCombGuid();
@@ -325,26 +320,17 @@ namespace WebApplications.Utilities.Logging
 
             // If we have a formatted message add it now
             if (!string.IsNullOrEmpty(format))
-            {
                 if (resourceType != null)
                 {
-                    try
+                    Translation translation;
+                    if (Translation.TryGet(resourceType, format, out translation, culture))
                     {
-                        _resourceManager = Translation.GetResourceManager(resourceType);
+                        Contract.Assert(translation != null);
 
-                        if (_resourceManager != null)
-                        {
-                            _tag = format;
-                            _resourceProperty = string.Join(".", resourceType.FullName, _tag);
-
-                            _messageFormat = _resourceManager.GetString(_tag, culture);
-                            hasMessage = true;
-                        }
-                    }
-                    catch
-                    {
-                        _messageFormat = null;
-                        hasMessage = false;
+                        _translation = translation;
+                        _messageFormat = translation.MessageFormat;
+                        _resourceProperty = translation.ResourceProperty;
+                        hasMessage = true;
                     }
                 }
                 else
@@ -352,51 +338,31 @@ namespace WebApplications.Utilities.Logging
                     hasMessage = true;
                     _messageFormat = format;
                 }
-            }
             else if (resource != null)
-                // Try to evaluate the resource
-                try
+            {
+                Translation translation;
+                if (Translation.TryGet(resource, out translation, culture))
                 {
-                    Func<string> func = resource.Compile();
+                    Contract.Assert(translation != null);
 
-                    // See if we can get the resource property.
-                    MemberExpression me = resource.Body as MemberExpression;
-                    if (me != null)
+                    _translation = translation;
+                    _messageFormat = translation.MessageFormat;
+                    _resourceProperty = translation.ResourceProperty;
+                }
+                else
+                    try
                     {
-                        PropertyInfo pi = me.Member as PropertyInfo;
-                        if (pi != null)
-                        {
-                            MethodInfo mi = pi.GetMethod;
-                            if (mi != null)
-                            {
-                                Type dt = mi.DeclaringType;
-                                Contract.Assert(dt != null);
-                                _resourceManager = Translation.GetResourceManager(dt);
-
-                                if (_resourceManager != null)
-                                {
-                                    _tag = pi.Name;
-                                    _resourceProperty = string.Join(".", dt.FullName, pi.Name);
-
-                                    _messageFormat = _resourceManager.GetString(_tag, culture);
-                                }
-                            }
-                        }
+                        _messageFormat = resource.Compile()();
+                    }
+                    catch
+                    {
+                        _messageFormat = null;
                     }
 
-                    // Grab the original message format, this is used in future if we fail to get the resource again.
-                    if (_messageFormat == null)
-                        _messageFormat = func();
-
-                    // If we have a resource property, then we have a message even if it's null for this culture
-                    // as it may not be null with other cultures.
-                    hasMessage = _resourceProperty != null || _messageFormat != null;
-                }
-                catch
-                {
-                    _messageFormat = null;
-                    hasMessage = false;
-                }
+                // If we have a resource property, then we have a message even if it's null for this culture
+                // as it may not be null with other cultures.
+                hasMessage = _translation != null || _messageFormat != null;
+            }
 
             // Add parameters
             if (hasMessage &&
@@ -415,7 +381,7 @@ namespace WebApplications.Utilities.Logging
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (!isLogException && hasMessage)
-                    innerExceptions = new[] { exception };
+                    innerExceptions = new[] {exception};
                 else
                 {
                     // Add the exception type.
@@ -437,7 +403,7 @@ namespace WebApplications.Utilities.Logging
                     else
                     {
                         if (exception.InnerException != null)
-                            innerExceptions = new[] { exception.InnerException };
+                            innerExceptions = new[] {exception.InnerException};
 
                         // If this is a SQL exception, then log the stored proc.
                         SqlException sqlException = exception as SqlException;
@@ -996,10 +962,18 @@ namespace WebApplications.Utilities.Logging
         /// <param name="parameters">The optional parameters, for formatting the message.</param>
         [PublicAPI]
         public Log(
-            [CanBeNull] Type resourceType, 
+            [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, null, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters)
+            : this(
+                Translation.DefaultCulture,
+                null,
+                null,
+                LoggingLevel.Information,
+                resourceType,
+                resourceProperty,
+                null,
+                parameters)
         {
         }
 
@@ -1016,7 +990,15 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, context, null, LoggingLevel.Information, resourceType, resourceProperty, null, parameters)
+            : this(
+                Translation.DefaultCulture,
+                context,
+                null,
+                LoggingLevel.Information,
+                resourceType,
+                resourceProperty,
+                null,
+                parameters)
         {
         }
 
@@ -1096,7 +1078,15 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] Type resourceType,
             [CanBeNull] string resourceProperty,
             [CanBeNull] params object[] parameters)
-            : this(Translation.DefaultCulture, context, exception, level, resourceType, resourceProperty, null, parameters)
+            : this(
+                Translation.DefaultCulture,
+                context,
+                exception,
+                level,
+                resourceType,
+                resourceProperty,
+                null,
+                parameters)
         {
         }
 
@@ -1411,7 +1401,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public string Tag
         {
-            get { return _tag; }
+            get { return _translation == null ? null : _translation.ResourceTag; }
         }
 
         /// <summary>
@@ -1491,22 +1481,16 @@ namespace WebApplications.Utilities.Logging
                         return;
                     _latestCultureInfo = culture;
 
-                    // Check if we have the resource manager yet (will be blank after de-serialization).
-                    if (_resourceManager == null)
-                    {
-                        int lastDot = _resourceProperty.LastIndexOf('.');
-                        _resourceManager = Translation.GetResourceManager(
-                            _resourceProperty.Substring(0, lastDot));
+                    int lastDot = _resourceProperty.LastIndexOf('.');
 
-                        if (_resourceManager != null)
-                            _tag = _resourceProperty.Substring(lastDot + 1);
-                    }
-                    else
-                        Contract.Assert(_tag != null);
+                    _translation = Translation.Get(
+                        _resourceProperty.Substring(0, lastDot),
+                        _resourceProperty.Substring(lastDot + 1),
+                        culture);
 
                     // Grab the format
-                    if (_resourceManager != null)
-                        messageFormat = _resourceManager.GetString(_tag, culture);
+                    if (_translation != null)
+                        messageFormat = _translation.MessageFormat;
                 }
                 catch
                 {
@@ -1557,7 +1541,7 @@ namespace WebApplications.Utilities.Logging
 
             if (formatProvider != null)
             {
-                ICustomFormatter formatter = formatProvider.GetFormat(typeof(Log)) as ICustomFormatter;
+                ICustomFormatter formatter = formatProvider.GetFormat(typeof (Log)) as ICustomFormatter;
 
                 if (formatter != null)
                     return formatter.Format(format, this, formatProvider) ?? String.Empty;
@@ -1697,7 +1681,7 @@ namespace WebApplications.Utilities.Logging
                 culture = Translation.DefaultCulture;
 
             // Remove option flags
-            format = ((LogFormat)(((int)format) & 0x0FFFFFFF));
+            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
 
             if (asXml && asJson)
                 throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
@@ -1885,9 +1869,8 @@ namespace WebApplications.Utilities.Logging
 
                             string i = indent + "   ";
                             bool cvf = true;
-                            foreach (
-                                KeyValuePair<string, string> kvp in (IEnumerable<KeyValuePair<string, string>>)_context
-                                )
+                            foreach (KeyValuePair<string, string> kvp 
+                                in (IEnumerable<KeyValuePair<string, string>>) _context)
                             {
                                 Contract.Assert(kvp.Key != null);
                                 if (!cvf)
@@ -2086,16 +2069,16 @@ namespace WebApplications.Utilities.Logging
 
                         // Look for inheritance from log or logging exception.
                         baseType = declaringType;
-                        while ((baseType != typeof(object)) &&
-                               (baseType != typeof(LoggingException)) &&
-                               (baseType != typeof(Log)))
+                        while ((baseType != typeof (object)) &&
+                               (baseType != typeof (LoggingException)) &&
+                               (baseType != typeof (Log)))
                         {
                             Contract.Assert(baseType != null);
                             baseType = baseType.BaseType;
                         }
 
-                        if ((baseType == typeof(LoggingException)) ||
-                            (baseType == typeof(Log)))
+                        if ((baseType == typeof (LoggingException)) ||
+                            (baseType == typeof (Log)))
                         {
                             // We are descended from LoggingException or Log so skip frame.
                             baseType = declaringType;

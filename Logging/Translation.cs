@@ -137,6 +137,7 @@ namespace WebApplications.Utilities.Logging
         public static ResourceManager GetResourceManager([NotNull] string typeFullName)
         {
             Contract.Requires(typeFullName != null);
+
             ResourceManager resourceManager;
             return _resourceManagers.TryGetValue(typeFullName, out resourceManager) ? resourceManager : null;
         }
@@ -154,6 +155,8 @@ namespace WebApplications.Utilities.Logging
         public static string GetResource<TResource>([NotNull] string property)
             where TResource : class
         {
+            Contract.Requires(property != null);
+
             string translation;
             return TryGetResource(typeof (TResource), property, DefaultCulture, out translation) ? translation : null;
         }
@@ -170,6 +173,9 @@ namespace WebApplications.Utilities.Logging
         [CanBeNull]
         public static string GetResource([NotNull] Type resourceType, [NotNull] string property)
         {
+            Contract.Requires(resourceType != null);
+            Contract.Requires(property != null);
+
             string translation;
             return TryGetResource(resourceType, property, DefaultCulture, out translation) ? translation : null;
         }
@@ -188,6 +194,8 @@ namespace WebApplications.Utilities.Logging
         public static string GetResource<TResource>([NotNull] string property, [CanBeNull] CultureInfo culture)
             where TResource : class
         {
+            Contract.Requires(property != null);
+
             string translation;
             return TryGetResource(typeof (TResource), property, culture, out translation) ? translation : null;
         }
@@ -206,6 +214,9 @@ namespace WebApplications.Utilities.Logging
             [NotNull] string property,
             [CanBeNull] CultureInfo culture)
         {
+            Contract.Requires(resourceType != null);
+            Contract.Requires(property != null);
+
             string translation;
             return TryGetResource(resourceType, property, culture, out translation) ? translation : null;
         }
@@ -223,6 +234,8 @@ namespace WebApplications.Utilities.Logging
         public static bool TryGetResource<TResource>([NotNull] string property, out string translation)
             where TResource : class
         {
+            Contract.Requires(property != null);
+
             return TryGetResource(typeof (TResource), property, DefaultCulture, out translation);
         }
 
@@ -241,6 +254,9 @@ namespace WebApplications.Utilities.Logging
             [NotNull] string property,
             out string translation)
         {
+            Contract.Requires(resourceType != null);
+            Contract.Requires(property != null);
+
             return TryGetResource(resourceType, property, DefaultCulture, out translation);
         }
 
@@ -261,6 +277,8 @@ namespace WebApplications.Utilities.Logging
             out string translation)
             where TResource : class
         {
+            Contract.Requires(property != null);
+
             return TryGetResource(typeof (TResource), property, culture, out translation);
         }
 
@@ -314,6 +332,9 @@ namespace WebApplications.Utilities.Logging
         [CanBeNull]
         public static string GetResource([NotNull] string typeFullName, [NotNull] string property)
         {
+            Contract.Requires(typeFullName != null);
+            Contract.Requires(property != null);
+
             string translation;
             return TryGetResource(typeFullName, property, DefaultCulture, out translation) ? translation : null;
         }
@@ -333,6 +354,9 @@ namespace WebApplications.Utilities.Logging
             [NotNull] string property,
             [CanBeNull] CultureInfo culture)
         {
+            Contract.Requires(typeFullName != null);
+            Contract.Requires(property != null);
+
             string translation;
             return TryGetResource(typeFullName, property, culture, out translation) ? translation : null;
         }
@@ -353,6 +377,9 @@ namespace WebApplications.Utilities.Logging
             [NotNull] string property,
             out string translation)
         {
+            Contract.Requires(typeFullName != null);
+            Contract.Requires(property != null);
+
             return TryGetResource(typeFullName, property, DefaultCulture, out translation);
         }
 
@@ -604,9 +631,13 @@ namespace WebApplications.Utilities.Logging
         /// <returns></returns>
         [CanBeNull]
         [PublicAPI]
-        public static Translation Get<TResource>([NotNull] string property, [CanBeNull] CultureInfo culture = null)
+        public static Translation Get<TResource>(
+            [NotNull] string property,
+            [CanBeNull] CultureInfo culture = null)
             where TResource : class
         {
+            Contract.Requires(property != null);
+
             Translation value;
             return TryGet(typeof (TResource), property, out value, culture)
                 ? value
@@ -627,6 +658,9 @@ namespace WebApplications.Utilities.Logging
             [NotNull] string property,
             [CanBeNull] CultureInfo culture = null)
         {
+            Contract.Requires(resourceType != null);
+            Contract.Requires(property != null);
+
             Translation value;
             return TryGet(resourceType, property, out value, culture)
                 ? value
@@ -648,6 +682,9 @@ namespace WebApplications.Utilities.Logging
             [NotNull] string property,
             [CanBeNull] CultureInfo culture = null)
         {
+            Contract.Requires(typeFullName != null);
+            Contract.Requires(property != null);
+
             Translation value;
             return TryGet(typeFullName, property, out value, culture)
                 ? value
@@ -666,6 +703,8 @@ namespace WebApplications.Utilities.Logging
             [NotNull] Expression<Func<string>> resource,
             [CanBeNull] CultureInfo culture = null)
         {
+            Contract.Requires(resource != null);
+
             Translation value;
             return TryGet(resource, out value, culture)
                 ? value
