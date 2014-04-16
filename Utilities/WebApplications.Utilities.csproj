@@ -194,11 +194,14 @@
     <Compile Include="ConsoleHelper.cs" />
     <Compile Include="EqualityNetwork.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
+    <Compile Include="Formatting\ConsoleWriter.cs" />
+    <Compile Include="Formatting\DebugTextWriter.cs" />
     <Compile Include="Formatting\FormatBuilder.cs" />
     <Compile Include="Formatting\FormatChunk.cs" />
     <Compile Include="Formatting\FormatWriter.cs" />
     <Compile Include="Formatting\LayoutWriter.cs" />
     <Compile Include="Formatting\Layout.cs" />
+    <Compile Include="Formatting\TraceTextWriter.cs" />
     <Compile Include="Queue.cs">
       <DependentUpon>Queue.tt</DependentUpon>
       <AutoGen>True</AutoGen>

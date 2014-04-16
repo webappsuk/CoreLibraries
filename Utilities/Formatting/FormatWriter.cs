@@ -57,7 +57,7 @@ namespace WebApplications.Utilities.Formatting
         /// The write lock.
         /// </summary>
         [NotNull]
-        private readonly AsyncLock _lock = new AsyncLock();
+        protected readonly AsyncLock Lock = new AsyncLock();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatWriter"/> class.
@@ -102,6 +102,23 @@ namespace WebApplications.Utilities.Formatting
         public IFormatProvider FormatProvider
         {
             get { return _formatProvider; }
+        }
+        /// <summary>
+        /// Closes the current writer and releases any system resources associated with the writer.
+        /// </summary>
+        [PublicAPI]
+        public virtual void Close()
+        {
+            _writer.Close();
+        }
+
+        /// <summary>
+        /// Clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
+        /// </summary>
+        [PublicAPI]
+        public virtual void Flush()
+        {
+            _writer.Flush();
         }
 
         /// <summary>
@@ -215,17 +232,18 @@ namespace WebApplications.Utilities.Formatting
             if (builder == null &&
                 !appendNewLine) return;
             if (formatProvider == null) formatProvider = FormatProvider;
-            using (_lock.LockAsync().Result)
+            using (Lock.LockAsync().Result)
             {
-                _overLoadCheck = false;
-                string text = builder != null
-                    ? DoWrite(formatProvider, builder)
-                    : null;
-                
+                if (builder != null)
+                    foreach (FormatChunk chunk in builder)
+                    {
+                        Contract.Assert(chunk != null);
+                        string c = DoWriteChunk(formatProvider, chunk);
+                        if (!string.IsNullOrEmpty(c))
+                            _writer.Write(c);
+                    }
                 if (appendNewLine)
-                    _writer.WriteLine(text ?? string.Empty);
-                else if (!string.IsNullOrEmpty(text))
-                    _writer.Write(text);
+                    _writer.WriteLine();
             }
         }
 
@@ -245,59 +263,37 @@ namespace WebApplications.Utilities.Formatting
                 !appendNewLine) return;
 
             if (formatProvider == null) formatProvider = FormatProvider;
-            using (await _lock.LockAsync())
+            using (await Lock.LockAsync())
             {
-                _overLoadCheck = false;
-                string text = builder != null
-                    ? await DoWriteAsync(formatProvider, builder)
-                    : null;
-
                 // ReSharper disable PossibleNullReferenceException
+                if (builder != null)
+                    foreach (FormatChunk chunk in builder)
+                    {
+                        Contract.Assert(chunk != null);
+                        string c = DoWriteChunk(formatProvider, chunk);
+                        if (!string.IsNullOrEmpty(c))
+                            await _writer.WriteAsync(c);
+                    }
                 if (appendNewLine)
-                    await _writer.WriteLineAsync(text ?? string.Empty);
-                else if (!string.IsNullOrEmpty(text))
-                    await _writer.WriteAsync(text);
+                    await _writer.WriteLineAsync();
                 // ReSharper restore PossibleNullReferenceException
             }
         }
 
-        private bool _overLoadCheck;
-
         /// <summary>
-        /// Does the write.
+        /// Gets a string represent of each chunk to write.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="builder">The builder.</param>
-        protected virtual string DoWrite(
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>A string representation of the chunk; otherwise <see langword="null"/> to skip.</returns>
+        [CanBeNull]
+        protected virtual string DoWriteChunk(
             [NotNull] IFormatProvider formatProvider,
-            [NotNull] FormatBuilder builder)
+            [NotNull] FormatChunk chunk)
         {
             Contract.Requires(formatProvider != null);
-            Contract.Requires(builder != null);
-            if (_overLoadCheck)
-                return builder.ToString(formatProvider);
-            _overLoadCheck = true;
-            return DoWriteAsync(formatProvider, builder).Result;
-        }
-
-        /// <summary>
-        /// Does the write.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="builder">The builder.</param>
-        [NotNull]
-        protected virtual Task<string> DoWriteAsync(
-            [NotNull] IFormatProvider formatProvider,
-            [NotNull] FormatBuilder builder)
-        {
-            Contract.Requires(formatProvider != null);
-            Contract.Requires(builder != null);
-            // ReSharper disable AssignNullToNotNullAttribute
-            if (_overLoadCheck)
-                return Task.FromResult(builder.ToString(formatProvider));
-            _overLoadCheck = true;
-            return Task.FromResult(DoWrite(formatProvider, builder));
-            // ReSharper restore AssignNullToNotNullAttribute
+            Contract.Requires(chunk != null);
+            return chunk.ToString(formatProvider);
         }
 
         /// <summary>
@@ -307,7 +303,7 @@ namespace WebApplications.Utilities.Formatting
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
-                ((IDisposable) _writer).Dispose();
+                ((IDisposable)_writer).Dispose();
         }
 
         /// <summary>

@@ -1,11 +1,35 @@
-using System;
-using System.Collections;
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Formatting;
 
-namespace WebApplications.Utilities
+namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
     /// Defines a layout for use with a <see cref="LayoutWriter"/>.
@@ -49,7 +73,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public readonly IEnumerable<ushort> TabStops;
 
-            /// <summary>
+        /// <summary>
         /// The tab character is used to fill to next tab stop.
         /// </summary>
         [PublicAPI]
@@ -73,13 +97,13 @@ namespace WebApplications.Utilities
         /// <param name="tabChar">The tab character.</param>
         /// <param name="splitWords">if set to <see langword="true" /> then words will split across lines.</param>
         public Layout(
-            ushort width,
-            byte indentSize, 
-            byte rightMarginSize,
-            char indentChar,
-            ushort firstLineIndentSize,
-            IEnumerable<ushort> tabStops, 
-            char tabChar = ' ', 
+            ushort width = 120,
+            byte indentSize = 0,
+            byte rightMarginSize = 0,
+            char indentChar = ' ',
+            ushort firstLineIndentSize = 0,
+            IEnumerable<ushort> tabStops = null,
+            char tabChar = ' ',
             bool splitWords = false)
         {
             Width = width;
