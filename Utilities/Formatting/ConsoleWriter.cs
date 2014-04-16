@@ -41,6 +41,7 @@ namespace WebApplications.Utilities.Formatting
         /// The default console writer.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public static readonly ConsoleWriter Default = new ConsoleWriter();
 
         /// <summary>
@@ -104,9 +105,11 @@ namespace WebApplications.Utilities.Formatting
                 {
                     ConsoleColor fc = Console.ForegroundColor;
                     ConsoleColor bc = Console.BackgroundColor;
+
                     Console.ResetColor();
                     DefaultForeColour = Console.ForegroundColor;
                     DefaultBackColour = Console.BackgroundColor;
+
                     Console.ForegroundColor = fc;
                     Console.BackgroundColor = bc;
                 }

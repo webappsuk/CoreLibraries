@@ -26,28 +26,17 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Formatting;
-using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
 {
     /// <summary>
     /// Helpful functions for initializing and using a console safely.
     /// </summary>
-    /// <remarks>
-    /// <para>The <see cref="ConsoleHelper"/> provides a <see cref="SynchronizationContext"/> that ensures all write methods occur in a synchronized fashion.
-    /// This prevents colour changes, etc. from being interleaved, so long as you only access the Console through the Helper methods.</para>
-    /// <para>The overloads for <see cref="Write(string)"/> and <see cref="WriteLine()"/>, as well as being synchronized, also fallback to their equivalents
-    /// in the <see cref="Trace"/> class, if a Console is not actually available.</para>
-    /// </remarks>
     [PublicAPI]
     public static class ConsoleHelper
     {
@@ -70,7 +59,7 @@ namespace WebApplications.Utilities
                 }
             },
             LazyThreadSafetyMode.PublicationOnly);
-        
+
         /// <summary>
         /// Whether the current application is running in a console.
         /// </summary>
@@ -79,7 +68,7 @@ namespace WebApplications.Utilities
         {
             get { return _isConsole.Value; }
         }
-        
+
         /// <summary>
         /// Attaches to a parent console.
         /// </summary>
