@@ -194,6 +194,10 @@
     <Compile Include="ConsoleHelper.cs" />
     <Compile Include="EqualityNetwork.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
+    <Compile Include="Formatting\FormatBuilder.cs" />
+    <Compile Include="Formatting\FormatChunk.cs" />
+    <Compile Include="LayoutWriter.cs" />
+    <Compile Include="Layout.cs" />
     <Compile Include="Queue.cs">
       <DependentUpon>Queue.tt</DependentUpon>
       <AutoGen>True</AutoGen>

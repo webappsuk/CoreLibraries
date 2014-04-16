@@ -31,9 +31,9 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
@@ -67,7 +67,8 @@ namespace WebApplications.Utilities
                     // Try to attach to parent process's console window
                     return AttachConsole(0xFFFFFFFF);
                 }
-            }, LazyThreadSafetyMode.PublicationOnly);
+            },
+            LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// The console synchronization context is respected by all write methods in the helper, and should be used anywhere you wish to synchronize writes.
@@ -90,6 +91,64 @@ namespace WebApplications.Utilities
         private static readonly Dictionary<string, ConsoleColor> _customColors =
             new Dictionary<string, ConsoleColor>();
 
+        private static int _indentSize;
+        private static int _rightMarginSize;
+        private static char _indentChar = ' ';
+        private static int _firstLineIndentSize;
+        private static int _tabSize = 3;
+        private static bool _splitWords;
+
+        #region Format Helpers
+        /// <summary>
+        /// Indicates a newline should be written.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static string NewLine = "{>n}";
+
+        /// <summary>
+        /// Indicates a tab should be written.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static string Tab = "{>t}";
+
+        /// <summary>
+        /// Indicates a tab should be written.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static string Indent = "{>i}";
+
+        /// <summary>
+        /// Indicates the foreground color should be reset.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static string ResetForeColor = "{+_}";
+
+        /// <summary>
+        /// Indicates the background color should be reset.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static string ResetBackColor = "{-_}";
+
+        /// <summary>
+        /// Indicates the background color should be reset.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static string ResetColor = "{+_}{-_}";
+
+        /// <summary>
+        /// Resets the layout.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static string ResetLayout = "{|i0}{|f0}{|r0}{c }";
+        #endregion
+
         /// <summary>
         /// Whether the current application is running in a console.
         /// </summary>
@@ -97,6 +156,96 @@ namespace WebApplications.Utilities
         public static bool IsConsole
         {
             get { return _isConsole.Value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the indent.
+        /// </summary>
+        /// <value>The indent.</value>
+        [PublicAPI]
+        public static int IndentSize
+        {
+            get { return _indentSize; }
+            set
+            {
+                if (_indentSize == value) return;
+                SynchronizationContext.Invoke(() => _indentSize = value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the size of the right hand margin.
+        /// </summary>
+        /// <value>The indent.</value>
+        [PublicAPI]
+        public static int RightMarginSize
+        {
+            get { return _rightMarginSize; }
+            set
+            {
+                if (_rightMarginSize == value) return;
+                SynchronizationContext.Invoke(() => _rightMarginSize = value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the indent.
+        /// </summary>
+        /// <value>The indent.</value>
+        [PublicAPI]
+        public static char IndentChar
+        {
+            get { return _indentChar; }
+            set
+            {
+                if (_indentChar == value) return;
+                SynchronizationContext.Invoke(() => _indentChar = value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the first line indent.
+        /// </summary>
+        /// <value>The first line indent.</value>
+        [PublicAPI]
+        public static int FirstLineIndentSize
+        {
+            get { return _firstLineIndentSize; }
+            set
+            {
+                if (_firstLineIndentSize == value) return;
+                SynchronizationContext.Invoke(() => _firstLineIndentSize = value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the size of the tab.
+        /// </summary>
+        /// <value>The size of the tab.</value>
+        [PublicAPI]
+        public static int TabSize
+        {
+            get { return _tabSize; }
+            set
+            {
+                if (_tabSize == value) return;
+                SynchronizationContext.Invoke(() => _tabSize = value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether words can be split across lines.
+        /// </summary>
+        /// <value>The size of the tab.</value>
+        [PublicAPI]
+        public static bool SplitWords
+        {
+            get { return _splitWords; }
+            set
+            {
+                if (_splitWords == value) return;
+                SynchronizationContext.Invoke(() => _splitWords = value);
+            }
         }
 
         /// <summary>
@@ -307,103 +456,137 @@ namespace WebApplications.Utilities
         /// <param name="args">The arguments.</param>
         private static void Write([CanBeNull] string str, bool addNewLine, [CanBeNull] params object[] args)
         {
-            if (string.IsNullOrEmpty(str) && !addNewLine) return;
+            if (string.IsNullOrEmpty(str) &&
+                !addNewLine) return;
             if (args == null) args = _emptyArgs;
 
             // Invoke on the synchronization context
-            SynchronizationContext.Invoke(() =>
-            {
-                ConsoleColor currentFore = Console.ForegroundColor;
-                ConsoleColor currentBack = Console.BackgroundColor;
-                TextWriter writer = IsConsole ? Console.Out : new StringWriter();
-                Contract.Assert(writer != null);
-
-                foreach (Tuple<string, string, string> tuple in str.FormatChunks())
+            SynchronizationContext.Invoke(
+                () =>
                 {
-                    Contract.Assert(tuple != null);
+                    ConsoleColor currentFore = Console.ForegroundColor;
+                    ConsoleColor currentBack = Console.BackgroundColor;
+                    bool isConsole = IsConsole;
+                    int currentX = isConsole ? Console.CursorLeft : 0;
+                    int maxWidth = isConsole ? Console.BufferWidth : 120;
+                    
+                    TextWriter writer = isConsole ? Console.Out : new StringWriter();
+                    Contract.Assert(writer != null);
 
-                    if (string.IsNullOrEmpty(tuple.Item1))
+                    foreach (FormatChunk chunk in str.FormatChunks())
                     {
-                        writer.Write(tuple.Item3);
-                        continue;
-                    }
+                        Contract.Assert(chunk != null);
 
-                    if (args.Length > 0)
-                    {
-                        int arg;
-                        if (int.TryParse(tuple.Item1, out arg))
+                        if (!chunk.IsFillPoint)
                         {
-                            if ((arg < 0) || (arg >= args.Length))
-                            {
-                                writer.Write(tuple.Item3);
-                                continue;
-                            }
-                            if (string.IsNullOrEmpty(tuple.Item2))
-                            {
-                                writer.Write(args[arg]);
-                                continue;
-                            }
-
-                            Contract.Assert(!string.IsNullOrEmpty(tuple.Item3));
-                            try
-                            {
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                writer.Write(tuple.Item3, args);
-                            }
-                            catch
-                            {
-                                writer.Write(tuple.Item3);
-                            }
+                            writer.Write(chunk.Text);
                             continue;
+                        }
+
+                        if (args.Length > 0)
+                        {
+                            int arg;
+                            if (int.TryParse(chunk.Tag, out arg))
+                            {
+                                if ((arg < 0) ||
+                                    (arg >= args.Length))
+                                {
+                                    writer.Write(chunk.Text);
+                                    continue;
+                                }
+                                if (string.IsNullOrEmpty(chunk.Format))
+                                {
+                                    writer.Write(args[arg]);
+                                    continue;
+                                }
+
+                                Contract.Assert(!string.IsNullOrEmpty(chunk.Text));
+                                try
+                                {
+                                    // ReSharper disable once AssignNullToNotNullAttribute
+                                    writer.Write(chunk.Text, args);
+                                }
+                                catch
+                                {
+                                    writer.Write(chunk.Text);
+                                }
+                                continue;
+                            }
+                        }
+
+                        // Our extensions use a prefix character followed by data, so any 1 character format is unknown.
+                        if (args.Length < 2)
+                        {
+                            writer.Write(chunk.Text);
+                            continue;
+                        }
+
+                        Contract.Assert(chunk.Text != null);
+                        char prefix = chunk.Tag[0];
+                        string remainder = chunk.Tag.Substring(1);
+                        switch (prefix)
+                        {
+                                // Set foreground/background colour
+                            case '+':
+                            case '-':
+                                bool isBack = prefix == '-';
+                                ConsoleColor colour;
+                                if (remainder == "_")
+                                    colour = isBack ? currentBack : currentFore;
+                                else if (!_customColors.TryGetValue(remainder, out colour) &&
+                                         !Enum.TryParse(remainder, true, out colour))
+                                {
+                                    writer.Write(chunk.Text);
+                                    continue;
+                                }
+
+                                // Set the relevant console colour, if we're running in a console.
+                                if (!isConsole) continue;
+
+                                if (isBack)
+                                    Console.BackgroundColor = colour;
+                                else
+                                    Console.ForegroundColor = colour;
+                                continue;
+
+                                // Special characters
+                            case '>':
+                                switch (remainder.ToLowerInvariant())
+                                {
+                                    case "n":
+                                        Console.WriteLine();
+                                        continue;
+                                    case "t":
+
+                                        continue;
+                                    case "i":
+                                        continue;
+                                }
+                                continue;
+
+                                // Indententation
+                            case '|':
+
+                                continue;
                         }
                     }
 
-                    // ReSharper disable once PossibleNullReferenceException
-                    bool back = tuple.Item1[0] == '-';
-                    if (!back && (tuple.Item1[0] != '+'))
+                    // Restore colours
+                    if (isConsole)
                     {
-                        writer.Write(tuple.Item3);
-                        continue;
+                        Console.BackgroundColor = currentBack;
+                        Console.ForegroundColor = currentFore;
                     }
 
-                    string cStr = tuple.Item1.Substring(1);
-                    ConsoleColor colour;
-                    if (cStr == "_")
-                    {
-                        colour = back ? currentBack : currentFore;
-                    }
-                    else if (!_customColors.TryGetValue(cStr, out colour) &&
-                             !Enum.TryParse(cStr, true, out colour))
-                    {
-                        writer.Write(tuple.Item3);
-                        continue;
-                    }
+                    if (addNewLine)
+                        writer.WriteLine();
 
-                    // Set the relevant console colour, if we're running in a console.
-                    if (!IsConsole) continue;
+                    if (isConsole) return;
 
-                    if (back)
-                        Console.BackgroundColor = colour;
-                    else
-                        Console.ForegroundColor = colour;
-                }
-
-                // Restore colours
-                if (IsConsole)
-                {
-                    Console.BackgroundColor = currentBack;
-                    Console.ForegroundColor = currentFore;
-                }
-
-                if (addNewLine)
-                    writer.WriteLine();
-
-                if (IsConsole) return;
-
-                // Write the StringWriter out to trace.
-                Trace.Write(writer.ToString());
-                writer.Dispose();
-            });
+                    // Write the StringWriter out to trace.
+                    Trace.Write(writer.ToString());
+                    writer.Dispose();
+                });
         }
     }
 }

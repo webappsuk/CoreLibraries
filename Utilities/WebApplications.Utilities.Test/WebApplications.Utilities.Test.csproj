@@ -118,6 +118,7 @@
     <Compile Include="Extensions\TopologicalSortTests.cs" />
     <Compile Include="Extensions\TruncateTests.cs" />
     <Compile Include="FinancialsTests.cs" />
+    <Compile Include="Formatting\TestFormatChunks.cs" />
     <Compile Include="Location\LatLngTests.cs" />
     <Compile Include="Ranges\DateRangeTests.cs" />
     <Compile Include="Ranges\DateTimeTests.cs" />

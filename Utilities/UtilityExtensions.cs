@@ -49,6 +49,7 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Enumerations;
+using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
@@ -1137,26 +1138,21 @@ namespace WebApplications.Utilities
                 return format;
             }
         }
-
+        
         /// <summary>
         /// Chunks a format string safely.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="open">The open character.</param>
-        /// <param name="close">The close character.</param>
-        /// <param name="formatSplit">The format splitter character.</param>
         /// <returns>An enumeration of tuples.</returns>
-        /// <remarks><para>if <see cref="Tuple{T1,T2,T3}.Item1"/> is <see langword="null"/> then the block isn't a fill point; otherwise
+        /// <remarks><para>if <see cref="Tuple{T1,T2,T3}.Item1" /> is <see langword="null" /> then the block isn't a fill point; otherwise
         /// it contains the tag (e.g. '0')</para>
         /// <para>
-        ///   <see cref="Tuple{T1,T2,T3}.Item2"/> contains the format (if any); otherwise <see langword="null"/>.</para>
+        ///   <see cref="Tuple{T1,T2,T3}.Item2" /> contains the format (if any); otherwise <see langword="null" />.</para>
         /// <para>
-        ///   <see cref="Tuple{T1,T2,T3}.Item3"/> contains the raw text.</para>
-        /// <para>
-        ///   <see cref="Tuple{T1,T2,T3}.Item3"/> contains the raw text.</para></remarks>
+        ///   <see cref="Tuple{T1,T2,T3}.Item3" /> contains the raw text.</para></remarks>
         [NotNull]
         [PublicAPI]
-        public static IEnumerable<Tuple<string, string, string>> FormatChunks([CanBeNull] this string format, char open = '{', char close = '}', char formatSplit = ':')
+        public static IEnumerable<FormatChunk> FormatChunks([CanBeNull] this string format)
         {
             if (string.IsNullOrEmpty(format))
                 yield break;
@@ -1169,11 +1165,11 @@ namespace WebApplications.Utilities
                 char c = format[i++];
                 if (!inFillPoint)
                 {
-                    if (c != open)
+                    if (c != FormatBuilder.Open)
                     {
-                        if (c != close || 
+                        if (c != FormatBuilder.Close || 
                             (chunk.Length < 1) ||
-                            (chunk[chunk.Length - 1] != close))
+                            (chunk[chunk.Length - 1] != FormatBuilder.Close))
                             chunk.Append(c);
                         continue;
                     }
@@ -1181,7 +1177,7 @@ namespace WebApplications.Utilities
                     if (chunk.Length > 0)
                     {
                         // Yield block of text.
-                        yield return new Tuple<string, string, string>(null, null, chunk.ToString());
+                        yield return FormatChunk.Create(chunk.ToString());
                         chunk.Clear();
                     }
 
@@ -1191,36 +1187,21 @@ namespace WebApplications.Utilities
                 }
 
                 chunk.Append(c);
-                if (c != close)
+                if (c != FormatBuilder.Close)
                 {
-                    if (c == open)
+                    if (c == FormatBuilder.Open)
                         inFillPoint = false;
                     continue;
                 }
 
                 // Reached end of fill point
                 inFillPoint = false;
-
-                string raw = chunk.ToString();
-                string tag = chunk.ToString(1, chunk.Length - 2);
+                yield return FormatChunk.Create(chunk.ToString());
                 chunk.Clear();
-
-                if (tag.Length < 1)
-                {
-                    yield return new Tuple<string, string, string>(null, null, raw);
-                    continue;
-                }
-
-                int fs = tag.IndexOf(formatSplit);
-                if (fs < 0)
-                    yield return new Tuple<string, string, string>(tag, null, raw);
-                else if (fs < 1)
-                    yield return new Tuple<string, string, string>(null, null, raw);
-                else
-                    yield return new Tuple<string, string, string>(tag.Substring(0, fs), tag.Substring(fs+1), raw);
             }
 
-            yield return new Tuple<string, string, string>(null, null, chunk.ToString());
+            if (chunk.Length > 0)
+                yield return FormatChunk.Create(chunk.ToString());
         }
 
         /// <summary>
