@@ -31,7 +31,7 @@ using System.IO;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities
+namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
     /// Lays out text written to the underlying text writer.
