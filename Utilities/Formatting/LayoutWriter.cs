@@ -495,10 +495,12 @@ namespace WebApplications.Utilities.Formatting
                         {
                             line.Finish(false, _firstLine);
                             yield return line;
-                        }
 
-                        // Store the position for later
-                        _position = line.Position;
+                            // Store the position for later
+                            _position = line.Position;
+                        }
+                        else
+                            _position = 0;
 
                         // No more words, so finish.
                         yield break;
