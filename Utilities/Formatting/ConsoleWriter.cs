@@ -98,11 +98,12 @@ namespace WebApplications.Utilities.Formatting
 
                 // Update the width
                 int width = Console.BufferWidth;
-                Width = width > ushort.MaxValue
-                    ? ushort.MaxValue
-                    : (width < 1
-                        ? (ushort)1
-                        : (ushort)width);
+                ApplyLayout(
+                    width > ushort.MaxValue
+                        ? ushort.MaxValue
+                        : (width < 1
+                            ? (ushort) 1
+                            : (ushort) width));
             }
             else
             {

@@ -41,87 +41,105 @@ namespace WebApplications.Utilities.Formatting
         /// The default layout (as specified by the current layout writer).
         /// </summary>
         [NotNull]
-        public static readonly Layout Default = new Layout();
-
-        /// <summary>
-        /// Calculate a string representation of the layout.
-        /// </summary>
-        [NotNull]
-        private readonly Lazy<string> _string;
+        public static readonly Layout Default = new Layout(120, 0, 0, ' ', 0, null, 4, ' ', Formatting.Alignment.Left, false, false, '-');
 
         /// <summary>
         /// The layout width.
         /// </summary>
         [PublicAPI]
-        public readonly ushort Width;
+        public readonly Optional<ushort> Width;
 
         /// <summary>
         /// The indent size.
         /// </summary>
         [PublicAPI]
-        public readonly byte IndentSize;
+        public readonly Optional<byte> IndentSize;
 
         /// <summary>
         /// The size of any right margin.
         /// </summary>
         [PublicAPI]
-        public readonly byte RightMarginSize;
+        public readonly Optional<byte> RightMarginSize;
 
         /// <summary>
         /// The indent character (is repeated <see cref="IndentSize"/> times).
         /// </summary>
         [PublicAPI]
-        public readonly char IndentChar;
+        public readonly Optional<char> IndentChar;
 
         /// <summary>
         /// The first line indent size.
         /// </summary>
         [PublicAPI]
-        public readonly ushort FirstLineIndentSize;
+        public readonly Optional<ushort> FirstLineIndentSize;
 
         /// <summary>
         /// The tab stops, only valid for <see cref="T:Alignment.Left"/> and <see cref="T:Alignment.None"/>.
         /// </summary>
         [PublicAPI]
-        [CanBeNull]
-        public readonly IEnumerable<ushort> TabStops;
+        public readonly Optional<IEnumerable<ushort>> TabStops;
 
         /// <summary>
         /// The tab size, used to produce tabs when the layout doesn't support tab stops.
         /// </summary>
         [PublicAPI]
-        public readonly byte TabSize;
+        public readonly Optional<byte> TabSize;
 
         /// <summary>
         /// The tab character is used to fill to next tab stop.
         /// </summary>
         [PublicAPI]
-        public readonly char TabChar;
+        public readonly Optional<char> TabChar;
 
         /// <summary>
         /// The alignment.
         /// </summary>
         [PublicAPI]
-        public readonly Alignment Alignment;
+        public readonly Optional<Alignment> Alignment;
 
         /// <summary>
         /// Whether to split words onto new lines, or move the entire word onto a newline.  Note if the word is longer than the line length
         /// it will always split.
         /// </summary>
         [PublicAPI]
-        public readonly bool SplitWords;
+        public readonly Optional<bool> SplitWords;
 
         /// <summary>
         /// Whether to add a hyphen when splitting words.
         /// </summary>
         [PublicAPI]
-        public readonly bool Hyphenate;
+        public readonly Optional<bool> Hyphenate;
 
         /// <summary>
         /// The hyphenation character is used to split words.
         /// </summary>
         [PublicAPI]
-        public readonly char HyphenChar;
+        public readonly Optional<char> HyphenChar;
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="Layout"/> is complete.
+        /// </summary>
+        /// <value><see langword="true" /> if full; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
+        public bool IsFull
+        {
+            get
+            {
+                // Confirm everything is assigned.
+                return Width.IsAssigned &&
+                       IndentSize.IsAssigned &&
+                       RightMarginSize.IsAssigned &&
+                       IndentChar.IsAssigned &&
+                       FirstLineIndentSize.IsAssigned &&
+                       TabStops.IsAssigned &&
+                       TabSize.IsAssigned &&
+                       TabChar.IsAssigned &&
+                       Alignment.IsAssigned &&
+                       SplitWords.IsAssigned &&
+                       Hyphenate.IsAssigned &&
+                       HyphenChar.IsAssigned;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Layout" /> class.
@@ -139,79 +157,151 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="hyphenate">if set to <see langword="true" /> [hyphenate].</param>
         /// <param name="hyphenChar">The hyphenation character.</param>
         public Layout(
-            ushort width = 120,
-            byte indentSize = 0,
-            byte rightMarginSize = 0,
-            char indentChar = ' ',
-            ushort firstLineIndentSize = 0,
-            [CanBeNull] IEnumerable<ushort> tabStops = null,
-            byte tabSize = 4,
-            char tabChar = ' ',
-            Alignment alignment = Alignment.Left,
-            bool splitWords = false,
-            bool hyphenate = false,
-            char hyphenChar = '-')
+            Optional<ushort> width = default(Optional<ushort>),
+            Optional<byte> indentSize = default(Optional<byte>),
+            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<char> indentChar = default(Optional<char>),
+            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
+            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<byte> tabSize = default(Optional<byte>),
+            Optional<char> tabChar = default(Optional<char>),
+            Optional<Alignment> alignment = default(Optional<Alignment>),
+            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<bool> hyphenate = default(Optional<bool>),
+            Optional<char> hyphenChar = default(Optional<char>))
         {
             // Normalize margins
-            if (width < 1)
-                width = 1;
-            if (indentSize >= width)
-                indentSize = (byte) (width - 1);
-            if (firstLineIndentSize >= width)
-                firstLineIndentSize = (byte) (width - 1);
-            if (rightMarginSize >= width - indentSize - 1) rightMarginSize = (byte) (width - indentSize - 1);
-            if (rightMarginSize >= width - firstLineIndentSize - 1)
-                rightMarginSize = (byte) (width - firstLineIndentSize - 1);
+            if (width.IsAssigned)
+            {
+                if (width.Value < 1)
+                    width = 1;
 
-            if (tabSize < 1) tabSize = 1;
-            else if (tabSize > width) tabSize = (byte) width;
+                byte w = (byte)(width.Value - 1);
+                if (indentSize.IsAssigned &&
+                    indentSize.Value > w)
+                    indentSize = w;
+                if (firstLineIndentSize.IsAssigned &&
+                    firstLineIndentSize.Value > w)
+                    firstLineIndentSize = w;
+                if (rightMarginSize.IsAssigned)
+                {
+                    if (indentSize.IsAssigned &&
+                        rightMarginSize.Value > w - indentSize.Value)
+                        rightMarginSize = (byte)(w - indentSize.Value);
+                    if (firstLineIndentSize.IsAssigned &&
+                        rightMarginSize.Value > w - firstLineIndentSize.Value)
+                        rightMarginSize = (byte)(w - firstLineIndentSize.Value);
+                }
+                if (tabSize.IsAssigned)
+                {
+                    if (tabSize.Value < 1) tabSize = 1;
+                    else if (tabSize.Value > width.Value) tabSize = (byte)width.Value;
+                }
+
+                // Only support tabstop on left/non alignments
+                if (alignment.IsAssigned && tabStops.IsAssigned)
+                {
+                    if ((alignment.Value == Formatting.Alignment.Left) ||
+                        (alignment.Value == Formatting.Alignment.None))
+                        tabStops = (!tabStops.IsAssigned || tabStops.IsNull
+                            ? Enumerable.Range(1, width.Value / tabSize.Value)
+                                .Select(t => (ushort)(t * tabSize.Value))
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            : tabStops.Value
+                                .Where(t => t > 0 && t < width.Value)
+                                .OrderBy(t => t))
+                            .Distinct()
+                            .ToArray();
+                    else
+                        tabStops = null;
+                }
+            }
 
             Width = width;
             IndentSize = indentSize;
             RightMarginSize = rightMarginSize;
             IndentChar = indentChar;
             FirstLineIndentSize = firstLineIndentSize;
-
-            // Only support tabstop on left/non alignments
-            if ((alignment == Alignment.Left) ||
-                (alignment == Alignment.None))
-                TabStops = (tabStops == null
-                    ? Enumerable.Range(1, width / tabSize)
-                        .Select(t => (ushort) (t * tabSize))
-                    : tabStops
-                        .Where(t => t > 0 && t < width)
-                        .OrderBy(t => t))
-                    .Distinct()
-                    .ToArray();
-
+            TabStops = tabStops;
             TabSize = tabSize;
             TabChar = tabChar;
             Alignment = alignment;
             SplitWords = splitWords;
             Hyphenate = hyphenate;
             HyphenChar = hyphenChar;
+        }
 
-            _string = new Lazy<string>(
-                () =>
-                {
-                    char[] cArr = new char[width];
-                    int rm = width - 1 - rightMarginSize;
-                    for (int i = 0; i < width; i++)
-                    {
-                        bool up = (i == firstLineIndentSize) ||
-                                  (i == rm);
-                        cArr[i] = i == indentSize
-                            ? (up ? 'X' : 'V')
-                            : (up
-                                ? '^'
-                                : (TabStops != null && TabStops.Contains((ushort) i)
-                                    ? 'L'
-                                    : (i % 10 == 0
-                                        ? (char) ('0' + (i / 10) % 10)
-                                        : '.')));
-                    }
-                    return new string(cArr);
-                });
+        /// <summary>
+        /// Applies the specified layout to this layout returning a new, combined layout.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="indentSize">Size of the indent.</param>
+        /// <param name="rightMarginSize">Size of the right margin.</param>
+        /// <param name="indentChar">The indent character.</param>
+        /// <param name="firstLineIndentSize">First size of the line indent.</param>
+        /// <param name="tabStops">The tab stops.</param>
+        /// <param name="tabSize">Size of the tab.</param>
+        /// <param name="tabChar">The tab character.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="splitWords">The split words.</param>
+        /// <param name="hyphenate">The hyphenate.</param>
+        /// <param name="hyphenChar">The hyphen character.</param>
+        /// <returns>Layout.</returns>
+        [PublicAPI]
+        [NotNull]
+        public Layout Apply(
+            Optional<ushort> width = default(Optional<ushort>),
+            Optional<byte> indentSize = default(Optional<byte>),
+            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<char> indentChar = default(Optional<char>),
+            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
+            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<byte> tabSize = default(Optional<byte>),
+            Optional<char> tabChar = default(Optional<char>),
+            Optional<Alignment> alignment = default(Optional<Alignment>),
+            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<bool> hyphenate = default(Optional<bool>),
+            Optional<char> hyphenChar = default(Optional<char>))
+        {
+            return new Layout(
+                width.IsAssigned ? width : Width,
+                indentSize.IsAssigned ? indentSize : IndentSize,
+                rightMarginSize.IsAssigned ? rightMarginSize : RightMarginSize,
+                indentChar.IsAssigned ? indentChar : IndentChar,
+                firstLineIndentSize.IsAssigned ? firstLineIndentSize : FirstLineIndentSize,
+                tabStops.IsAssigned ? tabStops : TabStops,
+                tabSize.IsAssigned ? tabSize : TabSize,
+                tabChar.IsAssigned ? tabChar : TabChar,
+                alignment.IsAssigned ? alignment : Alignment,
+                splitWords.IsAssigned ? splitWords : SplitWords,
+                hyphenate.IsAssigned ? hyphenate : Hyphenate,
+                hyphenChar.IsAssigned ? hyphenChar : HyphenChar);
+        }
+
+        /// <summary>
+        /// Applies the specified layout to this layout returning a new, combined layout.
+        /// </summary>
+        /// <param name="layout">The layout.</param>
+        /// <returns>Layout.</returns>
+        [PublicAPI]
+        [NotNull]
+        public Layout Apply([CanBeNull]Layout layout)
+        {
+            return layout == null
+                ? this
+                : new Layout(
+                    layout.Width.IsAssigned ? layout.Width : Width,
+                    layout.IndentSize.IsAssigned ? layout.IndentSize : IndentSize,
+                    layout.RightMarginSize.IsAssigned ? layout.RightMarginSize : RightMarginSize,
+                    layout.IndentChar.IsAssigned ? layout.IndentChar : IndentChar,
+                    layout.FirstLineIndentSize.IsAssigned ? layout.FirstLineIndentSize : FirstLineIndentSize,
+                    layout.TabStops.IsAssigned ? layout.TabStops : TabStops,
+                    layout.TabSize.IsAssigned ? layout.TabSize : TabSize,
+                    layout.TabChar.IsAssigned ? layout.TabChar : TabChar,
+                    layout.Alignment.IsAssigned ? layout.Alignment : Alignment,
+                    layout.SplitWords.IsAssigned ? layout.SplitWords : SplitWords,
+                    layout.Hyphenate.IsAssigned ? layout.Hyphenate : Hyphenate,
+                    layout.HyphenChar.IsAssigned ? layout.HyphenChar : HyphenChar);
         }
 
         /// <summary>
@@ -272,17 +362,32 @@ namespace WebApplications.Utilities.Formatting
                 format = "g";
             switch (format.ToLowerInvariant())
             {
-                case "l":
-                    return _string.Value ?? string.Empty;
-                    break;
+                case "l":/*
+                    char[] cArr = new char[width];
+                    int rm = width - 1 - rightMarginSize;
+                    for (int i = 0; i < width; i++)
+                    {
+                        bool up = (i == firstLineIndentSize) ||
+                                  (i == rm);
+                        cArr[i] = i == indentSize
+                            ? (up ? 'X' : 'V')
+                            : (up
+                                ? '^'
+                                : (TabStops != null && TabStops.Contains((ushort) i)
+                                    ? 'L'
+                                    : (i % 10 == 0
+                                        ? (char) ('0' + (i / 10) % 10)
+                                        : '.')));
+                    }
+                    return new string(cArr);
+                     */
+                    return "TODO Layout";
                 case "f":
                     // TODO output formatted string.
-                    return string.Empty;
-                    break;
+                    return "TODO Formatted Layout";
                 default:
                     // TODO Output nice string
-                    return string.Empty;
-                    break;
+                    return "TODO Human readable layout";
             }
         }
     }

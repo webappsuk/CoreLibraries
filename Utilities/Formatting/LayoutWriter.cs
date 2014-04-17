@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -92,8 +91,9 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="alignment">The alignment.</param>
             /// <param name="start">The start.</param>
             /// <param name="end">The end.</param>
-            public Line(Layout layout, Alignment alignment, int start, int end)
+            public Line([NotNull] Layout layout, Alignment alignment, int start, int end)
             {
+                Contract.Requires(layout != null);
                 Contract.Requires(start < end);
                 Layout = layout;
                 _alignment = alignment;
@@ -151,7 +151,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 get
                 {
-                    var lastWord = _chunks.LastOrDefault();
+                    string lastWord = _chunks.LastOrDefault();
                     return string.IsNullOrEmpty(lastWord) ? 0 : lastWord.Length;
                 }
             }
@@ -287,7 +287,8 @@ namespace WebApplications.Utilities.Formatting
             : base(writer, formatProvider)
         {
             Contract.Requires(writer != null);
-            _defaultLayout = _layout = layout ?? DefaultLayout;
+            _defaultLayout = _layout = Layout.Default.Apply(layout);
+            Contract.Assert(_layout.IsFull);
             _position = startPosition;
             _firstLine = firstLine;
         }
@@ -313,35 +314,6 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Gets or sets the width.
-        /// </summary>
-        /// <value>The width.</value>
-        [PublicAPI]
-        public ushort Width
-        {
-            get { return _layout.Width; }
-            set
-            {
-                if (value < 1) value = 1;
-                if (_layout.Width == value) return;
-                using (Lock.LockAsync().Result)
-                    _layout = new Layout(
-                        value,
-                        _layout.IndentSize,
-                        _layout.RightMarginSize,
-                        _layout.IndentChar,
-                        _layout.FirstLineIndentSize,
-                        _layout.TabStops,
-                        _layout.TabSize,
-                        _layout.TabChar,
-                        _layout.Alignment,
-                        _layout.SplitWords,
-                        _layout.Hyphenate,
-                        _layout.HyphenChar);
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the layout.
         /// </summary>
         /// <value>The layout.</value>
@@ -351,14 +323,68 @@ namespace WebApplications.Utilities.Formatting
         public Layout Layout
         {
             get { return _layout; }
-            set
-            {
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalse, HeuristicUnreachableCode
-                if (value == null) value = _defaultLayout;
-                if (_layout == value) return;
-                using (Lock.LockAsync().Result)
-                    _layout = value;
-            }
+        }
+
+        /// <summary>
+        /// Applies the specified layout to the current layout, returning the new, combined layout.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="indentSize">Size of the indent.</param>
+        /// <param name="rightMarginSize">Size of the right margin.</param>
+        /// <param name="indentChar">The indent character.</param>
+        /// <param name="firstLineIndentSize">First size of the line indent.</param>
+        /// <param name="tabStops">The tab stops.</param>
+        /// <param name="tabSize">Size of the tab.</param>
+        /// <param name="tabChar">The tab character.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="splitWords">The split words.</param>
+        /// <param name="hyphenate">The hyphenate.</param>
+        /// <param name="hyphenChar">The hyphen character.</param>
+        /// <returns>Layout.</returns>
+        [PublicAPI]
+        [NotNull]
+        public Layout ApplyLayout(
+            Optional<ushort> width = default(Optional<ushort>),
+            Optional<byte> indentSize = default(Optional<byte>),
+            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<char> indentChar = default(Optional<char>),
+            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
+            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<byte> tabSize = default(Optional<byte>),
+            Optional<char> tabChar = default(Optional<char>),
+            Optional<Alignment> alignment = default(Optional<Alignment>),
+            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<bool> hyphenate = default(Optional<bool>),
+            Optional<char> hyphenChar = default(Optional<char>))
+        {
+            using (Lock.LockAsync().Result)
+                return (_layout = _layout.Apply(
+                    width,
+                    indentSize,
+                    rightMarginSize,
+                    indentChar,
+                    firstLineIndentSize,
+                    tabStops,
+                    tabSize,
+                    tabChar,
+                    alignment,
+                    splitWords,
+                    hyphenate,
+                    hyphenChar));
+        }
+
+        /// <summary>
+        /// Applies the layout to the current layout, returning the new, combined layout.
+        /// </summary>
+        /// <param name="layout">The layout.</param>
+        /// <returns>Layout.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Layout ApplyLayout([CanBeNull] Layout layout)
+        {
+            if (layout == null) return _layout;
+            using (Lock.LockAsync().Result)
+                return (_layout = _layout.Apply(layout));
         }
 
         /// <summary>
@@ -373,6 +399,7 @@ namespace WebApplications.Utilities.Formatting
             [NotNull] IFormatProvider provider)
         {
             Contract.Requires(chunks != null);
+            Contract.Requires(provider != null);
             StringBuilder word = new StringBuilder();
             bool lastCharR = false;
             foreach (char ch in chunks
@@ -422,14 +449,17 @@ namespace WebApplications.Utilities.Formatting
             Layout layout = _layout;
 
             // Create the first line, if we're part way through a line then we cannot align the remainder of the line.
-            int end = layout.Width - layout.RightMarginSize;
             Line line = _position > 0
-                ? new Line(layout, Alignment.None, _position, end)
-                : new Line(layout, layout.Alignment, _firstLine ? layout.FirstLineIndentSize : layout.IndentSize, end);
+                ? new Line(layout, Alignment.None, _position, layout.Width.Value - layout.RightMarginSize.Value)
+                : new Line(
+                    layout,
+                    layout.Alignment.Value,
+                    _firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
+                    layout.Width.Value - layout.RightMarginSize.Value);
             _firstLine = false;
 
-            bool splitWords = layout.SplitWords;
-            int hyphenate = layout.Hyphenate ? 1 : 0;
+            bool splitWords = layout.SplitWords.Value;
+            int hyphenate = layout.Hyphenate.Value ? 1 : 0;
 
             IEnumerator<string> ce = chunks.GetEnumerator();
             string word = null;
@@ -445,15 +475,14 @@ namespace WebApplications.Utilities.Formatting
 
                     // Start a new line
                     layout = _layout;
-                    end = layout.Width - layout.RightMarginSize;
                     line = new Line(
-                            layout, 
-                            layout.Alignment,
-                            _firstLine ? layout.FirstLineIndentSize : layout.IndentSize,
-                            end);
+                        layout,
+                        layout.Alignment.Value,
+                        _firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
+                        layout.Width.Value - layout.RightMarginSize.Value);
                     _firstLine = false;
-                    splitWords = layout.SplitWords;
-                    hyphenate = layout.Hyphenate ? 1 : 0;
+                    splitWords = layout.SplitWords.Value;
+                    hyphenate = layout.Hyphenate.Value ? 1 : 0;
                     newLine = false;
                 }
 
@@ -518,18 +547,19 @@ namespace WebApplications.Utilities.Formatting
                     }
 
                     int tabSize;
-                    if (layout.TabStops != null)
+                    if (layout.TabStops.IsAssigned &&
+                        layout.TabStops.Value != null)
                     {
-                        int nextTab = layout.TabStops.FirstOrDefault(t => t > line.Position);
+                        int nextTab = layout.TabStops.Value.FirstOrDefault(t => t > line.Position);
                         tabSize = nextTab > line.Position
                             ? nextTab - line.Position
-                            : layout.TabSize;
+                            : layout.TabSize.Value;
                     }
                     else
-                        tabSize = layout.TabSize;
+                        tabSize = layout.TabSize.Value;
 
                     // Change word to spacer
-                    word = new string(layout.TabChar, tabSize);
+                    word = new string(layout.TabChar.Value, tabSize);
                 }
 
                 // Append word if short enough.
@@ -568,12 +598,12 @@ namespace WebApplications.Utilities.Formatting
         private IEnumerable<string> Align([NotNull] IEnumerable<Line> lines)
         {
             Contract.Requires(lines != null);
-            StringBuilder lb = new StringBuilder(_layout.Width);
+            StringBuilder lb = new StringBuilder(_layout.Width.Value);
             bool dontIndentFirstLine = _position > 0;
             foreach (Line line in lines)
             {
                 Contract.Assert(line != null);
-                char indentChar = line.Layout.IndentChar;
+                char indentChar = line.Layout.IndentChar.Value;
                 int indent;
                 Queue<int> spacers = null;
                 // Calculate indentation
@@ -594,9 +624,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0)
                         {
-                            decimal space = (decimal)(line.End - line.LastWordLength - line.Start) / remaining;
-                            int o = (int)Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
+                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
+                            int o = (int) Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
                         }
                         break;
                     default:
@@ -620,7 +650,7 @@ namespace WebApplications.Utilities.Formatting
                     p += chunk.Length;
 
                     while ((spacers.Count > 0) &&
-                        (spacers.Peek() <= p))
+                           (spacers.Peek() <= p))
                     {
                         lb.Append(indentChar);
                         spacers.Dequeue();
@@ -636,7 +666,7 @@ namespace WebApplications.Utilities.Formatting
                 if (line.Terminated)
                     lb.AppendLine();
                 else if ((spacers != null) &&
-                    (spacers.Count > 0))
+                         (spacers.Count > 0))
                     lb.Append(indentChar, spacers.Count);
 
                 yield return lb.ToString();
@@ -659,7 +689,7 @@ namespace WebApplications.Utilities.Formatting
             foreach (string line in Align(
                 GetLines(
                     GetLineChunks(
-                // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         builder.Select(c => GetChunk(formatProvider, c)),
                         formatProvider))))
                 sb.Append(line);
@@ -686,7 +716,7 @@ namespace WebApplications.Utilities.Formatting
                 {
                     _layout = ReferenceEquals(newLayout, Layout.Default)
                         ? _defaultLayout
-                        : newLayout;
+                        : _layout.Apply(newLayout);
                     return null;
                 }
             }
