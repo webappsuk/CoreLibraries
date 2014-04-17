@@ -207,6 +207,7 @@ namespace WebApplications.Utilities.Test.Formatting
             FormatBuilder fb = new FormatBuilder()
                 .AppendLine(ConsoleWriter.Default.Layout.ToString())
                 .AppendLine(FormatResources.LoremIpsum)
+                .Append("{layout:w30}")
                 .AppendLine(FormatResources.SedUtPerspiciatis)
                 .Append(FormatResources.AtVeroEos);
 

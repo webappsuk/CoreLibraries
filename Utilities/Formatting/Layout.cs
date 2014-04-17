@@ -27,7 +27,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -41,7 +43,26 @@ namespace WebApplications.Utilities.Formatting
         /// The default layout (as specified by the current layout writer).
         /// </summary>
         [NotNull]
-        public static readonly Layout Default = new Layout(120, 0, 0, ' ', 0, null, 4, ' ', Formatting.Alignment.Left, false, false, '-');
+        public static readonly Layout Default = new Layout(
+            120,
+            0,
+            0,
+            ' ',
+            0,
+            null,
+            4,
+            ' ',
+            Formatting.Alignment.Left,
+            false,
+            false,
+            '-');
+
+        /// <summary>
+        /// The empty layout makes no changes.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly Layout Empty = new Layout();
 
         /// <summary>
         /// The layout width.
@@ -176,7 +197,7 @@ namespace WebApplications.Utilities.Formatting
                 if (width.Value < 1)
                     width = 1;
 
-                byte w = (byte)(width.Value - 1);
+                byte w = (byte) (width.Value - 1);
                 if (indentSize.IsAssigned &&
                     indentSize.Value > w)
                     indentSize = w;
@@ -187,25 +208,23 @@ namespace WebApplications.Utilities.Formatting
                 {
                     if (indentSize.IsAssigned &&
                         rightMarginSize.Value > w - indentSize.Value)
-                        rightMarginSize = (byte)(w - indentSize.Value);
+                        rightMarginSize = (byte) (w - indentSize.Value);
                     if (firstLineIndentSize.IsAssigned &&
                         rightMarginSize.Value > w - firstLineIndentSize.Value)
-                        rightMarginSize = (byte)(w - firstLineIndentSize.Value);
+                        rightMarginSize = (byte) (w - firstLineIndentSize.Value);
                 }
                 if (tabSize.IsAssigned)
-                {
                     if (tabSize.Value < 1) tabSize = 1;
-                    else if (tabSize.Value > width.Value) tabSize = (byte)width.Value;
-                }
+                    else if (tabSize.Value > width.Value) tabSize = (byte) width.Value;
 
                 // Only support tabstop on left/non alignments
-                if (alignment.IsAssigned && tabStops.IsAssigned)
-                {
+                if (alignment.IsAssigned &&
+                    tabStops.IsAssigned)
                     if ((alignment.Value == Formatting.Alignment.Left) ||
                         (alignment.Value == Formatting.Alignment.None))
                         tabStops = (!tabStops.IsAssigned || tabStops.IsNull
                             ? Enumerable.Range(1, width.Value / tabSize.Value)
-                                .Select(t => (ushort)(t * tabSize.Value))
+                                .Select(t => (ushort) (t * tabSize.Value))
                             // ReSharper disable once AssignNullToNotNullAttribute
                             : tabStops.Value
                                 .Where(t => t > 0 && t < width.Value)
@@ -214,7 +233,6 @@ namespace WebApplications.Utilities.Formatting
                             .ToArray();
                     else
                         tabStops = null;
-                }
             }
 
             Width = width;
@@ -285,7 +303,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>Layout.</returns>
         [PublicAPI]
         [NotNull]
-        public Layout Apply([CanBeNull]Layout layout)
+        public Layout Apply([CanBeNull] Layout layout)
         {
             return layout == null
                 ? this
@@ -326,7 +344,141 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static bool TryParse([CanBeNull] string input, out Layout layout)
         {
-            throw new NotImplementedException();
+            if (input == null)
+            {
+                layout = null;
+                return false;
+            }
+
+            string[] parts = input.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+            layout = Empty;
+            if (parts.Length < 1)
+                return true;
+
+            Optional<ushort> width = default(Optional<ushort>);
+            Optional<byte> indentSize = default(Optional<byte>);
+            Optional<byte> rightMarginSize = default(Optional<byte>);
+            Optional<char> indentChar = default(Optional<char>);
+            Optional<ushort> firstLineIndentSize = default(Optional<ushort>);
+            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>);
+            Optional<byte> tabSize = default(Optional<byte>);
+            Optional<char> tabChar = default(Optional<char>);
+            Optional<Alignment> alignment = default(Optional<Alignment>);
+            Optional<bool> splitWords = default(Optional<bool>);
+            Optional<bool> hyphenate = default(Optional<bool>);
+            Optional<char> hyphenChar = default(Optional<char>);
+
+            foreach (string part in parts)
+            {
+                Contract.Assert(!string.IsNullOrEmpty(part));
+
+                if (part.Length < 2)
+                    return false;
+
+                char prefix = part[0];
+                string s = part.Substring(1);
+
+                switch (prefix)
+                {
+                    case 'w':
+                        ushort w;
+                        if (!ushort.TryParse(s, out w))
+                            return false;
+                        width = w;
+                        break;
+                    case 'i':
+                        byte i;
+                        if (!byte.TryParse(s, out i))
+                            return false;
+                        indentSize = i;
+                        break;
+                    case 'r':
+                        byte r;
+                        if (!byte.TryParse(s, out r))
+                            return false;
+                        rightMarginSize = r;
+                        break;
+                    case 'I':
+                        if (s.Length != 1)
+                            return false;
+                        indentChar = s[0];
+                        break;
+                    case 'f':
+                        ushort f;
+                        if (!ushort.TryParse(s, out f))
+                            return false;
+                        firstLineIndentSize = f;
+                        break;
+                    case 'l':
+                        bool ok = true;
+                        tabStops = new Optional<IEnumerable<ushort>>(
+                            s
+                                .Split(new[] {'|'}, StringSplitOptions.RemoveEmptyEntries)
+                                .Select(
+                                    tp =>
+                                    {
+                                        ushort tps;
+                                        if (!ushort.TryParse(tp, out tps))
+                                            ok = false;
+                                        return tps;
+                                    })
+                                .TakeWhile(kvp => ok));
+                        if (!ok)
+                            return false;
+                        break;
+                    case 't':
+                        byte t;
+                        if (!byte.TryParse(s, out t))
+                            return false;
+                        tabSize = t;
+                        break;
+                    case 'T':
+                        if (s.Length != 1)
+                            return false;
+                        tabChar = s[0];
+                        break;
+                    case 'a':
+                        Alignment a;
+                        if (!Enum.TryParse(s, true, out a))
+                            return false;
+                        alignment = a;
+                        break;
+                    case 's':
+                        bool sb;
+                        if (!bool.TryParse(s, out sb))
+                            return false;
+                        splitWords = sb;
+                        break;
+                    case 'h':
+                        bool h;
+                        if (!bool.TryParse(s, out h))
+                            return false;
+                        hyphenate = h;
+                        break;
+                    case 'H':
+                        if (s.Length != 1)
+                            return false;
+                        hyphenChar = s[0];
+                        break;
+                    default:
+                        return false;
+                }
+            }
+
+            layout = new Layout(
+                width,
+                indentSize,
+                rightMarginSize,
+                indentChar,
+                firstLineIndentSize,
+                tabStops,
+                tabSize,
+                tabChar,
+                alignment,
+                splitWords,
+                hyphenate,
+                hyphenChar);
+            return true;
         }
 
         /// <summary>
@@ -360,35 +512,69 @@ namespace WebApplications.Utilities.Formatting
         {
             if (format == null)
                 format = "g";
+            StringBuilder sb = new StringBuilder();
             switch (format.ToLowerInvariant())
             {
-                case "l":/*
-                    char[] cArr = new char[width];
-                    int rm = width - 1 - rightMarginSize;
-                    for (int i = 0; i < width; i++)
+                case "l":
+                    if (!IsFull)
+                        return "Cannot show ruler for partial layout";
+
+                    char[] cArr = new char[Width.Value];
+                    int rm = Width.Value - 1 - RightMarginSize.Value;
+                    for (int i = 0; i < Width.Value; i++)
                     {
-                        bool up = (i == firstLineIndentSize) ||
+                        bool up = (i == FirstLineIndentSize.Value) ||
                                   (i == rm);
-                        cArr[i] = i == indentSize
+                        cArr[i] = i == IndentSize.Value
                             ? (up ? 'X' : 'V')
                             : (up
                                 ? '^'
-                                : (TabStops != null && TabStops.Contains((ushort) i)
+                                : (TabStops.Value != null && TabStops.Value.Contains((ushort)i)
                                     ? 'L'
                                     : (i % 10 == 0
                                         ? (char) ('0' + (i / 10) % 10)
                                         : '.')));
                     }
                     return new string(cArr);
-                     */
-                    return "TODO Layout";
+
                 case "f":
-                    // TODO output formatted string.
-                    return "TODO Formatted Layout";
+                    if (Width.IsAssigned)
+                        sb.Append('w').Append(Width.Value).Append(';');
+                    if (IndentSize.IsAssigned)
+                        sb.Append('i').Append(IndentSize.Value).Append(';');
+                    if (RightMarginSize.IsAssigned)
+                        sb.Append('r').Append(RightMarginSize.Value).Append(';');
+                    if (IndentChar.IsAssigned)
+                        sb.Append('I').Append(IndentChar.Value).Append(';');
+                    if (FirstLineIndentSize.IsAssigned)
+                        sb.Append('f').Append(FirstLineIndentSize.Value).Append(';');
+                    if (TabStops.IsAssigned &&
+                        TabStops.Value != null)
+                        sb.Append('l')
+                            .Append(string.Join("|", TabStops.Value.Select(t => t.ToString(formatProvider))))
+                            .Append(';');
+                    if (TabSize.IsAssigned)
+                        sb.Append('t').Append(TabSize.Value).Append(';');
+                    if (TabChar.IsAssigned)
+                        sb.Append('T').Append(TabChar.Value).Append(';');
+                    if (Alignment.IsAssigned)
+                        sb.Append('a').Append(Alignment.Value).Append(';');
+                    if (SplitWords.IsAssigned)
+                        sb.Append('s').Append(SplitWords.Value).Append(';');
+                    if (Hyphenate.IsAssigned)
+                        sb.Append('h').Append(Hyphenate.Value).Append(';');
+                    if (HyphenChar.IsAssigned)
+                        sb.Append('H').Append(HyphenChar.Value).Append(';');
+
+                    // Remove trailing ';'
+                    if (sb.Length > 1)
+                        sb.Remove(sb.Length - 2, 1);
+                    break;
                 default:
                     // TODO Output nice string
                     return "TODO Human readable layout";
             }
+            return sb.ToString();
         }
     }
 }

@@ -624,9 +624,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0)
                         {
-                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
-                            int o = (int) Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
+                            decimal space = (decimal)(line.End - line.LastWordLength - line.Start) / remaining;
+                            int o = (int)Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
                         }
                         break;
                     default:
@@ -689,7 +689,7 @@ namespace WebApplications.Utilities.Formatting
             foreach (string line in Align(
                 GetLines(
                     GetLineChunks(
-                        // ReSharper disable once AssignNullToNotNullAttribute
+                // ReSharper disable once AssignNullToNotNullAttribute
                         builder.Select(c => GetChunk(formatProvider, c)),
                         formatProvider))))
                 sb.Append(line);
@@ -707,11 +707,27 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(formatProvider != null);
             Contract.Requires(chunk != null);
+            Layout newLayout;
+            /*
+             * Check for supported control tags,
+             * e.g. {Layout:w30}
+             * or {Layout} to reset.
+             */
+            if (string.Equals(chunk.Tag, "layout", StringComparison.InvariantCultureIgnoreCase))
+            {
+                if (string.IsNullOrEmpty(chunk.Format))
+                    _layout = _defaultLayout;
+                else if (Layout.TryParse(chunk.Format, out newLayout))
+                    _layout = _layout.Apply(newLayout);
+                return null;
+            }
 
-            // Look for layout changes.
+            /*
+             * Check for FormatBuilder's control chunks
+             */
             if (chunk.IsControl)
             {
-                Layout newLayout = chunk.Value as Layout;
+                newLayout = chunk.Value as Layout;
                 if (newLayout != null)
                 {
                     _layout = ReferenceEquals(newLayout, Layout.Default)

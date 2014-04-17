@@ -283,7 +283,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteLine()
         {
-            WriteInternal(null, new FormatBuilder());
+            WriteInternal(null, new FormatBuilder().AppendLine());
         }
 
         /// <summary>
@@ -295,7 +295,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteLine([CanBeNull]string format, [CanBeNull]params object[] args)
         {
-            WriteInternal(null, new FormatBuilder().Append(format, args));
+            WriteInternal(null, new FormatBuilder().Append(format, args).AppendLine());
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteLine([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]params object[] args)
         {
-            WriteInternal(formatProvider, new FormatBuilder().Append(format, args));
+            WriteInternal(formatProvider, new FormatBuilder().Append(format, args).AppendLine());
         }
 
         /// <summary>
@@ -320,7 +320,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteLine([CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
         {
-            WriteInternal(null, new FormatBuilder().Append(format, values));
+            WriteInternal(null, new FormatBuilder().Append(format, values).AppendLine());
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteLine([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
         {
-            WriteInternal(formatProvider, new FormatBuilder().Append(format, values));
+            WriteInternal(formatProvider, new FormatBuilder().Append(format, values).AppendLine());
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace WebApplications.Utilities.Formatting
         public void WriteLine([NotNull] FormatBuilder builder)
         {
             Contract.Requires(builder != null);
-            WriteInternal(null, builder);
+            WriteInternal(null, builder.AppendLine());
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace WebApplications.Utilities.Formatting
         public void WriteLine([CanBeNull] IFormatProvider formatProvider, [NotNull] FormatBuilder builder)
         {
             Contract.Requires(builder != null);
-            WriteInternal(formatProvider, builder);
+            WriteInternal(formatProvider, builder.AppendLine());
         }
 
         /// <summary>
@@ -366,7 +366,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public Task WriteLineAsync()
         {
-            return WriteInternalAsync(null, new FormatBuilder());
+            return WriteInternalAsync(null, new FormatBuilder().AppendLine());
         }
 
         /// <summary>
@@ -379,7 +379,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public Task WriteLineAsync([CanBeNull]string format, [CanBeNull]params object[] args)
         {
-            return WriteInternalAsync(null, new FormatBuilder().Append(format, args));
+            return WriteInternalAsync(null, new FormatBuilder().Append(format, args).AppendLine());
         }
 
         /// <summary>
@@ -393,7 +393,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public Task WriteLineAsync([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]params object[] args)
         {
-            return WriteInternalAsync(formatProvider, new FormatBuilder().Append(format, args));
+            return WriteInternalAsync(formatProvider, new FormatBuilder().Append(format, args).AppendLine());
         }
 
         /// <summary>
@@ -406,7 +406,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public Task WriteLineAsync([CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
         {
-            return WriteInternalAsync(null, new FormatBuilder().Append(format, values));
+            return WriteInternalAsync(null, new FormatBuilder().Append(format, values).AppendLine());
         }
 
         /// <summary>
@@ -420,7 +420,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public Task WriteLineAsync([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
         {
-            return WriteInternalAsync(formatProvider, new FormatBuilder().Append(format, values));
+            return WriteInternalAsync(formatProvider, new FormatBuilder().Append(format, values).AppendLine());
         }
 
         /// <summary>
@@ -432,7 +432,7 @@ namespace WebApplications.Utilities.Formatting
         public Task WriteLineAsync([NotNull] FormatBuilder builder)
         {
             Contract.Requires(builder != null);
-            return WriteInternalAsync(null, builder);
+            return WriteInternalAsync(null, builder.AppendLine());
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace WebApplications.Utilities.Formatting
         public Task WriteLineAsync([CanBeNull] IFormatProvider formatProvider, [NotNull] FormatBuilder builder)
         {
             Contract.Requires(builder != null);
-            return WriteInternalAsync(formatProvider, builder);
+            return WriteInternalAsync(formatProvider, builder.AppendLine());
         }
         #endregion
 

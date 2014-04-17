@@ -50,7 +50,7 @@ namespace WebApplications.Utilities.Formatting
         /// The custom colour names.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<string, ConsoleColor> _customColors =
+        private static readonly ConcurrentDictionary<string, ConsoleColor> _customColours =
             new ConcurrentDictionary<string, ConsoleColor>();
 
         /// <summary>
@@ -102,8 +102,8 @@ namespace WebApplications.Utilities.Formatting
                     width > ushort.MaxValue
                         ? ushort.MaxValue
                         : (width < 1
-                            ? (ushort) 1
-                            : (ushort) width));
+                            ? (ushort)1
+                            : (ushort)width));
             }
             else
             {
@@ -121,7 +121,7 @@ namespace WebApplications.Utilities.Formatting
         public static void SetCustomColourName([NotNull] string name, ConsoleColor colour)
         {
             Contract.Requires(name != null);
-            _customColors.AddOrUpdate(name, colour, (n, e) => colour);
+            _customColours.AddOrUpdate(name, colour, (n, e) => colour);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace WebApplications.Utilities.Formatting
         public static bool TryGetColour([NotNull] string name, out ConsoleColor colour)
         {
             Contract.Requires(name != null);
-            return _customColors.TryGetValue(name, out colour) ||
+            return _customColours.TryGetValue(name, out colour) ||
                    Enum.TryParse(name, true, out colour);
         }
 
@@ -148,7 +148,7 @@ namespace WebApplications.Utilities.Formatting
         public static bool RemoveCustomColour([NotNull] string name, out ConsoleColor colour)
         {
             Contract.Requires(name != null);
-            return _customColors.TryRemove(name, out colour);
+            return _customColours.TryRemove(name, out colour);
         }
 
         /// <summary>
@@ -157,33 +157,37 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="chunk">The chunk.</param>
         /// <returns>A string representation of the chunk; otherwise <see langword="null"/> to skip.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
         protected override string GetChunk(IFormatProvider formatProvider, FormatChunk chunk)
         {
             ConsoleColor colour;
-            if (chunk.Tag != null &&
-                chunk.Tag.Length > 1)
+            /*
+             * Check for supported control tags,
+             * e.g. {ConsoleFore:Red}
+             * or {ConsoleFore} to reset.
+             */
+            if (!string.IsNullOrEmpty(chunk.Tag))
             {
-                char prefix = chunk.Tag[0];
-                switch (prefix)
+                switch (chunk.Tag.ToLower())
                 {
-                    case '+':
-                    case '-':
-                        bool isBack = prefix == '-';
-                        string colourStr = chunk.Tag.Substring(1);
-                        if (colourStr == "_")
-                            colour = isBack ? DefaultBackColour : DefaultForeColour;
-                        else if (!TryGetColour(colourStr, out colour))
-                            break;
-
-                        if (isBack)
-                            Console.BackgroundColor = colour;
-                        else
+                    case "consolefore":
+                        if (string.IsNullOrEmpty(chunk.Format))
+                            Console.ForegroundColor = DefaultForeColour;
+                        else if (TryGetColour(chunk.Format, out colour))
                             Console.ForegroundColor = colour;
-
+                        return null;
+                    case "consoleback":
+                        if (string.IsNullOrEmpty(chunk.Format))
+                            Console.BackgroundColor = DefaultBackColour;
+                        else if (TryGetColour(chunk.Format, out colour))
+                            Console.BackgroundColor = colour;
                         return null;
                 }
             }
 
+            /*
+             * Check for FormatBuilder's control chunks
+             */
             if (chunk.IsControl)
             {
                 ConsoleColourControl colourControl = chunk.Value as ConsoleColourControl;
@@ -202,7 +206,7 @@ namespace WebApplications.Utilities.Formatting
                             Console.BackgroundColor = DefaultBackColour;
                         return null;
                     }
-                    
+
                     if (!TryGetColour(colourControl.Colour, out colour))
                         return null;
 
