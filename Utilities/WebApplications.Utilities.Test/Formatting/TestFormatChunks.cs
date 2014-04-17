@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -201,10 +202,15 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
-        public void TestResolve()
+        public void TestLayout()
         {
-            var builder = new FormatBuilder();
-            builder.AppendLine("{2}").Resolve(1, 2, 3);
+            FormatBuilder fb = new FormatBuilder()
+                .AppendLine(ConsoleWriter.Default.Layout.ToString())
+                .AppendLine(FormatResources.LoremIpsum)
+                .AppendLine(FormatResources.SedUtPerspiciatis)
+                .Append(FormatResources.AtVeroEos);
+
+            ConsoleWriter.Default.WriteLine(fb);
         }
     }
 }

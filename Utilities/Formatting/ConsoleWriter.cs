@@ -96,6 +96,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Updates the layout.
         /// </summary>
+        [PublicAPI]
         public void UpdateLayout()
         {
             if (ConsoleHelper.IsConsole)
@@ -114,25 +115,13 @@ namespace WebApplications.Utilities.Formatting
                     Console.BackgroundColor = bc;
                 }
 
+                // Update the width
                 int width = Console.BufferWidth;
-                ushort w = width > ushort.MaxValue
+                Width = width > ushort.MaxValue
                     ? ushort.MaxValue
                     : (width < 1
-                        ? (ushort) 1
-                        : (ushort) width);
-
-                // TODO Add set width to base?
-                Layout layout = Layout;
-                if (layout.Width != w)
-                    Layout = new Layout(
-                        w,
-                        layout.IndentSize,
-                        layout.RightMarginSize,
-                        layout.IndentChar,
-                        layout.FirstLineIndentSize,
-                        layout.TabStops,
-                        layout.TabChar,
-                        layout.SplitWords);
+                        ? (ushort)1
+                        : (ushort)width);
             }
             else
             {
@@ -185,7 +174,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="chunk">The chunk.</param>
         /// <returns>A string representation of the chunk; otherwise <see langword="null"/> to skip.</returns>
-        protected override string DoWriteChunk(IFormatProvider formatProvider, FormatChunk chunk)
+        protected override string GetChunk(IFormatProvider formatProvider, FormatChunk chunk)
         {
             if (chunk.Tag != null &&
                 chunk.Tag.Length > 1)
@@ -213,7 +202,7 @@ namespace WebApplications.Utilities.Formatting
                 }
             }
 
-            return base.DoWriteChunk(formatProvider, chunk);
+            return base.GetChunk(formatProvider, chunk);
         }
     }
 }

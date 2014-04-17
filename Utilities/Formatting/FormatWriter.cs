@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
@@ -121,80 +122,305 @@ namespace WebApplications.Utilities.Formatting
             _writer.Flush();
         }
 
+        #region Write Overloads
         /// <summary>
-        /// Writes the specified builder.
+        /// Writes the formatted string.
         /// </summary>
-        /// <param name="builder">The builder.</param>
-        public void Write([CanBeNull] FormatBuilder builder)
+        /// <param name="format">The format.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>FormatBuilder.</returns>
+        [PublicAPI]
+        public void Write([CanBeNull]string format, [CanBeNull]params object[] args)
         {
-            WriteInternal(null, builder, false);
+            WriteInternal(null, new FormatBuilder().Append(format, args));
         }
 
         /// <summary>
-        /// Writes the specified format provider.
+        /// Writes the formatted string.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>FormatBuilder.</returns>
+        [PublicAPI]
+        public void Write([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]params object[] args)
+        {
+            WriteInternal(formatProvider, new FormatBuilder().Append(format, args));
+        }
+
+        /// <summary>
+        /// Writes the formatted string.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>FormatBuilder.</returns>
+        [PublicAPI]
+        public void Write([CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
+        {
+            WriteInternal(null, new FormatBuilder().Append(format, values));
+        }
+
+        /// <summary>
+        /// Writes the formatted string.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>FormatBuilder.</returns>
+        [PublicAPI]
+        public void Write([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
+        {
+            WriteInternal(formatProvider, new FormatBuilder().Append(format, values));
+        }
+
+        /// <summary>
+        /// Writes the format builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        [PublicAPI]
+        public void Write([NotNull] FormatBuilder builder)
+        {
+            Contract.Requires(builder != null);
+            WriteInternal(null, builder);
+        }
+
+        /// <summary>
+        /// Writes the format builder.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="builder">The builder.</param>
-        public void Write([CanBeNull] IFormatProvider formatProvider, [CanBeNull] FormatBuilder builder)
+        [PublicAPI]
+        public void Write([CanBeNull] IFormatProvider formatProvider, [NotNull] FormatBuilder builder)
         {
-            WriteInternal(formatProvider, builder, false);
+            Contract.Requires(builder != null);
+            WriteInternal(formatProvider, builder);
         }
 
         /// <summary>
+        /// Writes the formatted string.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteAsync([CanBeNull]string format, [CanBeNull]params object[] args)
+        {
+            return WriteInternalAsync(null, new FormatBuilder().Append(format, args));
+        }
+
+        /// <summary>
+        /// Writes the formatted string.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteAsync([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]params object[] args)
+        {
+            return WriteInternalAsync(null, new FormatBuilder().Append(format, args));
+        }
+
+        /// <summary>
+        /// Writes the formatted string.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteAsync([CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
+        {
+            return WriteInternalAsync(null, new FormatBuilder().Append(format, values));
+        }
+
+        /// <summary>
+        /// Writes the formatted string.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteAsync([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
+        {
+            return WriteInternalAsync(null, new FormatBuilder().Append(format, values));
+        }
+
+        /// <summary>
+        /// Writes the format builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteAsync([NotNull] FormatBuilder builder)
+        {
+            Contract.Requires(builder != null);
+            return WriteInternalAsync(null, builder);
+        }
+
+        /// <summary>
+        /// Writes the format builder.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="builder">The builder.</param>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteAsync([CanBeNull] IFormatProvider formatProvider, [NotNull] FormatBuilder builder)
+        {
+            Contract.Requires(builder != null);
+            return WriteInternalAsync(formatProvider, builder);
+        }
+        #endregion
+
+        #region WriteLine Overloads
+        /// <summary>
         /// Writes the line.
         /// </summary>
+        [PublicAPI]
         public void WriteLine()
         {
-            WriteInternal(null, null, true);
+            WriteInternal(null, new FormatBuilder());
         }
 
         /// <summary>
-        /// Writes the line.
+        /// Writes the formatted line.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>FormatBuilder.</returns>
+        [PublicAPI]
+        public void WriteLine([CanBeNull]string format, [CanBeNull]params object[] args)
+        {
+            WriteInternal(null, new FormatBuilder().Append(format, args));
+        }
+
+        /// <summary>
+        /// Writes the formatted line.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>FormatBuilder.</returns>
+        [PublicAPI]
+        public void WriteLine([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]params object[] args)
+        {
+            WriteInternal(formatProvider, new FormatBuilder().Append(format, args));
+        }
+
+        /// <summary>
+        /// Writes the formatted line.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>FormatBuilder.</returns>
+        [PublicAPI]
+        public void WriteLine([CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
+        {
+            WriteInternal(null, new FormatBuilder().Append(format, values));
+        }
+
+        /// <summary>
+        /// Writes the formatted line.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>FormatBuilder.</returns>
+        [PublicAPI]
+        public void WriteLine([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
+        {
+            WriteInternal(formatProvider, new FormatBuilder().Append(format, values));
+        }
+
+        /// <summary>
+        /// Writes the format builder to a line.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void WriteLine([CanBeNull] FormatBuilder builder)
+        [PublicAPI]
+        public void WriteLine([NotNull] FormatBuilder builder)
         {
-            WriteInternal(null, builder, true);
+            Contract.Requires(builder != null);
+            WriteInternal(null, builder);
         }
 
         /// <summary>
-        /// Writes the line.
+        /// Writes the format builder to a line.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="builder">The builder.</param>
-        public void WriteLine([CanBeNull] IFormatProvider formatProvider, [CanBeNull] FormatBuilder builder)
+        [PublicAPI]
+        public void WriteLine([CanBeNull] IFormatProvider formatProvider, [NotNull] FormatBuilder builder)
         {
-            WriteInternal(formatProvider, builder, true);
+            Contract.Requires(builder != null);
+            WriteInternal(formatProvider, builder);
         }
 
         /// <summary>
-        /// Writes the specified builder.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        [NotNull]
-        public Task WriteAsync([CanBeNull] FormatBuilder builder)
-        {
-            return WriteInternalAsync(null, builder, false);
-        }
-
-        /// <summary>
-        /// Writes the specified format provider.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="builder">The builder.</param>
-        [NotNull]
-        public Task WriteAsync([CanBeNull] IFormatProvider formatProvider, [CanBeNull] FormatBuilder builder)
-        {
-            return WriteInternalAsync(formatProvider, builder, false);
-        }
-
-        /// <summary>
-        /// Writes the line.
+        /// Writes the format builder to a line.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public Task WriteLineAsync()
         {
-            return WriteInternalAsync(null, null, true);
+            return WriteInternalAsync(null, new FormatBuilder());
+        }
+
+        /// <summary>
+        /// Writes the line.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteLineAsync([CanBeNull]string format, [CanBeNull]params object[] args)
+        {
+            return WriteInternalAsync(null, new FormatBuilder().Append(format, args));
+        }
+
+        /// <summary>
+        /// Writes the line.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteLineAsync([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]params object[] args)
+        {
+            return WriteInternalAsync(formatProvider, new FormatBuilder().Append(format, args));
+        }
+
+        /// <summary>
+        /// Writes the line.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteLineAsync([CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
+        {
+            return WriteInternalAsync(null, new FormatBuilder().Append(format, values));
+        }
+
+        /// <summary>
+        /// Writes the line.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteLineAsync([CanBeNull] IFormatProvider formatProvider, [CanBeNull]string format, [CanBeNull]IReadOnlyDictionary<string, object> values)
+        {
+            return WriteInternalAsync(formatProvider, new FormatBuilder().Append(format, values));
         }
 
         /// <summary>
@@ -202,9 +428,11 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="builder">The builder.</param>
         [NotNull]
-        public Task WriteLineAsync([CanBeNull] FormatBuilder builder)
+        [PublicAPI]
+        public Task WriteLineAsync([NotNull] FormatBuilder builder)
         {
-            return WriteInternalAsync(null, builder, true);
+            Contract.Requires(builder != null);
+            return WriteInternalAsync(null, builder);
         }
 
         /// <summary>
@@ -213,37 +441,28 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="builder">The builder.</param>
         [NotNull]
-        public Task WriteLineAsync([CanBeNull] IFormatProvider formatProvider, [CanBeNull] FormatBuilder builder)
+        [PublicAPI]
+        public Task WriteLineAsync([CanBeNull] IFormatProvider formatProvider, [NotNull] FormatBuilder builder)
         {
-            return WriteInternalAsync(formatProvider, builder, true);
+            Contract.Requires(builder != null);
+            return WriteInternalAsync(formatProvider, builder);
         }
+        #endregion
 
         /// <summary>
         /// Writes the specified builder to the output stream.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="builder">The builder.</param>
-        /// <param name="appendNewLine">if set to <see langword="true" /> appends a new line.</param>
-        private void WriteInternal(
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] FormatBuilder builder,
-            bool appendNewLine)
+        private void WriteInternal([CanBeNull] IFormatProvider formatProvider, [NotNull] FormatBuilder builder)
         {
-            if (builder == null &&
-                !appendNewLine) return;
+            Contract.Requires(builder != null);
             if (formatProvider == null) formatProvider = FormatProvider;
             using (Lock.LockAsync().Result)
             {
-                if (builder != null)
-                    foreach (FormatChunk chunk in builder)
-                    {
-                        Contract.Assert(chunk != null);
-                        string c = DoWriteChunk(formatProvider, chunk);
-                        if (!string.IsNullOrEmpty(c))
-                            _writer.Write(c);
-                    }
-                if (appendNewLine)
-                    _writer.WriteLine();
+                string s = GetString(formatProvider, builder);
+                if (!string.IsNullOrEmpty(s))
+                    _writer.Write(s);
             }
         }
 
@@ -252,48 +471,32 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="builder">The builder.</param>
-        /// <param name="appendNewLine">if set to <see langword="true" /> appends a new line.</param>
         [NotNull]
-        private async Task WriteInternalAsync(
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] FormatBuilder builder,
-            bool appendNewLine)
+        private async Task WriteInternalAsync([CanBeNull] IFormatProvider formatProvider, [NotNull] FormatBuilder builder)
         {
-            if (builder == null &&
-                !appendNewLine) return;
-
+            Contract.Requires(builder != null);
             if (formatProvider == null) formatProvider = FormatProvider;
             using (await Lock.LockAsync())
             {
-                // ReSharper disable PossibleNullReferenceException
-                if (builder != null)
-                    foreach (FormatChunk chunk in builder)
-                    {
-                        Contract.Assert(chunk != null);
-                        string c = DoWriteChunk(formatProvider, chunk);
-                        if (!string.IsNullOrEmpty(c))
-                            await _writer.WriteAsync(c);
-                    }
-                if (appendNewLine)
-                    await _writer.WriteLineAsync();
-                // ReSharper restore PossibleNullReferenceException
+                string s = GetString(formatProvider, builder);
+                if (!string.IsNullOrEmpty(s))
+                    // ReSharper disable once PossibleNullReferenceException
+                    await _writer.WriteAsync(s);
             }
         }
 
         /// <summary>
-        /// Gets a string represent of each chunk to write.
+        /// Gets a string representation of the builder.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>A string representation of the chunk; otherwise <see langword="null"/> to skip.</returns>
+        /// <param name="builder">The builder.</param>
+        /// <returns>A string representation of the chunk; otherwise <see langword="null" /> to skip.</returns>
         [CanBeNull]
-        protected virtual string DoWriteChunk(
-            [NotNull] IFormatProvider formatProvider,
-            [NotNull] FormatChunk chunk)
+        protected virtual string GetString([CanBeNull] IFormatProvider formatProvider, [NotNull] FormatBuilder builder)
         {
             Contract.Requires(formatProvider != null);
-            Contract.Requires(chunk != null);
-            return chunk.ToString(formatProvider);
+            Contract.Requires(builder != null);
+            return builder.ToString(formatProvider);
         }
 
         /// <summary>

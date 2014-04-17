@@ -54,7 +54,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-		<PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\WebApplications.Utilities.xml</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
@@ -195,6 +195,7 @@
     <Compile Include="ConsoleHelper.cs" />
     <Compile Include="EqualityNetwork.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
+    <Compile Include="Formatting\Alignment.cs" />
     <Compile Include="Formatting\ConsoleWriter.cs" />
     <Compile Include="Formatting\DebugTextWriter.cs" />
     <Compile Include="Formatting\FormatBuilder.cs" />

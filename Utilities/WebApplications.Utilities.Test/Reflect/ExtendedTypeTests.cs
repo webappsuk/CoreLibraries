@@ -433,9 +433,11 @@ namespace WebApplications.Utilities.Test.Reflect
             {
             }
 
+            /*
             public unsafe void A(int* a)
             {
             }
+             */
 
             public static void A(string a, string b = null)
             {

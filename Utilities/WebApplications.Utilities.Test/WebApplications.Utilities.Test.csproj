@@ -17,7 +17,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\WebApplications.Utilities\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
-    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,8 +27,6 @@
     <DefineConstants>TRACE;DEBUG;CONTRACTS_FULL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PostSharpSearchPath>..\WebApplications.Utilities.Weavers\bin\Debug</PostSharpSearchPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
@@ -118,6 +116,11 @@
     <Compile Include="Extensions\TopologicalSortTests.cs" />
     <Compile Include="Extensions\TruncateTests.cs" />
     <Compile Include="FinancialsTests.cs" />
+    <Compile Include="Formatting\FormatResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FormatResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Formatting\TestFormatChunks.cs" />
     <Compile Include="Location\LatLngTests.cs" />
     <Compile Include="Ranges\DateRangeTests.cs" />
@@ -164,6 +167,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Formatting\FormatResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FormatResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Schema.xml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
