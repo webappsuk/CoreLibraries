@@ -196,10 +196,12 @@
     <Compile Include="EqualityNetwork.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
     <Compile Include="Formatting\Alignment.cs" />
+    <Compile Include="Formatting\ConsoleColourControl.cs" />
     <Compile Include="Formatting\ConsoleWriter.cs" />
     <Compile Include="Formatting\DebugTextWriter.cs" />
     <Compile Include="Formatting\FormatBuilder.cs" />
     <Compile Include="Formatting\FormatChunk.cs" />
+    <Compile Include="Formatting\FormatExtensions.cs" />
     <Compile Include="Formatting\FormatWriter.cs" />
     <Compile Include="Formatting\LayoutWriter.cs" />
     <Compile Include="Formatting\Layout.cs" />

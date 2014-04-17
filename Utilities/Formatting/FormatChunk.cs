@@ -26,15 +26,13 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
-    /// A format chunk, holds information about a chunk of formatted text.
+    /// A format chunk, holds information about a chunk of formatted Value.
     /// </summary>
     public class FormatChunk : IEquatable<FormatChunk>, IFormattable
     {
@@ -42,13 +40,13 @@ namespace WebApplications.Utilities.Formatting
         /// The empty format chunk.
         /// </summary>
         [NotNull]
-        public static readonly FormatChunk Empty = new FormatChunk(string.Empty);
+        public static readonly FormatChunk Empty = new FormatChunk(string.Empty, false);
 
         /// <summary>
-        /// The new line format chunk.
+        /// Control chunks are never written out when you call <see cref="ToString()"/>, but can be used by consumers of a <see cref="FormatBuilder"/> to
+        /// extend functionality.
         /// </summary>
-        [NotNull]
-        public static readonly FormatChunk NewLine = new FormatChunk(Environment.NewLine);
+        public readonly bool IsControl;
 
         /// <summary>
         /// The tag, if this is a formatting chunk, if any; otherwise <see langword="null"/>. (e.g. '0' for '{0,-3:G}')
@@ -71,40 +69,50 @@ namespace WebApplications.Utilities.Formatting
         public readonly string Format;
 
         /// <summary>
-        /// The chunk text (e.g. '{0,-3:G}' for '{0,-3:G}')
+        /// The chunk Value (e.g. '{0,-3:G}' for '{0,-3:G}')
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public readonly string Text;
+        public readonly object Value;
 
         /// <summary>
         /// Gets a value indicating whether this instance is a fill point.
         /// </summary>
         /// <value><see langword="true" /> if this instance is a fill point; otherwise, <see langword="false" />.</value>
-        public bool IsFillPoint { get { return Tag != null; }}
+        public bool IsFillPoint
+        {
+            get { return Tag != null; }
+        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FormatChunk"/> class.
+        /// Initializes a new instance of the <see cref="FormatChunk" /> class.
         /// </summary>
-        /// <param name="text">The text.</param>
-        /// <remarks>
-        /// This does not chunk the text, however if the text starts and ends with the <see cref="FormatBuilder.Open"/> and
-        /// <see cref="FormatBuilder.Close"/> characters, then it splits out the relevant parts.</remarks>
-        private FormatChunk([NotNull] string text)
+        /// <param name="value">The Value.</param>
+        /// <param name="isControl">if set to <see langword="true" /> this is a hidden control chunk.</param>
+        /// <remarks>This does not chunk the Value, however if the value is a string that starts and ends with the
+        /// <see cref="FormatBuilder.Open" /> and
+        /// <see cref="FormatBuilder.Close" /> characters, then it splits out the relevant parts.</remarks>
+        private FormatChunk([NotNull] object value, bool isControl)
         {
-            Contract.Requires(text != null);
-            Text = text;
+            Contract.Requires(value != null);
+            Value = value;
+            IsControl = isControl;
 
-            int end = text.Length - 1;
+            // See if we have a fillpoint
+            string v = value as string;
+            if (v == null) return;
+
+            int end = v.Length - 1;
             // Is this a fill point?
             if (end < 1 ||
-                text[0] != FormatBuilder.Open ||
-                text[end] != FormatBuilder.Close) return;
+                v[0] != FormatBuilder.Open ||
+                v[end] != FormatBuilder.Close) return;
 
             // Find alignment splitter and format splitter characters
-            int al = text.IndexOf(FormatBuilder.Alignment);
-            int sp = text.IndexOf(FormatBuilder.Splitter);
-            if ((sp > -1) && (al > sp)) al = -1;
+            int al = v.IndexOf(FormatBuilder.Alignment);
+            int sp = v.IndexOf(FormatBuilder.Splitter);
+            if ((sp > -1) &&
+                (al > sp)) al = -1;
 
             // Get the format if any.
             string format = null;
@@ -114,10 +122,10 @@ namespace WebApplications.Utilities.Formatting
                 sp++;
                 int flen = end - sp;
                 if (flen < 1) return;
-                format = text.Substring(sp, end - sp);
+                format = v.Substring(sp, end - sp);
                 end = sp - 1;
             }
-            
+
             // Check the alignment is a valid integer.
             if (al > -1)
             {
@@ -126,7 +134,7 @@ namespace WebApplications.Utilities.Formatting
                 if (allen < 1)
                     return;
 
-                string alstr = text.Substring(al, allen).Trim();
+                string alstr = v.Substring(al, allen).Trim();
                 int a;
                 if (!int.TryParse(alstr, out a))
                     return;
@@ -135,27 +143,35 @@ namespace WebApplications.Utilities.Formatting
             }
 
             // Get the tag
-            Tag = text.Substring(1, end - 1);
+            Tag = v.Substring(1, end - 1);
             Format = format;
             Alignment = alignment;
         }
 
         /// <summary>
-        /// Creates a <see cref="FormatChunk"/> from the specified text.
+        /// Creates a <see cref="FormatChunk"/> from the specified value.
         /// </summary>
-        /// <param name="text">The text.</param>
+        /// <param name="value">The Value.</param>
         /// <returns>A <see cref="FormatChunk"/>.</returns>
         /// <remarks>
-        /// This does not chunk the text, however if the text starts and ends with the <see cref="FormatBuilder.Open"/> and
+        /// This does not chunk the Value, however if the Value starts and ends with the <see cref="FormatBuilder.Open"/> and
         /// <see cref="FormatBuilder.Close"/> characters, then it splits out the relevant parts.</remarks>
         [NotNull]
-        public static FormatChunk Create([CanBeNull]string text)
+        public static FormatChunk Create([CanBeNull] object value)
         {
-            if (string.IsNullOrEmpty(text))
-                return Empty;
-            return text == Environment.NewLine
-                ? NewLine
-                : new FormatChunk(text);
+            return value == null ? Empty : new FormatChunk(value, false);
+        }
+
+        /// <summary>
+        /// Creates a control <see cref="FormatChunk"/> from the specified value.
+        /// </summary>
+        /// <param name="value">The Value.</param>
+        /// <returns>A <see cref="FormatChunk"/>.</returns>
+        /// <remarks>Control chunks are not written out, but can be used to extend functionality.</remarks>
+        [NotNull]
+        public static FormatChunk CreateControl([CanBeNull] object value)
+        {
+            return value == null ? Empty : new FormatChunk(value, true);
         }
 
         /// <summary>
@@ -167,7 +183,7 @@ namespace WebApplications.Utilities.Formatting
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((FormatChunk) obj);
         }
 
@@ -180,7 +196,8 @@ namespace WebApplications.Utilities.Formatting
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return string.Equals(Tag, other.Tag) && Alignment == other.Alignment && string.Equals(Format, other.Format) && string.Equals(Text, other.Text);
+            return string.Equals(Tag, other.Tag) && Alignment == other.Alignment && string.Equals(Format, other.Format) &&
+                   Equals(Value, other.Value);
         }
 
         /// <summary>
@@ -194,7 +211,7 @@ namespace WebApplications.Utilities.Formatting
                 int hashCode = (Tag != null ? Tag.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ Alignment.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Format != null ? Format.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ Text.GetHashCode();
+                hashCode = (hashCode * 397) ^ Value.GetHashCode();
                 return hashCode;
             }
         }
@@ -227,17 +244,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return Text;
-        }
-        /// <summary>
-        /// To the string.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>System.String.</returns>
-        [NotNull]
-        public string ToString([CanBeNull] IFormatProvider formatProvider)
-        {
-            return Text;
+            return IsControl ? string.Empty : Value.ToString();
         }
 
         /// <summary>
@@ -248,43 +255,9 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
         {
-            return Text;
-        }
-
-        /// <summary>
-        /// Creates a new, non-fill point chunk from the value.
-        /// </summary>
-        /// <param name="provider">The provider.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>FormatChunk.</returns>
-        [NotNull]
-        public FormatChunk FormatValue([CanBeNull]IFormatProvider provider, [CanBeNull]object value)
-        {
-            if (provider == null)
-                provider = Thread.CurrentThread.CurrentCulture;
-
-            string v;
-            if (value == null) v = string.Empty;
-            else
-            {
-                IFormattable fv = value as IFormattable;
-                try
-                {
-                    v = fv == null ? value.ToString() : fv.ToString(Format, provider);
-                }
-                catch
-                {
-                    return this;
-                }
-            }
-
-            if (Alignment != null)
-            {
-                int a = Alignment.Value;
-                v = a < 0 ? v.PadRight(-a) : v.PadLeft(a);
-            }
-
-            return Create(v);
+            if (IsControl) return string.Empty;
+            IFormattable fv = Value as IFormattable;
+            return fv != null ? fv.ToString(format, formatProvider) : Value.ToString();
         }
     }
 }

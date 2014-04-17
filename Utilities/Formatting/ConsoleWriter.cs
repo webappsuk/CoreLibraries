@@ -28,7 +28,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
+using System.Runtime.Remoting.Messaging;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Enumerations;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -43,27 +45,6 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public static readonly ConsoleWriter Default = new ConsoleWriter();
-
-        /// <summary>
-        /// Indicates the foreground colour should be reset.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public static string ResetForeColour = "{+_}";
-
-        /// <summary>
-        /// Indicates the background colour should be reset.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public static string ResetBackColour = "{-_}";
-
-        /// <summary>
-        /// Indicates the background colour should be reset.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public static string ResetColour = "{+_}{-_}";
 
         /// <summary>
         /// The custom colour names.
@@ -149,10 +130,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="colour">The colour.</param>
         /// <returns><see langword="true" /> if found, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        public static bool TryGetCustomColour([NotNull] string name, out ConsoleColor colour)
+        public static bool TryGetColour([NotNull] string name, out ConsoleColor colour)
         {
             Contract.Requires(name != null);
-            return _customColors.TryGetValue(name, out colour);
+            return _customColors.TryGetValue(name, out colour) ||
+                   Enum.TryParse(name, true, out colour);
         }
 
         /// <summary>
@@ -176,6 +158,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A string representation of the chunk; otherwise <see langword="null"/> to skip.</returns>
         protected override string GetChunk(IFormatProvider formatProvider, FormatChunk chunk)
         {
+            ConsoleColor colour;
             if (chunk.Tag != null &&
                 chunk.Tag.Length > 1)
             {
@@ -186,11 +169,9 @@ namespace WebApplications.Utilities.Formatting
                     case '-':
                         bool isBack = prefix == '-';
                         string colourStr = chunk.Tag.Substring(1);
-                        ConsoleColor colour;
                         if (colourStr == "_")
                             colour = isBack ? DefaultBackColour : DefaultForeColour;
-                        else if (!_customColors.TryGetValue(colourStr, out colour) &&
-                                 !Enum.TryParse(colourStr, true, out colour))
+                        else if (!TryGetColour(colourStr, out colour))
                             break;
 
                         if (isBack)
@@ -202,6 +183,41 @@ namespace WebApplications.Utilities.Formatting
                 }
             }
 
+            if (chunk.IsControl)
+            {
+                ConsoleColourControl colourControl = chunk.Value as ConsoleColourControl;
+                if (colourControl != null)
+                {
+                    if (colourControl.Colour == null)
+                    {
+                        if (colourControl.IsForeground == TriState.Equal)
+                        {
+                            Console.BackgroundColor = DefaultBackColour;
+                            Console.ForegroundColor = DefaultForeColour;
+                        }
+                        else if (colourControl.IsForeground == TriState.Yes)
+                            Console.ForegroundColor = DefaultForeColour;
+                        else if (colourControl.IsForeground == TriState.No)
+                            Console.BackgroundColor = DefaultBackColour;
+                        return null;
+                    }
+                    
+                    if (!TryGetColour(colourControl.Colour, out colour))
+                        return null;
+
+                    if (colourControl.IsForeground == TriState.Equal)
+                    {
+                        Console.BackgroundColor = colour;
+                        Console.ForegroundColor = colour;
+                    }
+                    else if (colourControl.IsForeground == TriState.Yes)
+                        Console.ForegroundColor = colour;
+                    else if (colourControl.IsForeground == TriState.No)
+                        Console.BackgroundColor = colour;
+                }
+            }
+
+            // Use base implementation.
             return base.GetChunk(formatProvider, chunk);
         }
     }

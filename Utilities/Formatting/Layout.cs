@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -36,8 +35,14 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Defines a layout for use with a <see cref="LayoutWriter"/>.
     /// </summary>
-    public class Layout
+    public class Layout : IFormattable
     {
+        /// <summary>
+        /// The default layout (as specified by the current layout writer).
+        /// </summary>
+        [NotNull]
+        public static readonly Layout Default = new Layout();
+
         /// <summary>
         /// Calculate a string representation of the layout.
         /// </summary>
@@ -139,7 +144,7 @@ namespace WebApplications.Utilities.Formatting
             byte rightMarginSize = 0,
             char indentChar = ' ',
             ushort firstLineIndentSize = 0,
-            IEnumerable<ushort> tabStops = null,
+            [CanBeNull] IEnumerable<ushort> tabStops = null,
             byte tabSize = 4,
             char tabChar = ' ',
             Alignment alignment = Alignment.Left,
@@ -147,8 +152,20 @@ namespace WebApplications.Utilities.Formatting
             bool hyphenate = false,
             char hyphenChar = '-')
         {
-            Contract.Requires(width > 0);
-            // TODO Validate! (RM > LM, etc.)
+            // Normalize margins
+            if (width < 1)
+                width = 1;
+            if (indentSize >= width)
+                indentSize = (byte) (width - 1);
+            if (firstLineIndentSize >= width)
+                firstLineIndentSize = (byte) (width - 1);
+            if (rightMarginSize >= width - indentSize - 1) rightMarginSize = (byte) (width - indentSize - 1);
+            if (rightMarginSize >= width - firstLineIndentSize - 1)
+                rightMarginSize = (byte) (width - firstLineIndentSize - 1);
+
+            if (tabSize < 1) tabSize = 1;
+            else if (tabSize > width) tabSize = (byte) width;
+
             Width = width;
             IndentSize = indentSize;
             RightMarginSize = rightMarginSize;
@@ -198,12 +215,75 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
+        /// Parses the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns>A <see cref="Layout"/> if valid; otherwise <see langword="null"/>.</returns>
+        [PublicAPI]
+        [CanBeNull]
+        public static Layout Parse([CanBeNull] string input)
+        {
+            Layout layout;
+            return TryParse(input, out layout) ? layout : null;
+        }
+
+        /// <summary>
+        /// Tries to parse the string into a valid <see cref="Layout"/>.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="layout">A <see cref="Layout" /> if valid; otherwise <see langword="null" />.</param>
+        /// <returns><see langword="true" /> if parse succeeded, <see langword="false" /> otherwise.</returns>
+        [PublicAPI]
+        public static bool TryParse([CanBeNull] string input, out Layout layout)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// To the string.
         /// </summary>
         /// <returns>System.String.</returns>
         public override string ToString()
         {
-            return _string.Value ?? string.Empty;
+            return ToString("g", null);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] string format)
+        {
+            return ToString(format, null);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
+        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
+        {
+            if (format == null)
+                format = "g";
+            switch (format.ToLowerInvariant())
+            {
+                case "l":
+                    return _string.Value ?? string.Empty;
+                    break;
+                case "f":
+                    // TODO output formatted string.
+                    return string.Empty;
+                    break;
+                default:
+                    // TODO Output nice string
+                    return string.Empty;
+                    break;
+            }
         }
     }
 }

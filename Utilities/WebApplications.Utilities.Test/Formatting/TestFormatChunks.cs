@@ -33,7 +33,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual(" ", chunk.Text);
+            Assert.AreEqual(" ", chunk.Value);
             Assert.IsFalse(chunk.IsFillPoint);
         }
 
@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0}", chunk.Text);
+            Assert.AreEqual("{0}", chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.IsNull(chunk.Alignment);
@@ -58,7 +58,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,-1}", chunk.Text);
+            Assert.AreEqual("{0,-1}", chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.AreEqual(-1, chunk.Alignment);
@@ -72,7 +72,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,}", chunk.Text);
+            Assert.AreEqual("{0,}", chunk.Value);
             Assert.IsFalse(chunk.IsFillPoint);
         }
 
@@ -83,7 +83,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,a}", chunk.Text);
+            Assert.AreEqual("{0,a}", chunk.Value);
             Assert.IsFalse(chunk.IsFillPoint);
         }
 
@@ -94,7 +94,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0:G}", chunk.Text);
+            Assert.AreEqual("{0:G}", chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.IsNull(chunk.Alignment);
@@ -108,7 +108,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0:,}", chunk.Text);
+            Assert.AreEqual("{0:,}", chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.IsNull(chunk.Alignment);
@@ -123,7 +123,7 @@ namespace WebApplications.Utilities.Test.Formatting
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0:}", chunk.Text);
+            Assert.AreEqual("{0:}", chunk.Value);
             Assert.IsFalse(chunk.IsFillPoint);
         }
 
@@ -134,7 +134,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,-1:G}", chunk.Text);
+            Assert.AreEqual("{0,-1:G}", chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.AreEqual(-1, chunk.Alignment);
@@ -148,7 +148,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,:}", chunk.Text);
+            Assert.AreEqual("{0,:}", chunk.Value);
             Assert.IsFalse(chunk.IsFillPoint);
         }
 
@@ -159,7 +159,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,a:G}", chunk.Text);
+            Assert.AreEqual("{0,a:G}", chunk.Value);
             Assert.IsFalse(chunk.IsFillPoint);
         }
 
@@ -170,12 +170,12 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(2, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual(" ", chunk.Text);
+            Assert.AreEqual(" ", chunk.Value);
             Assert.IsFalse(chunk.IsFillPoint);
 
             chunk = chunks[1];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,-1:G}", chunk.Text);
+            Assert.AreEqual("{0,-1:G}", chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.AreEqual(-1, chunk.Alignment);
@@ -189,7 +189,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(2, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,-1:G}", chunk.Text);
+            Assert.AreEqual("{0,-1:G}", chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.AreEqual(-1, chunk.Alignment);
@@ -197,7 +197,7 @@ namespace WebApplications.Utilities.Test.Formatting
 
             chunk = chunks[1];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual(" ", chunk.Text);
+            Assert.AreEqual(" ", chunk.Value);
             Assert.IsFalse(chunk.IsFillPoint);
         }
 

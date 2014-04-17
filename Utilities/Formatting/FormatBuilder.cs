@@ -162,7 +162,7 @@ namespace WebApplications.Utilities.Formatting
         {
             return GetEnumerator();
         }
-
+        
         #region Append overloads
         /// <summary>
         /// Appends the specified format string.
@@ -173,7 +173,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] string format)
         {
-            return AppendInternal(null, format, false, _empty);
+            return AppendInternal(format, false, _empty);
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] string format, [CanBeNull] params object[] args)
         {
-            return AppendInternal(null, format, false, ToDictionary(FormatProvider, args));
+            return AppendInternal(format, false, ToDictionary(FormatProvider, args));
         }
 
         /// <summary>
@@ -199,54 +199,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] string format, [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            return AppendInternal(null, format, false, values ?? _empty);
-        }
-
-        /// <summary>
-        /// Appends the specified format string.
-        /// </summary>
-        /// <param name="provider">The format provider.</param>
-        /// <param name="format">The format.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        public FormatBuilder Append([CanBeNull] IFormatProvider provider, [CanBeNull] string format)
-        {
-            return AppendInternal(provider, format, false, _empty);
-        }
-
-        /// <summary>
-        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
-        /// </summary>
-        /// <param name="provider">The format provider.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="args">The arguments.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        public FormatBuilder Append(
-            [CanBeNull] IFormatProvider provider,
-            [CanBeNull] string format,
-            [CanBeNull] params object[] args)
-        {
-            return AppendInternal(provider, format, false, ToDictionary(FormatProvider, args));
-        }
-
-        /// <summary>
-        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
-        /// </summary>
-        /// <param name="provider">The format provider.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        public FormatBuilder Append(
-            [CanBeNull] IFormatProvider provider,
-            [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
-        {
-            return AppendInternal(provider, format, false, values ?? _empty);
+            return AppendInternal(format, false, values ?? _empty);
         }
         #endregion
 
@@ -259,7 +212,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine()
         {
-            return AppendInternal(null, null, true, _empty);
+            return AppendInternal(null, true, _empty);
         }
 
         /// <summary>
@@ -271,7 +224,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] string format)
         {
-            return AppendInternal(null, format, true, _empty);
+            return AppendInternal(format, true, _empty);
         }
 
         /// <summary>
@@ -284,7 +237,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] string format, [CanBeNull] params object[] args)
         {
-            return AppendInternal(null, format, true, ToDictionary(FormatProvider, args));
+            return AppendInternal(format, true, ToDictionary(FormatProvider, args));
         }
 
         /// <summary>
@@ -299,76 +252,21 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            return AppendInternal(null, format, true, values ?? _empty);
-        }
-
-        /// <summary>
-        /// Appends the specified format string.
-        /// </summary>
-        /// <param name="provider">The format provider.</param>
-        /// <param name="format">The format.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        public FormatBuilder AppendLine([CanBeNull] IFormatProvider provider, [CanBeNull] string format)
-        {
-            return AppendInternal(provider, format, true, _empty);
-        }
-
-        /// <summary>
-        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
-        /// </summary>
-        /// <param name="provider">The format provider.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="args">The arguments.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        public FormatBuilder AppendLine(
-            [CanBeNull] IFormatProvider provider,
-            [CanBeNull] string format,
-            [CanBeNull] params object[] args)
-        {
-            return AppendInternal(provider, format, true, ToDictionary(FormatProvider, args));
-        }
-
-        /// <summary>
-        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
-        /// </summary>
-        /// <param name="provider">The format provider.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        public FormatBuilder AppendLine(
-            [CanBeNull] IFormatProvider provider,
-            [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
-        {
-            return AppendInternal(provider, format, true, values ?? _empty);
+            return AppendInternal(format, true, values ?? _empty);
         }
         #endregion
 
         /// <summary>
         /// Internal append implementation.
         /// </summary>
-        /// <param name="provider">The format provider.</param>
         /// <param name="format">The format.</param>
         /// <param name="addLine">if set to <see langword="true" /> [add line].</param>
         /// <param name="values">The values.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
-        private FormatBuilder AppendInternal(
-            [CanBeNull] IFormatProvider provider,
-            [CanBeNull] string format,
-            bool addLine,
-            [NotNull] IReadOnlyDictionary<string, object> values)
+        private FormatBuilder AppendInternal([CanBeNull] string format, bool addLine, [NotNull] IReadOnlyDictionary<string, object> values)
         {
             Contract.Requires(values != null);
-            if (provider == null)
-                provider = FormatProvider;
-
             values = values.Count < 1
                 ? _values
                 : values.Union(_values)
@@ -384,14 +282,28 @@ namespace WebApplications.Utilities.Formatting
                 if (hasValues &&
                     chunk.IsFillPoint &&
                     values.TryGetValue(chunk.Tag, out value))
-                    _chunks.Add(chunk.FormatValue(provider, value));
+                    _chunks.Add(FormatChunk.Create(value));
                 else
                     _chunks.Add(chunk);
             }
 
             if (addLine)
-                _chunks.Add(FormatChunk.NewLine);
+                _chunks.Add(FormatChunk.Create(Environment.NewLine));
 
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the control object for controlling formatting.
+        /// </summary>
+        /// <param name="control">The control.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendControl([NotNull] object control)
+        {
+            Contract.Requires(control != null);
+            _chunks.Add(FormatChunk.CreateControl(control));
             return this;
         }
 
@@ -421,41 +333,11 @@ namespace WebApplications.Utilities.Formatting
                 object resolved = resolver(chunk.Tag);
                 if (resolved == null) continue;
 
-                _chunks[a] = chunk.FormatValue(provider, resolved);
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Allows you to resolve any unresolved fill points.
-        /// </summary>
-        /// <param name="resolver">The resolver should return a non-null string to resolve the fill-point; otherwise <see langword="null" />.</param>
-        /// <param name="provider">The provider.</param>
-        /// <returns>This instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public FormatBuilder Resolve(
-            [CanBeNull] Func<FormatChunk, IFormatProvider, string> resolver,
-            [CanBeNull] IFormatProvider provider = null)
-        {
-            if (resolver == null) return this;
-            if (provider == null) provider = FormatProvider;
-
-            for (int a = 0; a < _chunks.Count; a++)
-            {
-                FormatChunk chunk = _chunks[a];
-                Contract.Assert(chunk != null);
-                if (!chunk.IsFillPoint) continue;
-
-                Contract.Assert(chunk.Tag != null);
-                string resolved = resolver(chunk, provider);
-                if (resolved == null) continue;
-
                 _chunks[a] = FormatChunk.Create(resolved);
             }
             return this;
         }
-
+        
         /// <summary>
         /// Allows you to resolve any unresolved fill points.
         /// </summary>
@@ -531,7 +413,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Assert(chunk.Tag != null);
                 object resolved;
                 if (values.TryGetValue(chunk.Tag, out resolved))
-                    _chunks[a] = chunk.FormatValue(provider, resolved);
+                    _chunks[a] = FormatChunk.Create(resolved);
             }
             return this;
         }
