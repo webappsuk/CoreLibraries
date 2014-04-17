@@ -39,11 +39,6 @@ namespace WebApplications.Utilities.Formatting
     public class Layout
     {
         /// <summary>
-        /// The default tab size.
-        /// </summary>
-        public const byte DefaultTabSize = 4;
-
-        /// <summary>
         /// Calculate a string representation of the layout.
         /// </summary>
         [NotNull]
@@ -87,9 +82,10 @@ namespace WebApplications.Utilities.Formatting
         public readonly IEnumerable<ushort> TabStops;
 
         /// <summary>
-        /// The tab size.
+        /// The tab size, used to produce tabs when the layout doesn't support tab stops.
         /// </summary>
-        public readonly int TabSize;
+        [PublicAPI]
+        public readonly byte TabSize;
 
         /// <summary>
         /// The tab character is used to fill to next tab stop.
@@ -131,6 +127,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="indentChar">The indent character.</param>
         /// <param name="firstLineIndentSize">First size of the line indent.</param>
         /// <param name="tabStops">The tab stops.</param>
+        /// <param name="tabSize">Size of the tab.</param>
         /// <param name="tabChar">The tab character.</param>
         /// <param name="alignment">The alignment.</param>
         /// <param name="splitWords">if set to <see langword="true" /> then words will split across lines.</param>
@@ -143,6 +140,7 @@ namespace WebApplications.Utilities.Formatting
             char indentChar = ' ',
             ushort firstLineIndentSize = 0,
             IEnumerable<ushort> tabStops = null,
+            byte tabSize = 4,
             char tabChar = ' ',
             Alignment alignment = Alignment.Left,
             bool splitWords = false,
@@ -156,14 +154,20 @@ namespace WebApplications.Utilities.Formatting
             RightMarginSize = rightMarginSize;
             IndentChar = indentChar;
             FirstLineIndentSize = firstLineIndentSize;
-            TabStops = (tabStops == null
-                ? Enumerable.Range(1, width / DefaultTabSize)
-                    .Select(t => (ushort) (t * DefaultTabSize))
-                : tabStops
-                    .Where(t => t > 0 && t < width)
-                    .OrderBy(t => t))
-                .Distinct()
-                .ToArray();
+
+            // Only support tabstop on left/non alignments
+            if ((alignment == Alignment.Left) ||
+                (alignment == Alignment.None))
+                TabStops = (tabStops == null
+                    ? Enumerable.Range(1, width / tabSize)
+                        .Select(t => (ushort) (t * tabSize))
+                    : tabStops
+                        .Where(t => t > 0 && t < width)
+                        .OrderBy(t => t))
+                    .Distinct()
+                    .ToArray();
+
+            TabSize = tabSize;
             TabChar = tabChar;
             Alignment = alignment;
             SplitWords = splitWords;
@@ -183,7 +187,7 @@ namespace WebApplications.Utilities.Formatting
                             ? (up ? 'X' : 'V')
                             : (up
                                 ? '^'
-                                : (TabStops.Contains((ushort) i)
+                                : (TabStops != null && TabStops.Contains((ushort) i)
                                     ? 'L'
                                     : (i % 10 == 0
                                         ? (char) ('0' + (i / 10) % 10)
