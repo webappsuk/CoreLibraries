@@ -214,8 +214,7 @@ namespace WebApplications.Utilities.Formatting
             IFormatProvider formatProvider)
         {
             // We can only change colours if we are writing to the console!
-            if (!ConsoleHelper.IsConsole ||
-                writer != Console.Out)
+            if (!ConsoleHelper.IsConsole)
                 return;
 
             ConsoleColor colour;

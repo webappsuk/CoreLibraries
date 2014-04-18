@@ -49,6 +49,8 @@ namespace WebApplications.Utilities.Formatting
         {
             [NotNull]
             private readonly List<string> _chunks = new List<string>();
+            [NotNull]
+            private readonly List<FormatChunk> _controls = new List<FormatChunk>();
 
             /// <summary>
             /// The layout for the line.
@@ -169,6 +171,26 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.Add(chunk);
                 _length += chunk.Length;
             }
+
+            /// <summary>
+            /// Adds the specified chunk to this line.
+            /// </summary>
+            /// <param name="chunk">The chunk.</param>
+            [PublicAPI]
+            public void AddControl([NotNull] FormatChunk chunk)
+            {
+                Contract.Requires(chunk != null);
+                Contract.Requires(chunk.IsControl);
+                _chunks.Add(null);
+                _controls.Add(chunk);
+            }
+
+            /// <summary>
+            /// Gets the controls.
+            /// </summary>
+            /// <value>The controls.</value>
+            [NotNull]
+            public IEnumerable<FormatChunk> Controls { get { return _controls; } }
 
             /// <summary>
             /// Gets the chunk count.
@@ -421,37 +443,6 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Splits the chunks on control chunks.
-        /// </summary>
-        /// <param name="chunks">The chunks.</param>
-        /// <returns>An enumeration of chunks.</returns>
-        [NotNull]
-        private static IEnumerable<FormatChunk[]> SplitChunks(
-            [NotNull] IEnumerable<FormatChunk> chunks)
-        {
-            Contract.Requires(chunks != null);
-            List<FormatChunk> output = new List<FormatChunk>();
-            foreach (FormatChunk chunk in chunks)
-            {
-                Contract.Assert(chunk != null);
-                if (!chunk.IsControl)
-                {
-                    output.Add(chunk);
-                    continue;
-                }
-
-                if (output.Count > 0)
-                {
-                    yield return output.ToArray();
-                    output.Clear();
-                }
-                yield return new[] { chunk };
-            }
-            if (output.Count > 0)
-                yield return output.ToArray();
-        }
-
-        /// <summary>
         /// Gets the line chunks from a set of chunks.
         /// </summary>
         /// <param name="chunks">The chunks.</param>
@@ -459,47 +450,63 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="provider">The format provider.</param>
         /// <returns>An enumeration of chunks.</returns>
         [NotNull]
-        private static IEnumerable<string> GetLineChunks(
+        private static Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> GetLineChunks(
             [NotNull] IEnumerable<FormatChunk> chunks,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider provider)
         {
             Contract.Requires(chunks != null);
+            List<string> words = new List<string>();
+            List<FormatChunk> controlChunks = new List<FormatChunk>();
+
             StringBuilder word = new StringBuilder();
             bool lastCharR = false;
-            foreach (char ch in chunks
-                // ReSharper disable once PossibleNullReferenceException
-                .Select(chunk => chunk.ToString(format, provider))
-                .Where(chunk => !string.IsNullOrEmpty(chunk))
-                .SelectMany(ch => ch))
+            foreach (FormatChunk chunk in chunks)
             {
-                if (!char.IsWhiteSpace(ch))
+                Contract.Assert(chunk != null);
+                if (chunk.IsControl)
                 {
-                    word.Append(ch);
-                    continue;
-                }
-                if (word.Length > 0)
-                {
-                    yield return word.ToString();
-                    word.Clear();
-                }
-
-                if (ch == '\n')
-                {
-                    // Skip '\n' after '\r'
-                    if (!lastCharR)
-                        yield return "\r";
-
-                    lastCharR = false;
+                    // Use null to indicate location of a control chunks
+                    words.Add(null);
+                    controlChunks.Add(chunk);
                     continue;
                 }
 
-                lastCharR = ch == '\r';
+                string chunk1 = chunk.ToString(format, provider);
+                if (string.IsNullOrEmpty(chunk1)) continue;
 
-                yield return ch.ToString(provider);
+                foreach (char ch in chunk1)
+                {
+                    if (!char.IsWhiteSpace(ch))
+                    {
+                        word.Append(ch);
+                        continue;
+                    }
+                    if (word.Length > 0)
+                    {
+                        words.Add(word.ToString());
+                        word.Clear();
+                    }
+
+                    if (ch == '\n')
+                    {
+                        // Skip '\n' after '\r'
+                        if (!lastCharR)
+                            words.Add("\r");
+
+                        lastCharR = false;
+                        continue;
+                    }
+
+                    lastCharR = ch == '\r';
+
+                    words.Add(ch.ToString(provider));
+                }
             }
             if (word.Length > 0)
-                yield return word.ToString();
+                words.Add(word.ToString());
+
+            return new Tuple<IEnumerable<string>, IEnumerable<FormatChunk>>(words, controlChunks);
         }
 
         /// <summary>
@@ -508,9 +515,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunks">The chunks.</param>
         /// <returns>IEnumerable&lt;System.String&gt;.</returns>
         [NotNull]
-        private IEnumerable<Line> GetLines([NotNull] IEnumerable<string> chunks)
+        private IEnumerable<Line> GetLines([NotNull] Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> chunks)
         {
             Contract.Requires(chunks != null);
+            Contract.Requires(chunks.Item1 != null);
+            Contract.Requires(chunks.Item2 != null);
 
             // Only grab the layout at the start of each line.
             Layout layout = _layout;
@@ -532,7 +541,9 @@ namespace WebApplications.Utilities.Formatting
             bool splitWords = layout.SplitWords.Value;
             int hyphenate = layout.Hyphenate.Value ? 1 : 0;
 
-            IEnumerator<string> ce = chunks.GetEnumerator();
+            IEnumerator<string> chunkEnumerator = chunks.Item1.GetEnumerator();
+            IEnumerator<FormatChunk> controlEnumerator = chunks.Item2.GetEnumerator();
+
             string word = null;
             bool newLine = false;
             do
@@ -560,24 +571,34 @@ namespace WebApplications.Utilities.Formatting
                 // If we don't have a word, get one.
                 if (string.IsNullOrEmpty(word))
                 {
-                    if (!ce.MoveNext())
+                    do
                     {
-                        if (line.ChunkCount > 0)
+                        if (!chunkEnumerator.MoveNext())
                         {
-                            line.Finish(false, _firstLine);
-                            yield return line;
+                            if (line.ChunkCount > 0)
+                            {
+                                line.Finish(false, _firstLine);
+                                yield return line;
 
-                            // Store the position for later
-                            _position = line.Position;
+                                // Store the position for later
+                                _position = line.Position;
+                            }
+                            else
+                                _position = 0;
+
+                            // No more words, so finish.
+                            yield break;
                         }
-                        else
-                            _position = 0;
+                        word = chunkEnumerator.Current;
 
-                        // No more words, so finish.
-                        yield break;
-                    }
-                    word = ce.Current;
-                    Contract.Assert(word != null);
+                        // Check if we have a control marker
+                        if (!string.IsNullOrEmpty(word)) break;
+
+                        bool success = controlEnumerator.MoveNext();
+                        Contract.Assert(success);
+                        Contract.Assert(controlEnumerator.Current != null);
+                        line.AddControl(controlEnumerator.Current);
+                    } while (true);
                 }
 
                 char c = word[0];
@@ -668,7 +689,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="lines">The lines.</param>
         /// <returns>An enumeration of terminated lines, laid out for writing.</returns>
         [NotNull]
-        private IEnumerable<string> Align([NotNull] IEnumerable<Line> lines)
+        private IEnumerable<FormatChunk> Align([NotNull] IEnumerable<Line> lines)
         {
             Contract.Requires(lines != null);
             StringBuilder lb = new StringBuilder(_layout.Width.Value);
@@ -713,9 +734,24 @@ namespace WebApplications.Utilities.Formatting
                     lb.Append(indentChar, indent);
 
                 int p = 0;
+                IEnumerator<FormatChunk> controlEnumerator = line.Controls.GetEnumerator();
                 foreach (string chunk in line)
                 {
-                    Contract.Assert(chunk != null);
+                    if (string.IsNullOrEmpty(chunk))
+                    {
+                        // We got a control chunk, so need to split line
+                        if (lb.Length > 0)
+                        {
+                            yield return FormatChunk.Create(lb.ToString());
+                            lb.Clear();
+                        }
+                        bool success = controlEnumerator.MoveNext();
+                        Contract.Assert(success);
+                        Contract.Assert(controlEnumerator.Current != null);
+                        yield return controlEnumerator.Current;
+                        continue;
+                    }
+
                     lb.Append(chunk);
 
                     // Check if we have to add justification spaces
@@ -742,7 +778,11 @@ namespace WebApplications.Utilities.Formatting
                          (spacers.Count > 0))
                     lb.Append(indentChar, spacers.Count);
 
-                yield return lb.ToString();
+                if (lb.Length > 0)
+                {
+                    yield return FormatChunk.Create(lb.ToString());
+                    lb.Clear();
+                }
                 lb.Clear();
             }
         }
@@ -759,23 +799,20 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return;
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
-            foreach (FormatChunk[] section in SplitChunks(this))
+            foreach (FormatChunk chunk in Align(GetLines(GetLineChunks(this, format, formatProvider))))
             {
-                Contract.Assert(section != null);
-                Contract.Assert(section[0] != null);
-                if (section.Length < 2 &&
-                    section[0].IsControl)
+                Contract.Assert(chunk != null);
+                if (chunk.IsControl)
                 {
                     if (sb.Length > 0)
                     {
                         writer.Write(sb.ToString());
                         sb.Clear();
                     }
-                    OnControlChunk(section[0], writer, format, formatProvider);
+                    OnControlChunk(chunk, writer, format, formatProvider);
                 }
                 else
-                    foreach (string line in Align(GetLines(GetLineChunks(section, format, formatProvider))))
-                        sb.Append(line);
+                    sb.Append(chunk.ToString(format, formatProvider));
             }
 
             if (sb.Length > 0)
@@ -803,12 +840,10 @@ namespace WebApplications.Utilities.Formatting
 
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
-            foreach (FormatChunk[] section in SplitChunks(this))
+            foreach (FormatChunk chunk in Align(GetLines(GetLineChunks(this, format, formatProvider))))
             {
-                Contract.Assert(section != null);
-                Contract.Assert(section[0] != null);
-                if (section.Length < 2 &&
-                    section[0].IsControl)
+                Contract.Assert(chunk != null);
+                if (chunk.IsControl)
                 {
                     if (sb.Length > 0)
                     {
@@ -816,17 +851,16 @@ namespace WebApplications.Utilities.Formatting
                         await writer.WriteAsync(sb.ToString());
                         sb.Clear();
                     }
-                    OnControlChunk(section[0], writer, format, formatProvider);
+                    OnControlChunk(chunk, writer, format, formatProvider);
                 }
                 else
-                    foreach (string line in Align(GetLines(GetLineChunks(section, format, formatProvider))))
-                        sb.Append(line);
+                    sb.Append(chunk.ToString(format, formatProvider));
             }
 
             if (sb.Length > 0)
                 // ReSharper disable once PossibleNullReferenceException
                 await writer.WriteAsync(sb.ToString());
-            
+
             // Restore the initial layout, in case someone tries to write us out again.
             _layout = _initialLayout;
         }
