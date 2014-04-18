@@ -49,6 +49,7 @@ namespace WebApplications.Utilities.Formatting
         {
             [NotNull]
             private readonly List<string> _chunks = new List<string>();
+
             [NotNull]
             private readonly List<FormatChunk> _controls = new List<FormatChunk>();
 
@@ -190,7 +191,10 @@ namespace WebApplications.Utilities.Formatting
             /// </summary>
             /// <value>The controls.</value>
             [NotNull]
-            public IEnumerable<FormatChunk> Controls { get { return _controls; } }
+            public IEnumerable<FormatChunk> Controls
+            {
+                get { return _controls; }
+            }
 
             /// <summary>
             /// Gets the chunk count.
@@ -290,84 +294,43 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         private Layout _layout;
 
-        private bool _firstLine;
-        private int _position;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
         /// </summary>
         /// <param name="layout">The layout.</param>
-        /// <param name="startPosition">The start position, if the writer is currently not at the start of a line.</param>
-        /// <param name="firstLine">if set to <see langword="true" /> the start position is on the first line.</param>
         public LayoutBuilder(
-            [CanBeNull] Layout layout = null,
-            int startPosition = 0,
-            bool firstLine = true)
+            [CanBeNull] Layout layout = null)
         {
             _initialLayout = _layout = Layout.Default.Apply(layout);
             Contract.Assert(_layout.IsFull);
-            _position = startPosition;
-            _firstLine = firstLine;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
         /// </summary>
-        /// <param name="layout">The layout.</param>
-        /// <param name="startPosition">The start position, if the writer is currently not at the start of a line.</param>
-        /// <param name="firstLine">if set to <see langword="true" /> the start position is on the first line.</param>
         /// <param name="values">The values.</param>
+        /// <param name="layout">The layout.</param>
         public LayoutBuilder(
             [CanBeNull] IEnumerable<object> values,
-            [CanBeNull] Layout layout = null,
-            int startPosition = 0,
-            bool firstLine = true)
+            [CanBeNull] Layout layout = null)
             : base(values)
         {
             _initialLayout = _layout = Layout.Default.Apply(layout);
             Contract.Assert(_layout.IsFull);
-            _position = startPosition;
-            _firstLine = firstLine;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
         /// </summary>
-        /// <param name="layout">The layout.</param>
-        /// <param name="startPosition">The start position, if the writer is currently not at the start of a line.</param>
-        /// <param name="firstLine">if set to <see langword="true" /> the start position is on the first line.</param>
         /// <param name="values">The values.</param>
+        /// <param name="layout">The layout.</param>
         public LayoutBuilder(
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            [CanBeNull] Layout layout = null,
-            int startPosition = 0,
-            bool firstLine = true)
+            [CanBeNull] Layout layout = null)
             : base(values)
         {
             _initialLayout = _layout = Layout.Default.Apply(layout);
             Contract.Assert(_layout.IsFull);
-            _position = startPosition;
-            _firstLine = firstLine;
-        }
-
-        /// <summary>
-        /// Gets the current horizontal position.
-        /// </summary>
-        /// <value>The position.</value>
-        [PublicAPI]
-        public int Position
-        {
-            get { return _position; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the write point is currently on the first line of a paragraph..
-        /// </summary>
-        /// <value><see langword="true" /> if at the first line; otherwise, <see langword="false" />.</value>
-        [PublicAPI]
-        public bool FirstLine
-        {
-            get { return _firstLine; }
         }
 
         /// <summary>
@@ -513,9 +476,12 @@ namespace WebApplications.Utilities.Formatting
         /// Gets the lines from an enumeration of chunks.
         /// </summary>
         /// <param name="chunks">The chunks.</param>
+        /// <param name="position">The position.</param>
         /// <returns>IEnumerable&lt;System.String&gt;.</returns>
         [NotNull]
-        private IEnumerable<Line> GetLines([NotNull] Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> chunks)
+        private IEnumerable<Line> GetLines(
+            [NotNull] Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> chunks,
+            int position)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(chunks.Item1 != null);
@@ -525,18 +491,18 @@ namespace WebApplications.Utilities.Formatting
             Layout layout = _layout;
 
             // Create the first line, if we're part way through a line then we cannot align the remainder of the line.
-            Line line = _position > 0
+            Line line = position > 0
                 ? new Line(
                     layout,
                     Alignment.None,
-                    _position,
+                    position,
                     layout.Width.Value - layout.RightMarginSize.Value)
                 : new Line(
                     layout,
                     layout.Alignment.Value,
-                    _firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
+                    layout.FirstLineIndentSize.Value,
                     layout.Width.Value - layout.RightMarginSize.Value);
-            _firstLine = false;
+            bool firstLine = false;
 
             bool splitWords = layout.SplitWords.Value;
             int hyphenate = layout.Hyphenate.Value ? 1 : 0;
@@ -552,7 +518,7 @@ namespace WebApplications.Utilities.Formatting
                 if (newLine)
                 {
                     // Close out existing line.
-                    line.Finish(true, _firstLine);
+                    line.Finish(true, firstLine);
                     yield return line;
 
                     // Start a new line
@@ -560,9 +526,9 @@ namespace WebApplications.Utilities.Formatting
                     line = new Line(
                         layout,
                         layout.Alignment.Value,
-                        _firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
+                        firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
                         layout.Width.Value - layout.RightMarginSize.Value);
-                    _firstLine = false;
+                    firstLine = false;
                     splitWords = layout.SplitWords.Value;
                     hyphenate = layout.Hyphenate.Value ? 1 : 0;
                     newLine = false;
@@ -570,21 +536,15 @@ namespace WebApplications.Utilities.Formatting
 
                 // If we don't have a word, get one.
                 if (string.IsNullOrEmpty(word))
-                {
                     do
                     {
                         if (!chunkEnumerator.MoveNext())
                         {
                             if (line.ChunkCount > 0)
                             {
-                                line.Finish(false, _firstLine);
+                                line.Finish(false, false);
                                 yield return line;
-
-                                // Store the position for later
-                                _position = line.Position;
                             }
-                            else
-                                _position = 0;
 
                             // No more words, so finish.
                             yield break;
@@ -599,7 +559,6 @@ namespace WebApplications.Utilities.Formatting
                         Contract.Assert(controlEnumerator.Current != null);
                         line.AddControl(controlEnumerator.Current);
                     } while (true);
-                }
 
                 char c = word[0];
 
@@ -623,7 +582,7 @@ namespace WebApplications.Utilities.Formatting
                 if (c == '\r')
                 {
                     newLine = true;
-                    _firstLine = true;
+                    firstLine = true;
                     word = null;
                     continue;
                 }
@@ -687,13 +646,14 @@ namespace WebApplications.Utilities.Formatting
         /// Aligns the specified lines.
         /// </summary>
         /// <param name="lines">The lines.</param>
+        /// <param name="position">The position.</param>
         /// <returns>An enumeration of terminated lines, laid out for writing.</returns>
         [NotNull]
-        private IEnumerable<FormatChunk> Align([NotNull] IEnumerable<Line> lines)
+        private IEnumerable<FormatChunk> Align([NotNull] IEnumerable<Line> lines, int position)
         {
             Contract.Requires(lines != null);
             StringBuilder lb = new StringBuilder(_layout.Width.Value);
-            bool dontIndentFirstLine = _position > 0;
+            bool dontIndentFirstLine = position > 0;
             foreach (Line line in lines)
             {
                 Contract.Assert(line != null);
@@ -718,9 +678,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0)
                         {
-                            decimal space = (decimal)(line.End - line.LastWordLength - line.Start) / remaining;
-                            int o = (int)Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
+                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
+                            int o = (int) Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
                         }
                         break;
                     default:
@@ -796,10 +756,29 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public override void WriteTo(TextWriter writer, string format = null, IFormatProvider formatProvider = null)
         {
+            WriteTo(writer, format, formatProvider, 0);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="position">The position.</param>
+        [PublicAPI]
+        public virtual void WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            int position)
+        {
             if (writer == null) return;
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
-            foreach (FormatChunk chunk in Align(GetLines(GetLineChunks(this, format, formatProvider))))
+            foreach (
+                FormatChunk chunk in
+                    Align(GetLines(GetLineChunks(this, format, formatProvider), position), position))
             {
                 Contract.Assert(chunk != null);
                 if (chunk.IsControl)
@@ -831,16 +810,37 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>An awaitable task.</returns>
         [PublicAPI]
-        public override async Task WriteToAsync(
+        public override Task WriteToAsync(
             TextWriter writer,
             string format = null,
             IFormatProvider formatProvider = null)
+        {
+            return WriteToAsync(writer, format, formatProvider, 0);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" /> asynchronously.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>An awaitable task.</returns>
+        [PublicAPI]
+        [NotNull]
+        public virtual async Task WriteToAsync(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            int position)
         {
             if (writer == null) return;
 
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
-            foreach (FormatChunk chunk in Align(GetLines(GetLineChunks(this, format, formatProvider))))
+            foreach (
+                FormatChunk chunk in
+                    Align(GetLines(GetLineChunks(this, format, formatProvider), position), position))
             {
                 Contract.Assert(chunk != null);
                 if (chunk.IsControl)

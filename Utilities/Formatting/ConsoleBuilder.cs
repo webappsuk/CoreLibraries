@@ -102,35 +102,36 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Updates the layout.
         /// </summary>
-        private void UpdateLayout()
+        private int UpdateLayout()
         {
-            if (ConsoleHelper.IsConsole)
-            {
-                // Grab the default colours.
-                ConsoleColor fc = Console.ForegroundColor;
-                ConsoleColor bc = Console.BackgroundColor;
-
-                Console.ResetColor();
-                DefaultForeColour = Console.ForegroundColor;
-                DefaultBackColour = Console.BackgroundColor;
-
-                Console.ForegroundColor = fc;
-                Console.BackgroundColor = bc;
-
-                // Update the width
-                int width = Console.BufferWidth;
-                ApplyLayout(
-                    width > ushort.MaxValue
-                        ? ushort.MaxValue
-                        : (width < 1
-                            ? (ushort)1
-                            : (ushort)width));
-            }
-            else
+            if (!ConsoleHelper.IsConsole)
             {
                 DefaultForeColour = ConsoleColor.White;
                 DefaultBackColour = ConsoleColor.Black;
+                return 0;
             }
+
+            // Grab the default colours.
+            ConsoleColor fc = Console.ForegroundColor;
+            ConsoleColor bc = Console.BackgroundColor;
+
+            Console.ResetColor();
+            DefaultForeColour = Console.ForegroundColor;
+            DefaultBackColour = Console.BackgroundColor;
+
+            Console.ForegroundColor = fc;
+            Console.BackgroundColor = bc;
+
+            // Update the width
+            int width = Console.BufferWidth;
+            ApplyLayout(
+                width > ushort.MaxValue
+                    ? ushort.MaxValue
+                    : (width < 1
+                        ? (ushort)1
+                        : (ushort)width));
+
+            return Console.CursorLeft;
         }
 
         /// <summary>
@@ -178,11 +179,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
-        public override void WriteTo(TextWriter writer, string format = null, IFormatProvider formatProvider = null)
+        /// <param name="position">The position.</param>
+        public override void WriteTo(TextWriter writer, string format, IFormatProvider formatProvider, int position)
         {
             // Update the layout based on the console.
-            UpdateLayout();
-            base.WriteTo(writer, format, formatProvider);
+            base.WriteTo(writer, format, formatProvider, UpdateLayout());
         }
 
         /// <summary>
@@ -191,12 +192,12 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
+        /// <param name="position">The position.</param>
         /// <returns>An awaitable task.</returns>
-        public override Task WriteToAsync(TextWriter writer, string format = null, IFormatProvider formatProvider = null)
+        public override Task WriteToAsync(TextWriter writer, string format, IFormatProvider formatProvider, int position)
         {
             // Update the layout based on the console.
-            UpdateLayout();
-            return base.WriteToAsync(writer, format, formatProvider);
+            return base.WriteToAsync(writer, format, formatProvider, UpdateLayout());
         }
 
         /// <summary>
