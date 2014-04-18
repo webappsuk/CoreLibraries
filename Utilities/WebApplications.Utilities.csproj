@@ -198,7 +198,6 @@
     <Compile Include="Formatting\Alignment.cs" />
     <Compile Include="Formatting\ConsoleBuilder.cs" />
     <Compile Include="Formatting\ConsoleColourControl.cs" />
-    <Compile Include="Formatting\DebugTextWriter.cs" />
     <Compile Include="Formatting\FormatBuilder.cs" />
     <Compile Include="Formatting\FormatChunk.cs" />
     <Compile Include="Formatting\FormatExtensions.cs" />

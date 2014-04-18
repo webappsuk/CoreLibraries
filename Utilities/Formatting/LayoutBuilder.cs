@@ -429,6 +429,12 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Assert(chunk != null);
                 if (chunk.IsControl)
                 {
+                    if (word.Length > 0)
+                    {
+                        words.Add(word.ToString());
+                        word.Clear();
+                    }
+
                     // Use null to indicate location of a control chunks
                     words.Add(null);
                     controlChunks.Add(chunk);
@@ -893,11 +899,14 @@ namespace WebApplications.Utilities.Formatting
             }
 
             newLayout = controlChunk.Value as Layout;
-            if (newLayout == null) return;
+            if (newLayout != null)
+            {
+                _layout = ReferenceEquals(newLayout, Layout.Default)
+                    ? _initialLayout
+                    : _layout.Apply(newLayout);
+            }
 
-            _layout = ReferenceEquals(newLayout, Layout.Default)
-                ? _initialLayout
-                : _layout.Apply(newLayout);
+            base.OnControlChunk(controlChunk, writer, format, formatProvider);
         }
 
         /// <summary>

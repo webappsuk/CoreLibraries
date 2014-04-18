@@ -31,6 +31,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
 {
@@ -40,6 +42,12 @@ namespace WebApplications.Utilities
     [PublicAPI]
     public static class ConsoleHelper
     {
+        /// <summary>
+        /// And asynchronous lock that is used by <see cref="ConsoleBuilder"/> to synchronize write access to the underlying Console.
+        /// </summary>
+        [NotNull]
+        public static readonly AsyncLock Lock = new AsyncLock();
+
         /// <summary>
         /// Calculates whether we have a console available.
         /// </summary>

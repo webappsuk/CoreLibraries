@@ -266,5 +266,31 @@ namespace WebApplications.Utilities.Formatting
                 lb.AppendControl(layout ?? Layout.Default);
             return builder;
         }
+
+        /// <summary>
+        /// Writes the builder to the console.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        public static void ToConsole([CanBeNull] this FormatBuilder builder, [CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if ((builder == null) || (!ConsoleHelper.IsConsole)) return;
+            builder.WriteTo(Console.Out, format, formatProvider);
+        }
+
+        /// <summary>
+        /// Writes the builder to Trace.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        public static void ToTrace([CanBeNull] this FormatBuilder builder, [CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (builder == null) return;
+            builder.WriteTo(TraceTextWriter.Default, format, formatProvider);
+        }
     }
 }

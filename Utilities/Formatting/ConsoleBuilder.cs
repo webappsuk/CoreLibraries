@@ -33,6 +33,7 @@ using System.IO;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Enumerations;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -174,6 +175,18 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
+        /// Writes this instance to the console.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        public void Write([CanBeNull]string format = null, [CanBeNull]IFormatProvider formatProvider = null)
+        {
+            if (ConsoleHelper.IsConsole)
+                WriteTo(Console.Out, format, formatProvider);
+        }
+
+        /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
@@ -183,7 +196,8 @@ namespace WebApplications.Utilities.Formatting
         public override void WriteTo(TextWriter writer, string format, IFormatProvider formatProvider, int position)
         {
             // Update the layout based on the console.
-            base.WriteTo(writer, format, formatProvider, UpdateLayout());
+            using (ConsoleHelper.Lock.LockAsync().Result)
+                base.WriteTo(writer, format, formatProvider, UpdateLayout());
         }
 
         /// <summary>
@@ -194,10 +208,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="position">The position.</param>
         /// <returns>An awaitable task.</returns>
-        public override Task WriteToAsync(TextWriter writer, string format, IFormatProvider formatProvider, int position)
+        public override async Task WriteToAsync(TextWriter writer, string format, IFormatProvider formatProvider, int position)
         {
             // Update the layout based on the console.
-            return base.WriteToAsync(writer, format, formatProvider, UpdateLayout());
+            using (await ConsoleHelper.Lock.LockAsync())
+                await base.WriteToAsync(writer, format, formatProvider, UpdateLayout());
         }
 
         /// <summary>
@@ -215,70 +230,74 @@ namespace WebApplications.Utilities.Formatting
             IFormatProvider formatProvider)
         {
             // We can only change colours if we are writing to the console!
-            if (!ConsoleHelper.IsConsole)
-                return;
-
-            ConsoleColor colour;
-            /*
-             * Check for supported control tags,
-             * e.g. {ConsoleFore:Red}
-             * or {ConsoleFore} to reset.
-             */
-            if (!string.IsNullOrEmpty(controlChunk.Tag))
+            if (ConsoleHelper.IsConsole)
             {
-                // ReSharper disable once PossibleNullReferenceException
-                switch (controlChunk.Tag.ToLower())
+                ConsoleColor colour;
+                /*
+                 * Check for supported control tags,
+                 * e.g. {ConsoleFore:Red}
+                 * or {ConsoleFore} to reset.
+                 */
+                if (!string.IsNullOrEmpty(controlChunk.Tag))
                 {
-                    case "consolefore":
-                        if (string.IsNullOrEmpty(controlChunk.Format))
-                            Console.ForegroundColor = DefaultForeColour;
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        else if (TryGetColour(controlChunk.Format, out colour))
-                            Console.ForegroundColor = colour;
-                        return;
-                    case "consoleback":
-                        if (string.IsNullOrEmpty(controlChunk.Format))
-                            Console.BackgroundColor = DefaultBackColour;
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        else if (TryGetColour(controlChunk.Format, out colour))
-                            Console.BackgroundColor = colour;
-                        return;
+                    // ReSharper disable once PossibleNullReferenceException
+                    switch (controlChunk.Tag.ToLower())
+                    {
+                        case "consolefore":
+                            if (string.IsNullOrEmpty(controlChunk.Format))
+                                Console.ForegroundColor = DefaultForeColour;
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            else if (TryGetColour(controlChunk.Format, out colour))
+                                Console.ForegroundColor = colour;
+                            return;
+                        case "consoleback":
+                            if (string.IsNullOrEmpty(controlChunk.Format))
+                                Console.BackgroundColor = DefaultBackColour;
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            else if (TryGetColour(controlChunk.Format, out colour))
+                                Console.BackgroundColor = colour;
+                            return;
+                    }
+                    return;
                 }
-            }
 
-            /*
-             * Check for FormatBuilder's control chunks
-             */
-            ConsoleColourControl colourControl = controlChunk.Value as ConsoleColourControl;
-            if (colourControl != null)
-            {
-                if (colourControl.Colour == null)
+                /*
+                 * Check for FormatBuilder's control chunks
+                 */
+                ConsoleColourControl colourControl = controlChunk.Value as ConsoleColourControl;
+                if (colourControl != null)
                 {
+                    if (colourControl.Colour == null)
+                    {
+                        if (colourControl.IsForeground == TriState.Equal)
+                        {
+                            Console.BackgroundColor = DefaultBackColour;
+                            Console.ForegroundColor = DefaultForeColour;
+                        }
+                        else if (colourControl.IsForeground == TriState.Yes)
+                            Console.ForegroundColor = DefaultForeColour;
+                        else if (colourControl.IsForeground == TriState.No)
+                            Console.BackgroundColor = DefaultBackColour;
+                        return;
+                    }
+
+                    if (!TryGetColour(colourControl.Colour, out colour))
+                        return;
+
                     if (colourControl.IsForeground == TriState.Equal)
                     {
-                        Console.BackgroundColor = DefaultBackColour;
-                        Console.ForegroundColor = DefaultForeColour;
+                        Console.BackgroundColor = colour;
+                        Console.ForegroundColor = colour;
                     }
                     else if (colourControl.IsForeground == TriState.Yes)
-                        Console.ForegroundColor = DefaultForeColour;
+                        Console.ForegroundColor = colour;
                     else if (colourControl.IsForeground == TriState.No)
-                        Console.BackgroundColor = DefaultBackColour;
+                        Console.BackgroundColor = colour;
                     return;
                 }
-
-                if (!TryGetColour(colourControl.Colour, out colour))
-                    return;
-
-                if (colourControl.IsForeground == TriState.Equal)
-                {
-                    Console.BackgroundColor = colour;
-                    Console.ForegroundColor = colour;
-                }
-                else if (colourControl.IsForeground == TriState.Yes)
-                    Console.ForegroundColor = colour;
-                else if (colourControl.IsForeground == TriState.No)
-                    Console.BackgroundColor = colour;
             }
+
+            base.OnControlChunk(controlChunk, writer, format, formatProvider);
         }
     }
 }
