@@ -29,9 +29,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -50,28 +52,30 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// The first character of a fill point.
         /// </summary>
-        public const char Open = '{';
+        public const char OpenChar = '{';
 
         /// <summary>
         /// The last character of a fill point.
         /// </summary>
-        public const char Close = '}';
+        public const char CloseChar = '}';
+
+        /// <summary>
+        /// The control character precedes a tag to indicate it is a control chunk.
+        /// </summary>
+        public const char ControlChar = '!';
 
         /// <summary>
         /// The alignment character separates the tag from an alignment
         /// </summary>
-        public const char Alignment = ',';
+        public const char AlignmentChar = ',';
 
         /// <summary>
         /// The splitter character separates the tag/alignment from the format.
         /// </summary>
-        public const char Splitter = ':';
+        public const char FormatChar = ':';
 
         [NotNull]
         private readonly IReadOnlyDictionary<string, object> _values;
-
-        [NotNull]
-        private readonly IFormatProvider _formatProvider;
 
         [NotNull]
         private readonly List<FormatChunk> _chunks = new List<FormatChunk>();
@@ -83,42 +87,25 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         public FormatBuilder([CanBeNull] params object[] values)
         {
-            _formatProvider = Thread.CurrentThread.CurrentCulture;
-            _values = ToDictionary(_formatProvider, values);
+            _values = ToDictionary(values);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatBuilder" /> class.
         /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
-        public FormatBuilder([CanBeNull] IFormatProvider formatProvider, [CanBeNull] params object[] values)
+        public FormatBuilder([CanBeNull] IEnumerable<object> values)
         {
-            _formatProvider = formatProvider ?? Thread.CurrentThread.CurrentCulture;
-            _values = ToDictionary(_formatProvider, values);
+            _values = values == null ? _empty : ToDictionary(values.ToArray());
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FormatBuilder"/> class.
+        /// Initializes a new instance of the <see cref="FormatBuilder" /> class.
         /// </summary>
         /// <param name="values">The values.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        public FormatBuilder([CanBeNull] IEnumerable<object> values, [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            _formatProvider = formatProvider ?? Thread.CurrentThread.CurrentCulture;
-            _values = values == null ? _empty : ToDictionary(_formatProvider, values.ToArray());
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FormatBuilder"/> class.
-        /// </summary>
-        /// <param name="values">The values.</param>
-        /// <param name="formatProvider">The format provider.</param>
         public FormatBuilder(
-            [CanBeNull] IReadOnlyDictionary<string, object> values,
-            [CanBeNull] IFormatProvider formatProvider = null)
+            [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            _formatProvider = formatProvider ?? Thread.CurrentThread.CurrentCulture;
             _values = values == null || _values.Count < 1 ? _empty : values;
         }
         #endregion
@@ -132,17 +119,6 @@ namespace WebApplications.Utilities.Formatting
         public IReadOnlyDictionary<string, object> Values
         {
             get { return _values; }
-        }
-
-        /// <summary>
-        /// Gets the current format provider.
-        /// </summary>
-        /// <value>The format provider.</value>
-        [NotNull]
-        [PublicAPI]
-        public IFormatProvider FormatProvider
-        {
-            get { return _formatProvider; }
         }
 
         /// <summary>
@@ -162,82 +138,631 @@ namespace WebApplications.Utilities.Formatting
         {
             return GetEnumerator();
         }
-        
+
+        /// <summary>
+        /// Clears this instance.
+        /// </summary>
+        [PublicAPI]
+        public void Clear()
+        {
+            _chunks.Clear();
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is empty.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is empty; otherwise, <see langword="false" />.</value>
+        public bool IsEmpty
+        {
+            get { return _chunks.Count < 1; }
+        }
+
         #region Append overloads
         /// <summary>
-        /// Appends the specified format string.
+        /// Appends the value.
         /// </summary>
-        /// <param name="format">The format.</param>
-        /// <returns>FormatBuilder.</returns>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Append([CanBeNull] string format)
+        public FormatBuilder Append(bool value)
         {
-            return AppendInternal(format, false, _empty);
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
         }
 
         /// <summary>
-        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
+        /// Appends the value.
         /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="args">The arguments.</param>
-        /// <returns>FormatBuilder.</returns>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Append([CanBeNull] string format, [CanBeNull] params object[] args)
+        public FormatBuilder Append(sbyte value)
         {
-            return AppendInternal(format, false, ToDictionary(FormatProvider, args));
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
         }
 
         /// <summary>
-        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
+        /// Appends the value.
         /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>FormatBuilder.</returns>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Append([CanBeNull] string format, [CanBeNull] IReadOnlyDictionary<string, object> values)
+        public FormatBuilder Append(byte value)
         {
-            return AppendInternal(format, false, values ?? _empty);
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(char value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(short value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(int value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(long value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(float value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(double value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(decimal value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(ushort value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(uint value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(ulong value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append([CanBeNull]object value)
+        {
+            if (value != null)
+                _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append([CanBeNull]char[] value)
+        {
+            if ((value != null) &&
+                (value.Length > 0))
+                _chunks.Add(FormatChunk.Create(new string(value)));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="charCount">The character count.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append([CanBeNull]char[] value, int startIndex, int charCount)
+        {
+            if ((value != null) &&
+                (value.Length > 0) &&
+                (startIndex >= 0) &&
+                (charCount >= 0))
+            {
+                if (startIndex + charCount > value.Length)
+                    charCount = value.Length - startIndex;
+                _chunks.Add(FormatChunk.Create(new string(value, startIndex, charCount)));
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="repeatCount">The repeat count.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append(char value, int repeatCount)
+        {
+            if (repeatCount > 0)
+                _chunks.Add(FormatChunk.Create(new string(value, repeatCount)));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string, without additional formatting.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append([CanBeNull]string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+                _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the chunks.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append([CanBeNull]IEnumerable<FormatChunk> chunks)
+        {
+            if (chunks != null)
+                _chunks.AddRange(chunks);
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append([CanBeNull]FormatBuilder builder)
+        {
+            if (builder != null && !builder.IsEmpty)
+                _chunks.AddRange(builder);
+            return this;
         }
         #endregion
 
         #region AppendLine overloads
         /// <summary>
-        /// Appends a new line.
+        /// Appends a line.
         /// </summary>
-        /// <returns>FormatBuilder.</returns>
+        /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
         public FormatBuilder AppendLine()
         {
-            return AppendInternal(null, true, _empty);
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
         }
 
         /// <summary>
-        /// Appends the specified format string.
+        /// Appends the value.
         /// </summary>
-        /// <param name="format">The format.</param>
-        /// <returns>FormatBuilder.</returns>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendLine([CanBeNull] string format)
+        public FormatBuilder AppendLine(bool value)
         {
-            return AppendInternal(format, true, _empty);
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
         }
 
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(sbyte value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(byte value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(char value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(short value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(int value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(long value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(float value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(double value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(decimal value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(ushort value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(uint value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(ulong value)
+        {
+            _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine([CanBeNull]object value)
+        {
+            if (value != null)
+                _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine([CanBeNull]char[] value)
+        {
+            if ((value != null) &&
+                (value.Length > 0))
+                _chunks.Add(FormatChunk.Create(new string(value)));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <param name="charCount">The character count.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine([CanBeNull]char[] value, int startIndex, int charCount)
+        {
+            if ((value != null) &&
+                (value.Length > 0) &&
+                (startIndex >= 0) &&
+                (charCount >= 0))
+            {
+                if (startIndex + charCount > value.Length)
+                    charCount = value.Length - startIndex;
+                _chunks.Add(FormatChunk.Create(new string(value, startIndex, charCount)));
+            }
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="repeatCount">The repeat count.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine(char value, int repeatCount)
+        {
+            if (repeatCount > 0)
+                _chunks.Add(FormatChunk.Create(new string(value, repeatCount)));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the string, without additional formatting.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine([CanBeNull]string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+                _chunks.Add(FormatChunk.Create(value));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the chunks.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine([CanBeNull]IEnumerable<FormatChunk> chunks)
+        {
+            if (chunks != null)
+                _chunks.AddRange(chunks);
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLine([CanBeNull]FormatBuilder builder)
+        {
+            if (builder != null && !builder.IsEmpty)
+                _chunks.AddRange(builder);
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+        #endregion
+
+        #region AppendFormat overloads
         /// <summary>
         /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="args">The arguments.</param>
-        /// <returns>FormatBuilder.</returns>
+        /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendLine([CanBeNull] string format, [CanBeNull] params object[] args)
+        public FormatBuilder AppendFormat([CanBeNull] string format, [CanBeNull] params object[] args)
         {
-            return AppendInternal(format, true, ToDictionary(FormatProvider, args));
+            if (!string.IsNullOrEmpty(format))
+                AppendFormatInternal(format, ToDictionary(args));
+            return this;
         }
 
         /// <summary>
@@ -245,14 +770,77 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
-        /// <returns>FormatBuilder.</returns>
+        /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendLine(
+        public FormatBuilder AppendFormat([CanBeNull] string format, [CanBeNull] IReadOnlyDictionary<string, object> values)
+        {
+            if (!string.IsNullOrEmpty(format))
+                AppendFormatInternal(format, values ?? _empty);
+            return this;
+        }
+        #endregion
+
+        #region AppendFormatLine overloads
+        /// <summary>
+        /// Appends a new line.
+        /// </summary>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendFormatLine()
+        {
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the specified format string.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendFormatLine([CanBeNull] string format)
+        {
+            if (!string.IsNullOrEmpty(format))
+                AppendFormatInternal(format, _empty);
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendFormatLine([CanBeNull] string format, [CanBeNull] params object[] args)
+        {
+            if (!string.IsNullOrEmpty(format))
+                AppendFormatInternal(format, ToDictionary(args));
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendFormatLine(
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            return AppendInternal(format, true, values ?? _empty);
+            if (!string.IsNullOrEmpty(format))
+                AppendFormatInternal(format, values ?? _empty);
+            _chunks.Add(FormatChunk.Create(Environment.NewLine));
+            return this;
         }
         #endregion
 
@@ -260,12 +848,11 @@ namespace WebApplications.Utilities.Formatting
         /// Internal append implementation.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="addLine">if set to <see langword="true" /> [add line].</param>
         /// <param name="values">The values.</param>
         /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        private FormatBuilder AppendInternal([CanBeNull] string format, bool addLine, [NotNull] IReadOnlyDictionary<string, object> values)
+        private void AppendFormatInternal([NotNull] string format, [NotNull] IReadOnlyDictionary<string, object> values)
         {
+            Contract.Requires(format != null);
             Contract.Requires(values != null);
             values = values.Count < 1
                 ? _values
@@ -286,11 +873,6 @@ namespace WebApplications.Utilities.Formatting
                 else
                     _chunks.Add(chunk);
             }
-
-            if (addLine)
-                _chunks.Add(FormatChunk.Create(Environment.NewLine));
-
-            return this;
         }
 
         /// <summary>
@@ -312,16 +894,13 @@ namespace WebApplications.Utilities.Formatting
         /// Allows you to resolve any unresolved fill points.
         /// </summary>
         /// <param name="resolver">The resolver should return a non-null object to resolve the fill-point; otherwise <see langword="null" />.</param>
-        /// <param name="provider">The provider.</param>
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
         public FormatBuilder Resolve(
-            [CanBeNull] Func<string, object> resolver,
-            [CanBeNull] IFormatProvider provider = null)
+            [CanBeNull] Func<string, object> resolver)
         {
             if (resolver == null) return this;
-            if (provider == null) provider = FormatProvider;
 
             for (int a = 0; a < _chunks.Count; a++)
             {
@@ -337,7 +916,21 @@ namespace WebApplications.Utilities.Formatting
             }
             return this;
         }
-        
+
+        /// <summary>
+        /// Allows you to resolve any unresolved fill points.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Resolve(
+            [CanBeNull] IEnumerable<object> values)
+        {
+            if (values == null) return this;
+            return Resolve(ToDictionary(values.ToArray()));
+        }
+
         /// <summary>
         /// Allows you to resolve any unresolved fill points.
         /// </summary>
@@ -349,60 +942,21 @@ namespace WebApplications.Utilities.Formatting
         {
             if ((values == null) ||
                 (values.Length < 1)) return this;
-            IFormatProvider provider = FormatProvider;
-            return Resolve(ToDictionary(provider, values), provider);
+            return Resolve(ToDictionary(values));
         }
 
         /// <summary>
         /// Allows you to resolve any unresolved fill points.
         /// </summary>
         /// <param name="values">The values.</param>
-        /// <param name="provider">The provider.</param>
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
         public FormatBuilder Resolve(
-            [CanBeNull] IEnumerable<object> values,
-            [CanBeNull] IFormatProvider provider)
-        {
-            if (values == null) return this;
-            if (provider == null) provider = FormatProvider;
-            return Resolve(ToDictionary(provider, values.ToArray()), provider);
-        }
-
-        /// <summary>
-        /// Allows you to resolve any unresolved fill points.
-        /// </summary>
-        /// <param name="values">The values.</param>
-        /// <param name="provider">The provider.</param>
-        /// <returns>This instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public FormatBuilder Resolve(
-            [CanBeNull] IFormatProvider provider,
-            [CanBeNull] params object[] values)
-        {
-            if ((values == null) ||
-                (values.Length < 1)) return this;
-            if (provider == null) provider = FormatProvider;
-            return Resolve(ToDictionary(provider, values), provider);
-        }
-
-        /// <summary>
-        /// Allows you to resolve any unresolved fill points.
-        /// </summary>
-        /// <param name="values">The values.</param>
-        /// <param name="provider">The provider.</param>
-        /// <returns>This instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public FormatBuilder Resolve(
-            [CanBeNull] IReadOnlyDictionary<string, object> values,
-            [CanBeNull] IFormatProvider provider = null)
+            [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if ((values == null) ||
                 (values.Count < 1)) return this;
-            if (provider == null) provider = FormatProvider;
 
             for (int a = 0; a < _chunks.Count; a++)
             {
@@ -420,21 +974,18 @@ namespace WebApplications.Utilities.Formatting
         #endregion
 
         /// <summary>
-        /// Converts to dictionary lookup.
+        /// Converts the objects to a numbered dictionary lookup.
         /// </summary>
-        /// <param name="provider">The format provider.</param>
         /// <param name="values">The values.</param>
-        /// <returns>A <see cref="IReadOnlyDictionary{TKey,TValue}"/>.</returns>
+        /// <returns>A <see cref="IReadOnlyDictionary{TKey,TValue}" />.</returns>
         [NotNull]
         private static IReadOnlyDictionary<string, object> ToDictionary(
-            [NotNull] IFormatProvider provider,
             [CanBeNull] object[] values)
         {
-            Contract.Requires(provider != null);
             return values == null || values.Length < 1
                 ? _empty
                 : values
-                    .Select((v, i) => new KeyValuePair<string, object>(i.ToString(provider), v))
+                    .Select((v, i) => new KeyValuePair<string, object>(i.ToString(CultureInfo.InvariantCulture), v))
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
@@ -464,18 +1015,126 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>System.String.</returns>
-        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
+        public virtual string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
         {
-            if (formatProvider == null) formatProvider = FormatProvider;
+            using (StringWriter writer = new StringWriter())
+            {
+                WriteTo(writer, format, formatProvider);
+                return writer.ToString();
+            }
+        }
 
-            StringBuilder builder = new StringBuilder();
-            foreach (FormatChunk chunk in this)
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        public void WriteTo([CanBeNull]TextWriter writer, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            WriteTo(writer, null, formatProvider);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>An awaitable task.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteToAsync(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            return WriteToAsync(writer, null, formatProvider);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        public virtual void WriteTo([CanBeNull]TextWriter writer, [CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (writer == null) return;
+
+            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
+            StringBuilder sb = new StringBuilder();
+            foreach (FormatChunk chunk in _chunks)
             {
                 Contract.Assert(chunk != null);
-                builder.Append(chunk.ToString(format, formatProvider));
+                if (chunk.IsControl)
+                {
+                    if (sb.Length > 0)
+                    {
+                        writer.Write(sb.ToString());
+                        sb.Clear();
+                    }
+                    OnControlChunk(chunk, writer, format, formatProvider);
+                }
+                else
+                    sb.Append(chunk.ToString(format, formatProvider));
             }
 
-            return builder.ToString();
+            if (sb.Length > 0)
+                writer.Write(sb.ToString());
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" /> asynchronously.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>An awaitable task.</returns>
+        [NotNull]
+        [PublicAPI]
+        public virtual async Task WriteToAsync([CanBeNull]TextWriter writer, [CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (writer == null) return;
+
+            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
+            StringBuilder sb = new StringBuilder();
+            foreach (FormatChunk chunk in _chunks)
+            {
+                Contract.Assert(chunk != null);
+                if (chunk.IsControl)
+                {
+                    if (sb.Length > 0)
+                    {
+                        // ReSharper disable once PossibleNullReferenceException
+                        await writer.WriteAsync(sb.ToString());
+                        sb.Clear();
+                    }
+                    OnControlChunk(chunk, writer, format, formatProvider);
+                }
+                else
+                    sb.Append(chunk.ToString(format, formatProvider));
+            }
+
+            if (sb.Length > 0)
+                // ReSharper disable once PossibleNullReferenceException
+                await writer.WriteAsync(sb.ToString());
+        }
+
+        /// <summary>
+        /// Called when a control chunk is encountered.
+        /// </summary>
+        /// <param name="controlChunk">The control chunk.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        protected virtual void OnControlChunk(
+            [NotNull] FormatChunk controlChunk,
+            [NotNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider)
+        {
+            Contract.Requires(controlChunk != null);
+            Contract.Requires(writer != null);
         }
     }
 }

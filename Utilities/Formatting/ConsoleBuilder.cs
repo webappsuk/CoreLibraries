@@ -1,4 +1,4 @@
-#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -27,7 +27,10 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Enumerations;
 
@@ -36,15 +39,8 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Used to write out coloured, laid out, formatted content to the console.
     /// </summary>
-    public class ConsoleWriter : LayoutWriter
+    public class ConsoleBuilder : LayoutBuilder
     {
-        /// <summary>
-        /// The default console writer.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public static readonly ConsoleWriter Default = new ConsoleWriter();
-
         /// <summary>
         /// The custom colour names.
         /// </summary>
@@ -65,10 +61,40 @@ namespace WebApplications.Utilities.Formatting
         public static ConsoleColor DefaultBackColour;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LayoutWriter" /> class.
+        /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
         /// </summary>
-        private ConsoleWriter()
-            : base((ConsoleHelper.IsConsole ? Console.Out : null) ?? TraceTextWriter.Default)
+        /// <param name="layout">The layout.</param>
+        [PublicAPI]
+        public ConsoleBuilder(
+            [CanBeNull] Layout layout = null)
+            : base(layout)
+        {
+            UpdateLayout();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <param name="layout">The layout.</param>
+        public ConsoleBuilder(
+            [CanBeNull] IEnumerable<object> values,
+            [CanBeNull] Layout layout = null)
+            : base(values, layout)
+        {
+            UpdateLayout();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <param name="layout">The layout.</param>
+        [PublicAPI]
+        public ConsoleBuilder(
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            [CanBeNull] Layout layout = null)
+            : base(values, layout)
         {
             UpdateLayout();
         }
@@ -147,91 +173,112 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Gets a string represent of each chunk to write.
+        /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="builder">The builder.</param>
-        /// <returns>A string representation of the chunk; otherwise <see langword="null" /> to skip.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        protected override string GetString(IFormatProvider formatProvider, FormatBuilder builder)
+        public override void WriteTo(TextWriter writer, string format = null, IFormatProvider formatProvider = null)
         {
+            // Update the layout based on the console.
             UpdateLayout();
-            return base.GetString(formatProvider, builder);
+            base.WriteTo(writer, format, formatProvider);
         }
 
         /// <summary>
-        /// Gets a string represent of each chunk to write.
+        /// Writes the builder to the specified <see cref="TextWriter" /> asynchronously.
         /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>A string representation of the chunk; otherwise <see langword="null"/> to skip.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        protected override string GetChunk(IFormatProvider formatProvider, FormatChunk chunk)
+        /// <returns>An awaitable task.</returns>
+        public override Task WriteToAsync(TextWriter writer, string format = null, IFormatProvider formatProvider = null)
         {
+            // Update the layout based on the console.
+            UpdateLayout();
+            return base.WriteToAsync(writer, format, formatProvider);
+        }
+
+        /// <summary>
+        /// Called when a control chunk is encountered.
+        /// </summary>
+        /// <param name="controlChunk">The control chunk.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        protected override void OnControlChunk(
+            FormatChunk controlChunk,
+            TextWriter writer,
+            string format,
+            IFormatProvider formatProvider)
+        {
+            // We can only change colours if we are writing to the console!
+            if (!ConsoleHelper.IsConsole ||
+                writer != Console.Out)
+                return;
+
             ConsoleColor colour;
             /*
              * Check for supported control tags,
              * e.g. {ConsoleFore:Red}
              * or {ConsoleFore} to reset.
              */
-            if (!string.IsNullOrEmpty(chunk.Tag))
+            if (!string.IsNullOrEmpty(controlChunk.Tag))
             {
-                switch (chunk.Tag.ToLower())
+                // ReSharper disable once PossibleNullReferenceException
+                switch (controlChunk.Tag.ToLower())
                 {
                     case "consolefore":
-                        if (string.IsNullOrEmpty(chunk.Format))
+                        if (string.IsNullOrEmpty(controlChunk.Format))
                             Console.ForegroundColor = DefaultForeColour;
-                        else if (TryGetColour(chunk.Format, out colour))
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        else if (TryGetColour(controlChunk.Format, out colour))
                             Console.ForegroundColor = colour;
-                        return null;
+                        return;
                     case "consoleback":
-                        if (string.IsNullOrEmpty(chunk.Format))
+                        if (string.IsNullOrEmpty(controlChunk.Format))
                             Console.BackgroundColor = DefaultBackColour;
-                        else if (TryGetColour(chunk.Format, out colour))
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        else if (TryGetColour(controlChunk.Format, out colour))
                             Console.BackgroundColor = colour;
-                        return null;
+                        return;
                 }
             }
 
             /*
              * Check for FormatBuilder's control chunks
              */
-            if (chunk.IsControl)
+            ConsoleColourControl colourControl = controlChunk.Value as ConsoleColourControl;
+            if (colourControl != null)
             {
-                ConsoleColourControl colourControl = chunk.Value as ConsoleColourControl;
-                if (colourControl != null)
+                if (colourControl.Colour == null)
                 {
-                    if (colourControl.Colour == null)
-                    {
-                        if (colourControl.IsForeground == TriState.Equal)
-                        {
-                            Console.BackgroundColor = DefaultBackColour;
-                            Console.ForegroundColor = DefaultForeColour;
-                        }
-                        else if (colourControl.IsForeground == TriState.Yes)
-                            Console.ForegroundColor = DefaultForeColour;
-                        else if (colourControl.IsForeground == TriState.No)
-                            Console.BackgroundColor = DefaultBackColour;
-                        return null;
-                    }
-
-                    if (!TryGetColour(colourControl.Colour, out colour))
-                        return null;
-
                     if (colourControl.IsForeground == TriState.Equal)
                     {
-                        Console.BackgroundColor = colour;
-                        Console.ForegroundColor = colour;
+                        Console.BackgroundColor = DefaultBackColour;
+                        Console.ForegroundColor = DefaultForeColour;
                     }
                     else if (colourControl.IsForeground == TriState.Yes)
-                        Console.ForegroundColor = colour;
+                        Console.ForegroundColor = DefaultForeColour;
                     else if (colourControl.IsForeground == TriState.No)
-                        Console.BackgroundColor = colour;
+                        Console.BackgroundColor = DefaultBackColour;
+                    return;
                 }
-            }
 
-            // Use base implementation.
-            return base.GetChunk(formatProvider, chunk);
+                if (!TryGetColour(colourControl.Colour, out colour))
+                    return;
+
+                if (colourControl.IsForeground == TriState.Equal)
+                {
+                    Console.BackgroundColor = colour;
+                    Console.ForegroundColor = colour;
+                }
+                else if (colourControl.IsForeground == TriState.Yes)
+                    Console.ForegroundColor = colour;
+                else if (colourControl.IsForeground == TriState.No)
+                    Console.BackgroundColor = colour;
+            }
         }
     }
 }

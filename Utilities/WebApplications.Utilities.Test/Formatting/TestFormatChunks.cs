@@ -204,12 +204,13 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestLayout()
         {
-            ConsoleWriter.Default.Write(
-                b => b.AppendLine(ConsoleWriter.Default.Layout.ToString())
+            Trace.WriteLine(
+                new LayoutBuilder(new Layout(60, alignment:Alignment.Justify))
                     .AppendLine(FormatResources.LoremIpsum)
-                    .Append("{layout:w30}")
+                    .Append("{!layout:w50}")
                     .AppendLine(FormatResources.SedUtPerspiciatis)
-                    .AppendLine(FormatResources.AtVeroEos));
+                    .SetLayout(new Layout(40))
+                    .AppendLine(FormatResources.AtVeroEos).ToString());
         }
     }
 }

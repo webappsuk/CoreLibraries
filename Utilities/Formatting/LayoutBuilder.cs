@@ -32,6 +32,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -39,7 +40,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Lays out text written to the underlying text writer.
     /// </summary>
-    public class LayoutWriter : FormatWriter
+    public class LayoutBuilder : FormatBuilder
     {
         /// <summary>
         /// Holds an unaligned line.
@@ -259,7 +260,7 @@ namespace WebApplications.Utilities.Formatting
         /// The current layout
         /// </summary>
         [NotNull]
-        private readonly Layout _defaultLayout;
+        private readonly Layout _initialLayout;
 
         /// <summary>
         /// The current layout
@@ -271,23 +272,57 @@ namespace WebApplications.Utilities.Formatting
         private int _position;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LayoutWriter" /> class.
+        /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
         /// </summary>
-        /// <param name="writer">The writer.</param>
         /// <param name="layout">The layout.</param>
         /// <param name="startPosition">The start position, if the writer is currently not at the start of a line.</param>
         /// <param name="firstLine">if set to <see langword="true" /> the start position is on the first line.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        public LayoutWriter(
-            [NotNull] TextWriter writer,
+        public LayoutBuilder(
             [CanBeNull] Layout layout = null,
             int startPosition = 0,
-            bool firstLine = true,
-            [CanBeNull] IFormatProvider formatProvider = null)
-            : base(writer, formatProvider)
+            bool firstLine = true)
         {
-            Contract.Requires(writer != null);
-            _defaultLayout = _layout = Layout.Default.Apply(layout);
+            _initialLayout = _layout = Layout.Default.Apply(layout);
+            Contract.Assert(_layout.IsFull);
+            _position = startPosition;
+            _firstLine = firstLine;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
+        /// </summary>
+        /// <param name="layout">The layout.</param>
+        /// <param name="startPosition">The start position, if the writer is currently not at the start of a line.</param>
+        /// <param name="firstLine">if set to <see langword="true" /> the start position is on the first line.</param>
+        /// <param name="values">The values.</param>
+        public LayoutBuilder(
+            [CanBeNull] IEnumerable<object> values,
+            [CanBeNull] Layout layout = null,
+            int startPosition = 0,
+            bool firstLine = true)
+            : base(values)
+        {
+            _initialLayout = _layout = Layout.Default.Apply(layout);
+            Contract.Assert(_layout.IsFull);
+            _position = startPosition;
+            _firstLine = firstLine;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
+        /// </summary>
+        /// <param name="layout">The layout.</param>
+        /// <param name="startPosition">The start position, if the writer is currently not at the start of a line.</param>
+        /// <param name="firstLine">if set to <see langword="true" /> the start position is on the first line.</param>
+        /// <param name="values">The values.</param>
+        public LayoutBuilder(
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            [CanBeNull] Layout layout = null,
+            int startPosition = 0,
+            bool firstLine = true)
+            : base(values)
+        {
+            _initialLayout = _layout = Layout.Default.Apply(layout);
             Contract.Assert(_layout.IsFull);
             _position = startPosition;
             _firstLine = firstLine;
@@ -358,18 +393,18 @@ namespace WebApplications.Utilities.Formatting
             Optional<char> hyphenChar = default(Optional<char>))
         {
             return (_layout = _layout.Apply(
-                    width,
-                    indentSize,
-                    rightMarginSize,
-                    indentChar,
-                    firstLineIndentSize,
-                    tabStops,
-                    tabSize,
-                    tabChar,
-                    alignment,
-                    splitWords,
-                    hyphenate,
-                    hyphenChar));
+                width,
+                indentSize,
+                rightMarginSize,
+                indentChar,
+                firstLineIndentSize,
+                tabStops,
+                tabSize,
+                tabChar,
+                alignment,
+                splitWords,
+                hyphenate,
+                hyphenChar));
         }
 
         /// <summary>
@@ -386,21 +421,55 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
+        /// Splits the chunks on control chunks.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <returns>An enumeration of chunks.</returns>
+        [NotNull]
+        private static IEnumerable<FormatChunk[]> SplitChunks(
+            [NotNull] IEnumerable<FormatChunk> chunks)
+        {
+            Contract.Requires(chunks != null);
+            List<FormatChunk> output = new List<FormatChunk>();
+            foreach (FormatChunk chunk in chunks)
+            {
+                Contract.Assert(chunk != null);
+                if (!chunk.IsControl)
+                {
+                    output.Add(chunk);
+                    continue;
+                }
+
+                if (output.Count > 0)
+                {
+                    yield return output.ToArray();
+                    output.Clear();
+                }
+                yield return new[] { chunk };
+            }
+            if (output.Count > 0)
+                yield return output.ToArray();
+        }
+
+        /// <summary>
         /// Gets the line chunks from a set of chunks.
         /// </summary>
         /// <param name="chunks">The chunks.</param>
+        /// <param name="format">The format.</param>
         /// <param name="provider">The format provider.</param>
         /// <returns>An enumeration of chunks.</returns>
         [NotNull]
         private static IEnumerable<string> GetLineChunks(
-            [NotNull] IEnumerable<string> chunks,
-            [NotNull] IFormatProvider provider)
+            [NotNull] IEnumerable<FormatChunk> chunks,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider provider)
         {
             Contract.Requires(chunks != null);
-            Contract.Requires(provider != null);
             StringBuilder word = new StringBuilder();
             bool lastCharR = false;
             foreach (char ch in chunks
+                // ReSharper disable once PossibleNullReferenceException
+                .Select(chunk => chunk.ToString(format, provider))
                 .Where(chunk => !string.IsNullOrEmpty(chunk))
                 .SelectMany(ch => ch))
             {
@@ -448,7 +517,11 @@ namespace WebApplications.Utilities.Formatting
 
             // Create the first line, if we're part way through a line then we cannot align the remainder of the line.
             Line line = _position > 0
-                ? new Line(layout, Alignment.None, _position, layout.Width.Value - layout.RightMarginSize.Value)
+                ? new Line(
+                    layout,
+                    Alignment.None,
+                    _position,
+                    layout.Width.Value - layout.RightMarginSize.Value)
                 : new Line(
                     layout,
                     layout.Alignment.Value,
@@ -675,69 +748,119 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Gets a string represent of each chunk to write.
+        /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="builder">The builder.</param>
-        /// <returns>A string representation of the chunk; otherwise <see langword="null" /> to skip.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        protected override string GetString(IFormatProvider formatProvider, FormatBuilder builder)
+        [PublicAPI]
+        public override void WriteTo(TextWriter writer, string format = null, IFormatProvider formatProvider = null)
         {
+            if (writer == null) return;
             StringBuilder sb = new StringBuilder();
-            if (formatProvider == null)
-                formatProvider = FormatProvider;
-            foreach (string line in Align(
-                GetLines(
-                    GetLineChunks(
-                // ReSharper disable once AssignNullToNotNullAttribute
-                        builder.Select(c => GetChunk(formatProvider, c)),
-                        formatProvider))))
-                sb.Append(line);
-            return sb.ToString();
+            // Get sections based on control codes
+            foreach (FormatChunk[] section in SplitChunks(this))
+            {
+                Contract.Assert(section != null);
+                Contract.Assert(section[0] != null);
+                if (section.Length < 2 &&
+                    section[0].IsControl)
+                {
+                    if (sb.Length > 0)
+                    {
+                        writer.Write(sb.ToString());
+                        sb.Clear();
+                    }
+                    OnControlChunk(section[0], writer, format, formatProvider);
+                }
+                else
+                    foreach (string line in Align(GetLines(GetLineChunks(section, format, formatProvider))))
+                        sb.Append(line);
+            }
+
+            if (sb.Length > 0)
+                writer.Write(sb.ToString());
+
+            // Restore the initial layout, in case someone tries to write us out again.
+            _layout = _initialLayout;
+        }
+
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" /> asynchronously.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>An awaitable task.</returns>
+        [PublicAPI]
+        public override async Task WriteToAsync(
+            TextWriter writer,
+            string format = null,
+            IFormatProvider formatProvider = null)
+        {
+            if (writer == null) return;
+
+            StringBuilder sb = new StringBuilder();
+            // Get sections based on control codes
+            foreach (FormatChunk[] section in SplitChunks(this))
+            {
+                Contract.Assert(section != null);
+                Contract.Assert(section[0] != null);
+                if (section.Length < 2 &&
+                    section[0].IsControl)
+                {
+                    if (sb.Length > 0)
+                    {
+                        // ReSharper disable once PossibleNullReferenceException
+                        await writer.WriteAsync(sb.ToString());
+                        sb.Clear();
+                    }
+                    OnControlChunk(section[0], writer, format, formatProvider);
+                }
+                else
+                    foreach (string line in Align(GetLines(GetLineChunks(section, format, formatProvider))))
+                        sb.Append(line);
+            }
+
+            if (sb.Length > 0)
+                // ReSharper disable once PossibleNullReferenceException
+                await writer.WriteAsync(sb.ToString());
+            
+            // Restore the initial layout, in case someone tries to write us out again.
+            _layout = _initialLayout;
         }
 
         /// <summary>
-        /// Gets a string represent of each chunk to write.
+        /// Called when a control chunk is encountered.
         /// </summary>
+        /// <param name="controlChunk">The control chunk.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>A string representation of the chunk; otherwise <see langword="null"/> to skip.</returns>
-        [CanBeNull]
-        protected virtual string GetChunk([NotNull] IFormatProvider formatProvider, [NotNull] FormatChunk chunk)
+        // ReSharper disable once CodeAnnotationAnalyzer
+        protected override void OnControlChunk(
+            FormatChunk controlChunk,
+            TextWriter writer,
+            string format,
+            IFormatProvider formatProvider)
         {
-            Contract.Requires(formatProvider != null);
-            Contract.Requires(chunk != null);
             Layout newLayout;
-            /*
-             * Check for supported control tags,
-             * e.g. {Layout:w30}
-             * or {Layout} to reset.
-             */
-            if (string.Equals(chunk.Tag, "layout", StringComparison.InvariantCultureIgnoreCase))
+            if (string.Equals(controlChunk.Tag, "layout", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (string.IsNullOrEmpty(chunk.Format))
-                    _layout = _defaultLayout;
-                else if (Layout.TryParse(chunk.Format, out newLayout))
+                if (string.IsNullOrEmpty(controlChunk.Format))
+                    _layout = _initialLayout;
+                else if (Layout.TryParse(controlChunk.Format, out newLayout))
                     _layout = _layout.Apply(newLayout);
-                return null;
+                return;
             }
 
-            /*
-             * Check for FormatBuilder's control chunks
-             */
-            if (chunk.IsControl)
-            {
-                newLayout = chunk.Value as Layout;
-                if (newLayout != null)
-                {
-                    _layout = ReferenceEquals(newLayout, Layout.Default)
-                        ? _defaultLayout
-                        : _layout.Apply(newLayout);
-                    return null;
-                }
-            }
+            newLayout = controlChunk.Value as Layout;
+            if (newLayout == null) return;
 
-            return chunk.ToString(null, formatProvider);
+            _layout = ReferenceEquals(newLayout, Layout.Default)
+                ? _initialLayout
+                : _layout.Apply(newLayout);
         }
     }
 }

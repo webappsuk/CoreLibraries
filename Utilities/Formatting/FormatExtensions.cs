@@ -57,7 +57,7 @@ namespace WebApplications.Utilities.Formatting
             if (String.IsNullOrEmpty(format))
                 yield break;
 
-            StringBuilder chunk = new StringBuilder((int) (format.Length * 1.2));
+            StringBuilder chunk = new StringBuilder((int)(format.Length * 1.2));
             bool inFillPoint = false;
             int i = 0;
             while (i < format.Length)
@@ -65,11 +65,11 @@ namespace WebApplications.Utilities.Formatting
                 char c = format[i++];
                 if (!inFillPoint)
                 {
-                    if (c != FormatBuilder.Open)
+                    if (c != FormatBuilder.OpenChar)
                     {
-                        if (c != FormatBuilder.Close ||
+                        if (c != FormatBuilder.CloseChar ||
                             (chunk.Length < 1) ||
-                            (chunk[chunk.Length - 1] != FormatBuilder.Close))
+                            (chunk[chunk.Length - 1] != FormatBuilder.CloseChar))
                             chunk.Append(c);
                         continue;
                     }
@@ -87,9 +87,9 @@ namespace WebApplications.Utilities.Formatting
                 }
 
                 chunk.Append(c);
-                if (c != FormatBuilder.Close)
+                if (c != FormatBuilder.CloseChar)
                 {
-                    if (c == FormatBuilder.Open)
+                    if (c == FormatBuilder.OpenChar)
                         inFillPoint = false;
                     continue;
                 }
@@ -111,12 +111,15 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleResetColours([NotNull] this FormatBuilder builder)
         {
-            Contract.Requires(builder != null);
-            return !ConsoleHelper.IsConsole
-                ? builder
-                : builder.AppendControl(ConsoleColourControl.Reset);
+            if (!ConsoleHelper.IsConsole) return builder;
+
+            ConsoleBuilder cb = builder as ConsoleBuilder;
+            if (cb != null)
+                builder.AppendControl(ConsoleColourControl.Reset);
+            return builder;
         }
 
         /// <summary>
@@ -126,12 +129,15 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleResetForeColour([NotNull] this FormatBuilder builder)
         {
-            Contract.Requires(builder != null);
-            return !ConsoleHelper.IsConsole
-                ? builder
-                : builder.AppendControl(ConsoleColourControl.ResetForeground);
+            if (!ConsoleHelper.IsConsole) return builder;
+
+            ConsoleBuilder cb = builder as ConsoleBuilder;
+            if (cb != null)
+                builder.AppendControl(ConsoleColourControl.ResetForeground);
+            return builder;
         }
 
         /// <summary>
@@ -142,12 +148,15 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleForeColour([NotNull] this FormatBuilder builder, ConsoleColor colour)
         {
-            Contract.Requires(builder != null);
-            return !ConsoleHelper.IsConsole
-                ? builder
-                : builder.AppendControl(new ConsoleColourControl(TriState.True, colour.ToString()));
+            if (!ConsoleHelper.IsConsole) return builder;
+
+            ConsoleBuilder cb = builder as ConsoleBuilder;
+            if (cb != null)
+                builder.AppendControl(new ConsoleColourControl(TriState.True, colour.ToString()));
+            return builder;
         }
 
         /// <summary>
@@ -158,12 +167,15 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleForeColour([NotNull] this FormatBuilder builder, [CanBeNull] string colour)
         {
-            Contract.Requires(builder != null);
-            return !ConsoleHelper.IsConsole
-                ? builder
-                : builder.AppendControl(new ConsoleColourControl(TriState.True, colour));
+            if (!ConsoleHelper.IsConsole) return builder;
+
+            ConsoleBuilder cb = builder as ConsoleBuilder;
+            if (cb != null)
+                builder.AppendControl(new ConsoleColourControl(TriState.True, colour));
+            return builder;
         }
 
         /// <summary>
@@ -173,12 +185,15 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleResetBackColour([NotNull] this FormatBuilder builder)
         {
-            Contract.Requires(builder != null);
-            return !ConsoleHelper.IsConsole
-                ? builder
-                : builder.AppendControl(ConsoleColourControl.ResetBackground);
+            if (!ConsoleHelper.IsConsole) return builder;
+
+            ConsoleBuilder cb = builder as ConsoleBuilder;
+            if (cb != null)
+                builder.AppendControl(ConsoleColourControl.ResetBackground);
+            return builder;
         }
 
         /// <summary>
@@ -189,12 +204,15 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleBackColour([NotNull] this FormatBuilder builder, ConsoleColor colour)
         {
-            Contract.Requires(builder != null);
-            return !ConsoleHelper.IsConsole
-                ? builder
-                : builder.AppendControl(new ConsoleColourControl(TriState.False, colour.ToString()));
+            if (!ConsoleHelper.IsConsole) return builder;
+
+            ConsoleBuilder cb = builder as ConsoleBuilder;
+            if (cb != null)
+                builder.AppendControl(new ConsoleColourControl(TriState.False, colour.ToString()));
+            return builder;
         }
 
         /// <summary>
@@ -205,12 +223,15 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleBackColour([NotNull] this FormatBuilder builder, [CanBeNull] string colour)
         {
-            Contract.Requires(builder != null);
-            return !ConsoleHelper.IsConsole
-                ? builder
-                : builder.AppendControl(new ConsoleColourControl(TriState.False, colour));
+            if (!ConsoleHelper.IsConsole) return builder;
+
+            ConsoleBuilder cb = builder as ConsoleBuilder;
+            if (cb != null)
+                builder.AppendControl(new ConsoleColourControl(TriState.False, colour));
+            return builder;
         }
 
         /// <summary>
@@ -220,23 +241,30 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ResetLayout([NotNull] this FormatBuilder builder)
         {
-            Contract.Requires(builder != null);
-            return builder.AppendControl(Layout.Default);
+            LayoutBuilder lb = builder as LayoutBuilder;
+            if (lb != null)
+                lb.AppendControl(Layout.Default);
+            return builder;
         }
 
         /// <summary>
         /// Sets the layout (if outputting to a layout writer).
         /// </summary>
         /// <param name="builder">The builder.</param>
+        /// <param name="layout">The layout.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder SetLayout([NotNull] this FormatBuilder builder, [CanBeNull] Layout layout)
         {
-            Contract.Requires(builder != null);
-            return builder.AppendControl(layout ?? Layout.Default);
+            LayoutBuilder lb = builder as LayoutBuilder;
+            if (lb != null)
+                lb.AppendControl(layout ?? Layout.Default);
+            return builder;
         }
     }
 }

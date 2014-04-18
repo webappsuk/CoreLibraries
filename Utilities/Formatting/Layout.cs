@@ -95,7 +95,7 @@ namespace WebApplications.Utilities.Formatting
         public readonly Optional<ushort> FirstLineIndentSize;
 
         /// <summary>
-        /// The tab stops, only valid for <see cref="T:Alignment.Left"/> and <see cref="T:Alignment.None"/>.
+        /// The tab stops, only valid for <see cref="T:AlignmentChar.Left"/> and <see cref="T:AlignmentChar.None"/>.
         /// </summary>
         [PublicAPI]
         public readonly Optional<IEnumerable<ushort>> TabStops;

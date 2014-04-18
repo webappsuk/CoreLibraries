@@ -26,9 +26,12 @@
 #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -496,6 +499,56 @@ namespace WebApplications.Utilities.Formatting
             if (!_isOpen)
                 throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
             _builder.AppendFormatLine(format, arg0, arg1, arg2);
+        }
+
+        /// <summary>
+        /// Writes the specified chunks.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        public void Write([CanBeNull]IEnumerable<FormatChunk> chunks)
+        {
+            if (!_isOpen)
+                throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
+            _builder.Append(chunks);
+        }
+
+        /// <summary>
+        /// Writes the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        public void Write([CanBeNull]FormatBuilder builder)
+        {
+            if (!_isOpen)
+                throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
+            _builder.Append(builder);
+        }
+
+        /// <summary>
+        /// Writes the specified chunks.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteAsync([CanBeNull]IEnumerable<FormatChunk> chunks)
+        {
+            if (!_isOpen)
+                throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
+            _builder.Append(chunks);
+            return TaskResult.Completed;
+        }
+
+        /// <summary>
+        /// Writes the specified builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteAsync([CanBeNull]FormatBuilder builder)
+        {
+            if (!_isOpen)
+                throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
+            _builder.Append(builder);
+            return TaskResult.Completed;
         }
 
         /// <summary>
