@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
-using System.Runtime.Remoting.Messaging;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Enumerations;
 
@@ -77,24 +76,20 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Updates the layout.
         /// </summary>
-        [PublicAPI]
-        public void UpdateLayout()
+        private void UpdateLayout()
         {
             if (ConsoleHelper.IsConsole)
             {
                 // Grab the default colours.
-                using (Lock.LockAsync().Result)
-                {
-                    ConsoleColor fc = Console.ForegroundColor;
-                    ConsoleColor bc = Console.BackgroundColor;
+                ConsoleColor fc = Console.ForegroundColor;
+                ConsoleColor bc = Console.BackgroundColor;
 
-                    Console.ResetColor();
-                    DefaultForeColour = Console.ForegroundColor;
-                    DefaultBackColour = Console.BackgroundColor;
+                Console.ResetColor();
+                DefaultForeColour = Console.ForegroundColor;
+                DefaultBackColour = Console.BackgroundColor;
 
-                    Console.ForegroundColor = fc;
-                    Console.BackgroundColor = bc;
-                }
+                Console.ForegroundColor = fc;
+                Console.BackgroundColor = bc;
 
                 // Update the width
                 int width = Console.BufferWidth;
@@ -149,6 +144,19 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(name != null);
             return _customColours.TryRemove(name, out colour);
+        }
+
+        /// <summary>
+        /// Gets a string represent of each chunk to write.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="builder">The builder.</param>
+        /// <returns>A string representation of the chunk; otherwise <see langword="null" /> to skip.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        protected override string GetString(IFormatProvider formatProvider, FormatBuilder builder)
+        {
+            UpdateLayout();
+            return base.GetString(formatProvider, builder);
         }
 
         /// <summary>

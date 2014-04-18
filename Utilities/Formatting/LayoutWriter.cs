@@ -357,8 +357,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>))
         {
-            using (Lock.LockAsync().Result)
-                return (_layout = _layout.Apply(
+            return (_layout = _layout.Apply(
                     width,
                     indentSize,
                     rightMarginSize,
@@ -383,8 +382,7 @@ namespace WebApplications.Utilities.Formatting
         public Layout ApplyLayout([CanBeNull] Layout layout)
         {
             if (layout == null) return _layout;
-            using (Lock.LockAsync().Result)
-                return (_layout = _layout.Apply(layout));
+            return (_layout = _layout.Apply(layout));
         }
 
         /// <summary>
@@ -683,7 +681,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="builder">The builder.</param>
         /// <returns>A string representation of the chunk; otherwise <see langword="null" /> to skip.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        protected override sealed string GetString(IFormatProvider formatProvider, FormatBuilder builder)
+        protected override string GetString(IFormatProvider formatProvider, FormatBuilder builder)
         {
             StringBuilder sb = new StringBuilder();
             if (formatProvider == null)

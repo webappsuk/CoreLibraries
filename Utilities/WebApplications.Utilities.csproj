@@ -202,6 +202,7 @@
     <Compile Include="Formatting\FormatBuilder.cs" />
     <Compile Include="Formatting\FormatChunk.cs" />
     <Compile Include="Formatting\FormatExtensions.cs" />
+    <Compile Include="Formatting\FormattedStreamWriter.cs" />
     <Compile Include="Formatting\FormatWriter.cs" />
     <Compile Include="Formatting\LayoutWriter.cs" />
     <Compile Include="Formatting\Layout.cs" />

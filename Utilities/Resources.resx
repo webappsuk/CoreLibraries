@@ -405,4 +405,7 @@
   <data name="CombGuid_InvalidDateTime_TooEarly" xml:space="preserve">
     <value>The date time supplied to a CombGuid cannot be before '{0}' UTC.</value>
   </data>
+  <data name="FormatWriter_IsClosed" xml:space="preserve">
+    <value>Cannot write to a closed FormatWriter.</value>
+  </data>
 </root>
