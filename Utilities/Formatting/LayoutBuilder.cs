@@ -678,9 +678,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0)
                         {
-                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
-                            int o = (int) Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
+                            decimal space = (decimal)(line.End - line.LastWordLength - line.Start) / remaining;
+                            int o = (int)Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
                         }
                         break;
                     default:
@@ -774,6 +774,8 @@ namespace WebApplications.Utilities.Formatting
             int position)
         {
             if (writer == null) return;
+
+            if (position < 0) position = 0;
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
             foreach (
@@ -836,6 +838,7 @@ namespace WebApplications.Utilities.Formatting
         {
             if (writer == null) return;
 
+            if (position < 0) position = 0;
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
             foreach (
@@ -895,6 +898,49 @@ namespace WebApplications.Utilities.Formatting
             _layout = ReferenceEquals(newLayout, Layout.Default)
                 ? _initialLayout
                 : _layout.Apply(newLayout);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The start position.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(int position)
+        {
+            return ToString(position, null, null);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The start position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(int position, [CanBeNull] IFormatProvider formatProvider)
+        {
+            return ToString(position, null, formatProvider);
+        }
+
+        /// <summary>
+        /// To the string.
+        /// </summary>
+        /// <param name="position">The start position.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>System.String.</returns>
+        [NotNull]
+        [PublicAPI]
+        public virtual string ToString(int position, [CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                WriteTo(writer, format, formatProvider, position);
+                return writer.ToString();
+            }
         }
     }
 }

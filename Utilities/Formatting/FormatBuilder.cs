@@ -1004,6 +1004,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
         [NotNull]
+        [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider)
         {
             return ToString(null, formatProvider);
