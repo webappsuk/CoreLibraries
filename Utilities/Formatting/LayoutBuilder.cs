@@ -50,8 +50,36 @@ namespace WebApplications.Utilities.Formatting
             [NotNull]
             private readonly List<string> _chunks = new List<string>();
 
-            [NotNull]
-            private readonly List<FormatChunk> _controls = new List<FormatChunk>();
+            /// <summary>
+            /// The control chunk
+            /// </summary>
+            [CanBeNull]
+            private FormatChunk _controlChunk;
+
+            /// <summary>
+            /// Gets the control chunk.
+            /// </summary>
+            /// <value>
+            /// The control chunk.
+            /// </value>
+            [CanBeNull]
+            [PublicAPI]
+            public FormatChunk ControlChunk
+            {
+                get { return _controlChunk; }
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether this line has a control chunk.
+            /// </summary>
+            /// <value>
+            /// <see langword="true" /> if this line has a control chunk; otherwise, <see langword="false" />.
+            /// </value>
+            [PublicAPI]
+            public bool IsControl
+            {
+                get { return _controlChunk != null; }
+            }
 
             /// <summary>
             /// The layout for the line.
@@ -81,6 +109,12 @@ namespace WebApplications.Utilities.Formatting
             public readonly int End;
 
             /// <summary>
+            /// Indicates if this line is the first line of a paragraph.
+            /// </summary>
+            [PublicAPI]
+            public readonly bool IsFirstLine;
+
+            /// <summary>
             /// The line length.
             /// </summary>
             private int _length;
@@ -95,7 +129,8 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="alignment">The alignment.</param>
             /// <param name="start">The start.</param>
             /// <param name="end">The end.</param>
-            public Line([NotNull] Layout layout, Alignment alignment, int start, int end)
+            /// <param name="isFirstLine">if set to <see langword="true" /> this line is the first line of a paragraph.</param>
+            public Line([NotNull] Layout layout, Alignment alignment, int start, int end, bool isFirstLine)
             {
                 Contract.Requires(layout != null);
                 Contract.Requires(start < end);
@@ -103,6 +138,7 @@ namespace WebApplications.Utilities.Formatting
                 _alignment = alignment;
                 Start = start;
                 End = end;
+                IsFirstLine = isFirstLine;
             }
 
             /// <summary>
@@ -169,6 +205,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Requires(chunk != null);
                 Contract.Requires(chunk.Length > 0);
+                Contract.Requires(!IsControl);
                 _chunks.Add(chunk);
                 _length += chunk.Length;
             }
@@ -178,22 +215,13 @@ namespace WebApplications.Utilities.Formatting
             /// </summary>
             /// <param name="chunk">The chunk.</param>
             [PublicAPI]
-            public void AddControl([NotNull] FormatChunk chunk)
+            public void SetControl([NotNull] FormatChunk chunk)
             {
                 Contract.Requires(chunk != null);
                 Contract.Requires(chunk.IsControl);
+                Contract.Requires(!IsControl);
                 _chunks.Add(null);
-                _controls.Add(chunk);
-            }
-
-            /// <summary>
-            /// Gets the controls.
-            /// </summary>
-            /// <value>The controls.</value>
-            [NotNull]
-            public IEnumerable<FormatChunk> Controls
-            {
-                get { return _controls; }
+                _controlChunk = chunk;
             }
 
             /// <summary>
@@ -298,8 +326,7 @@ namespace WebApplications.Utilities.Formatting
         /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
         /// </summary>
         /// <param name="layout">The layout.</param>
-        public LayoutBuilder(
-            [CanBeNull] Layout layout = null)
+        public LayoutBuilder([CanBeNull] Layout layout = null)
         {
             _initialLayout = _layout = Layout.Default.Apply(layout);
             Contract.Assert(_layout.IsFull);
@@ -311,7 +338,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <param name="layout">The layout.</param>
         public LayoutBuilder(
-            [CanBeNull] IEnumerable<object> values,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values,
             [CanBeNull] Layout layout = null)
             : base(values)
         {
@@ -360,7 +387,10 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="splitWords">The split words.</param>
         /// <param name="hyphenate">The hyphenate.</param>
         /// <param name="hyphenChar">The hyphen character.</param>
-        /// <returns>Layout.</returns>
+        /// <param name="wrapMode">The line wrap mode.</param>
+        /// <returns>
+        /// Layout.
+        /// </returns>
         [PublicAPI]
         [NotNull]
         public Layout ApplyLayout(
@@ -375,7 +405,8 @@ namespace WebApplications.Utilities.Formatting
             Optional<Alignment> alignment = default(Optional<Alignment>),
             Optional<bool> splitWords = default(Optional<bool>),
             Optional<bool> hyphenate = default(Optional<bool>),
-            Optional<char> hyphenChar = default(Optional<char>))
+            Optional<char> hyphenChar = default(Optional<char>),
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
             return (_layout = _layout.Apply(
                 width,
@@ -389,7 +420,8 @@ namespace WebApplications.Utilities.Formatting
                 alignment,
                 splitWords,
                 hyphenate,
-                hyphenChar));
+                hyphenChar,
+                wrapMode));
         }
 
         /// <summary>
@@ -414,7 +446,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>An enumeration of chunks.</returns>
         [NotNull]
         private static Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> GetLineChunks(
-            [NotNull] IEnumerable<FormatChunk> chunks,
+            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider provider)
         {
@@ -502,12 +534,14 @@ namespace WebApplications.Utilities.Formatting
                     layout,
                     Alignment.None,
                     position,
-                    layout.Width.Value - layout.RightMarginSize.Value)
+                    layout.Width.Value - layout.RightMarginSize.Value,
+                    false)
                 : new Line(
                     layout,
                     layout.Alignment.Value,
                     layout.FirstLineIndentSize.Value,
-                    layout.Width.Value - layout.RightMarginSize.Value);
+                    layout.Width.Value - layout.RightMarginSize.Value,
+                    true);
             bool firstLine = false;
 
             bool splitWords = layout.SplitWords.Value;
@@ -518,6 +552,7 @@ namespace WebApplications.Utilities.Formatting
 
             string word = null;
             bool newLine = false;
+
             do
             {
                 // Check if we need to start a new line.
@@ -533,7 +568,8 @@ namespace WebApplications.Utilities.Formatting
                         layout,
                         layout.Alignment.Value,
                         firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
-                        layout.Width.Value - layout.RightMarginSize.Value);
+                        layout.Width.Value - layout.RightMarginSize.Value,
+                        firstLine);
                     firstLine = false;
                     splitWords = layout.SplitWords.Value;
                     hyphenate = layout.Hyphenate.Value ? 1 : 0;
@@ -563,7 +599,24 @@ namespace WebApplications.Utilities.Formatting
                         bool success = controlEnumerator.MoveNext();
                         Contract.Assert(success);
                         Contract.Assert(controlEnumerator.Current != null);
-                        line.AddControl(controlEnumerator.Current);
+                        line.SetControl(controlEnumerator.Current);
+
+                        line.Finish(false, false);
+                        yield return line;
+
+                        firstLine = line.IsFirstLine;
+
+                        // Start a new line
+                        layout = _layout;
+                        line = new Line(
+                            layout,
+                            layout.Alignment.Value,
+                            firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
+                            layout.Width.Value - layout.RightMarginSize.Value,
+                            firstLine);
+                        firstLine = false;
+                        splitWords = layout.SplitWords.Value;
+                        hyphenate = layout.Hyphenate.Value ? 1 : 0;
                     } while (true);
 
                 char c = word[0];
@@ -655,7 +708,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns>An enumeration of terminated lines, laid out for writing.</returns>
         [NotNull]
-        private IEnumerable<FormatChunk> Align([NotNull] IEnumerable<Line> lines, int position)
+        private IEnumerable<FormatChunk> Align([NotNull] [InstantHandle] IEnumerable<Line> lines, int position)
         {
             Contract.Requires(lines != null);
             StringBuilder lb = new StringBuilder(_layout.Width.Value);
@@ -663,6 +716,13 @@ namespace WebApplications.Utilities.Formatting
             foreach (Line line in lines)
             {
                 Contract.Assert(line != null);
+
+                if (line.IsControl)
+                {
+                    yield return line.ControlChunk;
+                    continue;
+                }
+
                 char indentChar = line.Layout.IndentChar.Value;
                 int indent;
                 Queue<int> spacers = null;
@@ -684,9 +744,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0)
                         {
-                            decimal space = (decimal)(line.End - line.LastWordLength - line.Start) / remaining;
-                            int o = (int)Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
+                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
+                            int o = (int) Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
                         }
                         break;
                     default:
@@ -700,23 +760,9 @@ namespace WebApplications.Utilities.Formatting
                     lb.Append(indentChar, indent);
 
                 int p = 0;
-                IEnumerator<FormatChunk> controlEnumerator = line.Controls.GetEnumerator();
                 foreach (string chunk in line)
                 {
-                    if (string.IsNullOrEmpty(chunk))
-                    {
-                        // We got a control chunk, so need to split line
-                        if (lb.Length > 0)
-                        {
-                            yield return FormatChunk.Create(lb.ToString());
-                            lb.Clear();
-                        }
-                        bool success = controlEnumerator.MoveNext();
-                        Contract.Assert(success);
-                        Contract.Assert(controlEnumerator.Current != null);
-                        yield return controlEnumerator.Current;
-                        continue;
-                    }
+                    Contract.Assert(!string.IsNullOrEmpty(chunk));
 
                     lb.Append(chunk);
 
@@ -739,7 +785,24 @@ namespace WebApplications.Utilities.Formatting
 
                 // Add any remaining justification spaces
                 if (line.Terminated)
-                    lb.AppendLine();
+                {
+                    switch (line.Layout.WrapMode.Value)
+                    {
+                        case LayoutWrapMode.NewLine:
+                            lb.AppendLine();
+                            break;
+                        case LayoutWrapMode.NewLineOnShort:
+                            if (lb.Length < line.Layout.Width.Value)
+                                lb.AppendLine();
+                            break;
+                        case LayoutWrapMode.PadToWrap:
+                            lb.Append(line.Layout.IndentChar.Value, line.Layout.Width.Value - lb.Length);
+                            break;
+                        default:
+                            Contract.Assert(false);
+                            break;
+                    }
+                }
                 else if ((spacers != null) &&
                          (spacers.Count > 0))
                     lb.Append(indentChar, spacers.Count);
@@ -900,11 +963,9 @@ namespace WebApplications.Utilities.Formatting
 
             newLayout = controlChunk.Value as Layout;
             if (newLayout != null)
-            {
                 _layout = ReferenceEquals(newLayout, Layout.Default)
                     ? _initialLayout
                     : _layout.Apply(newLayout);
-            }
 
             base.OnControlChunk(controlChunk, writer, format, formatProvider);
         }
@@ -943,7 +1004,10 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>System.String.</returns>
         [NotNull]
         [PublicAPI]
-        public virtual string ToString(int position, [CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
+        public virtual string ToString(
+            int position,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider)
         {
             using (StringWriter writer = new StringWriter())
             {

@@ -35,7 +35,7 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
-    /// Defines a layout for use with a <see cref="LayoutWriter"/>.
+    /// Defines a layout for use with a <see cref="LayoutBuilder"/>.
     /// </summary>
     public class Layout : IFormattable
     {
@@ -55,7 +55,8 @@ namespace WebApplications.Utilities.Formatting
             Formatting.Alignment.Left,
             false,
             false,
-            '-');
+            '-',
+            LayoutWrapMode.NewLine);
 
         /// <summary>
         /// The empty layout makes no changes.
@@ -138,6 +139,12 @@ namespace WebApplications.Utilities.Formatting
         public readonly Optional<char> HyphenChar;
 
         /// <summary>
+        /// The line wrap mode
+        /// </summary>
+        [PublicAPI]
+        public readonly Optional<LayoutWrapMode> WrapMode;
+
+        /// <summary>
         /// Gets a value indicating whether this <see cref="Layout"/> is complete.
         /// </summary>
         /// <value><see langword="true" /> if full; otherwise, <see langword="false" />.</value>
@@ -158,7 +165,8 @@ namespace WebApplications.Utilities.Formatting
                        Alignment.IsAssigned &&
                        SplitWords.IsAssigned &&
                        Hyphenate.IsAssigned &&
-                       HyphenChar.IsAssigned;
+                       HyphenChar.IsAssigned &&
+                       WrapMode.IsAssigned;
             }
         }
 
@@ -177,6 +185,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="splitWords">if set to <see langword="true" /> then words will split across lines.</param>
         /// <param name="hyphenate">if set to <see langword="true" /> [hyphenate].</param>
         /// <param name="hyphenChar">The hyphenation character.</param>
+        /// <param name="wrapMode">The line wrap mode.</param>
         public Layout(
             Optional<ushort> width = default(Optional<ushort>),
             Optional<byte> indentSize = default(Optional<byte>),
@@ -189,7 +198,8 @@ namespace WebApplications.Utilities.Formatting
             Optional<Alignment> alignment = default(Optional<Alignment>),
             Optional<bool> splitWords = default(Optional<bool>),
             Optional<bool> hyphenate = default(Optional<bool>),
-            Optional<char> hyphenChar = default(Optional<char>))
+            Optional<char> hyphenChar = default(Optional<char>),
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
             // Normalize margins
             if (width.IsAssigned)
@@ -197,7 +207,7 @@ namespace WebApplications.Utilities.Formatting
                 if (width.Value < 1)
                     width = 1;
 
-                byte w = (byte) (width.Value - 1);
+                byte w = (byte)(width.Value - 1);
                 if (indentSize.IsAssigned &&
                     indentSize.Value > w)
                     indentSize = w;
@@ -208,14 +218,14 @@ namespace WebApplications.Utilities.Formatting
                 {
                     if (indentSize.IsAssigned &&
                         rightMarginSize.Value > w - indentSize.Value)
-                        rightMarginSize = (byte) (w - indentSize.Value);
+                        rightMarginSize = (byte)(w - indentSize.Value);
                     if (firstLineIndentSize.IsAssigned &&
                         rightMarginSize.Value > w - firstLineIndentSize.Value)
-                        rightMarginSize = (byte) (w - firstLineIndentSize.Value);
+                        rightMarginSize = (byte)(w - firstLineIndentSize.Value);
                 }
                 if (tabSize.IsAssigned)
                     if (tabSize.Value < 1) tabSize = 1;
-                    else if (tabSize.Value > width.Value) tabSize = (byte) width.Value;
+                    else if (tabSize.Value > width.Value) tabSize = (byte)width.Value;
 
                 // Only support tabstop on left/non alignments
                 if (alignment.IsAssigned &&
@@ -224,7 +234,7 @@ namespace WebApplications.Utilities.Formatting
                         (alignment.Value == Formatting.Alignment.None))
                         tabStops = (!tabStops.IsAssigned || tabStops.IsNull
                             ? Enumerable.Range(1, width.Value / tabSize.Value)
-                                .Select(t => (ushort) (t * tabSize.Value))
+                                .Select(t => (ushort)(t * tabSize.Value))
                             // ReSharper disable once AssignNullToNotNullAttribute
                             : tabStops.Value
                                 .Where(t => t > 0 && t < width.Value)
@@ -247,6 +257,7 @@ namespace WebApplications.Utilities.Formatting
             SplitWords = splitWords;
             Hyphenate = hyphenate;
             HyphenChar = hyphenChar;
+            WrapMode = wrapMode;
         }
 
         /// <summary>
@@ -264,7 +275,10 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="splitWords">The split words.</param>
         /// <param name="hyphenate">The hyphenate.</param>
         /// <param name="hyphenChar">The hyphen character.</param>
-        /// <returns>Layout.</returns>
+        /// <param name="wrapMode">The line wrap mode.</param>
+        /// <returns>
+        /// Layout.
+        /// </returns>
         [PublicAPI]
         [NotNull]
         public Layout Apply(
@@ -279,7 +293,8 @@ namespace WebApplications.Utilities.Formatting
             Optional<Alignment> alignment = default(Optional<Alignment>),
             Optional<bool> splitWords = default(Optional<bool>),
             Optional<bool> hyphenate = default(Optional<bool>),
-            Optional<char> hyphenChar = default(Optional<char>))
+            Optional<char> hyphenChar = default(Optional<char>),
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
             return new Layout(
                 width.IsAssigned ? width : Width,
@@ -293,7 +308,8 @@ namespace WebApplications.Utilities.Formatting
                 alignment.IsAssigned ? alignment : Alignment,
                 splitWords.IsAssigned ? splitWords : SplitWords,
                 hyphenate.IsAssigned ? hyphenate : Hyphenate,
-                hyphenChar.IsAssigned ? hyphenChar : HyphenChar);
+                hyphenChar.IsAssigned ? hyphenChar : HyphenChar,
+                wrapMode.IsAssigned ? wrapMode : WrapMode);
         }
 
         /// <summary>
@@ -319,7 +335,8 @@ namespace WebApplications.Utilities.Formatting
                     layout.Alignment.IsAssigned ? layout.Alignment : Alignment,
                     layout.SplitWords.IsAssigned ? layout.SplitWords : SplitWords,
                     layout.Hyphenate.IsAssigned ? layout.Hyphenate : Hyphenate,
-                    layout.HyphenChar.IsAssigned ? layout.HyphenChar : HyphenChar);
+                    layout.HyphenChar.IsAssigned ? layout.HyphenChar : HyphenChar,
+                    layout.WrapMode.IsAssigned ? layout.WrapMode : WrapMode);
         }
 
         /// <summary>
@@ -350,7 +367,7 @@ namespace WebApplications.Utilities.Formatting
                 return false;
             }
 
-            string[] parts = input.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = input.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             layout = Empty;
             if (parts.Length < 1)
                 return true;
@@ -367,6 +384,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<bool> splitWords = default(Optional<bool>);
             Optional<bool> hyphenate = default(Optional<bool>);
             Optional<char> hyphenChar = default(Optional<char>);
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>);
 
             foreach (string part in parts)
             {
@@ -413,7 +431,7 @@ namespace WebApplications.Utilities.Formatting
                         bool ok = true;
                         tabStops = new Optional<IEnumerable<ushort>>(
                             s
-                                .Split(new[] {'|'}, StringSplitOptions.RemoveEmptyEntries)
+                                .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
                                 .Select(
                                     tp =>
                                     {
@@ -460,6 +478,12 @@ namespace WebApplications.Utilities.Formatting
                             return false;
                         hyphenChar = s[0];
                         break;
+                    case 'p':
+                        LayoutWrapMode wm;
+                        if (!Enum.TryParse(s, true, out wm))
+                            return false;
+                        wrapMode = wm;
+                        break;
                     default:
                         return false;
                 }
@@ -477,7 +501,8 @@ namespace WebApplications.Utilities.Formatting
                 alignment,
                 splitWords,
                 hyphenate,
-                hyphenChar);
+                hyphenChar,
+                wrapMode);
             return true;
         }
 
@@ -515,6 +540,7 @@ namespace WebApplications.Utilities.Formatting
             StringBuilder sb = new StringBuilder();
             switch (format.ToLowerInvariant())
             {
+                // Creates a string for indicating the positions of margins and tab stops
                 case "l":
                     if (!IsFull)
                         return "Cannot show ruler for partial layout";
@@ -532,11 +558,12 @@ namespace WebApplications.Utilities.Formatting
                                 : (TabStops.Value != null && TabStops.Value.Contains((ushort)i)
                                     ? 'L'
                                     : (i % 10 == 0
-                                        ? (char) ('0' + (i / 10) % 10)
+                                        ? (char)('0' + (i / 10) % 10)
                                         : '.')));
                     }
                     return new string(cArr);
 
+                // Creates a compact string that can be easily parsed back into a layout
                 case "f":
                     if (Width.IsAssigned)
                         sb.Append('w').Append(Width.Value).Append(';');
@@ -565,14 +592,50 @@ namespace WebApplications.Utilities.Formatting
                         sb.Append('h').Append(Hyphenate.Value).Append(';');
                     if (HyphenChar.IsAssigned)
                         sb.Append('H').Append(HyphenChar.Value).Append(';');
+                    if (WrapMode.IsAssigned)
+                        sb.Append('p').Append(WrapMode.Value).Append(';');
 
                     // Remove trailing ';'
                     if (sb.Length > 1)
-                        sb.Remove(sb.Length - 2, 1);
+                        sb.Remove(sb.Length - 1, 1);
                     break;
+
+                // Creates a nice, human readable string
                 default:
-                    // TODO Output nice string
-                    return "TODO Human readable layout";
+                    if (Width.IsAssigned)
+                        sb.Append("Width = ").Append(Width.Value).Append(", ");
+                    if (IndentSize.IsAssigned)
+                        sb.Append("Indent Size = ").Append(IndentSize.Value).Append(", ");
+                    if (RightMarginSize.IsAssigned)
+                        sb.Append("Right Margin Size = ").Append(RightMarginSize.Value).Append(", ");
+                    if (IndentChar.IsAssigned)
+                        sb.Append("Indent Character = '").Append(IndentChar.Value).Append("', ");
+                    if (FirstLineIndentSize.IsAssigned)
+                        sb.Append("First Line Indent Size = ").Append(FirstLineIndentSize.Value).Append(", ");
+                    if (TabStops.IsAssigned &&
+                        TabStops.Value != null)
+                        sb.Append("Tab Stops = [")
+                            .Append(string.Join(" | ", TabStops.Value.Select(t => t.ToString(formatProvider))))
+                            .Append("], ");
+                    if (TabSize.IsAssigned)
+                        sb.Append("Tab Size = ").Append(TabSize.Value).Append(", ");
+                    if (TabChar.IsAssigned)
+                        sb.Append("Tab Char = '").Append(TabChar.Value).Append("', ");
+                    if (Alignment.IsAssigned)
+                        sb.Append("Alignment = ").Append(Alignment.Value).Append(", ");
+                    if (SplitWords.IsAssigned)
+                        sb.Append("Split Words = ").Append(SplitWords.Value).Append(", ");
+                    if (Hyphenate.IsAssigned)
+                        sb.Append("Hyphenate = ").Append(Hyphenate.Value).Append(", ");
+                    if (HyphenChar.IsAssigned)
+                        sb.Append("Hyphen Character = '").Append(HyphenChar.Value).Append("', ");
+                    if (WrapMode.IsAssigned)
+                        sb.Append("Line Wrap Mode = ").Append(WrapMode.Value).Append(", ");
+
+                    // Remove trailing ", "
+                    if (sb.Length > 2)
+                        sb.Remove(sb.Length - 2, 2);
+                    break;
             }
             return sb.ToString();
         }

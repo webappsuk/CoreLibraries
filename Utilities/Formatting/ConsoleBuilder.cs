@@ -33,7 +33,6 @@ using System.IO;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Enumerations;
-using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -62,7 +61,7 @@ namespace WebApplications.Utilities.Formatting
         public static ConsoleColor DefaultBackColour;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
+        /// Initializes a new instance of the <see cref="ConsoleBuilder" /> class.
         /// </summary>
         /// <param name="layout">The layout.</param>
         [PublicAPI]
@@ -74,12 +73,12 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
+        /// Initializes a new instance of the <see cref="ConsoleBuilder" /> class.
         /// </summary>
         /// <param name="values">The values.</param>
         /// <param name="layout">The layout.</param>
         public ConsoleBuilder(
-            [CanBeNull] IEnumerable<object> values,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values,
             [CanBeNull] Layout layout = null)
             : base(values, layout)
         {
@@ -87,7 +86,7 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
+        /// Initializes a new instance of the <see cref="ConsoleBuilder" /> class.
         /// </summary>
         /// <param name="values">The values.</param>
         /// <param name="layout">The layout.</param>
@@ -129,8 +128,9 @@ namespace WebApplications.Utilities.Formatting
                 width > ushort.MaxValue
                     ? ushort.MaxValue
                     : (width < 1
-                        ? (ushort)1
-                        : (ushort)width));
+                        ? (ushort) 1
+                        : (ushort) width),
+                wrapMode: LayoutWrapMode.PadToWrap);
 
             return Console.CursorLeft;
         }
@@ -180,7 +180,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
         [PublicAPI]
-        public void Write([CanBeNull]string format = null, [CanBeNull]IFormatProvider formatProvider = null)
+        public void Write([CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
         {
             if (ConsoleHelper.IsConsole)
                 WriteTo(Console.Out, format, formatProvider);
@@ -208,7 +208,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="position">The position.</param>
         /// <returns>An awaitable task.</returns>
-        public override async Task WriteToAsync(TextWriter writer, string format, IFormatProvider formatProvider, int position)
+        public override async Task WriteToAsync(
+            TextWriter writer,
+            string format,
+            IFormatProvider formatProvider,
+            int position)
         {
             // Update the layout based on the console.
             using (await ConsoleHelper.Lock.LockAsync())
@@ -246,14 +250,14 @@ namespace WebApplications.Utilities.Formatting
                         case "consolefore":
                             if (string.IsNullOrEmpty(controlChunk.Format))
                                 Console.ForegroundColor = DefaultForeColour;
-                            // ReSharper disable once AssignNullToNotNullAttribute
+                                // ReSharper disable once AssignNullToNotNullAttribute
                             else if (TryGetColour(controlChunk.Format, out colour))
                                 Console.ForegroundColor = colour;
                             return;
                         case "consoleback":
                             if (string.IsNullOrEmpty(controlChunk.Format))
                                 Console.BackgroundColor = DefaultBackColour;
-                            // ReSharper disable once AssignNullToNotNullAttribute
+                                // ReSharper disable once AssignNullToNotNullAttribute
                             else if (TryGetColour(controlChunk.Format, out colour))
                                 Console.BackgroundColor = colour;
                             return;

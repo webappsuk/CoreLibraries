@@ -94,7 +94,7 @@ namespace WebApplications.Utilities.Formatting
         /// Initializes a new instance of the <see cref="FormatBuilder" /> class.
         /// </summary>
         /// <param name="values">The values.</param>
-        public FormatBuilder([CanBeNull] IEnumerable<object> values)
+        public FormatBuilder([CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             _values = values == null ? _empty : ToDictionary(values.ToArray());
         }
@@ -334,7 +334,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Append([CanBeNull]object value)
+        public FormatBuilder Append([CanBeNull] object value)
         {
             if (value != null)
                 _chunks.Add(FormatChunk.Create(value));
@@ -348,7 +348,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Append([CanBeNull]char[] value)
+        public FormatBuilder Append([CanBeNull] char[] value)
         {
             if ((value != null) &&
                 (value.Length > 0))
@@ -365,7 +365,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Append([CanBeNull]char[] value, int startIndex, int charCount)
+        public FormatBuilder Append([CanBeNull] char[] value, int startIndex, int charCount)
         {
             if ((value != null) &&
                 (value.Length > 0) &&
@@ -401,7 +401,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Append([CanBeNull]string value)
+        public FormatBuilder Append([CanBeNull] string value)
         {
             if (!string.IsNullOrEmpty(value))
                 _chunks.Add(FormatChunk.Create(value));
@@ -415,7 +415,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Append([CanBeNull]IEnumerable<FormatChunk> chunks)
+        public FormatBuilder Append([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
             if (chunks != null)
                 _chunks.AddRange(chunks);
@@ -429,9 +429,10 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Append([CanBeNull]FormatBuilder builder)
+        public FormatBuilder Append([CanBeNull] FormatBuilder builder)
         {
-            if (builder != null && !builder.IsEmpty)
+            if (builder != null &&
+                !builder.IsEmpty)
                 _chunks.AddRange(builder);
             return this;
         }
@@ -639,7 +640,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendLine([CanBeNull]object value)
+        public FormatBuilder AppendLine([CanBeNull] object value)
         {
             if (value != null)
                 _chunks.Add(FormatChunk.Create(value));
@@ -654,7 +655,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendLine([CanBeNull]char[] value)
+        public FormatBuilder AppendLine([CanBeNull] char[] value)
         {
             if ((value != null) &&
                 (value.Length > 0))
@@ -672,7 +673,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendLine([CanBeNull]char[] value, int startIndex, int charCount)
+        public FormatBuilder AppendLine([CanBeNull] char[] value, int startIndex, int charCount)
         {
             if ((value != null) &&
                 (value.Length > 0) &&
@@ -710,7 +711,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendLine([CanBeNull]string value)
+        public FormatBuilder AppendLine([CanBeNull] string value)
         {
             if (!string.IsNullOrEmpty(value))
                 _chunks.Add(FormatChunk.Create(value));
@@ -725,7 +726,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendLine([CanBeNull]IEnumerable<FormatChunk> chunks)
+        public FormatBuilder AppendLine([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
             if (chunks != null)
                 _chunks.AddRange(chunks);
@@ -740,9 +741,10 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendLine([CanBeNull]FormatBuilder builder)
+        public FormatBuilder AppendLine([CanBeNull] FormatBuilder builder)
         {
-            if (builder != null && !builder.IsEmpty)
+            if (builder != null &&
+                !builder.IsEmpty)
                 _chunks.AddRange(builder);
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -773,7 +775,9 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendFormat([CanBeNull] string format, [CanBeNull] IReadOnlyDictionary<string, object> values)
+        public FormatBuilder AppendFormat(
+            [CanBeNull] string format,
+            [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if (!string.IsNullOrEmpty(format))
                 AppendFormatInternal(format, values ?? _empty);
@@ -898,7 +902,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public FormatBuilder Resolve(
-            [CanBeNull] Func<string, object> resolver)
+            [CanBeNull] [InstantHandle] Func<string, object> resolver)
         {
             if (resolver == null) return this;
 
@@ -925,7 +929,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public FormatBuilder Resolve(
-            [CanBeNull] IEnumerable<object> values)
+            [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             if (values == null) return this;
             return Resolve(ToDictionary(values.ToArray()));
@@ -1031,7 +1035,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="formatProvider">The format provider.</param>
         [PublicAPI]
-        public void WriteTo([CanBeNull]TextWriter writer, [CanBeNull] IFormatProvider formatProvider = null)
+        public void WriteTo([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider = null)
         {
             WriteTo(writer, null, formatProvider);
         }
@@ -1058,7 +1062,10 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
         [PublicAPI]
-        public virtual void WriteTo([CanBeNull]TextWriter writer, [CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
+        public virtual void WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format = null,
+            [CanBeNull] IFormatProvider formatProvider = null)
         {
             if (writer == null) return;
 
@@ -1093,7 +1100,10 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>An awaitable task.</returns>
         [NotNull]
         [PublicAPI]
-        public virtual async Task WriteToAsync([CanBeNull]TextWriter writer, [CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
+        public virtual async Task WriteToAsync(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format = null,
+            [CanBeNull] IFormatProvider formatProvider = null)
         {
             if (writer == null) return;
 

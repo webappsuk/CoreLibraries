@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -61,7 +60,7 @@ namespace WebApplications.Utilities.Formatting
         private readonly FormatBuilder _builder;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FormatWriter" /> class.
+        /// Initializes a new instance of the <see cref="FormattedStringWriter" /> class.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="formatProvider">The format provider.</param>
@@ -505,7 +504,8 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the specified chunks.
         /// </summary>
         /// <param name="chunks">The chunks.</param>
-        public void Write([CanBeNull]IEnumerable<FormatChunk> chunks)
+        [PublicAPI]
+        public void Write([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
             if (!_isOpen)
                 throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
@@ -516,7 +516,8 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the specified builder.
         /// </summary>
         /// <param name="builder">The builder.</param>
-        public void Write([CanBeNull]FormatBuilder builder)
+        [PublicAPI]
+        public void Write([CanBeNull] FormatBuilder builder)
         {
             if (!_isOpen)
                 throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
@@ -529,7 +530,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunks">The chunks.</param>
         [NotNull]
         [PublicAPI]
-        public Task WriteAsync([CanBeNull]IEnumerable<FormatChunk> chunks)
+        public Task WriteAsync([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
             if (!_isOpen)
                 throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
@@ -543,7 +544,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="builder">The builder.</param>
         [NotNull]
         [PublicAPI]
-        public Task WriteAsync([CanBeNull]FormatBuilder builder)
+        public Task WriteAsync([CanBeNull] FormatBuilder builder)
         {
             if (!_isOpen)
                 throw new InvalidOperationException(Resources.FormatWriter_IsClosed);

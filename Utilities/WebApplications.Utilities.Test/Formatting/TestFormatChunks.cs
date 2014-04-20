@@ -205,12 +205,42 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestLayout()
         {
             Trace.WriteLine(
-                new LayoutBuilder(new Layout(60, alignment:Alignment.Justify))
+                new LayoutBuilder(new Layout(60, alignment: Alignment.Justify, firstLineIndentSize: 5))
                     .AppendLine(FormatResources.LoremIpsum)
                     .Append("{!layout:w50}")
                     .AppendLine(FormatResources.SedUtPerspiciatis)
                     .SetLayout(new Layout(40))
                     .AppendLine(FormatResources.AtVeroEos).ToString());
+        }
+
+        [TestMethod]
+        public void TestPadToWrap()
+        {
+            const int width = 60;
+
+            string text = new LayoutBuilder(new Layout(width, alignment: Alignment.Justify, wrapMode: LayoutWrapMode.PadToWrap))
+                    .AppendLine(FormatResources.LoremIpsum)
+                    .AppendLine()
+                    .SetLayout(new Layout(alignment: Alignment.Left))
+                    .AppendLine(FormatResources.SedUtPerspiciatis)
+                    .AppendLine()
+                    .SetLayout(new Layout(alignment: Alignment.Right))
+                    .AppendLine(FormatResources.AtVeroEos)
+                    .AppendLine()
+                    .SetLayout(new Layout(alignment: Alignment.Centre, indentSize: 4, rightMarginSize: 4))
+                    .AppendLine(FormatResources.AtVeroEos).ToString();
+
+            Assert.IsFalse(text.Contains('\r'), "Text should not contain new line characters");
+            Assert.IsFalse(text.Contains('\n'), "Text should not contain new line characters");
+            Assert.IsTrue(text.Length % width == 0, "Text length should be a multiple of the width");
+
+            // Simulate console wrapping
+            for (int i = 0; i < text.Length; i += width)
+            {
+                Trace.Write((i + width) >= text.Length ? text.Substring(i) : text.Substring(i, width));
+                Trace.WriteLine("|");
+            }
+
         }
     }
 }
