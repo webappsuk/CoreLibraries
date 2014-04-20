@@ -35,6 +35,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Implements a <see cref="TextWriter"/> for tracing.
     /// </summary>
+    [PublicAPI]
     public class TraceTextWriter : TextWriter
     {
         /// <summary>
