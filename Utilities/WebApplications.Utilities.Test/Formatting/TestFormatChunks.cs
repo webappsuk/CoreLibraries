@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
@@ -16,7 +13,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestNull()
         {
-            FormatChunk[] chunks = ((string)null).FormatChunks().ToArray();
+            FormatChunk[] chunks = ((string) null).FormatChunks().ToArray();
             Assert.AreEqual(0, chunks.Length);
         }
 
@@ -45,7 +42,8 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0}", chunk.Value);
+            Assert.AreEqual("{0}", chunk.ToString("F", null));
+            Assert.IsNull(chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.IsNull(chunk.Alignment);
@@ -59,7 +57,8 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,-1}", chunk.Value);
+            Assert.AreEqual("{0,-1}", chunk.ToString("F", null));
+            Assert.IsNull(chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.AreEqual(-1, chunk.Alignment);
@@ -95,7 +94,8 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0:G}", chunk.Value);
+            Assert.AreEqual("{0:G}", chunk.ToString("F", null));
+            Assert.IsNull(chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.IsNull(chunk.Alignment);
@@ -109,7 +109,8 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0:,}", chunk.Value);
+            Assert.AreEqual("{0:,}", chunk.ToString("F", null));
+            Assert.IsNull(chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.IsNull(chunk.Alignment);
@@ -135,7 +136,8 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,-1:G}", chunk.Value);
+            Assert.AreEqual("{0,-1:G}", chunk.ToString("F", null));
+            Assert.IsNull(chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.AreEqual(-1, chunk.Alignment);
@@ -176,7 +178,8 @@ namespace WebApplications.Utilities.Test.Formatting
 
             chunk = chunks[1];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,-1:G}", chunk.Value);
+            Assert.AreEqual("{0,-1:G}", chunk.ToString("F", null));
+            Assert.IsNull(chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.AreEqual(-1, chunk.Alignment);
@@ -190,7 +193,8 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(2, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,-1:G}", chunk.Value);
+            Assert.AreEqual("{0,-1:G}", chunk.ToString("F", null));
+            Assert.IsNull(chunk.Value);
             Assert.IsTrue(chunk.IsFillPoint);
             Assert.AreEqual("0", chunk.Tag);
             Assert.AreEqual(-1, chunk.Alignment);
@@ -210,7 +214,7 @@ namespace WebApplications.Utilities.Test.Formatting
                     .AppendLine(FormatResources.LoremIpsum)
                     .Append("{!layout:w50}")
                     .AppendLine(FormatResources.SedUtPerspiciatis)
-                    .SetLayout(new Layout(40))
+                    .SetLayout(40)
                     .AppendLine(FormatResources.AtVeroEos).ToString());
         }
 
@@ -219,16 +223,17 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             const int width = 60;
 
-            string text = new LayoutBuilder(new Layout(width, alignment: Alignment.Justify, wrapMode: LayoutWrapMode.PadToWrap))
+            string text =
+                new LayoutBuilder(new Layout(width, alignment: Alignment.Justify, wrapMode: LayoutWrapMode.PadToWrap))
                     .AppendLine(FormatResources.LoremIpsum)
                     .AppendLine()
-                    .SetLayout(new Layout(alignment: Alignment.Left))
+                    .SetLayout(alignment: Alignment.Left)
                     .AppendLine(FormatResources.SedUtPerspiciatis)
                     .AppendLine()
-                    .SetLayout(new Layout(alignment: Alignment.Right))
+                    .SetLayout(alignment: Alignment.Right)
                     .AppendLine(FormatResources.AtVeroEos)
                     .AppendLine()
-                    .SetLayout(new Layout(alignment: Alignment.Centre, firstLineIndentSize: 4, indentSize: 4, rightMarginSize: 4))
+                    .SetLayout(alignment: Alignment.Centre, firstLineIndentSize: 4, indentSize: 4, rightMarginSize: 4)
                     .AppendLine(FormatResources.AtVeroEos).ToString();
 
             Assert.IsFalse(text.Contains('\r'), "Text should not contain new line characters");

@@ -171,6 +171,32 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
+        /// Gets a value indicating whether this <see cref="Layout"/> is totally incomplete.
+        /// </summary>
+        /// <value><see langword="true" /> if empty; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
+        public bool IsEmpty
+        {
+            get
+            {
+                // Confirm everything is not assigned.
+                return !Width.IsAssigned &&
+                       !IndentSize.IsAssigned &&
+                       !RightMarginSize.IsAssigned &&
+                       !IndentChar.IsAssigned &&
+                       !FirstLineIndentSize.IsAssigned &&
+                       !TabStops.IsAssigned &&
+                       !TabSize.IsAssigned &&
+                       !TabChar.IsAssigned &&
+                       !Alignment.IsAssigned &&
+                       !SplitWords.IsAssigned &&
+                       !Hyphenate.IsAssigned &&
+                       !HyphenChar.IsAssigned &&
+                       !WrapMode.IsAssigned;
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Layout" /> class.
         /// </summary>
         /// <param name="width">The width.</param>

@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
@@ -1103,7 +1104,8 @@ namespace WebApplications.Utilities.Formatting
             foreach (FormatChunk chunk in _chunks)
             {
                 Contract.Assert(chunk != null);
-                if (chunk.IsControl && !writeTags)
+                if (chunk.IsControl &&
+                    !writeTags)
                 {
                     if (sb.Length > 0)
                     {
@@ -1118,6 +1120,33 @@ namespace WebApplications.Utilities.Formatting
 
             if (sb.Length > 0)
                 writer.Write(sb.ToString());
+        }
+
+        /// <summary>
+        /// Writes the builder to the console.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        public void WriteToConsole(
+            [CanBeNull] string format = null,
+            [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (!ConsoleHelper.IsConsole) return;
+            WriteTo(Console.Out, format, formatProvider);
+        }
+
+        /// <summary>
+        /// Writes the builder to <see cref="Trace"/>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        public void WriteToTrace(
+            [CanBeNull] string format = null,
+            [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            WriteTo(TraceTextWriter.Default, format, formatProvider);
         }
 
         /// <summary>
@@ -1144,7 +1173,8 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(chunk != null);
                 // If the format is F/f, then control tags will need to be output
-                if (chunk.IsControl && !writeTags)
+                if (chunk.IsControl &&
+                    !writeTags)
                 {
                     if (sb.Length > 0)
                     {

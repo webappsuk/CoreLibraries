@@ -27,10 +27,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Text;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Enumerations;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -57,7 +55,7 @@ namespace WebApplications.Utilities.Formatting
             if (String.IsNullOrEmpty(format))
                 yield break;
 
-            StringBuilder chunk = new StringBuilder((int)(format.Length * 1.2));
+            StringBuilder chunk = new StringBuilder((int) (format.Length * 1.2));
             bool inFillPoint = false;
             int i = 0;
             while (i < format.Length)
@@ -249,7 +247,8 @@ namespace WebApplications.Utilities.Formatting
         {
             LayoutBuilder lb = builder as LayoutBuilder;
             if (lb != null)
-                lb.AppendControl(FormatChunk.CreateControl("Layout", null, Layout.Default.ToString("f"), Layout.Default));
+                lb.AppendControl(
+                    FormatChunk.CreateControl("Layout", null, Layout.Default.ToString("f"), Layout.Default));
             return builder;
         }
 
@@ -269,35 +268,71 @@ namespace WebApplications.Utilities.Formatting
             {
                 if (layout == null)
                     layout = Layout.Default;
-                lb.AppendControl(FormatChunk.CreateControl("Layout", null, layout.ToString("f"), layout));
+                if (!layout.IsEmpty)
+                    lb.AppendControl(FormatChunk.CreateControl("Layout", null, layout.ToString("f"), layout));
             }
             return builder;
         }
 
         /// <summary>
-        /// Writes the builder to the console.
+        /// Sets the layout (if outputting to a layout writer).
         /// </summary>
         /// <param name="builder">The builder.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="indentSize">Size of the indent.</param>
+        /// <param name="rightMarginSize">Size of the right margin.</param>
+        /// <param name="indentChar">The indent character.</param>
+        /// <param name="firstLineIndentSize">First size of the line indent.</param>
+        /// <param name="tabStops">The tab stops.</param>
+        /// <param name="tabSize">Size of the tab.</param>
+        /// <param name="tabChar">The tab character.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="splitWords">if set to <see langword="true" /> then words will split across lines.</param>
+        /// <param name="hyphenate">if set to <see langword="true" /> [hyphenate].</param>
+        /// <param name="hyphenChar">The hyphenation character.</param>
+        /// <param name="wrapMode">The line wrap mode.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
         [PublicAPI]
-        public static void ToConsole([CanBeNull] this FormatBuilder builder, [CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static FormatBuilder SetLayout(
+            [NotNull] this FormatBuilder builder,
+            Optional<ushort> width = default(Optional<ushort>),
+            Optional<byte> indentSize = default(Optional<byte>),
+            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<char> indentChar = default(Optional<char>),
+            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
+            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<byte> tabSize = default(Optional<byte>),
+            Optional<char> tabChar = default(Optional<char>),
+            Optional<Alignment> alignment = default(Optional<Alignment>),
+            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<bool> hyphenate = default(Optional<bool>),
+            Optional<char> hyphenChar = default(Optional<char>),
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
-            if ((builder == null) || (!ConsoleHelper.IsConsole)) return;
-            builder.WriteTo(Console.Out, format, formatProvider);
-        }
+            LayoutBuilder lb = builder as LayoutBuilder;
+            if (lb != null)
+            {
+                Layout layout = new Layout(
+                    width,
+                    indentSize,
+                    rightMarginSize,
+                    indentChar,
+                    firstLineIndentSize,
+                    tabStops,
+                    tabSize,
+                    tabChar,
+                    alignment,
+                    splitWords,
+                    hyphenate,
+                    hyphenChar,
+                    wrapMode);
 
-        /// <summary>
-        /// Writes the builder to Trace.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        [PublicAPI]
-        public static void ToTrace([CanBeNull] this FormatBuilder builder, [CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            if (builder == null) return;
-            builder.WriteTo(TraceTextWriter.Default, format, formatProvider);
+                if (!layout.IsEmpty)
+                    lb.AppendControl(FormatChunk.CreateControl("Layout", null, layout.ToString("f"), layout));
+            }
+            return builder;
         }
     }
 }
