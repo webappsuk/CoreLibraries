@@ -1092,51 +1092,41 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        ///   A safe <see cref="string"/> format.
+        /// A safe <see cref="string" /> format.
         /// </summary>
         /// <param name="format">The format string.</param>
         /// <param name="parameters">The values used in the format string.</param>
         /// <returns>
-        ///   Returns the formatted <see cref="string"/> if successful; otherwise returns the <paramref name="format"/> string.
+        /// Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.
         /// </returns>
         [CanBeNull]
+        [PublicAPI]
         public static string SafeFormat([CanBeNull]this string format, [CanBeNull]params object[] parameters)
         {
             if (format == null) return null;
             if (parameters == null || parameters.Length < 1)
                 return format;
-            try
-            {
-                return String.Format(format, parameters);
-            }
-            catch (FormatException)
-            {
-                return format;
-            }
+
+            return new FormatBuilder(parameters).AppendFormat(format).ToString();
         }
 
         /// <summary>
         /// A safe <see cref="string" /> format.
         /// </summary>
         /// <param name="format">The format string.</param>
+        /// <param name="formatOptions">The format options string. <seealso cref="FormatBuilder.ToString{String,IFormatProvider}"/></param>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="parameters">The values used in the format string.</param>
         /// <returns>Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.</returns>
         [CanBeNull]
-        public static string SafeFormat([CanBeNull]this string format, [CanBeNull]IFormatProvider formatProvider, [CanBeNull]params object[] parameters)
+        [PublicAPI]
+        public static string SafeFormat([CanBeNull]this string format, [CanBeNull]string formatOptions, [CanBeNull]IFormatProvider formatProvider, [CanBeNull]params object[] parameters)
         {
             if (format == null) return null;
             if (parameters == null || parameters.Length < 1)
                 return format;
 
-            try
-            {
-                return String.Format(formatProvider, format, parameters);
-            }
-            catch (FormatException)
-            {
-                return format;
-            }
+            return new FormatBuilder(parameters).AppendFormat(format).ToString(formatOptions, formatProvider);
         }
 
         /// <summary>

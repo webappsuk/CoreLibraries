@@ -979,22 +979,20 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Resolve(
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+        public FormatBuilder Resolve([CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if ((values == null) ||
                 (values.Count < 1)) return this;
 
-            for (int a = 0; a < _chunks.Count; a++)
+            foreach (FormatChunk chunk in _chunks)
             {
-                FormatChunk chunk = _chunks[a];
                 Contract.Assert(chunk != null);
                 if (!chunk.IsFillPoint) continue;
 
                 Contract.Assert(chunk.Tag != null);
                 object resolved;
                 if (values.TryGetValue(chunk.Tag, out resolved))
-                    _chunks[a] = FormatChunk.Create(resolved);
+                    chunk.Value = resolved;
             }
             return this;
         }
@@ -1038,11 +1036,17 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// To the string.
+        /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
-        /// <param name="format">The format.</param>
+        /// <param name="format">The format. 
+        /// <list type="table">
+        ///     <listheader> <term>Format string</term> <description>Description</description> </listheader>
+        ///     <item> <term>G/g/null</term> <description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description> </item>
+        ///     <item> <term>F/f</term> <description>All control and fill point chunks will have their tags output.</description> </item>
+        ///     <item> <term>S/s</term> <description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description> </item>
+        /// </list></param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <returns>System.String.</returns>
+        /// <returns>A <see cref="System.String"/> that represents this instance. </returns>
         public virtual string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
         {
             using (StringWriter writer = new StringWriter())
@@ -1092,12 +1096,14 @@ namespace WebApplications.Utilities.Formatting
         {
             if (writer == null) return;
 
+            bool writeTags = format != null && string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
             foreach (FormatChunk chunk in _chunks)
             {
                 Contract.Assert(chunk != null);
-                if (chunk.IsControl)
+                if (chunk.IsControl && !writeTags)
                 {
                     if (sb.Length > 0)
                     {
@@ -1130,12 +1136,15 @@ namespace WebApplications.Utilities.Formatting
         {
             if (writer == null) return;
 
+            bool writeTags = format != null && string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
             foreach (FormatChunk chunk in _chunks)
             {
                 Contract.Assert(chunk != null);
-                if (chunk.IsControl)
+                // If the format is F/f, then control tags will need to be output
+                if (chunk.IsControl && !writeTags)
                 {
                     if (sb.Length > 0)
                     {
@@ -1161,6 +1170,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
         protected virtual void OnControlChunk(
             [NotNull] FormatChunk controlChunk,
             [NotNull] TextWriter writer,

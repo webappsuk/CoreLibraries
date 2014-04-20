@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -69,11 +70,11 @@ namespace WebApplications.Utilities.Formatting
         public readonly string Format;
 
         /// <summary>
-        /// The chunk Value (e.g. '{0,-3:G}' for '{0,-3:G}')
+        /// The chunk Value, if any.
         /// </summary>
-        [NotNull]
+        [CanBeNull]
         [PublicAPI]
-        public readonly object Value;
+        public object Value;
 
         /// <summary>
         /// Gets a value indicating whether this instance is a fill point.
@@ -99,10 +100,10 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string tag,
             [CanBeNull] int? alignment,
             [CanBeNull] string format,
-            [NotNull] object value,
+            [CanBeNull] object value,
             bool isControl)
         {
-            Contract.Requires(value != null);
+            Contract.Requires(tag != null || value != null);
             Tag = tag;
             Alignment = alignment;
             Format = format;
@@ -171,7 +172,7 @@ namespace WebApplications.Utilities.Formatting
             // Check if we are a control tag
             bool isControl;
             string tag;
-            if (str[1] == '!')
+            if (str[1] == FormatBuilder.ControlChar)
             {
                 isControl = true;
                 if (end < 3) return new FormatChunk(null, null, null, str, false);
@@ -183,7 +184,7 @@ namespace WebApplications.Utilities.Formatting
                 tag = str.Substring(1, end - 1);
             }
 
-            return new FormatChunk(tag, alignment, format, str, isControl);
+            return new FormatChunk(tag, alignment, format, null, isControl);
         }
 
         /// <summary>
@@ -213,11 +214,7 @@ namespace WebApplications.Utilities.Formatting
                     tag,
                     alignment,
                     format,
-                    value ?? string.Format(
-                        "{{!{0}{1}{2}}}",
-                        tag,
-                        alignment != null ? FormatBuilder.AlignmentChar + alignment.Value.ToString("D") : string.Empty,
-                        !string.IsNullOrEmpty(format) ? FormatBuilder.FormatChar + format : string.Empty),
+                    value,
                     true);
         }
 
@@ -258,7 +255,7 @@ namespace WebApplications.Utilities.Formatting
                 int hashCode = (Tag != null ? Tag.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ Alignment.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Format != null ? Format.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ Value.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Value != null ? Value.GetHashCode() : 0);
                 return hashCode;
             }
         }
@@ -291,7 +288,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return IsControl ? string.Empty : Value.ToString();
+            return ToString(null, null);
         }
 
         /// <summary>
@@ -302,9 +299,80 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
         {
-            if (IsControl) return string.Empty;
+            if (format == null)
+                format = "g";
+
+            bool pad;
+            string value;
+
             IFormattable fv = Value as IFormattable;
-            return fv != null ? fv.ToString(format, formatProvider) : Value.ToString();
+            switch (format.ToLowerInvariant())
+            {
+                    // Should always output the tag if the chunk has one, otherwise output the value as normal
+                case "f":
+                    if (Tag != null)
+                    {
+                        pad = false;
+                        value = string.Format(
+                            "{{{0}{1}{2}{3}}}",
+                            IsControl ? FormatBuilder.ControlChar.ToString(CultureInfo.InvariantCulture) : string.Empty,
+                            Tag,
+                            Alignment != null
+                                ? FormatBuilder.AlignmentChar + Alignment.Value.ToString("D")
+                                : string.Empty,
+                            !string.IsNullOrEmpty(Format) ? FormatBuilder.FormatChar + Format : string.Empty);
+                    }
+                    else
+                    {
+                        Contract.Assert(Value != null);
+                        pad = true;
+                        value = fv != null ? fv.ToString(Format, formatProvider) : Value.ToString();
+                    }
+                    break;
+
+                    // Should output the value as normal, but treats unresolved tags as an empty string value
+                case "s":
+                    if (IsControl) return string.Empty;
+
+                    pad = true;
+                    value = Value == null
+                        ? null
+                        : (fv != null ? fv.ToString(Format, formatProvider) : Value.ToString());
+                    break;
+
+                    // Outputs the value if set, otherwise the format tag. Control tags ignored
+                default:
+                    if (IsControl) return string.Empty;
+
+                    if (Value == null)
+                    {
+                        Contract.Assert(Tag != null);
+                        pad = false;
+                        value = string.Format(
+                            "{{{0}{1}{2}}}",
+                            Tag,
+                            Alignment != null
+                                ? FormatBuilder.AlignmentChar + Alignment.Value.ToString("D")
+                                : string.Empty,
+                            !string.IsNullOrEmpty(Format) ? FormatBuilder.FormatChar + Format : string.Empty);
+                    }
+                    else
+                    {
+                        pad = true;
+                        value = fv != null ? fv.ToString(Format, formatProvider) : Value.ToString();
+                    }
+                    break;
+            }
+
+            if (value == null)
+                value = string.Empty;
+
+            if (pad && Alignment != null)
+                return Alignment.Value > 0
+                    ? value.PadLeft(Alignment.Value)
+                    : value.PadRight(-Alignment.Value);
+
+            return value;
         }
     }
 }

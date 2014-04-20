@@ -844,15 +844,16 @@ namespace WebApplications.Utilities.Formatting
         {
             if (writer == null) return;
 
+            bool writeTags = format != null && string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+
             if (position < 0) position = 0;
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
-            foreach (
-                FormatChunk chunk in
+            foreach (FormatChunk chunk in
                     Align(GetLines(GetLineChunks(this, format, formatProvider), position), position))
             {
                 Contract.Assert(chunk != null);
-                if (chunk.IsControl)
+                if (chunk.IsControl && !writeTags)
                 {
                     if (sb.Length > 0)
                     {
@@ -907,15 +908,16 @@ namespace WebApplications.Utilities.Formatting
         {
             if (writer == null) return;
 
+            bool writeTags = format != null && string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+
             if (position < 0) position = 0;
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
-            foreach (
-                FormatChunk chunk in
+            foreach (FormatChunk chunk in
                     Align(GetLines(GetLineChunks(this, format, formatProvider), position), position))
             {
                 Contract.Assert(chunk != null);
-                if (chunk.IsControl)
+                if (chunk.IsControl && !writeTags)
                 {
                     if (sb.Length > 0)
                     {

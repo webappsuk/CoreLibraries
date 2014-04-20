@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
 
@@ -240,7 +241,84 @@ namespace WebApplications.Utilities.Test.Formatting
                 Trace.Write((i + width) >= text.Length ? text.Substring(i) : text.Substring(i, width));
                 Trace.WriteLine("|");
             }
+        }
 
+        [TestMethod]
+        public void TestResolve()
+        {
+            FormatBuilder builder = new FormatBuilder()
+                .AppendFormat("{TestA}, {TestB}, {TestC}");
+
+            string str = builder.ToString();
+            Assert.AreEqual("{TestA}, {TestB}, {TestC}", str);
+            Trace.WriteLine(str);
+
+            builder.Resolve(
+                new Dictionary<string, object>
+                {
+                    {"TestA", "abc"},
+                    {"TestB", 4},
+                    {"TestC", 5},
+                });
+            str = builder.ToString();
+            Assert.AreEqual("abc, 4, 5", str);
+            Trace.WriteLine(str);
+
+            builder.Resolve(
+                new Dictionary<string, object>
+                {
+                    {"TestA", "xyz"},
+                    {"TestB", 20},
+                    {"TestC", 30},
+                });
+            str = builder.ToString();
+            Assert.AreEqual("xyz, 20, 30", str);
+            Trace.WriteLine(str);
+        }
+
+        [TestMethod]
+        public void TestFormatBuilderToString()
+        {
+            TestToStringFormats(new FormatBuilder());
+        }
+
+        [TestMethod]
+        public void TestLayoutBuilderToString()
+        {
+            // Expect LayoutBuilder with default layout to behave the same as FormatBuilder
+            TestToStringFormats(new LayoutBuilder());
+        }
+
+        private void TestToStringFormats([NotNull] FormatBuilder builder)
+        {
+            builder.AppendFormat("{!control}{TestA}, {TestB,4}, {TestC,-4}, {TestD:F4}");
+
+            Trace.WriteLine("default before resolving");
+            string str = builder.ToString();
+            Trace.WriteLine("    " + str);
+            Assert.AreEqual("{TestA}, {TestB,4}, {TestC,-4}, {TestD:F4}", str);
+
+            Trace.WriteLine("default after resolving the first 3 points");
+            builder.Resolve(
+                new Dictionary<string, object>
+                {
+                    {"TestA", "abc"},
+                    {"TestB", 4},
+                    {"TestC", 5},
+                });
+            str = builder.ToString();
+            Trace.WriteLine("    " + str);
+            Assert.AreEqual("abc,    4, 5   , {TestD:F4}", str);
+
+            Trace.WriteLine("'F' after resolving the first 3 points");
+            str = builder.ToString("f", null);
+            Trace.WriteLine("    " + str);
+            Assert.AreEqual("{!control}{TestA}, {TestB,4}, {TestC,-4}, {TestD:F4}", str);
+
+            Trace.WriteLine("'S' after resolving the first 3 points");
+            str = builder.ToString("s", null);
+            Trace.WriteLine("    " + str);
+            Assert.AreEqual("abc,    4, 5   , ", str);
         }
     }
 }
