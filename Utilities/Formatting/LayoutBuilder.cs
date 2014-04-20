@@ -951,21 +951,20 @@ namespace WebApplications.Utilities.Formatting
             string format,
             IFormatProvider formatProvider)
         {
-            Layout newLayout;
             if (string.Equals(controlChunk.Tag, "layout", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (string.IsNullOrEmpty(controlChunk.Format))
+                Layout newLayout = controlChunk.Value as Layout;
+             
+                if (newLayout != null)
+                    _layout = ReferenceEquals(newLayout, Layout.Default)
+                        ? _initialLayout
+                        : _layout.Apply(newLayout);
+                else if (string.IsNullOrEmpty(controlChunk.Format))
                     _layout = _initialLayout;
                 else if (Layout.TryParse(controlChunk.Format, out newLayout))
                     _layout = _layout.Apply(newLayout);
                 return;
             }
-
-            newLayout = controlChunk.Value as Layout;
-            if (newLayout != null)
-                _layout = ReferenceEquals(newLayout, Layout.Default)
-                    ? _initialLayout
-                    : _layout.Apply(newLayout);
 
             base.OnControlChunk(controlChunk, writer, format, formatProvider);
         }

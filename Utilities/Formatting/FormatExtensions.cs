@@ -118,7 +118,10 @@ namespace WebApplications.Utilities.Formatting
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
             if (cb != null)
-                builder.AppendControl(ConsoleColourControl.Reset);
+            {
+                builder.AppendControl(FormatChunk.CreateControl("ConsoleFore"));
+                builder.AppendControl(FormatChunk.CreateControl("ConsoleBack"));
+            }
             return builder;
         }
 
@@ -136,7 +139,7 @@ namespace WebApplications.Utilities.Formatting
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
             if (cb != null)
-                builder.AppendControl(ConsoleColourControl.ResetForeground);
+                builder.AppendControl(FormatChunk.CreateControl("ConsoleFore"));
             return builder;
         }
 
@@ -155,7 +158,7 @@ namespace WebApplications.Utilities.Formatting
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
             if (cb != null)
-                builder.AppendControl(new ConsoleColourControl(TriState.True, colour.ToString()));
+                builder.AppendControl(FormatChunk.CreateControl("ConsoleFore", null, colour.ToString(), colour));
             return builder;
         }
 
@@ -174,7 +177,7 @@ namespace WebApplications.Utilities.Formatting
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
             if (cb != null)
-                builder.AppendControl(new ConsoleColourControl(TriState.True, colour));
+                builder.AppendControl(FormatChunk.CreateControl("ConsoleFore", null, colour));
             return builder;
         }
 
@@ -192,7 +195,7 @@ namespace WebApplications.Utilities.Formatting
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
             if (cb != null)
-                builder.AppendControl(ConsoleColourControl.ResetBackground);
+                builder.AppendControl(FormatChunk.CreateControl("ConsoleBack"));
             return builder;
         }
 
@@ -211,7 +214,7 @@ namespace WebApplications.Utilities.Formatting
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
             if (cb != null)
-                builder.AppendControl(new ConsoleColourControl(TriState.False, colour.ToString()));
+                builder.AppendControl(FormatChunk.CreateControl("ConsoleBack", null, colour.ToString(), colour));
             return builder;
         }
 
@@ -230,7 +233,7 @@ namespace WebApplications.Utilities.Formatting
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
             if (cb != null)
-                builder.AppendControl(new ConsoleColourControl(TriState.False, colour));
+                builder.AppendControl(FormatChunk.CreateControl("ConsoleBack", null, colour));
             return builder;
         }
 
@@ -246,7 +249,7 @@ namespace WebApplications.Utilities.Formatting
         {
             LayoutBuilder lb = builder as LayoutBuilder;
             if (lb != null)
-                lb.AppendControl(Layout.Default);
+                lb.AppendControl(FormatChunk.CreateControl("Layout", null, Layout.Default.ToString("f"), Layout.Default));
             return builder;
         }
 
@@ -263,7 +266,11 @@ namespace WebApplications.Utilities.Formatting
         {
             LayoutBuilder lb = builder as LayoutBuilder;
             if (lb != null)
-                lb.AppendControl(layout ?? Layout.Default);
+            {
+                if (layout == null)
+                    layout = Layout.Default;
+                lb.AppendControl(FormatChunk.CreateControl("Layout", null, layout.ToString("f"), layout));
+            }
             return builder;
         }
 

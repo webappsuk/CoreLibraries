@@ -248,55 +248,24 @@ namespace WebApplications.Utilities.Formatting
                     switch (controlChunk.Tag.ToLower())
                     {
                         case "consolefore":
-                            if (string.IsNullOrEmpty(controlChunk.Format))
+                            if (controlChunk.Value is ConsoleColor)
+                                Console.ForegroundColor = (ConsoleColor) controlChunk.Value;
+                            else if (string.IsNullOrEmpty(controlChunk.Format))
                                 Console.ForegroundColor = DefaultForeColour;
                                 // ReSharper disable once AssignNullToNotNullAttribute
                             else if (TryGetColour(controlChunk.Format, out colour))
                                 Console.ForegroundColor = colour;
                             return;
                         case "consoleback":
-                            if (string.IsNullOrEmpty(controlChunk.Format))
+                            if (controlChunk.Value is ConsoleColor)
+                                Console.BackgroundColor = (ConsoleColor)controlChunk.Value;
+                            else if (string.IsNullOrEmpty(controlChunk.Format))
                                 Console.BackgroundColor = DefaultBackColour;
                                 // ReSharper disable once AssignNullToNotNullAttribute
                             else if (TryGetColour(controlChunk.Format, out colour))
                                 Console.BackgroundColor = colour;
                             return;
                     }
-                    return;
-                }
-
-                /*
-                 * Check for FormatBuilder's control chunks
-                 */
-                ConsoleColourControl colourControl = controlChunk.Value as ConsoleColourControl;
-                if (colourControl != null)
-                {
-                    if (colourControl.Colour == null)
-                    {
-                        if (colourControl.IsForeground == TriState.Equal)
-                        {
-                            Console.BackgroundColor = DefaultBackColour;
-                            Console.ForegroundColor = DefaultForeColour;
-                        }
-                        else if (colourControl.IsForeground == TriState.Yes)
-                            Console.ForegroundColor = DefaultForeColour;
-                        else if (colourControl.IsForeground == TriState.No)
-                            Console.BackgroundColor = DefaultBackColour;
-                        return;
-                    }
-
-                    if (!TryGetColour(colourControl.Colour, out colour))
-                        return;
-
-                    if (colourControl.IsForeground == TriState.Equal)
-                    {
-                        Console.BackgroundColor = colour;
-                        Console.ForegroundColor = colour;
-                    }
-                    else if (colourControl.IsForeground == TriState.Yes)
-                        Console.ForegroundColor = colour;
-                    else if (colourControl.IsForeground == TriState.No)
-                        Console.BackgroundColor = colour;
                     return;
                 }
             }

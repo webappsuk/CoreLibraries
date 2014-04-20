@@ -187,29 +187,25 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Creates a control <see cref="FormatChunk"/> from the specified value.
-        /// </summary>
-        /// <param name="value">The Value.</param>
-        /// <returns>A <see cref="FormatChunk"/>.</returns>
-        /// <remarks>Control chunks are not written out, but can be used to extend functionality.</remarks>
-        [NotNull]
-        [PublicAPI]
-        public static FormatChunk CreateControl([CanBeNull] object value)
-        {
-            return value == null ? Empty : new FormatChunk(null, null, null, value, true);
-        }
-
-        /// <summary>
         /// Creates a control <see cref="FormatChunk" /> from the specified value.
         /// </summary>
         /// <param name="tag">The tag.</param>
         /// <param name="alignment">The alignment.</param>
         /// <param name="format">The format.</param>
-        /// <returns>A <see cref="FormatChunk" />.</returns>
-        /// <remarks>Control chunks are not written out, but can be used to extend functionality.</remarks>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// A <see cref="FormatChunk" />.
+        /// </returns>
+        /// <remarks>
+        /// Control chunks are not written out, but can be used to extend functionality.
+        /// </remarks>
         [NotNull]
         [PublicAPI]
-        public static FormatChunk CreateControl([CanBeNull] string tag, [CanBeNull] int? alignment = null, [CanBeNull]  string format = null)
+        public static FormatChunk CreateControl(
+            [CanBeNull] string tag,
+            [CanBeNull] int? alignment = null,
+            [CanBeNull] string format = null,
+            [CanBeNull] object value = null)
         {
             return string.IsNullOrEmpty(tag)
                 ? Empty
@@ -217,10 +213,10 @@ namespace WebApplications.Utilities.Formatting
                     tag,
                     alignment,
                     format,
-                    string.Format(
+                    value ?? string.Format(
                         "{{!{0}{1}{2}}}",
                         tag,
-                        alignment != null ? FormatBuilder.AlignmentChar + alignment.Value.ToString() : string.Empty,
+                        alignment != null ? FormatBuilder.AlignmentChar + alignment.Value.ToString("D") : string.Empty,
                         !string.IsNullOrEmpty(format) ? FormatBuilder.FormatChar + format : string.Empty),
                     true);
         }

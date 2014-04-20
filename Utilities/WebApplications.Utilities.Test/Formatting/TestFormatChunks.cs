@@ -227,7 +227,7 @@ namespace WebApplications.Utilities.Test.Formatting
                     .SetLayout(new Layout(alignment: Alignment.Right))
                     .AppendLine(FormatResources.AtVeroEos)
                     .AppendLine()
-                    .SetLayout(new Layout(alignment: Alignment.Centre, indentSize: 4, rightMarginSize: 4))
+                    .SetLayout(new Layout(alignment: Alignment.Centre, firstLineIndentSize: 4, indentSize: 4, rightMarginSize: 4))
                     .AppendLine(FormatResources.AtVeroEos).ToString();
 
             Assert.IsFalse(text.Contains('\r'), "Text should not contain new line characters");

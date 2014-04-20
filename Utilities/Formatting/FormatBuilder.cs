@@ -882,14 +882,37 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Appends the control object for controlling formatting.
         /// </summary>
+        /// <param name="tag">The tag.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// This instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendControl(
+            [CanBeNull] string tag,
+            [CanBeNull] int? alignment = null,
+            [CanBeNull] string format = null,
+            [CanBeNull] object value = null)
+        {
+            _chunks.Add(FormatChunk.CreateControl(tag, alignment, format, value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the control object for controlling formatting.
+        /// </summary>
         /// <param name="control">The control.</param>
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendControl([NotNull] object control)
+        public FormatBuilder AppendControl([NotNull] FormatChunk control)
         {
             Contract.Requires(control != null);
-            _chunks.Add(FormatChunk.CreateControl(control));
+            Contract.Requires(control.IsControl);
+            _chunks.Add(control);
             return this;
         }
 
