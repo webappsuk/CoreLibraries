@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
@@ -324,6 +325,42 @@ namespace WebApplications.Utilities.Test.Formatting
             str = builder.ToString("s", null);
             Trace.WriteLine("    " + str);
             Assert.AreEqual("abc,    4, 5   , ", str);
+        }
+
+        [TestMethod]
+        public void TestCloneFormatBuilder()
+        {
+            FormatBuilder builder = new FormatBuilder()
+                .SetLayout(50)
+                .AppendLine(FormatResources.LoremIpsum)
+                .ConsoleForeColour("Red")
+                .AppendLine(FormatResources.SedUtPerspiciatis)
+                .AppendLine(FormatResources.AtVeroEos)
+                .AppendFormatLine("Some text with a {0} thing", "format");
+
+            FormatBuilder clone = builder.Clone();
+
+            Assert.IsTrue(builder.SequenceEqual(clone), "Chunks are not equal");
+            Assert.AreEqual(builder.ToString(), clone.ToString());
+        }
+
+        [TestMethod]
+        public void TestCloneLayoutBuilder()
+        {
+            FormatBuilder builder = new LayoutBuilder()
+                .SetLayout(50)
+                .AppendLine(FormatResources.LoremIpsum)
+                .ConsoleForeColour("Red")
+                .AppendLine(FormatResources.SedUtPerspiciatis)
+                .AppendLine(FormatResources.AtVeroEos)
+                .AppendFormatLine("Some text with a {0} thing", "format");
+
+            FormatBuilder clone = builder.Clone();
+
+            Assert.IsInstanceOfType(clone, typeof(LayoutBuilder));
+
+            Assert.IsTrue(builder.SequenceEqual(clone), "Chunks are not equal");
+            Assert.AreEqual(builder.ToString(), clone.ToString());
         }
     }
 }

@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Text;
 using JetBrains.Annotations;
 
@@ -112,6 +113,9 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleResetColours([NotNull] this FormatBuilder builder)
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             if (!ConsoleHelper.IsConsole) return builder;
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
@@ -133,6 +137,9 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleResetForeColour([NotNull] this FormatBuilder builder)
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             if (!ConsoleHelper.IsConsole) return builder;
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
@@ -152,6 +159,9 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleForeColour([NotNull] this FormatBuilder builder, ConsoleColor colour)
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             if (!ConsoleHelper.IsConsole) return builder;
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
@@ -171,6 +181,9 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleForeColour([NotNull] this FormatBuilder builder, [CanBeNull] string colour)
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             if (!ConsoleHelper.IsConsole) return builder;
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
@@ -189,6 +202,9 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleResetBackColour([NotNull] this FormatBuilder builder)
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             if (!ConsoleHelper.IsConsole) return builder;
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
@@ -208,6 +224,9 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleBackColour([NotNull] this FormatBuilder builder, ConsoleColor colour)
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             if (!ConsoleHelper.IsConsole) return builder;
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
@@ -227,6 +246,9 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ConsoleBackColour([NotNull] this FormatBuilder builder, [CanBeNull] string colour)
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             if (!ConsoleHelper.IsConsole) return builder;
 
             ConsoleBuilder cb = builder as ConsoleBuilder;
@@ -245,6 +267,9 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder ResetLayout([NotNull] this FormatBuilder builder)
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             LayoutBuilder lb = builder as LayoutBuilder;
             if (lb != null)
                 lb.AppendControl(
@@ -263,6 +288,9 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public static FormatBuilder SetLayout([NotNull] this FormatBuilder builder, [CanBeNull] Layout layout)
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             LayoutBuilder lb = builder as LayoutBuilder;
             if (lb != null)
             {
@@ -311,6 +339,9 @@ namespace WebApplications.Utilities.Formatting
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
+            Contract.Requires(!builder.IsReadonly);
+            if (builder.IsReadonly) return builder;
+
             LayoutBuilder lb = builder as LayoutBuilder;
             if (lb != null)
             {

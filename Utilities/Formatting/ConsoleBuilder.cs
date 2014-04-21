@@ -30,6 +30,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
@@ -74,8 +75,8 @@ namespace WebApplications.Utilities.Formatting
                 return width > ushort.MaxValue
                     ? ushort.MaxValue
                     : (width < 1
-                        ? (ushort) 1
-                        : (ushort) width);
+                        ? (ushort)1
+                        : (ushort)width);
             }
         }
 
@@ -116,6 +117,19 @@ namespace WebApplications.Utilities.Formatting
             : base(values, layout == null ? null : layout.Apply(ConsoleWidth, wrapMode: LayoutWrapMode.PadToWrap))
         {
             UpdateLayout();
+        }
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>
+        /// A shallow copy of this builder.
+        /// </returns>
+        public override FormatBuilder Clone()
+        {
+            ConsoleBuilder consoleBuilder = new ConsoleBuilder(Values, InitialLayout);
+            consoleBuilder.Append(this.Select(c => c.Clone()));
+            return consoleBuilder;
         }
 
         /// <summary>
@@ -161,9 +175,10 @@ namespace WebApplications.Utilities.Formatting
             Console.BackgroundColor = bc;
 
             // Update the width and wrap mode
-            ApplyLayout(
-                ConsoleWidth,
-                wrapMode: LayoutWrapMode.PadToWrap);
+            if (!IsReadonly)
+                ApplyLayout(
+                    ConsoleWidth,
+                    wrapMode: LayoutWrapMode.PadToWrap);
 
             return Console.CursorLeft;
         }
@@ -282,10 +297,10 @@ namespace WebApplications.Utilities.Formatting
                     {
                         case "consolefore":
                             if (controlChunk.Value is ConsoleColor)
-                                Console.ForegroundColor = (ConsoleColor) controlChunk.Value;
+                                Console.ForegroundColor = (ConsoleColor)controlChunk.Value;
                             else if (string.IsNullOrEmpty(controlChunk.Format))
                                 Console.ForegroundColor = DefaultForeColour;
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             else if (TryGetColour(controlChunk.Format, out colour))
                                 Console.ForegroundColor = colour;
                             return;
@@ -294,7 +309,7 @@ namespace WebApplications.Utilities.Formatting
                                 Console.BackgroundColor = (ConsoleColor)controlChunk.Value;
                             else if (string.IsNullOrEmpty(controlChunk.Format))
                                 Console.BackgroundColor = DefaultBackColour;
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             else if (TryGetColour(controlChunk.Format, out colour))
                                 Console.BackgroundColor = colour;
                             return;

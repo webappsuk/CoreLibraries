@@ -81,6 +81,11 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         private readonly List<FormatChunk> _chunks = new List<FormatChunk>();
 
+        /// <summary>
+        /// Whether this builder is readonly
+        /// </summary>
+        private bool _isReadonly;
+
         #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatBuilder" /> class.
@@ -107,7 +112,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder(
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            _values = values == null || _values.Count < 1 ? _empty : values;
+            _values = values == null || values.Count < 1 ? _empty : values;
         }
         #endregion
 
@@ -153,9 +158,48 @@ namespace WebApplications.Utilities.Formatting
         /// Gets a value indicating whether this instance is empty.
         /// </summary>
         /// <value><see langword="true" /> if this instance is empty; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
         public bool IsEmpty
         {
             get { return _chunks.Count < 1; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this builder is readonly.
+        /// </summary>
+        /// <value>
+        /// <see langword="true" /> if this builder is readonly; otherwise, <see langword="false" />.
+        /// </value>
+        /// <remarks>A readonly builder cannot have any more chunks appended, but fill points can still be resolved.</remarks>
+        [PublicAPI]
+        public bool IsReadonly
+        {
+            get { return _isReadonly; }
+        }
+
+        /// <summary>
+        /// Makes this builder readonly.
+        /// </summary>
+        [PublicAPI]
+        public void MakeReadonly()
+        {
+            _isReadonly = true;
+        }
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>A shallow copy of this builder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public virtual FormatBuilder Clone()
+        {
+            Contract.Ensures(Contract.Result<FormatBuilder>().GetType() == this.GetType(),
+                "All classes derived from FormatBuilder should overload this method and return a builder of their own type");
+
+            FormatBuilder formatBuilder = new FormatBuilder(_values);
+            formatBuilder._chunks.AddRange(_chunks.Select(c => c.Clone()));
+            return formatBuilder;
         }
 
         #region Append overloads
@@ -168,6 +212,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(bool value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -181,6 +227,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(sbyte value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -194,6 +242,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(byte value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -207,6 +257,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(char value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -220,6 +272,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(short value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -233,6 +287,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(int value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -246,6 +302,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(long value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -259,6 +317,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(float value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -272,6 +332,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(double value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -285,6 +347,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(decimal value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -298,6 +362,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(ushort value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -311,6 +377,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(uint value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -324,6 +392,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(ulong value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -337,7 +407,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] object value)
         {
-            if (value != null)
+            Contract.Requires(!IsReadonly);
+            if (!_isReadonly && value != null)
                 _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -351,7 +422,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] char[] value)
         {
-            if ((value != null) &&
+            Contract.Requires(!IsReadonly);
+            if (!_isReadonly &&
+                (value != null) &&
                 (value.Length > 0))
                 _chunks.Add(FormatChunk.Create(new string(value)));
             return this;
@@ -368,7 +441,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] char[] value, int startIndex, int charCount)
         {
-            if ((value != null) &&
+            Contract.Requires(!IsReadonly);
+            if (!_isReadonly &&
+                (value != null) &&
                 (value.Length > 0) &&
                 (startIndex >= 0) &&
                 (charCount >= 0))
@@ -390,7 +465,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(char value, int repeatCount)
         {
-            if (repeatCount > 0)
+            Contract.Requires(!IsReadonly);
+            if (!_isReadonly &&
+                repeatCount > 0)
                 _chunks.Add(FormatChunk.Create(new string(value, repeatCount)));
             return this;
         }
@@ -404,7 +481,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] string value)
         {
-            if (!string.IsNullOrEmpty(value))
+            Contract.Requires(!IsReadonly);
+            if (!_isReadonly &&
+                !string.IsNullOrEmpty(value))
                 _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -418,7 +497,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
-            if (chunks != null)
+            Contract.Requires(!IsReadonly);
+            if (!_isReadonly &&
+                chunks != null)
                 _chunks.AddRange(chunks);
             return this;
         }
@@ -432,7 +513,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] FormatBuilder builder)
         {
-            if (builder != null &&
+            Contract.Requires(!IsReadonly);
+            if (!_isReadonly &&
+                builder != null &&
                 !builder.IsEmpty)
                 _chunks.AddRange(builder);
             return this;
@@ -448,6 +531,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine()
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -461,6 +546,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(bool value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -475,6 +562,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(sbyte value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -489,6 +578,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(byte value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -503,6 +594,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(char value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -517,6 +610,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(short value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -531,6 +626,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(int value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -545,6 +642,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(long value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -559,6 +658,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(float value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -573,6 +674,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(double value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -587,6 +690,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(decimal value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -601,6 +706,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(ushort value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -615,6 +722,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(uint value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -629,6 +738,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(ulong value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -643,6 +754,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] object value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (value != null)
                 _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -658,6 +771,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] char[] value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if ((value != null) &&
                 (value.Length > 0))
                 _chunks.Add(FormatChunk.Create(new string(value)));
@@ -676,6 +791,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] char[] value, int startIndex, int charCount)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if ((value != null) &&
                 (value.Length > 0) &&
                 (startIndex >= 0) &&
@@ -699,6 +816,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(char value, int repeatCount)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (repeatCount > 0)
                 _chunks.Add(FormatChunk.Create(new string(value, repeatCount)));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -714,6 +833,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] string value)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(value))
                 _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -729,6 +850,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (chunks != null)
                 _chunks.AddRange(chunks);
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -744,6 +867,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] FormatBuilder builder)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (builder != null &&
                 !builder.IsEmpty)
                 _chunks.AddRange(builder);
@@ -761,8 +886,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public FormatBuilder AppendFormat([CanBeNull] string format, [CanBeNull] params object[] args)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
                 AppendFormatInternal(format, ToDictionary(args));
             return this;
@@ -780,6 +908,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
                 AppendFormatInternal(format, values ?? _empty);
             return this;
@@ -795,6 +925,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendFormatLine()
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -808,6 +940,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendFormatLine([CanBeNull] string format)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
                 AppendFormatInternal(format, _empty);
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -822,8 +956,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine([CanBeNull] string format, [CanBeNull] params object[] args)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
                 AppendFormatInternal(format, ToDictionary(args));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -842,6 +979,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
                 AppendFormatInternal(format, values ?? _empty);
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -859,6 +998,7 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(format != null);
             Contract.Requires(values != null);
+            Contract.Requires(!IsReadonly);
             values = values.Count < 1
                 ? _values
                 : values.Union(_values)
@@ -898,6 +1038,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format = null,
             [CanBeNull] object value = null)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(FormatChunk.CreateControl(tag, alignment, format, value));
             return this;
         }
@@ -913,6 +1055,8 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(control != null);
             Contract.Requires(control.IsControl);
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             _chunks.Add(control);
             return this;
         }

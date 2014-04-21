@@ -52,7 +52,7 @@ namespace WebApplications.Utilities.Formatting
 
             [NotNull]
             private readonly List<FormatChunk> _controls = new List<FormatChunk>();
-            
+
             /// <summary>
             /// The layout for the line.
             /// </summary>
@@ -355,6 +355,19 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>
+        /// A shallow copy of this builder.
+        /// </returns>
+        public override FormatBuilder Clone()
+        {
+            LayoutBuilder layoutBuilder = new LayoutBuilder(Values, _initialLayout);
+            layoutBuilder.Append(this.Select(c => c.Clone()));
+            return layoutBuilder;
+        }
+
+        /// <summary>
         /// Gets or sets the layout.
         /// </summary>
         /// <value>The layout.</value>
@@ -402,6 +415,9 @@ namespace WebApplications.Utilities.Formatting
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
+            Contract.Requires(!IsReadonly);
+            if (IsReadonly) return _layout;
+
             return (_layout = _layout.Apply(
                 width,
                 indentSize,
@@ -427,6 +443,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public Layout ApplyLayout([CanBeNull] Layout layout)
         {
+            Contract.Requires(!IsReadonly);
+            if (IsReadonly) return _layout;
+
             if (layout == null) return _layout;
             return (_layout = _layout.Apply(layout));
         }
@@ -752,9 +771,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0)
                         {
-                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
-                            int o = (int) Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
+                            decimal space = (decimal)(line.End - line.LastWordLength - line.Start) / remaining;
+                            int o = (int)Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
                         }
                         break;
                     default:
@@ -894,7 +913,7 @@ namespace WebApplications.Utilities.Formatting
                 writer.Write(sb.ToString());
 
             // Restore the initial layout, in case someone tries to write us out again.
-            _layout = _initialLayout;
+            _layout = InitialLayout;
         }
 
 

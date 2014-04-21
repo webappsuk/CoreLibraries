@@ -374,5 +374,15 @@ namespace WebApplications.Utilities.Formatting
 
             return value;
         }
+
+        /// <summary>
+        /// Clones this instance.
+        /// </summary>
+        /// <returns>A shallow copy of this chunk.</returns>
+        [NotNull]
+        public FormatChunk Clone()
+        {
+            return new FormatChunk(Tag, Alignment, Format, Value, IsControl);
+        }
     }
 }
