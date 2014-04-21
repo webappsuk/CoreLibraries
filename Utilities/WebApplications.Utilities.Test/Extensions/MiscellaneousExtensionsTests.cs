@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -801,13 +802,23 @@ namespace WebApplications.Utilities.Test.Extensions
         }
 
         [TestMethod]
-        public void SafeFormat_IncorrectFormatString_ReturnFormatString()
+        public void SafeFormat_IncorrectFormatParameters_ReturnFormatString()
         {
             int a = Random.Next();
             int b = Random.Next(0, 256);
             const string formatString = "Test string to format with too many parameters: {3} {1:X2} and {0}";
+            Assert.AreEqual(String.Format(formatString, a, b, null, "{3}"), formatString.SafeFormat(a, b),
+                            "SafeFormat should silently return the string with as many fill points filled in if parameters are missing.");
+        }
+
+        [TestMethod]
+        public void SafeFormat_IncorrectFormatString_ReturnFormatString()
+        {
+            int a = Random.Next();
+            int b = Random.Next(0, 256);
+            const string formatString = "Test string to format with invalid format: {1:z} and {0}";
             Assert.AreEqual(formatString, formatString.SafeFormat(a, b),
-                            "SafeFormat should silently return the string if the string is not a valid format string for the parameters supplied.");
+                            "SafeFormat should silently return the string if the string is not a valid format string.");
         }
 
         [TestMethod]

@@ -236,16 +236,16 @@ namespace WebApplications.Utilities.Test.Formatting
                     .SetLayout(alignment: Alignment.Centre, firstLineIndentSize: 4, indentSize: 4, rightMarginSize: 4)
                     .AppendLine(FormatResources.AtVeroEos).ToString();
 
-            Assert.IsFalse(text.Contains('\r'), "Text should not contain new line characters");
-            Assert.IsFalse(text.Contains('\n'), "Text should not contain new line characters");
-            Assert.IsTrue(text.Length % width == 0, "Text length should be a multiple of the width");
-
             // Simulate console wrapping
             for (int i = 0; i < text.Length; i += width)
             {
                 Trace.Write((i + width) >= text.Length ? text.Substring(i) : text.Substring(i, width));
                 Trace.WriteLine("|");
             }
+
+            Assert.IsFalse(text.Contains('\r'), "Text should not contain new line characters");
+            Assert.IsFalse(text.Contains('\n'), "Text should not contain new line characters");
+            Assert.IsTrue(text.Length % width == 0, "Text length should be a multiple of the width");
         }
 
         [TestMethod]

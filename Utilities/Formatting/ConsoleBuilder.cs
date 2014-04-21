@@ -32,7 +32,6 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Enumerations;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -61,13 +60,33 @@ namespace WebApplications.Utilities.Formatting
         public static ConsoleColor DefaultBackColour;
 
         /// <summary>
+        /// Gets the width of the console.
+        /// </summary>
+        /// <value>
+        /// The width of the console.
+        /// </value>
+        [PublicAPI]
+        public static ushort ConsoleWidth
+        {
+            get
+            {
+                int width = Console.BufferWidth;
+                return width > ushort.MaxValue
+                    ? ushort.MaxValue
+                    : (width < 1
+                        ? (ushort) 1
+                        : (ushort) width);
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleBuilder" /> class.
         /// </summary>
         /// <param name="layout">The layout.</param>
         [PublicAPI]
         public ConsoleBuilder(
             [CanBeNull] Layout layout = null)
-            : base(layout)
+            : base(layout == null ? null : layout.Apply(ConsoleWidth, wrapMode: LayoutWrapMode.PadToWrap))
         {
             UpdateLayout();
         }
@@ -80,7 +99,7 @@ namespace WebApplications.Utilities.Formatting
         public ConsoleBuilder(
             [CanBeNull] [InstantHandle] IEnumerable<object> values,
             [CanBeNull] Layout layout = null)
-            : base(values, layout)
+            : base(values, layout == null ? null : layout.Apply(ConsoleWidth, wrapMode: LayoutWrapMode.PadToWrap))
         {
             UpdateLayout();
         }
@@ -94,9 +113,28 @@ namespace WebApplications.Utilities.Formatting
         public ConsoleBuilder(
             [CanBeNull] IReadOnlyDictionary<string, object> values,
             [CanBeNull] Layout layout = null)
-            : base(values, layout)
+            : base(values, layout == null ? null : layout.Apply(ConsoleWidth, wrapMode: LayoutWrapMode.PadToWrap))
         {
             UpdateLayout();
+        }
+
+        /// <summary>
+        /// Gets the initial layout to use when resetting the layout.
+        /// </summary>
+        /// <value>
+        /// The initial layout. If the current application running in a console, the current <see cref="ConsoleWidth"/> 
+        /// and wrap mode <see cref="LayoutWrapMode.PadToWrap"/> will be applied.
+        /// </value>
+        protected override Layout InitialLayout
+        {
+            get
+            {
+                if (!ConsoleHelper.IsConsole)
+                    return base.InitialLayout;
+                return base.InitialLayout.Apply(
+                    ConsoleWidth,
+                    wrapMode: LayoutWrapMode.PadToWrap);
+            }
         }
 
         /// <summary>
@@ -122,14 +160,9 @@ namespace WebApplications.Utilities.Formatting
             Console.ForegroundColor = fc;
             Console.BackgroundColor = bc;
 
-            // Update the width
-            int width = Console.BufferWidth;
+            // Update the width and wrap mode
             ApplyLayout(
-                width > ushort.MaxValue
-                    ? ushort.MaxValue
-                    : (width < 1
-                        ? (ushort) 1
-                        : (ushort) width),
+                ConsoleWidth,
                 wrapMode: LayoutWrapMode.PadToWrap);
 
             return Console.CursorLeft;

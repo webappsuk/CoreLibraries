@@ -314,8 +314,8 @@ namespace WebApplications.Utilities.Test.Ranges
             // note that the number of steps is limited to 1000 or fewer
             int step = length.Days/Random.Next(4, Math.Max(4, Math.Min(length.Days/2, 1000)));
 
-            // In case range length is under 4, ensure the step is at least 1
-            if (step < 1) step = 1;
+            // In case range length is under 4, ensure the step is at least 2
+            if (step < 2) step = 2;
 
             //ensure that step size is not a factor of the length of the range
             if (length.Days%step == 0)

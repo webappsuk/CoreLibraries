@@ -50,37 +50,9 @@ namespace WebApplications.Utilities.Formatting
             [NotNull]
             private readonly List<string> _chunks = new List<string>();
 
-            /// <summary>
-            /// The control chunk
-            /// </summary>
-            [CanBeNull]
-            private FormatChunk _controlChunk;
-
-            /// <summary>
-            /// Gets the control chunk.
-            /// </summary>
-            /// <value>
-            /// The control chunk.
-            /// </value>
-            [CanBeNull]
-            [PublicAPI]
-            public FormatChunk ControlChunk
-            {
-                get { return _controlChunk; }
-            }
-
-            /// <summary>
-            /// Gets a value indicating whether this line has a control chunk.
-            /// </summary>
-            /// <value>
-            /// <see langword="true" /> if this line has a control chunk; otherwise, <see langword="false" />.
-            /// </value>
-            [PublicAPI]
-            public bool IsControl
-            {
-                get { return _controlChunk != null; }
-            }
-
+            [NotNull]
+            private readonly List<FormatChunk> _controls = new List<FormatChunk>();
+            
             /// <summary>
             /// The layout for the line.
             /// </summary>
@@ -165,7 +137,8 @@ namespace WebApplications.Utilities.Formatting
                     for (int c = _chunks.Count - 1; c > -1; c--)
                     {
                         string chunk = _chunks[c];
-                        Contract.Assert(!string.IsNullOrEmpty(chunk));
+                        if (chunk == null)
+                            continue;
                         if (!Char.IsWhiteSpace(chunk[0]))
                             break;
                         _chunks.RemoveAt(c);
@@ -205,7 +178,6 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Requires(chunk != null);
                 Contract.Requires(chunk.Length > 0);
-                Contract.Requires(!IsControl);
                 _chunks.Add(chunk);
                 _length += chunk.Length;
             }
@@ -215,13 +187,23 @@ namespace WebApplications.Utilities.Formatting
             /// </summary>
             /// <param name="chunk">The chunk.</param>
             [PublicAPI]
-            public void SetControl([NotNull] FormatChunk chunk)
+            public void AddControl([NotNull] FormatChunk chunk)
             {
                 Contract.Requires(chunk != null);
                 Contract.Requires(chunk.IsControl);
-                Contract.Requires(!IsControl);
                 _chunks.Add(null);
-                _controlChunk = chunk;
+                _controls.Add(chunk);
+            }
+
+            /// <summary>
+            /// Gets the controls.
+            /// </summary>
+            /// <value>The controls.</value>
+            [NotNull]
+            [PublicAPI]
+            public IEnumerable<FormatChunk> Controls
+            {
+                get { return _controls; }
             }
 
             /// <summary>
@@ -315,6 +297,18 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [NotNull]
         private readonly Layout _initialLayout;
+
+        /// <summary>
+        /// Gets the initial layout to use when resetting the layout.
+        /// </summary>
+        /// <value>
+        /// The initial layout.
+        /// </value>
+        [NotNull]
+        protected virtual Layout InitialLayout
+        {
+            get { return _initialLayout; }
+        }
 
         /// <summary>
         /// The current layout
@@ -598,25 +592,45 @@ namespace WebApplications.Utilities.Formatting
 
                         bool success = controlEnumerator.MoveNext();
                         Contract.Assert(success);
-                        Contract.Assert(controlEnumerator.Current != null);
-                        line.SetControl(controlEnumerator.Current);
 
-                        line.Finish(false, false);
-                        yield return line;
+                        FormatChunk controlChunk = controlEnumerator.Current;
+                        Contract.Assert(controlChunk != null);
 
-                        firstLine = line.IsFirstLine;
+                        // If the control chunk is a layout chunk, we need to get the layout
+                        if (string.Equals(controlChunk.Tag, "layout", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            Layout newLayout = controlChunk.Value as Layout;
 
-                        // Start a new line
-                        layout = _layout;
-                        line = new Line(
-                            layout,
-                            layout.Alignment.Value,
-                            firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
-                            layout.Width.Value - layout.RightMarginSize.Value,
-                            firstLine);
-                        firstLine = false;
-                        splitWords = layout.SplitWords.Value;
-                        hyphenate = layout.Hyphenate.Value ? 1 : 0;
+                            if (newLayout != null)
+                                _layout = ReferenceEquals(newLayout, Layout.Default)
+                                    ? InitialLayout
+                                    : _layout.Apply(newLayout);
+                            else if (string.IsNullOrEmpty(controlChunk.Format))
+                                _layout = InitialLayout;
+                            else if (Layout.TryParse(controlChunk.Format, out newLayout))
+                                _layout = _layout.Apply(newLayout);
+
+                            if (!line.IsEmpty) continue;
+
+                            // If the line is empty, we can create a new line using the new layout
+
+                            firstLine = line.IsFirstLine;
+
+                            // Start a new line
+                            layout = _layout;
+                            line = new Line(
+                                layout,
+                                layout.Alignment.Value,
+                                firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
+                                layout.Width.Value - layout.RightMarginSize.Value,
+                                firstLine);
+                            firstLine = false;
+                            splitWords = layout.SplitWords.Value;
+                            hyphenate = layout.Hyphenate.Value ? 1 : 0;
+                        }
+                        else
+                            line.AddControl(controlChunk);
+
                     } while (true);
 
                 char c = word[0];
@@ -717,12 +731,6 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(line != null);
 
-                if (line.IsControl)
-                {
-                    yield return line.ControlChunk;
-                    continue;
-                }
-
                 char indentChar = line.Layout.IndentChar.Value;
                 int indent;
                 Queue<int> spacers = null;
@@ -760,15 +768,29 @@ namespace WebApplications.Utilities.Formatting
                     lb.Append(indentChar, indent);
 
                 int p = 0;
+                IEnumerator<FormatChunk> controlEnumerator = line.Controls.GetEnumerator();
                 foreach (string chunk in line)
                 {
-                    Contract.Assert(!string.IsNullOrEmpty(chunk));
+                    if (string.IsNullOrEmpty(chunk))
+                    {
+                        // We got a control chunk, so need to split line
+                        if (lb.Length > 0)
+                        {
+                            yield return FormatChunk.Create(lb.ToString());
+                            lb.Clear();
+                        }
+                        bool success = controlEnumerator.MoveNext();
+                        Contract.Assert(success);
+                        Contract.Assert(controlEnumerator.Current != null);
+                        yield return controlEnumerator.Current;
+                        continue;
+                    }
 
                     lb.Append(chunk);
+                    p += chunk.Length;
 
                     // Check if we have to add justification spaces
                     if (spacers == null) continue;
-                    p += chunk.Length;
 
                     while ((spacers.Count > 0) &&
                            (spacers.Peek() <= p))
@@ -783,6 +805,8 @@ namespace WebApplications.Utilities.Formatting
                         spacers = null;
                 }
 
+                int lineLen = p + indent;
+
                 // Add any remaining justification spaces
                 if (line.Terminated)
                 {
@@ -792,11 +816,11 @@ namespace WebApplications.Utilities.Formatting
                             lb.AppendLine();
                             break;
                         case LayoutWrapMode.NewLineOnShort:
-                            if (lb.Length < line.Layout.Width.Value)
+                            if (lineLen < line.Layout.Width.Value)
                                 lb.AppendLine();
                             break;
                         case LayoutWrapMode.PadToWrap:
-                            lb.Append(line.Layout.IndentChar.Value, line.Layout.Width.Value - lb.Length);
+                            lb.Append(line.Layout.IndentChar.Value, line.Layout.Width.Value - lineLen);
                             break;
                         default:
                             Contract.Assert(false);
@@ -936,39 +960,7 @@ namespace WebApplications.Utilities.Formatting
                 await writer.WriteAsync(sb.ToString());
 
             // Restore the initial layout, in case someone tries to write us out again.
-            _layout = _initialLayout;
-        }
-
-        /// <summary>
-        /// Called when a control chunk is encountered.
-        /// </summary>
-        /// <param name="controlChunk">The control chunk.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        protected override void OnControlChunk(
-            FormatChunk controlChunk,
-            TextWriter writer,
-            string format,
-            IFormatProvider formatProvider)
-        {
-            if (string.Equals(controlChunk.Tag, "layout", StringComparison.InvariantCultureIgnoreCase))
-            {
-                Layout newLayout = controlChunk.Value as Layout;
-             
-                if (newLayout != null)
-                    _layout = ReferenceEquals(newLayout, Layout.Default)
-                        ? _initialLayout
-                        : _layout.Apply(newLayout);
-                else if (string.IsNullOrEmpty(controlChunk.Format))
-                    _layout = _initialLayout;
-                else if (Layout.TryParse(controlChunk.Format, out newLayout))
-                    _layout = _layout.Apply(newLayout);
-                return;
-            }
-
-            base.OnControlChunk(controlChunk, writer, format, formatProvider);
+            _layout = InitialLayout;
         }
 
         /// <summary>

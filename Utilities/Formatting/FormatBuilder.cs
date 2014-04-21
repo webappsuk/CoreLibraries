@@ -874,9 +874,9 @@ namespace WebApplications.Utilities.Formatting
                 if (hasValues &&
                     chunk.IsFillPoint &&
                     values.TryGetValue(chunk.Tag, out value))
-                    _chunks.Add(FormatChunk.Create(value));
-                else
-                    _chunks.Add(chunk);
+                    chunk.Value = value;
+
+                _chunks.Add(chunk);
             }
         }
 

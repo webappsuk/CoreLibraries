@@ -1103,11 +1103,18 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string SafeFormat([CanBeNull]this string format, [CanBeNull]params object[] parameters)
         {
-            if (format == null) return null;
+            if (string.IsNullOrWhiteSpace(format)) return null;
             if (parameters == null || parameters.Length < 1)
                 return format;
 
-            return new FormatBuilder(parameters).AppendFormat(format).ToString();
+            try
+            {
+                return new FormatBuilder(parameters).AppendFormat(format).ToString();
+            }
+            catch (FormatException)
+            {
+                return format;
+            }
         }
 
         /// <summary>
@@ -1122,11 +1129,18 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static string SafeFormat([CanBeNull]this string format, [CanBeNull]string formatOptions, [CanBeNull]IFormatProvider formatProvider, [CanBeNull]params object[] parameters)
         {
-            if (format == null) return null;
+            if (string.IsNullOrWhiteSpace(format)) return null;
             if (parameters == null || parameters.Length < 1)
                 return format;
 
-            return new FormatBuilder(parameters).AppendFormat(format).ToString(formatOptions, formatProvider);
+            try
+            {
+                return new FormatBuilder(parameters).AppendFormat(format).ToString(formatOptions, formatProvider);
+            }
+            catch (FormatException)
+            {
+                return format;
+            }
         }
 
         /// <summary>
