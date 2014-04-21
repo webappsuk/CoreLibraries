@@ -42,8 +42,10 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
+using Microsoft.SqlServer.Server;
 using ProtoBuf;
 using ProtoBuf.Meta;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -296,7 +298,7 @@ namespace WebApplications.Utilities.Logging
             [CanBeNull] params object[] parameters)
             : this()
         {
-            Contract.Requires((format == null) ^ (resource == null));
+            Contract.Requires((format == null) ^ (resource == null) || (exception != null));
             Contract.Requires(resourceType == null || format != null);
 
             _guid = CombGuid.NewCombGuid();
@@ -1537,48 +1539,7 @@ namespace WebApplications.Utilities.Logging
             [NotNull] CultureInfo culture,
             [CanBeNull] IFormatProvider formatProvider = null)
         {
-            if (format == null) format = LogFormat.General.ToString();
-
-            if (formatProvider != null)
-            {
-                ICustomFormatter formatter = formatProvider.GetFormat(typeof (Log)) as ICustomFormatter;
-
-                if (formatter != null)
-                    return formatter.Format(format, this, formatProvider) ?? String.Empty;
-            }
-
-            // Try to get the actual format if specified as an enum.
-            LogFormat logFormat;
-            if (_formats.TryGetValue(format, out logFormat) ||
-                Enum.TryParse(format, true, out logFormat))
-                return ToString(logFormat); // TODO
-
-            // Get format chunks
-            StringBuilder builder = new StringBuilder(format.Length * 2);
-            foreach (Tuple<string, string, string> tuple in format.FormatChunks())
-            {
-                Contract.Assert(tuple != null);
-                if (String.IsNullOrEmpty(tuple.Item1) ||
-                    (!_formats.TryGetValue(tuple.Item1, out logFormat) &&
-                     !Enum.TryParse(tuple.Item1, true, out logFormat)))
-                {
-                    // We didn't recognise the format string (if there was one), so we just output the chunk un-escaoed.
-                    builder.AddUnescaped(tuple.Item3);
-                    continue;
-                }
-
-                // Append the formatted options.
-                AppendFormatted(
-                    builder,
-                    logFormat,
-                    culture,
-                    tuple.Item2 != null
-                        ? tuple.Item2.Unescape()
-                        : null);
-            }
-
-            // Output our formatted string.
-            return builder.ToString();
+            return AppendTo(new LayoutBuilder(), format, culture, formatProvider).ToString();
         }
 
         /// <summary>
@@ -1645,15 +1606,161 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public string ToString(LogFormat format, [NotNull] CultureInfo culture, [CanBeNull] string options = null)
         {
-            if (format == LogFormat.None)
-                return String.Empty;
-            StringBuilder builder = new StringBuilder();
-            AppendFormatted(builder, format, culture, options);
-            return builder.ToString();
+            return format == LogFormat.None 
+                ? String.Empty 
+                : AppendTo(new LayoutBuilder(), format, culture, options).ToString();
+        }
+        #endregion
+
+        #region AppendTo
+
+        /// <summary>
+        /// Appends this log to the <paramref name="builder"/> given.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>The <paramref name="builder"/> that was given.</returns>
+        [NotNull]
+        [PublicAPI]
+        public LayoutBuilder AppendTo([NotNull] LayoutBuilder builder, [CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            return AppendTo(builder, format, CultureInfo.CurrentCulture, formatProvider);
         }
 
         /// <summary>
-        /// Appends the the formatted information.
+        /// Appends this log to the <paramref name="builder"/> given.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="culture">The culture.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>The <paramref name="builder"/> that was given.</returns>
+        [NotNull]
+        [PublicAPI]
+        public LayoutBuilder AppendTo(
+            [NotNull] LayoutBuilder builder,  
+            [CanBeNull] string format,
+            [NotNull] CultureInfo culture,
+            [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (format == null) format = LogFormat.General.ToString();
+
+            if (formatProvider != null)
+            {
+                ICustomFormatter formatter = formatProvider.GetFormat(typeof(Log)) as ICustomFormatter;
+
+                if (formatter != null)
+                    return (LayoutBuilder)builder.Append(formatter.Format(format, this, formatProvider) ?? String.Empty);
+            }
+
+            // Try to get the actual format if specified as an enum.
+            LogFormat logFormat;
+            if (_formats.TryGetValue(format, out logFormat) ||
+                Enum.TryParse(format, true, out logFormat))
+                return AppendTo(builder, logFormat); // TODO
+
+            //// Get format chunks
+            //StringBuilder builder = new StringBuilder(format.Length * 2);
+            foreach (FormatChunk chunk in format.FormatChunks())
+            {
+                Contract.Assert(chunk != null);
+
+                if (chunk.IsControl)
+                {
+                    builder.AppendControl(chunk);
+                    continue;
+                }
+
+                if (!chunk.IsFillPoint ||
+                    string.IsNullOrEmpty(chunk.Tag) ||
+                    (!_formats.TryGetValue(chunk.Tag, out logFormat) &&
+                     !Enum.TryParse(chunk.Tag, true, out logFormat)))
+                {
+                    // TODO Change to overload that takes a single chunk
+                    builder.Append(new[] {chunk});
+                    continue;
+                }
+
+                // Append the formatted options.
+                AppendFormatted(
+                    builder,
+                    logFormat,
+                    culture,
+                    chunk.Format);
+            }
+
+            // Output our formatted string.
+            return builder;
+        }
+
+        /// <summary>
+        /// Appends this log to the <paramref name="builder"/> given.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns>The <paramref name="builder"/> that was given.</returns>
+        [NotNull]
+        [PublicAPI]
+        public LayoutBuilder AppendTo([NotNull] LayoutBuilder builder, [NotNull] CultureInfo culture)
+        {
+            return AppendTo(builder, LogFormat.General, culture);
+        }
+
+        /// <summary>
+        /// Appends this log to the <paramref name="builder"/> given.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public LayoutBuilder AppendTo([NotNull] LayoutBuilder builder, [CanBeNull] IFormatProvider formatProvider)
+        {
+            return AppendTo(builder, null, formatProvider);
+        }
+
+        /// <summary>
+        /// Appends this log to the <paramref name="builder"/> given.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="options">The options.</param>
+        /// <returns>The <paramref name="builder"/> that was given.</returns>
+        [NotNull]
+        [PublicAPI]
+        public LayoutBuilder AppendTo(
+            [NotNull] LayoutBuilder builder,
+            LogFormat format = LogFormat.General,
+            [CanBeNull] string options = null)
+        {
+            return AppendTo(builder, format, CultureInfo.CurrentCulture, options);
+        }
+
+        /// <summary>
+        /// Appends this log to the <paramref name="builder" /> given.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="culture">The culture.</param>
+        /// <param name="options">The options.</param>
+        /// <returns>The <paramref name="builder"/> that was given.</returns>
+        [NotNull]
+        [PublicAPI]
+        public LayoutBuilder AppendTo(
+            [NotNull] LayoutBuilder builder,
+            LogFormat format,
+            [NotNull] CultureInfo culture,
+            [CanBeNull] string options = null)
+        {
+            if (format == LogFormat.None)
+                return builder;
+            AppendFormatted(builder, format, culture, options);
+            return builder;
+        }
+
+        /// <summary>
+        /// Appends this log to the <paramref name="builder" /> given.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <param name="format">The format.</param>
@@ -1662,7 +1769,7 @@ namespace WebApplications.Utilities.Logging
         /// <exception cref="System.FormatException">
         /// </exception>
         private void AppendFormatted(
-            [NotNull] StringBuilder builder,
+            [NotNull] FormatBuilder builder,
             LogFormat format,
             [CanBeNull] CultureInfo culture,
             [CanBeNull] string options = null)
@@ -1681,38 +1788,46 @@ namespace WebApplications.Utilities.Logging
                 culture = Translation.DefaultCulture;
 
             // Remove option flags
-            format = ((LogFormat) (((int) format) & 0x0FFFFFFF));
+            format = ((LogFormat)(((int)format) & 0x0FFFFFFF));
 
             if (asXml && asJson)
                 throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
 
             MasterFormat masterFormat;
             bool includeKey;
-            string indent;
+
+            Layout layout = Layout.Default;
+
             if (asXml)
             {
                 masterFormat = MasterFormat.Xml;
                 includeKey = true;
-                indent = "   ";
+                layout = layout.Apply(ushort.MaxValue, indentSize: 8, firstLineIndentSize: 4, alignment: Alignment.None);
             }
             else if (asJson)
             {
                 masterFormat = MasterFormat.JSON;
                 includeKey = true;
-                indent = "   ";
+                layout = layout.Apply(ushort.MaxValue, indentSize: 8, firstLineIndentSize: 4, alignment: Alignment.None);
             }
             else
             {
                 masterFormat = MasterFormat.Text;
 
+                layout = layout.Apply(ushort.MaxValue, alignment: Alignment.None);
+
                 // Only include the key if we're a combination of keys.
                 includeKey = format.IsCombinationFlag(true);
-                indent = String.Empty;
             }
 
             // Otherwise always include value.
             if (!includeKey)
                 includeMissing = true;
+
+            LogFormat[] flags = format.SplitFlags(true).ToArray();
+            if (flags.Length < 1) return;
+
+            builder.ResetLayout();
 
             if (includeHeader)
                 switch (masterFormat)
@@ -1728,12 +1843,28 @@ namespace WebApplications.Utilities.Logging
                         break;
                 }
 
+            builder.SetLayout(layout);
+
             bool first = true;
-            LogFormat[] flags = format.SplitFlags(true).ToArray();
-            if (flags.Length < 1) return;
 
             // Ignore options if we have multiple flags
             if (flags.Length > 1) options = null;
+
+            string entryFormat;
+            switch (masterFormat)
+            {
+                case MasterFormat.Xml:
+                    entryFormat = "<{0}>{1}</{0}>";
+                    break;
+                case MasterFormat.JSON:
+                    entryFormat = "\"{0}\": {1}";
+                    break;
+                default:
+                    entryFormat = "{0,-18}: {1}";
+                    break;
+            }
+
+
             foreach (LogFormat flag in flags)
             {
                 string key;
@@ -1790,11 +1921,11 @@ namespace WebApplications.Utilities.Logging
                         {
                             key = "Inner Exceptions";
 
-                            StringBuilder cv = new StringBuilder();
+                            LayoutBuilder cv = new LayoutBuilder();
+                            cv.SetLayout(indentSize: layout.IndentSize, firstLineIndentSize: 0)
+                                .AppendLine(masterFormat == MasterFormat.JSON ? "[" : String.Empty)
+                                .SetLayout(indentSize: (byte)(layout.IndentSize.Value + 4), firstLineIndentSize: (ushort)(layout.FirstLineIndentSize.Value + 4));
 
-                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "[" : String.Empty);
-
-                            string i = indent + "   ";
                             bool cvf = true;
                             foreach (CombGuid ieg in _innerExceptionGuids)
                             {
@@ -1802,36 +1933,28 @@ namespace WebApplications.Utilities.Logging
                                     cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
                                 cvf = false;
 
-                                // ReSharper disable once AssignNullToNotNullAttribute
                                 if (masterFormat == MasterFormat.JSON)
-                                    // Write out as array
-                                    cv.Append(i)
-                                        .Append('"')
+                                    cv.Append('"')
                                         .Append(ieg.ToString(options ?? "D"))
                                         .Append('"');
                                 else
-                                    AddKVP(
-                                        cv,
-                                        masterFormat,
-                                        i,
-                                        "Inner Exception",
-                                        ieg.ToString(options ?? "D"));
+                                    cv.AppendFormat(entryFormat, masterFormat == MasterFormat.Xml ? "Inner_Exception" : "Inner Exception", ieg.ToString(options ?? "D"));
                             }
+
+                            cv.SetLayout(layout);
 
                             switch (masterFormat)
                             {
                                 case MasterFormat.Xml:
-                                    cv.AppendLine()
-                                        .Append(indent);
+                                    cv.AppendLine();
                                     break;
                                 case MasterFormat.JSON:
                                     cv.AppendLine()
-                                        .Append(indent)
                                         .Append("]");
                                     break;
                             }
 
-                            value = cv.ToString();
+                            value = cv.ToString(); // TODO Append cv chunks to builder
                             escaped = true;
                         }
                         break;
@@ -1863,43 +1986,48 @@ namespace WebApplications.Utilities.Logging
                             value = null;
                         else
                         {
-                            StringBuilder cv = new StringBuilder();
+                            LayoutBuilder cv = new LayoutBuilder();
+                            cv.SetLayout(layout.Apply(firstLineIndentSize: 0))
+                                .AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty)
+                                .SetLayout(indentSize: (byte)(layout.IndentSize.Value + 4), firstLineIndentSize: (ushort)(layout.FirstLineIndentSize.Value + 4));
 
-                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty);
-
-                            string i = indent + "   ";
                             bool cvf = true;
-                            foreach (KeyValuePair<string, string> kvp 
-                                in (IEnumerable<KeyValuePair<string, string>>) _context)
+                            foreach (KeyValuePair<string, string> kvp
+                                in (IEnumerable<KeyValuePair<string, string>>)_context)
                             {
                                 Contract.Assert(kvp.Key != null);
                                 if (!cvf)
                                     cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
                                 cvf = false;
 
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                AddKVP(
-                                    cv,
-                                    masterFormat,
-                                    i,
-                                    kvp.Key,
-                                    kvp.Value);
+                                string v = kvp.Value;
+                                switch (masterFormat)
+                                {
+                                    case MasterFormat.Xml:
+                                        v = v.XmlEscape();
+                                        break;
+                                    case MasterFormat.JSON:
+                                        v = v.ToJSON();
+                                        break;
+                                }
+
+                                cv.AppendFormat(entryFormat, masterFormat == MasterFormat.Xml ? kvp.Key.Replace(' ', '_') : kvp.Key, v);
                             }
+
+                            cv.SetLayout(layout);
 
                             switch (masterFormat)
                             {
                                 case MasterFormat.Xml:
-                                    cv.AppendLine()
-                                        .Append(indent);
+                                    cv.AppendLine();
                                     break;
                                 case MasterFormat.JSON:
                                     cv.AppendLine()
-                                        .Append(indent)
-                                        .Append("]");
+                                        .Append("}");
                                     break;
                             }
 
-                            value = cv.ToString();
+                            value = cv.ToString();  // TODO Append cv chunks to builder
                             escaped = true;
                         }
                         break;
@@ -1907,6 +2035,7 @@ namespace WebApplications.Utilities.Logging
                     default:
                         throw new FormatException(String.Format(Resources.Log_Invalid_Format_Singular, flag));
                 }
+
                 if (value == null &&
                     !includeMissing)
                     continue;
@@ -1916,13 +2045,28 @@ namespace WebApplications.Utilities.Logging
                     if (!first)
                         builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
 
-                    AddKVP(builder, masterFormat, indent, key, value, escaped);
+                    if (!escaped)
+                    {
+                        switch (masterFormat)
+                        {
+                            case MasterFormat.Xml:
+                                value = value.XmlEscape();
+                                break;
+                            case MasterFormat.JSON:
+                                value = value.ToJSON();
+                                break;
+                        }
+                    }
+
+                    builder.AppendFormat(entryFormat, masterFormat == MasterFormat.Xml ? key.Replace(' ', '_') : key, value);
 
                     first = false;
                 }
                 else
                     builder.Append(value);
             }
+
+            builder.ResetLayout();
 
             if (includeHeader)
             {
@@ -2210,60 +2354,6 @@ namespace WebApplications.Utilities.Logging
         {
             Contract.Requires(prefix != null);
             return this.Where(kvp => kvp.Key.StartsWith(prefix));
-        }
-
-        /// <summary>
-        /// Adds the KVP.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="masterFormat">The master format.</param>
-        /// <param name="indent">The indent.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="escaped">if set to <see langword="true" /> [escaped].</param>
-        private void AddKVP(
-            [NotNull] StringBuilder builder,
-            MasterFormat masterFormat,
-            [NotNull] string indent,
-            [NotNull] string key,
-            [CanBeNull] string value,
-            bool escaped = false)
-        {
-            Contract.Requires(builder != null);
-            Contract.Requires(indent != null);
-            Contract.Requires(key != null);
-            builder.Append(indent);
-            switch (masterFormat)
-            {
-                case MasterFormat.Xml:
-                    builder.Append('<');
-                    key = key.Replace(' ', '_');
-                    builder.Append(key);
-                    if (value == null)
-                    {
-                        builder.Append(" />");
-                        return;
-                    }
-                    builder.Append('>');
-                    builder.Append(escaped ? value : value.XmlEscape());
-                    builder.Append("</");
-                    builder.Append(key);
-                    builder.Append(">");
-                    return;
-                case MasterFormat.JSON:
-                    builder.Append(key.ToJSON());
-                    builder.Append(": ");
-                    builder.Append(escaped ? (value ?? "null") : value.ToJSON());
-                    return;
-                default:
-                    builder.Append(key);
-                    int len = key.Length + indent.Length;
-                    if (len < 17)
-                        builder.Append(' ', 17 - len);
-                    builder.Append(": ");
-                    builder.Append(value);
-                    return;
-            }
         }
 
         /// <summary>

@@ -25,8 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -70,6 +73,23 @@ namespace WebApplications.Utilities.Logging
         {
             LoggingLevels l = (LoggingLevels)level;
             return l == (l & Log.ValidLevels);
+        }
+
+        /// <summary>
+        /// Adds a log to the given builder.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="log">The log.</param>
+        /// <param name="format">The format.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public static LayoutBuilder AppendLine([NotNull] this LayoutBuilder builder, [NotNull] Log log, [CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            Contract.Requires(builder != null);
+            Contract.Requires(log != null);
+
+            return (LayoutBuilder)log.AppendTo(builder, format, formatProvider).AppendLine();
         }
     }
 }

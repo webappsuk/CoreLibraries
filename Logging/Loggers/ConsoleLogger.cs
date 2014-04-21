@@ -32,6 +32,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -92,19 +93,26 @@ namespace WebApplications.Utilities.Logging.Loggers
             // Check we're actually in a console!
             if (!ConsoleHelper.IsConsole) return;
 
-            // Write out the logs on the synchronization context which will prevent 'interleaving'.
-            await ConsoleHelper.SynchronizationContext;
-
             string format = Format;
+
+            ConsoleBuilder builder = new ConsoleBuilder();
+
             // ReSharper disable once PossibleNullReferenceException
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {
+                Contract.Assert(log != null);
                 token.ThrowIfCancellationRequested();
-                // ReSharper disable once PossibleNullReferenceException
-                ConsoleHelper.SetCustomColourName("?", LevelColour(log.Level));
-                ConsoleHelper.WriteLine(log.ToString(format));
+                ConsoleBuilder.SetCustomColourName("?", LevelColour(log.Level));
+                builder.AppendLine(log, format);
             }
-            ConsoleHelper.RemoveCustomColour("?");
+            ConsoleColor color;
+            ConsoleBuilder.RemoveCustomColour("?", out color);
+
+            // Lock to prevent 'interleaving'.
+            using (await ConsoleHelper.Lock.LockAsync(token))
+            {
+                builder.WriteToConsole();
+            }
         }
 
         /// <summary>

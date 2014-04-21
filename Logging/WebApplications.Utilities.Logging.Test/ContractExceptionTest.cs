@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,11 @@ namespace WebApplications.Utilities.Logging.Test
 
         private void TestMethod(string str)
         {
+#if CONTRACTS_FULL
             Contract.Requires<ContractException<Resources>>(str != null, "TestContractFailed");
+#else
+            Assert.Inconclusive("This test requires contract rewriting to be enabled.");
+#endif
         }
 
         [TestCleanup]
