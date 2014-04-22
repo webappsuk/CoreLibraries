@@ -278,7 +278,6 @@ namespace WebApplications.Utilities.Formatting
             // We can only change colours if we are writing to the console!
             if (ConsoleHelper.IsConsole)
             {
-                ConsoleColor colour;
                 /*
                  * Check for supported control tags,
                  * e.g. {ConsoleFore:Red}
@@ -287,6 +286,7 @@ namespace WebApplications.Utilities.Formatting
                 if (!string.IsNullOrEmpty(controlChunk.Tag))
                 {
                     // ReSharper disable once PossibleNullReferenceException
+                    ConsoleColor colour;
                     switch (controlChunk.Tag.ToLower())
                     {
                         case "!consolefore":
