@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// The default format.
         /// </summary>
         [NotNull]
-        public const string DefaultFormat = "{+Cyan}[{TimeStamp}] {+?}{Level}{+White}\t{Message}{+Gray}{StackTrace}\r\n";
+        public const string DefaultFormat = "{!ConsoleFore:Cyan}[{TimeStamp}] {!ConsoleFore:?}{Level}{!ConsoleFore:White}\t{Message}{!ConsoleFore:Gray}{StackTrace}{!ConsoleFore}\r\n";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleLogger"/> class.
@@ -87,11 +87,11 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="logs">The logs to add to storage.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        public override async Task Add([InstantHandle] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public override Task Add([InstantHandle] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
             // Check we're actually in a console!
-            if (!ConsoleHelper.IsConsole) return;
+            if (!ConsoleHelper.IsConsole) return TaskResult.Completed;
 
             string format = Format;
 
@@ -105,14 +105,10 @@ namespace WebApplications.Utilities.Logging.Loggers
                 ConsoleBuilder.SetCustomColourName("?", LevelColour(log.Level));
                 builder.AppendLine(log, format);
             }
-            ConsoleColor color;
-            ConsoleBuilder.RemoveCustomColour("?", out color);
+            ConsoleBuilder.RemoveCustomColour("?");
 
-            // Lock to prevent 'interleaving'.
-            using (await ConsoleHelper.Lock.LockAsync(token))
-            {
-                builder.WriteToConsole();
-            }
+            builder.WriteToConsole();
+            return TaskResult.Completed;
         }
 
         /// <summary>

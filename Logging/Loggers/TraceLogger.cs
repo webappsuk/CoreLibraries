@@ -32,6 +32,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -81,14 +82,19 @@ namespace WebApplications.Utilities.Logging.Loggers
         public override Task Add([InstantHandle]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
+
+            LayoutBuilder builder = new LayoutBuilder();
+
             string format = Format;
             // ReSharper disable once PossibleNullReferenceException
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {
                 Contract.Assert(log != null);
                 token.ThrowIfCancellationRequested();
-                Trace.WriteLine(log.ToString(format));
+                builder.AppendLine(log, format);
             }
+
+            builder.WriteToTrace();
 
             // We always complete synchronously.
             // ReSharper disable once AssignNullToNotNullAttribute

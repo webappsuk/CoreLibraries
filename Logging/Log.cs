@@ -151,7 +151,7 @@ namespace WebApplications.Utilities.Logging
         [NonSerialized]
         private static readonly Lazy<string> _protobufSchema = new Lazy<string>(
             // ReSharper disable once PossibleNullReferenceException
-            () => RuntimeTypeModel.Default.GetSchema(typeof (Log)),
+            () => RuntimeTypeModel.Default.GetSchema(typeof(Log)),
             LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace WebApplications.Utilities.Logging
 
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (!isLogException && hasMessage)
-                    innerExceptions = new[] {exception};
+                    innerExceptions = new[] { exception };
                 else
                 {
                     // Add the exception type.
@@ -405,7 +405,7 @@ namespace WebApplications.Utilities.Logging
                     else
                     {
                         if (exception.InnerException != null)
-                            innerExceptions = new[] {exception.InnerException};
+                            innerExceptions = new[] { exception.InnerException };
 
                         // If this is a SQL exception, then log the stored proc.
                         SqlException sqlException = exception as SqlException;
@@ -1606,8 +1606,8 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public string ToString(LogFormat format, [NotNull] CultureInfo culture, [CanBeNull] string options = null)
         {
-            return format == LogFormat.None 
-                ? String.Empty 
+            return format == LogFormat.None
+                ? String.Empty
                 : AppendTo(new LayoutBuilder(), format, culture, options).ToString();
         }
         #endregion
@@ -1639,7 +1639,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public LayoutBuilder AppendTo(
-            [NotNull] LayoutBuilder builder,  
+            [NotNull] LayoutBuilder builder,
             [CanBeNull] string format,
             [NotNull] CultureInfo culture,
             [CanBeNull] IFormatProvider formatProvider = null)
@@ -1678,7 +1678,7 @@ namespace WebApplications.Utilities.Logging
                      !Enum.TryParse(chunk.Tag, true, out logFormat)))
                 {
                     // TODO Change to overload that takes a single chunk
-                    builder.Append(new[] {chunk});
+                    builder.Append(new[] { chunk });
                     continue;
                 }
 
@@ -1769,7 +1769,7 @@ namespace WebApplications.Utilities.Logging
         /// <exception cref="System.FormatException">
         /// </exception>
         private void AppendFormatted(
-            [NotNull] FormatBuilder builder,
+            [NotNull] LayoutBuilder builder,
             LogFormat format,
             [CanBeNull] CultureInfo culture,
             [CanBeNull] string options = null)
@@ -1814,7 +1814,7 @@ namespace WebApplications.Utilities.Logging
             {
                 masterFormat = MasterFormat.Text;
 
-                layout = layout.Apply(ushort.MaxValue, alignment: Alignment.None);
+                layout = layout.Apply((ushort)Header.Length, alignment: Alignment.None, firstLineIndentSize: 0, indentSize: 20, tabStops: new Optional<IEnumerable<ushort>>(new ushort[] { 18, 20 }), tabSize: 2);
 
                 // Only include the key if we're a combination of keys.
                 includeKey = format.IsCombinationFlag(true);
@@ -1851,25 +1851,30 @@ namespace WebApplications.Utilities.Logging
             if (flags.Length > 1) options = null;
 
             string entryFormat;
+            Func<string, string> keyEscaper;
+            Func<string, string> valueEscaper;
             switch (masterFormat)
             {
                 case MasterFormat.Xml:
                     entryFormat = "<{0}>{1}</{0}>";
+                    keyEscaper = s => s.Replace(' ', '_');
+                    valueEscaper = UtilityExtensions.XmlEscape;
                     break;
                 case MasterFormat.JSON:
                     entryFormat = "\"{0}\": {1}";
+                    keyEscaper = s => s;
+                    valueEscaper = UtilityExtensions.ToJSON;
                     break;
                 default:
-                    entryFormat = "{0,-18}: {1}";
+                    entryFormat = includeKey ? "{0}\t:\t{1}" : "{1}";
+                    keyEscaper = valueEscaper = s => s;
                     break;
             }
-
 
             foreach (LogFormat flag in flags)
             {
                 string key;
                 string value;
-                bool escaped = false;
 
                 // This is a single value format, just output the value directly
                 switch (flag)
@@ -1919,14 +1924,23 @@ namespace WebApplications.Utilities.Logging
                             value = _innerExceptionGuids[0].ToString(options ?? "D");
                         else
                         {
-                            key = "Inner Exceptions";
+                            if (includeKey)
+                            {
+                                key = "Inner Exceptions";
+
+                                if (!first)
+                                    builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
+                                first = false;
+                            }
 
                             LayoutBuilder cv = new LayoutBuilder();
-                            cv.SetLayout(indentSize: layout.IndentSize, firstLineIndentSize: 0)
-                                .AppendLine(masterFormat == MasterFormat.JSON ? "[" : String.Empty)
-                                .SetLayout(indentSize: (byte)(layout.IndentSize.Value + 4), firstLineIndentSize: (ushort)(layout.FirstLineIndentSize.Value + 4));
+                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "[" : String.Empty)
+                                .SetLayout(
+                                    indentSize: (byte) (layout.IndentSize.Value + 2),
+                                    firstLineIndentSize: (ushort) (layout.FirstLineIndentSize.Value + 2));
 
                             bool cvf = true;
+                            string innerKey = keyEscaper("Inner Exception");
                             foreach (CombGuid ieg in _innerExceptionGuids)
                             {
                                 if (!cvf)
@@ -1938,7 +1952,7 @@ namespace WebApplications.Utilities.Logging
                                         .Append(ieg.ToString(options ?? "D"))
                                         .Append('"');
                                 else
-                                    cv.AppendFormat(entryFormat, masterFormat == MasterFormat.Xml ? "Inner_Exception" : "Inner Exception", ieg.ToString(options ?? "D"));
+                                    cv.AppendFormat(entryFormat, innerKey, valueEscaper(ieg.ToString(options ?? "D")));
                             }
 
                             cv.SetLayout(layout);
@@ -1954,8 +1968,23 @@ namespace WebApplications.Utilities.Logging
                                     break;
                             }
 
-                            value = cv.ToString(); // TODO Append cv chunks to builder
-                            escaped = true;
+                            foreach (FormatChunk c in entryFormat.FormatChunks())
+                            {
+                                switch (c.Tag)
+                                {
+                                    case "0":
+                                        builder.Append(FormatChunk.Create(c, keyEscaper(key)));
+                                        break;
+                                    case "1":
+                                        builder.Append(cv);
+                                        break;
+                                    default:
+                                        builder.Append(c);
+                                        break;
+                                }
+                            }
+
+                            continue;
                         }
                         break;
                     case LogFormat.StackTrace:
@@ -1986,10 +2015,18 @@ namespace WebApplications.Utilities.Logging
                             value = null;
                         else
                         {
+                            if (includeKey)
+                            {
+                                if (!first)
+                                    builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
+                                first = false;
+                            }
+
                             LayoutBuilder cv = new LayoutBuilder();
-                            cv.SetLayout(layout.Apply(firstLineIndentSize: 0))
-                                .AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty)
-                                .SetLayout(indentSize: (byte)(layout.IndentSize.Value + 4), firstLineIndentSize: (ushort)(layout.FirstLineIndentSize.Value + 4));
+                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty)
+                                .SetLayout(
+                                    indentSize: (byte) (layout.IndentSize.Value + 2),
+                                    firstLineIndentSize: (ushort) (layout.FirstLineIndentSize.Value + 2));
 
                             bool cvf = true;
                             foreach (KeyValuePair<string, string> kvp
@@ -2000,18 +2037,7 @@ namespace WebApplications.Utilities.Logging
                                     cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
                                 cvf = false;
 
-                                string v = kvp.Value;
-                                switch (masterFormat)
-                                {
-                                    case MasterFormat.Xml:
-                                        v = v.XmlEscape();
-                                        break;
-                                    case MasterFormat.JSON:
-                                        v = v.ToJSON();
-                                        break;
-                                }
-
-                                cv.AppendFormat(entryFormat, masterFormat == MasterFormat.Xml ? kvp.Key.Replace(' ', '_') : kvp.Key, v);
+                                cv.AppendFormat(entryFormat, keyEscaper(kvp.Key), valueEscaper(kvp.Value ?? string.Empty));
                             }
 
                             cv.SetLayout(layout);
@@ -2027,8 +2053,23 @@ namespace WebApplications.Utilities.Logging
                                     break;
                             }
 
-                            value = cv.ToString();  // TODO Append cv chunks to builder
-                            escaped = true;
+                            foreach (FormatChunk c in entryFormat.FormatChunks())
+                            {
+                                switch (c.Tag)
+                                {
+                                    case "0":
+                                        builder.Append(FormatChunk.Create(c, keyEscaper(key)));
+                                        break;
+                                    case "1":
+                                        builder.Append(cv);
+                                        break;
+                                    default:
+                                        builder.Append(c);
+                                        break;
+                                }
+                            }
+
+                            continue;
                         }
                         break;
 
@@ -2036,34 +2077,16 @@ namespace WebApplications.Utilities.Logging
                         throw new FormatException(String.Format(Resources.Log_Invalid_Format_Singular, flag));
                 }
 
-                if (value == null &&
-                    !includeMissing)
-                    continue;
-
-                if (includeKey)
+                if (includeMissing || value != null)
                 {
-                    if (!first)
-                        builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
-
-                    if (!escaped)
+                    if (includeKey)
                     {
-                        switch (masterFormat)
-                        {
-                            case MasterFormat.Xml:
-                                value = value.XmlEscape();
-                                break;
-                            case MasterFormat.JSON:
-                                value = value.ToJSON();
-                                break;
-                        }
+                        if (!first)
+                            builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
+                        first = false;
                     }
-
-                    builder.AppendFormat(entryFormat, masterFormat == MasterFormat.Xml ? key.Replace(' ', '_') : key, value);
-
-                    first = false;
+                    builder.AppendFormat(entryFormat, keyEscaper(key), valueEscaper(value ?? string.Empty));
                 }
-                else
-                    builder.Append(value);
             }
 
             builder.ResetLayout();
@@ -2213,16 +2236,16 @@ namespace WebApplications.Utilities.Logging
 
                         // Look for inheritance from log or logging exception.
                         baseType = declaringType;
-                        while ((baseType != typeof (object)) &&
-                               (baseType != typeof (LoggingException)) &&
-                               (baseType != typeof (Log)))
+                        while ((baseType != typeof(object)) &&
+                               (baseType != typeof(LoggingException)) &&
+                               (baseType != typeof(Log)))
                         {
                             Contract.Assert(baseType != null);
                             baseType = baseType.BaseType;
                         }
 
-                        if ((baseType == typeof (LoggingException)) ||
-                            (baseType == typeof (Log)))
+                        if ((baseType == typeof(LoggingException)) ||
+                            (baseType == typeof(Log)))
                         {
                             // We are descended from LoggingException or Log so skip frame.
                             baseType = declaringType;
