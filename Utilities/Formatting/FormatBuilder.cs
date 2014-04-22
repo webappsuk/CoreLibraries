@@ -189,16 +189,26 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Clones this instance.
         /// </summary>
-        /// <returns>A shallow copy of this builder.</returns>
+        /// <param name="makeReadonly">If set to <see langword="true" />, the returned builder will be readonly.</param>
+        /// <returns>
+        /// A shallow copy of this builder.
+        /// </returns>
         [NotNull]
         [PublicAPI]
-        public virtual FormatBuilder Clone()
+        public virtual FormatBuilder Clone(bool makeReadonly = false)
         {
             Contract.Ensures(Contract.Result<FormatBuilder>().GetType() == this.GetType(),
                 "All classes derived from FormatBuilder should overload this method and return a builder of their own type");
+            Contract.Ensures(!makeReadonly || Contract.Result<FormatBuilder>().IsReadonly,
+                "Returned builder should be readonly if makeReadonly is true");
+
+            if (IsReadonly)
+                return this;
 
             FormatBuilder formatBuilder = new FormatBuilder(_values);
-            formatBuilder._chunks.AddRange(_chunks.Select(c => c.Clone()));
+            formatBuilder._chunks.AddRange(_chunks);
+            if (makeReadonly)
+                formatBuilder.MakeReadonly();
             return formatBuilder;
         }
 
@@ -485,6 +495,22 @@ namespace WebApplications.Utilities.Formatting
             if (!_isReadonly &&
                 !string.IsNullOrEmpty(value))
                 _chunks.Add(FormatChunk.Create(value));
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the chunks.
+        /// </summary>
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Append([CanBeNull] FormatChunk chunk)
+        {
+            Contract.Requires(!IsReadonly);
+            if (!_isReadonly &&
+                chunk != null)
+                _chunks.Add(chunk);
             return this;
         }
 
@@ -1014,9 +1040,9 @@ namespace WebApplications.Utilities.Formatting
                 if (hasValues &&
                     chunk.IsFillPoint &&
                     values.TryGetValue(chunk.Tag, out value))
-                    chunk.Value = value;
-
-                _chunks.Add(chunk);
+                    _chunks.Add(FormatChunk.Create(chunk, value));
+                else
+                    _chunks.Add(chunk);
             }
         }
 
@@ -1072,6 +1098,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Resolve(
             [CanBeNull] [InstantHandle] Func<string, object> resolver)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (resolver == null) return this;
 
             for (int a = 0; a < _chunks.Count; a++)
@@ -1099,6 +1127,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Resolve(
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if (values == null) return this;
             return Resolve(ToDictionary(values.ToArray()));
         }
@@ -1112,6 +1142,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Resolve([CanBeNull] params object[] values)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if ((values == null) ||
                 (values.Length < 1)) return this;
             return Resolve(ToDictionary(values));
@@ -1126,18 +1158,21 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Resolve([CanBeNull] IReadOnlyDictionary<string, object> values)
         {
+            Contract.Requires(!IsReadonly);
+            if (_isReadonly) return this;
             if ((values == null) ||
                 (values.Count < 1)) return this;
 
-            foreach (FormatChunk chunk in _chunks)
+            for (int a = 0; a < _chunks.Count; a++)
             {
+                FormatChunk chunk = _chunks[a];
                 Contract.Assert(chunk != null);
                 if (!chunk.IsFillPoint) continue;
 
                 Contract.Assert(chunk.Tag != null);
                 object resolved;
                 if (values.TryGetValue(chunk.Tag, out resolved))
-                    chunk.Value = resolved;
+                    _chunks[a] = FormatChunk.Create(chunk, resolved);
             }
             return this;
         }

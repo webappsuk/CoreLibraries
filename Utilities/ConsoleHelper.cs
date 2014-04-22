@@ -43,12 +43,6 @@ namespace WebApplications.Utilities
     public static class ConsoleHelper
     {
         /// <summary>
-        /// And asynchronous lock that is used by <see cref="ConsoleBuilder"/> to synchronize write access to the underlying Console.
-        /// </summary>
-        [NotNull]
-        public static readonly AsyncLock Lock = new AsyncLock();
-
-        /// <summary>
         /// Calculates whether we have a console available.
         /// </summary>
         [NotNull]

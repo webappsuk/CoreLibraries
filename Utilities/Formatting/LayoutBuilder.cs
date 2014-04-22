@@ -293,28 +293,14 @@ namespace WebApplications.Utilities.Formatting
         public static readonly Layout DefaultLayout = new Layout();
 
         /// <summary>
-        /// The current layout
-        /// </summary>
-        [NotNull]
-        private readonly Layout _initialLayout;
-
-        /// <summary>
         /// Gets the initial layout to use when resetting the layout.
         /// </summary>
         /// <value>
         /// The initial layout.
         /// </value>
         [NotNull]
-        protected virtual Layout InitialLayout
-        {
-            get { return _initialLayout; }
-        }
-
-        /// <summary>
-        /// The current layout
-        /// </summary>
-        [NotNull]
-        private Layout _layout;
+        [PublicAPI]
+        public Layout InitialLayout { get; protected set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
@@ -322,8 +308,8 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="layout">The layout.</param>
         public LayoutBuilder([CanBeNull] Layout layout = null)
         {
-            _initialLayout = _layout = Layout.Default.Apply(layout);
-            Contract.Assert(_layout.IsFull);
+            InitialLayout = Layout.Default.Apply(layout);
+            Contract.Assert(InitialLayout.IsFull);
         }
 
         /// <summary>
@@ -336,8 +322,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout = null)
             : base(values)
         {
-            _initialLayout = _layout = Layout.Default.Apply(layout);
-            Contract.Assert(_layout.IsFull);
+            InitialLayout = Layout.Default.Apply(layout);
+            Contract.Assert(InitialLayout.IsFull);
         }
 
         /// <summary>
@@ -350,104 +336,27 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout = null)
             : base(values)
         {
-            _initialLayout = _layout = Layout.Default.Apply(layout);
-            Contract.Assert(_layout.IsFull);
+            InitialLayout = Layout.Default.Apply(layout);
+            Contract.Assert(InitialLayout.IsFull);
         }
 
         /// <summary>
         /// Clones this instance.
         /// </summary>
+        /// <param name="makeReadonly">If set to <see langword="true"/>, the returned builder will be readonly.</param>
         /// <returns>
         /// A shallow copy of this builder.
         /// </returns>
-        public override FormatBuilder Clone()
+        public override FormatBuilder Clone(bool makeReadonly = false)
         {
-            LayoutBuilder layoutBuilder = new LayoutBuilder(Values, _initialLayout);
-            layoutBuilder.Append(this.Select(c => c.Clone()));
+            if (IsReadonly)
+                return this;
+
+            LayoutBuilder layoutBuilder = new LayoutBuilder(Values, InitialLayout);
+            layoutBuilder.Append(this);
+            if (makeReadonly)
+                layoutBuilder.MakeReadonly();
             return layoutBuilder;
-        }
-
-        /// <summary>
-        /// Gets or sets the layout.
-        /// </summary>
-        /// <value>The layout.</value>
-        [PublicAPI]
-        [NotNull]
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public Layout Layout
-        {
-            get { return _layout; }
-        }
-
-        /// <summary>
-        /// Applies the specified layout to the current layout, returning the new, combined layout.
-        /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="indentSize">Size of the indent.</param>
-        /// <param name="rightMarginSize">Size of the right margin.</param>
-        /// <param name="indentChar">The indent character.</param>
-        /// <param name="firstLineIndentSize">First size of the line indent.</param>
-        /// <param name="tabStops">The tab stops.</param>
-        /// <param name="tabSize">Size of the tab.</param>
-        /// <param name="tabChar">The tab character.</param>
-        /// <param name="alignment">The alignment.</param>
-        /// <param name="splitWords">The split words.</param>
-        /// <param name="hyphenate">The hyphenate.</param>
-        /// <param name="hyphenChar">The hyphen character.</param>
-        /// <param name="wrapMode">The line wrap mode.</param>
-        /// <returns>
-        /// Layout.
-        /// </returns>
-        [PublicAPI]
-        [NotNull]
-        public Layout ApplyLayout(
-            Optional<ushort> width = default(Optional<ushort>),
-            Optional<byte> indentSize = default(Optional<byte>),
-            Optional<byte> rightMarginSize = default(Optional<byte>),
-            Optional<char> indentChar = default(Optional<char>),
-            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
-            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
-            Optional<byte> tabSize = default(Optional<byte>),
-            Optional<char> tabChar = default(Optional<char>),
-            Optional<Alignment> alignment = default(Optional<Alignment>),
-            Optional<bool> splitWords = default(Optional<bool>),
-            Optional<bool> hyphenate = default(Optional<bool>),
-            Optional<char> hyphenChar = default(Optional<char>),
-            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
-        {
-            Contract.Requires(!IsReadonly);
-            if (IsReadonly) return _layout;
-
-            return (_layout = _layout.Apply(
-                width,
-                indentSize,
-                rightMarginSize,
-                indentChar,
-                firstLineIndentSize,
-                tabStops,
-                tabSize,
-                tabChar,
-                alignment,
-                splitWords,
-                hyphenate,
-                hyphenChar,
-                wrapMode));
-        }
-
-        /// <summary>
-        /// Applies the layout to the current layout, returning the new, combined layout.
-        /// </summary>
-        /// <param name="layout">The layout.</param>
-        /// <returns>Layout.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Layout ApplyLayout([CanBeNull] Layout layout)
-        {
-            Contract.Requires(!IsReadonly);
-            if (IsReadonly) return _layout;
-
-            if (layout == null) return _layout;
-            return (_layout = _layout.Apply(layout));
         }
 
         /// <summary>
@@ -539,7 +448,8 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(chunks.Item2 != null);
 
             // Only grab the layout at the start of each line.
-            Layout layout = _layout;
+            Layout nextLayout = InitialLayout;
+            Layout layout = nextLayout;
 
             // Create the first line, if we're part way through a line then we cannot align the remainder of the line.
             Line line = position > 0
@@ -576,7 +486,7 @@ namespace WebApplications.Utilities.Formatting
                     yield return line;
 
                     // Start a new line
-                    layout = _layout;
+                    layout = nextLayout;
                     line = new Line(
                         layout,
                         layout.Alignment.Value,
@@ -616,18 +526,18 @@ namespace WebApplications.Utilities.Formatting
                         Contract.Assert(controlChunk != null);
 
                         // If the control chunk is a layout chunk, we need to get the layout
-                        if (string.Equals(controlChunk.Tag, "layout", StringComparison.InvariantCultureIgnoreCase))
+                        if (string.Equals(controlChunk.Tag, "!layout", StringComparison.InvariantCultureIgnoreCase))
                         {
                             Layout newLayout = controlChunk.Value as Layout;
 
                             if (newLayout != null)
-                                _layout = ReferenceEquals(newLayout, Layout.Default)
+                                nextLayout = ReferenceEquals(newLayout, Layout.Default)
                                     ? InitialLayout
-                                    : _layout.Apply(newLayout);
+                                    : nextLayout.Apply(newLayout);
                             else if (string.IsNullOrEmpty(controlChunk.Format))
-                                _layout = InitialLayout;
+                                nextLayout = InitialLayout;
                             else if (Layout.TryParse(controlChunk.Format, out newLayout))
-                                _layout = _layout.Apply(newLayout);
+                                nextLayout = nextLayout.Apply(newLayout);
 
                             if (!line.IsEmpty) continue;
 
@@ -636,7 +546,7 @@ namespace WebApplications.Utilities.Formatting
                             firstLine = line.IsFirstLine;
 
                             // Start a new line
-                            layout = _layout;
+                            layout = nextLayout;
                             line = new Line(
                                 layout,
                                 layout.Alignment.Value,
@@ -744,7 +654,7 @@ namespace WebApplications.Utilities.Formatting
         private IEnumerable<FormatChunk> Align([NotNull] [InstantHandle] IEnumerable<Line> lines, int position)
         {
             Contract.Requires(lines != null);
-            StringBuilder lb = new StringBuilder(_layout.Width.Value);
+            StringBuilder lb = new StringBuilder(InitialLayout.Width.Value);
             bool dontIndentFirstLine = position > 0;
             foreach (Line line in lines)
             {
@@ -911,9 +821,6 @@ namespace WebApplications.Utilities.Formatting
 
             if (sb.Length > 0)
                 writer.Write(sb.ToString());
-
-            // Restore the initial layout, in case someone tries to write us out again.
-            _layout = InitialLayout;
         }
 
 
@@ -977,9 +884,6 @@ namespace WebApplications.Utilities.Formatting
             if (sb.Length > 0)
                 // ReSharper disable once PossibleNullReferenceException
                 await writer.WriteAsync(sb.ToString());
-
-            // Restore the initial layout, in case someone tries to write us out again.
-            _layout = InitialLayout;
         }
 
         /// <summary>

@@ -30,7 +30,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
@@ -122,33 +121,20 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Clones this instance.
         /// </summary>
+        /// <param name="makeReadonly">If set to <see langword="true"/>, the returned builder will be readonly.</param>
         /// <returns>
         /// A shallow copy of this builder.
         /// </returns>
-        public override FormatBuilder Clone()
+        public override FormatBuilder Clone(bool makeReadonly = false)
         {
-            ConsoleBuilder consoleBuilder = new ConsoleBuilder(Values, InitialLayout);
-            consoleBuilder.Append(this.Select(c => c.Clone()));
-            return consoleBuilder;
-        }
+            if (IsReadonly)
+                return this;
 
-        /// <summary>
-        /// Gets the initial layout to use when resetting the layout.
-        /// </summary>
-        /// <value>
-        /// The initial layout. If the current application running in a console, the current <see cref="ConsoleWidth"/> 
-        /// and wrap mode <see cref="LayoutWrapMode.PadToWrap"/> will be applied.
-        /// </value>
-        protected override Layout InitialLayout
-        {
-            get
-            {
-                if (!ConsoleHelper.IsConsole)
-                    return base.InitialLayout;
-                return base.InitialLayout.Apply(
-                    ConsoleWidth,
-                    wrapMode: LayoutWrapMode.PadToWrap);
-            }
+            ConsoleBuilder consoleBuilder = new ConsoleBuilder(Values, InitialLayout);
+            consoleBuilder.Append(this);
+            if (makeReadonly)
+                consoleBuilder.MakeReadonly();
+            return consoleBuilder;
         }
 
         /// <summary>
@@ -175,10 +161,9 @@ namespace WebApplications.Utilities.Formatting
             Console.BackgroundColor = bc;
 
             // Update the width and wrap mode
-            if (!IsReadonly)
-                ApplyLayout(
-                    ConsoleWidth,
-                    wrapMode: LayoutWrapMode.PadToWrap);
+            InitialLayout = InitialLayout.Apply(
+                ConsoleWidth,
+                wrapMode: LayoutWrapMode.PadToWrap);
 
             return Console.CursorLeft;
         }
@@ -213,6 +198,21 @@ namespace WebApplications.Utilities.Formatting
         /// Tries to remove the custom name for the colour.
         /// </summary>
         /// <param name="name">The name.</param>
+        /// <returns>
+        ///   <see langword="true" /> if removed, <see langword="false" /> otherwise.
+        /// </returns>
+        [PublicAPI]
+        public static bool RemoveCustomColour([NotNull] string name)
+        {
+            Contract.Requires(name != null);
+            ConsoleColor color;
+            return _customColours.TryRemove(name, out color);
+        }
+
+        /// <summary>
+        /// Tries to remove the custom name for the colour.
+        /// </summary>
+        /// <param name="name">The name.</param>
         /// <param name="colour">The colour that was removed.</param>
         /// <returns><see langword="true" /> if removed, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
@@ -221,19 +221,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(name != null);
             return _customColours.TryRemove(name, out colour);
         }
-
-        /// <summary>
-        /// Writes this instance to the console.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        [PublicAPI]
-        public void Write([CanBeNull] string format = null, [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            if (ConsoleHelper.IsConsole)
-                WriteTo(Console.Out, format, formatProvider);
-        }
-
+        
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
@@ -244,7 +232,7 @@ namespace WebApplications.Utilities.Formatting
         public override void WriteTo(TextWriter writer, string format, IFormatProvider formatProvider, int position)
         {
             // Update the layout based on the console.
-            using (ConsoleHelper.Lock.LockAsync().Result)
+            lock(ConsoleTextWriter.Lock)
                 base.WriteTo(writer, format, formatProvider, UpdateLayout());
         }
 
@@ -256,15 +244,16 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="position">The position.</param>
         /// <returns>An awaitable task.</returns>
-        public override async Task WriteToAsync(
+        public override Task WriteToAsync(
             TextWriter writer,
             string format,
             IFormatProvider formatProvider,
             int position)
         {
             // Update the layout based on the console.
-            using (await ConsoleHelper.Lock.LockAsync())
-                await base.WriteToAsync(writer, format, formatProvider, UpdateLayout());
+            lock (ConsoleTextWriter.Lock)
+                base.WriteTo(writer, format, formatProvider, UpdateLayout());
+            return TaskResult.Completed;
         }
 
         /// <summary>
@@ -295,7 +284,7 @@ namespace WebApplications.Utilities.Formatting
                     // ReSharper disable once PossibleNullReferenceException
                     switch (controlChunk.Tag.ToLower())
                     {
-                        case "consolefore":
+                        case "!consolefore":
                             if (controlChunk.Value is ConsoleColor)
                                 Console.ForegroundColor = (ConsoleColor)controlChunk.Value;
                             else if (string.IsNullOrEmpty(controlChunk.Format))
@@ -304,7 +293,7 @@ namespace WebApplications.Utilities.Formatting
                             else if (TryGetColour(controlChunk.Format, out colour))
                                 Console.ForegroundColor = colour;
                             return;
-                        case "consoleback":
+                        case "!consoleback":
                             if (controlChunk.Value is ConsoleColor)
                                 Console.BackgroundColor = (ConsoleColor)controlChunk.Value;
                             else if (string.IsNullOrEmpty(controlChunk.Format))

@@ -74,7 +74,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [CanBeNull]
         [PublicAPI]
-        public object Value;
+        public readonly object Value;
 
         /// <summary>
         /// Gets a value indicating whether this instance is a fill point.
@@ -176,15 +176,26 @@ namespace WebApplications.Utilities.Formatting
             {
                 isControl = true;
                 if (end < 3) return new FormatChunk(null, null, null, str, false);
-                tag = str.Substring(2, end - 2);
             }
             else
-            {
                 isControl = false;
-                tag = str.Substring(1, end - 1);
-            }
+            tag = str.Substring(1, end - 1);
 
             return new FormatChunk(tag, alignment, format, null, isControl);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="FormatChunk"/> from an existing chunk, with a new value.
+        /// </summary>
+        /// <param name="chunk">The chunk to copy.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public static FormatChunk Create([NotNull] FormatChunk chunk, [CanBeNull] object value)
+        {
+            Contract.Requires(chunk != null);
+            return new FormatChunk(chunk.Tag, chunk.Alignment, chunk.Format, value, chunk.IsControl);
         }
 
         /// <summary>
@@ -211,7 +222,7 @@ namespace WebApplications.Utilities.Formatting
             return string.IsNullOrEmpty(tag)
                 ? Empty
                 : new FormatChunk(
-                    tag,
+                    tag[0] == FormatBuilder.ControlChar ? tag : FormatBuilder.ControlChar + tag,
                     alignment,
                     format,
                     value,
@@ -314,8 +325,7 @@ namespace WebApplications.Utilities.Formatting
                     {
                         pad = false;
                         value = string.Format(
-                            "{{{0}{1}{2}{3}}}",
-                            IsControl ? FormatBuilder.ControlChar.ToString(CultureInfo.InvariantCulture) : string.Empty,
+                            "{{{0}{1}{2}}}",
                             Tag,
                             Alignment != null
                                 ? FormatBuilder.AlignmentChar + Alignment.Value.ToString("D")
@@ -373,16 +383,6 @@ namespace WebApplications.Utilities.Formatting
                     : value.PadRight(-Alignment.Value);
 
             return value;
-        }
-
-        /// <summary>
-        /// Clones this instance.
-        /// </summary>
-        /// <returns>A shallow copy of this chunk.</returns>
-        [NotNull]
-        public FormatChunk Clone()
-        {
-            return new FormatChunk(Tag, Alignment, Format, Value, IsControl);
         }
     }
 }
