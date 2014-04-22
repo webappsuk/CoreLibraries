@@ -52,7 +52,7 @@ namespace WebApplications.Utilities
                 if (!Environment.UserInteractive) return false;
                 try
                 {
-                    return Console.CursorLeft >= int.MinValue;
+                    return Console.CursorLeft >= Int32.MinValue;
                 }
                 catch (IOException)
                 {
@@ -99,5 +99,12 @@ namespace WebApplications.Utilities
             Process p = Process.GetCurrentProcess();
             ShowWindow(p.MainWindowHandle, 3); //SW_MAXIMIZE = 3
         }
+
+        /// <summary>
+        /// The synchronization context
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly SynchronizationContext SynchronizationContext = new SerializingSynchronizationContext(); 
     }
 }

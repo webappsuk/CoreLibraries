@@ -48,13 +48,6 @@ namespace WebApplications.Utilities.Formatting
         public static readonly ConsoleTextWriter Default;
 
         /// <summary>
-        /// The lock
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public static readonly object Lock = new object();
-
-        /// <summary>
         /// Initializes the <see cref="ConsoleTextWriter"/> class.
         /// </summary>
         static ConsoleTextWriter()
@@ -113,8 +106,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         public override void Flush()
         {
-            _outWriter.Flush();
-            base.Flush();
+            ConsoleHelper.SynchronizationContext.Invoke(_outWriter.Flush);
         }
 
         /// <summary>
@@ -126,10 +118,9 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         public override async Task FlushAsync()
         {
-            // ReSharper disable PossibleNullReferenceException
+            await ConsoleHelper.SynchronizationContext;
+            // ReSharper disable once PossibleNullReferenceException
             await _outWriter.FlushAsync();
-            await base.FlushAsync();
-            // ReSharper restore PossibleNullReferenceException
         }
 
         /// <summary>
@@ -138,8 +129,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(bool value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -148,8 +138,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(char value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -158,8 +147,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="buffer">The buffer.</param>
         public override void Write([CanBeNull] char[] buffer)
         {
-            lock (Lock)
-                _outWriter.Write(buffer);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(buffer));
         }
 
         /// <summary>
@@ -168,8 +156,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(decimal value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -178,8 +165,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(double value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -188,8 +174,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(float value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -198,8 +183,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(int value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -208,8 +192,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(long value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -218,8 +201,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write([CanBeNull] object value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -228,8 +210,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write([CanBeNull] string value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -238,8 +219,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(uint value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -248,8 +228,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(ulong value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -259,8 +238,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The arg0.</param>
         public override void Write(string format, [CanBeNull] object arg0)
         {
-            lock (Lock)
-                _outWriter.Write(format, arg0);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(format, arg0));
         }
 
         /// <summary>
@@ -270,8 +248,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg">The argument.</param>
         public override void Write(string format, params object[] arg)
         {
-            lock (Lock)
-                _outWriter.Write(format, arg);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(format, arg));
         }
 
         /// <summary>
@@ -283,8 +260,7 @@ namespace WebApplications.Utilities.Formatting
         public override void Write(char[] buffer, int index, int count)
         {
             string x = new string(buffer, index, count);
-            lock (Lock)
-                _outWriter.Write(x);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(x));
         }
 
         /// <summary>
@@ -295,8 +271,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg1">The arg1.</param>
         public override void Write(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
         {
-            lock (Lock)
-                _outWriter.Write(format, arg0, arg1);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(format, arg0, arg1));
         }
 
         /// <summary>
@@ -308,8 +283,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg2">The arg2.</param>
         public override void Write(string format, [CanBeNull] object arg0, [CanBeNull] object arg1, [CanBeNull] object arg2)
         {
-            lock (Lock)
-                _outWriter.Write(format, arg0, arg1, arg2);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(format, arg0, arg1, arg2));
         }
 
         /// <summary>
@@ -317,8 +291,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         public override void WriteLine()
         {
-            lock (Lock)
-                _outWriter.WriteLine();
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine());
         }
 
         /// <summary>
@@ -327,8 +300,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine(bool value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -337,8 +309,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine(char value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -347,8 +318,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="buffer">The buffer.</param>
         public override void WriteLine([CanBeNull] char[] buffer)
         {
-            lock (Lock)
-                _outWriter.WriteLine(buffer);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(buffer));
         }
 
         /// <summary>
@@ -357,8 +327,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine(decimal value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -367,8 +336,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine(double value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -377,8 +345,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine(float value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -387,8 +354,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine(int value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -397,8 +363,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine(long value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -407,8 +372,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine([CanBeNull] object value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -417,8 +381,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine([CanBeNull] string value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -427,8 +390,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine(uint value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -437,8 +399,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void WriteLine(ulong value)
         {
-            lock (Lock)
-                _outWriter.WriteLine(value);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
         }
 
         /// <summary>
@@ -448,8 +409,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The arg0.</param>
         public override void WriteLine(string format, [CanBeNull] object arg0)
         {
-            lock (Lock)
-                _outWriter.WriteLine(format, arg0);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(format, arg0));
         }
 
         /// <summary>
@@ -459,8 +419,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg">The argument.</param>
         public override void WriteLine(string format, params object[] arg)
         {
-            lock (Lock)
-                _outWriter.WriteLine(format, arg);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(format, arg));
         }
 
         /// <summary>
@@ -472,8 +431,7 @@ namespace WebApplications.Utilities.Formatting
         public override void WriteLine(char[] buffer, int index, int count)
         {
             string x = new string(buffer, index, count);
-            lock (Lock)
-                _outWriter.WriteLine(x);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(x));
         }
 
         /// <summary>
@@ -484,8 +442,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg1">The arg1.</param>
         public override void WriteLine(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
         {
-            lock (Lock)
-                _outWriter.WriteLine(format, arg0, arg1);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(format, arg0, arg1));
         }
 
         /// <summary>
@@ -497,8 +454,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg2">The arg2.</param>
         public override void WriteLine(string format, [CanBeNull] object arg0, [CanBeNull] object arg1, [CanBeNull] object arg2)
         {
-            lock (Lock)
-                _outWriter.WriteLine(format, arg0, arg1, arg2);
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(format, arg0, arg1, arg2));
         }
 
         /// <summary>
@@ -509,11 +465,11 @@ namespace WebApplications.Utilities.Formatting
         /// A task that represents the asynchronous write operation.
         /// </returns>
         [NotNull]
-        public override Task WriteAsync(char value)
+        public override async Task WriteAsync(char value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
-            return TaskResult.Completed;
+            await ConsoleHelper.SynchronizationContext;
+            // ReSharper disable once PossibleNullReferenceException
+            await _outWriter.WriteAsync(value);
         }
 
         /// <summary>
@@ -526,11 +482,11 @@ namespace WebApplications.Utilities.Formatting
         /// A task that represents the asynchronous write operation.
         /// </returns>
         [NotNull]
-        public override Task WriteAsync([NotNull] char[] buffer, int index, int count)
+        public override async Task WriteAsync([NotNull] char[] buffer, int index, int count)
         {
-            lock (Lock)
-                _outWriter.Write(buffer, index, count);
-            return TaskResult.Completed;
+            await ConsoleHelper.SynchronizationContext;
+            // ReSharper disable once PossibleNullReferenceException
+            await _outWriter.WriteAsync(buffer, index, count);
         }
 
         /// <summary>
@@ -541,11 +497,11 @@ namespace WebApplications.Utilities.Formatting
         /// A task that represents the asynchronous write operation.
         /// </returns>
         [NotNull]
-        public override Task WriteAsync([CanBeNull] string value)
+        public override async Task WriteAsync([CanBeNull] string value)
         {
-            lock (Lock)
-                _outWriter.Write(value);
-            return TaskResult.Completed;
+            await ConsoleHelper.SynchronizationContext;
+            // ReSharper disable once PossibleNullReferenceException
+            await _outWriter.WriteAsync(value);
         }
 
         /// <summary>
@@ -555,11 +511,11 @@ namespace WebApplications.Utilities.Formatting
         /// A task that represents the asynchronous write operation.
         /// </returns>
         [NotNull]
-        public override Task WriteLineAsync()
+        public override async Task WriteLineAsync()
         {
-            lock (Lock)
-                _outWriter.WriteLine();
-            return TaskResult.Completed;
+            await ConsoleHelper.SynchronizationContext;
+            // ReSharper disable once PossibleNullReferenceException
+            await _outWriter.WriteLineAsync();
         }
 
         /// <summary>
@@ -570,12 +526,11 @@ namespace WebApplications.Utilities.Formatting
         /// A task that represents the asynchronous write operation.
         /// </returns>
         [NotNull]
-        public override Task WriteLineAsync(char value)
+        public override async Task WriteLineAsync(char value)
         {
-            lock (Lock)
-                // ReSharper disable once PossibleNullReferenceException
-                _outWriter.WriteLine(value);
-            return TaskResult.Completed;
+            await ConsoleHelper.SynchronizationContext;
+            // ReSharper disable once PossibleNullReferenceException
+            await _outWriter.WriteLineAsync(value);
         }
 
         /// <summary>
@@ -588,12 +543,11 @@ namespace WebApplications.Utilities.Formatting
         /// A task that represents the asynchronous write operation.
         /// </returns>
         [NotNull]
-        public override Task WriteLineAsync([NotNull] char[] buffer, int index, int count)
+        public override async Task WriteLineAsync([NotNull] char[] buffer, int index, int count)
         {
-            lock (Lock)
-                // ReSharper disable once PossibleNullReferenceException
-                _outWriter.WriteLine(buffer, index, count);
-            return TaskResult.Completed;
+            await ConsoleHelper.SynchronizationContext;
+            // ReSharper disable once PossibleNullReferenceException
+            await _outWriter.WriteLineAsync(buffer, index, count);
         }
 
         /// <summary>
@@ -604,12 +558,11 @@ namespace WebApplications.Utilities.Formatting
         /// A task that represents the asynchronous write operation.
         /// </returns>
         [NotNull]
-        public override Task WriteLineAsync([CanBeNull] string value)
+        public override async Task WriteLineAsync([CanBeNull] string value)
         {
-            lock (Lock)
-                // ReSharper disable once PossibleNullReferenceException
-                _outWriter.WriteLine(value);
-            return TaskResult.Completed;
+            await ConsoleHelper.SynchronizationContext;
+            // ReSharper disable once PossibleNullReferenceException
+            await _outWriter.WriteLineAsync(value);
         }
     }
 }

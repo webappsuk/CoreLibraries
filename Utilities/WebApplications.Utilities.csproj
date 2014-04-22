@@ -197,6 +197,7 @@
     <Compile Include="ExtendedInterlocked.cs" />
     <Compile Include="Formatting\Alignment.cs" />
     <Compile Include="Formatting\ConsoleBuilder.cs" />
+    <Compile Include="Formatting\ConsoleTextWriter.cs" />
     <Compile Include="Formatting\FormatBuilder.cs" />
     <Compile Include="Formatting\FormatChunk.cs" />
     <Compile Include="Formatting\FormatExtensions.cs" />
@@ -204,7 +205,6 @@
     <Compile Include="Formatting\LayoutBuilder.cs" />
     <Compile Include="Formatting\Layout.cs" />
     <Compile Include="Formatting\LayoutWrapMode.cs" />
-    <Compile Include="Formatting\ConsoleTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
     <Compile Include="Queue.cs">
       <DependentUpon>Queue.tt</DependentUpon>
@@ -286,6 +286,7 @@
     <Compile Include="Threading\AsyncSemaphore.cs" />
     <Compile Include="Threading\SerializingSynchronizationContext.cs" />
     <Compile Include="Threading\SynchronizationContextAwaiter.cs" />
+    <Compile Include="Threading\SynchronizedQueue.cs" />
     <Compile Include="UtilityExtensions.cs" />
     <Compile Include="Interfaces\Caching\ICaching.cs" />
     <Compile Include="Ranges\IntRange.cs" />

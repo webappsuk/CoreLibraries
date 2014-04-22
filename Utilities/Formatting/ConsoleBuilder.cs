@@ -88,7 +88,6 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout = null)
             : base(layout == null ? null : layout.Apply(ConsoleWidth, wrapMode: LayoutWrapMode.PadToWrap))
         {
-            UpdateLayout();
         }
 
         /// <summary>
@@ -101,7 +100,6 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout = null)
             : base(values, layout == null ? null : layout.Apply(ConsoleWidth, wrapMode: LayoutWrapMode.PadToWrap))
         {
-            UpdateLayout();
         }
 
         /// <summary>
@@ -115,7 +113,6 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout = null)
             : base(values, layout == null ? null : layout.Apply(ConsoleWidth, wrapMode: LayoutWrapMode.PadToWrap))
         {
-            UpdateLayout();
         }
 
         /// <summary>
@@ -233,8 +230,7 @@ namespace WebApplications.Utilities.Formatting
         public override void WriteTo(TextWriter writer, string format, IFormatProvider formatProvider, IReadOnlyDictionary<string, object> values, int position)
         {
             // Update the layout based on the console.
-            lock(ConsoleTextWriter.Lock)
-                base.WriteTo(writer, format, formatProvider, values, UpdateLayout());
+            ConsoleHelper.SynchronizationContext.Invoke(() => base.WriteTo(writer, format, formatProvider, values, UpdateLayout()));
         }
 
         /// <summary>
@@ -248,17 +244,17 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>
         /// An awaitable task.
         /// </returns>
-        public override Task WriteToAsync(
+        public override async Task WriteToAsync(
             TextWriter writer,
             string format,
             IFormatProvider formatProvider,
             IReadOnlyDictionary<string, object> values,
             int position)
         {
+            await ConsoleHelper.SynchronizationContext;
+
             // Update the layout based on the console.
-            lock (ConsoleTextWriter.Lock)
-                base.WriteTo(writer, format, formatProvider, values, UpdateLayout());
-            return TaskResult.Completed;
+            await base.WriteToAsync(writer, format, formatProvider, values, UpdateLayout());
         }
 
         /// <summary>

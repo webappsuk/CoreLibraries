@@ -800,26 +800,36 @@ namespace WebApplications.Utilities.Formatting
         {
             if (writer == null) return;
 
-            bool writeTags = format != null && string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+            bool writeTags = format != null &&
+                             string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
 
             if (position < 0) position = 0;
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
             foreach (FormatChunk chunk in
-                    Align(GetLines(GetLineChunks(this.Select(
-                        c =>
-                        {
-                            object value;
-                            return (values != null) &&
-                                   (values.Count > 0) &&
-                                   c.IsFillPoint &&
-                                   values.TryGetValue(c.Tag, out value)
-                                ? FormatChunk.Create(c, value) : c;
-                        }), format, formatProvider), position), position))
+                Align(
+                    GetLines(
+                        GetLineChunks(
+                            this.Select(
+                                c =>
+                                {
+                                    object value;
+                                    return (values != null) &&
+                                           (values.Count > 0) &&
+                                           c.IsFillPoint &&
+                                           values.TryGetValue(c.Tag, out value)
+                                        ? FormatChunk.Create(c, value)
+                                        : c;
+                                }),
+                            format,
+                            formatProvider),
+                        position),
+                    position))
             {
                 Contract.Assert(chunk != null);
 
-                if (chunk.IsControl && !writeTags)
+                if (chunk.IsControl &&
+                    !writeTags)
                 {
                     if (sb.Length > 0)
                     {
@@ -835,7 +845,6 @@ namespace WebApplications.Utilities.Formatting
             if (sb.Length > 0)
                 writer.Write(sb.ToString());
         }
-
 
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" /> asynchronously.
