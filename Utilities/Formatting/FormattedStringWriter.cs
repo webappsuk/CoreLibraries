@@ -570,7 +570,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return _builder.ToString(null, null);
+            return _builder.ToString();
         }
 
         /// <summary>

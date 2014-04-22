@@ -362,5 +362,50 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.IsTrue(builder.SequenceEqual(clone), "Chunks are not equal");
             Assert.AreEqual(builder.ToString(), clone.ToString());
         }
+
+        [TestMethod]
+        public void TestFormatBuilderToStringValues()
+        {
+            TestToStringValues(new FormatBuilder());
+        }
+
+        [TestMethod]
+        public void TestLayoutBuilderToStringValues()
+        {
+            TestToStringValues(new LayoutBuilder());
+        }
+
+        private void TestToStringValues([NotNull] FormatBuilder builder)
+        {
+            var dictionary =
+                new Dictionary<string, object>
+                {
+                    {"TestA", "abc"},
+                    {"TestB", 4},
+                    {"TestC", 5},
+                };
+
+            builder.AppendFormat("{!control}{TestA}, {TestB,4}, {TestC,-4}, {TestD:F4}");
+
+            Trace.WriteLine("default with none");
+            string str = builder.ToString();
+            Trace.WriteLine("    " + str);
+            Assert.AreEqual("{TestA}, {TestB,4}, {TestC,-4}, {TestD:F4}", str);
+
+            Trace.WriteLine("default with the first 3 points");
+            str = builder.ToString(dictionary);
+            Trace.WriteLine("    " + str);
+            Assert.AreEqual("abc,    4, 5   , {TestD:F4}", str);
+
+            Trace.WriteLine("'F' with the first 3 points");
+            str = builder.ToString("f", null, dictionary);
+            Trace.WriteLine("    " + str);
+            Assert.AreEqual("{!control}{TestA}, {TestB,4}, {TestC,-4}, {TestD:F4}", str);
+
+            Trace.WriteLine("'S' with the first 3 points");
+            str = builder.ToString("s", null, dictionary);
+            Trace.WriteLine("    " + str);
+            Assert.AreEqual("abc,    4, 5   , ", str);
+        }
     }
 }

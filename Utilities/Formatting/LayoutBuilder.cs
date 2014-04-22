@@ -775,10 +775,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values"></param>
         [PublicAPI]
-        public override void WriteTo(TextWriter writer, string format = null, IFormatProvider formatProvider = null)
+        public override void WriteTo(TextWriter writer, string format = null, IFormatProvider formatProvider = null, IReadOnlyDictionary<string, object> values = null)
         {
-            WriteTo(writer, format, formatProvider, 0);
+            WriteTo(writer, format, formatProvider, values, 0);
         }
 
         /// <summary>
@@ -787,12 +788,14 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
         /// <param name="position">The position.</param>
         [PublicAPI]
         public virtual void WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
             int position)
         {
             if (writer == null) return;
@@ -803,9 +806,19 @@ namespace WebApplications.Utilities.Formatting
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
             foreach (FormatChunk chunk in
-                    Align(GetLines(GetLineChunks(this, format, formatProvider), position), position))
+                    Align(GetLines(GetLineChunks(this.Select(
+                        c =>
+                        {
+                            object value;
+                            return (values != null) &&
+                                   (values.Count > 0) &&
+                                   c.IsFillPoint &&
+                                   values.TryGetValue(c.Tag, out value)
+                                ? FormatChunk.Create(c, value) : c;
+                        }), format, formatProvider), position), position))
             {
                 Contract.Assert(chunk != null);
+
                 if (chunk.IsControl && !writeTags)
                 {
                     if (sb.Length > 0)
@@ -830,14 +843,18 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <returns>An awaitable task.</returns>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// An awaitable task.
+        /// </returns>
         [PublicAPI]
         public override Task WriteToAsync(
             TextWriter writer,
             string format = null,
-            IFormatProvider formatProvider = null)
+            IFormatProvider formatProvider = null,
+            IReadOnlyDictionary<string, object> values = null)
         {
-            return WriteToAsync(writer, format, formatProvider, 0);
+            return WriteToAsync(writer, format, formatProvider, values, 0);
         }
 
         /// <summary>
@@ -846,14 +863,18 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
         /// <param name="position">The position.</param>
-        /// <returns>An awaitable task.</returns>
+        /// <returns>
+        /// An awaitable task.
+        /// </returns>
         [PublicAPI]
         [NotNull]
         public virtual async Task WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
             int position)
         {
             if (writer == null) return;
@@ -864,9 +885,19 @@ namespace WebApplications.Utilities.Formatting
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
             foreach (FormatChunk chunk in
-                    Align(GetLines(GetLineChunks(this, format, formatProvider), position), position))
+                    Align(GetLines(GetLineChunks(this.Select(
+                        c =>
+                        {
+                            object value;
+                            return (values != null) &&
+                                   (values.Count > 0) &&
+                                   c.IsFillPoint &&
+                                   values.TryGetValue(c.Tag, out value)
+                                ? FormatChunk.Create(c, value) : c;
+                        }), format, formatProvider), position), position))
             {
                 Contract.Assert(chunk != null);
+
                 if (chunk.IsControl && !writeTags)
                 {
                     if (sb.Length > 0)

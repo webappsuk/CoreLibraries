@@ -221,19 +221,20 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(name != null);
             return _customColours.TryRemove(name, out colour);
         }
-        
+
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
         /// <param name="position">The position.</param>
-        public override void WriteTo(TextWriter writer, string format, IFormatProvider formatProvider, int position)
+        public override void WriteTo(TextWriter writer, string format, IFormatProvider formatProvider, IReadOnlyDictionary<string, object> values, int position)
         {
             // Update the layout based on the console.
             lock(ConsoleTextWriter.Lock)
-                base.WriteTo(writer, format, formatProvider, UpdateLayout());
+                base.WriteTo(writer, format, formatProvider, values, UpdateLayout());
         }
 
         /// <summary>
@@ -242,17 +243,21 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
         /// <param name="position">The position.</param>
-        /// <returns>An awaitable task.</returns>
+        /// <returns>
+        /// An awaitable task.
+        /// </returns>
         public override Task WriteToAsync(
             TextWriter writer,
             string format,
             IFormatProvider formatProvider,
+            IReadOnlyDictionary<string, object> values,
             int position)
         {
             // Update the layout based on the console.
             lock (ConsoleTextWriter.Lock)
-                base.WriteTo(writer, format, formatProvider, UpdateLayout());
+                base.WriteTo(writer, format, formatProvider, values, UpdateLayout());
             return TaskResult.Completed;
         }
 

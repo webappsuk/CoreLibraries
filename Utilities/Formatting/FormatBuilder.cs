@@ -1200,7 +1200,49 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return ToString(null, null);
+            return ToString(null, null, _empty);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] params object[] values)
+        {
+            return ToString(null, null, values);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull][InstantHandle] IEnumerable values)
+        {
+            return ToString(null, null, values);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] IReadOnlyDictionary<string, object> values)
+        {
+            return ToString(null, null, values);
         }
 
         /// <summary>
@@ -1216,6 +1258,51 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] IFormatProvider formatProvider, [CanBeNull] params object[] values)
+        {
+            return ToString(null, formatProvider, values);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] IFormatProvider formatProvider, [CanBeNull][InstantHandle] IEnumerable values)
+        {
+            return ToString(null, formatProvider, values);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] IFormatProvider formatProvider, [CanBeNull] IReadOnlyDictionary<string, object> values)
+        {
+            return ToString(null, formatProvider, values);
+        }
+
+        /// <summary>
         /// Returns a <see cref="System.String"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format. 
@@ -1227,13 +1314,108 @@ namespace WebApplications.Utilities.Formatting
         /// </list></param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String"/> that represents this instance. </returns>
+        [NotNull]
+        [PublicAPI]
         public virtual string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
+        {
+            return ToString(format, formatProvider, _empty);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format. 
+        /// <list type="table">
+        ///     <listheader> <term>Format string</term> <description>Description</description> </listheader>
+        ///     <item> <term>G/g/null</term> <description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description> </item>
+        ///     <item> <term>F/f</term> <description>All control and fill point chunks will have their tags output.</description> </item>
+        ///     <item> <term>S/s</term> <description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description> </item>
+        /// </list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider, [CanBeNull] params object[] values)
+        {
+            return ToString(format, formatProvider, ToDictionary(values));
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format. 
+        /// <list type="table">
+        ///     <listheader> <term>Format string</term> <description>Description</description> </listheader>
+        ///     <item> <term>G/g/null</term> <description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description> </item>
+        ///     <item> <term>F/f</term> <description>All control and fill point chunks will have their tags output.</description> </item>
+        ///     <item> <term>S/s</term> <description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description> </item>
+        /// </list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider, [CanBeNull][InstantHandle] IEnumerable<object> values)
+        {
+            return ToString(format, formatProvider, values == null ? null : ToDictionary(values.ToArray()));
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format. 
+        /// <list type="table">
+        ///     <listheader> <term>Format string</term> <description>Description</description> </listheader>
+        ///     <item> <term>G/g/null</term> <description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description> </item>
+        ///     <item> <term>F/f</term> <description>All control and fill point chunks will have their tags output.</description> </item>
+        ///     <item> <term>S/s</term> <description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description> </item>
+        /// </list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider, [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, format, formatProvider);
+                WriteTo(writer, format, formatProvider, values);
                 return writer.ToString();
             }
+        }
+
+        /// <summary>
+        /// Writes the builder to the console.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        public void WriteToConsole(
+            [CanBeNull] string format = null,
+            [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (!ConsoleHelper.IsConsole) return;
+            WriteTo(Console.Out, format, formatProvider, _empty);
+        }
+
+        /// <summary>
+        /// Writes the builder to <see cref="Trace"/>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        public void WriteToTrace(
+            [CanBeNull] string format = null,
+            [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            WriteTo(TraceTextWriter.Default, format, formatProvider, _empty);
         }
 
         /// <summary>
@@ -1244,35 +1426,52 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteTo([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider = null)
         {
-            WriteTo(writer, null, formatProvider);
+            WriteTo(writer, null, formatProvider, _empty);
         }
 
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <returns>An awaitable task.</returns>
-        [NotNull]
+        /// <param name="values">The values.</param>
         [PublicAPI]
-        public Task WriteToAsync(
+        public void WriteTo(
             [CanBeNull] TextWriter writer,
-            [CanBeNull] IFormatProvider formatProvider = null)
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] params object[] values)
         {
-            return WriteToAsync(writer, null, formatProvider);
+            WriteTo(writer, format, formatProvider, ToDictionary(values));
         }
 
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="format">The format passed to each chunk.</param>
+        /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        [PublicAPI]
+        public void WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format = null,
+            [CanBeNull] IFormatProvider formatProvider = null,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values = null)
+        {
+            WriteTo(writer, format, formatProvider, values == null ? null : ToDictionary(values.ToArray()));
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
         [PublicAPI]
         public virtual void WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format = null,
-            [CanBeNull] IFormatProvider formatProvider = null)
+            [CanBeNull] IFormatProvider formatProvider = null,
+            [CanBeNull] IReadOnlyDictionary<string, object> values = null)
         {
             if (writer == null) return;
 
@@ -1280,9 +1479,20 @@ namespace WebApplications.Utilities.Formatting
 
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
-            foreach (FormatChunk chunk in _chunks)
+            foreach (FormatChunk c in _chunks)
             {
-                Contract.Assert(chunk != null);
+                Contract.Assert(c != null);
+                FormatChunk chunk = c;
+
+                object value;
+                if ((values != null) &&
+                    (values.Count > 0) &&
+                    chunk.IsFillPoint &&
+                    values.TryGetValue(chunk.Tag, out value))
+                {
+                    chunk = FormatChunk.Create(chunk, value);
+                }
+
                 if (chunk.IsControl &&
                     !writeTags)
                 {
@@ -1302,30 +1512,54 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Writes the builder to the console.
+        /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
-        /// <param name="format">The format.</param>
+        /// <param name="writer">The writer.</param>
         /// <param name="formatProvider">The format provider.</param>
+        /// <returns>An awaitable task.</returns>
+        [NotNull]
         [PublicAPI]
-        public void WriteToConsole(
-            [CanBeNull] string format = null,
+        public Task WriteToAsync(
+            [CanBeNull] TextWriter writer,
             [CanBeNull] IFormatProvider formatProvider = null)
         {
-            if (!ConsoleHelper.IsConsole) return;
-            WriteTo(Console.Out, format, formatProvider);
+            return WriteToAsync(writer, null, formatProvider, _empty);
         }
 
         /// <summary>
-        /// Writes the builder to <see cref="Trace"/>.
+        /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
+        /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        [NotNull]
         [PublicAPI]
-        public void WriteToTrace(
-            [CanBeNull] string format = null,
-            [CanBeNull] IFormatProvider formatProvider = null)
+        public Task WriteToAsync(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] params object[] values)
         {
-            WriteTo(TraceTextWriter.Default, format, formatProvider);
+            return WriteToAsync(writer, format, formatProvider, ToDictionary(values));
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteToAsync(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format = null,
+            [CanBeNull] IFormatProvider formatProvider = null,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values = null)
+        {
+            return WriteToAsync(writer, format, formatProvider, values == null ? null : ToDictionary(values.ToArray()));
         }
 
         /// <summary>
@@ -1334,13 +1568,17 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <returns>An awaitable task.</returns>
+        /// <param name="values">The values.</param>
+        /// <returns>
+        /// An awaitable task.
+        /// </returns>
         [NotNull]
         [PublicAPI]
         public virtual async Task WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format = null,
-            [CanBeNull] IFormatProvider formatProvider = null)
+            [CanBeNull] IFormatProvider formatProvider = null,
+            [CanBeNull] IReadOnlyDictionary<string, object> values = null)
         {
             if (writer == null) return;
 
@@ -1348,9 +1586,20 @@ namespace WebApplications.Utilities.Formatting
 
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
-            foreach (FormatChunk chunk in _chunks)
+            foreach (FormatChunk c in _chunks)
             {
-                Contract.Assert(chunk != null);
+                Contract.Assert(c != null);
+                FormatChunk chunk = c;
+
+                object value;
+                if ((values != null) &&
+                    (values.Count > 0) &&
+                    chunk.IsFillPoint &&
+                    values.TryGetValue(chunk.Tag, out value))
+                {
+                    chunk = FormatChunk.Create(chunk, value);
+                }
+
                 // If the format is F/f, then control tags will need to be output
                 if (chunk.IsControl &&
                     !writeTags)
