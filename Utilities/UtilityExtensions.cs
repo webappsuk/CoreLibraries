@@ -1109,7 +1109,7 @@ namespace WebApplications.Utilities
 
             try
             {
-                return new FormatBuilder(parameters).AppendFormat(format).ToString();
+                return new FormatBuilder().AppendFormat(format, parameters).ToString();
             }
             catch (FormatException)
             {
@@ -1135,7 +1135,7 @@ namespace WebApplications.Utilities
 
             try
             {
-                return new FormatBuilder(parameters).AppendFormat(format).ToString(formatOptions, formatProvider);
+                return new FormatBuilder().AppendFormat(format, parameters).ToString(formatOptions, formatProvider);
             }
             catch (FormatException)
             {

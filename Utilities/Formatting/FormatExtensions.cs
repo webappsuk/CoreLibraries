@@ -43,12 +43,8 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>An enumeration of tuples.</returns>
-        /// <remarks><para>if <see cref="Tuple{T1,T2,T3}.Item1" /> is <see langword="null" /> then the block isn't a fill point; otherwise
-        /// it contains the tag (e.g. '0')</para>
-        /// <para>
-        ///   <see cref="Tuple{T1,T2,T3}.Item2" /> contains the format (if any); otherwise <see langword="null" />.</para>
-        /// <para>
-        ///   <see cref="Tuple{T1,T2,T3}.Item3" /> contains the raw text.</para></remarks>
+        /// <remarks>To insert a '{', '}' or '\' character in the format, then it should be preceded with a '\' character.
+        /// A '\' before any other character will be ignored. Escapes within a fill point will be kept in case the chunks format is another format string.</remarks>
         [NotNull]
         [PublicAPI]
         public static IEnumerable<FormatChunk> FormatChunks([CanBeNull] this string format)
@@ -56,47 +52,64 @@ namespace WebApplications.Utilities.Formatting
             if (String.IsNullOrEmpty(format))
                 yield break;
 
-            StringBuilder chunk = new StringBuilder((int) (format.Length * 1.2));
+            StringBuilder chunk = new StringBuilder(format.Length);
+
             bool inFillPoint = false;
+
+            int openCount = 0;
             int i = 0;
+
             while (i < format.Length)
             {
                 char c = format[i++];
+
+                if (c == '\\')
+                {
+                    if (i < format.Length)
+                    {
+                        if (inFillPoint)
+                            chunk.Append(c);
+                        chunk.Append(format[i++]);
+                    }
+                    else
+                        chunk.Append(c);
+                    continue;
+                }
+
                 if (!inFillPoint)
                 {
-                    if (c != FormatBuilder.OpenChar)
+                    if (c == FormatBuilder.OpenChar)
                     {
-                        if (c != FormatBuilder.CloseChar ||
-                            (chunk.Length < 1) ||
-                            (chunk[chunk.Length - 1] != FormatBuilder.CloseChar))
-                            chunk.Append(c);
-                        continue;
-                    }
+                        inFillPoint = true;
 
-                    if (chunk.Length > 0)
-                    {
-                        // Yield block of text.
-                        yield return FormatChunk.Create(chunk.ToString());
-                        chunk.Clear();
+                        if (chunk.Length > 0)
+                        {
+                            // Yield block of text.
+                            yield return FormatChunk.Create(chunk.ToString());
+                            chunk.Clear();
+                        }
                     }
 
                     chunk.Append(c);
-                    inFillPoint = true;
                     continue;
                 }
 
                 chunk.Append(c);
-                if (c != FormatBuilder.CloseChar)
-                {
-                    if (c == FormatBuilder.OpenChar)
-                        inFillPoint = false;
-                    continue;
-                }
 
-                // Reached end of fill point
-                inFillPoint = false;
-                yield return FormatChunk.Create(chunk.ToString());
-                chunk.Clear();
+                if (c == FormatBuilder.OpenChar)
+                    openCount++;
+                else if (c == FormatBuilder.CloseChar)
+                {
+                    if (openCount == 0)
+                    {
+                        // Reached end of fill point
+                        inFillPoint = false;
+                        yield return FormatChunk.Create(chunk.ToString());
+                        chunk.Clear();
+                    }
+                    else
+                        openCount--;
+                }
             }
 
             if (chunk.Length > 0)

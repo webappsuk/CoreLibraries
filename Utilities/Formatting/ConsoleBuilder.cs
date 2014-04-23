@@ -91,31 +91,6 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConsoleBuilder" /> class.
-        /// </summary>
-        /// <param name="values">The values.</param>
-        /// <param name="layout">The layout.</param>
-        public ConsoleBuilder(
-            [CanBeNull] [InstantHandle] IEnumerable<object> values,
-            [CanBeNull] Layout layout = null)
-            : base(values, layout == null ? null : layout.Apply(ConsoleWidth, wrapMode: LayoutWrapMode.PadToWrap))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConsoleBuilder" /> class.
-        /// </summary>
-        /// <param name="values">The values.</param>
-        /// <param name="layout">The layout.</param>
-        [PublicAPI]
-        public ConsoleBuilder(
-            [CanBeNull] IReadOnlyDictionary<string, object> values,
-            [CanBeNull] Layout layout = null)
-            : base(values, layout == null ? null : layout.Apply(ConsoleWidth, wrapMode: LayoutWrapMode.PadToWrap))
-        {
-        }
-
-        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <param name="makeReadonly">If set to <see langword="true"/>, the returned builder will be readonly.</param>
@@ -127,7 +102,7 @@ namespace WebApplications.Utilities.Formatting
             if (IsReadonly)
                 return this;
 
-            ConsoleBuilder consoleBuilder = new ConsoleBuilder(Values, InitialLayout);
+            ConsoleBuilder consoleBuilder = new ConsoleBuilder(InitialLayout);
             consoleBuilder.Append(this);
             if (makeReadonly)
                 consoleBuilder.MakeReadonly();
@@ -222,39 +197,33 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
+        /// <param name="chunks">The chunks.</param>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
         /// <param name="position">The position.</param>
-        public override void WriteTo(TextWriter writer, string format, IFormatProvider formatProvider, IReadOnlyDictionary<string, object> values, int position)
+        /// <returns></returns>
+        protected override int WriteTo(IEnumerable<FormatChunk> chunks, TextWriter writer, string format, IFormatProvider formatProvider, int position)
         {
-            // Update the layout based on the console.
-            ConsoleHelper.SynchronizationContext.Invoke(() => base.WriteTo(writer, format, formatProvider, values, UpdateLayout()));
+            return ConsoleHelper.SynchronizationContext.Invoke(
+                () => base.WriteTo(chunks, writer, format, formatProvider, UpdateLayout()));
         }
 
         /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" /> asynchronously.
+        /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
+        /// <param name="chunks">The chunks.</param>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
         /// <param name="position">The position.</param>
-        /// <returns>
-        /// An awaitable task.
-        /// </returns>
-        public override async Task WriteToAsync(
-            TextWriter writer,
-            string format,
-            IFormatProvider formatProvider,
-            IReadOnlyDictionary<string, object> values,
-            int position)
+        /// <returns></returns>
+        protected override async Task<int> WriteToAsync(IEnumerable<FormatChunk> chunks, TextWriter writer, string format, IFormatProvider formatProvider, int position)
         {
             await ConsoleHelper.SynchronizationContext;
 
             // Update the layout based on the console.
-            await base.WriteToAsync(writer, format, formatProvider, values, UpdateLayout());
+            return await base.WriteToAsync(chunks, writer, format, formatProvider, UpdateLayout());
         }
 
         /// <summary>
