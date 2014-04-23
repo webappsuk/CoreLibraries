@@ -1422,9 +1422,19 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
+        [PublicAPI]
+        public void WriteTo([CanBeNull] TextWriter writer)
+        {
+            WriteTo(writer, null, null, _empty);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
         /// <param name="formatProvider">The format provider.</param>
         [PublicAPI]
-        public void WriteTo([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider = null)
+        public void WriteTo([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider)
         {
             WriteTo(writer, null, formatProvider, _empty);
         }
@@ -1456,9 +1466,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteTo(
             [CanBeNull] TextWriter writer,
-            [CanBeNull] string format = null,
-            [CanBeNull] IFormatProvider formatProvider = null,
-            [CanBeNull] [InstantHandle] IEnumerable<object> values = null)
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             WriteTo(writer, format, formatProvider, values == null ? null : ToDictionary(values.ToArray()));
         }
@@ -1469,9 +1479,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public virtual void WriteTo(
             [CanBeNull] TextWriter writer,
-            [CanBeNull] string format = null,
-            [CanBeNull] IFormatProvider formatProvider = null,
-            [CanBeNull] IReadOnlyDictionary<string, object> values = null)
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if (writer == null) return;
 
@@ -1515,13 +1525,27 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
+        /// <returns>
+        /// An awaitable task.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public Task WriteToAsync([CanBeNull] TextWriter writer)
+        {
+            return WriteToAsync(writer, null, null, _empty);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>An awaitable task.</returns>
         [NotNull]
         [PublicAPI]
         public Task WriteToAsync(
             [CanBeNull] TextWriter writer,
-            [CanBeNull] IFormatProvider formatProvider = null)
+            [CanBeNull] IFormatProvider formatProvider)
         {
             return WriteToAsync(writer, null, formatProvider, _empty);
         }
@@ -1555,9 +1579,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public Task WriteToAsync(
             [CanBeNull] TextWriter writer,
-            [CanBeNull] string format = null,
-            [CanBeNull] IFormatProvider formatProvider = null,
-            [CanBeNull] [InstantHandle] IEnumerable<object> values = null)
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             return WriteToAsync(writer, format, formatProvider, values == null ? null : ToDictionary(values.ToArray()));
         }
@@ -1576,9 +1600,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public virtual async Task WriteToAsync(
             [CanBeNull] TextWriter writer,
-            [CanBeNull] string format = null,
-            [CanBeNull] IFormatProvider formatProvider = null,
-            [CanBeNull] IReadOnlyDictionary<string, object> values = null)
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if (writer == null) return;
 
