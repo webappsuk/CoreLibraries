@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,12 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Collections.Concurrent;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using JetBrains.Annotations;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Performance
 {
@@ -42,19 +39,24 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         /// Default counters for a category.
         /// </summary>
-        [NotNull] private static readonly CounterCreationData[] _counterData = new[]
-            {
-                new CounterCreationData("Total operations", "Total operations executed since the start of the process.",
-                                        PerformanceCounterType.NumberOfItems64),
-                new CounterCreationData("Operations per second", "The number of operations per second.",
-                                        PerformanceCounterType.RateOfCountsPerSecond64)
-            };
-        
+        [NotNull]
+        private static readonly CounterCreationData[] _counterData = new[]
+        {
+            new CounterCreationData(
+                "Total operations",
+                "Total operations executed since the start of the process.",
+                PerformanceCounterType.NumberOfItems64),
+            new CounterCreationData(
+                "Operations per second",
+                "The number of operations per second.",
+                PerformanceCounterType.RateOfCountsPerSecond64)
+        };
+
         /// <summary>
         ///   Initializes a new instance of <see cref="PerfCounter"/>.
         /// </summary>
         /// <param name="categoryName">The performance counter's category name.</param>
-        private PerfCounter([NotNull]string categoryName)
+        private PerfCounter([NotNull] string categoryName)
             : base(categoryName, _counterData)
         {
             Contract.Requires(categoryName != null);

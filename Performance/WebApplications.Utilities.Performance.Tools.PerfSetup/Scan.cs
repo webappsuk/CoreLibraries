@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
@@ -8,7 +35,6 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using WebApplications.Utilities;
 
 namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 {
@@ -21,12 +47,13 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// The assembly resolver.
         /// </summary>
         public static readonly DefaultAssemblyResolver AssemblyResolver;
+
         public static readonly ReaderParameters ReaderParameters;
 
         static Scan()
         {
             AssemblyResolver = new DefaultAssemblyResolver();
-            ReaderParameters = new ReaderParameters() { AssemblyResolver = AssemblyResolver };
+            ReaderParameters = new ReaderParameters() {AssemblyResolver = AssemblyResolver};
         }
 
         /// <summary>
@@ -98,13 +125,12 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 int succeeded = 0;
                 int failed = 0;
                 foreach (PerfCategory performanceInformation in PerfCategory.All)
-                {
                     switch (mode)
                     {
                         case ScanMode.Add:
                             bool added = performanceInformation.Create(machineName);
                             Logger.Add(
-                                added ? Level.Normal : Level.Error, 
+                                added ? Level.Normal : Level.Error,
                                 "Adding '{0}' {1}",
                                 performanceInformation,
                                 added ? "succeeded" : "failed");
@@ -116,7 +142,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         case ScanMode.Delete:
                             bool deleted = performanceInformation.Delete(machineName);
                             Logger.Add(
-                                deleted ? Level.Normal : Level.Error, 
+                                deleted ? Level.Normal : Level.Error,
                                 "Deleting '{0}' {1}",
                                 performanceInformation,
                                 deleted ? "succeeded" : "failed");
@@ -129,7 +155,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                             // Treat everything else as list.
                             bool exists = performanceInformation.Exists;
                             Logger.Add(
-                                exists ? Level.Normal : Level.Error, 
+                                exists ? Level.Normal : Level.Error,
                                 "'{0}' {1}",
                                 performanceInformation,
                                 exists ? "exists" : "is missing");
@@ -139,7 +165,6 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                                 failed++;
                             break;
                     }
-                }
 
                 if (succeeded + failed > 0)
                 {
@@ -156,17 +181,22 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                             operation = "Found";
                             break;
                     }
-                    Logger.Add(Level.High, "{0} '{1}' performance counters.{2}", operation, succeeded,
-                               failed > 0 ? string.Format(" {0} failures.", failed) : string.Empty);
+                    Logger.Add(
+                        Level.High,
+                        "{0} '{1}' performance counters.{2}",
+                        operation,
+                        succeeded,
+                        failed > 0 ? string.Format(" {0} failures.", failed) : string.Empty);
 
                     if (executeAgain &&
                         Environment.Is64BitOperatingSystem)
                     {
                         bool bit64 = Environment.Is64BitProcess;
-                        Logger.Add(Level.High,
-                                   "Running PerfSetup in {0} bit process on 64 bit operating system, will run again in {1} bit mode to ensure counters are added to both environments!",
-                                   bit64 ? 64 : 32,
-                                   bit64 ? 32 : 64);
+                        Logger.Add(
+                            Level.High,
+                            "Running PerfSetup in {0} bit process on 64 bit operating system, will run again in {1} bit mode to ensure counters are added to both environments!",
+                            bit64 ? 64 : 32,
+                            bit64 ? 32 : 64);
                         ExecuteAgain(mode, fullPath, machineName, !bit64);
                     }
                 }
@@ -174,9 +204,10 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     Logger.Add(Level.High, "No valid performance counters found.");
             }
             else
-                Logger.Add(Level.Warning, "The '{0}' path did not match any executables or dlls, so no performance counters added.", fullPath);
-
-
+                Logger.Add(
+                    Level.Warning,
+                    "The '{0}' path did not match any executables or dlls, so no performance counters added.",
+                    fullPath);
         }
 
         /// <summary>
@@ -191,20 +222,19 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
             // Find any modules that reference logging.
             ModuleDefinition[] referencingModules = assembly.Modules
-                                                            .Where(m => m.AssemblyReferences
-                                                                         .FirstOrDefault(
-                                                                             ar => ar.Name == "WebApplications.Utilities.Performance") !=
-                                                                        null)
-                                                            .ToArray();
+                .Where(
+                    m => m.AssemblyReferences
+                        .FirstOrDefault(
+                            ar => ar.Name == "WebApplications.Utilities.Performance") !=
+                         null)
+                .ToArray();
 
             if (referencingModules.Length < 1)
                 return;
 
             Queue<string> lastStrings = new Queue<string>(2);
-            foreach (var module in referencingModules)
-            {
+            foreach (ModuleDefinition module in referencingModules)
                 foreach (TypeDefinition type in module.Types)
-                {
                     foreach (MethodDefinition method in type.Methods)
                     {
                         if (!method.HasBody) continue;
@@ -282,23 +312,26 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                                         categoryName,
                                         categoryHelp == null ? "null" : "\"" + categoryHelp + "\"");
 
-                                    PerfCategory.Set(categoryName, PerfCategoryType, assembly.Name.Name,
-                                                     categoryHelp);
+                                    PerfCategory.Set(
+                                        categoryName,
+                                        PerfCategoryType,
+                                        assembly.Name.Name,
+                                        categoryHelp);
                                 }
                                 else
-                                    Logger.Add(Level.Error,
-                                               "Performance counter creation found in '{0}' but category name was null or empty - make sure you use inline strings as constructor parameters.  Press any key to continue",
-                                               assemblyPath);
+                                    Logger.Add(
+                                        Level.Error,
+                                        "Performance counter creation found in '{0}' but category name was null or empty - make sure you use inline strings as constructor parameters.  Press any key to continue",
+                                        assemblyPath);
                             }
                             else
-                            {
-                                Logger.Add(Level.Error, "Performance counter creation found in '{0}' but could not find category name and or category help - make sure you use inline strings as constructor parameters.  Press any key to continue", assemblyPath);
-                            }
+                                Logger.Add(
+                                    Level.Error,
+                                    "Performance counter creation found in '{0}' but could not find category name and or category help - make sure you use inline strings as constructor parameters.  Press any key to continue",
+                                    assemblyPath);
                             lastStrings.Clear();
                         }
                     }
-                }
-            }
         }
 
         /// <summary>
@@ -317,16 +350,17 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             string executable = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
                                 @"\PerfSetup" +
                                 (bit64
-                                     ? "64"
-                                     : "32") +
+                                    ? "64"
+                                    : "32") +
                                 ".exe";
 
             if (!File.Exists(executable))
             {
-                Logger.Add(Level.Error,
-                           "Could not find '{0}' executable, could not add performance counters in {1} bit mode.",
-                           executable,
-                           bit64 ? 64 : 32);
+                Logger.Add(
+                    Level.Error,
+                    "Could not find '{0}' executable, could not add performance counters in {1} bit mode.",
+                    executable,
+                    bit64 ? 64 : 32);
                 return;
             }
 
@@ -335,19 +369,21 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 if (fullPath.EndsWith(@"\"))
                     fullPath = fullPath.Substring(0, fullPath.Length - 1);
 
-                ProcessStartInfo processStartInfo = new ProcessStartInfo(executable,
-                                                                         string.Format("/M:\"{0}\" /E- {1} \"{2}\"", 
-                                                                         machineName,
-                                                                         mode.ToString(), 
-                                                                         fullPath))
-                    {
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true
-                    };
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(
+                    executable,
+                    string.Format(
+                        "/M:\"{0}\" /E- {1} \"{2}\"",
+                        machineName,
+                        mode.ToString(),
+                        fullPath))
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true
+                };
 
                 Logger.Add(Level.Low, "Executing: {0} {1}", processStartInfo.FileName, processStartInfo.Arguments);
-                
+
                 Process process = Process.Start(processStartInfo);
                 string output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();

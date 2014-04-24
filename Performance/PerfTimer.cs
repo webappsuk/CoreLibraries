@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,14 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Linq;
-using JetBrains.Annotations;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Performance
 {
@@ -46,22 +43,32 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         [NotNull]
         private static readonly CounterCreationData[] _counterData = new[]
-            {
-                new CounterCreationData("Total operations", "Total operations executed since the start of the process.",
-                                        PerformanceCounterType.NumberOfItems64),
-                new CounterCreationData("Operations per second", "The number of operations per second.",
-                                        PerformanceCounterType.RateOfCountsPerSecond64),
-                new CounterCreationData("Average duration", "The average duration of each operation.",
-                                        PerformanceCounterType.AverageTimer32),
-                new CounterCreationData("Average duration Base", "The average duration base counter.",
-                                        PerformanceCounterType.AverageBase),
-                new CounterCreationData("Total warnings",
-                                        "Total operations executed since the start of the process that have exceeded the warning duration threshhold.",
-                                        PerformanceCounterType.NumberOfItems64),
-                new CounterCreationData("Total criticals",
-                                        "Total operations executed since the start of the process that have exceeded the critical duration threshhold.",
-                                        PerformanceCounterType.NumberOfItems64)
-            };
+        {
+            new CounterCreationData(
+                "Total operations",
+                "Total operations executed since the start of the process.",
+                PerformanceCounterType.NumberOfItems64),
+            new CounterCreationData(
+                "Operations per second",
+                "The number of operations per second.",
+                PerformanceCounterType.RateOfCountsPerSecond64),
+            new CounterCreationData(
+                "Average duration",
+                "The average duration of each operation.",
+                PerformanceCounterType.AverageTimer32),
+            new CounterCreationData(
+                "Average duration Base",
+                "The average duration base counter.",
+                PerformanceCounterType.AverageBase),
+            new CounterCreationData(
+                "Total warnings",
+                "Total operations executed since the start of the process that have exceeded the warning duration threshhold.",
+                PerformanceCounterType.NumberOfItems64),
+            new CounterCreationData(
+                "Total criticals",
+                "Total operations executed since the start of the process that have exceeded the critical duration threshhold.",
+                PerformanceCounterType.NumberOfItems64)
+        };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PerfTimer" /> class.
@@ -85,8 +92,9 @@ namespace WebApplications.Utilities.Performance
         /// <param name="criticalDuration">Duration before a critical is counted (defaults to infinite).</param>
         /// <returns>IDisposable.</returns>
         [NotNull]
-        public Timer Region(TimeSpan warningDuration = default (TimeSpan),
-                            TimeSpan criticalDuration = default (TimeSpan))
+        public Timer Region(
+            TimeSpan warningDuration = default (TimeSpan),
+            TimeSpan criticalDuration = default (TimeSpan))
         {
             return new Timer(this, warningDuration, criticalDuration);
         }
@@ -177,7 +185,8 @@ namespace WebApplications.Utilities.Performance
         /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
         /// <param name="warningDuration">Duration before a warning is counted (defaults to infinite).</param>
         /// <param name="criticalDuration">Duration before a critical is counted (defaults to infinite).</param>
-        public void DecrementBy(TimeSpan duration,
+        public void DecrementBy(
+            TimeSpan duration,
             TimeSpan warningDuration = default (TimeSpan),
             TimeSpan criticalDuration = default (TimeSpan))
         {
@@ -260,7 +269,7 @@ namespace WebApplications.Utilities.Performance
                 get { return Elapsed > CriticalDuration; }
             }
 
-            internal Timer([NotNull]PerfTimer perfTimer, TimeSpan warningDuration, TimeSpan criticalDuration)
+            internal Timer([NotNull] PerfTimer perfTimer, TimeSpan warningDuration, TimeSpan criticalDuration)
             {
                 PerfTimer = perfTimer;
                 if (warningDuration == default(TimeSpan))

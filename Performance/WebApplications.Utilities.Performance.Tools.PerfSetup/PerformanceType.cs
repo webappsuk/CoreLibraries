@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +46,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// The type cache.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<string, PerformanceType> _types = new ConcurrentDictionary<string, PerformanceType>();
+        private static readonly ConcurrentDictionary<string, PerformanceType> _types =
+            new ConcurrentDictionary<string, PerformanceType>();
 
         /// <summary>
         /// The performance counter type lookup
@@ -70,7 +98,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
                     if (baseType == null)
                     {
-                        Logger.Add(Level.Error,
+                        Logger.Add(
+                            Level.Error,
                             "The '{0}' type does not descend from 'WebApplications.Utilities.Performance.PerfCategory' and so cannot be used.",
                             typeDefinition.FullName);
                         IsValid = false;
@@ -94,7 +123,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
                 if (creationField == null)
                 {
-                    Logger.Add(Level.Error,
+                    Logger.Add(
+                        Level.Error,
                         "The '{0}' type does not contains a single readonly static field of type 'System.Diagnostics.CounterCreationData[]' so counters cannot be created.",
                         typeDefinition.FullName);
                     IsValid = false;
@@ -107,7 +137,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                 if ((staticConstructor == null) ||
                     !staticConstructor.HasBody)
                 {
-                    Logger.Add(Level.Error,
+                    Logger.Add(
+                        Level.Error,
                         "The '{0}' type does not contain a static constructor so the initial values for the '{1}' field cannot be parsed.",
                         typeDefinition.FullName,
                         creationField.FullName);
@@ -194,7 +225,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                     }
                     else
                     {
-                        Logger.Add(Level.Warning,
+                        Logger.Add(
+                            Level.Warning,
                             "Performance counter creation data construction was found for the '{0}' type, but the parameters were not literals and so could not be decoded.",
                             typeDefinition.FullName);
                         IsValid = false;
@@ -206,7 +238,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
                 if (data.Count < 1)
                 {
-                    Logger.Add(Level.Warning,
+                    Logger.Add(
+                        Level.Warning,
                         "The '{0}' type does not appear to contain any initialisation data for the '{1}' field.",
                         typeDefinition.FullName,
                         creationField.FullName);
@@ -216,7 +249,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
 
                 // We have valid creation data for the type.
                 CounterCreationData = data.ToArray();
-                Logger.Add(Level.Normal,
+                Logger.Add(
+                    Level.Normal,
                     "The '{0}' type defines '{1}' performance counters.",
                     typeDefinition.FullName,
                     CounterCreationData.Length);

@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +44,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// Holds information by category.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<string, PerfCategory> _categories = new ConcurrentDictionary<string, PerfCategory>();
+        private static readonly ConcurrentDictionary<string, PerfCategory> _categories =
+            new ConcurrentDictionary<string, PerfCategory>();
 
         /// <summary>
         /// The assemblies referencing the counter.
@@ -28,7 +56,10 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// The category name.
         /// </summary>
         [NotNull]
-        public IEnumerable<string> Assemblies { get { return _assemblies; } }
+        public IEnumerable<string> Assemblies
+        {
+            get { return _assemblies; }
+        }
 
         [NotNull]
         public readonly PerformanceType PerformanceType;
@@ -50,7 +81,10 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <param name="assembly">The assembly.</param>
         /// <param name="performanceType">Type of the performance.</param>
         /// <param name="categoryName">Name of the category.</param>
-        private PerfCategory([NotNull]string assembly, [NotNull] PerformanceType performanceType, [NotNull]string categoryName)
+        private PerfCategory(
+            [NotNull] string assembly,
+            [NotNull] PerformanceType performanceType,
+            [NotNull] string categoryName)
         {
             _assemblies = new List<string> {assembly};
             PerformanceType = performanceType;
@@ -64,7 +98,11 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <param name="typeReference">The type reference.</param>
         /// <param name="assembly">The assembly.</param>
         /// <param name="categoryHelp">The category help.</param>
-        public static void Set([NotNull] string categoryName, [NotNull] TypeReference typeReference, [NotNull] string assembly, string categoryHelp)
+        public static void Set(
+            [NotNull] string categoryName,
+            [NotNull] TypeReference typeReference,
+            [NotNull] string assembly,
+            string categoryHelp)
         {
             try
             {
@@ -81,7 +119,8 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         "The '{0}' performance counter category was declared more than once with different types ('{1}' and '{2}') in assembly '{3}'.",
                         categoryName,
                         category.PerformanceType,
-                        performanceType, assembly);
+                        performanceType,
+                        assembly);
                     return;
                 }
 
@@ -145,7 +184,9 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             {
                 if (PerformanceCounterCategory.Exists(CategoryName))
                 {
-                    if (PerformanceType.CounterCreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName)))
+                    if (
+                        PerformanceType.CounterCreationData.All(
+                            c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName)))
                         return true;
 
                     // We don't have all the counters, so drop and recreate.
@@ -153,11 +194,15 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
                         return false;
                 }
 
-                PerformanceCounterCategory.Create(CategoryName, CategoryHelp,
-                                                  PerformanceCounterCategoryType.MultiInstance,
-                                                  new CounterCreationDataCollection(PerformanceType.CounterCreationData));
+                PerformanceCounterCategory.Create(
+                    CategoryName,
+                    CategoryHelp,
+                    PerformanceCounterCategoryType.MultiInstance,
+                    new CounterCreationDataCollection(PerformanceType.CounterCreationData));
 
-                Created = PerformanceType.CounterCreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName));
+                Created =
+                    PerformanceType.CounterCreationData.All(
+                        c => PerformanceCounterCategory.CounterExists(c.CounterName, CategoryName));
                 Deleted = false;
                 return Created;
             }
@@ -187,7 +232,7 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
             {
                 if (!PerformanceCounterCategory.Exists(CategoryName))
                     return true;
-                    
+
                 PerformanceCounterCategory.Delete(CategoryName);
                 Deleted = !PerformanceCounterCategory.Exists(CategoryName);
                 Created = false;
@@ -206,10 +251,11 @@ namespace WebApplications.Utilities.Performance.Tools.PerfSetup
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return string.Format("{0}: {1} [{2}]",
-                                 string.Join(",", _assemblies),
-                                 CategoryName,
-                                 PerformanceType);
+            return string.Format(
+                "{0}: {1} [{2}]",
+                string.Join(",", _assemblies),
+                CategoryName,
+                PerformanceType);
         }
     }
 }

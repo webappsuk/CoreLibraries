@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,11 +28,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Reflect;
@@ -55,7 +53,8 @@ namespace WebApplications.Utilities.Performance
         /// The counter types.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<Type, PerfCategoryType> _counterTypes = new ConcurrentDictionary<Type, PerfCategoryType>();
+        private static readonly ConcurrentDictionary<Type, PerfCategoryType> _counterTypes =
+            new ConcurrentDictionary<Type, PerfCategoryType>();
 
         /// <summary>
         /// The current instance name for all performance counters.
@@ -79,14 +78,20 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <value>All.</value>
         [NotNull]
-        public static IEnumerable<PerfCategory> All { get { return _counters.Values; } }
+        public static IEnumerable<PerfCategory> All
+        {
+            get { return _counters.Values; }
+        }
 
         /// <summary>
         /// Gets all known counter types.
         /// </summary>
         /// <value>All.</value>
         [NotNull]
-        public static IEnumerable<Type> AllTypes { get { return _counterTypes.Keys; } }
+        public static IEnumerable<Type> AllTypes
+        {
+            get { return _counterTypes.Keys; }
+        }
 
         /// <summary>
         /// Initializes static members of the <see cref="PerfCategory" /> class.
@@ -131,7 +136,7 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <param name="categoryName">The performance counter's <see cref="PerfCategory.CategoryName">category name</see>.</param>
         /// <param name="counters">The counters.</param>
-        protected PerfCategory([NotNull] string categoryName, [NotNull]IEnumerable<CounterCreationData> counters)
+        protected PerfCategory([NotNull] string categoryName, [NotNull] IEnumerable<CounterCreationData> counters)
         {
             Contract.Requires(categoryName != null);
             Contract.Requires(counters != null);
@@ -151,7 +156,8 @@ namespace WebApplications.Utilities.Performance
             {
                 if (!PerformanceCounterCategory.Exists(CategoryName))
                 {
-                    Trace.WriteLine(string.Format(Resources.PerformanceCounterHelper_CategoryDoesNotExist, CategoryName));
+                    Trace.WriteLine(
+                        string.Format(Resources.PerformanceCounterHelper_CategoryDoesNotExist, CategoryName));
                     IsValid = false;
                     return;
                 }
@@ -162,19 +168,23 @@ namespace WebApplications.Utilities.Performance
                     CounterCreationData counter = cArray[c];
                     if (!PerformanceCounterCategory.CounterExists(counter.CounterName, categoryName))
                     {
-                        Trace.WriteLine(string.Format(Resources.PerformanceCounterHelper_CounterDoesNotExist, CategoryName, counter.CounterName));
+                        Trace.WriteLine(
+                            string.Format(
+                                Resources.PerformanceCounterHelper_CounterDoesNotExist,
+                                CategoryName,
+                                counter.CounterName));
                         IsValid = false;
                         return;
                     }
-                    Counters[c] = new System.Diagnostics.PerformanceCounter()
-                        {
-                            CategoryName = categoryName,
-                            CounterName = counter.CounterName,
-                            MachineName = MachineName,
-                            InstanceLifetime = PerformanceCounterInstanceLifetime.Process,
-                            InstanceName = InstanceGuid,
-                            ReadOnly = false
-                        };
+                    Counters[c] = new PerformanceCounter()
+                    {
+                        CategoryName = categoryName,
+                        CounterName = counter.CounterName,
+                        MachineName = MachineName,
+                        InstanceLifetime = PerformanceCounterInstanceLifetime.Process,
+                        InstanceName = InstanceGuid,
+                        ReadOnly = false
+                    };
 
                     // Read the first value to 'start' the counters.
                     Counters[c].NextValue();
@@ -188,7 +198,8 @@ namespace WebApplications.Utilities.Performance
             }
             catch
             {
-                Trace.WriteLine(string.Format(Resources.PerformanceCounterHelper_UnhandledExceptionOccurred, CategoryName));
+                Trace.WriteLine(
+                    string.Format(Resources.PerformanceCounterHelper_UnhandledExceptionOccurred, CategoryName));
                 IsValid = false;
             }
         }
@@ -207,16 +218,16 @@ namespace WebApplications.Utilities.Performance
         /// auto detected.</para>
         /// </remarks>
         [NotNull]
-        public static T GetOrAdd<T>([NotNull]string categoryName, string categoryHelp = null)
+        public static T GetOrAdd<T>([NotNull] string categoryName, string categoryHelp = null)
             where T : PerfCategory
         {
             // NOTE: Cant have Requires here as contract re-writing might change the method name and we need the name to be kept
             Contract.Assert(!string.IsNullOrWhiteSpace(categoryHelp));
-            PerfCategoryType pct = _counterTypes.GetOrAdd(typeof(T), t => new PerfCategoryType(t));
+            PerfCategoryType pct = _counterTypes.GetOrAdd(typeof (T), t => new PerfCategoryType(t));
             if (pct.Exception != null)
                 throw pct.Exception;
 
-            return (T)_counters.GetOrAdd(categoryName, n => pct.Creator(n));
+            return (T) _counters.GetOrAdd(categoryName, n => pct.Creator(n));
         }
 
         /// <summary>
@@ -242,7 +253,7 @@ namespace WebApplications.Utilities.Performance
             where T : PerfCategory
         {
             Contract.Requires(categoryName != null);
-            return Exists(typeof(T), categoryName);
+            return Exists(typeof (T), categoryName);
         }
 
         /// <summary>
@@ -252,7 +263,7 @@ namespace WebApplications.Utilities.Performance
         /// <param name="categoryName">Name of the category.</param>
         /// <returns><see langword="true" /> if the performance category exists; otherwise <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Exists([NotNull]Type PerfCategoryType, [NotNull] string categoryName)
+        public static bool Exists([NotNull] Type PerfCategoryType, [NotNull] string categoryName)
         {
             Contract.Requires(PerfCategoryType != null);
             Contract.Requires(categoryName != null);
@@ -299,13 +310,14 @@ namespace WebApplications.Utilities.Performance
             public PerfCategoryType([NotNull] Type type)
             {
                 Type = type;
-                if ((type == typeof(PerfCategory)) ||
-                    !type.DescendsFrom(typeof(PerfCategory)))
+                if ((type == typeof (PerfCategory)) ||
+                    !type.DescendsFrom(typeof (PerfCategory)))
                 {
                     Exception =
                         new InvalidOperationException(
-                            string.Format("The performance counter type '{0}' does not descend from PerfCategory.",
-                                          type.FullName));
+                            string.Format(
+                                "The performance counter type '{0}' does not descend from PerfCategory.",
+                                type.FullName));
                     return;
                 }
 
@@ -318,27 +330,32 @@ namespace WebApplications.Utilities.Performance
                 {
                     Exception =
                         new InvalidOperationException(
-                            string.Format("The performance counter type '{0}' does not have a constructor that takes a string.",
-                                          type.FullName), e);
+                            string.Format(
+                                "The performance counter type '{0}' does not have a constructor that takes a string.",
+                                type.FullName),
+                            e);
                     return;
                 }
 
                 try
                 {
                     CreationData = ExtendedType.Get(type)
-                                               .Fields
-                                               .Single(f => f.Info.IsStatic &&
-                                                            f.Info.IsInitOnly &&
-                                                            f.ReturnType ==
-                                                            typeof(CounterCreationData[]))
-                                               .Getter<CounterCreationData[]>()();
+                        .Fields
+                        .Single(
+                            f => f.Info.IsStatic &&
+                                 f.Info.IsInitOnly &&
+                                 f.ReturnType ==
+                                 typeof (CounterCreationData[]))
+                        .Getter<CounterCreationData[]>()();
                 }
                 catch (Exception e)
                 {
                     Exception =
                         new InvalidOperationException(
-                            string.Format("The performance counter type '{0}' does not have a single readonly static field of type CounterCreationData[].",
-                                          type.FullName), e);
+                            string.Format(
+                                "The performance counter type '{0}' does not have a single readonly static field of type CounterCreationData[].",
+                                type.FullName),
+                            e);
                     return;
                 }
             }
