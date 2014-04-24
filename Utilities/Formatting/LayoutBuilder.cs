@@ -888,7 +888,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull]  [InstantHandle] Func<FormatChunk, Optional<object>> resolver,
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver,
             int position)
         {
             if (writer == null) return position;
@@ -912,7 +912,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
         [PublicAPI]
-        protected override void WriteTo(
+        protected override void WriteToInternal(
             IEnumerable<FormatChunk> chunks,
             TextWriter writer,
             string format,
@@ -1146,7 +1146,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format passed to each chunk.</param>
         /// <param name="formatProvider">The format provider.</param>
         [PublicAPI]
-        protected override Task WriteToAsync(
+        protected override Task WriteToInternalAsync(
             IEnumerable<FormatChunk> chunks,
             TextWriter writer,
             string format,

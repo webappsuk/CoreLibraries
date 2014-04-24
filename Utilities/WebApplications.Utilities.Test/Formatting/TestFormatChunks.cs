@@ -406,21 +406,28 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestNestedResolution()
         {
+            FormatBuilder builder = new FormatBuilder()
+                .AppendFormat("{t:A {t:nested {t}}}");
+            Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("G"));
+            Assert.AreEqual(string.Empty, builder.ToString("S"));
+            Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("F"));
             Assert.AreEqual(
                 "A nested tag",
-                new FormatBuilder()
-                    .AppendFormat("{t:A {t:nested {t}}}")
-                    .ToString(
-                        c =>
-                        {
-                            if (!string.Equals(c.Tag, "t"))
-                                return c.Value;
+                builder.ToString(
+                    c =>
+                    {
+                        // This demonstrates how we can perform tag nesting.
+                        if (!string.Equals(c.Tag, "t"))
+                            return c.Value;
 
-                            if (string.IsNullOrEmpty(c.Format))
-                                return "tag";
+                        // If the tag doesn't have a format, we output the value.
+                        if (string.IsNullOrEmpty(c.Format))
+                            return "tag";
 
-                            return new FormatBuilder().AppendFormat(c.Format);
-                        }));
+                        // Otherwise we output a format builder for the format, which will itself
+                        // be resolved with this resolver.
+                        return new FormatBuilder().AppendFormat(c.Format);
+                    }));
         }
     }
 }

@@ -368,7 +368,7 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(!IsReadonly);
             if (!_isReadonly && value != null)
-                _chunks.AddRange(Resolve(new[] { FormatChunk.Create(value) }));
+                _chunks.AddRange(Resolve(FormatChunk.Create(value)));
             return this;
         }
 
@@ -459,7 +459,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadonly);
             if (!_isReadonly &&
                 chunk != null)
-                _chunks.AddRange(Resolve(new[] { chunk }));
+                _chunks.AddRange(Resolve(chunk));
             return this;
         }
 
@@ -475,7 +475,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadonly);
             if (!_isReadonly &&
                 chunks != null)
-                _chunks.AddRange(Resolve(chunks));
+                _chunks.AddRange(chunks.SelectMany(Resolve));
             return this;
         }
 
@@ -732,7 +732,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadonly);
             if (_isReadonly) return this;
             if (value != null)
-                _chunks.AddRange(Resolve(new[] { FormatChunk.Create(value) }));
+                _chunks.AddRange(Resolve(FormatChunk.Create(value)));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -828,7 +828,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadonly);
             if (!_isReadonly &&
                 chunk != null)
-                _chunks.AddRange(Resolve(new[] { chunk }));
+                _chunks.AddRange(Resolve(chunk));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -845,7 +845,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadonly);
             if (_isReadonly) return this;
             if (chunks != null)
-                _chunks.AddRange(Resolve(chunks));
+                _chunks.AddRange(chunks.SelectMany(Resolve));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1036,6 +1036,7 @@ namespace WebApplications.Utilities.Formatting
         }
         #endregion
 
+        #region AppendControl
         /// <summary>
         /// Appends the control object for controlling formatting.
         /// </summary>
@@ -1060,7 +1061,7 @@ namespace WebApplications.Utilities.Formatting
             FormatChunk chunk = FormatChunk.CreateControl(tag, alignment, format, value);
 
             if (value != null)
-                _chunks.AddRange(Resolve(new[] {chunk}));
+                _chunks.AddRange(Resolve(chunk));
             else
                 _chunks.Add(chunk);
             return this;
@@ -1081,50 +1082,50 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadonly) return this;
 
             if (control.Value != null)
-                _chunks.AddRange(Resolve(new[] {control}));
+                _chunks.AddRange(Resolve(control));
             else
                 _chunks.Add(control);
 
             return this;
         }
+        #endregion
 
         #region Resolve Overloads
         /// <summary>
-        /// Resolves the specified chunks.
+        /// Resolves the specified chunk.
         /// </summary>
-        /// <param name="chunks">The chunks.</param>
-        /// <returns></returns>
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>An enumeration of chunks.</returns>
         [NotNull]
-        protected static IEnumerable<FormatChunk> Resolve([NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
+        private static IEnumerable<FormatChunk> Resolve([NotNull]FormatChunk chunk)
         {
-            Contract.Requires(chunks != null);
+            Contract.Requires(chunk != null);
             Stack<FormatChunk> stack = new Stack<FormatChunk>();
-            IEnumerator<FormatChunk> ce = chunks.GetEnumerator();
+            stack.Push(chunk);
             do
             {
-                FormatChunk chunk;
+                FormatChunk c;
                 if (stack.Count > 0)
-                    chunk = stack.Pop();
-                else if (!ce.MoveNext())
+                    c = stack.Pop();
+                else
                     yield break;
-                else chunk = ce.Current;
 
-                if (chunk == null) continue;
+                if (c == null) continue;
 
-                if (!chunk.IsFillPoint)
+                if (!c.IsFillPoint)
                 {
-                    yield return chunk;
+                    yield return c;
                     continue;
                 }
 
-                object value = chunk.Value;
+                object value = c.Value;
 
                 IEnumerable<FormatChunk> cs = value as IEnumerable<FormatChunk>;
                 if (cs != null)
                 {
                     // Push chunks in reverse order.
-                    foreach (FormatChunk c in cs.Reverse())
-                        stack.Push(c);
+                    foreach (FormatChunk ic in cs.Reverse())
+                        stack.Push(ic);
                     continue;
                 }
 
@@ -1135,7 +1136,7 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
-                yield return chunk;
+                yield return c;
             } while (true);
         }
 
@@ -1147,10 +1148,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns></returns>
         [NotNull]
         protected static IEnumerable<FormatChunk> Resolve(
-            [CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
+            [NotNull] IEnumerable<FormatChunk> chunks,
             [NotNull] object[] values)
         {
             Contract.Requires(chunks != null);
+            Contract.Requires(values != null);
             Stack<FormatChunk> stack = new Stack<FormatChunk>();
             IEnumerator<FormatChunk> ce = chunks.GetEnumerator();
             do
@@ -1212,10 +1214,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns></returns>
         [NotNull]
         protected static IEnumerable<FormatChunk> Resolve(
-            [CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
+            [NotNull] IEnumerable<FormatChunk> chunks,
             [NotNull] IReadOnlyDictionary<string, object> values)
         {
             Contract.Requires(chunks != null);
+            Contract.Requires(values != null);
             Stack<FormatChunk> stack = new Stack<FormatChunk>();
             IEnumerator<FormatChunk> ce = chunks.GetEnumerator();
             do
@@ -1274,10 +1277,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns></returns>
         [NotNull]
         protected static IEnumerable<FormatChunk> Resolve(
-            [CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
-            [NotNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
+            [NotNull] IEnumerable<FormatChunk> chunks,
+            [NotNull] Func<FormatChunk, Optional<object>> resolver)
         {
             Contract.Requires(chunks != null);
+            Contract.Requires(resolver != null);
             Stack<FormatChunk> stack = new Stack<FormatChunk>();
             IEnumerator<FormatChunk> ce = chunks.GetEnumerator();
             do
@@ -1369,7 +1373,7 @@ namespace WebApplications.Utilities.Formatting
         /// </returns>
         [NotNull]
         [PublicAPI]
-        public string ToString([CanBeNull] [InstantHandle] IEnumerable values)
+        public string ToString([CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -1461,7 +1465,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public string ToString(
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] [InstantHandle] IEnumerable values)
+            [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -1525,7 +1529,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String"/> that represents this instance. </returns>
         [PublicAPI]
-        public virtual string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
+        public virtual string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -1658,7 +1662,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteToConsole()
         {
-            WriteTo(_chunks, ConsoleTextWriter.Default, "G", null);
+            WriteToInternal(_chunks, ConsoleTextWriter.Default, "G", null);
         }
 
         /// <summary>
@@ -1668,7 +1672,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteToConsole([CanBeNull] IFormatProvider formatProvider)
         {
-            WriteTo(_chunks, ConsoleTextWriter.Default, "G", formatProvider);
+            WriteToInternal(_chunks, ConsoleTextWriter.Default, "G", formatProvider);
         }
 
         /// <summary>
@@ -1685,7 +1689,7 @@ namespace WebApplications.Utilities.Formatting
         {
             if (format == null)
                 format = "G";
-            WriteTo(
+            WriteToInternal(
                 values != null && values.Length > 0
                     ? Resolve(_chunks, values)
                     : _chunks,
@@ -1713,7 +1717,7 @@ namespace WebApplications.Utilities.Formatting
                 object[] vArray = values.ToArray();
                 if (vArray.Length > 0)
                 {
-                    WriteTo(
+                    WriteToInternal(
                         Resolve(_chunks, vArray),
                         ConsoleTextWriter.Default,
                         format,
@@ -1722,7 +1726,7 @@ namespace WebApplications.Utilities.Formatting
                 }
             }
 
-            WriteTo(
+            WriteToInternal(
                 _chunks,
                 ConsoleTextWriter.Default,
                 format,
@@ -1743,7 +1747,7 @@ namespace WebApplications.Utilities.Formatting
         {
             if (format == null)
                 format = "G";
-            WriteTo(
+            WriteToInternal(
                 values != null && values.Count > 0
                     ? Resolve(_chunks, values)
                     : _chunks,
@@ -1766,7 +1770,7 @@ namespace WebApplications.Utilities.Formatting
         {
             if (format == null)
                 format = "G";
-            WriteTo(
+            WriteToInternal(
                 resolver != null
                     ? Resolve(_chunks, resolver)
                     : _chunks,
@@ -1783,7 +1787,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteToTrace()
         {
-            WriteTo(_chunks, TraceTextWriter.Default, "G", null);
+            WriteToInternal(_chunks, TraceTextWriter.Default, "G", null);
         }
 
         /// <summary>
@@ -1793,7 +1797,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteToTrace([CanBeNull] IFormatProvider formatProvider)
         {
-            WriteTo(_chunks, TraceTextWriter.Default, "G", formatProvider);
+            WriteToInternal(_chunks, TraceTextWriter.Default, "G", formatProvider);
         }
 
         /// <summary>
@@ -1810,7 +1814,7 @@ namespace WebApplications.Utilities.Formatting
         {
             if (format == null)
                 format = "G";
-            WriteTo(
+            WriteToInternal(
                 values != null && values.Length > 0
                     ? Resolve(_chunks, values)
                     : _chunks,
@@ -1838,7 +1842,7 @@ namespace WebApplications.Utilities.Formatting
                 object[] vArray = values.ToArray();
                 if (vArray.Length > 0)
                 {
-                    WriteTo(
+                    WriteToInternal(
                         Resolve(_chunks, vArray),
                         TraceTextWriter.Default,
                         format,
@@ -1847,7 +1851,7 @@ namespace WebApplications.Utilities.Formatting
                 }
             }
 
-            WriteTo(
+            WriteToInternal(
                 _chunks,
                 TraceTextWriter.Default,
                 format,
@@ -1868,7 +1872,7 @@ namespace WebApplications.Utilities.Formatting
         {
             if (format == null)
                 format = "G";
-            WriteTo(
+            WriteToInternal(
                 values != null && values.Count > 0
                     ? Resolve(_chunks, values)
                     : _chunks,
@@ -1891,7 +1895,7 @@ namespace WebApplications.Utilities.Formatting
         {
             if (format == null)
                 format = "G";
-            WriteTo(
+            WriteToInternal(
                 resolver != null
                     ? Resolve(_chunks, resolver)
                     : _chunks,
@@ -1910,7 +1914,7 @@ namespace WebApplications.Utilities.Formatting
         public void WriteTo([CanBeNull] TextWriter writer)
         {
             if (writer == null) return;
-            WriteTo(_chunks, writer, "G", null);
+            WriteToInternal(_chunks, writer, "G", null);
         }
 
         /// <summary>
@@ -1922,7 +1926,7 @@ namespace WebApplications.Utilities.Formatting
         public void WriteTo([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider)
         {
             if (writer == null) return;
-            WriteTo(_chunks, writer, "G", formatProvider);
+            WriteToInternal(_chunks, writer, "G", formatProvider);
         }
 
         /// <summary>
@@ -1942,7 +1946,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return;
             if (format == null)
                 format = "G";
-            WriteTo(
+            WriteToInternal(
                 values != null && values.Length > 0
                     ? Resolve(_chunks, values)
                     : _chunks,
@@ -1973,7 +1977,7 @@ namespace WebApplications.Utilities.Formatting
                 object[] vArray = values.ToArray();
                 if (vArray.Length > 0)
                 {
-                    WriteTo(
+                    WriteToInternal(
                         Resolve(_chunks, vArray),
                         writer,
                         format,
@@ -1982,7 +1986,7 @@ namespace WebApplications.Utilities.Formatting
                 }
             }
 
-            WriteTo(
+            WriteToInternal(
                 _chunks,
                 writer,
                 format,
@@ -2006,7 +2010,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return;
             if (format == null)
                 format = "G";
-            WriteTo(
+            WriteToInternal(
                 values != null && values.Count > 0
                     ? Resolve(_chunks, values)
                     : _chunks,
@@ -2032,54 +2036,13 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return;
             if (format == null)
                 format = "G";
-            WriteTo(
+            WriteToInternal(
                 resolver != null
                     ? Resolve(_chunks, resolver)
                     : _chunks,
                 writer,
                 format,
                 formatProvider);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="chunks">The chunks.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        [PublicAPI]
-        protected virtual void WriteTo(
-            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
-            [NotNull] TextWriter writer,
-            [NotNull] string format,
-            [CanBeNull] IFormatProvider formatProvider)
-        {
-            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
-
-            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
-            StringBuilder sb = new StringBuilder();
-            foreach (FormatChunk c in chunks)
-            {
-                Contract.Assert(c != null);
-                FormatChunk chunk = c;
-
-                if (chunk.IsControl &&
-                    !writeTags)
-                {
-                    if (sb.Length > 0)
-                    {
-                        writer.Write(sb.ToString());
-                        sb.Clear();
-                    }
-                    OnControlChunk(chunk, writer, format, formatProvider);
-                }
-                else
-                    sb.Append(chunk.ToString(format, formatProvider));
-            }
-
-            if (sb.Length > 0)
-                writer.Write(sb.ToString());
         }
         #endregion
 
@@ -2093,7 +2056,7 @@ namespace WebApplications.Utilities.Formatting
         public Task WriteToAsync([CanBeNull] TextWriter writer)
         {
             if (writer == null) return TaskResult.Completed;
-            return WriteToAsync(_chunks, writer, "G", null);
+            return WriteToInternalAsync(_chunks, writer, "G", null);
         }
 
         /// <summary>
@@ -2106,7 +2069,7 @@ namespace WebApplications.Utilities.Formatting
         public Task WriteToAsync([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider)
         {
             if (writer == null) return TaskResult.Completed;
-            return WriteToAsync(_chunks, writer, "G", formatProvider);
+            return WriteToInternalAsync(_chunks, writer, "G", formatProvider);
         }
 
         /// <summary>
@@ -2127,7 +2090,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return TaskResult.Completed;
             if (format == null)
                 format = "G";
-            return WriteToAsync(
+            return WriteToInternalAsync(
                 values != null && values.Length > 0
                     ? Resolve(_chunks, values)
                     : _chunks,
@@ -2159,7 +2122,7 @@ namespace WebApplications.Utilities.Formatting
                 object[] vArray = values.ToArray();
                 if (vArray.Length > 0)
                 {
-                    return WriteToAsync(
+                    return WriteToInternalAsync(
                         Resolve(_chunks, vArray),
                         writer,
                         format,
@@ -2167,7 +2130,7 @@ namespace WebApplications.Utilities.Formatting
                 }
             }
 
-            return WriteToAsync(
+            return WriteToInternalAsync(
                 _chunks,
                 writer,
                 format,
@@ -2193,7 +2156,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return TaskResult.Completed;
             if (format == null)
                 format = "G";
-            return WriteToAsync(
+            return WriteToInternalAsync(
                 values != null && values.Count > 0
                     ? Resolve(_chunks, values)
                     : _chunks,
@@ -2221,13 +2184,57 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return TaskResult.Completed;
             if (format == null)
                 format = "G";
-            return WriteToAsync(
+            return WriteToInternalAsync(
                 resolver != null
                     ? Resolve(_chunks, resolver)
                     : _chunks,
                 writer,
                 format,
                 formatProvider);
+        }
+        #endregion
+        
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        [PublicAPI]
+        protected virtual void WriteToInternal(
+            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
+            [NotNull] TextWriter writer,
+            [NotNull] string format,
+            [CanBeNull] IFormatProvider formatProvider)
+        {
+            Contract.Requires(chunks != null);
+            Contract.Requires(writer != null);
+            Contract.Requires(format != null);
+            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+
+            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
+            StringBuilder sb = new StringBuilder();
+            foreach (FormatChunk c in chunks)
+            {
+                Contract.Assert(c != null);
+
+                if (c.IsControl &&
+                    !writeTags)
+                {
+                    if (sb.Length > 0)
+                    {
+                        writer.Write(sb.ToString());
+                        sb.Clear();
+                    }
+                    OnControlChunk(c, writer, format, formatProvider);
+                }
+                else
+                    sb.Append(c.ToString(format, formatProvider));
+            }
+
+            if (sb.Length > 0)
+                writer.Write(sb.ToString());
         }
 
         /// <summary>
@@ -2240,12 +2247,15 @@ namespace WebApplications.Utilities.Formatting
         /// <returns></returns>
         [NotNull]
         [PublicAPI]
-        protected virtual async Task WriteToAsync(
+        protected virtual async Task WriteToInternalAsync(
             [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
             [NotNull] string format,
             [CanBeNull] IFormatProvider formatProvider)
         {
+            Contract.Requires(chunks != null);
+            Contract.Requires(writer != null);
+            Contract.Requires(format != null);
             bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
 
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
@@ -2253,9 +2263,8 @@ namespace WebApplications.Utilities.Formatting
             foreach (FormatChunk c in chunks)
             {
                 Contract.Assert(c != null);
-                FormatChunk chunk = c;
 
-                if (chunk.IsControl &&
+                if (c.IsControl &&
                     !writeTags)
                 {
                     if (sb.Length > 0)
@@ -2264,17 +2273,16 @@ namespace WebApplications.Utilities.Formatting
                         await writer.WriteAsync(sb.ToString());
                         sb.Clear();
                     }
-                    OnControlChunk(chunk, writer, format, formatProvider);
+                    OnControlChunk(c, writer, format, formatProvider);
                 }
                 else
-                    sb.Append(chunk.ToString(format, formatProvider));
+                    sb.Append(c.ToString(format, formatProvider));
             }
 
             if (sb.Length > 0)
                 // ReSharper disable once PossibleNullReferenceException
                 await writer.WriteAsync(sb.ToString());
         }
-        #endregion
 
         /// <summary>
         /// Called when a control chunk is encountered.
