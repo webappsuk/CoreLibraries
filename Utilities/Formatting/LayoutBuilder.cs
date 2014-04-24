@@ -469,6 +469,7 @@ namespace WebApplications.Utilities.Formatting
                     splitWords = layout.SplitWords.Value;
                     hyphenate = layout.Hyphenate.Value ? 1 : 0;
                     newLine = false;
+                    position = 0;
                 }
 
                 // If we don't have a word, get one.
@@ -511,21 +512,37 @@ namespace WebApplications.Utilities.Formatting
                             else if (Layout.TryParse(controlChunk.Format, out newLayout))
                                 nextLayout = nextLayout.Apply(newLayout);
 
+                            // If the line is empty, we can recreate the line using the new layout,
+                            // otherwise the new layout only applies on the next line.
                             if (!line.IsEmpty) continue;
+                            
+                            // Check if the current position is past the new layout's width
+                            int start = position > 0 ? position : line.Position;
+                            if (start >= nextLayout.Width.Value)
+                            {
+                                // Start a new line, as we are past the current lines width.
+                                newLine = true;
+                                firstLine = false;
+                                continue;
+                            }
 
-                            // If the line is empty, we can create a new line using the new layout
-
+                            // Re-create current line now.
+                            layout = nextLayout;
                             firstLine = line.IsFirstLine;
 
-                            // Start a new line
-                            layout = nextLayout;
+                            if (position < 1)
+                            {
+                                // Move start if we're not already 
+                                int newStart = firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value;
+                                if (newStart > start) start = newStart;
+                            }
+
                             line = new Line(
                                 layout,
                                 layout.Alignment.Value,
-                                firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
-                                layout.Width.Value - layout.RightMarginSize.Value,
+                                start,
+                                line.End,
                                 firstLine);
-                            firstLine = false;
                             splitWords = layout.SplitWords.Value;
                             hyphenate = layout.Hyphenate.Value ? 1 : 0;
                         }
@@ -1152,6 +1169,9 @@ namespace WebApplications.Utilities.Formatting
             string format,
             IFormatProvider formatProvider)
         {
+            Contract.Requires(chunks != null);
+            Contract.Requires(writer != null);
+            Contract.Requires(format != null);
             return WriteToAsync(chunks, writer, format, formatProvider, 0);
         }
 
@@ -1173,13 +1193,16 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             int position)
         {
+            Contract.Requires(chunks != null);
+            Contract.Requires(writer != null);
+            Contract.Requires(format != null);
             bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
 
             if (position < 0) position = 0;
             StringBuilder sb = new StringBuilder();
             // Get sections based on control codes
             foreach (FormatChunk chunk in
-                    Align(GetLines(GetLineChunks(chunks, format, formatProvider), position), ref position))
+                Align(GetLines(GetLineChunks(chunks, format, formatProvider), position), ref position))
             {
                 Contract.Assert(chunk != null);
 
@@ -1205,50 +1228,302 @@ namespace WebApplications.Utilities.Formatting
             return position;
         }
 
+        #region ToString Overloads
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <param name="position">The start position.</param>
+        /// <param name="position">The position.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(int position)
-        {
-            return ToString(position, null, null);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="position">The start position.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString(int position, [CanBeNull] IFormatProvider formatProvider)
-        {
-            return ToString(position, null, formatProvider);
-        }
-
-        /// <summary>
-        /// To the string.
-        /// </summary>
-        /// <param name="position">The start position.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>System.String.</returns>
-        [NotNull]
-        [PublicAPI]
-        public virtual string ToString(
-            int position,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider)
+        public string ToString(ref int position)
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, format, formatProvider, position);
+                position = WriteTo(writer, null, null, position);
                 return writer.ToString();
             }
         }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(ref int position, [CanBeNull] params object[] values)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, null, null, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(ref int position, [CanBeNull] [InstantHandle] IEnumerable<object> values)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, null, null, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(ref int position, [CanBeNull] IReadOnlyDictionary<string, object> values)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, null, null, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="resolver">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(ref int position, [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, null, null, resolver, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(ref int position, [CanBeNull] IFormatProvider formatProvider)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, null, formatProvider, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(ref int position, [CanBeNull] IFormatProvider formatProvider, [CanBeNull] params object[] values)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, null, formatProvider, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position, 
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, null, formatProvider, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position, 
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] IReadOnlyDictionary<string, object> values)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, null, formatProvider, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position, 
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, null, formatProvider, resolver, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="format">The format.
+        /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(ref int position, [CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, format, formatProvider, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="format">The format.
+        /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position, 
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] params object[] values)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, format, formatProvider, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="format">The format.
+        /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position, 
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, format, formatProvider, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="format">The format.
+        /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position, 
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] IReadOnlyDictionary<string, object> values)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, format, formatProvider, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="format">The format.
+        /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position, 
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] Func<FormatChunk, Optional<object>> resolver)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, format, formatProvider, resolver, position);
+                return writer.ToString();
+            }
+        }
+        #endregion
     }
 }
