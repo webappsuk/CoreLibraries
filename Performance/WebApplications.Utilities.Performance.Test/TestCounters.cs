@@ -26,6 +26,8 @@
 #endregion
 
 using System;
+using System.Diagnostics;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebApplications.Utilities.Performance.Test
@@ -52,6 +54,10 @@ namespace WebApplications.Utilities.Performance.Test
             PerfTimer t = PerfCategory.GetOrAdd<PerfTimer>("Test Timer");
             Assert.IsNotNull(_timer);
             Assert.AreSame(t, _timer);
+            Trace.WriteLine(t.ToString());
+            using (t.Region())
+                Thread.Sleep(50);
+            Trace.WriteLine(t.ToString());
         }
 
         [TestMethod]

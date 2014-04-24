@@ -36,13 +36,14 @@ namespace WebApplications.Utilities.Performance
     /// <summary>
     ///   Times an operation using a performance timer.
     /// </summary>
+    [PublicAPI]
     public sealed class PerfTimer : PerfCategory
     {
         /// <summary>
         /// Default counters for a category.
         /// </summary>
         [NotNull]
-        private static readonly CounterCreationData[] _counterData = new[]
+        private static readonly CounterCreationData[] _counterData =
         {
             new CounterCreationData(
                 "Total operations",
@@ -74,11 +75,27 @@ namespace WebApplications.Utilities.Performance
         /// Initializes a new instance of the <see cref="PerfTimer" /> class.
         /// </summary>
         /// <param name="categoryName">The name of the category.</param>
-        /// <param name="data">The data.</param>
         private PerfTimer([NotNull] string categoryName)
             : base(categoryName, _counterData)
         {
             Contract.Requires(categoryName != null);
+            if (!IsValid) return;
+            // ReSharper disable PossibleNullReferenceException
+            AddInfo("Count", "Total operations executed since the start of the process.", () => Counters[0].RawValue);
+            AddInfo("Rate", "The number of operations per second.", () => Counters[1].NextValue());
+            AddInfo(
+                "AverageDuration",
+                "The average duration of each operation.",
+                () => TimeSpan.FromSeconds(Counters[2].NextValue()));
+            AddInfo(
+                "Warnings",
+                "Total operations executed since the start of the process that have exceeded the warning duration threshhold.",
+                () => Counters[4].RawValue);
+            AddInfo(
+                "Criticals",
+                "Total operations executed since the start of the process that have exceeded the critical duration threshhold.",
+                () => Counters[5].RawValue);
+            // ReSharper restore PossibleNullReferenceException
         }
 
         /// <summary>
@@ -92,6 +109,7 @@ namespace WebApplications.Utilities.Performance
         /// <param name="criticalDuration">Duration before a critical is counted (defaults to infinite).</param>
         /// <returns>IDisposable.</returns>
         [NotNull]
+        [PublicAPI]
         public Timer Region(
             TimeSpan warningDuration = default (TimeSpan),
             TimeSpan criticalDuration = default (TimeSpan))
@@ -103,7 +121,8 @@ namespace WebApplications.Utilities.Performance
         /// Gets the current operation count.
         /// </summary>
         /// <value>The count.</value>
-        public long Count
+        [PublicAPI]
+        public long OperationCount
         {
             get { return IsValid ? Counters[0].RawValue : 0; }
         }
@@ -112,6 +131,7 @@ namespace WebApplications.Utilities.Performance
         /// Gets the operations per second.
         /// </summary>
         /// <value>The count.</value>
+        [PublicAPI]
         public float Rate
         {
             get { return IsValid ? Counters[1].NextValue() : float.NaN; }
@@ -121,6 +141,7 @@ namespace WebApplications.Utilities.Performance
         /// Gets the operations per second.
         /// </summary>
         /// <value>The count.</value>
+        [PublicAPI]
         public TimeSpan AverageDuration
         {
             get { return IsValid ? TimeSpan.FromSeconds(Counters[2].NextValue()) : TimeSpan.Zero; }
@@ -130,6 +151,7 @@ namespace WebApplications.Utilities.Performance
         /// Gets the current operation count.
         /// </summary>
         /// <value>The count.</value>
+        [PublicAPI]
         public long Warnings
         {
             get { return IsValid ? Counters[4].RawValue : 0; }
@@ -139,6 +161,7 @@ namespace WebApplications.Utilities.Performance
         /// Gets the current operation count.
         /// </summary>
         /// <value>The count.</value>
+        [PublicAPI]
         public long Criticals
         {
             get { return IsValid ? Counters[5].RawValue : 0; }
@@ -158,7 +181,6 @@ namespace WebApplications.Utilities.Performance
             if (!IsValid ||
                 (duration == TimeSpan.Zero))
                 return;
-
             Counters[0].Increment();
             Counters[1].Increment();
 
@@ -185,6 +207,7 @@ namespace WebApplications.Utilities.Performance
         /// <param name="duration">The <see cref="TimeSpan">duration</see> of the operation.</param>
         /// <param name="warningDuration">Duration before a warning is counted (defaults to infinite).</param>
         /// <param name="criticalDuration">Duration before a critical is counted (defaults to infinite).</param>
+        [PublicAPI]
         public void DecrementBy(
             TimeSpan duration,
             TimeSpan warningDuration = default (TimeSpan),

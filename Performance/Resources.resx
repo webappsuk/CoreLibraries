@@ -138,4 +138,13 @@
   <data name="PerformanceCounterHelper_UnhandledExceptionOccurred" xml:space="preserve">
     <value>An unhandled error occurred whilst initialising the counter category '{0}'.</value>
   </data>
+  <data name="PerfCategoryType_Must_Descend_From_PerfCategory" xml:space="preserve">
+    <value>The performance counter type '{0}' does not descend from PerfCategory.</value>
+  </data>
+  <data name="PerfCategoryType_Invalid_Constructor" xml:space="preserve">
+    <value>The performance counter type '{0}' does not have a constructor that takes a string.</value>
+  </data>
+  <data name="PerfCategoryType_Missing_Static_Readonly_Field" xml:space="preserve">
+    <value>The performance counter type '{0}' does not have a single readonly static field of type CounterCreationData[].</value>
+  </data>
 </root>

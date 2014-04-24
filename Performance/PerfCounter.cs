@@ -34,13 +34,14 @@ namespace WebApplications.Utilities.Performance
     /// <summary>
     ///   Performance counters used to count operations.
     /// </summary>
+    [PublicAPI]
     public sealed class PerfCounter : PerfCategory
     {
         /// <summary>
         /// Default counters for a category.
         /// </summary>
         [NotNull]
-        private static readonly CounterCreationData[] _counterData = new[]
+        private static readonly CounterCreationData[] _counterData =
         {
             new CounterCreationData(
                 "Total operations",
@@ -60,13 +61,19 @@ namespace WebApplications.Utilities.Performance
             : base(categoryName, _counterData)
         {
             Contract.Requires(categoryName != null);
+            if (!IsValid) return;
+            // ReSharper disable PossibleNullReferenceException
+            AddInfo("Count", "Total operations executed since the start of the process.", () => Counters[0].RawValue);
+            AddInfo("Rate", "The number of operations per second.", () => Counters[1].NextValue());
+            // ReSharper restore PossibleNullReferenceException
         }
 
         /// <summary>
         /// Gets the current operation count.
         /// </summary>
         /// <value>The count.</value>
-        public long Count
+        [PublicAPI]
+        public long OperationCount
         {
             get { return IsValid ? Counters[0].RawValue : 0; }
         }
@@ -75,6 +82,7 @@ namespace WebApplications.Utilities.Performance
         /// Gets the operations per second.
         /// </summary>
         /// <value>The count.</value>
+        [PublicAPI]
         public float Rate
         {
             get { return IsValid ? Counters[1].NextValue() : float.NaN; }
@@ -83,6 +91,7 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         ///   Increments the operation counters.
         /// </summary>
+        [PublicAPI]
         public void Increment()
         {
             if (!IsValid)
@@ -95,6 +104,7 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         ///   Increments the operation counters.
         /// </summary>
+        [PublicAPI]
         public void IncrementBy(long value)
         {
             if (!IsValid ||
@@ -108,6 +118,7 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         ///   Decrements the operation counters.
         /// </summary>
+        [PublicAPI]
         public void Decrement()
         {
             if (!IsValid)
@@ -120,6 +131,7 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         ///   Decrements the operation counters.
         /// </summary>
+        [PublicAPI]
         public void DecrementBy(long value)
         {
             if (!IsValid ||

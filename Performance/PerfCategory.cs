@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,6 +34,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Reflect;
 
 namespace WebApplications.Utilities.Performance
@@ -40,7 +42,7 @@ namespace WebApplications.Utilities.Performance
     /// <summary>
     ///   Performance category helper.
     /// </summary>
-    public abstract class PerfCategory
+    public abstract class PerfCategory : IReadOnlyDictionary<string, PerfCounterInfo>, IFormattable
     {
         /// <summary>
         /// Holds all counters.
@@ -60,17 +62,20 @@ namespace WebApplications.Utilities.Performance
         /// The current instance name for all performance counters.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public static readonly string InstanceGuid = Guid.NewGuid().ToString();
 
         /// <summary>
         /// The machine name used to access performance counters.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public const string MachineName = ".";
 
         /// <summary>
         /// Whether the current process has access to performance counters.
         /// </summary>
+        [PublicAPI]
         public static readonly bool HasAccess;
 
         /// <summary>
@@ -78,6 +83,7 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <value>All.</value>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<PerfCategory> All
         {
             get { return _counters.Values; }
@@ -88,6 +94,7 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <value>All.</value>
         [NotNull]
+        [PublicAPI]
         public static IEnumerable<Type> AllTypes
         {
             get { return _counterTypes.Keys; }
@@ -104,10 +111,12 @@ namespace WebApplications.Utilities.Performance
                 // Check we have access to the performance counters.
                 PerformanceCounterCategory.Exists("TestAccess", MachineName);
                 HasAccess = true;
+                // ReSharper disable once AssignNullToNotNullAttribute
                 Trace.WriteLine(string.Format(Resources.PerformanceCounterHelper_Enabled, InstanceGuid));
             }
             catch
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 Trace.WriteLine(Resources.PerformanceCounterHelper_ProcessDoesNotHaveAccess);
                 HasAccess = false;
             }
@@ -117,25 +126,34 @@ namespace WebApplications.Utilities.Performance
         ///   The performance counter's category.
         /// </summary>
         [NotNull]
-        [UsedImplicitly]
+        [PublicAPI]
         public readonly string CategoryName;
 
         /// <summary>
         /// Whether the counter is valid (exists and can be accessed).
         /// </summary>
+        [PublicAPI]
         public readonly bool IsValid;
 
         /// <summary>
         /// The underlying counters.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         protected readonly PerformanceCounter[] Counters;
+
+        /// <summary>
+        /// The info dictionary, holds info by name.
+        /// </summary>
+        [NotNull]
+        private readonly Dictionary<string, PerfCounterInfo> _infoDictionary = new Dictionary<string, PerfCounterInfo>();
 
         /// <summary>
         /// Creates a performance counter instance.
         /// </summary>
         /// <param name="categoryName">The performance counter's <see cref="PerfCategory.CategoryName">category name</see>.</param>
         /// <param name="counters">The counters.</param>
+        /// <param name="getInfo">The function to create the information dictionary.</param>
         protected PerfCategory([NotNull] string categoryName, [NotNull] IEnumerable<CounterCreationData> counters)
         {
             Contract.Requires(categoryName != null);
@@ -156,6 +174,7 @@ namespace WebApplications.Utilities.Performance
             {
                 if (!PerformanceCounterCategory.Exists(CategoryName))
                 {
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     Trace.WriteLine(
                         string.Format(Resources.PerformanceCounterHelper_CategoryDoesNotExist, CategoryName));
                     IsValid = false;
@@ -166,17 +185,20 @@ namespace WebApplications.Utilities.Performance
                 for (int c = 0; c < cArray.Length; c++)
                 {
                     CounterCreationData counter = cArray[c];
+                    Contract.Assert(counter != null);
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     if (!PerformanceCounterCategory.CounterExists(counter.CounterName, categoryName))
                     {
                         Trace.WriteLine(
                             string.Format(
+                                // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PerformanceCounterHelper_CounterDoesNotExist,
                                 CategoryName,
                                 counter.CounterName));
                         IsValid = false;
                         return;
                     }
-                    Counters[c] = new PerformanceCounter()
+                    Counters[c] = new PerformanceCounter
                     {
                         CategoryName = categoryName,
                         CounterName = counter.CounterName,
@@ -193,15 +215,35 @@ namespace WebApplications.Utilities.Performance
             }
             catch (UnauthorizedAccessException)
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 Trace.WriteLine(Resources.PerformanceCounterHelper_ProcessDoesNotHaveAccess);
                 IsValid = false;
             }
             catch
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 Trace.WriteLine(
                     string.Format(Resources.PerformanceCounterHelper_UnhandledExceptionOccurred, CategoryName));
                 IsValid = false;
             }
+        }
+
+        /// <summary>
+        /// Adds the information.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name">The name.</param>
+        /// <param name="help">The help.</param>
+        /// <param name="getLatestValueFunc">The get latest value function.</param>
+        /// <remarks>
+        /// You must only call this during construction.
+        /// </remarks>
+        protected void AddInfo<T>([NotNull] string name, [NotNull] string help, [NotNull] Func<T> getLatestValueFunc)
+        {
+            Contract.Requires(name != null);
+            Contract.Requires(help != null);
+            Contract.Requires(getLatestValueFunc != null);
+            _infoDictionary.Add(name, new PerfCounterInfo<T>(name, help, getLatestValueFunc));
         }
 
         /// <summary>
@@ -218,15 +260,20 @@ namespace WebApplications.Utilities.Performance
         /// auto detected.</para>
         /// </remarks>
         [NotNull]
-        public static T GetOrAdd<T>([NotNull] string categoryName, string categoryHelp = null)
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static T GetOrAdd<T>([NotNull] string categoryName, [CanBeNull] string categoryHelp = null)
             where T : PerfCategory
         {
             // NOTE: Cant have Requires here as contract re-writing might change the method name and we need the name to be kept
-            Contract.Assert(!string.IsNullOrWhiteSpace(categoryHelp));
+            Contract.Assert(!string.IsNullOrWhiteSpace(categoryName));
+            // ReSharper disable once AssignNullToNotNullAttribute
             PerfCategoryType pct = _counterTypes.GetOrAdd(typeof (T), t => new PerfCategoryType(t));
+            Contract.Assert(pct != null);
             if (pct.Exception != null)
                 throw pct.Exception;
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return (T) _counters.GetOrAdd(categoryName, n => pct.Creator(n));
         }
 
@@ -236,6 +283,7 @@ namespace WebApplications.Utilities.Performance
         /// <param name="categoryName">Name of the category.</param>
         /// <returns><see langword="true"/> if the performance category exists; otherwise <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
         public static bool Exists([NotNull] string categoryName)
         {
             Contract.Requires(categoryName != null);
@@ -249,6 +297,7 @@ namespace WebApplications.Utilities.Performance
         /// <param name="categoryName">Name of the category.</param>
         /// <returns><see langword="true" /> if the performance category exists; otherwise <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
         public static bool Exists<T>([NotNull] string categoryName)
             where T : PerfCategory
         {
@@ -259,20 +308,24 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         /// Whether the counter category exists.
         /// </summary>
-        /// <param name="PerfCategoryType">Type of the perf counter.</param>
+        /// <param name="perfCategoryType">Type of the performance counter.</param>
         /// <param name="categoryName">Name of the category.</param>
         /// <returns><see langword="true" /> if the performance category exists; otherwise <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Exists([NotNull] Type PerfCategoryType, [NotNull] string categoryName)
+        [PublicAPI]
+        public static bool Exists([NotNull] Type perfCategoryType, [NotNull] string categoryName)
         {
-            Contract.Requires(PerfCategoryType != null);
+            Contract.Requires(perfCategoryType != null);
             Contract.Requires(categoryName != null);
 
-            PerfCategoryType pct = _counterTypes.GetOrAdd(PerfCategoryType, t => new PerfCategoryType(t));
+            // ReSharper disable once AssignNullToNotNullAttribute
+            PerfCategoryType pct = _counterTypes.GetOrAdd(perfCategoryType, t => new PerfCategoryType(t));
+            Contract.Assert(pct != null);
             if (pct.Exception != null)
                 throw pct.Exception;
 
             return PerformanceCounterCategory.Exists(categoryName) &&
+                   // ReSharper disable once PossibleNullReferenceException,  AssignNullToNotNullAttribute
                    pct.CreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, categoryName));
         }
 
@@ -284,6 +337,7 @@ namespace WebApplications.Utilities.Performance
             /// <summary>
             /// The type.
             /// </summary>
+            [PublicAPI]
             public readonly Type Type;
 
             /// <summary>
@@ -309,6 +363,7 @@ namespace WebApplications.Utilities.Performance
             /// <param name="type">The type.</param>
             public PerfCategoryType([NotNull] Type type)
             {
+                Contract.Requires(type != null);
                 Type = type;
                 if ((type == typeof (PerfCategory)) ||
                     !type.DescendsFrom(typeof (PerfCategory)))
@@ -316,7 +371,8 @@ namespace WebApplications.Utilities.Performance
                     Exception =
                         new InvalidOperationException(
                             string.Format(
-                                "The performance counter type '{0}' does not descend from PerfCategory.",
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                Resources.PerfCategoryType_Must_Descend_From_PerfCategory,
                                 type.FullName));
                     return;
                 }
@@ -331,7 +387,8 @@ namespace WebApplications.Utilities.Performance
                     Exception =
                         new InvalidOperationException(
                             string.Format(
-                                "The performance counter type '{0}' does not have a constructor that takes a string.",
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                Resources.PerfCategoryType_Invalid_Constructor,
                                 type.FullName),
                             e);
                     return;
@@ -339,9 +396,11 @@ namespace WebApplications.Utilities.Performance
 
                 try
                 {
+                    // ReSharper disable once PossibleNullReferenceException
                     CreationData = ExtendedType.Get(type)
                         .Fields
                         .Single(
+                            // ReSharper disable once PossibleNullReferenceException
                             f => f.Info.IsStatic &&
                                  f.Info.IsInitOnly &&
                                  f.ReturnType ==
@@ -353,12 +412,161 @@ namespace WebApplications.Utilities.Performance
                     Exception =
                         new InvalidOperationException(
                             string.Format(
-                                "The performance counter type '{0}' does not have a single readonly static field of type CounterCreationData[].",
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                Resources.PerfCategoryType_Missing_Static_Readonly_Field,
                                 type.FullName),
                             e);
                     return;
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
+        public IEnumerator<KeyValuePair<string, PerfCounterInfo>> GetEnumerator()
+        {
+            return _infoDictionary.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the number of elements in the collection.
+        /// </summary>
+        /// <value>The count.</value>
+        /// <returns>The number of elements in the collection. </returns>
+        public int Count
+        {
+            get { return _infoDictionary.Count; }
+        }
+
+        /// <summary>
+        /// Determines whether the read-only dictionary contains an element that has the specified key.
+        /// </summary>
+        /// <param name="key">The key to locate.</param>
+        /// <returns>true if the read-only dictionary contains an element that has the specified key; otherwise, false.</returns>
+        public bool ContainsKey([NotNull] string key)
+        {
+            Contract.Requires(key != null);
+            return _infoDictionary.ContainsKey(key);
+        }
+
+        /// <summary>
+        /// Gets the value that is associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key to locate.</param>
+        /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value" /> parameter. This parameter is passed uninitialized.</param>
+        /// <returns>true if the object that implements the <see cref="T:System.Collections.Generic.IReadOnlyDictionary`2" /> interface contains an element that has the specified key; otherwise, false.</returns>
+        public bool TryGetValue([NotNull] string key, out PerfCounterInfo value)
+        {
+            Contract.Requires(key != null);
+            return _infoDictionary.TryGetValue(key, out value);
+        }
+
+        /// <summary>
+        /// Gets the element that has the specified key in the read-only dictionary.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>PerfCounterInfo.</returns>
+        public PerfCounterInfo this[string key]
+        {
+            get
+            {
+                PerfCounterInfo value;
+                return _infoDictionary.TryGetValue(key, out value) ? value : null;
+            }
+        }
+
+        /// <summary>
+        /// Gets an enumerable collection that contains the keys in the read-only dictionary.
+        /// </summary>
+        /// <value>The keys.</value>
+        /// <returns>An enumerable collection that contains the keys in the read-only dictionary.</returns>
+        [NotNull]
+        public IEnumerable<string> Keys
+        {
+            get { return _infoDictionary.Keys ?? Enumerable.Empty<string>(); }
+        }
+
+        /// <summary>
+        /// Gets an enumerable collection that contains the values in the read-only dictionary.
+        /// </summary>
+        /// <value>The values.</value>
+        /// <returns>An enumerable collection that contains the values in the read-only dictionary.</returns>
+        [NotNull]
+        public IEnumerable<PerfCounterInfo> Values
+        {
+            get { return _infoDictionary.Values ?? Enumerable.Empty<PerfCounterInfo>(); }
+        }
+
+        /// <summary>
+        /// The default builder for writing out a performance category.
+        /// </summary>
+        [NotNull]
+        private static readonly FormatBuilder _defaultBuilder = new LayoutBuilder(
+            new Layout(
+                firstLineIndentSize: 0,
+                indentSize: 0,
+                tabStops: new ushort[] {3, 20, 22}))
+            .AppendFormatLine("{CategoryName}{Info:\r\n\t{Name}\t:\t{Value}}");
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return ToString(null, null);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
+        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            FormatBuilder builder = string.IsNullOrEmpty(format)
+                ? _defaultBuilder
+                : new FormatBuilder().AppendFormat(format);
+
+            return builder
+                .ToString(
+                    format,
+                    formatProvider,
+                    chunk =>
+                    {
+                        Contract.Assert(chunk != null);
+                        Contract.Assert(!string.IsNullOrWhiteSpace(chunk.Tag));
+
+                        if (chunk.IsControl)
+                            return Optional<object>.Unassigned;
+                        // ReSharper disable once PossibleNullReferenceException
+                        switch (chunk.Tag.ToLowerInvariant())
+                        {
+                            case "categoryname":
+                                return CategoryName;
+                            case "instanceguid":
+                                return InstanceGuid;
+                            case "info":
+                                FormatBuilder infoBuilder = new FormatBuilder();
+                                foreach (PerfCounterInfo info in _infoDictionary.Values)
+                                    infoBuilder.Append(info.ToString(chunk.Format));
+                                return infoBuilder;
+                            default:
+                                return Optional<object>.Unassigned;
+                        }
+                    });
         }
     }
 }
