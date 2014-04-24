@@ -84,7 +84,7 @@ namespace WebApplications.Utilities.Performance
             AddInfo("Count", "Total operations executed since the start of the process.", () => Counters[0].RawValue);
             AddInfo("Rate", "The number of operations per second.", () => Counters[1].NextValue());
             AddInfo(
-                "AverageDuration",
+                "Average Duration",
                 "The average duration of each operation.",
                 () => TimeSpan.FromSeconds(Counters[2].NextValue()));
             AddInfo(

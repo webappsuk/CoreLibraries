@@ -153,7 +153,6 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         /// <param name="categoryName">The performance counter's <see cref="PerfCategory.CategoryName">category name</see>.</param>
         /// <param name="counters">The counters.</param>
-        /// <param name="getInfo">The function to create the information dictionary.</param>
         protected PerfCategory([NotNull] string categoryName, [NotNull] IEnumerable<CounterCreationData> counters)
         {
             Contract.Requires(categoryName != null);
@@ -409,6 +408,7 @@ namespace WebApplications.Utilities.Performance
                 }
                 catch (Exception e)
                 {
+                    // Store the exception.
                     Exception =
                         new InvalidOperationException(
                             string.Format(
@@ -416,7 +416,6 @@ namespace WebApplications.Utilities.Performance
                                 Resources.PerfCategoryType_Missing_Static_Readonly_Field,
                                 type.FullName),
                             e);
-                    return;
                 }
             }
         }
@@ -481,6 +480,7 @@ namespace WebApplications.Utilities.Performance
         {
             get
             {
+                Contract.Requires(key != null);
                 PerfCounterInfo value;
                 return _infoDictionary.TryGetValue(key, out value) ? value : null;
             }
@@ -494,7 +494,7 @@ namespace WebApplications.Utilities.Performance
         [NotNull]
         public IEnumerable<string> Keys
         {
-            get { return _infoDictionary.Keys ?? Enumerable.Empty<string>(); }
+            get { return _infoDictionary.Keys; }
         }
 
         /// <summary>
@@ -505,7 +505,7 @@ namespace WebApplications.Utilities.Performance
         [NotNull]
         public IEnumerable<PerfCounterInfo> Values
         {
-            get { return _infoDictionary.Values ?? Enumerable.Empty<PerfCounterInfo>(); }
+            get { return _infoDictionary.Values; }
         }
 
         /// <summary>
@@ -525,7 +525,7 @@ namespace WebApplications.Utilities.Performance
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return ToString(null, null);
+            return ToString(_defaultBuilder);
         }
 
         /// <summary>
@@ -536,13 +536,27 @@ namespace WebApplications.Utilities.Performance
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
-            FormatBuilder builder = string.IsNullOrEmpty(format)
-                ? _defaultBuilder
-                : new FormatBuilder().AppendFormat(format);
+            return ToString(
+                string.IsNullOrEmpty(format) ? _defaultBuilder : new FormatBuilder().AppendFormat(format),
+                formatProvider);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] FormatBuilder builder, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (builder == null)
+                builder = _defaultBuilder;
 
             return builder
                 .ToString(
-                    format,
+                    null,
                     formatProvider,
                     chunk =>
                     {
@@ -561,7 +575,10 @@ namespace WebApplications.Utilities.Performance
                             case "info":
                                 FormatBuilder infoBuilder = new FormatBuilder();
                                 foreach (PerfCounterInfo info in _infoDictionary.Values)
+                                {
+                                    Contract.Assert(info != null);
                                     infoBuilder.Append(info.ToString(chunk.Format));
+                                }
                                 return infoBuilder;
                             default:
                                 return Optional<object>.Unassigned;

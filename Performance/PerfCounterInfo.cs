@@ -96,7 +96,7 @@ namespace WebApplications.Utilities.Performance
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return ToString(null, null);
+            return ToString(_defaultBuilder);
         }
 
         /// <summary>
@@ -108,13 +108,28 @@ namespace WebApplications.Utilities.Performance
         /// <exception cref="System.NotImplementedException"></exception>
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
-            FormatBuilder builder = string.IsNullOrEmpty(format)
-                ? _defaultBuilder
-                : new FormatBuilder().AppendFormat(format);
+            return ToString(
+                string.IsNullOrEmpty(format) ? _defaultBuilder : new FormatBuilder().AppendFormat(format),
+                formatProvider);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] FormatBuilder builder, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (builder == null)
+                builder = _defaultBuilder;
 
             return builder
                 .ToString(
-                    format,
+                    null,
                     formatProvider,
                     chunk =>
                     {
