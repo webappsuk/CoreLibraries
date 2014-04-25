@@ -726,11 +726,10 @@ namespace WebApplications.Utilities.Formatting
                         spacers = null;
                 }
 
-                position = p + indent;
-
                 // Add any remaining justification spaces
                 if (line.Terminated)
                 {
+                    position = 0;
                     switch (line.Layout.WrapMode.Value)
                     {
                         case LayoutWrapMode.NewLine:
@@ -750,7 +749,12 @@ namespace WebApplications.Utilities.Formatting
                 }
                 else if ((spacers != null) &&
                          (spacers.Count > 0))
+                {
+                    position = p + indent;
                     lb.Append(indentChar, spacers.Count);
+                }
+                else
+                    position = p + indent;
 
                 if (lb.Length > 0)
                 {

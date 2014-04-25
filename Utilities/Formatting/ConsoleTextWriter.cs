@@ -138,7 +138,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(char value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(decimal value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(double value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(float value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(int value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(long value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write([CanBeNull] object value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write([CanBeNull] string value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(uint value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(ulong value)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
         }
 
         /// <summary>
@@ -259,8 +259,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="count">The count.</param>
         public override void Write(char[] buffer, int index, int count)
         {
-            string x = new string(buffer, index, count);
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(x));
+            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(buffer, index, count));
         }
 
         /// <summary>
