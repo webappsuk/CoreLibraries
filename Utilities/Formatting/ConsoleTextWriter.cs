@@ -29,6 +29,7 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -47,6 +48,18 @@ namespace WebApplications.Utilities.Formatting
         public static readonly ConsoleTextWriter Default;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SynchronizedTextWriter" /> class.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="context">The synchronization context.</param>
+        private ConsoleTextWriter([NotNull] TextWriter writer, [NotNull] SynchronizationContext context)
+            : base(writer, context)
+        {
+            Contract.Requires(writer != null);
+            Contract.Requires(context != null);
+        }
+
+        /// <summary>
         /// The default foreground color.
         /// </summary>
         [PublicAPI]
@@ -63,12 +76,20 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         static ConsoleTextWriter()
         {
-            Default = new ConsoleTextWriter();
+            if (ConsoleHelper.IsConsole)
+            {
+                Default = new ConsoleTextWriter(Console.Out, new SerializingSynchronizationContext());
 
-            // Set the console's default output to use this one.
-            Console.SetOut(Default);
+                // Set the console's default output to use this one.
+                Console.SetOut(Default);
+            }
+            else
+            {
+                LayoutTextWriter writer = TraceTextWriter.Default.Layout();
+                Default = new ConsoleTextWriter(writer, writer.Context);
+            }
         }
-
+        
         /// <summary>
         /// Gets the width of the console.
         /// </summary>
@@ -80,7 +101,11 @@ namespace WebApplications.Utilities.Formatting
         {
             get
             {
-                if (!ConsoleHelper.IsConsole) return 120;
+                if (!ConsoleHelper.IsConsole)
+                {
+                    ILayoutTextWriter lw = Writer as ILayoutTextWriter;
+                    return lw == null ? (ushort) 120 : lw.Width;
+                }
 
                 int width = Console.BufferWidth;
                 return width > ushort.MaxValue
@@ -100,6 +125,11 @@ namespace WebApplications.Utilities.Formatting
         {
             get
             {
+                if (!ConsoleHelper.IsConsole)
+                {
+                    ILayoutTextWriter lw = Writer as ILayoutTextWriter;
+                    return lw == null ? (ushort)120 : lw.Position;
+                }
                 int position = Console.CursorLeft;
                 return position > ushort.MaxValue
                     ? ushort.MaxValue
@@ -115,16 +145,15 @@ namespace WebApplications.Utilities.Formatting
         /// Gets a value indicating whether the writer automatically wraps on reaching <see cref="Width" />.
         /// </summary>
         /// <value><see langword="true" /> if the writer automatically wraps; otherwise, <see langword="false" />.</value>
-        public bool AutoWraps { get { return true; }}
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SynchronizedTextWriter" /> class.
-        /// </summary>
-        private ConsoleTextWriter()
-            : base(ConsoleHelper.IsConsole
-                ? Console.Out ?? TraceTextWriter.Default
-                : TraceTextWriter.Default, new SerializingSynchronizationContext())
+        public bool AutoWraps
         {
+            get
+            {
+                if (ConsoleHelper.IsConsole) return true;
+                
+                ILayoutTextWriter lw = Writer as ILayoutTextWriter;
+                return lw != null && lw.AutoWraps;
+            }
         }
 
         /// <summary>
@@ -207,7 +236,8 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(controlChunk != null);
             Contract.Requires(controlChunk.IsControl);
-            this.SetColor(controlChunk);
+            if (ConsoleHelper.IsConsole)
+                this.SetColor(controlChunk);
         }
     }
 }
