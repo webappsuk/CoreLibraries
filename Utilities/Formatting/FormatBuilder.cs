@@ -1331,7 +1331,7 @@ namespace WebApplications.Utilities.Formatting
             } while (true);
         }
         #endregion
-        
+
         #region ToString Overloads
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
@@ -1341,7 +1341,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, null, null);
+                WriteTo(writer, null);
                 return writer.ToString();
             }
         }
@@ -1359,7 +1359,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, null, null, values);
+                WriteTo(writer, null, values);
                 return writer.ToString();
             }
         }
@@ -1377,7 +1377,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, null, null, values);
+                WriteTo(writer, null, values);
                 return writer.ToString();
             }
         }
@@ -1395,7 +1395,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, null, null, values);
+                WriteTo(writer, null, values);
                 return writer.ToString();
             }
         }
@@ -1413,7 +1413,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, null, null, resolver);
+                WriteTo(writer, null, resolver);
                 return writer.ToString();
             }
         }
@@ -1427,9 +1427,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, null, formatProvider);
+                WriteTo(writer, null);
                 return writer.ToString();
             }
         }
@@ -1446,9 +1446,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider, [CanBeNull] params object[] values)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, null, formatProvider, values);
+                WriteTo(writer, null, values);
                 return writer.ToString();
             }
         }
@@ -1467,9 +1467,9 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, null, formatProvider, values);
+                WriteTo(writer, null, values);
                 return writer.ToString();
             }
         }
@@ -1488,9 +1488,9 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, null, formatProvider, values);
+                WriteTo(writer, null, values);
                 return writer.ToString();
             }
         }
@@ -1509,9 +1509,9 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, null, formatProvider, resolver);
+                WriteTo(writer, null, resolver);
                 return writer.ToString();
             }
         }
@@ -1531,9 +1531,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public virtual string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, format, formatProvider);
+                WriteTo(writer, format);
                 return writer.ToString();
             }
         }
@@ -1560,9 +1560,9 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, format, formatProvider, values);
+                WriteTo(writer, format, values);
                 return writer.ToString();
             }
         }
@@ -1589,9 +1589,9 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, format, formatProvider, values);
+                WriteTo(writer, format, values);
                 return writer.ToString();
             }
         }
@@ -1618,9 +1618,9 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, format, formatProvider, values);
+                WriteTo(writer, format, values);
                 return writer.ToString();
             }
         }
@@ -1647,9 +1647,9 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] Func<FormatChunk, Optional<object>> resolver)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, format, formatProvider, resolver);
+                WriteTo(writer, format, resolver);
                 return writer.ToString();
             }
         }
@@ -1662,29 +1662,17 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteToConsole()
         {
-            WriteToInternal(_chunks, ConsoleTextWriter.Default, "G", null);
-        }
-
-        /// <summary>
-        /// Writes the builder to the console.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        [PublicAPI]
-        public void WriteToConsole([CanBeNull] IFormatProvider formatProvider)
-        {
-            WriteToInternal(_chunks, ConsoleTextWriter.Default, "G", formatProvider);
+            WriteToInternal(_chunks, ConsoleTextWriter.Default, "G");
         }
 
         /// <summary>
         /// Writes the builder to the console.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
         {
             if (format == null)
@@ -1694,20 +1682,17 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values)
                     : _chunks,
                 ConsoleTextWriter.Default,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
         /// Writes the builder to the console.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             if (format == null)
@@ -1720,8 +1705,7 @@ namespace WebApplications.Utilities.Formatting
                     WriteToInternal(
                         Resolve(_chunks, vArray),
                         ConsoleTextWriter.Default,
-                        format,
-                        formatProvider);
+                        format);
                     return;
                 }
             }
@@ -1729,20 +1713,17 @@ namespace WebApplications.Utilities.Formatting
             WriteToInternal(
                 _chunks,
                 ConsoleTextWriter.Default,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
         /// Writes the builder to the console.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if (format == null)
@@ -1752,20 +1733,17 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values)
                     : _chunks,
                 ConsoleTextWriter.Default,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
         /// Writes the builder to the console.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="resolver">The resolver.</param>
         [PublicAPI]
         public void WriteToConsole(
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             if (format == null)
@@ -1775,8 +1753,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, resolver)
                     : _chunks,
                 ConsoleTextWriter.Default,
-                format,
-                formatProvider);
+                format);
         }
         #endregion
 
@@ -1787,29 +1764,17 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteToTrace()
         {
-            WriteToInternal(_chunks, TraceTextWriter.Default, "G", null);
+            WriteToInternal(_chunks, TraceTextWriter.Default, "G");
         }
 
         /// <summary>
-        /// Writes the builder to <see cref="Trace"/>.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        [PublicAPI]
-        public void WriteToTrace([CanBeNull] IFormatProvider formatProvider)
-        {
-            WriteToInternal(_chunks, TraceTextWriter.Default, "G", formatProvider);
-        }
-
-        /// <summary>
-        /// Writes the builder to <see cref="Trace"/>.
+        /// Writes the builder to <see cref="Trace" />.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
         {
             if (format == null)
@@ -1819,20 +1784,17 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values)
                     : _chunks,
                 TraceTextWriter.Default,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
         /// Writes the builder to <see cref="Trace" />.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             if (format == null)
@@ -1845,8 +1807,7 @@ namespace WebApplications.Utilities.Formatting
                     WriteToInternal(
                         Resolve(_chunks, vArray),
                         TraceTextWriter.Default,
-                        format,
-                        formatProvider);
+                        format);
                     return;
                 }
             }
@@ -1854,20 +1815,17 @@ namespace WebApplications.Utilities.Formatting
             WriteToInternal(
                 _chunks,
                 TraceTextWriter.Default,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
         /// Writes the builder to <see cref="Trace" />.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if (format == null)
@@ -1877,20 +1835,17 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values)
                     : _chunks,
                 TraceTextWriter.Default,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
         /// Writes the builder to <see cref="Trace" />.
         /// </summary>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="resolver">The resolver.</param>
         [PublicAPI]
         public void WriteToTrace(
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             if (format == null)
@@ -1900,8 +1855,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, resolver)
                     : _chunks,
                 TraceTextWriter.Default,
-                format,
-                formatProvider);
+                format);
         }
         #endregion
 
@@ -1914,19 +1868,7 @@ namespace WebApplications.Utilities.Formatting
         public void WriteTo([CanBeNull] TextWriter writer)
         {
             if (writer == null) return;
-            WriteToInternal(_chunks, writer, "G", null);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        [PublicAPI]
-        public void WriteTo([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider)
-        {
-            if (writer == null) return;
-            WriteToInternal(_chunks, writer, "G", formatProvider);
+            WriteToInternal(_chunks, writer, "G");
         }
 
         /// <summary>
@@ -1934,13 +1876,11 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
         public void WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
         {
             if (writer == null) return;
@@ -1951,8 +1891,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values)
                     : _chunks,
                 writer,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
@@ -1960,13 +1899,11 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
         public void WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             if (writer == null) return;
@@ -1980,8 +1917,7 @@ namespace WebApplications.Utilities.Formatting
                     WriteToInternal(
                         Resolve(_chunks, vArray),
                         writer,
-                        format,
-                        formatProvider);
+                        format);
                     return;
                 }
             }
@@ -1989,8 +1925,7 @@ namespace WebApplications.Utilities.Formatting
             WriteToInternal(
                 _chunks,
                 writer,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
@@ -1998,13 +1933,11 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
         public void WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if (writer == null) return;
@@ -2015,8 +1948,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values)
                     : _chunks,
                 writer,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
@@ -2024,13 +1956,11 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="resolver">The resolver.</param>
         [PublicAPI]
         public void WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             if (writer == null) return;
@@ -2041,8 +1971,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, resolver)
                     : _chunks,
                 writer,
-                format,
-                formatProvider);
+                format);
         }
         #endregion
 
@@ -2051,25 +1980,14 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
+        /// <returns>Task.</returns>
         [NotNull]
         [PublicAPI]
         public Task WriteToAsync([CanBeNull] TextWriter writer)
         {
-            if (writer == null) return TaskResult.Completed;
-            return WriteToInternalAsync(_chunks, writer, "G", null);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        [NotNull]
-        [PublicAPI]
-        public Task WriteToAsync([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider)
-        {
-            if (writer == null) return TaskResult.Completed;
-            return WriteToInternalAsync(_chunks, writer, "G", formatProvider);
+            return writer == null
+                ? TaskResult.Completed
+                : WriteToInternalAsync(_chunks, writer, "G");
         }
 
         /// <summary>
@@ -2077,14 +1995,13 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
+        /// <returns>Task.</returns>
         [NotNull]
         [PublicAPI]
         public Task WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
         {
             if (writer == null) return TaskResult.Completed;
@@ -2095,8 +2012,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values)
                     : _chunks,
                 writer,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
@@ -2104,14 +2020,13 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
+        /// <returns>Task.</returns>
         [NotNull]
         [PublicAPI]
         public Task WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             if (writer == null) return TaskResult.Completed;
@@ -2125,16 +2040,14 @@ namespace WebApplications.Utilities.Formatting
                     return WriteToInternalAsync(
                         Resolve(_chunks, vArray),
                         writer,
-                        format,
-                        formatProvider);
+                        format);
                 }
             }
 
             return WriteToInternalAsync(
                 _chunks,
                 writer,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
@@ -2142,15 +2055,13 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
-        /// <returns></returns>
+        /// <returns>Task.</returns>
         [NotNull]
         [PublicAPI]
         public Task WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if (writer == null) return TaskResult.Completed;
@@ -2161,8 +2072,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values)
                     : _chunks,
                 writer,
-                format,
-                formatProvider);
+                format);
         }
 
         /// <summary>
@@ -2170,15 +2080,13 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <param name="resolver">The resolver.</param>
-        /// <returns></returns>
+        /// <returns>Task.</returns>
         [NotNull]
         [PublicAPI]
         public Task WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull]  [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             if (writer == null) return TaskResult.Completed;
@@ -2189,48 +2097,48 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, resolver)
                     : _chunks,
                 writer,
-                format,
-                formatProvider);
+                format);
         }
         #endregion
-        
+
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="chunks">The chunks.</param>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         [PublicAPI]
-        protected virtual void WriteToInternal(
-            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
-            [NotNull] TextWriter writer,
-            [NotNull] string format,
-            [CanBeNull] IFormatProvider formatProvider)
+        protected virtual void WriteToInternal([NotNull, InstantHandle] IEnumerable<FormatChunk> chunks, [NotNull] TextWriter writer, [NotNull] string format)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(writer != null);
             Contract.Requires(format != null);
             bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+            IFormatProvider formatProvider = writer.FormatProvider;
+            IControllableTextWriter controller = writer as IControllableTextWriter;
 
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
-            foreach (FormatChunk c in chunks)
+            foreach (FormatChunk chunk in chunks)
             {
-                Contract.Assert(c != null);
+                Contract.Assert(chunk != null);
 
-                if (c.IsControl &&
+                if (chunk.IsControl &&
                     !writeTags)
                 {
+                    if (controller == null) continue;
+
+                    // If we have anything to write out, do so before calling the controller.
                     if (sb.Length > 0)
                     {
                         writer.Write(sb.ToString());
                         sb.Clear();
                     }
-                    OnControlChunk(c, writer, format, formatProvider);
+
+                    controller.OnControlChunk(chunk, format, formatProvider);
                 }
                 else
-                    sb.Append(c.ToString(format, formatProvider));
+                    sb.Append(chunk.ToString(format, formatProvider));
             }
 
             if (sb.Length > 0)
@@ -2243,63 +2151,46 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunks">The chunks.</param>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
         /// <returns></returns>
         [NotNull]
         [PublicAPI]
-        protected virtual async Task WriteToInternalAsync(
-            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
-            [NotNull] TextWriter writer,
-            [NotNull] string format,
-            [CanBeNull] IFormatProvider formatProvider)
+        protected virtual async Task WriteToInternalAsync([NotNull, InstantHandle] IEnumerable<FormatChunk> chunks, [NotNull] TextWriter writer, [NotNull] string format)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(writer != null);
             Contract.Requires(format != null);
             bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+            IFormatProvider formatProvider = writer.FormatProvider;
+            IControllableTextWriter controller = writer as IControllableTextWriter;
 
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
-            foreach (FormatChunk c in chunks)
+            foreach (FormatChunk chunk in chunks)
             {
-                Contract.Assert(c != null);
+                Contract.Assert(chunk != null);
 
-                if (c.IsControl &&
+                if (chunk.IsControl &&
                     !writeTags)
                 {
+                    if (controller == null) continue;
+
+                    // If we have anything to write out, do so before calling the controller.
                     if (sb.Length > 0)
                     {
                         // ReSharper disable once PossibleNullReferenceException
                         await writer.WriteAsync(sb.ToString());
                         sb.Clear();
                     }
-                    OnControlChunk(c, writer, format, formatProvider);
+
+                    controller.OnControlChunk(chunk, format, formatProvider);
                 }
                 else
-                    sb.Append(c.ToString(format, formatProvider));
+                    sb.Append(chunk.ToString(format, formatProvider));
             }
 
             if (sb.Length > 0)
                 // ReSharper disable once PossibleNullReferenceException
                 await writer.WriteAsync(sb.ToString());
-        }
-
-        /// <summary>
-        /// Called when a control chunk is encountered.
-        /// </summary>
-        /// <param name="controlChunk">The control chunk.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        [PublicAPI]
-        protected virtual void OnControlChunk(
-            [NotNull] FormatChunk controlChunk,
-            [NotNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider)
-        {
-            Contract.Requires(controlChunk != null);
-            Contract.Requires(writer != null);
         }
     }
 }

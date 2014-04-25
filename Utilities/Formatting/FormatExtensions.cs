@@ -26,10 +26,19 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data.Odbc;
 using System.Diagnostics.Contracts;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Web.SessionState;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -116,178 +125,256 @@ namespace WebApplications.Utilities.Formatting
                 yield return FormatChunk.Create(chunk.ToString());
         }
 
+        #region Color Control
         /// <summary>
-        /// Adds a control to reset the console's foreground and background colours (if outputting to a console).
+        /// The reset colors control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string ResetColorsTag = "!resetcolors";
+
+        /// <summary>
+        /// The reset colors chunk.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatChunk ResetColorsChunk = FormatChunk.CreateControl(ResetColorsTag);
+
+        /// <summary>
+        /// The foreground color control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string ForegroundColorTag = "!fgColor";
+
+        /// <summary>
+        /// The background color control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string BackgroundColorTag = "!bgColor";
+
+        /// <summary>
+        /// The reset foreground color chunk.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatChunk ResetForegroundColorChunk = FormatChunk.CreateControl(ForegroundColorTag);
+
+        /// <summary>
+        /// The reset background color chunk.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatChunk ResetBackgroundColorChunk = FormatChunk.CreateControl(BackgroundColorTag);
+
+        /// <summary>
+        /// Adds a control to reset the foreground and background colors
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder ConsoleResetColours([NotNull] this FormatBuilder builder)
+        public static FormatBuilder AppendResetColors([NotNull] this FormatBuilder builder)
         {
             Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
+            return builder.AppendControl(ResetColorsChunk);
+        }
 
-            if (!ConsoleHelper.IsConsole) return builder;
+        /// <summary>
+        /// Adds a control to reset the foreground color.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static FormatBuilder AppendResetForegroundColor([NotNull] this FormatBuilder builder)
+        {
+            Contract.Requires(!builder.IsReadonly);
+            return builder.AppendControl(ResetForegroundColorChunk);
+        }
 
-            ConsoleBuilder cb = builder as ConsoleBuilder;
-            if (cb != null)
+        /// <summary>
+        /// Adds a control to reset the background color.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static FormatBuilder AppendResetBackgroundColor([NotNull] this FormatBuilder builder)
+        {
+            Contract.Requires(!builder.IsReadonly);
+            return builder.AppendControl(ResetBackgroundColorChunk);
+        }
+
+        /// <summary>
+        /// Adds a control to set the foreground color.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static FormatBuilder AppendForegroundColor([NotNull] this FormatBuilder builder, ConsoleColor color)
+        {
+            Contract.Requires(!builder.IsReadonly);
+            Color c = color.ToColor();
+            return builder.AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, c.ToString(), c));
+        }
+
+        /// <summary>
+        /// Adds a control to set the foreground color.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static FormatBuilder AppendForegroundColor([NotNull] this FormatBuilder builder, Color color)
+        {
+            Contract.Requires(!builder.IsReadonly);
+            return builder.AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color.ToString(), color));
+        }
+
+        /// <summary>
+        /// Adds a control to set the foreground color.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static FormatBuilder AppendForegroundColor([NotNull] this FormatBuilder builder, [CanBeNull] string color)
+        {
+            Contract.Requires(!builder.IsReadonly);
+            return builder.AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color, color));
+        }
+
+        /// <summary>
+        /// Adds a control to set the background color.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static FormatBuilder AppendBackgroundColor([NotNull] this FormatBuilder builder, ConsoleColor color)
+        {
+            Contract.Requires(!builder.IsReadonly);
+            Color c = color.ToColor();
+            return builder.AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, c.ToString(), c));
+        }
+
+        /// <summary>
+        /// Adds a control to set the background color.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static FormatBuilder AppendBackgroundColor([NotNull] this FormatBuilder builder, Color color)
+        {
+            Contract.Requires(!builder.IsReadonly);
+            return builder.AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color.ToString(), color));
+        }
+
+        /// <summary>
+        /// Adds a control to set the console's background color.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public static FormatBuilder AppendBackgroundColor([NotNull] this FormatBuilder builder, [CanBeNull] string color)
+        {
+            Contract.Requires(!builder.IsReadonly);
+            return builder.AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color, color));
+        }
+
+        /// <summary>
+        /// Sets the color based on the <see paramref="chunk" />
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="chunk">The chunk.</param>
+        /// <returns><see langword="true" /> if the <see paramref="chunk"/> was a color control, <see langword="false" /> otherwise.</returns>
+        [PublicAPI]
+        public static bool SetColor([NotNull] this IColoredTextWriter writer, [NotNull] FormatChunk chunk)
+        {
+            Contract.Requires(writer != null);
+            Contract.Requires(chunk != null);
+            Contract.Requires(chunk.IsControl);
+            // ReSharper disable once PossibleNullReferenceException
+            switch (chunk.Tag.ToLowerInvariant())
             {
-                builder.AppendControl(FormatChunk.CreateControl("ConsoleFore"));
-                builder.AppendControl(FormatChunk.CreateControl("ConsoleBack"));
+                case ResetColorsTag:
+                    writer.ResetColors();
+                    return true;
+                case ForegroundColorTag:
+                    if (string.IsNullOrWhiteSpace(chunk.Format))
+                        writer.ResetForegroundColor();
+                    else
+                    {
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        Optional<Color> color = ColorHelper.GetColor(chunk.Format);
+                        if (color.IsAssigned)
+                            writer.SetForegroundColor(color.Value);
+                    }
+                    return true;
+                case BackgroundColorTag:
+                    if (string.IsNullOrWhiteSpace(chunk.Format))
+                        writer.ResetBackgroundColor();
+                    else
+                    {
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        Optional<Color> color = ColorHelper.GetColor(chunk.Format);
+                        if (color.IsAssigned)
+                            writer.SetBackgroundColor(color.Value);
+                    }
+                    return true;
+                default:
+                    return false;
             }
-            return builder;
         }
+        #endregion
+
+        #region Layout Control
+        /// <summary>
+        /// The layout control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string LayoutTag = "!layout";
 
         /// <summary>
-        /// Adds a control to reset the console's foreground colour (if outputting to a console).
+        /// The reset layout chunk.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatChunk ResetLayoutChunk = FormatChunk.CreateControl(LayoutTag);
+
+        /// <summary>
+        /// Resets the layout.
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder ConsoleResetForeColour([NotNull] this FormatBuilder builder)
+        public static FormatBuilder AppendLayout([NotNull] this FormatBuilder builder)
         {
             Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
-
-            if (!ConsoleHelper.IsConsole) return builder;
-
-            ConsoleBuilder cb = builder as ConsoleBuilder;
-            if (cb != null)
-                builder.AppendControl(FormatChunk.CreateControl("ConsoleFore"));
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds a control to set the console's foreground colour (if outputting to a console).
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="colour">The colour.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder ConsoleForeColour([NotNull] this FormatBuilder builder, ConsoleColor colour)
-        {
-            Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
-
-            if (!ConsoleHelper.IsConsole) return builder;
-
-            ConsoleBuilder cb = builder as ConsoleBuilder;
-            if (cb != null)
-                builder.AppendControl(FormatChunk.CreateControl("ConsoleFore", null, colour.ToString(), colour));
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds a control to set the console's foreground colour (if outputting to a console).
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="colour">The colour.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder ConsoleForeColour([NotNull] this FormatBuilder builder, [CanBeNull] string colour)
-        {
-            Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
-
-            if (!ConsoleHelper.IsConsole) return builder;
-
-            ConsoleBuilder cb = builder as ConsoleBuilder;
-            if (cb != null)
-                builder.AppendControl(FormatChunk.CreateControl("ConsoleFore", null, colour));
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds a control to reset the console's background colour (if outputting to a console).
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder ConsoleResetBackColour([NotNull] this FormatBuilder builder)
-        {
-            Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
-
-            if (!ConsoleHelper.IsConsole) return builder;
-
-            ConsoleBuilder cb = builder as ConsoleBuilder;
-            if (cb != null)
-                builder.AppendControl(FormatChunk.CreateControl("ConsoleBack"));
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds a control to set the console's background colour (if outputting to a console).
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="colour">The colour.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder ConsoleBackColour([NotNull] this FormatBuilder builder, ConsoleColor colour)
-        {
-            Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
-
-            if (!ConsoleHelper.IsConsole) return builder;
-
-            ConsoleBuilder cb = builder as ConsoleBuilder;
-            if (cb != null)
-                builder.AppendControl(FormatChunk.CreateControl("ConsoleBack", null, colour.ToString(), colour));
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds a control to set the console's background colour (if outputting to a console).
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="colour">The colour.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder ConsoleBackColour([NotNull] this FormatBuilder builder, [CanBeNull] string colour)
-        {
-            Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
-
-            if (!ConsoleHelper.IsConsole) return builder;
-
-            ConsoleBuilder cb = builder as ConsoleBuilder;
-            if (cb != null)
-                builder.AppendControl(FormatChunk.CreateControl("ConsoleBack", null, colour));
-            return builder;
-        }
-
-        /// <summary>
-        /// Resets the layout (if outputting to a layout writer).
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <returns>FormatBuilder.</returns>
-        [NotNull]
-        [PublicAPI]
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder ResetLayout([NotNull] this FormatBuilder builder)
-        {
-            Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
-
-            LayoutBuilder lb = builder as LayoutBuilder;
-            if (lb != null)
-                lb.AppendControl(
-                    FormatChunk.CreateControl("Layout", null, Layout.Default.ToString("f"), Layout.Default));
-            return builder;
+            return builder.Append(ResetLayoutChunk);
         }
 
         /// <summary>
@@ -299,20 +386,10 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder SetLayout([NotNull] this FormatBuilder builder, [CanBeNull] Layout layout)
+        public static FormatBuilder AppendApplyLayout([NotNull] this FormatBuilder builder, [CanBeNull] Layout layout)
         {
             Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
-
-            LayoutBuilder lb = builder as LayoutBuilder;
-            if (lb != null)
-            {
-                if (layout == null)
-                    layout = Layout.Default;
-                if (!layout.IsEmpty)
-                    lb.AppendControl(FormatChunk.CreateControl("Layout", null, layout.ToString("f"), layout));
-            }
-            return builder;
+            return builder.Append(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
         }
 
         /// <summary>
@@ -336,7 +413,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder SetLayout(
+        public static FormatBuilder AppendLayout(
             [NotNull] this FormatBuilder builder,
             Optional<ushort> width = default(Optional<ushort>),
             Optional<byte> indentSize = default(Optional<byte>),
@@ -353,12 +430,128 @@ namespace WebApplications.Utilities.Formatting
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
             Contract.Requires(!builder.IsReadonly);
-            if (builder.IsReadonly) return builder;
+            Layout layout = new Layout(
+                width,
+                indentSize,
+                rightMarginSize,
+                indentChar,
+                firstLineIndentSize,
+                tabStops,
+                tabSize,
+                tabChar,
+                alignment,
+                splitWords,
+                hyphenate,
+                hyphenChar,
+                wrapMode);
+            return builder.Append(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
+        }
+        #endregion
 
-            LayoutBuilder lb = builder as LayoutBuilder;
-            if (lb != null)
-            {
-                Layout layout = new Layout(
+        /// <summary>
+        /// Produces a synchronized version of the specified writer, using <see cref="SerializingSynchronizationContext" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <returns>A synchronized TextWriter.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static TextWriter Synchronize([NotNull] this TextWriter writer)
+        {
+            Contract.Requires(writer != null);
+            Contract.Ensures(Contract.Result<TextWriter>() != null);
+            ISynchronizedTextWriter stw = writer as ISynchronizedTextWriter;
+            return stw != null
+                ? writer
+                : new SynchronizedTextWriter(writer, new SerializingSynchronizationContext());
+        }
+
+        /// <summary>
+        /// Produces a synchronized version of the specified writer, using a specific <see cref="SynchronizedTextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="context">The synchronization context.</param>
+        /// <returns>A synchronized TextWriter.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static TextWriter Synchronize([NotNull] this TextWriter writer, [NotNull] SynchronizationContext context)
+        {
+            Contract.Requires(writer != null);
+            Contract.Requires(context != null);
+            Contract.Ensures(Contract.Result<TextWriter>() != null);
+
+            ISynchronizedTextWriter stw = writer as ISynchronizedTextWriter;
+            return (stw != null) &&
+                   (stw.Context == context)
+                ? writer
+                : new SynchronizedTextWriter(writer, context);
+        }
+
+        /// <summary>
+        /// Produces a laid out version of the specified writer, using <see cref="LayoutTextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="layout">The layout.</param>
+        /// <param name="startPosition">The start position.</param>
+        /// <returns>A laid out TextWriter.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static LayoutTextWriter Layout([NotNull] this TextWriter writer, [CanBeNull] Layout layout = null, int startPosition = 0)
+        {
+            Contract.Requires(writer != null);
+            Contract.Ensures(Contract.Result<TextWriter>() != null);
+
+            LayoutTextWriter ltw = writer as LayoutTextWriter;
+            if (ltw == null) return new LayoutTextWriter(writer, layout, startPosition);
+
+            ltw.ApplyLayout(layout);
+            return ltw;
+        }
+
+        /// <summary>
+        /// Produces a laid out version of the specified writer, using <see cref="LayoutTextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="indentSize">Size of the indent.</param>
+        /// <param name="rightMarginSize">Size of the right margin.</param>
+        /// <param name="indentChar">The indent character.</param>
+        /// <param name="firstLineIndentSize">First size of the line indent.</param>
+        /// <param name="tabStops">The tab stops.</param>
+        /// <param name="tabSize">Size of the tab.</param>
+        /// <param name="tabChar">The tab character.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="splitWords">The split words.</param>
+        /// <param name="hyphenate">The hyphenate.</param>
+        /// <param name="hyphenChar">The hyphen character.</param>
+        /// <param name="wrapMode">The wrap mode.</param>
+        /// <param name="startPosition">The start position.</param>
+        /// <returns>A laid out TextWriter.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static LayoutTextWriter Layout(
+            [NotNull] this TextWriter writer,
+            Optional<ushort> width,
+            Optional<byte> indentSize = default(Optional<byte>),
+            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<char> indentChar = default(Optional<char>),
+            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
+            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<byte> tabSize = default(Optional<byte>),
+            Optional<char> tabChar = default(Optional<char>),
+            Optional<Alignment> alignment = default(Optional<Alignment>),
+            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<bool> hyphenate = default(Optional<bool>),
+            Optional<char> hyphenChar = default(Optional<char>),
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
+            int startPosition = 0)
+        {
+            Contract.Requires(writer != null);
+            Contract.Ensures(Contract.Result<TextWriter>() != null);
+
+            LayoutTextWriter ltw = writer as LayoutTextWriter;
+            if (ltw == null)
+                return new LayoutTextWriter(
+                    writer,
                     width,
                     indentSize,
                     rightMarginSize,
@@ -371,12 +564,24 @@ namespace WebApplications.Utilities.Formatting
                     splitWords,
                     hyphenate,
                     hyphenChar,
-                    wrapMode);
+                    wrapMode,
+                    startPosition);
 
-                if (!layout.IsEmpty)
-                    lb.AppendControl(FormatChunk.CreateControl("Layout", null, layout.ToString("f"), layout));
-            }
-            return builder;
+            ltw.ApplyLayout(
+                width,
+                indentSize,
+                rightMarginSize,
+                indentChar,
+                firstLineIndentSize,
+                tabStops,
+                tabSize,
+                tabChar,
+                alignment,
+                splitWords,
+                hyphenate,
+                hyphenChar,
+                wrapMode);
+            return ltw;
         }
     }
 }

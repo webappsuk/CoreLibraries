@@ -26,10 +26,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -38,530 +38,283 @@ namespace WebApplications.Utilities.Formatting
     /// Implements a <see cref="TextWriter"/> for writing to the <see cref="Console"/>, with write calls synchronized.
     /// </summary>
     [PublicAPI]
-    public class ConsoleTextWriter : TextWriter
+    public class ConsoleTextWriter : LayoutTextWriter, IColoredTextWriter
     {
         /// <summary>
-        /// The default
+        /// The default <see cref="ConsoleTextWriter"/> (there can be only one).
         /// </summary>
         [NotNull]
-        [PublicAPI]
         public static readonly ConsoleTextWriter Default;
 
         /// <summary>
-        /// Initializes the <see cref="ConsoleTextWriter"/> class.
+        /// The default foreground color.
+        /// </summary>
+        [PublicAPI]
+        public static ConsoleColor DefaultForeColor { get; private set; }
+
+        /// <summary>
+        /// The default background color.
+        /// </summary>
+        [PublicAPI]
+        public static ConsoleColor DefaultBackColor { get; private set; }
+
+        /// <summary>
+        /// Initializes static members of the <see cref="ConsoleTextWriter"/> class.
         /// </summary>
         static ConsoleTextWriter()
         {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            Default = new ConsoleTextWriter(Console.Out);
+            Default = new ConsoleTextWriter();
 
+            // Set the console's default output to use this one.
             Console.SetOut(Default);
         }
 
         /// <summary>
-        /// The out writer
+        /// Gets the width of the console.
         /// </summary>
-        [NotNull]
-        private readonly TextWriter _outWriter;
-
-        /// <summary>
-        /// Prevents a default instance of the <see cref="ConsoleTextWriter"/> class from being created.
-        /// </summary>
-        private ConsoleTextWriter([NotNull] TextWriter outWriter)
+        /// <value>
+        /// The width of the console.
+        /// </value>
+        [PublicAPI]
+        public ushort ConsoleWidth
         {
-            Contract.Requires(outWriter != null);
-            _outWriter = outWriter;
+            get
+            {
+                if (!ConsoleHelper.IsConsole) return Layout.Width.Value;
+
+                int width = Console.BufferWidth;
+                return width > ushort.MaxValue
+                    ? ushort.MaxValue
+                    : (width < 1
+                        ? (ushort) 1
+                        : (ushort) width);
+            }
         }
 
         /// <summary>
-        /// Gets the encoding.
+        /// Initializes a new instance of the <see cref="SynchronizedTextWriter" /> class.
         /// </summary>
-        /// <value>The encoding.</value>
-        public override Encoding Encoding
+        private ConsoleTextWriter()
+            : base(ConsoleHelper.IsConsole
+                ? Console.Out ?? TraceTextWriter.Default
+                : TraceTextWriter.Default)
         {
-            get { return _outWriter.Encoding; }
+            Update();
         }
 
         /// <summary>
-        /// Gets an object that controls formatting.
+        /// Updates the <see cref="Layout"/>, <see cref="LayoutTextWriter.Position"/> and default colors,
+        /// based on the console's current settings.
         /// </summary>
-        /// <returns>An <see cref="T:System.IFormatProvider" /> object for a specific culture, or the formatting of the current culture if no other culture is specified.</returns>
-        public override IFormatProvider FormatProvider
+        [PublicAPI]
+        public void Update()
         {
-            get { return _outWriter.FormatProvider; }
+            if (!ConsoleHelper.IsConsole)
+            {
+                DefaultForeColor = ConsoleColor.White;
+                DefaultBackColor = ConsoleColor.Black;
+                return;
+            }
+            Context.Invoke(
+                () =>
+                {
+                    // Grab the default colors.
+                    ConsoleColor fc = Console.ForegroundColor;
+                    ConsoleColor bc = Console.BackgroundColor;
+
+                    Console.ResetColor();
+                    DefaultForeColor = Console.ForegroundColor;
+                    DefaultBackColor = Console.BackgroundColor;
+
+                    Console.ForegroundColor = fc;
+                    Console.BackgroundColor = bc;
+
+                    ushort cw = ConsoleWidth;
+                    ushort lw = Layout.Width.Value;
+                    if (cw <= lw)
+                        ApplyLayout(
+                            ConsoleWidth,
+                            wrapMode: LayoutWrapMode.NewLineOnShort);
+                    else if (cw > lw)
+                        ApplyLayout(wrapMode: LayoutWrapMode.NewLine);
+                });
         }
 
         /// <summary>
-        /// Gets or sets the line terminator string used by the current TextWriter.
+        /// Gets or sets the current horizontal position.
         /// </summary>
-        /// <returns>The line terminator string for the current TextWriter.</returns>
-        public override string NewLine
+        /// <value>The position.</value>
+        public override int Position
         {
-            get { return _outWriter.NewLine; }
-            set { _outWriter.NewLine = value; }
+            get { return Console.CursorLeft; }
+            // Ignore position updates.
+            set { }
         }
 
         /// <summary>
-        /// Flushes this instance.
+        /// Sets the layout.
         /// </summary>
-        public override void Flush()
+        /// <param name="newLayout">The new layout.</param>
+        /// <returns>An awaitable task that returns the existing layout.</returns>
+        public override Layout ApplyLayout(Layout newLayout)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(_outWriter.Flush);
+            Contract.Requires(newLayout != null);
+            return ApplyLayout(
+                newLayout.Width,
+                newLayout.IndentSize,
+                newLayout.RightMarginSize,
+                newLayout.IndentChar,
+                newLayout.FirstLineIndentSize,
+                newLayout.TabStops,
+                newLayout.TabSize,
+                newLayout.TabChar,
+                newLayout.Alignment,
+                newLayout.SplitWords,
+                newLayout.Hyphenate,
+                newLayout.HyphenChar,
+                newLayout.WrapMode);
         }
 
         /// <summary>
-        /// Asynchronously clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
+        /// Applies the layout.
         /// </summary>
-        /// <returns>
-        /// A task that represents the asynchronous flush operation.
-        /// </returns>
-        [NotNull]
-        public override async Task FlushAsync()
+        /// <param name="width">The width.</param>
+        /// <param name="indentSize">Size of the indent.</param>
+        /// <param name="rightMarginSize">Size of the right margin.</param>
+        /// <param name="indentChar">The indent character.</param>
+        /// <param name="firstLineIndentSize">First size of the line indent.</param>
+        /// <param name="tabStops">The tab stops.</param>
+        /// <param name="tabSize">Size of the tab.</param>
+        /// <param name="tabChar">The tab character.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="splitWords">The split words.</param>
+        /// <param name="hyphenate">The hyphenate.</param>
+        /// <param name="hyphenChar">The hyphen character.</param>
+        /// <param name="wrapMode">The wrap mode.</param>
+        /// <returns>WebApplications.Utilities.Formatting.Layout.</returns>
+        public override Layout ApplyLayout(
+            Optional<ushort> width = new Optional<ushort>(),
+            Optional<byte> indentSize = new Optional<byte>(),
+            Optional<byte> rightMarginSize = new Optional<byte>(),
+            Optional<char> indentChar = new Optional<char>(),
+            Optional<ushort> firstLineIndentSize = new Optional<ushort>(),
+            Optional<IEnumerable<ushort>> tabStops = new Optional<IEnumerable<ushort>>(),
+            Optional<byte> tabSize = new Optional<byte>(),
+            Optional<char> tabChar = new Optional<char>(),
+            Optional<Alignment> alignment = new Optional<Alignment>(),
+            Optional<bool> splitWords = new Optional<bool>(),
+            Optional<bool> hyphenate = new Optional<bool>(),
+            Optional<char> hyphenChar = new Optional<char>(),
+            Optional<LayoutWrapMode> wrapMode = new Optional<LayoutWrapMode>())
         {
-            await ConsoleHelper.SynchronizationContext;
-            // ReSharper disable once PossibleNullReferenceException
-            await _outWriter.FlushAsync();
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return Context.Invoke(
+                () =>
+                {
+                    if (width.IsAssigned)
+                    {
+                        ushort cw = ConsoleWidth;
+                        ushort lw = width.Value;
+                        if (cw <= lw)
+                        {
+                            width = cw;
+                            wrapMode = LayoutWrapMode.NewLineOnShort;
+                        }
+                        else if (cw > lw)
+                            wrapMode = LayoutWrapMode.NewLine;
+                    }
+                    return base.ApplyLayout(
+                        width,
+                        indentSize,
+                        rightMarginSize,
+                        indentChar,
+                        firstLineIndentSize,
+                        tabStops,
+                        tabSize,
+                        tabChar,
+                        alignment,
+                        splitWords,
+                        hyphenate,
+                        hyphenChar,
+                        wrapMode);
+                });
         }
 
         /// <summary>
-        /// Writes the specified value.
+        /// Resets the foreground and background colors of the writer.
         /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(bool value)
+        public void ResetColors()
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
+            if (ConsoleHelper.IsConsole)
+                Context.Invoke(
+                    () =>
+                    {
+                        Update();
+                        Console.ForegroundColor = DefaultBackColor;
+                        Console.BackgroundColor = DefaultBackColor;
+                    });
         }
 
         /// <summary>
-        /// Writes the specified value.
+        /// Resets the foreground color of the writer.
         /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(char value)
+        public void ResetForegroundColor()
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
+            if (ConsoleHelper.IsConsole)
+                Context.Invoke(
+                    () =>
+                    {
+                        Update();
+                        Console.ForegroundColor = DefaultBackColor;
+                    });
         }
 
         /// <summary>
-        /// Writes the specified buffer.
+        /// Sets the foreground color of the writer.
         /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        public override void Write([CanBeNull] char[] buffer)
+        /// <param name="color">The color.</param>
+        public void SetForegroundColor(Color color)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(buffer));
+            if (ConsoleHelper.IsConsole)
+                Context.Invoke(() => Console.ForegroundColor = color.ToConsoleColor());
         }
 
         /// <summary>
-        /// Writes the specified value.
+        /// Sets the background color of the writer.
         /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(decimal value)
+        public void ResetBackgroundColor()
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
+            if (ConsoleHelper.IsConsole)
+                Context.Invoke(
+                    () =>
+                    {
+                        Update();
+                        Console.BackgroundColor = DefaultBackColor;
+                    });
         }
 
         /// <summary>
-        /// Writes the specified value.
+        /// Sets the background color of the writer.
         /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(double value)
+        /// <param name="color">The color.</param>
+        public void SetBackgroundColor(Color color)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
+            if (ConsoleHelper.IsConsole)
+                Context.Invoke(() => Console.BackgroundColor = color.ToConsoleColor());
         }
 
         /// <summary>
-        /// Writes the specified value.
+        /// Called when a control chunk is encountered.
         /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(float value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
-        }
-
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(int value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
-        }
-
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(long value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
-        }
-
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write([CanBeNull] object value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
-        }
-
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write([CanBeNull] string value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
-        }
-
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(uint value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
-        }
-
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(ulong value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(value));
-        }
-
-        /// <summary>
-        /// Writes the specified format.
-        /// </summary>
+        /// <param name="controlChunk">The control chunk.</param>
         /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        public override void Write(string format, [CanBeNull] object arg0)
+        /// <param name="formatProvider">The format provider.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public void OnControlChunk(FormatChunk controlChunk, string format, IFormatProvider formatProvider)
         {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(format, arg0));
-        }
-
-        /// <summary>
-        /// Writes the specified format.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg">The argument.</param>
-        public override void Write(string format, params object[] arg)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(format, arg));
-        }
-
-        /// <summary>
-        /// Writes the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="count">The count.</param>
-        public override void Write(char[] buffer, int index, int count)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(buffer, index, count));
-        }
-
-        /// <summary>
-        /// Writes the specified format.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        /// <param name="arg1">The arg1.</param>
-        public override void Write(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(format, arg0, arg1));
-        }
-
-        /// <summary>
-        /// Writes the specified format.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        /// <param name="arg1">The arg1.</param>
-        /// <param name="arg2">The arg2.</param>
-        public override void Write(string format, [CanBeNull] object arg0, [CanBeNull] object arg1, [CanBeNull] object arg2)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.Write(format, arg0, arg1, arg2));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        public override void WriteLine()
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine());
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(bool value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(char value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        public override void WriteLine([CanBeNull] char[] buffer)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(buffer));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(decimal value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(double value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(float value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(int value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(long value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine([CanBeNull] object value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine([CanBeNull] string value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(uint value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(ulong value)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(value));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        public override void WriteLine(string format, [CanBeNull] object arg0)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(format, arg0));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg">The argument.</param>
-        public override void WriteLine(string format, params object[] arg)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(format, arg));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="count">The count.</param>
-        public override void WriteLine(char[] buffer, int index, int count)
-        {
-            string x = new string(buffer, index, count);
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(x));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        /// <param name="arg1">The arg1.</param>
-        public override void WriteLine(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(format, arg0, arg1));
-        }
-
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        /// <param name="arg1">The arg1.</param>
-        /// <param name="arg2">The arg2.</param>
-        public override void WriteLine(string format, [CanBeNull] object arg0, [CanBeNull] object arg1, [CanBeNull] object arg2)
-        {
-            ConsoleHelper.SynchronizationContext.Invoke(() => _outWriter.WriteLine(format, arg0, arg1, arg2));
-        }
-
-        /// <summary>
-        /// Writes a character to the text string or stream asynchronously.
-        /// </summary>
-        /// <param name="value">The character to write to the text stream.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override async Task WriteAsync(char value)
-        {
-            await ConsoleHelper.SynchronizationContext;
-            // ReSharper disable once PossibleNullReferenceException
-            await _outWriter.WriteAsync(value);
-        }
-
-        /// <summary>
-        /// Writes a subarray of characters to the text string or stream asynchronously.
-        /// </summary>
-        /// <param name="buffer">The character array to write data from.</param>
-        /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
-        /// <param name="count">The number of characters to write.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override async Task WriteAsync([NotNull] char[] buffer, int index, int count)
-        {
-            await ConsoleHelper.SynchronizationContext;
-            // ReSharper disable once PossibleNullReferenceException
-            await _outWriter.WriteAsync(buffer, index, count);
-        }
-
-        /// <summary>
-        /// Writes a string to the text string or stream asynchronously.
-        /// </summary>
-        /// <param name="value">The string to write. If <paramref name="value" /> is null, nothing is written to the text stream.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override async Task WriteAsync([CanBeNull] string value)
-        {
-            await ConsoleHelper.SynchronizationContext;
-            // ReSharper disable once PossibleNullReferenceException
-            await _outWriter.WriteAsync(value);
-        }
-
-        /// <summary>
-        /// Writes a line terminator asynchronously to the text string or stream.
-        /// </summary>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override async Task WriteLineAsync()
-        {
-            await ConsoleHelper.SynchronizationContext;
-            // ReSharper disable once PossibleNullReferenceException
-            await _outWriter.WriteLineAsync();
-        }
-
-        /// <summary>
-        /// Writes a character followed by a line terminator asynchronously to the text string or stream.
-        /// </summary>
-        /// <param name="value">The character to write to the text stream.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override async Task WriteLineAsync(char value)
-        {
-            await ConsoleHelper.SynchronizationContext;
-            // ReSharper disable once PossibleNullReferenceException
-            await _outWriter.WriteLineAsync(value);
-        }
-
-        /// <summary>
-        /// Writes a subarray of characters followed by a line terminator asynchronously to the text string or stream.
-        /// </summary>
-        /// <param name="buffer">The character array to write data from.</param>
-        /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
-        /// <param name="count">The number of characters to write.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override async Task WriteLineAsync([NotNull] char[] buffer, int index, int count)
-        {
-            await ConsoleHelper.SynchronizationContext;
-            // ReSharper disable once PossibleNullReferenceException
-            await _outWriter.WriteLineAsync(buffer, index, count);
-        }
-
-        /// <summary>
-        /// Writes a string followed by a line terminator asynchronously to the text string or stream.
-        /// </summary>
-        /// <param name="value">The string to write. If the value is null, only a line terminator is written.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override async Task WriteLineAsync([CanBeNull] string value)
-        {
-            await ConsoleHelper.SynchronizationContext;
-            // ReSharper disable once PossibleNullReferenceException
-            await _outWriter.WriteLineAsync(value);
+            Contract.Requires(controlChunk != null);
+            Contract.Requires(controlChunk.IsControl);
+            this.SetColor(controlChunk);
         }
     }
 }

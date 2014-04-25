@@ -19,7 +19,7 @@ namespace WebApplications.Utilities.Test.Formatting
                     .AppendLine(FormatResources.LoremIpsum)
                     .Append("{!layout:w50}")
                     .AppendLine(FormatResources.SedUtPerspiciatis)
-                    .SetLayout(40)
+                    .AppendLayout(40)
                     .AppendLine(FormatResources.AtVeroEos).ToString());
         }
 
@@ -32,13 +32,13 @@ namespace WebApplications.Utilities.Test.Formatting
                 new LayoutBuilder(new Layout(width, alignment: Alignment.Justify, wrapMode: LayoutWrapMode.PadToWrap))
                     .AppendLine(FormatResources.LoremIpsum)
                     .AppendLine()
-                    .SetLayout(alignment: Alignment.Left)
+                    .AppendLayout(alignment: Alignment.Left)
                     .AppendLine(FormatResources.SedUtPerspiciatis)
                     .AppendLine()
-                    .SetLayout(alignment: Alignment.Right)
+                    .AppendLayout(alignment: Alignment.Right)
                     .AppendLine(FormatResources.AtVeroEos)
                     .AppendLine()
-                    .SetLayout(alignment: Alignment.Centre, firstLineIndentSize: 4, indentSize: 4, rightMarginSize: 4)
+                    .AppendLayout(alignment: Alignment.Centre, firstLineIndentSize: 4, indentSize: 4, rightMarginSize: 4)
                     .AppendLine(FormatResources.AtVeroEos).ToString();
 
             // Simulate console wrapping
@@ -65,7 +65,7 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             LayoutBuilder builder = new LayoutBuilder();
             builder
-                .SetLayout(50,
+                .AppendLayout(50,
                     firstLineIndentSize: 1,
                     tabStops: new ushort[] {6, 9, 20, 30, 40})
                 .Append("A\tTab Stop\tAnother");
@@ -81,9 +81,9 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestCloneLayoutBuilder()
         {
             FormatBuilder builder = new LayoutBuilder()
-                .SetLayout(50)
+                .AppendLayout(50)
                 .AppendLine(FormatResources.LoremIpsum)
-                .ConsoleForeColour("Red")
+                .AppendForegroundColor("Red")
                 .AppendLine(FormatResources.SedUtPerspiciatis)
                 .AppendLine(FormatResources.AtVeroEos)
                 .AppendFormatLine("Some text with a {0} thing", "format");

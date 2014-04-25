@@ -66,9 +66,9 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestCloneFormatBuilder()
         {
             FormatBuilder builder = new FormatBuilder()
-                .SetLayout(50)
+                .AppendLayout(50)
                 .AppendLine(FormatResources.LoremIpsum)
-                .ConsoleForeColour("Red")
+                .AppendForegroundColor("Red")
                 .AppendLine(FormatResources.SedUtPerspiciatis)
                 .AppendLine(FormatResources.AtVeroEos)
                 .AppendFormatLine("Some text with a {0} thing", "format");

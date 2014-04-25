@@ -313,6 +313,55 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="LayoutBuilder"/> class.
+        /// </summary>
+        /// <param name="width">The width.</param>
+        /// <param name="indentSize">Size of the indent.</param>
+        /// <param name="rightMarginSize">Size of the right margin.</param>
+        /// <param name="indentChar">The indent character.</param>
+        /// <param name="firstLineIndentSize">First size of the line indent.</param>
+        /// <param name="tabStops">The tab stops.</param>
+        /// <param name="tabSize">Size of the tab.</param>
+        /// <param name="tabChar">The tab character.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="splitWords">The split words.</param>
+        /// <param name="hyphenate">The hyphenate.</param>
+        /// <param name="hyphenChar">The hyphen character.</param>
+        /// <param name="wrapMode">The wrap mode.</param>
+        /// <param name="?">The ?.</param>
+        public LayoutBuilder(
+            Optional<ushort> width,
+            Optional<byte> indentSize = default(Optional<byte>),
+            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<char> indentChar = default(Optional<char>),
+            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
+            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<byte> tabSize = default(Optional<byte>),
+            Optional<char> tabChar = default(Optional<char>),
+            Optional<Alignment> alignment = default(Optional<Alignment>),
+            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<bool> hyphenate = default(Optional<bool>),
+            Optional<char> hyphenChar = default(Optional<char>),
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
+        {
+            InitialLayout = Layout.Default.Apply(
+                width,
+                indentSize,
+                rightMarginSize,
+                indentChar,
+                firstLineIndentSize,
+                tabStops,
+                tabSize,
+                tabChar,
+                alignment,
+                splitWords,
+                hyphenate,
+                hyphenChar,
+                wrapMode);
+            Contract.Assert(InitialLayout.IsFull);
+        }
+
+        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <param name="makeReadonly">If set to <see langword="true"/>, the returned builder will be readonly.</param>
@@ -515,7 +564,7 @@ namespace WebApplications.Utilities.Formatting
                             // If the line is empty, we can recreate the line using the new layout,
                             // otherwise the new layout only applies on the next line.
                             if (!line.IsEmpty) continue;
-                            
+
                             // Check if the current position is past the new layout's width
                             int start = position > 0 ? position : line.Position;
                             if (start >= nextLayout.Width.Value)
@@ -548,7 +597,6 @@ namespace WebApplications.Utilities.Formatting
                         }
                         else
                             line.AddControl(controlChunk);
-
                     } while (true);
 
                 char c = word[0];
@@ -766,472 +814,6 @@ namespace WebApplications.Utilities.Formatting
             return chunks;
         }
 
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [PublicAPI]
-        public int WriteTo([CanBeNull] TextWriter writer, int position)
-        {
-            if (writer == null) return position;
-            return WriteTo(this, writer, "G", null, position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [PublicAPI]
-        public int WriteTo([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider, int position)
-        {
-            if (writer == null) return position;
-            return WriteTo(this, writer, "G", formatProvider, position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="position">The position.</param>
-        /// <param name="values">The values.</param>
-        /// <returns></returns>
-        [PublicAPI]
-        public int WriteTo(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            int position,
-            [CanBeNull] params object[] values)
-        {
-            if (writer == null) return position;
-            if (format == null)
-                format = "G";
-            return WriteTo(
-                values != null && values.Length > 0
-                    ? Resolve(this, values)
-                    : this,
-                writer,
-                format,
-                formatProvider,
-                position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [PublicAPI]
-        public int WriteTo(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] [InstantHandle] IEnumerable<object> values,
-            int position)
-        {
-            if (writer == null) return position;
-            if (format == null)
-                format = "G";
-            if (values != null)
-            {
-                object[] vArray = values.ToArray();
-                if (vArray.Length > 0)
-                {
-                    return WriteTo(
-                        Resolve(this, vArray),
-                        writer,
-                        format,
-                        formatProvider,
-                        position);
-                }
-            }
-
-            return WriteTo(
-                this,
-                writer,
-                format,
-                formatProvider,
-                position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [PublicAPI]
-        public int WriteTo(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] IReadOnlyDictionary<string, object> values,
-            int position)
-        {
-            if (writer == null) return position;
-            if (format == null)
-                format = "G";
-            return WriteTo(
-                values != null && values.Count > 0
-                    ? Resolve(this, values)
-                    : this,
-                writer,
-                format,
-                formatProvider,
-                position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="resolver">The resolver.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [PublicAPI]
-        public int WriteTo(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver,
-            int position)
-        {
-            if (writer == null) return position;
-            if (format == null)
-                format = "G";
-            return WriteTo(
-                resolver != null
-                    ? Resolve(this, resolver)
-                    : this,
-                writer,
-                format,
-                formatProvider,
-                position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="chunks"></param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format passed to each chunk.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        [PublicAPI]
-        protected override void WriteToInternal(
-            IEnumerable<FormatChunk> chunks,
-            TextWriter writer,
-            string format,
-            IFormatProvider formatProvider)
-        {
-            WriteTo(chunks, writer, format, formatProvider, 0);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="chunks">The chunks.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format passed to each chunk.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [PublicAPI]
-        protected virtual int WriteTo(
-            [NotNull] IEnumerable<FormatChunk> chunks,
-            [NotNull] TextWriter writer,
-            [NotNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            int position)
-        {
-            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
-
-            if (position < 0) position = 0;
-            StringBuilder sb = new StringBuilder();
-            // Get sections based on control codes
-            foreach (FormatChunk chunk in
-                    Align(GetLines(GetLineChunks(chunks, format, formatProvider), position), ref position))
-            {
-                Contract.Assert(chunk != null);
-
-                if (chunk.IsControl &&
-                    !writeTags)
-                {
-                    if (sb.Length > 0)
-                    {
-                        writer.Write(sb.ToString());
-                        sb.Clear();
-                    }
-                    OnControlChunk(chunk, writer, format, formatProvider);
-                }
-                else
-                    sb.Append(chunk.ToString(format, formatProvider));
-            }
-
-            if (sb.Length > 0)
-                writer.Write(sb.ToString());
-
-            return position;
-        }
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<int> WriteToAsync([CanBeNull] TextWriter writer, int position)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            return WriteToAsync(this, writer, "G", null, position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<int> WriteToAsync([CanBeNull] TextWriter writer, [CanBeNull] IFormatProvider formatProvider, int position)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            return WriteToAsync(this, writer, "G", formatProvider, position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="position">The position.</param>
-        /// <param name="values">The values.</param>
-        /// <returns></returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<int> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            int position,
-            [CanBeNull] params object[] values)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            if (format == null)
-                format = "G";
-            return WriteToAsync(
-                values != null && values.Length > 0
-                    ? Resolve(this, values)
-                    : this,
-                writer,
-                format,
-                formatProvider,
-                position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<int> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] [InstantHandle] IEnumerable<object> values,
-            int position)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            if (format == null)
-                format = "G";
-            if (values != null)
-            {
-                object[] vArray = values.ToArray();
-                if (vArray.Length > 0)
-                {
-                    return WriteToAsync(
-                        Resolve(this, vArray),
-                        writer,
-                        format,
-                        formatProvider,
-                        position);
-                }
-            }
-
-            return WriteToAsync(
-                this,
-                writer,
-                format,
-                formatProvider,
-                        position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<int> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] IReadOnlyDictionary<string, object> values,
-            int position)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            if (format == null)
-                format = "G";
-            return WriteToAsync(
-                values != null && values.Count > 0
-                    ? Resolve(this, values)
-                    : this,
-                writer,
-                format,
-                formatProvider,
-                position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="resolver">The resolver.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<int> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull]  [InstantHandle] Func<FormatChunk, Optional<object>> resolver,
-            int position)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            if (format == null)
-                format = "G";
-            return WriteToAsync(
-                resolver != null
-                    ? Resolve(this, resolver)
-                    : this,
-                writer,
-                format,
-                formatProvider,
-                position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="chunks"></param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format passed to each chunk.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        [PublicAPI]
-        protected override Task WriteToInternalAsync(
-            IEnumerable<FormatChunk> chunks,
-            TextWriter writer,
-            string format,
-            IFormatProvider formatProvider)
-        {
-            Contract.Requires(chunks != null);
-            Contract.Requires(writer != null);
-            Contract.Requires(format != null);
-            return WriteToAsync(chunks, writer, format, formatProvider, 0);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="chunks">The chunks.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format passed to each chunk.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="position">The position.</param>
-        /// <returns></returns>
-        [NotNull]
-        [PublicAPI]
-        protected virtual async Task<int> WriteToAsync(
-            [NotNull] IEnumerable<FormatChunk> chunks,
-            [NotNull] TextWriter writer,
-            [NotNull] string format,
-            [CanBeNull] IFormatProvider formatProvider,
-            int position)
-        {
-            Contract.Requires(chunks != null);
-            Contract.Requires(writer != null);
-            Contract.Requires(format != null);
-            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
-
-            if (position < 0) position = 0;
-            StringBuilder sb = new StringBuilder();
-            // Get sections based on control codes
-            foreach (FormatChunk chunk in
-                Align(GetLines(GetLineChunks(chunks, format, formatProvider), position), ref position))
-            {
-                Contract.Assert(chunk != null);
-
-                if (chunk.IsControl &&
-                    !writeTags)
-                {
-                    if (sb.Length > 0)
-                    {
-                        // ReSharper disable once PossibleNullReferenceException
-                        await writer.WriteAsync(sb.ToString());
-                        sb.Clear();
-                    }
-                    OnControlChunk(chunk, writer, format, formatProvider);
-                }
-                else
-                    sb.Append(chunk.ToString(format, formatProvider));
-            }
-
-            if (sb.Length > 0)
-                // ReSharper disable once PossibleNullReferenceException
-                await writer.WriteAsync(sb.ToString());
-
-            return position;
-        }
-
         #region ToString Overloads
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
@@ -1244,7 +826,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, null, null, position);
+                position = WriteTo(writer, null, position);
                 return writer.ToString();
             }
         }
@@ -1261,7 +843,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, null, null, values, position);
+                position = WriteTo(writer, null, values, position);
                 return writer.ToString();
             }
         }
@@ -1278,7 +860,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, null, null, values, position);
+                position = WriteTo(writer, null, values, position);
                 return writer.ToString();
             }
         }
@@ -1295,7 +877,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, null, null, values, position);
+                position = WriteTo(writer, null, values, position);
                 return writer.ToString();
             }
         }
@@ -1308,108 +890,114 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
-        {
-            using (StringWriter writer = new StringWriter())
-            {
-                position = WriteTo(writer, null, null, resolver, position);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] IFormatProvider formatProvider)
-        {
-            using (StringWriter writer = new StringWriter())
-            {
-                position = WriteTo(writer, null, formatProvider, position);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="position">The position.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] IFormatProvider formatProvider, [CanBeNull] params object[] values)
-        {
-            using (StringWriter writer = new StringWriter())
-            {
-                position = WriteTo(writer, null, formatProvider, values, position);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="position">The position.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
         public string ToString(
-            ref int position, 
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] [InstantHandle] IEnumerable<object> values)
-        {
-            using (StringWriter writer = new StringWriter())
-            {
-                position = WriteTo(writer, null, formatProvider, values, position);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <param name="position">The position.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString(
-            ref int position, 
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
-        {
-            using (StringWriter writer = new StringWriter())
-            {
-                position = WriteTo(writer, null, formatProvider, values, position);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="position">The position.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="resolver">The values.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString(
-            ref int position, 
-            [CanBeNull] IFormatProvider formatProvider,
+            ref int position,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, null, formatProvider, resolver, position);
+                position = WriteTo(writer, null, resolver, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(ref int position, [CanBeNull] IFormatProvider formatProvider)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                position = WriteTo(writer, null, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] params object[] values)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                position = WriteTo(writer, null, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                position = WriteTo(writer, null, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] IReadOnlyDictionary<string, object> values)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                position = WriteTo(writer, null, values, position);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            ref int position,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                position = WriteTo(writer, null, resolver, position);
                 return writer.ToString();
             }
         }
@@ -1424,11 +1012,14 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
+        public string ToString(
+            ref int position,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider = null)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, format, formatProvider, position);
+                position = WriteTo(writer, format, position);
                 return writer.ToString();
             }
         }
@@ -1445,14 +1036,14 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position, 
+            ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, format, formatProvider, values, position);
+                position = WriteTo(writer, format, values, position);
                 return writer.ToString();
             }
         }
@@ -1469,14 +1060,14 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position, 
+            ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, format, formatProvider, values, position);
+                position = WriteTo(writer, format, values, position);
                 return writer.ToString();
             }
         }
@@ -1493,14 +1084,14 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position, 
+            ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, format, formatProvider, values, position);
+                position = WriteTo(writer, format, values, position);
                 return writer.ToString();
             }
         }
@@ -1517,17 +1108,426 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position, 
+            ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] Func<FormatChunk, Optional<object>> resolver)
         {
-            using (StringWriter writer = new StringWriter())
+            using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, format, formatProvider, resolver, position);
+                position = WriteTo(writer, format, resolver, position);
                 return writer.ToString();
             }
         }
         #endregion
+
+        #region WriteTo overloads
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="position">The position.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        public int WriteTo([CanBeNull] TextWriter writer, int position)
+        {
+            if (writer == null) return position;
+            return WriteToInternal(this, writer, "G", position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>System.Int32.</returns>
+        [PublicAPI]
+        public int WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            int position,
+            [CanBeNull] params object[] values)
+        {
+            if (writer == null) return position;
+            if (format == null)
+                format = "G";
+            return WriteToInternal(
+                values != null && values.Length > 0
+                    ? Resolve(this, values)
+                    : this,
+                writer,
+                format,
+                position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>System.Int32.</returns>
+        [PublicAPI]
+        public int WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values,
+            int position)
+        {
+            if (writer == null) return position;
+            if (format == null)
+                format = "G";
+            if (values != null)
+            {
+                object[] vArray = values.ToArray();
+                if (vArray.Length > 0)
+                    return WriteToInternal(
+                        Resolve(this, vArray),
+                        writer,
+                        format,
+                        position);
+            }
+
+            return WriteToInternal(
+                this,
+                writer,
+                format,
+                position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>System.Int32.</returns>
+        [PublicAPI]
+        public int WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            int position)
+        {
+            if (writer == null) return position;
+            if (format == null)
+                format = "G";
+            return WriteToInternal(
+                values != null && values.Count > 0
+                    ? Resolve(this, values)
+                    : this,
+                writer,
+                format,
+                position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>System.Int32.</returns>
+        [PublicAPI]
+        public int WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver,
+            int position)
+        {
+            if (writer == null) return position;
+            if (format == null)
+                format = "G";
+            return WriteToInternal(
+                resolver != null
+                    ? Resolve(this, resolver)
+                    : this,
+                writer,
+                format,
+                position);
+        }
+        #endregion
+
+        #region WriteToAsync overloads
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="position">The position.</param>
+        /// <returns></returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<int> WriteToAsync([CanBeNull] TextWriter writer, int position)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            if (writer == null) return Task.FromResult(position);
+            return WriteToInternalAsync(this, writer, "G", position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="values">The values.</param>
+        /// <returns>Task&lt;System.Int32&gt;.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<int> WriteToAsync(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            int position,
+            [CanBeNull] params object[] values)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            if (writer == null) return Task.FromResult(position);
+            if (format == null)
+                format = "G";
+            return WriteToInternalAsync(
+                values != null && values.Length > 0
+                    ? Resolve(this, values)
+                    : this,
+                writer,
+                format,
+                position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>Task&lt;System.Int32&gt;.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<int> WriteToAsync(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] [InstantHandle] IEnumerable<object> values,
+            int position)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            if (writer == null) return Task.FromResult(position);
+            if (format == null)
+                format = "G";
+            if (values != null)
+            {
+                object[] vArray = values.ToArray();
+                if (vArray.Length > 0)
+                    return WriteToInternalAsync(
+                        Resolve(this, vArray),
+                        writer,
+                        format,
+                        position);
+            }
+
+            return WriteToInternalAsync(
+                this,
+                writer,
+                format,
+                position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="values">The values.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>Task&lt;System.Int32&gt;.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<int> WriteToAsync(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            int position)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            if (writer == null) return Task.FromResult(position);
+            if (format == null)
+                format = "G";
+            return WriteToInternalAsync(
+                values != null && values.Count > 0
+                    ? Resolve(this, values)
+                    : this,
+                writer,
+                format,
+                position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>Task&lt;System.Int32&gt;.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<int> WriteToAsync(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver,
+            int position)
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            if (writer == null) return Task.FromResult(position);
+            if (format == null)
+                format = "G";
+            return WriteToInternalAsync(
+                resolver != null
+                    ? Resolve(this, resolver)
+                    : this,
+                writer,
+                format,
+                position);
+        }
+        #endregion
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        protected override void WriteToInternal(IEnumerable<FormatChunk> chunks, TextWriter writer, string format)
+        {
+            WriteToInternal(chunks, writer, format, 0);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>System.Int32.</returns>
+        [PublicAPI]
+        protected virtual int WriteToInternal(
+            [NotNull] IEnumerable<FormatChunk> chunks,
+            [NotNull] TextWriter writer,
+            [NotNull] string format,
+            int position)
+        {
+            Contract.Requires(chunks != null);
+            Contract.Requires(writer != null);
+            Contract.Requires(format != null);
+            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+            IFormatProvider formatProvider = writer.FormatProvider;
+            IControllableTextWriter controller = writer as IControllableTextWriter;
+            if (position < 0) position = 0;
+
+            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
+            StringBuilder sb = new StringBuilder();
+            foreach (FormatChunk chunk in
+                Align(GetLines(GetLineChunks(chunks, format, formatProvider), position), ref position))
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                if (chunk.IsControl &&
+                    !writeTags)
+                {
+                    if (controller == null) continue;
+
+                    // If we have anything to write out, do so before calling the controller.
+                    if (sb.Length > 0)
+                    {
+                        writer.Write(sb.ToString());
+                        sb.Clear();
+                    }
+
+                    controller.OnControlChunk(chunk, format, formatProvider);
+                }
+                else
+                    sb.Append(chunk.ToString(format, formatProvider));
+            }
+
+            if (sb.Length > 0)
+                writer.Write(sb.ToString());
+
+            return position;
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
+        /// <returns>Task.</returns>
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        protected override Task WriteToInternalAsync(IEnumerable<FormatChunk> chunks, TextWriter writer, string format)
+        {
+            return WriteToInternalAsync(chunks, writer, format, 0);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format passed to each chunk.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>Task&lt;System.Int32&gt;.</returns>
+        [NotNull]
+        [PublicAPI]
+        protected virtual async Task<int> WriteToInternalAsync(
+            [NotNull] IEnumerable<FormatChunk> chunks,
+            [NotNull] TextWriter writer,
+            [NotNull] string format,
+            int position)
+        {
+            Contract.Requires(chunks != null);
+            Contract.Requires(writer != null);
+            Contract.Requires(format != null);
+            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+            IFormatProvider formatProvider = writer.FormatProvider;
+            IControllableTextWriter controller = writer as IControllableTextWriter;
+
+            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
+            StringBuilder sb = new StringBuilder();
+            foreach (FormatChunk chunk in
+                Align(GetLines(GetLineChunks(chunks, format, formatProvider), position), ref position))
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                if (chunk.IsControl &&
+                    !writeTags)
+                {
+                    if (controller == null) continue;
+
+                    // If we have anything to write out, do so before calling the controller.
+                    if (sb.Length > 0)
+                    {
+                        // ReSharper disable once PossibleNullReferenceException
+                        await writer.WriteAsync(sb.ToString());
+                        sb.Clear();
+                    }
+
+                    controller.OnControlChunk(chunk, format, formatProvider);
+                }
+                else
+                    sb.Append(chunk.ToString(format, formatProvider));
+            }
+
+            if (sb.Length > 0)
+                // ReSharper disable once PossibleNullReferenceException
+                await writer.WriteAsync(sb.ToString());
+
+            return position;
+        }
     }
 }

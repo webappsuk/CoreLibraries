@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;

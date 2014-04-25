@@ -196,16 +196,20 @@
     <Compile Include="EqualityNetwork.cs" />
     <Compile Include="ExtendedInterlocked.cs" />
     <Compile Include="Formatting\Alignment.cs" />
-    <Compile Include="Formatting\ConsoleBuilder.cs" />
+    <Compile Include="Formatting\ColorHelper.cs" />
     <Compile Include="Formatting\ConsoleTextWriter.cs" />
     <Compile Include="Formatting\FormatBuilder.cs" />
     <Compile Include="Formatting\FormatChunk.cs" />
     <Compile Include="Formatting\FormatExtensions.cs" />
     <Compile Include="Formatting\FormattedStringWriter.cs" />
+    <Compile Include="Formatting\IColoredTextWriter.cs" />
+    <Compile Include="Formatting\IControllableTextWriter.cs" />
+    <Compile Include="Formatting\ISynchronizedTextWriter.cs" />
     <Compile Include="Formatting\LayoutBuilder.cs" />
     <Compile Include="Formatting\Layout.cs" />
     <Compile Include="Formatting\LayoutWrapMode.cs" />
-    <Compile Include="Formatting\LayoutWriter.cs" />
+    <Compile Include="Formatting\LayoutTextWriter.cs" />
+    <Compile Include="Formatting\SynchronizedTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
     <Compile Include="Queue.cs">
       <DependentUpon>Queue.tt</DependentUpon>
