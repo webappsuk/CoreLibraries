@@ -204,6 +204,7 @@
     <Compile Include="Formatting\FormattedStringWriter.cs" />
     <Compile Include="Formatting\IColoredTextWriter.cs" />
     <Compile Include="Formatting\IControllableTextWriter.cs" />
+    <Compile Include="Formatting\ILayoutTextWriter.cs" />
     <Compile Include="Formatting\ISynchronizedTextWriter.cs" />
     <Compile Include="Formatting\LayoutBuilder.cs" />
     <Compile Include="Formatting\Layout.cs" />

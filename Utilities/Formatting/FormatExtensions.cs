@@ -145,14 +145,14 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public const string ForegroundColorTag = "!fgColor";
+        public const string ForegroundColorTag = "!fgcolor";
 
         /// <summary>
         /// The background color control tag.
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public const string BackgroundColorTag = "!bgColor";
+        public const string BackgroundColorTag = "!bgcolor";
 
         /// <summary>
         /// The reset foreground color chunk.
@@ -223,7 +223,7 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(!builder.IsReadonly);
             Color c = color.ToColor();
-            return builder.AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, c.ToString(), c));
+            return builder.AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, c.GetName(), c));
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace WebApplications.Utilities.Formatting
         public static FormatBuilder AppendForegroundColor([NotNull] this FormatBuilder builder, Color color)
         {
             Contract.Requires(!builder.IsReadonly);
-            return builder.AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color.ToString(), color));
+            return builder.AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color.GetName(), color));
         }
 
         /// <summary>
@@ -253,7 +253,10 @@ namespace WebApplications.Utilities.Formatting
         public static FormatBuilder AppendForegroundColor([NotNull] this FormatBuilder builder, [CanBeNull] string color)
         {
             Contract.Requires(!builder.IsReadonly);
-            return builder.AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color, color));
+            Optional<Color> c = ColorHelper.GetColor(color);
+            return !c.IsAssigned
+                ? builder
+                : builder.AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, c.Value.GetName(), c.Value));
         }
 
         /// <summary>
@@ -269,7 +272,7 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(!builder.IsReadonly);
             Color c = color.ToColor();
-            return builder.AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, c.ToString(), c));
+            return builder.AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, c.GetName(), c));
         }
 
         /// <summary>
@@ -284,7 +287,7 @@ namespace WebApplications.Utilities.Formatting
         public static FormatBuilder AppendBackgroundColor([NotNull] this FormatBuilder builder, Color color)
         {
             Contract.Requires(!builder.IsReadonly);
-            return builder.AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color.ToString(), color));
+            return builder.AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color.GetName(), color));
         }
 
         /// <summary>
@@ -299,7 +302,10 @@ namespace WebApplications.Utilities.Formatting
         public static FormatBuilder AppendBackgroundColor([NotNull] this FormatBuilder builder, [CanBeNull] string color)
         {
             Contract.Requires(!builder.IsReadonly);
-            return builder.AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color, color));
+            Optional<Color> c = ColorHelper.GetColor(color);
+            return !c.IsAssigned
+                ? builder
+                : builder.AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, c.Value.GetName(), c.Value));
         }
 
         /// <summary>
@@ -321,8 +327,11 @@ namespace WebApplications.Utilities.Formatting
                     writer.ResetColors();
                     return true;
                 case ForegroundColorTag:
+
                     if (string.IsNullOrWhiteSpace(chunk.Format))
                         writer.ResetForegroundColor();
+                    else if (chunk.Value is Color)
+                        writer.SetForegroundColor((Color) chunk.Value);
                     else
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
@@ -332,8 +341,11 @@ namespace WebApplications.Utilities.Formatting
                     }
                     return true;
                 case BackgroundColorTag:
+
                     if (string.IsNullOrWhiteSpace(chunk.Format))
                         writer.ResetBackgroundColor();
+                    else if (chunk.Value is Color)
+                        writer.SetBackgroundColor((Color) chunk.Value);
                     else
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
@@ -371,7 +383,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder AppendLayout([NotNull] this FormatBuilder builder)
+        public static FormatBuilder AppendResetLayout([NotNull] this FormatBuilder builder)
         {
             Contract.Requires(!builder.IsReadonly);
             return builder.Append(ResetLayoutChunk);
@@ -386,7 +398,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static FormatBuilder AppendApplyLayout([NotNull] this FormatBuilder builder, [CanBeNull] Layout layout)
+        public static FormatBuilder AppendLayout([NotNull] this FormatBuilder builder, [CanBeNull] Layout layout)
         {
             Contract.Requires(!builder.IsReadonly);
             return builder.Append(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
@@ -495,7 +507,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A laid out TextWriter.</returns>
         [NotNull]
         [PublicAPI]
-        public static LayoutTextWriter Layout([NotNull] this TextWriter writer, [CanBeNull] Layout layout = null, int startPosition = 0)
+        public static LayoutTextWriter Layout([NotNull] this TextWriter writer, [CanBeNull] Layout layout = null, ushort startPosition = 0)
         {
             Contract.Requires(writer != null);
             Contract.Ensures(Contract.Result<TextWriter>() != null);
@@ -543,7 +555,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
-            int startPosition = 0)
+            ushort startPosition = 0)
         {
             Contract.Requires(writer != null);
             Contract.Ensures(Contract.Result<TextWriter>() != null);

@@ -40,6 +40,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Lays out text written to the underlying text writer.
     /// </summary>
+    [PublicAPI]
     public class LayoutBuilder : FormatBuilder
     {
         /// <summary>
@@ -401,7 +402,7 @@ namespace WebApplications.Utilities.Formatting
             bool lastCharR = false;
             foreach (FormatChunk chunk in chunks)
             {
-                Contract.Assert(chunk != null);
+                // ReSharper disable once PossibleNullReferenceException
                 if (chunk.IsControl)
                 {
                     if (word.Length > 0)
@@ -458,11 +459,13 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="chunks">The chunks.</param>
         /// <param name="position">The position.</param>
+        /// <param name="writerWidth">The writer's width.</param>
         /// <returns>IEnumerable&lt;System.String&gt;.</returns>
         [NotNull]
         private IEnumerable<Line> GetLines(
             [NotNull] Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> chunks,
-            int position)
+            ushort position,
+            ushort writerWidth)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(chunks.Item1 != null);
@@ -470,6 +473,9 @@ namespace WebApplications.Utilities.Formatting
 
             // Only grab the layout at the start of each line.
             Layout nextLayout = InitialLayout;
+            if (nextLayout.Width.Value >= writerWidth)
+                nextLayout = nextLayout.Apply(writerWidth);
+
             Layout layout = nextLayout;
 
             // Create the first line, if we're part way through a line then we cannot align the remainder of the line.
@@ -491,8 +497,10 @@ namespace WebApplications.Utilities.Formatting
             bool splitWords = layout.SplitWords.Value;
             int hyphenate = layout.Hyphenate.Value ? 1 : 0;
 
+            // ReSharper disable PossibleNullReferenceException
             IEnumerator<string> chunkEnumerator = chunks.Item1.GetEnumerator();
             IEnumerator<FormatChunk> controlEnumerator = chunks.Item2.GetEnumerator();
+            // ReSharper restore PossibleNullReferenceException
 
             string word = null;
             bool newLine = false;
@@ -507,6 +515,9 @@ namespace WebApplications.Utilities.Formatting
                     yield return line;
 
                     // Start a new line
+                    if (nextLayout.Width.Value >= writerWidth)
+                        nextLayout = nextLayout.Apply(writerWidth);
+
                     layout = nextLayout;
                     line = new Line(
                         layout,
@@ -541,13 +552,13 @@ namespace WebApplications.Utilities.Formatting
                         // Check if we have a control marker
                         if (!string.IsNullOrEmpty(word)) break;
 
-                        bool success = controlEnumerator.MoveNext();
-                        Contract.Assert(success);
+                        controlEnumerator.MoveNext();
 
                         FormatChunk controlChunk = controlEnumerator.Current;
                         Contract.Assert(controlChunk != null);
 
                         // If the control chunk is a layout chunk, we need to get the layout
+                        // ReSharper disable once PossibleNullReferenceException
                         if (string.Equals(controlChunk.Tag, "!layout", StringComparison.InvariantCultureIgnoreCase))
                         {
                             Layout newLayout = controlChunk.Value as Layout;
@@ -576,6 +587,9 @@ namespace WebApplications.Utilities.Formatting
                             }
 
                             // Re-create current line now.
+                            if (nextLayout.Width.Value >= writerWidth)
+                                nextLayout = nextLayout.Apply(writerWidth);
+
                             layout = nextLayout;
                             firstLine = line.IsFirstLine;
 
@@ -642,6 +656,7 @@ namespace WebApplications.Utilities.Formatting
                     if (layout.TabStops.IsAssigned &&
                         layout.TabStops.Value != null)
                     {
+                        // ReSharper disable once PossibleNullReferenceException
                         int nextTab = layout.TabStops.Value.FirstOrDefault(t => t > line.Position);
                         tabSize = nextTab > line.Position
                             ? nextTab - line.Position
@@ -685,10 +700,16 @@ namespace WebApplications.Utilities.Formatting
         /// Aligns the specified lines.
         /// </summary>
         /// <param name="lines">The lines.</param>
+        /// <param name="writerWidth">Width of the writer.</param>
+        /// <param name="autoWraps">if set to <see langword="true" /> then the writer automatically wraps on reaching width.</param>
         /// <param name="position">The position.</param>
         /// <returns>An enumeration of terminated lines, laid out for writing.</returns>
         [NotNull]
-        private IEnumerable<FormatChunk> Align([NotNull] [InstantHandle] IEnumerable<Line> lines, ref int position)
+        private IEnumerable<FormatChunk> Align(
+            [NotNull] [InstantHandle] IEnumerable<Line> lines,
+            ushort writerWidth,
+            bool autoWraps,
+            ref ushort position)
         {
             Contract.Requires(lines != null);
             StringBuilder lb = new StringBuilder(InitialLayout.Width.Value);
@@ -698,8 +719,7 @@ namespace WebApplications.Utilities.Formatting
 
             foreach (Line line in lines)
             {
-                Contract.Assert(line != null);
-
+                // ReSharper disable once PossibleNullReferenceException
                 char indentChar = line.Layout.IndentChar.Value;
                 int indent;
                 Queue<int> spacers = null;
@@ -748,8 +768,7 @@ namespace WebApplications.Utilities.Formatting
                             chunks.Add(FormatChunk.Create(lb.ToString()));
                             lb.Clear();
                         }
-                        bool success = controlEnumerator.MoveNext();
-                        Contract.Assert(success);
+                        controlEnumerator.MoveNext();
                         Contract.Assert(controlEnumerator.Current != null);
                         chunks.Add(controlEnumerator.Current);
                         continue;
@@ -777,32 +796,37 @@ namespace WebApplications.Utilities.Formatting
                 // Add any remaining justification spaces
                 if (line.Terminated)
                 {
-                    position = 0;
                     switch (line.Layout.WrapMode.Value)
                     {
-                        case LayoutWrapMode.NewLine:
-                            lb.AppendLine();
-                            break;
                         case LayoutWrapMode.NewLineOnShort:
                             if (position < line.Layout.Width.Value)
                                 lb.AppendLine();
                             break;
                         case LayoutWrapMode.PadToWrap:
-                            lb.Append(line.Layout.IndentChar.Value, line.Layout.Width.Value - position);
+                            lb.Append(
+                                line.Layout.IndentChar.Value,
+                                (writerWidth < ushort.MaxValue ? writerWidth : line.Layout.Width.Value) - position);
                             break;
                         default:
-                            Contract.Assert(false);
+                            if (!autoWraps ||
+                                (position < writerWidth))
+                                lb.AppendLine();
                             break;
                     }
+                    position = 0;
                 }
                 else if ((spacers != null) &&
                          (spacers.Count > 0))
                 {
-                    position = p + indent;
+                    int np = p + indent;
+                    position = np < ushort.MaxValue ? (ushort)np : ushort.MaxValue;
                     lb.Append(indentChar, spacers.Count);
                 }
                 else
-                    position = p + indent;
+                {
+                    int np = p + indent;
+                    position = np < ushort.MaxValue ? (ushort)np : ushort.MaxValue;
+                }
 
                 if (lb.Length > 0)
                 {
@@ -822,7 +846,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref int position)
+        public string ToString(ref ushort position)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -839,7 +863,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] params object[] values)
+        public string ToString(ref ushort position, [CanBeNull] params object[] values)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -856,7 +880,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] [InstantHandle] IEnumerable<object> values)
+        public string ToString(ref ushort position, [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -873,7 +897,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] IReadOnlyDictionary<string, object> values)
+        public string ToString(ref ushort position, [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -891,7 +915,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             using (StringWriter writer = new StringWriter())
@@ -909,7 +933,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] IFormatProvider formatProvider)
+        public string ToString(ref ushort position, [CanBeNull] IFormatProvider formatProvider)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
@@ -928,7 +952,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
         {
@@ -949,7 +973,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
         {
@@ -970,7 +994,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
@@ -991,7 +1015,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
@@ -1013,7 +1037,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider = null)
         {
@@ -1036,7 +1060,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
@@ -1060,7 +1084,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] IEnumerable<object> values)
@@ -1084,7 +1108,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
@@ -1108,7 +1132,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref int position,
+            ref ushort position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] Func<FormatChunk, Optional<object>> resolver)
@@ -1129,7 +1153,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns></returns>
         [PublicAPI]
-        public int WriteTo([CanBeNull] TextWriter writer, int position)
+        public ushort WriteTo([CanBeNull] TextWriter writer, ushort position)
         {
             if (writer == null) return position;
             return WriteToInternal(this, writer, "G", position);
@@ -1144,10 +1168,10 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>System.Int32.</returns>
         [PublicAPI]
-        public int WriteTo(
+        public ushort WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            int position,
+            ushort position,
             [CanBeNull] params object[] values)
         {
             if (writer == null) return position;
@@ -1171,11 +1195,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns>System.Int32.</returns>
         [PublicAPI]
-        public int WriteTo(
+        public ushort WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] IEnumerable<object> values,
-            int position)
+            ushort position)
         {
             if (writer == null) return position;
             if (format == null)
@@ -1207,11 +1231,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns>System.Int32.</returns>
         [PublicAPI]
-        public int WriteTo(
+        public ushort WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            int position)
+            ushort position)
         {
             if (writer == null) return position;
             if (format == null)
@@ -1234,11 +1258,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns>System.Int32.</returns>
         [PublicAPI]
-        public int WriteTo(
+        public ushort WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver,
-            int position)
+            ushort position)
         {
             if (writer == null) return position;
             if (format == null)
@@ -1262,7 +1286,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns></returns>
         [NotNull]
         [PublicAPI]
-        public Task<int> WriteToAsync([CanBeNull] TextWriter writer, int position)
+        public Task<ushort> WriteToAsync([CanBeNull] TextWriter writer, ushort position)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             if (writer == null) return Task.FromResult(position);
@@ -1279,10 +1303,10 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>Task&lt;System.Int32&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        public Task<int> WriteToAsync(
+        public Task<ushort> WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            int position,
+            ushort position,
             [CanBeNull] params object[] values)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -1308,11 +1332,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>Task&lt;System.Int32&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        public Task<int> WriteToAsync(
+        public Task<ushort> WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] IEnumerable<object> values,
-            int position)
+            ushort position)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             if (writer == null) return Task.FromResult(position);
@@ -1346,11 +1370,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>Task&lt;System.Int32&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        public Task<int> WriteToAsync(
+        public Task<ushort> WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            int position)
+            ushort position)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             if (writer == null) return Task.FromResult(position);
@@ -1375,11 +1399,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>Task&lt;System.Int32&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        public Task<int> WriteToAsync(
+        public Task<ushort> WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver,
-            int position)
+            ushort position)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             if (writer == null) return Task.FromResult(position);
@@ -1403,7 +1427,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format passed to each chunk.</param>
         [PublicAPI]
         // ReSharper disable once CodeAnnotationAnalyzer
-        protected override void WriteToInternal(IEnumerable<FormatChunk> chunks, TextWriter writer, string format)
+        protected override void WriteTo(IEnumerable<FormatChunk> chunks, TextWriter writer, string format)
         {
             WriteToInternal(chunks, writer, format, 0);
         }
@@ -1417,46 +1441,45 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns>System.Int32.</returns>
         [PublicAPI]
-        protected virtual int WriteToInternal(
+        // ReSharper disable once CodeAnnotationAnalyzer
+        protected virtual ushort WriteToInternal(
             [NotNull] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
             [NotNull] string format,
-            int position)
+            ushort position)
         {
-            Contract.Requires(chunks != null);
-            Contract.Requires(writer != null);
-            Contract.Requires(format != null);
-            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
-            IFormatProvider formatProvider = writer.FormatProvider;
-            IControllableTextWriter controller = writer as IControllableTextWriter;
-            if (position < 0) position = 0;
+            ILayoutTextWriter layoutWriter = writer as ILayoutTextWriter;
 
-            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
-            StringBuilder sb = new StringBuilder();
-            foreach (FormatChunk chunk in
-                Align(GetLines(GetLineChunks(chunks, format, formatProvider), position), ref position))
+            ushort writerWidth;
+            bool autoWraps;
+            if (layoutWriter != null)
             {
-                // ReSharper disable once PossibleNullReferenceException
-                if (chunk.IsControl &&
-                    !writeTags)
-                {
-                    if (controller == null) continue;
-
-                    // If we have anything to write out, do so before calling the controller.
-                    if (sb.Length > 0)
-                    {
-                        writer.Write(sb.ToString());
-                        sb.Clear();
-                    }
-
-                    controller.OnControlChunk(chunk, format, formatProvider);
-                }
-                else
-                    sb.Append(chunk.ToString(format, formatProvider));
+                // Get current state from the writer.
+                position = layoutWriter.Position;
+                writerWidth = layoutWriter.Width;
+                autoWraps = layoutWriter.AutoWraps;
+            }
+            else
+            {
+                writerWidth = ushort.MaxValue;
+                autoWraps = false;
             }
 
-            if (sb.Length > 0)
-                writer.Write(sb.ToString());
+            base.WriteToInternal(
+                Align(
+                    GetLines(
+                        GetLineChunks(chunks, format, writer.FormatProvider),
+                        position,
+                        writerWidth),
+                    writerWidth,
+                    autoWraps,
+                    ref position),
+                writer,
+                format);
+
+            if (layoutWriter != null)
+                // Get current position from writer.
+                layoutWriter.Position = position;
 
             return position;
         }
@@ -1485,47 +1508,45 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>Task&lt;System.Int32&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        protected virtual async Task<int> WriteToInternalAsync(
+        // ReSharper disable once CodeAnnotationAnalyzer
+        protected virtual async Task<ushort> WriteToInternalAsync(
             [NotNull] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
             [NotNull] string format,
-            int position)
+            ushort position)
         {
-            Contract.Requires(chunks != null);
-            Contract.Requires(writer != null);
-            Contract.Requires(format != null);
-            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
-            IFormatProvider formatProvider = writer.FormatProvider;
-            IControllableTextWriter controller = writer as IControllableTextWriter;
+            ILayoutTextWriter layoutWriter = writer as ILayoutTextWriter;
 
-            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
-            StringBuilder sb = new StringBuilder();
-            foreach (FormatChunk chunk in
-                Align(GetLines(GetLineChunks(chunks, format, formatProvider), position), ref position))
+            ushort writerWidth;
+            bool autoWraps;
+            if (layoutWriter != null)
             {
-                // ReSharper disable once PossibleNullReferenceException
-                if (chunk.IsControl &&
-                    !writeTags)
-                {
-                    if (controller == null) continue;
-
-                    // If we have anything to write out, do so before calling the controller.
-                    if (sb.Length > 0)
-                    {
-                        // ReSharper disable once PossibleNullReferenceException
-                        await writer.WriteAsync(sb.ToString());
-                        sb.Clear();
-                    }
-
-                    controller.OnControlChunk(chunk, format, formatProvider);
-                }
-                else
-                    sb.Append(chunk.ToString(format, formatProvider));
+                // Get current state from the writer.
+                position = layoutWriter.Position;
+                writerWidth = layoutWriter.Width;
+                autoWraps = layoutWriter.AutoWraps;
+            }
+            else
+            {
+                writerWidth = ushort.MaxValue;
+                autoWraps = false;
             }
 
-            if (sb.Length > 0)
-                // ReSharper disable once PossibleNullReferenceException
-                await writer.WriteAsync(sb.ToString());
+            await base.WriteToInternalAsync(
+                Align(
+                    GetLines(
+                        GetLineChunks(chunks, format, writer.FormatProvider),
+                        position,
+                        writerWidth),
+                    writerWidth,
+                    autoWraps,
+                    ref position),
+                writer,
+                format);
+
+            if (layoutWriter != null)
+                // Get current position from writer.
+                layoutWriter.Position = position;
 
             return position;
         }

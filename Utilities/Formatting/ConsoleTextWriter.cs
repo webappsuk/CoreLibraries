@@ -26,11 +26,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.IO;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -38,7 +38,7 @@ namespace WebApplications.Utilities.Formatting
     /// Implements a <see cref="TextWriter"/> for writing to the <see cref="Console"/>, with write calls synchronized.
     /// </summary>
     [PublicAPI]
-    public class ConsoleTextWriter : LayoutTextWriter, IColoredTextWriter
+    public class ConsoleTextWriter : SynchronizedTextWriter, IColoredTextWriter, ILayoutTextWriter
     {
         /// <summary>
         /// The default <see cref="ConsoleTextWriter"/> (there can be only one).
@@ -76,11 +76,11 @@ namespace WebApplications.Utilities.Formatting
         /// The width of the console.
         /// </value>
         [PublicAPI]
-        public ushort ConsoleWidth
+        public ushort Width
         {
             get
             {
-                if (!ConsoleHelper.IsConsole) return Layout.Width.Value;
+                if (!ConsoleHelper.IsConsole) return 120;
 
                 int width = Console.BufferWidth;
                 return width > ushort.MaxValue
@@ -92,152 +92,39 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SynchronizedTextWriter" /> class.
-        /// </summary>
-        private ConsoleTextWriter()
-            : base(ConsoleHelper.IsConsole
-                ? Console.Out ?? TraceTextWriter.Default
-                : TraceTextWriter.Default)
-        {
-            Update();
-        }
-
-        /// <summary>
-        /// Updates the <see cref="Layout"/>, <see cref="LayoutTextWriter.Position"/> and default colors,
-        /// based on the console's current settings.
-        /// </summary>
-        [PublicAPI]
-        public void Update()
-        {
-            if (!ConsoleHelper.IsConsole)
-            {
-                DefaultForeColor = ConsoleColor.White;
-                DefaultBackColor = ConsoleColor.Black;
-                return;
-            }
-            Context.Invoke(
-                () =>
-                {
-                    // Grab the default colors.
-                    ConsoleColor fc = Console.ForegroundColor;
-                    ConsoleColor bc = Console.BackgroundColor;
-
-                    Console.ResetColor();
-                    DefaultForeColor = Console.ForegroundColor;
-                    DefaultBackColor = Console.BackgroundColor;
-
-                    Console.ForegroundColor = fc;
-                    Console.BackgroundColor = bc;
-
-                    ushort cw = ConsoleWidth;
-                    ushort lw = Layout.Width.Value;
-                    if (cw <= lw)
-                        ApplyLayout(
-                            ConsoleWidth,
-                            wrapMode: LayoutWrapMode.NewLineOnShort);
-                    else if (cw > lw)
-                        ApplyLayout(wrapMode: LayoutWrapMode.NewLine);
-                });
-        }
-
-        /// <summary>
         /// Gets or sets the current horizontal position.
         /// </summary>
         /// <value>The position.</value>
-        public override int Position
+        [PublicAPI]
+        public ushort Position
         {
-            get { return Console.CursorLeft; }
+            get
+            {
+                int position = Console.CursorLeft;
+                return position > ushort.MaxValue
+                    ? ushort.MaxValue
+                    : (position < 1
+                        ? (ushort)1
+                        : (ushort)position);
+            }
             // Ignore position updates.
             set { }
         }
 
         /// <summary>
-        /// Sets the layout.
+        /// Gets a value indicating whether the writer automatically wraps on reaching <see cref="Width" />.
         /// </summary>
-        /// <param name="newLayout">The new layout.</param>
-        /// <returns>An awaitable task that returns the existing layout.</returns>
-        public override Layout ApplyLayout(Layout newLayout)
-        {
-            Contract.Requires(newLayout != null);
-            return ApplyLayout(
-                newLayout.Width,
-                newLayout.IndentSize,
-                newLayout.RightMarginSize,
-                newLayout.IndentChar,
-                newLayout.FirstLineIndentSize,
-                newLayout.TabStops,
-                newLayout.TabSize,
-                newLayout.TabChar,
-                newLayout.Alignment,
-                newLayout.SplitWords,
-                newLayout.Hyphenate,
-                newLayout.HyphenChar,
-                newLayout.WrapMode);
-        }
-
+        /// <value><see langword="true" /> if the writer automatically wraps; otherwise, <see langword="false" />.</value>
+        public bool AutoWraps { get { return true; }}
+        
         /// <summary>
-        /// Applies the layout.
+        /// Initializes a new instance of the <see cref="SynchronizedTextWriter" /> class.
         /// </summary>
-        /// <param name="width">The width.</param>
-        /// <param name="indentSize">Size of the indent.</param>
-        /// <param name="rightMarginSize">Size of the right margin.</param>
-        /// <param name="indentChar">The indent character.</param>
-        /// <param name="firstLineIndentSize">First size of the line indent.</param>
-        /// <param name="tabStops">The tab stops.</param>
-        /// <param name="tabSize">Size of the tab.</param>
-        /// <param name="tabChar">The tab character.</param>
-        /// <param name="alignment">The alignment.</param>
-        /// <param name="splitWords">The split words.</param>
-        /// <param name="hyphenate">The hyphenate.</param>
-        /// <param name="hyphenChar">The hyphen character.</param>
-        /// <param name="wrapMode">The wrap mode.</param>
-        /// <returns>WebApplications.Utilities.Formatting.Layout.</returns>
-        public override Layout ApplyLayout(
-            Optional<ushort> width = new Optional<ushort>(),
-            Optional<byte> indentSize = new Optional<byte>(),
-            Optional<byte> rightMarginSize = new Optional<byte>(),
-            Optional<char> indentChar = new Optional<char>(),
-            Optional<ushort> firstLineIndentSize = new Optional<ushort>(),
-            Optional<IEnumerable<ushort>> tabStops = new Optional<IEnumerable<ushort>>(),
-            Optional<byte> tabSize = new Optional<byte>(),
-            Optional<char> tabChar = new Optional<char>(),
-            Optional<Alignment> alignment = new Optional<Alignment>(),
-            Optional<bool> splitWords = new Optional<bool>(),
-            Optional<bool> hyphenate = new Optional<bool>(),
-            Optional<char> hyphenChar = new Optional<char>(),
-            Optional<LayoutWrapMode> wrapMode = new Optional<LayoutWrapMode>())
+        private ConsoleTextWriter()
+            : base(ConsoleHelper.IsConsole
+                ? Console.Out ?? TraceTextWriter.Default
+                : TraceTextWriter.Default, new SerializingSynchronizationContext())
         {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return Context.Invoke(
-                () =>
-                {
-                    if (width.IsAssigned)
-                    {
-                        ushort cw = ConsoleWidth;
-                        ushort lw = width.Value;
-                        if (cw <= lw)
-                        {
-                            width = cw;
-                            wrapMode = LayoutWrapMode.NewLineOnShort;
-                        }
-                        else if (cw > lw)
-                            wrapMode = LayoutWrapMode.NewLine;
-                    }
-                    return base.ApplyLayout(
-                        width,
-                        indentSize,
-                        rightMarginSize,
-                        indentChar,
-                        firstLineIndentSize,
-                        tabStops,
-                        tabSize,
-                        tabChar,
-                        alignment,
-                        splitWords,
-                        hyphenate,
-                        hyphenChar,
-                        wrapMode);
-                });
         }
 
         /// <summary>
@@ -249,9 +136,9 @@ namespace WebApplications.Utilities.Formatting
                 Context.Invoke(
                     () =>
                     {
-                        Update();
-                        Console.ForegroundColor = DefaultBackColor;
-                        Console.BackgroundColor = DefaultBackColor;
+                        Console.ResetColor();
+                        DefaultForeColor = Console.ForegroundColor;
+                        DefaultBackColor = Console.BackgroundColor;
                     });
         }
 
@@ -264,8 +151,11 @@ namespace WebApplications.Utilities.Formatting
                 Context.Invoke(
                     () =>
                     {
-                        Update();
-                        Console.ForegroundColor = DefaultBackColor;
+                        ConsoleColor bc = Console.BackgroundColor;
+                        Console.ResetColor();
+                        DefaultForeColor = Console.ForegroundColor;
+                        DefaultBackColor = Console.BackgroundColor;
+                        Console.BackgroundColor = bc;
                     });
         }
 
@@ -288,8 +178,11 @@ namespace WebApplications.Utilities.Formatting
                 Context.Invoke(
                     () =>
                     {
-                        Update();
-                        Console.BackgroundColor = DefaultBackColor;
+                        ConsoleColor fc = Console.ForegroundColor;
+                        Console.ResetColor();
+                        DefaultForeColor = Console.ForegroundColor;
+                        DefaultBackColor = Console.BackgroundColor;
+                        Console.ForegroundColor = fc;
                     });
         }
 

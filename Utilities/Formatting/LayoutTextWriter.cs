@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Formatting
     /// This is not inherently thread safe, to make thread safe use a synchronization wrapper.
     /// </remarks>
     [PublicAPI]
-    public class LayoutTextWriter : TextWriter, ISynchronizedTextWriter
+    public class LayoutTextWriter : TextWriter, ISynchronizedTextWriter, ILayoutTextWriter
     {
         /// <summary>
         /// The <see cref="SynchronizationContext">synchronization context</see>.
@@ -64,10 +64,13 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         protected readonly TextWriter Writer;
 
+        [CanBeNull]
+        private readonly ILayoutTextWriter _layoutTextWriter;
+
         /// <summary>
         /// The current horizontal position
         /// </summary>
-        private int _position;
+        private ushort _position;
 
         /// <summary>
         /// The layout builder
@@ -76,20 +79,39 @@ namespace WebApplications.Utilities.Formatting
         private LayoutBuilder _builder;
 
         /// <summary>
+        /// Gets the width of the console.
+        /// </summary>
+        /// <value>The width of the console.</value>
+        public ushort Width
+        {
+            get
+            {
+                return _layoutTextWriter == null ? _builder.InitialLayout.Width.Value : _layoutTextWriter.Width;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the current horizontal position.
         /// </summary>
         /// <value>The position.</value>
         [PublicAPI]
-        public virtual int Position
+        public ushort Position
         {
-            get { return _position; }
+            get { return _layoutTextWriter == null ? _position : _layoutTextWriter.Position; }
             set
             {
+                if (_layoutTextWriter != null) return;
                 if (value < 1) value = 0;
                 if (value == _position) return;
                 _context.Invoke(() => _position = value);
             }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the writer automatically wraps on reaching <see cref="Width" />.
+        /// </summary>
+        /// <value><see langword="true" /> if the writer automatically wraps; otherwise, <see langword="false" />.</value>
+        public bool AutoWraps { get { return _layoutTextWriter != null && _layoutTextWriter.AutoWraps; } }
 
         /// <summary>
         /// Gets the current Layout.
@@ -111,11 +133,12 @@ namespace WebApplications.Utilities.Formatting
         public LayoutTextWriter(
             [NotNull] TextWriter writer,
             [CanBeNull] Layout defaultLayout = null,
-            int startPosition = 0)
+            ushort startPosition = 0)
             : base(writer.FormatProvider)
         {
             Contract.Requires(writer != null);
             Writer = writer;
+            _layoutTextWriter = writer as ILayoutTextWriter;
             Position = startPosition;
             _builder = new LayoutBuilder(defaultLayout);
 
@@ -156,7 +179,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
-            int startPosition = 0)
+            ushort startPosition = 0)
             : base(writer.FormatProvider)
         {
             Contract.Requires(writer != null);
