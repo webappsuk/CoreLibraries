@@ -122,7 +122,7 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
-        [Timeout(1000)]
+        [Timeout(60000)]
         public void TestThreadSafetyNestedLayout()
         {
             const ushort width = 80;
@@ -133,7 +133,7 @@ namespace WebApplications.Utilities.Test.Formatting
                     Stopwatch watch = Stopwatch.StartNew();
                     Parallel.For(
                         0,
-                        1000,
+                        100,
                         new ParallelOptions() { MaxDegreeOfParallelism = 8 },
                         i => new FormatBuilder(width, alignment: Alignment.Justify)
                             .AppendFormat(FormatResources.ButIMustExplain, i)

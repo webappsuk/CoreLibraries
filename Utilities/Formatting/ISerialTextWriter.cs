@@ -41,6 +41,15 @@ namespace WebApplications.Utilities.Formatting
         /// The serializing synchronization context.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         SerializingSynchronizationContext Context { get; }
+
+        /// <summary>
+        /// Gets the un-serialized underlying writer, which should only be used if you have already synchronized using the <see cref="Context"/>.
+        /// </summary>
+        /// <value>The writer.</value>
+        [NotNull]
+        [PublicAPI]
+        TextWriter Writer { get; }
     }
 }

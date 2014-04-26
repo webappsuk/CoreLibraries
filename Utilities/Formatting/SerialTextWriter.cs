@@ -50,7 +50,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [NotNull]
         [PublicAPI]
-        protected readonly TextWriter Writer;
+        private readonly TextWriter _writer;
 
         /// <summary>
         /// The synchronization context.
@@ -66,18 +66,32 @@ namespace WebApplications.Utilities.Formatting
             : base(writer.FormatProvider)
         {
             Contract.Requires(writer != null);
-            Writer = writer;
-            
             // Sanity check, we shouldn't normally create a serial text writer on a serialized text writer,
             // but it can happen (for example when initializing ConsoleTextWriter to use TraceTextWriter).
             ISerialTextWriter stw = writer as ISerialTextWriter;
-            _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
+            if (stw != null)
+            {
+                // Use the underlying writer and context from the original serialized writer.
+                _writer = stw.Writer;
+                _context = stw.Context;
+            }
+            else
+            {
+                // This writer needs a new serializing context.
+                _writer = writer;
+                _context = new SerializingSynchronizationContext();
+            }
         }
+
+        /// <summary>
+        /// Gets the un-serialized underlying writer, which should only be used if you have already synchronized using the <see cref="Context" />.
+        /// </summary>
+        /// <value>The writer.</value>
+        public TextWriter Writer { get { return _writer; }}
 
         /// <summary>
         /// The synchronization context.
         /// </summary>
-        [NotNull]
         public SerializingSynchronizationContext Context
         {
             get { return _context; }
@@ -90,7 +104,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>The character encoding in which the output is written.</returns>
         public override Encoding Encoding
         {
-            get { return Writer.Encoding; }
+            get { return _writer.Encoding; }
         }
 
         /// <summary>
@@ -100,7 +114,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>An <see cref="T:System.IFormatProvider" /> object for a specific culture, or the formatting of the current culture if no other culture is specified.</returns>
         public override IFormatProvider FormatProvider
         {
-            get { return Writer.FormatProvider; }
+            get { return _writer.FormatProvider; }
         }
 
         /// <summary>
@@ -110,8 +124,8 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>The line terminator string for the current TextWriter.</returns>
         public override String NewLine
         {
-            get { return Writer.NewLine; }
-            set { Context.Invoke(() => Writer.NewLine = value); }
+            get { return _writer.NewLine; }
+            set { Context.Invoke(() => _writer.NewLine = value); }
         }
 
 
@@ -121,7 +135,7 @@ namespace WebApplications.Utilities.Formatting
         public override void Close()
         {
             // So that any overriden Close() gets run
-            Context.Invoke(Writer.Close);
+            Context.Invoke(_writer.Close);
         }
 
         /// <summary>
@@ -132,7 +146,7 @@ namespace WebApplications.Utilities.Formatting
         {
             // Explicitly pick up a potentially methodimpl'ed Dispose
             if (disposing)
-                Context.Invoke(((IDisposable)Writer).Dispose);
+                Context.Invoke(((IDisposable)_writer).Dispose);
         }
 
         /// <summary>
@@ -140,7 +154,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         public override void Flush()
         {
-            Context.Invoke(Writer.Flush);
+            Context.Invoke(_writer.Flush);
         }
 
         /// <summary>
@@ -149,7 +163,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The character to write to the text stream.</param>
         public override void Write(char value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -158,7 +172,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="buffer">The character array to write to the text stream.</param>
         public override void Write(char[] buffer)
         {
-            Context.Invoke(() => Writer.Write(buffer));
+            Context.Invoke(() => _writer.Write(buffer));
         }
 
         /// <summary>
@@ -172,7 +186,7 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         public override void Write(char[] buffer, int index, int count)
         {
-            Context.Invoke(() => Writer.Write(buffer, index, count));
+            Context.Invoke(() => _writer.Write(buffer, index, count));
         }
 
         /// <summary>
@@ -181,7 +195,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The Boolean value to write.</param>
         public override void Write(bool value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -190,7 +204,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 4-byte signed integer to write.</param>
         public override void Write(int value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -199,7 +213,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(uint value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -208,7 +222,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public override void Write(long value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -217,7 +231,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 8-byte unsigned integer to write.</param>
         public override void Write(ulong value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -226,7 +240,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 4-byte floating-point value to write.</param>
         public override void Write(float value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -235,7 +249,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 8-byte floating-point value to write.</param>
         public override void Write(double value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -244,7 +258,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The decimal value to write.</param>
         public override void Write(Decimal value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -253,7 +267,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The string to write.</param>
         public override void Write(String value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -262,7 +276,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The object to write.</param>
         public override void Write(Object value)
         {
-            Context.Invoke(() => Writer.Write(value));
+            Context.Invoke(() => _writer.Write(value));
         }
 
         /// <summary>
@@ -272,7 +286,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The object to format and write.</param>
         public override void Write(String format, Object arg0)
         {
-            Context.Invoke(() => Writer.Write(format, arg0));
+            Context.Invoke(() => _writer.Write(format, arg0));
         }
 
         /// <summary>
@@ -283,7 +297,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg1">The second object to format and write.</param>
         public override void Write(String format, Object arg0, Object arg1)
         {
-            Context.Invoke(() => Writer.Write(format, arg0, arg1));
+            Context.Invoke(() => _writer.Write(format, arg0, arg1));
         }
 
         /// <summary>
@@ -295,7 +309,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg2">The third object to format and write.</param>
         public override void Write(String format, Object arg0, Object arg1, Object arg2)
         {
-            Context.Invoke(() => Writer.Write(format, arg0, arg1, arg2));
+            Context.Invoke(() => _writer.Write(format, arg0, arg1, arg2));
         }
 
         /// <summary>
@@ -305,7 +319,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg">An object array that contains zero or more objects to format and write.</param>
         public override void Write(String format, params Object[] arg)
         {
-            Context.Invoke(() => Writer.Write(format, arg));
+            Context.Invoke(() => _writer.Write(format, arg));
         }
 
         /// <summary>
@@ -313,7 +327,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         public override void WriteLine()
         {
-            Context.Invoke(() => Writer.WriteLine());
+            Context.Invoke(() => _writer.WriteLine());
         }
 
         /// <summary>
@@ -322,7 +336,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The character to write to the text stream.</param>
         public override void WriteLine(char value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -331,7 +345,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The decimal value to write.</param>
         public override void WriteLine(decimal value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -340,7 +354,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="buffer">The character array from which data is read.</param>
         public override void WriteLine(char[] buffer)
         {
-            Context.Invoke(() => Writer.WriteLine(buffer));
+            Context.Invoke(() => _writer.WriteLine(buffer));
         }
 
         /// <summary>
@@ -351,7 +365,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="count">The maximum number of characters to write.</param>
         public override void WriteLine(char[] buffer, int index, int count)
         {
-            Context.Invoke(() => Writer.WriteLine(buffer, index, count));
+            Context.Invoke(() => _writer.WriteLine(buffer, index, count));
         }
 
         /// <summary>
@@ -360,7 +374,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The Boolean value to write.</param>
         public override void WriteLine(bool value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -369,7 +383,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 4-byte signed integer to write.</param>
         public override void WriteLine(int value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -378,7 +392,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 4-byte unsigned integer to write.</param>
         public override void WriteLine(uint value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -387,7 +401,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 8-byte signed integer to write.</param>
         public override void WriteLine(long value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -396,7 +410,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 8-byte unsigned integer to write.</param>
         public override void WriteLine(ulong value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -405,7 +419,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 4-byte floating-point value to write.</param>
         public override void WriteLine(float value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -414,7 +428,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The 8-byte floating-point value to write.</param>
         public override void WriteLine(double value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -423,7 +437,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The string to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
         public override void WriteLine(String value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -432,7 +446,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The object to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
         public override void WriteLine(Object value)
         {
-            Context.Invoke(() => Writer.WriteLine(value));
+            Context.Invoke(() => _writer.WriteLine(value));
         }
 
         /// <summary>
@@ -442,7 +456,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The object to format and write.</param>
         public override void WriteLine(String format, Object arg0)
         {
-            Context.Invoke(() => Writer.WriteLine(format, arg0));
+            Context.Invoke(() => _writer.WriteLine(format, arg0));
         }
 
         /// <summary>
@@ -453,7 +467,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg1">The second object to format and write.</param>
         public override void WriteLine(String format, Object arg0, Object arg1)
         {
-            Context.Invoke(() => Writer.WriteLine(format, arg0, arg1));
+            Context.Invoke(() => _writer.WriteLine(format, arg0, arg1));
         }
 
         /// <summary>
@@ -465,7 +479,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg2">The third object to format and write.</param>
         public override void WriteLine(String format, Object arg0, Object arg1, Object arg2)
         {
-            Context.Invoke(() => Writer.WriteLine(format, arg0, arg1, arg2));
+            Context.Invoke(() => _writer.WriteLine(format, arg0, arg1, arg2));
         }
 
         /// <summary>
@@ -475,7 +489,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg">An object array that contains zero or more objects to format and write.</param>
         public override void WriteLine(String format, params Object[] arg)
         {
-            Context.Invoke(() => Writer.WriteLine(format, arg));
+            Context.Invoke(() => _writer.WriteLine(format, arg));
         }
 
         //

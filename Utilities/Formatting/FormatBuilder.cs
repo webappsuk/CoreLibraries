@@ -2165,189 +2165,6 @@ namespace WebApplications.Utilities.Formatting
         }
         #endregion
 
-        #region WriteToAsync Overloads
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="position">The start position.</param>
-        /// <returns>And awaitable <see cref="Task"/> that returns the end position.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<ushort> WriteToAsync([CanBeNull] TextWriter writer, ushort position = 0)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return writer == null
-                ? Task.FromResult(position)
-                : WriteToAsync(_chunks, writer, "G", position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>And awaitable <see cref="Task" /> that returns the end position.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<ushort> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] params object[] values)
-        {
-            if (writer == null) return TaskResult<ushort>.Default;
-            if (format == null)
-                format = "G";
-            return WriteToAsync(
-                values != null && values.Length > 0
-                    ? Resolve(_chunks, values)
-                    : _chunks,
-                writer,
-                format,
-                0);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="position">The start position.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>And awaitable <see cref="Task"/> that returns the end position.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<ushort> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            ushort position,
-            [CanBeNull] string format,
-            [CanBeNull] params object[] values)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            if (format == null)
-                format = "G";
-            return WriteToAsync(
-                values != null && values.Length > 0
-                    ? Resolve(_chunks, values)
-                    : _chunks,
-                writer,
-                format,
-                position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>And awaitable <see cref="Task" /> that returns the end position.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<ushort> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
-        {
-            if (writer == null) return TaskResult<ushort>.Default;
-            if (format == null)
-                format = "G";
-            return WriteToAsync(
-                values != null && values.Count > 0
-                    ? Resolve(_chunks, values)
-                    : _chunks,
-                writer,
-                format,
-                0);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="position">The start position.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>And awaitable <see cref="Task" /> that returns the end position.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<ushort> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            ushort position,
-            [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            if (format == null)
-                format = "G";
-            return WriteToAsync(
-                values != null && values.Count > 0
-                    ? Resolve(_chunks, values)
-                    : _chunks,
-                writer,
-                format,
-                position);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="resolver">The resolver.</param>
-        /// <returns>And awaitable <see cref="Task" /> that returns the end position.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<ushort> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            [CanBeNull] string format,
-            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
-        {
-            if (writer == null) return TaskResult<ushort>.Default;
-            if (format == null)
-                format = "G";
-            return WriteToAsync(
-                resolver != null
-                    ? Resolve(_chunks, resolver)
-                    : _chunks,
-                writer,
-                format,
-                0);
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="position">The start position.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="resolver">The resolver.</param>
-        /// <returns>And awaitable <see cref="Task" /> that returns the end position.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Task<ushort> WriteToAsync(
-            [CanBeNull] TextWriter writer,
-            ushort position,
-            [CanBeNull] string format,
-            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
-        {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            if (format == null)
-                format = "G";
-            return WriteToAsync(
-                resolver != null
-                    ? Resolve(_chunks, resolver)
-                    : _chunks,
-                writer,
-                format,
-                position);
-        }
-        #endregion
-
         #region Synchronization wrappers
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
@@ -2370,33 +2187,7 @@ namespace WebApplications.Utilities.Formatting
             ISerialTextWriter serialTextWriter = writer as ISerialTextWriter;
             return serialTextWriter == null
                 ? DoWrite(chunks, writer, format, position)
-                : serialTextWriter.Context.Invoke(() => DoWrite(chunks, writer, format, position));
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="chunks">The chunks.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="position">The position.</param>
-        /// <returns>Task&lt;System.UInt16&gt;.</returns>
-        [NotNull]
-        [PublicAPI]
-        private async Task<ushort> WriteToAsync(
-            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
-            [NotNull] TextWriter writer,
-            [NotNull] string format,
-            ushort position)
-        {
-            Contract.Requires(chunks != null);
-            Contract.Requires(writer != null);
-            Contract.Requires(format != null);
-            ISerialTextWriter serialTextWriter = writer as ISerialTextWriter;
-            return serialTextWriter == null
-                ? await DoWriteAsync(chunks, writer, format, position)
-                // Note we run synchronous code if we're synchronized!
-                : serialTextWriter.Context.Invoke(() => DoWrite(chunks, writer, format, position));
+                : serialTextWriter.Context.Invoke(() => DoWrite(chunks, serialTextWriter.Writer, format, position));
         }
         #endregion
 
@@ -2418,6 +2209,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(chunks != null);
             Contract.Requires(writer != null);
             Contract.Requires(format != null);
+            
             bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
             IFormatProvider formatProvider = writer.FormatProvider;
             IControllableTextWriter controller = writer as IControllableTextWriter;
@@ -2441,13 +2233,13 @@ namespace WebApplications.Utilities.Formatting
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
             foreach (FormatChunk chunk in Align(
-                GetLines(
-                    GetLineChunks(chunks, format, writer.FormatProvider),
-                    position,
-                    writerWidth),
-                writerWidth,
-                autoWraps,
-                ref position))
+                    GetLines(
+                        GetLineChunks(chunks, format, writer.FormatProvider),
+                        position,
+                        writerWidth),
+                    writerWidth,
+                    autoWraps,
+                    ref position))
                 // ReSharper disable once PossibleNullReferenceException
                 if (chunk.IsControl &&
                     !writeTags)
@@ -2468,86 +2260,6 @@ namespace WebApplications.Utilities.Formatting
 
             if (sb.Length > 0)
                 writer.Write(sb.ToString());
-
-            if (layoutWriter != null)
-                // Get current position from writer.
-                layoutWriter.Position = position;
-
-            return position;
-        }
-
-        /// <summary>
-        /// Writes the builder to the specified <see cref="TextWriter" />.
-        /// </summary>
-        /// <param name="chunks">The chunks.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="position">The position.</param>
-        /// <returns>Task&lt;System.UInt16&gt;.</returns>
-        [NotNull]
-        [PublicAPI]
-        private async Task<ushort> DoWriteAsync(
-            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
-            [NotNull] TextWriter writer,
-            [NotNull] string format,
-            ushort position)
-        {
-            Contract.Requires(chunks != null);
-            Contract.Requires(writer != null);
-            Contract.Requires(format != null);
-            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
-            IFormatProvider formatProvider = writer.FormatProvider;
-            IControllableTextWriter controller = writer as IControllableTextWriter;
-            ILayoutTextWriter layoutWriter = writer as ILayoutTextWriter;
-
-            ushort writerWidth;
-            bool autoWraps;
-            if (layoutWriter != null)
-            {
-                // Get current state from the writer.
-                position = layoutWriter.Position;
-                writerWidth = layoutWriter.Width;
-                autoWraps = layoutWriter.AutoWraps;
-            }
-            else
-            {
-                writerWidth = ushort.MaxValue;
-                autoWraps = false;
-            }
-
-            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
-            StringBuilder sb = new StringBuilder();
-            foreach (FormatChunk chunk in Align(
-                GetLines(
-                    GetLineChunks(chunks, format, writer.FormatProvider),
-                    position,
-                    writerWidth),
-                writerWidth,
-                autoWraps,
-                ref position))
-                // ReSharper disable once PossibleNullReferenceException
-                if (chunk.IsControl &&
-                    !writeTags)
-                {
-                    if (controller == null) continue;
-
-                    // If we have anything to write out, do so before calling the controller.
-                    if (sb.Length > 0)
-                    {
-                        // ReSharper disable PossibleNullReferenceException
-                        await writer.WriteAsync(sb.ToString());
-                        // ReSharper restore PossibleNullReferenceException
-                        sb.Clear();
-                    }
-
-                    controller.OnControlChunk(chunk, format, formatProvider);
-                }
-                else
-                    sb.Append(chunk.ToString(format, formatProvider));
-
-            if (sb.Length > 0)
-                // ReSharper disable once PossibleNullReferenceException
-                await writer.WriteAsync(sb.ToString());
 
             if (layoutWriter != null)
                 // Get current position from writer.

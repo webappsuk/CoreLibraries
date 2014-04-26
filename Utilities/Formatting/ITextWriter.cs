@@ -31,6 +31,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -364,5 +365,14 @@ namespace WebApplications.Utilities.Formatting
         Task FlushAsync();
 
         void Dispose();
+
+        /// <summary>
+        /// Writes a line terminator asynchronously to the text string or stream.
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous write operation.
+        /// </returns>
+        [NotNull]
+        Task WriteLineAsync();
     }
 }

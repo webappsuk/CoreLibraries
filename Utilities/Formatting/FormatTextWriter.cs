@@ -30,10 +30,8 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -44,39 +42,13 @@ namespace WebApplications.Utilities.Formatting
     /// This is not inherently thread safe, to make thread safe use a synchronization wrapper.
     /// </remarks>
     [PublicAPI]
-    public sealed class FormatTextWriter : TextWriter, ISerialTextWriter, ILayoutTextWriter
+    public sealed class FormatTextWriter : SerialTextWriter, ILayoutTextWriter
     {
-        /// <summary>
-        /// The <see cref="SynchronizationContext">synchronization context</see>.
-        /// </summary>
-        [NotNull]
-        private readonly SerializingSynchronizationContext _context;
-
-        /// <summary>
-        /// Gets the <see cref="SynchronizationContext">synchronization context</see>.
-        /// </summary>
-        /// <value>The synchronization context.</value>
-        public SerializingSynchronizationContext Context { get { return _context; } }
-
         /// <summary>
         /// The underlying writer.
         /// </summary>
         [NotNull]
-        private readonly TextWriter _writer;
-
-        [CanBeNull]
-        private readonly ILayoutTextWriter _layoutTextWriter;
-
-        /// <summary>
-        /// The format builder
-        /// </summary>
-        [NotNull]
-        private FormatBuilder _builder;
-
-        /// <summary>
-        /// The current horizontal position
-        /// </summary>
-        private ushort _position;
+        private readonly UnderlyingFormatTextWriter _writer;
 
         /// <summary>
         /// Gets the width of the console.
@@ -84,10 +56,7 @@ namespace WebApplications.Utilities.Formatting
         /// <value>The width of the console.</value>
         public ushort Width
         {
-            get
-            {
-                return _layoutTextWriter == null ? _builder.InitialLayout.Width.Value : _layoutTextWriter.Width;
-            }
+            get { return _writer.Width; }
         }
 
         /// <summary>
@@ -97,29 +66,18 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public ushort Position
         {
-            get { return _layoutTextWriter == null ? _position : _layoutTextWriter.Position; }
-            set
-            {
-                _context.Invoke(
-                    () =>
-                    {
-                        if (_layoutTextWriter != null)
-                        {
-                            _layoutTextWriter.Position = value;
-                            return;
-                        }
-                        if (value < 1) value = 0;
-                        if (value == _position) return;
-                        _position = value;
-                    });
-            }
+            get { return _writer.Position; }
+            set { Context.Invoke(() => _writer.Position = value); }
         }
 
         /// <summary>
         /// Gets a value indicating whether the writer automatically wraps on reaching <see cref="Width" />.
         /// </summary>
         /// <value><see langword="true" /> if the writer automatically wraps; otherwise, <see langword="false" />.</value>
-        public bool AutoWraps { get { return _layoutTextWriter != null && _layoutTextWriter.AutoWraps; } }
+        public bool AutoWraps
+        {
+            get { return _writer.AutoWraps; }
+        }
 
         /// <summary>
         /// Gets the current Layout.
@@ -129,7 +87,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         public Layout Layout
         {
-            get { return _builder.InitialLayout; }
+            get { return _writer.Builder.InitialLayout; }
         }
 
         #region Constructors
@@ -138,19 +96,14 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The out writer.</param>
         /// <param name="startPosition">The starting horizontal position.</param>
+        /// <exception cref="System.InvalidOperationException">Cannot wrap an ILayoutTextWriter in a FormatTextWriter as this can cause issues with position tracking.</exception>
         public FormatTextWriter(
             [NotNull] TextWriter writer,
             ushort startPosition = 0)
-            : base(writer.FormatProvider)
+            : base(new UnderlyingFormatTextWriter(writer, new FormatBuilder(), startPosition))
         {
             Contract.Requires(writer != null);
-            _writer = writer;
-            ISerialTextWriter stw = writer as ISerialTextWriter;
-            _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
-            _layoutTextWriter = writer as ILayoutTextWriter;
-            if (_layoutTextWriter == null)
-                Position = startPosition;
-            _builder = new FormatBuilder();
+            _writer = (UnderlyingFormatTextWriter) Writer;
         }
 
         /// <summary>
@@ -163,16 +116,10 @@ namespace WebApplications.Utilities.Formatting
             [NotNull] TextWriter writer,
             [CanBeNull] Layout defaultLayout,
             ushort startPosition = 0)
-            : base(writer.FormatProvider)
+            : base(new UnderlyingFormatTextWriter(writer, new FormatBuilder(defaultLayout), startPosition))
         {
             Contract.Requires(writer != null);
-            _writer = writer;
-            ISerialTextWriter stw = writer as ISerialTextWriter;
-            _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
-            _layoutTextWriter = writer as ILayoutTextWriter;
-            if (_layoutTextWriter == null)
-                Position = startPosition;
-            _builder = new FormatBuilder(defaultLayout);
+            _writer = (UnderlyingFormatTextWriter) Writer;
         }
 
         /// <summary>
@@ -209,29 +156,26 @@ namespace WebApplications.Utilities.Formatting
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
             ushort startPosition = 0)
-            : base(writer.FormatProvider)
+            : base(new UnderlyingFormatTextWriter(
+                       writer,
+                       new FormatBuilder(
+                           width,
+                           indentSize,
+                           rightMarginSize,
+                           indentChar,
+                           firstLineIndentSize,
+                           tabStops,
+                           tabSize,
+                           tabChar,
+                           alignment,
+                           splitWords,
+                           hyphenate,
+                           hyphenChar,
+                           wrapMode),
+                       startPosition))
         {
             Contract.Requires(writer != null);
-            _writer = writer;
-            ISerialTextWriter stw = writer as ISerialTextWriter;
-            _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
-            _layoutTextWriter = writer as ILayoutTextWriter;
-            if (_layoutTextWriter == null)
-                Position = startPosition;
-            _builder = new FormatBuilder(
-                width,
-                indentSize,
-                rightMarginSize,
-                indentChar,
-                firstLineIndentSize,
-                tabStops,
-                tabSize,
-                tabChar,
-                alignment,
-                splitWords,
-                hyphenate,
-                hyphenChar,
-                wrapMode);
+            _writer = (UnderlyingFormatTextWriter) Writer;
         }
         #endregion
 
@@ -244,15 +188,15 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         public Layout ApplyLayout([CanBeNull] Layout newLayout)
         {
-            if (newLayout == null) return _builder.InitialLayout;
+            if (newLayout == null) return _writer.Builder.InitialLayout;
             // ReSharper disable once AssignNullToNotNullAttribute
-            return _context.Invoke(
+            return Context.Invoke(
                 () =>
                 {
-                    if (newLayout == _builder.InitialLayout) return newLayout;
+                    if (newLayout == _writer.Builder.InitialLayout) return newLayout;
 
-                    Layout existing = _builder.InitialLayout;
-                    _builder = new FormatBuilder(existing.Apply(newLayout));
+                    Layout existing = _writer.Builder.InitialLayout;
+                    _writer.Builder = new FormatBuilder(existing.Apply(newLayout));
                     return existing;
                 });
         }
@@ -304,14 +248,14 @@ namespace WebApplications.Utilities.Formatting
                 !hyphenate.IsAssigned &&
                 !hyphenChar.IsAssigned &&
                 !wrapMode.IsAssigned)
-                return _builder.InitialLayout;
+                return _writer.Builder.InitialLayout;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            return _context.Invoke(
+            return Context.Invoke(
                 () =>
                 {
-                    Layout existing = _builder.InitialLayout;
-                    _builder =
+                    Layout existing = _writer.Builder.InitialLayout;
+                    _writer.Builder =
                         new FormatBuilder(
                             existing.Apply(
                                 width,
@@ -332,852 +276,705 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Gets the encoding.
+        /// Wraps a <see cref="TextWriter"/>, providing position tracking and synchronized writing with a <see cref="Layout"/>.
         /// </summary>
-        /// <value>The encoding.</value>
-        public override Encoding Encoding
+        /// <remarks>
+        /// This is not inherently thread safe, to make thread safe use a synchronization wrapper.
+        /// </remarks>
+        [PublicAPI]
+        private sealed class UnderlyingFormatTextWriter : TextWriter, ILayoutTextWriter
         {
-            get { return _writer.Encoding; }
-        }
+            /// <summary>
+            /// The underlying writer
+            /// </summary>
+            [NotNull]
+            private readonly TextWriter _writer;
 
-        /// <summary>
-        /// Gets an object that controls formatting.
-        /// </summary>
-        /// <returns>An <see cref="T:System.IFormatProvider" /> object for a specific culture, or the formatting of the current culture if no other culture is specified.</returns>
-        public override IFormatProvider FormatProvider
-        {
-            get { return _writer.FormatProvider; }
-        }
+            /// <summary>
+            /// The builder
+            /// </summary>
+            [NotNull]
+            public FormatBuilder Builder;
 
-        /// <summary>
-        /// Gets or sets the line terminator string used by the current TextWriter.
-        /// </summary>
-        /// <returns>The line terminator string for the current TextWriter.</returns>
-        public override string NewLine
-        {
-            get { return _writer.NewLine; }
-            set
+            /// <summary>
+            /// Gets the width of the console.
+            /// </summary>
+            /// <value>The width of the console.</value>
+            public ushort Width
             {
-                Contract.Requires(value != null);
-                if (_writer.NewLine == value) return;
-
-                _context.Invoke(() => _writer.NewLine = value);
+                get { return Builder.InitialLayout.Width.Value; }
             }
-        }
 
-        /// <summary>
-        /// Flushes this instance.
-        /// </summary>
-        public override void Flush()
-        {
-            _context.Invoke(_writer.Flush);
-        }
+            /// <summary>
+            /// Gets or sets the current horizontal position.
+            /// </summary>
+            /// <value>The position.</value>
+            public ushort Position { get; set; }
 
-        /// <summary>
-        /// Asynchronously clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
-        /// </summary>
-        /// <returns>
-        /// A task that represents the asynchronous flush operation.
-        /// </returns>
-        [NotNull]
-        public override Task FlushAsync()
-        {
-            // We run everything synchronously, as we're synchronized!
-            _context.Invoke(_writer.Flush);
-            return TaskResult.Completed;
-        }
+            /// <summary>
+            /// Gets a value indicating whether the writer automatically wraps on reaching <see cref="Width" />.
+            /// </summary>
+            /// <value><see langword="true" /> if the writer automatically wraps; otherwise, <see langword="false" />.</value>
+            public bool AutoWraps
+            {
+                get { return false; }
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(bool value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
+            /// <summary>
+            /// Initializes a new instance of the <see cref="UnderlyingFormatTextWriter" /> class.
+            /// </summary>
+            /// <param name="writer">The writer.</param>
+            /// <param name="builder">The builder.</param>
+            /// <param name="startPosition">The start position.</param>
+            /// <exception cref="System.InvalidOperationException">Cannot wrap an ILayoutTextWriter in a FormatTextWriter as this can cause issues with position tracking.</exception>
+            public UnderlyingFormatTextWriter(
+                [NotNull] TextWriter writer,
+                [NotNull] FormatBuilder builder,
+                ushort startPosition)
+            {
+                Contract.Requires(writer != null);
+                Contract.Requires(builder != null);
+                if (writer is ILayoutTextWriter)
+                    throw new InvalidOperationException(
+                        "Cannot wrap an ILayoutTextWriter in a FormatTextWriter as this can cause issues with position tracking.");
+                _writer = writer;
+                Builder = builder;
+                Position = startPosition;
+            }
+
+            /// <summary>
+            /// Gets the encoding.
+            /// </summary>
+            /// <value>The encoding.</value>
+            public override Encoding Encoding
+            {
+                get { return _writer.Encoding; }
+            }
+
+            /// <summary>
+            /// Gets an object that controls formatting.
+            /// </summary>
+            /// <returns>An <see cref="T:System.IFormatProvider" /> object for a specific culture, or the formatting of the current culture if no other culture is specified.</returns>
+            public override IFormatProvider FormatProvider
+            {
+                get { return _writer.FormatProvider; }
+            }
+
+            /// <summary>
+            /// Gets or sets the line terminator string used by the current TextWriter.
+            /// </summary>
+            /// <returns>The line terminator string for the current TextWriter.</returns>
+            public override string NewLine
+            {
+                get { return _writer.NewLine; }
+                set
                 {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+                    Contract.Requires(value != null);
+                    _writer.NewLine = value;
+                }
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(char value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Flushes this instance.
+            /// </summary>
+            public override void Flush()
+            {
+                _writer.Flush();
+            }
 
-        /// <summary>
-        /// Writes the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        public override void Write([CanBeNull] char[] buffer)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(buffer);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Asynchronously clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
+            /// </summary>
+            /// <returns>
+            /// A task that represents the asynchronous flush operation.
+            /// </returns>
+            [NotNull]
+            public override Task FlushAsync()
+            {
+                // We run everything synchronously, as we're synchronized!
+                _writer.Flush();
+                return TaskResult.Completed;
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(decimal value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write(bool value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(double value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write(char value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(float value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified buffer.
+            /// </summary>
+            /// <param name="buffer">The buffer.</param>
+            public override void Write([CanBeNull] char[] buffer)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(buffer);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(int value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write(decimal value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(long value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write(double value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write([CanBeNull] object value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write(float value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write([CanBeNull] string value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormat(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write(int value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(uint value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write(long value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void Write(ulong value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write([CanBeNull] object value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified format.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        public override void Write(string format, [CanBeNull] object arg0)
-        {
-            Contract.Requires(format != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormat(format, arg0);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write([CanBeNull] string value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormat(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified format.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg">The argument.</param>
-        public override void Write(string format, params object[] arg)
-        {
-            Contract.Requires(format != null);
-            Contract.Requires(arg != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormat(format, arg);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write(uint value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified buffer.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="count">The count.</param>
-        public override void Write(char[] buffer, int index, int count)
-        {
-            Contract.Requires(buffer != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(buffer, index, count);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified value.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void Write(ulong value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified format.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        /// <param name="arg1">The arg1.</param>
-        public override void Write(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
-        {
-            Contract.Requires(format != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormat(format, arg0, arg1);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified format.
+            /// </summary>
+            /// <param name="format">The format.</param>
+            /// <param name="arg0">The arg0.</param>
+            public override void Write(string format, [CanBeNull] object arg0)
+            {
+                Contract.Requires(format != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormat(format, arg0);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the specified format.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        /// <param name="arg1">The arg1.</param>
-        /// <param name="arg2">The arg2.</param>
-        public override void Write(
-            string format,
-            [CanBeNull] object arg0,
-            [CanBeNull] object arg1,
-            [CanBeNull] object arg2)
-        {
-            Contract.Requires(format != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormat(format, arg0, arg1, arg2);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified format.
+            /// </summary>
+            /// <param name="format">The format.</param>
+            /// <param name="arg">The argument.</param>
+            public override void Write(string format, params object[] arg)
+            {
+                Contract.Requires(format != null);
+                Contract.Requires(arg != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormat(format, arg);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        public override void WriteLine()
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine();
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified buffer.
+            /// </summary>
+            /// <param name="buffer">The buffer.</param>
+            /// <param name="index">The index.</param>
+            /// <param name="count">The count.</param>
+            public override void Write(char[] buffer, int index, int count)
+            {
+                Contract.Requires(buffer != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(buffer, index, count);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(bool value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified format.
+            /// </summary>
+            /// <param name="format">The format.</param>
+            /// <param name="arg0">The arg0.</param>
+            /// <param name="arg1">The arg1.</param>
+            public override void Write(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
+            {
+                Contract.Requires(format != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormat(format, arg0, arg1);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(char value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the specified format.
+            /// </summary>
+            /// <param name="format">The format.</param>
+            /// <param name="arg0">The arg0.</param>
+            /// <param name="arg1">The arg1.</param>
+            /// <param name="arg2">The arg2.</param>
+            public override void Write(
+                string format,
+                [CanBeNull] object arg0,
+                [CanBeNull] object arg1,
+                [CanBeNull] object arg2)
+            {
+                Contract.Requires(format != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormat(format, arg0, arg1, arg2);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        public override void WriteLine([CanBeNull] char[] buffer)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(buffer);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            public override void WriteLine()
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine();
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(decimal value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine(bool value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(double value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine(char value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(float value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="buffer">The buffer.</param>
+            public override void WriteLine([CanBeNull] char[] buffer)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(buffer);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(int value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine(decimal value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(long value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine(double value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine([CanBeNull] object value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine(float value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine([CanBeNull] string value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormatLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine(int value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(uint value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine(long value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public override void WriteLine(ulong value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine([CanBeNull] object value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        public override void WriteLine(string format, [CanBeNull] object arg0)
-        {
-            Contract.Requires(format != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormatLine(format, arg0);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine([CanBeNull] string value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormatLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg">The argument.</param>
-        public override void WriteLine(string format, params object[] arg)
-        {
-            Contract.Requires(format != null);
-            Contract.Requires(arg != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormatLine(format, arg);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine(uint value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="buffer">The buffer.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="count">The count.</param>
-        public override void WriteLine(char[] buffer, int index, int count)
-        {
-            Contract.Requires(buffer != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(buffer, index, count);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="value">The value.</param>
+            public override void WriteLine(ulong value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        /// <param name="arg1">The arg1.</param>
-        public override void WriteLine(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
-        {
-            Contract.Requires(format != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormatLine(format, arg0, arg1);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="format">The format.</param>
+            /// <param name="arg0">The arg0.</param>
+            public override void WriteLine(string format, [CanBeNull] object arg0)
+            {
+                Contract.Requires(format != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormatLine(format, arg0);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes the line.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg0">The arg0.</param>
-        /// <param name="arg1">The arg1.</param>
-        /// <param name="arg2">The arg2.</param>
-        public override void WriteLine(
-            string format,
-            [CanBeNull] object arg0,
-            [CanBeNull] object arg1,
-            [CanBeNull] object arg2)
-        {
-            Contract.Requires(format != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormatLine(format, arg0, arg1, arg2);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="format">The format.</param>
+            /// <param name="arg">The argument.</param>
+            public override void WriteLine(string format, params object[] arg)
+            {
+                Contract.Requires(format != null);
+                Contract.Requires(arg != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormatLine(format, arg);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes a character to the text string or stream asynchronously.
-        /// </summary>
-        /// <param name="value">The character to write to the text stream.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override Task WriteAsync(char value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-            return TaskResult.Completed;
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="buffer">The buffer.</param>
+            /// <param name="index">The index.</param>
+            /// <param name="count">The count.</param>
+            public override void WriteLine(char[] buffer, int index, int count)
+            {
+                Contract.Requires(buffer != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(buffer, index, count);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes a subarray of characters to the text string or stream asynchronously.
-        /// </summary>
-        /// <param name="buffer">The character array to write data from.</param>
-        /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
-        /// <param name="count">The number of characters to write.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override Task WriteAsync([NotNull] char[] buffer, int index, int count)
-        {
-            Contract.Requires(buffer != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.Append(buffer, index, count);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-            return TaskResult.Completed;
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="format">The format.</param>
+            /// <param name="arg0">The arg0.</param>
+            /// <param name="arg1">The arg1.</param>
+            public override void WriteLine(string format, [CanBeNull] object arg0, [CanBeNull] object arg1)
+            {
+                Contract.Requires(format != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormatLine(format, arg0, arg1);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes a string to the text string or stream asynchronously.
-        /// </summary>
-        /// <param name="value">The string to write. If <paramref name="value" /> is null, nothing is written to the text stream.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override Task WriteAsync([CanBeNull] string value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormat(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-            return TaskResult.Completed;
-        }
+            /// <summary>
+            /// Writes the line.
+            /// </summary>
+            /// <param name="format">The format.</param>
+            /// <param name="arg0">The arg0.</param>
+            /// <param name="arg1">The arg1.</param>
+            /// <param name="arg2">The arg2.</param>
+            public override void WriteLine(
+                string format,
+                [CanBeNull] object arg0,
+                [CanBeNull] object arg1,
+                [CanBeNull] object arg2)
+            {
+                Contract.Requires(format != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormatLine(format, arg0, arg1, arg2);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+            }
 
-        /// <summary>
-        /// Writes a string to the text string or stream asynchronously.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg">The argument.</param>
-        /// <returns>A task that represents the asynchronous write operation.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Task WriteAsync([CanBeNull] string format, [NotNull] params object[] arg)
-        {
-            Contract.Requires(arg != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormat(format, arg);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-            return TaskResult.Completed;
-        }
+            /// <summary>
+            /// Writes a character to the text string or stream asynchronously.
+            /// </summary>
+            /// <param name="value">The character to write to the text stream.</param>
+            /// <returns>
+            /// A task that represents the asynchronous write operation.
+            /// </returns>
+            [NotNull]
+            public override Task WriteAsync(char value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+                return TaskResult.Completed;
+            }
 
-        /// <summary>
-        /// Writes a line terminator asynchronously to the text string or stream.
-        /// </summary>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override Task WriteLineAsync()
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine();
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-            return TaskResult.Completed;
-        }
+            /// <summary>
+            /// Writes a subarray of characters to the text string or stream asynchronously.
+            /// </summary>
+            /// <param name="buffer">The character array to write data from.</param>
+            /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
+            /// <param name="count">The number of characters to write.</param>
+            /// <returns>
+            /// A task that represents the asynchronous write operation.
+            /// </returns>
+            [NotNull]
+            public override Task WriteAsync([NotNull] char[] buffer, int index, int count)
+            {
+                Contract.Requires(buffer != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.Append(buffer, index, count);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+                return TaskResult.Completed;
+            }
 
-        /// <summary>
-        /// Writes a character followed by a line terminator asynchronously to the text string or stream.
-        /// </summary>
-        /// <param name="value">The character to write to the text stream.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override Task WriteLineAsync(char value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-            return TaskResult.Completed;
-        }
+            /// <summary>
+            /// Writes a string to the text string or stream asynchronously.
+            /// </summary>
+            /// <param name="value">The string to write. If <paramref name="value" /> is null, nothing is written to the text stream.</param>
+            /// <returns>
+            /// A task that represents the asynchronous write operation.
+            /// </returns>
+            [NotNull]
+            public override Task WriteAsync([CanBeNull] string value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormat(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+                return TaskResult.Completed;
+            }
 
-        /// <summary>
-        /// Writes a subarray of characters followed by a line terminator asynchronously to the text string or stream.
-        /// </summary>
-        /// <param name="buffer">The character array to write data from.</param>
-        /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
-        /// <param name="count">The number of characters to write.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override Task WriteLineAsync([NotNull] char[] buffer, int index, int count)
-        {
-            Contract.Requires(buffer != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendLine(buffer, index, count);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-            return TaskResult.Completed;
-        }
+            /// <summary>
+            /// Writes a line terminator asynchronously to the text string or stream.
+            /// </summary>
+            /// <returns>
+            /// A task that represents the asynchronous write operation.
+            /// </returns>
+            public override Task WriteLineAsync()
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine();
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+                return TaskResult.Completed;
+            }
 
-        /// <summary>
-        /// Writes a string followed by a line terminator asynchronously to the text string or stream.
-        /// </summary>
-        /// <param name="value">The string to write. If the value is null, only a line terminator is written.</param>
-        /// <returns>
-        /// A task that represents the asynchronous write operation.
-        /// </returns>
-        [NotNull]
-        public override Task WriteLineAsync([CanBeNull] string value)
-        {
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormatLine(value);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-            return TaskResult.Completed;
-        }
+            /// <summary>
+            /// Writes a character followed by a line terminator asynchronously to the text string or stream.
+            /// </summary>
+            /// <param name="value">The character to write to the text stream.</param>
+            /// <returns>
+            /// A task that represents the asynchronous write operation.
+            /// </returns>
+            [NotNull]
+            public override Task WriteLineAsync(char value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+                return TaskResult.Completed;
+            }
 
-        /// <summary>
-        /// Writes a string to the text string or stream asynchronously.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="arg">The argument.</param>
-        /// <returns>A task that represents the asynchronous write operation.</returns>
-        [NotNull]
-        [PublicAPI]
-        public Task WriteLineAsync([CanBeNull] string format, [NotNull] params object[] arg)
-        {
-            Contract.Requires(arg != null);
-            Contract.Assert(_builder.IsEmpty);
-            _context.Invoke(
-                () =>
-                {
-                    _builder.AppendFormatLine(format, arg);
-                    Position = _builder.WriteTo(_writer, Position);
-                    _builder.Clear();
-                });
-            return TaskResult.Completed;
+            /// <summary>
+            /// Writes a subarray of characters followed by a line terminator asynchronously to the text string or stream.
+            /// </summary>
+            /// <param name="buffer">The character array to write data from.</param>
+            /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
+            /// <param name="count">The number of characters to write.</param>
+            /// <returns>
+            /// A task that represents the asynchronous write operation.
+            /// </returns>
+            [NotNull]
+            public override Task WriteLineAsync([NotNull] char[] buffer, int index, int count)
+            {
+                Contract.Requires(buffer != null);
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendLine(buffer, index, count);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+                return TaskResult.Completed;
+            }
+
+            /// <summary>
+            /// Writes a string followed by a line terminator asynchronously to the text string or stream.
+            /// </summary>
+            /// <param name="value">The string to write. If the value is null, only a line terminator is written.</param>
+            /// <returns>
+            /// A task that represents the asynchronous write operation.
+            /// </returns>
+            [NotNull]
+            public override Task WriteLineAsync([CanBeNull] string value)
+            {
+                Contract.Assert(Builder.IsEmpty);
+                Builder.AppendFormatLine(value);
+                Position = Builder.WriteTo(_writer, Position);
+                Builder.Clear();
+                return TaskResult.Completed;
+            }
         }
     }
 }
