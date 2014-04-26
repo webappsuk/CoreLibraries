@@ -2143,8 +2143,7 @@ namespace WebApplications.Utilities.Formatting
             StringBuilder sb = new StringBuilder();
             foreach (FormatChunk chunk in chunks)
             {
-                Contract.Assert(chunk != null);
-
+                // ReSharper disable once PossibleNullReferenceException
                 if (chunk.IsControl &&
                     !writeTags)
                 {
@@ -2213,8 +2212,7 @@ namespace WebApplications.Utilities.Formatting
             StringBuilder sb = new StringBuilder();
             foreach (FormatChunk chunk in chunks)
             {
-                Contract.Assert(chunk != null);
-
+                // ReSharper disable once PossibleNullReferenceException
                 if (chunk.IsControl &&
                     !writeTags)
                 {

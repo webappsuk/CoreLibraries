@@ -39,10 +39,10 @@ namespace WebApplications.Utilities.Formatting
     public class TraceTextWriter : TextWriter
     {
         /// <summary>
-        /// The default
+        /// The default, synchronized, laid out Trace writer.
         /// </summary>
         [NotNull]
-        public static readonly TraceTextWriter Default = new TraceTextWriter();
+        public static readonly LayoutTextWriter Default = new TraceTextWriter().Layout();
 
         /// <summary>
         /// Prevents a default instance of the <see cref="TraceTextWriter"/> class from being created.

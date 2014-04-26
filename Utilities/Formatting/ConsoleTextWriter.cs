@@ -76,20 +76,17 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         static ConsoleTextWriter()
         {
-            if (ConsoleHelper.IsConsole)
+            if (!ConsoleHelper.IsConsole)
             {
-                Default = new ConsoleTextWriter(Console.Out, new SerializingSynchronizationContext());
-
-                // Set the console's default output to use this one.
-                Console.SetOut(Default);
+                Default = new ConsoleTextWriter(TraceTextWriter.Default, TraceTextWriter.Default.Context);
+                return;
             }
-            else
-            {
-                LayoutTextWriter writer = TraceTextWriter.Default.Layout();
-                Default = new ConsoleTextWriter(writer, writer.Context);
-            }
+            
+            Default = new ConsoleTextWriter(Console.Out, new SerializingSynchronizationContext());
+            // Set the console's default output to use this one.
+            Console.SetOut(Default);
         }
-        
+
         /// <summary>
         /// Gets the width of the console.
         /// </summary>

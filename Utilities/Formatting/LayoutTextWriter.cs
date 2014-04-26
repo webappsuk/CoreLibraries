@@ -220,14 +220,13 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>An awaitable task that returns the existing layout.</returns>
         [PublicAPI]
         [NotNull]
-        public virtual Layout ApplyLayout([NotNull] Layout newLayout)
+        public virtual Layout ApplyLayout([CanBeNull] Layout newLayout)
         {
-            Contract.Requires(newLayout != null);
+            if (newLayout == null) return _builder.InitialLayout;
             // ReSharper disable once AssignNullToNotNullAttribute
             return _context.Invoke(
                 () =>
                 {
-                    if (newLayout == null) return _builder.InitialLayout;
                     if (newLayout == _builder.InitialLayout) return newLayout;
 
                     Layout existing = _builder.InitialLayout;
