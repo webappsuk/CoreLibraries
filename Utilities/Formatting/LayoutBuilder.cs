@@ -791,11 +791,23 @@ namespace WebApplications.Utilities.Formatting
                     // Check if justification is finished
                     if (spacers.Count < 1)
                         spacers = null;
+                } 
+                
+                // Add any remaining spacers
+                if ((spacers != null) &&
+                          (spacers.Count > 0))
+                {
+                    lb.Append(indentChar, spacers.Count);
+                    p += spacers.Count;
                 }
 
-                // Add any remaining justification spaces
+                // Calculate our finish position
+                int np = p + indent;
+                position = np < ushort.MaxValue ? (ushort)np : ushort.MaxValue;
+                
                 if (line.Terminated)
                 {
+                    // Wrap the line according to our mode.
                     switch (line.Layout.WrapMode.Value)
                     {
                         case LayoutWrapMode.NewLineOnShort:
@@ -813,19 +825,9 @@ namespace WebApplications.Utilities.Formatting
                                 lb.AppendLine();
                             break;
                     }
+
+                    // Set position to start of line.
                     position = 0;
-                }
-                else if ((spacers != null) &&
-                         (spacers.Count > 0))
-                {
-                    int np = p + indent;
-                    position = np < ushort.MaxValue ? (ushort)np : ushort.MaxValue;
-                    lb.Append(indentChar, spacers.Count);
-                }
-                else
-                {
-                    int np = p + indent;
-                    position = np < ushort.MaxValue ? (ushort)np : ushort.MaxValue;
                 }
 
                 if (lb.Length > 0)

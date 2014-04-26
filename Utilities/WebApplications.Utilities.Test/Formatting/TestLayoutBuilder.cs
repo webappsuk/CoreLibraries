@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
@@ -123,13 +124,12 @@ namespace WebApplications.Utilities.Test.Formatting
                     Assert.AreEqual(9, lw.Position);
                     string result = sw.ToString();
 
-                    // Check maximum line length.
-                    Assert.AreEqual(
-                        width,
-                        result
-                            .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
-                            .Select(l => l.Length)
-                            .Max());
+                    string[] lines = result
+                        .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                    // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
+                    Assert.AreEqual(12501, lines.Length);
+                    Assert.AreEqual(width, lines.Select(l => l.Length).Max());
                 }
             }
         }
@@ -155,13 +155,12 @@ namespace WebApplications.Utilities.Test.Formatting
                     Assert.AreEqual(9, lw.Position);
                     string result = sw.ToString();
 
-                    // Check maximum line length.
-                    Assert.AreEqual(
-                        width,
-                        result
-                            .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
-                            .Select(l => l.Length)
-                            .Max());
+                    string[] lines = result
+                        .Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+
+                    // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
+                    Assert.AreEqual(12501, lines.Length);
+                    Assert.AreEqual(width, lines.Select(l => l.Length).Max());
                 }
             }
         }
