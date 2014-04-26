@@ -138,7 +138,18 @@ namespace WebApplications.Utilities.Formatting
                         : (ushort)position);
             }
             // Ignore position updates.
-            set { }
+            set
+            {
+                if (!ConsoleHelper.IsConsole)
+                {
+                    Context.Invoke(() =>
+                    {
+                        ILayoutTextWriter lw = Writer as ILayoutTextWriter;
+                        if (lw != null)
+                            lw.Position = value;
+                    });
+                }
+            }
         }
 
         /// <summary>

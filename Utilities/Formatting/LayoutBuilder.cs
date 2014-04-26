@@ -307,7 +307,7 @@ namespace WebApplications.Utilities.Formatting
         /// Initializes a new instance of the <see cref="LayoutBuilder" /> class.
         /// </summary>
         /// <param name="layout">The layout.</param>
-        public LayoutBuilder([CanBeNull] Layout layout = null)
+        public LayoutBuilder([CanBeNull] Layout layout)
         {
             InitialLayout = Layout.Default.Apply(layout);
             Contract.Assert(InitialLayout.IsFull);
@@ -331,7 +331,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="wrapMode">The wrap mode.</param>
         /// <param name="?">The ?.</param>
         public LayoutBuilder(
-            Optional<ushort> width,
+            Optional<ushort> width = default(Optional<ushort>),
             Optional<byte> indentSize = default(Optional<byte>),
             Optional<byte> rightMarginSize = default(Optional<byte>),
             Optional<char> indentChar = default(Optional<char>),
@@ -1156,7 +1156,7 @@ namespace WebApplications.Utilities.Formatting
         public ushort WriteTo([CanBeNull] TextWriter writer, ushort position)
         {
             if (writer == null) return position;
-            return WriteToInternal(this, writer, "G", position);
+            return WriteTo(this, writer, "G", position);
         }
 
         /// <summary>
@@ -1177,7 +1177,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return position;
             if (format == null)
                 format = "G";
-            return WriteToInternal(
+            return WriteTo(
                 values != null && values.Length > 0
                     ? Resolve(this, values)
                     : this,
@@ -1208,14 +1208,14 @@ namespace WebApplications.Utilities.Formatting
             {
                 object[] vArray = values.ToArray();
                 if (vArray.Length > 0)
-                    return WriteToInternal(
+                    return WriteTo(
                         Resolve(this, vArray),
                         writer,
                         format,
                         position);
             }
 
-            return WriteToInternal(
+            return WriteTo(
                 this,
                 writer,
                 format,
@@ -1240,7 +1240,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return position;
             if (format == null)
                 format = "G";
-            return WriteToInternal(
+            return WriteTo(
                 values != null && values.Count > 0
                     ? Resolve(this, values)
                     : this,
@@ -1267,7 +1267,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return position;
             if (format == null)
                 format = "G";
-            return WriteToInternal(
+            return WriteTo(
                 resolver != null
                     ? Resolve(this, resolver)
                     : this,
@@ -1289,8 +1289,7 @@ namespace WebApplications.Utilities.Formatting
         public Task<ushort> WriteToAsync([CanBeNull] TextWriter writer, ushort position)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            if (writer == null) return Task.FromResult(position);
-            return WriteToInternalAsync(this, writer, "G", position);
+            return writer == null ? Task.FromResult(position) : WriteToAsync(this, writer, "G", position);
         }
 
         /// <summary>
@@ -1313,7 +1312,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return Task.FromResult(position);
             if (format == null)
                 format = "G";
-            return WriteToInternalAsync(
+            return WriteToAsync(
                 values != null && values.Length > 0
                     ? Resolve(this, values)
                     : this,
@@ -1346,14 +1345,14 @@ namespace WebApplications.Utilities.Formatting
             {
                 object[] vArray = values.ToArray();
                 if (vArray.Length > 0)
-                    return WriteToInternalAsync(
+                    return WriteToAsync(
                         Resolve(this, vArray),
                         writer,
                         format,
                         position);
             }
 
-            return WriteToInternalAsync(
+            return WriteToAsync(
                 this,
                 writer,
                 format,
@@ -1380,7 +1379,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return Task.FromResult(position);
             if (format == null)
                 format = "G";
-            return WriteToInternalAsync(
+            return WriteToAsync(
                 values != null && values.Count > 0
                     ? Resolve(this, values)
                     : this,
@@ -1409,7 +1408,7 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null) return Task.FromResult(position);
             if (format == null)
                 format = "G";
-            return WriteToInternalAsync(
+            return WriteToAsync(
                 resolver != null
                     ? Resolve(this, resolver)
                     : this,
@@ -1429,7 +1428,31 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         protected override void WriteTo(IEnumerable<FormatChunk> chunks, TextWriter writer, string format)
         {
-            WriteToInternal(chunks, writer, format, 0);
+            WriteTo(chunks, writer, format, 0);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>System.UInt16.</returns>
+        [PublicAPI]
+        protected virtual ushort WriteTo(
+            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
+            [NotNull] TextWriter writer,
+            [NotNull] string format,
+            ushort position)
+        {
+            Contract.Requires(chunks != null);
+            Contract.Requires(writer != null);
+            Contract.Requires(format != null);
+            ISynchronizedTextWriter synchronizedTextWriter = writer as ISynchronizedTextWriter;
+            return synchronizedTextWriter == null
+                ? WriteToInternal(chunks, writer, format, position)
+                : synchronizedTextWriter.Context.Invoke(() => WriteToInternal(chunks, writer, format, position));
         }
 
         /// <summary>
@@ -1495,7 +1518,32 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         protected override Task WriteToInternalAsync(IEnumerable<FormatChunk> chunks, TextWriter writer, string format)
         {
-            return WriteToInternalAsync(chunks, writer, format, 0);
+            return WriteToAsync(chunks, writer, format, 0);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="chunks">The chunks.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>Task&lt;System.UInt16&gt;.</returns>
+        [NotNull]
+        [PublicAPI]
+        protected virtual async Task<ushort> WriteToAsync(
+            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
+            [NotNull] TextWriter writer,
+            [NotNull] string format,
+            ushort position)
+        {
+            Contract.Requires(chunks != null);
+            Contract.Requires(writer != null);
+            Contract.Requires(format != null);
+            ISynchronizedTextWriter synchronizedTextWriter = writer as ISynchronizedTextWriter;
+            return synchronizedTextWriter == null
+                ? await WriteToInternalAsync(chunks, writer, format, position)
+                : synchronizedTextWriter.Context.Invoke(() => WriteToInternal(chunks, writer, format, position));
         }
 
         /// <summary>

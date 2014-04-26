@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
@@ -67,7 +69,7 @@ namespace WebApplications.Utilities.Test.Formatting
             builder
                 .AppendLayout(50,
                     firstLineIndentSize: 1,
-                    tabStops: new ushort[] {6, 9, 20, 30, 40})
+                    tabStops: new ushort[] { 6, 9, 20, 30, 40 })
                 .Append("A\tTab Stop\tAnother");
 
             ushort position = 0;
@@ -100,6 +102,68 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestLayoutBuilderToStringValues()
         {
             TestFormatBuilder.TestToStringValues(new LayoutBuilder());
+        }
+
+        [TestMethod]
+        public void TestThreadSafety()
+        {
+            const ushort width = 80;
+            using (StringWriter sw = new StringWriter())
+            {
+                using (LayoutTextWriter lw = new LayoutTextWriter(sw, width, alignment: Alignment.Justify))
+                {
+                    Stopwatch watch = Stopwatch.StartNew();
+                    Parallel.For(
+                        0,
+                        1000,
+                        new ParallelOptions() { MaxDegreeOfParallelism = 8 },
+                        i => lw.Write(FormatResources.ButIMustExplain));
+                    watch.Stop();
+                    Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
+                    Assert.AreEqual(9, lw.Position);
+                    string result = sw.ToString();
+
+                    // Check maximum line length.
+                    Assert.AreEqual(
+                        width,
+                        result
+                            .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
+                            .Select(l => l.Length)
+                            .Max());
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestThreadSafetyNestedLayout()
+        {
+            const ushort width = 80;
+            using (StringWriter sw = new StringWriter())
+            {
+                using (LayoutTextWriter lw = new LayoutTextWriter(sw, width))
+                {
+                    Stopwatch watch = Stopwatch.StartNew();
+                    Parallel.For(
+                        0,
+                        1000,
+                        new ParallelOptions() { MaxDegreeOfParallelism = 8 },
+                        i => new LayoutBuilder(width, alignment: Alignment.Justify)
+                            .AppendFormat(FormatResources.ButIMustExplain, i)
+                            .WriteTo(lw));
+                    watch.Stop();
+                    Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
+                    Assert.AreEqual(9, lw.Position);
+                    string result = sw.ToString();
+
+                    // Check maximum line length.
+                    Assert.AreEqual(
+                        width,
+                        result
+                            .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
+                            .Select(l => l.Length)
+                            .Max());
+                }
+            }
         }
     }
 }

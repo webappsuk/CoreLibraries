@@ -568,24 +568,30 @@ namespace WebApplications.Utilities.Formatting
             {
                 // Creates a string for indicating the positions of margins and tab stops
                 case "l":
-                    if (!IsFull)
-                        return "Cannot show ruler for partial layout";
+                    var layout = this;
+                    bool partial = !layout.IsFull;
+
+                    // If we have a partial layout, apply it to the default layout so we can display it.
+                    if (!partial)
+                        layout = Default.Apply(this);
 
                     char[] cArr = new char[Width.Value];
-                    int rm = Width.Value - 1 - RightMarginSize.Value;
-                    for (int i = 0; i < Width.Value; i++)
+                    int rm = layout.Width.Value - 1 - layout.RightMarginSize.Value;
+                    for (int i = 0; i < layout.Width.Value; i++)
                     {
-                        bool up = (i == FirstLineIndentSize.Value) ||
+                        bool up = (i == layout.FirstLineIndentSize.Value) ||
                                   (i == rm);
-                        cArr[i] = i == IndentSize.Value
+                        cArr[i] = i == layout.IndentSize.Value
                             ? (up ? 'X' : 'V')
                             : (up
                                 ? '^'
-                                : (TabStops.Value != null && TabStops.Value.Contains((ushort)i)
+                                : (layout.TabStops.Value != null && layout.TabStops.Value.Contains((ushort) i)
                                     ? 'L'
                                     : (i % 10 == 0
-                                        ? (char)('0' + (i / 10) % 10)
-                                        : '.')));
+                                        ? (char) ('0' + (i / 10) % 10)
+                                        : (partial
+                                            ? '.'
+                                            : '_'))));
                     }
                     return new string(cArr);
 

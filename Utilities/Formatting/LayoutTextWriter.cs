@@ -100,10 +100,18 @@ namespace WebApplications.Utilities.Formatting
             get { return _layoutTextWriter == null ? _position : _layoutTextWriter.Position; }
             set
             {
-                if (_layoutTextWriter != null) return;
-                if (value < 1) value = 0;
-                if (value == _position) return;
-                _context.Invoke(() => _position = value);
+                _context.Invoke(
+                    () =>
+                    {
+                        if (_layoutTextWriter != null)
+                        {
+                            _layoutTextWriter.Position = value;
+                            return;
+                        }
+                        if (value < 1) value = 0;
+                        if (value == _position) return;
+                        _position = value;
+                    });
             }
         }
 
@@ -132,18 +140,18 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="startPosition">The starting horizontal position.</param>
         public LayoutTextWriter(
             [NotNull] TextWriter writer,
-            [CanBeNull] Layout defaultLayout = null,
+            [CanBeNull] Layout defaultLayout,
             ushort startPosition = 0)
             : base(writer.FormatProvider)
         {
             Contract.Requires(writer != null);
             Writer = writer;
-            _layoutTextWriter = writer as ILayoutTextWriter;
-            Position = startPosition;
-            _builder = new LayoutBuilder(defaultLayout);
-
-            ISynchronizedTextWriter stw = Writer as ISynchronizedTextWriter;
+            ISynchronizedTextWriter stw = writer as ISynchronizedTextWriter;
             _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
+            _layoutTextWriter = writer as ILayoutTextWriter;
+            if (_layoutTextWriter == null)
+                Position = startPosition;
+            _builder = new LayoutBuilder(defaultLayout);
         }
 
         /// <summary>
@@ -166,7 +174,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="startPosition">The starting horizontal position.</param>
         public LayoutTextWriter(
             [NotNull] TextWriter writer,
-            Optional<ushort> width,
+            Optional<ushort> width = default(Optional<ushort>),
             Optional<byte> indentSize = default(Optional<byte>),
             Optional<byte> rightMarginSize = default(Optional<byte>),
             Optional<char> indentChar = default(Optional<char>),
@@ -184,7 +192,11 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(writer != null);
             Writer = writer;
-            Position = startPosition;
+            ISynchronizedTextWriter stw = writer as ISynchronizedTextWriter;
+            _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
+            _layoutTextWriter = writer as ILayoutTextWriter;
+            if (_layoutTextWriter == null)
+                Position = startPosition;
             _builder = new LayoutBuilder(
                 width,
                 indentSize,
@@ -199,9 +211,6 @@ namespace WebApplications.Utilities.Formatting
                 hyphenate,
                 hyphenChar,
                 wrapMode);
-
-            ISynchronizedTextWriter stw = Writer as ISynchronizedTextWriter;
-            _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
         }
 
         /// <summary>
