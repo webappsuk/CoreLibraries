@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [NotNull]
         public static readonly Layout Default = new Layout(
-            120,
+            ushort.MaxValue,
             0,
             0,
             ' ',
@@ -588,7 +588,9 @@ namespace WebApplications.Utilities.Formatting
                                 : (layout.TabStops.Value != null && layout.TabStops.Value.Contains((ushort) i)
                                     ? 'L'
                                     : (i % 10 == 0
-                                        ? (char) ('0' + (i / 10) % 10)
+                                        ? (char) ('0' + (i % 100 == 0
+                                            ? (i / 100)
+                                            : (i / 10)) % 10)
                                         : (partial
                                             ? '.'
                                             : '_'))));

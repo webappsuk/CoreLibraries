@@ -27,34 +27,20 @@
 
 using System.IO;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
-    /// Indicates a <see cref="TextWriter"/> provides positional information for a <see cref="LayoutBuilder"/>.
+    /// Indicates the <see cref="TextWriter"/> is synchronized with a <see cref="SerializingSynchronizationContext"/>, making it easier to group multiple writes in
+    /// a block that won't be interrupted from another thread.
     /// </summary>
-    public interface ILayoutTextWriter : ITextWriter
+    public interface ISerialTextWriter : ITextWriter
     {
         /// <summary>
-        /// Gets the width of the console.
+        /// The serializing synchronization context.
         /// </summary>
-        /// <value>
-        /// The width of the console.
-        /// </value>
-        [PublicAPI]
-        ushort Width { get; }
-
-        /// <summary>
-        /// Gets or sets the current horizontal position.
-        /// </summary>
-        /// <value>The position.</value>
-        [PublicAPI]
-        ushort Position { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the writer automatically wraps on reaching <see cref="Width"/>.
-        /// </summary>
-        /// <value><see langword="true" /> if the writer automatically wraps; otherwise, <see langword="false" />.</value>
-        bool AutoWraps { get; }
+        [NotNull]
+        SerializingSynchronizationContext Context { get; }
     }
 }

@@ -33,16 +33,17 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
-    /// Implements a <see cref="TextWriter"/> for tracing.
+    /// Implements a <see cref="TextWriter"/> for tracing.  You cannot get an instance directly, but use <see cref="Default"/> to access a <see cref="TraceTextWriter"/>
+    /// that is wrapped by a <see cref="FormatTextWriter"/> to provide synchronization and formatting support.
     /// </summary>
     [PublicAPI]
-    public class TraceTextWriter : TextWriter
+    public class TraceTextWriter : TextWriter, ITextWriter
     {
         /// <summary>
         /// The default, synchronized, laid out Trace writer.
         /// </summary>
         [NotNull]
-        public static readonly LayoutTextWriter Default = new TraceTextWriter().Layout();
+        public static readonly FormatTextWriter Default = new TraceTextWriter().Format();
 
         /// <summary>
         /// Prevents a default instance of the <see cref="TraceTextWriter"/> class from being created.

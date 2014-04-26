@@ -12,13 +12,13 @@ using WebApplications.Utilities.Formatting;
 namespace WebApplications.Utilities.Test.Formatting
 {
     [TestClass]
-    public class TestLayoutBuilder
+    public class TestFormatBuilderLayout
     {
         [TestMethod]
         public void TestLayout()
         {
             Trace.WriteLine(
-                new LayoutBuilder(new Layout(60, alignment: Alignment.Justify, firstLineIndentSize: 5))
+                new FormatBuilder(new Layout(60, alignment: Alignment.Justify, firstLineIndentSize: 5))
                     .AppendLine(FormatResources.LoremIpsum)
                     .Append("{!layout:w50}")
                     .AppendLine(FormatResources.SedUtPerspiciatis)
@@ -32,7 +32,7 @@ namespace WebApplications.Utilities.Test.Formatting
             const int width = 60;
 
             string text =
-                new LayoutBuilder(new Layout(width, alignment: Alignment.Justify, wrapMode: LayoutWrapMode.PadToWrap))
+                new FormatBuilder(new Layout(width, alignment: Alignment.Justify, wrapMode: LayoutWrapMode.PadToWrap))
                     .AppendLine(FormatResources.LoremIpsum)
                     .AppendLine()
                     .AppendLayout(alignment: Alignment.Left)
@@ -55,18 +55,11 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.IsFalse(text.Contains('\n'), "Text should not contain new line characters");
             Assert.IsTrue(text.Length % width == 0, "Text length should be a multiple of the width");
         }
-
-        [TestMethod]
-        public void TestLayoutBuilderToString()
-        {
-            // Expect LayoutBuilder with default layout to behave the same as FormatBuilder
-            TestFormatBuilder.TestToStringFormats(new LayoutBuilder());
-        }
-
+        
         [TestMethod]
         public void TestTabStops()
         {
-            LayoutBuilder builder = new LayoutBuilder();
+            FormatBuilder builder = new FormatBuilder();
             builder
                 .AppendLayout(50,
                     firstLineIndentSize: 1,
@@ -83,7 +76,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestCloneLayoutBuilder()
         {
-            FormatBuilder builder = new LayoutBuilder()
+            FormatBuilder builder = new FormatBuilder()
                 .AppendLayout(50)
                 .AppendLine(FormatResources.LoremIpsum)
                 .AppendForegroundColor("Red")
@@ -93,16 +86,10 @@ namespace WebApplications.Utilities.Test.Formatting
 
             FormatBuilder clone = builder.Clone();
 
-            Assert.IsInstanceOfType(clone, typeof(LayoutBuilder));
+            Assert.IsInstanceOfType(clone, typeof(FormatBuilder));
 
             Assert.IsTrue(builder.SequenceEqual(clone), "Chunks are not equal");
             Assert.AreEqual(builder.ToString(), clone.ToString());
-        }
-
-        [TestMethod]
-        public void TestLayoutBuilderToStringValues()
-        {
-            TestFormatBuilder.TestToStringValues(new LayoutBuilder());
         }
 
         [TestMethod]
@@ -111,7 +98,7 @@ namespace WebApplications.Utilities.Test.Formatting
             const ushort width = 80;
             using (StringWriter sw = new StringWriter())
             {
-                using (LayoutTextWriter lw = new LayoutTextWriter(sw, width, alignment: Alignment.Justify))
+                using (FormatTextWriter lw = new FormatTextWriter(sw, width, alignment: Alignment.Justify))
                 {
                     Stopwatch watch = Stopwatch.StartNew();
                     Parallel.For(
@@ -140,14 +127,14 @@ namespace WebApplications.Utilities.Test.Formatting
             const ushort width = 80;
             using (StringWriter sw = new StringWriter())
             {
-                using (LayoutTextWriter lw = new LayoutTextWriter(sw, width))
+                using (FormatTextWriter lw = new FormatTextWriter(sw, width))
                 {
                     Stopwatch watch = Stopwatch.StartNew();
                     Parallel.For(
                         0,
                         1000,
                         new ParallelOptions() { MaxDegreeOfParallelism = 8 },
-                        i => new LayoutBuilder(width, alignment: Alignment.Justify)
+                        i => new FormatBuilder(width, alignment: Alignment.Justify)
                             .AppendFormat(FormatResources.ButIMustExplain, i)
                             .WriteTo(lw));
                     watch.Stop();

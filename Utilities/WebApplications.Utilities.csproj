@@ -205,12 +205,13 @@
     <Compile Include="Formatting\IColoredTextWriter.cs" />
     <Compile Include="Formatting\IControllableTextWriter.cs" />
     <Compile Include="Formatting\ILayoutTextWriter.cs" />
-    <Compile Include="Formatting\ISynchronizedTextWriter.cs" />
-    <Compile Include="Formatting\LayoutBuilder.cs" />
+    <Compile Include="Formatting\ISerialTextWriter.cs" />
+    <Compile Include="Formatting\FormatBuilderLine.cs" />
+    <Compile Include="Formatting\ITextWriter.cs" />
     <Compile Include="Formatting\Layout.cs" />
     <Compile Include="Formatting\LayoutWrapMode.cs" />
-    <Compile Include="Formatting\LayoutTextWriter.cs" />
-    <Compile Include="Formatting\SynchronizedTextWriter.cs" />
+    <Compile Include="Formatting\FormatTextWriter.cs" />
+    <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
     <Compile Include="Queue.cs">
       <DependentUpon>Queue.tt</DependentUpon>

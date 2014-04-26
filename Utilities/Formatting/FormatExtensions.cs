@@ -461,45 +461,25 @@ namespace WebApplications.Utilities.Formatting
         #endregion
 
         /// <summary>
-        /// Produces a synchronized version of the specified writer, using <see cref="SerializingSynchronizationContext" />.
+        /// Produces a serialized version of the specified writer, using <see cref="SerializingSynchronizationContext" />, that
+        /// will write output serially.
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <returns>A synchronized TextWriter.</returns>
         [NotNull]
         [PublicAPI]
-        public static TextWriter Synchronize([NotNull] this TextWriter writer)
+        public static TextWriter Serialize([NotNull] this TextWriter writer)
         {
             Contract.Requires(writer != null);
             Contract.Ensures(Contract.Result<TextWriter>() != null);
-            ISynchronizedTextWriter stw = writer as ISynchronizedTextWriter;
+            ISerialTextWriter stw = writer as ISerialTextWriter;
             return stw != null
                 ? writer
-                : new SynchronizedTextWriter(writer, new SerializingSynchronizationContext());
+                : new SerialTextWriter(writer);
         }
 
         /// <summary>
-        /// Produces a synchronized version of the specified writer, using a specific <see cref="SynchronizedTextWriter" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="context">The synchronization context.</param>
-        /// <returns>A synchronized TextWriter.</returns>
-        [NotNull]
-        [PublicAPI]
-        public static TextWriter Synchronize([NotNull] this TextWriter writer, [NotNull] SynchronizationContext context)
-        {
-            Contract.Requires(writer != null);
-            Contract.Requires(context != null);
-            Contract.Ensures(Contract.Result<TextWriter>() != null);
-
-            ISynchronizedTextWriter stw = writer as ISynchronizedTextWriter;
-            return (stw != null) &&
-                   (stw.Context == context)
-                ? writer
-                : new SynchronizedTextWriter(writer, context);
-        }
-
-        /// <summary>
-        /// Produces a laid out version of the specified writer, using <see cref="LayoutTextWriter" />.
+        /// Produces a formatted version of the specified writer, using <see cref="FormatTextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="layout">The layout.</param>
@@ -507,20 +487,20 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A laid out TextWriter.</returns>
         [NotNull]
         [PublicAPI]
-        public static LayoutTextWriter Layout([NotNull] this TextWriter writer, [CanBeNull] Layout layout = null, ushort startPosition = 0)
+        public static FormatTextWriter Format([NotNull] this TextWriter writer, [CanBeNull] Layout layout = null, ushort startPosition = 0)
         {
             Contract.Requires(writer != null);
             Contract.Ensures(Contract.Result<TextWriter>() != null);
 
-            LayoutTextWriter ltw = writer as LayoutTextWriter;
-            if (ltw == null) return new LayoutTextWriter(writer, layout, startPosition);
+            FormatTextWriter ltw = writer as FormatTextWriter;
+            if (ltw == null) return new FormatTextWriter(writer, layout, startPosition);
 
             ltw.ApplyLayout(layout);
             return ltw;
         }
 
         /// <summary>
-        /// Produces a laid out version of the specified writer, using <see cref="LayoutTextWriter" />.
+        /// Produces a formatted version of the specified writer, using <see cref="FormatTextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="width">The width.</param>
@@ -540,7 +520,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A laid out TextWriter.</returns>
         [NotNull]
         [PublicAPI]
-        public static LayoutTextWriter Layout(
+        public static FormatTextWriter Format(
             [NotNull] this TextWriter writer,
             Optional<ushort> width,
             Optional<byte> indentSize = default(Optional<byte>),
@@ -560,9 +540,9 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(writer != null);
             Contract.Ensures(Contract.Result<TextWriter>() != null);
 
-            LayoutTextWriter ltw = writer as LayoutTextWriter;
+            FormatTextWriter ltw = writer as FormatTextWriter;
             if (ltw == null)
-                return new LayoutTextWriter(
+                return new FormatTextWriter(
                     writer,
                     width,
                     indentSize,

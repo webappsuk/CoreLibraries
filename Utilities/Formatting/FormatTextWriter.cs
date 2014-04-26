@@ -44,39 +44,39 @@ namespace WebApplications.Utilities.Formatting
     /// This is not inherently thread safe, to make thread safe use a synchronization wrapper.
     /// </remarks>
     [PublicAPI]
-    public class LayoutTextWriter : TextWriter, ISynchronizedTextWriter, ILayoutTextWriter
+    public sealed class FormatTextWriter : TextWriter, ISerialTextWriter, ILayoutTextWriter
     {
         /// <summary>
         /// The <see cref="SynchronizationContext">synchronization context</see>.
         /// </summary>
         [NotNull]
-        private readonly SynchronizationContext _context;
+        private readonly SerializingSynchronizationContext _context;
 
         /// <summary>
         /// Gets the <see cref="SynchronizationContext">synchronization context</see>.
         /// </summary>
         /// <value>The synchronization context.</value>
-        public SynchronizationContext Context { get { return _context; } }
+        public SerializingSynchronizationContext Context { get { return _context; } }
 
         /// <summary>
         /// The underlying writer.
         /// </summary>
         [NotNull]
-        protected readonly TextWriter Writer;
+        private readonly TextWriter _writer;
 
         [CanBeNull]
         private readonly ILayoutTextWriter _layoutTextWriter;
 
         /// <summary>
+        /// The format builder
+        /// </summary>
+        [NotNull]
+        private FormatBuilder _builder;
+
+        /// <summary>
         /// The current horizontal position
         /// </summary>
         private ushort _position;
-
-        /// <summary>
-        /// The layout builder
-        /// </summary>
-        [NotNull]
-        private LayoutBuilder _builder;
 
         /// <summary>
         /// Gets the width of the console.
@@ -132,30 +132,51 @@ namespace WebApplications.Utilities.Formatting
             get { return _builder.InitialLayout; }
         }
 
+        #region Constructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="LayoutTextWriter" /> class.
+        /// Initializes a new instance of the <see cref="FormatTextWriter" /> class.
+        /// </summary>
+        /// <param name="writer">The out writer.</param>
+        /// <param name="startPosition">The starting horizontal position.</param>
+        public FormatTextWriter(
+            [NotNull] TextWriter writer,
+            ushort startPosition = 0)
+            : base(writer.FormatProvider)
+        {
+            Contract.Requires(writer != null);
+            _writer = writer;
+            ISerialTextWriter stw = writer as ISerialTextWriter;
+            _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
+            _layoutTextWriter = writer as ILayoutTextWriter;
+            if (_layoutTextWriter == null)
+                Position = startPosition;
+            _builder = new FormatBuilder();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatTextWriter" /> class.
         /// </summary>
         /// <param name="writer">The out writer.</param>
         /// <param name="defaultLayout">The default layout.</param>
         /// <param name="startPosition">The starting horizontal position.</param>
-        public LayoutTextWriter(
+        public FormatTextWriter(
             [NotNull] TextWriter writer,
             [CanBeNull] Layout defaultLayout,
             ushort startPosition = 0)
             : base(writer.FormatProvider)
         {
             Contract.Requires(writer != null);
-            Writer = writer;
-            ISynchronizedTextWriter stw = writer as ISynchronizedTextWriter;
+            _writer = writer;
+            ISerialTextWriter stw = writer as ISerialTextWriter;
             _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
             _layoutTextWriter = writer as ILayoutTextWriter;
             if (_layoutTextWriter == null)
                 Position = startPosition;
-            _builder = new LayoutBuilder(defaultLayout);
+            _builder = new FormatBuilder(defaultLayout);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LayoutTextWriter" /> class.
+        /// Initializes a new instance of the <see cref="FormatTextWriter" /> class.
         /// </summary>
         /// <param name="writer">The out writer.</param>
         /// <param name="width">The width.</param>
@@ -172,7 +193,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="hyphenChar">The hyphen character.</param>
         /// <param name="wrapMode">The wrap mode.</param>
         /// <param name="startPosition">The starting horizontal position.</param>
-        public LayoutTextWriter(
+        public FormatTextWriter(
             [NotNull] TextWriter writer,
             Optional<ushort> width = default(Optional<ushort>),
             Optional<byte> indentSize = default(Optional<byte>),
@@ -191,13 +212,13 @@ namespace WebApplications.Utilities.Formatting
             : base(writer.FormatProvider)
         {
             Contract.Requires(writer != null);
-            Writer = writer;
-            ISynchronizedTextWriter stw = writer as ISynchronizedTextWriter;
+            _writer = writer;
+            ISerialTextWriter stw = writer as ISerialTextWriter;
             _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
             _layoutTextWriter = writer as ILayoutTextWriter;
             if (_layoutTextWriter == null)
                 Position = startPosition;
-            _builder = new LayoutBuilder(
+            _builder = new FormatBuilder(
                 width,
                 indentSize,
                 rightMarginSize,
@@ -212,6 +233,7 @@ namespace WebApplications.Utilities.Formatting
                 hyphenChar,
                 wrapMode);
         }
+        #endregion
 
         /// <summary>
         /// Sets the layout.
@@ -220,7 +242,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>An awaitable task that returns the existing layout.</returns>
         [PublicAPI]
         [NotNull]
-        public virtual Layout ApplyLayout([CanBeNull] Layout newLayout)
+        public Layout ApplyLayout([CanBeNull] Layout newLayout)
         {
             if (newLayout == null) return _builder.InitialLayout;
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -230,7 +252,7 @@ namespace WebApplications.Utilities.Formatting
                     if (newLayout == _builder.InitialLayout) return newLayout;
 
                     Layout existing = _builder.InitialLayout;
-                    _builder = new LayoutBuilder(existing.Apply(newLayout));
+                    _builder = new FormatBuilder(existing.Apply(newLayout));
                     return existing;
                 });
         }
@@ -254,7 +276,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>An awaitable task that returns the existing layout.</returns>
         [PublicAPI]
         [NotNull]
-        public virtual Layout ApplyLayout(
+        public Layout ApplyLayout(
             Optional<ushort> width = default(Optional<ushort>),
             Optional<byte> indentSize = default(Optional<byte>),
             Optional<byte> rightMarginSize = default(Optional<byte>),
@@ -290,7 +312,7 @@ namespace WebApplications.Utilities.Formatting
                 {
                     Layout existing = _builder.InitialLayout;
                     _builder =
-                        new LayoutBuilder(
+                        new FormatBuilder(
                             existing.Apply(
                                 width,
                                 indentSize,
@@ -315,7 +337,7 @@ namespace WebApplications.Utilities.Formatting
         /// <value>The encoding.</value>
         public override Encoding Encoding
         {
-            get { return Writer.Encoding; }
+            get { return _writer.Encoding; }
         }
 
         /// <summary>
@@ -324,7 +346,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>An <see cref="T:System.IFormatProvider" /> object for a specific culture, or the formatting of the current culture if no other culture is specified.</returns>
         public override IFormatProvider FormatProvider
         {
-            get { return Writer.FormatProvider; }
+            get { return _writer.FormatProvider; }
         }
 
         /// <summary>
@@ -333,13 +355,13 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>The line terminator string for the current TextWriter.</returns>
         public override string NewLine
         {
-            get { return Writer.NewLine; }
+            get { return _writer.NewLine; }
             set
             {
                 Contract.Requires(value != null);
-                if (Writer.NewLine == value) return;
+                if (_writer.NewLine == value) return;
 
-                _context.Invoke(() => Writer.NewLine = value);
+                _context.Invoke(() => _writer.NewLine = value);
             }
         }
 
@@ -348,7 +370,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         public override void Flush()
         {
-            _context.Invoke(Writer.Flush);
+            _context.Invoke(_writer.Flush);
         }
 
         /// <summary>
@@ -361,7 +383,7 @@ namespace WebApplications.Utilities.Formatting
         public override Task FlushAsync()
         {
             // We run everything synchronously, as we're synchronized!
-            _context.Invoke(Writer.Flush);
+            _context.Invoke(_writer.Flush);
             return TaskResult.Completed;
         }
 
@@ -376,7 +398,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -392,7 +414,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -408,7 +430,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(buffer);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -424,7 +446,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -440,7 +462,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -456,7 +478,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -472,7 +494,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -488,7 +510,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -504,7 +526,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -520,7 +542,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormat(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -536,7 +558,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -552,7 +574,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -570,7 +592,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormat(format, arg0);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -589,7 +611,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormat(format, arg);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -608,7 +630,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(buffer, index, count);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -627,7 +649,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormat(format, arg0, arg1);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -651,7 +673,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormat(format, arg0, arg1, arg2);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -666,7 +688,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine();
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -682,7 +704,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -698,7 +720,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -714,7 +736,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(buffer);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -730,7 +752,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -746,7 +768,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -762,7 +784,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -778,7 +800,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -794,7 +816,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -810,7 +832,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -826,7 +848,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormatLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -842,7 +864,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -858,7 +880,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -876,7 +898,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormatLine(format, arg0);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -895,7 +917,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormatLine(format, arg);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -914,7 +936,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(buffer, index, count);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -933,7 +955,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormatLine(format, arg0, arg1);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -957,7 +979,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormatLine(format, arg0, arg1, arg2);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
         }
@@ -977,7 +999,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
             return TaskResult.Completed;
@@ -1001,7 +1023,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.Append(buffer, index, count);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
             return TaskResult.Completed;
@@ -1022,7 +1044,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormat(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
             return TaskResult.Completed;
@@ -1044,7 +1066,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormat(format, arg);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
             return TaskResult.Completed;
@@ -1064,7 +1086,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine();
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
             return TaskResult.Completed;
@@ -1085,7 +1107,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
             return TaskResult.Completed;
@@ -1109,7 +1131,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendLine(buffer, index, count);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
             return TaskResult.Completed;
@@ -1130,7 +1152,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormatLine(value);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
             return TaskResult.Completed;
@@ -1152,7 +1174,7 @@ namespace WebApplications.Utilities.Formatting
                 () =>
                 {
                     _builder.AppendFormatLine(format, arg);
-                    Position = _builder.WriteTo(Writer, Position);
+                    Position = _builder.WriteTo(_writer, Position);
                     _builder.Clear();
                 });
             return TaskResult.Completed;

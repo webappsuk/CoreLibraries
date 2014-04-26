@@ -34,6 +34,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -42,7 +43,7 @@ namespace WebApplications.Utilities.Formatting
     /// </summary>
     [Serializable]
     [PublicAPI]
-    public class SynchronizedTextWriter : TextWriter, ISynchronizedTextWriter
+    public class SerialTextWriter : TextWriter, ISerialTextWriter
     {
         /// <summary>
         /// The underlying writer.
@@ -55,27 +56,29 @@ namespace WebApplications.Utilities.Formatting
         /// The synchronization context.
         /// </summary>
         [NotNull]
-        private readonly SynchronizationContext _context;
+        private readonly SerializingSynchronizationContext _context;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SynchronizedTextWriter"/> class.
+        /// Initializes a new instance of the <see cref="SerialTextWriter" /> class.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="context">The synchronization context.</param>
-        public SynchronizedTextWriter([NotNull] TextWriter writer, [NotNull] SynchronizationContext context)
+        internal SerialTextWriter([NotNull] TextWriter writer)
             : base(writer.FormatProvider)
         {
             Contract.Requires(writer != null);
-            Contract.Requires(context != null);
             Writer = writer;
-            _context = context;
+            
+            // Sanity check, we shouldn't normally create a serial text writer on a serialized text writer,
+            // but it can happen (for example when initializing ConsoleTextWriter to use TraceTextWriter).
+            ISerialTextWriter stw = writer as ISerialTextWriter;
+            _context = stw != null ? stw.Context : new SerializingSynchronizationContext();
         }
 
         /// <summary>
         /// The synchronization context.
         /// </summary>
         [NotNull]
-        public SynchronizationContext Context
+        public SerializingSynchronizationContext Context
         {
             get { return _context; }
         }

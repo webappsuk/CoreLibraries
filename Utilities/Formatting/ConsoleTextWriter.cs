@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Formatting
     /// Implements a <see cref="TextWriter"/> for writing to the <see cref="Console"/>, with write calls synchronized.
     /// </summary>
     [PublicAPI]
-    public class ConsoleTextWriter : SynchronizedTextWriter, IColoredTextWriter, ILayoutTextWriter
+    public class ConsoleTextWriter : SerialTextWriter, IColoredTextWriter, ILayoutTextWriter
     {
         /// <summary>
         /// The default <see cref="ConsoleTextWriter"/> (there can be only one).
@@ -48,15 +48,13 @@ namespace WebApplications.Utilities.Formatting
         public static readonly ConsoleTextWriter Default;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SynchronizedTextWriter" /> class.
+        /// Initializes a new instance of the <see cref="SerialTextWriter" /> class.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="context">The synchronization context.</param>
-        private ConsoleTextWriter([NotNull] TextWriter writer, [NotNull] SynchronizationContext context)
-            : base(writer, context)
+        private ConsoleTextWriter([NotNull] TextWriter writer)
+            : base(writer)
         {
             Contract.Requires(writer != null);
-            Contract.Requires(context != null);
         }
 
         /// <summary>
@@ -78,11 +76,12 @@ namespace WebApplications.Utilities.Formatting
         {
             if (!ConsoleHelper.IsConsole)
             {
-                Default = new ConsoleTextWriter(TraceTextWriter.Default, TraceTextWriter.Default.Context);
+                Default = new ConsoleTextWriter(TraceTextWriter.Default);
                 return;
             }
-            
-            Default = new ConsoleTextWriter(Console.Out, new SerializingSynchronizationContext());
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Default = new ConsoleTextWriter(Console.Out);
             // Set the console's default output to use this one.
             Console.SetOut(Default);
         }
@@ -101,15 +100,15 @@ namespace WebApplications.Utilities.Formatting
                 if (!ConsoleHelper.IsConsole)
                 {
                     ILayoutTextWriter lw = Writer as ILayoutTextWriter;
-                    return lw == null ? (ushort) 120 : lw.Width;
+                    return lw == null ? (ushort)120 : lw.Width;
                 }
 
                 int width = Console.BufferWidth;
                 return width > ushort.MaxValue
                     ? ushort.MaxValue
                     : (width < 1
-                        ? (ushort) 1
-                        : (ushort) width);
+                        ? (ushort)1
+                        : (ushort)width);
             }
         }
 
@@ -158,7 +157,7 @@ namespace WebApplications.Utilities.Formatting
             get
             {
                 if (ConsoleHelper.IsConsole) return true;
-                
+
                 ILayoutTextWriter lw = Writer as ILayoutTextWriter;
                 return lw != null && lw.AutoWraps;
             }

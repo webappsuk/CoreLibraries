@@ -35,7 +35,7 @@ namespace WebApplications.Utilities.Formatting
     /// Indicates a <see cref="TextWriter"/> that supports control codes.
     /// </summary>
     [PublicAPI]
-    public interface IControllableTextWriter
+    public interface IControllableTextWriter : ITextWriter
     {
         /// <summary>
         /// Called when a control chunk is encountered.
