@@ -2198,21 +2198,23 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(format != null);
             ISerialTextWriter serialTextWriter = writer as ISerialTextWriter;
             return serialTextWriter == null
-                ? DoWrite(chunks, writer, format, position)
-                : serialTextWriter.Context.Invoke(() => DoWrite(chunks, serialTextWriter.Writer, format, position));
+                ? DoWrite(chunks, writer, null, format, position)
+                : serialTextWriter.Context.Invoke(
+                    () => DoWrite(chunks, writer, serialTextWriter.Writer, format, position));
         }
 
         /// <summary>
         /// The new line characters.
         /// </summary>
         [NotNull]
-        private static char[] _newLineChars = {'\r', '\n'};
+        private static readonly char[] _newLineChars = {'\r', '\n'};
 
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="chunks">The chunks.</param>
         /// <param name="writer">The writer.</param>
+        /// <param name="serialWriter">The serial writer.</param>
         /// <param name="format">The format.</param>
         /// <param name="position">The position.</param>
         /// <returns>System.UInt16.</returns>
@@ -2220,6 +2222,7 @@ namespace WebApplications.Utilities.Formatting
         private int DoWrite(
             [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
+            [CanBeNull] TextWriter serialWriter,
             [NotNull] string format,
             int position)
         {
@@ -2228,9 +2231,11 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(format != null);
             
             bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+            IControllableTextWriter controller = serialWriter as IControllableTextWriter ??  writer as IControllableTextWriter;
+            ILayoutTextWriter layoutWriter = serialWriter as ILayoutTextWriter ?? writer as ILayoutTextWriter;
+            
+            if (serialWriter != null) writer = serialWriter;
             IFormatProvider formatProvider = writer.FormatProvider;
-            IControllableTextWriter controller = writer as IControllableTextWriter;
-            ILayoutTextWriter layoutWriter = writer as ILayoutTextWriter;
 
             int writerWidth;
             bool autoWraps;
@@ -2248,8 +2253,8 @@ namespace WebApplications.Utilities.Formatting
             }
 
             // If we require layout, run chunks through layout engine.
-            IEnumerable<FormatChunk> enumerable =
-                _isLayoutRequired
+            bool lr = _isLayoutRequired || writerWidth < int.MaxValue;
+            IEnumerable<FormatChunk> enumerable = lr
                     ? Align(
                         GetLines(
                             GetLineChunks(chunks, format, writer.FormatProvider),
@@ -2275,7 +2280,7 @@ namespace WebApplications.Utilities.Formatting
                     {
                         result = sb.ToString();
                         writer.Write(result);
-                        if (!_isLayoutRequired)
+                        if (!lr)
                         {
                             // We have to manually find last newline as we're not using the layout engine.
                             int index = result.LastIndexOfAny(_newLineChars);
@@ -2296,7 +2301,7 @@ namespace WebApplications.Utilities.Formatting
                 result = sb.ToString();
                 writer.Write(result);
 
-                if (!_isLayoutRequired)
+                if (!lr)
                 {
                     // We have to manually find last newline as we're not using the layout engine.
                     int index = result.LastIndexOfAny(_newLineChars);
