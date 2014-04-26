@@ -54,7 +54,7 @@ namespace WebApplications.Utilities.Formatting
         /// Gets the width of the console.
         /// </summary>
         /// <value>The width of the console.</value>
-        public ushort Width
+        public int Width
         {
             get { return _writer.Width; }
         }
@@ -64,7 +64,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The position.</value>
         [PublicAPI]
-        public ushort Position
+        public int Position
         {
             get { return _writer.Position; }
             set { Context.Invoke(() => _writer.Position = value); }
@@ -112,7 +112,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatTextWriter(
             [NotNull] TextWriter writer,
             [CanBeNull] Layout defaultLayout,
-            ushort startPosition = 0)
+            int startPosition = 0)
             : base(new UnderlyingFormatTextWriter(writer, new FormatBuilder(defaultLayout), startPosition))
         {
             Contract.Requires(writer != null);
@@ -139,12 +139,12 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="startPosition">The starting horizontal position.</param>
         public FormatTextWriter(
             [NotNull] TextWriter writer,
-            Optional<ushort> width = default(Optional<ushort>),
-            Optional<byte> indentSize = default(Optional<byte>),
-            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<int> width = default(Optional<int>),
+            Optional<int> indentSize = default(Optional<int>),
+            Optional<int> rightMarginSize = default(Optional<int>),
             Optional<char> indentChar = default(Optional<char>),
-            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
-            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<int> firstLineIndentSize = default(Optional<int>),
+            Optional<IEnumerable<int>> tabStops = default(Optional<IEnumerable<int>>),
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
@@ -152,7 +152,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
-            ushort startPosition = 0)
+            int startPosition = 0)
             : base(new UnderlyingFormatTextWriter(
                        writer,
                        new FormatBuilder(
@@ -232,12 +232,12 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         [NotNull]
         public Layout ApplyLayout(
-            Optional<ushort> width = default(Optional<ushort>),
-            Optional<byte> indentSize = default(Optional<byte>),
-            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<int> width = default(Optional<int>),
+            Optional<int> indentSize = default(Optional<int>),
+            Optional<int> rightMarginSize = default(Optional<int>),
             Optional<char> indentChar = default(Optional<char>),
-            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
-            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<int> firstLineIndentSize = default(Optional<int>),
+            Optional<IEnumerable<int>> tabStops = default(Optional<IEnumerable<int>>),
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
@@ -311,7 +311,7 @@ namespace WebApplications.Utilities.Formatting
             /// Gets the width of the console.
             /// </summary>
             /// <value>The width of the console.</value>
-            public ushort Width
+            public int Width
             {
                 get { return Builder.InitialLayout.Width.Value; }
             }
@@ -320,7 +320,7 @@ namespace WebApplications.Utilities.Formatting
             /// Gets or sets the current horizontal position.
             /// </summary>
             /// <value>The position.</value>
-            public ushort Position { get; set; }
+            public int Position { get; set; }
 
             /// <summary>
             /// Gets a value indicating whether the writer automatically wraps on reaching <see cref="Width" />.
@@ -341,7 +341,7 @@ namespace WebApplications.Utilities.Formatting
             public UnderlyingFormatTextWriter(
                 [NotNull] TextWriter writer,
                 [NotNull] FormatBuilder builder,
-                ushort startPosition)
+                int startPosition)
             {
                 Contract.Requires(writer != null);
                 Contract.Requires(builder != null);

@@ -63,10 +63,10 @@ namespace WebApplications.Utilities.Test.Formatting
             builder
                 .AppendLayout(50,
                     firstLineIndentSize: 1,
-                    tabStops: new ushort[] { 6, 9, 20, 30, 40 })
+                    tabStops: new[] { 6, 9, 20, 30, 40 })
                 .Append("A\tTab Stop\tAnother");
 
-            ushort position = 0;
+            int position = 0;
             Assert.AreEqual(" A    Tab Stop      Another", builder.ToString(ref position));
             Assert.AreEqual(27, position);
             Assert.AreEqual("A  Tab Stop  Another", builder.ToString(ref position));

@@ -124,12 +124,12 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="wrapMode">The wrap mode.</param>
         /// <param name="?">The ?.</param>
         public FormatBuilder(
-            Optional<ushort> width = default(Optional<ushort>),
-            Optional<byte> indentSize = default(Optional<byte>),
-            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<int> width = default(Optional<int>),
+            Optional<int> indentSize = default(Optional<int>),
+            Optional<int> rightMarginSize = default(Optional<int>),
             Optional<char> indentChar = default(Optional<char>),
-            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
-            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<int> firstLineIndentSize = default(Optional<int>),
+            Optional<IEnumerable<int>> tabStops = default(Optional<IEnumerable<int>>),
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
@@ -1444,7 +1444,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref ushort position, [CanBeNull] params object[] values)
+        public string ToString(ref int position, [CanBeNull] params object[] values)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -1479,7 +1479,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref ushort position, [CanBeNull] IReadOnlyDictionary<string, object> values)
+        public string ToString(ref int position, [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -1515,7 +1515,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref ushort position,
+            ref int position,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             using (StringWriter writer = new StringWriter())
@@ -1554,7 +1554,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref ushort position,
+            ref int position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
         {
@@ -1596,7 +1596,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref ushort position,
+            ref int position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
@@ -1638,7 +1638,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref ushort position,
+            ref int position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
@@ -1682,7 +1682,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref ushort position,
+            ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider = null)
         {
@@ -1727,7 +1727,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref ushort position,
+            ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
@@ -1780,7 +1780,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref ushort position,
+            ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
@@ -1833,7 +1833,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            ref ushort position,
+            ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] Func<FormatChunk, Optional<object>> resolver)
@@ -2002,7 +2002,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The start position.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
-        public ushort WriteTo([CanBeNull] TextWriter writer, ushort position = 0)
+        public int WriteTo([CanBeNull] TextWriter writer, int position = 0)
         {
             return writer == null ? position : WriteTo(_chunks, writer, "G", position);
         }
@@ -2015,7 +2015,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
-        public ushort WriteTo(
+        public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
@@ -2041,9 +2041,9 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
-        public ushort WriteTo(
+        public int WriteTo(
             [CanBeNull] TextWriter writer,
-            ushort position,
+            int position,
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
         {
@@ -2067,7 +2067,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
-        public ushort WriteTo(
+        public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
@@ -2093,9 +2093,9 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
-        public ushort WriteTo(
+        public int WriteTo(
             [CanBeNull] TextWriter writer,
-            ushort position,
+            int position,
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
@@ -2119,7 +2119,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
-        public ushort WriteTo(
+        public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
@@ -2145,9 +2145,9 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
-        public ushort WriteTo(
+        public int WriteTo(
             [CanBeNull] TextWriter writer,
-            ushort position,
+            int position,
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
@@ -2174,11 +2174,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns>System.UInt16.</returns>
         [PublicAPI]
-        private ushort WriteTo(
+        private int WriteTo(
             [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
             [NotNull] string format,
-            ushort position)
+            int position)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(writer != null);
@@ -2199,11 +2199,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns>System.UInt16.</returns>
         [PublicAPI]
-        private ushort DoWrite(
+        private int DoWrite(
             [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
             [NotNull] string format,
-            ushort position)
+            int position)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(writer != null);
@@ -2214,7 +2214,7 @@ namespace WebApplications.Utilities.Formatting
             IControllableTextWriter controller = writer as IControllableTextWriter;
             ILayoutTextWriter layoutWriter = writer as ILayoutTextWriter;
 
-            ushort writerWidth;
+            int writerWidth;
             bool autoWraps;
             if (layoutWriter != null)
             {
@@ -2225,7 +2225,7 @@ namespace WebApplications.Utilities.Formatting
             }
             else
             {
-                writerWidth = ushort.MaxValue;
+                writerWidth = int.MaxValue;
                 autoWraps = false;
             }
 
@@ -2350,8 +2350,8 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         private IEnumerable<Line> GetLines(
             [NotNull] Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> chunks,
-            ushort position,
-            ushort writerWidth)
+            int position,
+            int writerWidth)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(chunks.Item1 != null);
@@ -2593,12 +2593,12 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         private IEnumerable<FormatChunk> Align(
             [NotNull] [InstantHandle] IEnumerable<Line> lines,
-            ushort writerWidth,
+            int writerWidth,
             bool autoWraps,
-            ref ushort position)
+            ref int position)
         {
             Contract.Requires(lines != null);
-            StringBuilder lb = new StringBuilder(InitialLayout.Width.Value);
+            StringBuilder lb = new StringBuilder(InitialLayout.Width.Value < 1024 ? InitialLayout.Width.Value : 1024);
             bool dontIndentFirstLine = position > 0;
 
             List<FormatChunk> chunks = new List<FormatChunk>();
@@ -2689,7 +2689,7 @@ namespace WebApplications.Utilities.Formatting
 
                 // Calculate our finish position
                 int np = p + indent;
-                position = np < ushort.MaxValue ? (ushort) np : ushort.MaxValue;
+                position = np < int.MaxValue ? np : int.MaxValue;
 
                 if (line.Terminated)
                 {
@@ -2703,7 +2703,7 @@ namespace WebApplications.Utilities.Formatting
                         case LayoutWrapMode.PadToWrap:
                             lb.Append(
                                 line.Layout.IndentChar.Value,
-                                (writerWidth < ushort.MaxValue ? writerWidth : line.Layout.Width.Value) - position);
+                                (writerWidth < int.MaxValue ? writerWidth : line.Layout.Width.Value) - position);
                             break;
                         default:
                             if (!autoWraps ||
@@ -2946,12 +2946,12 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public FormatBuilder AppendLayout(
-            Optional<ushort> width = default(Optional<ushort>),
-            Optional<byte> indentSize = default(Optional<byte>),
-            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<int> width = default(Optional<int>),
+            Optional<int> indentSize = default(Optional<int>),
+            Optional<int> rightMarginSize = default(Optional<int>),
             Optional<char> indentChar = default(Optional<char>),
-            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
-            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<int> firstLineIndentSize = default(Optional<int>),
+            Optional<IEnumerable<int>> tabStops = default(Optional<IEnumerable<int>>),
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),

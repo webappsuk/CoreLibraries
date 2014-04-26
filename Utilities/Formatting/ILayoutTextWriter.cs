@@ -42,14 +42,14 @@ namespace WebApplications.Utilities.Formatting
         /// The width of the console.
         /// </value>
         [PublicAPI]
-        ushort Width { get; }
+        int Width { get; }
 
         /// <summary>
         /// Gets or sets the current horizontal position.
         /// </summary>
         /// <value>The position.</value>
         [PublicAPI]
-        ushort Position { get; set; }
+        int Position { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the writer automatically wraps on reaching <see cref="Width"/>.

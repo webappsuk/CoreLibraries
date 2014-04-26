@@ -45,7 +45,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [NotNull]
         public static readonly Layout Default = new Layout(
-            ushort.MaxValue,
+            int.MaxValue,
             0,
             0,
             ' ',
@@ -70,19 +70,19 @@ namespace WebApplications.Utilities.Formatting
         /// The layout width.
         /// </summary>
         [PublicAPI]
-        public readonly Optional<ushort> Width;
+        public readonly Optional<int> Width;
 
         /// <summary>
         /// The indent size.
         /// </summary>
         [PublicAPI]
-        public readonly Optional<byte> IndentSize;
+        public readonly Optional<int> IndentSize;
 
         /// <summary>
         /// The size of any right margin.
         /// </summary>
         [PublicAPI]
-        public readonly Optional<byte> RightMarginSize;
+        public readonly Optional<int> RightMarginSize;
 
         /// <summary>
         /// The indent character (is repeated <see cref="IndentSize"/> times).
@@ -94,13 +94,13 @@ namespace WebApplications.Utilities.Formatting
         /// The first line indent size.
         /// </summary>
         [PublicAPI]
-        public readonly Optional<ushort> FirstLineIndentSize;
+        public readonly Optional<int> FirstLineIndentSize;
 
         /// <summary>
         /// The tab stops, only valid for <see cref="T:AlignmentChar.Left"/> and <see cref="T:AlignmentChar.None"/>.
         /// </summary>
         [PublicAPI]
-        public readonly Optional<IEnumerable<ushort>> TabStops;
+        public readonly Optional<IEnumerable<int>> TabStops;
 
         /// <summary>
         /// The tab size, used to produce tabs when the layout doesn't support tab stops.
@@ -214,12 +214,12 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="hyphenChar">The hyphenation character.</param>
         /// <param name="wrapMode">The line wrap mode.</param>
         public Layout(
-            Optional<ushort> width = default(Optional<ushort>),
-            Optional<byte> indentSize = default(Optional<byte>),
-            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<int> width = default(Optional<int>),
+            Optional<int> indentSize = default(Optional<int>),
+            Optional<int> rightMarginSize = default(Optional<int>),
             Optional<char> indentChar = default(Optional<char>),
-            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
-            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<int> firstLineIndentSize = default(Optional<int>),
+            Optional<IEnumerable<int>> tabStops = default(Optional<IEnumerable<int>>),
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
@@ -234,7 +234,7 @@ namespace WebApplications.Utilities.Formatting
                 if (width.Value < 1)
                     width = 1;
 
-                byte w = (byte)(width.Value - 1);
+                int w = width.Value - 1;
                 if (indentSize.IsAssigned &&
                     indentSize.Value > w)
                     indentSize = w;
@@ -245,31 +245,28 @@ namespace WebApplications.Utilities.Formatting
                 {
                     if (indentSize.IsAssigned &&
                         rightMarginSize.Value > w - indentSize.Value)
-                        rightMarginSize = (byte)(w - indentSize.Value);
+                        rightMarginSize = w - indentSize.Value;
                     if (firstLineIndentSize.IsAssigned &&
                         rightMarginSize.Value > w - firstLineIndentSize.Value)
-                        rightMarginSize = (byte)(w - firstLineIndentSize.Value);
+                        rightMarginSize = w - firstLineIndentSize.Value;
                 }
                 if (tabSize.IsAssigned)
                     if (tabSize.Value < 1) tabSize = 1;
-                    else if (tabSize.Value > width.Value) tabSize = (byte)width.Value;
+                    else if (tabSize.Value > width.Value) tabSize = (byte) width.Value;
 
                 // Only support tabstop on left/non alignments
                 if (alignment.IsAssigned &&
                     tabStops.IsAssigned)
-                    if ((alignment.Value == Formatting.Alignment.Left) ||
-                        (alignment.Value == Formatting.Alignment.None))
-                        tabStops = (!tabStops.IsAssigned || tabStops.IsNull
-                            ? Enumerable.Range(1, width.Value / tabSize.Value)
-                                .Select(t => (ushort)(t * tabSize.Value))
-                            // ReSharper disable once AssignNullToNotNullAttribute
-                            : tabStops.Value
-                                .Where(t => t > 0 && t < width.Value)
-                                .OrderBy(t => t))
+                    tabStops = (!tabStops.IsNull) &&
+                               ((alignment.Value == Formatting.Alignment.Left) ||
+                                (alignment.Value == Formatting.Alignment.None))
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        ? tabStops.Value
+                            .Where(t => t > 0 && t < width.Value)
+                            .OrderBy(t => t)
                             .Distinct()
-                            .ToArray();
-                    else
-                        tabStops = null;
+                            .ToArray()
+                        : null;
             }
 
             Width = width;
@@ -309,12 +306,12 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         [NotNull]
         public Layout Apply(
-            Optional<ushort> width = default(Optional<ushort>),
-            Optional<byte> indentSize = default(Optional<byte>),
-            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<int> width = default(Optional<int>),
+            Optional<int> indentSize = default(Optional<int>),
+            Optional<int> rightMarginSize = default(Optional<int>),
             Optional<char> indentChar = default(Optional<char>),
-            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
-            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<int> firstLineIndentSize = default(Optional<int>),
+            Optional<IEnumerable<int>> tabStops = default(Optional<IEnumerable<int>>),
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
@@ -467,12 +464,12 @@ namespace WebApplications.Utilities.Formatting
             if (parts.Length < 1)
                 return true;
 
-            Optional<ushort> width = default(Optional<ushort>);
-            Optional<byte> indentSize = default(Optional<byte>);
-            Optional<byte> rightMarginSize = default(Optional<byte>);
+            Optional<int> width = default(Optional<int>);
+            Optional<int> indentSize = default(Optional<int>);
+            Optional<int> rightMarginSize = default(Optional<int>);
             Optional<char> indentChar = default(Optional<char>);
-            Optional<ushort> firstLineIndentSize = default(Optional<ushort>);
-            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>);
+            Optional<int> firstLineIndentSize = default(Optional<int>);
+            Optional<IEnumerable<int>> tabStops = default(Optional<IEnumerable<int>>);
             Optional<byte> tabSize = default(Optional<byte>);
             Optional<char> tabChar = default(Optional<char>);
             Optional<Alignment> alignment = default(Optional<Alignment>);
@@ -483,8 +480,7 @@ namespace WebApplications.Utilities.Formatting
 
             foreach (string part in parts)
             {
-                Contract.Assert(!string.IsNullOrEmpty(part));
-
+                // ReSharper disable once PossibleNullReferenceException
                 if (part.Length < 2)
                     return false;
 
@@ -494,20 +490,20 @@ namespace WebApplications.Utilities.Formatting
                 switch (prefix)
                 {
                     case 'w':
-                        ushort w;
-                        if (!ushort.TryParse(s, out w))
+                        int w;
+                        if (!int.TryParse(s, out w))
                             return false;
                         width = w;
                         break;
                     case 'i':
-                        byte i;
-                        if (!byte.TryParse(s, out i))
+                        int i;
+                        if (!int.TryParse(s, out i))
                             return false;
                         indentSize = i;
                         break;
                     case 'r':
-                        byte r;
-                        if (!byte.TryParse(s, out r))
+                        int r;
+                        if (!int.TryParse(s, out r))
                             return false;
                         rightMarginSize = r;
                         break;
@@ -517,21 +513,21 @@ namespace WebApplications.Utilities.Formatting
                         indentChar = s[0];
                         break;
                     case 'f':
-                        ushort f;
-                        if (!ushort.TryParse(s, out f))
+                        int f;
+                        if (!int.TryParse(s, out f))
                             return false;
                         firstLineIndentSize = f;
                         break;
                     case 'l':
                         bool ok = true;
-                        tabStops = new Optional<IEnumerable<ushort>>(
+                        tabStops = new Optional<IEnumerable<int>>(
                             s
                                 .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
                                 .Select(
                                     tp =>
                                     {
-                                        ushort tps;
-                                        if (!ushort.TryParse(tp, out tps))
+                                        int tps;
+                                        if (!int.TryParse(tp, out tps))
                                             ok = false;
                                         return tps;
                                     })
@@ -606,7 +602,7 @@ namespace WebApplications.Utilities.Formatting
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Layout) obj);
+            return Equals((Layout)obj);
         }
 
         /// <summary>
@@ -652,7 +648,24 @@ namespace WebApplications.Utilities.Formatting
                     if (!partial)
                         layout = Default.Apply(this);
 
-                    char[] cArr = new char[Width.Value];
+                    int width = layout.Width.Value;
+                    bool elipsis;
+                    char[] cArr;
+                    if (width > 1024)
+                    {
+                        width = 1021;
+                        elipsis = true;
+                        cArr = new char[1024];
+                        cArr[1021] = '.';
+                        cArr[1022] = '.';
+                        cArr[1023] = '.';
+                    }
+                    else
+                    {
+                        elipsis = false;
+                        cArr = new char[width];
+                    }
+
                     int rm = layout.Width.Value - 1 - layout.RightMarginSize.Value;
                     for (int i = 0; i < layout.Width.Value; i++)
                     {
@@ -662,7 +675,8 @@ namespace WebApplications.Utilities.Formatting
                             ? (up ? 'X' : 'V')
                             : (up
                                 ? '^'
-                                : (layout.TabStops.Value != null && layout.TabStops.Value.Contains((ushort) i)
+                                : (layout.TabStops.Value != null &&
+                                   layout.TabStops.Value.Contains(i)
                                     ? 'L'
                                     : (i % 10 == 0
                                         ? (char) ('0' + (i % 100 == 0

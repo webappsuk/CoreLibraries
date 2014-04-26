@@ -238,12 +238,12 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static FormatTextWriter Format(
             [NotNull] this TextWriter writer,
-            Optional<ushort> width,
-            Optional<byte> indentSize = default(Optional<byte>),
-            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<int> width,
+            Optional<int> indentSize = default(Optional<int>),
+            Optional<int> rightMarginSize = default(Optional<int>),
             Optional<char> indentChar = default(Optional<char>),
-            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
-            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<int> firstLineIndentSize = default(Optional<int>),
+            Optional<IEnumerable<int>> tabStops = default(Optional<IEnumerable<int>>),
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),

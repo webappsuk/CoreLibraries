@@ -29,9 +29,7 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.IO;
-using System.Threading;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -93,22 +91,17 @@ namespace WebApplications.Utilities.Formatting
         /// The width of the console.
         /// </value>
         [PublicAPI]
-        public ushort Width
+        public int Width
         {
             get
             {
                 if (!ConsoleHelper.IsConsole)
                 {
                     ILayoutTextWriter lw = Writer as ILayoutTextWriter;
-                    return lw == null ? (ushort)120 : lw.Width;
+                    return lw == null ? int.MaxValue : lw.Width;
                 }
-
-                int width = Console.BufferWidth;
-                return width > ushort.MaxValue
-                    ? ushort.MaxValue
-                    : (width < 1
-                        ? (ushort)1
-                        : (ushort)width);
+                Contract.Assert(Console.BufferWidth > 0);
+                return Console.BufferWidth;
             }
         }
 
@@ -117,34 +110,29 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <value>The position.</value>
         [PublicAPI]
-        public ushort Position
+        public int Position
         {
             get
             {
                 if (!ConsoleHelper.IsConsole)
                 {
                     ILayoutTextWriter lw = Writer as ILayoutTextWriter;
-                    return lw == null ? (ushort)120 : lw.Position;
+                    return lw == null ? 0 : lw.Position;
                 }
-                int position = Console.CursorLeft;
-                return position > ushort.MaxValue
-                    ? ushort.MaxValue
-                    : (position < 1
-                        ? (ushort)1
-                        : (ushort)position);
+                Contract.Assert(Console.CursorLeft > 0);
+                return Console.CursorLeft;
             }
             // Ignore position updates.
             set
             {
                 if (!ConsoleHelper.IsConsole)
-                {
-                    Context.Invoke(() =>
-                    {
-                        ILayoutTextWriter lw = Writer as ILayoutTextWriter;
-                        if (lw != null)
-                            lw.Position = value;
-                    });
-                }
+                    Context.Invoke(
+                        () =>
+                        {
+                            ILayoutTextWriter lw = Writer as ILayoutTextWriter;
+                            if (lw != null)
+                                lw.Position = value;
+                        });
             }
         }
 
