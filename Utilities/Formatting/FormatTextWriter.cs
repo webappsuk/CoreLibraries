@@ -196,7 +196,21 @@ namespace WebApplications.Utilities.Formatting
                     if (newLayout == _writer.Builder.InitialLayout) return newLayout;
 
                     Layout existing = _writer.Builder.InitialLayout;
-                    _writer.Builder = new FormatBuilder(existing.Apply(newLayout));
+                    _writer.Builder = new FormatBuilder(
+                        existing.Apply(
+                            newLayout.Width,
+                            newLayout.IndentSize,
+                            newLayout.RightMarginSize,
+                            newLayout.IndentChar,
+                            newLayout.FirstLineIndentSize,
+                            newLayout.TabStops,
+                            newLayout.TabSize,
+                            newLayout.TabChar,
+                            newLayout.Alignment,
+                            newLayout.SplitWords,
+                            newLayout.Hyphenate,
+                            newLayout.HyphenChar,
+                            newLayout.WrapMode));
                     return existing;
                 });
         }

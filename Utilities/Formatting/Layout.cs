@@ -37,8 +37,9 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Defines a layout for use with a <see cref="LayoutBuilder"/>.
     /// </summary>
-    public class Layout : IFormattable
+    public class Layout : IFormattable, IEquatable<Layout>
     {
+
         /// <summary>
         /// The default layout (as specified by the current layout writer).
         /// </summary>
@@ -322,20 +323,88 @@ namespace WebApplications.Utilities.Formatting
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
-            return new Layout(
-                width.IsAssigned ? width : Width,
-                indentSize.IsAssigned ? indentSize : IndentSize,
-                rightMarginSize.IsAssigned ? rightMarginSize : RightMarginSize,
-                indentChar.IsAssigned ? indentChar : IndentChar,
-                firstLineIndentSize.IsAssigned ? firstLineIndentSize : FirstLineIndentSize,
-                tabStops.IsAssigned ? tabStops : TabStops,
-                tabSize.IsAssigned ? tabSize : TabSize,
-                tabChar.IsAssigned ? tabChar : TabChar,
-                alignment.IsAssigned ? alignment : Alignment,
-                splitWords.IsAssigned ? splitWords : SplitWords,
-                hyphenate.IsAssigned ? hyphenate : Hyphenate,
-                hyphenChar.IsAssigned ? hyphenChar : HyphenChar,
-                wrapMode.IsAssigned ? wrapMode : WrapMode);
+            bool apply = false;
+            if ((width.IsAssigned) &&
+                (width != Width))
+                apply = true;
+            else width = Width;
+
+            if ((indentSize.IsAssigned) &&
+                (indentSize != IndentSize))
+                apply = true;
+            else indentSize = IndentSize;
+
+            if ((rightMarginSize.IsAssigned) &&
+                (rightMarginSize != RightMarginSize))
+                apply = true;
+            else rightMarginSize = RightMarginSize;
+
+            if ((indentChar.IsAssigned) &&
+                (indentChar != IndentChar))
+                apply = true;
+            else indentChar = IndentChar;
+
+            if ((firstLineIndentSize.IsAssigned) &&
+                (firstLineIndentSize != FirstLineIndentSize))
+                apply = true;
+            else firstLineIndentSize = FirstLineIndentSize;
+
+            if (tabStops.IsAssigned)
+                apply = true;
+            else tabStops = TabStops;
+
+            if ((tabSize.IsAssigned) &&
+                (tabSize != TabSize))
+                apply = true;
+            else tabSize = TabSize;
+
+            if ((tabChar.IsAssigned) &&
+                (tabChar != TabChar))
+                apply = true;
+            else tabChar = TabChar;
+
+            if ((alignment.IsAssigned) &&
+                (alignment != Alignment))
+                apply = true;
+            else alignment = Alignment;
+
+            if ((splitWords.IsAssigned) &&
+                (splitWords != SplitWords))
+                apply = true;
+            else splitWords = SplitWords;
+
+            if ((hyphenate.IsAssigned) &&
+                (hyphenate != Hyphenate))
+                apply = true;
+            else hyphenate = Hyphenate;
+
+            if ((hyphenChar.IsAssigned) &&
+                (hyphenChar != HyphenChar))
+                apply = true;
+            else hyphenChar = HyphenChar;
+
+            if ((wrapMode.IsAssigned) &&
+                (wrapMode != WrapMode))
+                apply = true;
+            else wrapMode = WrapMode;
+
+            // Create new layout if necessary.
+            return apply
+                ? new Layout(
+                    width,
+                    indentSize,
+                    rightMarginSize,
+                    indentChar,
+                    firstLineIndentSize,
+                    tabStops,
+                    tabSize,
+                    tabChar,
+                    alignment,
+                    splitWords,
+                    hyphenate,
+                    hyphenChar,
+                    wrapMode)
+                : this;
         }
 
         /// <summary>
@@ -349,20 +418,20 @@ namespace WebApplications.Utilities.Formatting
         {
             return layout == null
                 ? this
-                : new Layout(
-                    layout.Width.IsAssigned ? layout.Width : Width,
-                    layout.IndentSize.IsAssigned ? layout.IndentSize : IndentSize,
-                    layout.RightMarginSize.IsAssigned ? layout.RightMarginSize : RightMarginSize,
-                    layout.IndentChar.IsAssigned ? layout.IndentChar : IndentChar,
-                    layout.FirstLineIndentSize.IsAssigned ? layout.FirstLineIndentSize : FirstLineIndentSize,
-                    layout.TabStops.IsAssigned ? layout.TabStops : TabStops,
-                    layout.TabSize.IsAssigned ? layout.TabSize : TabSize,
-                    layout.TabChar.IsAssigned ? layout.TabChar : TabChar,
-                    layout.Alignment.IsAssigned ? layout.Alignment : Alignment,
-                    layout.SplitWords.IsAssigned ? layout.SplitWords : SplitWords,
-                    layout.Hyphenate.IsAssigned ? layout.Hyphenate : Hyphenate,
-                    layout.HyphenChar.IsAssigned ? layout.HyphenChar : HyphenChar,
-                    layout.WrapMode.IsAssigned ? layout.WrapMode : WrapMode);
+                : Apply(
+                    layout.Width,
+                    layout.IndentSize,
+                    layout.RightMarginSize,
+                    layout.IndentChar,
+                    layout.FirstLineIndentSize,
+                    layout.TabStops,
+                    layout.TabSize,
+                    layout.TabChar,
+                    layout.Alignment,
+                    layout.SplitWords,
+                    layout.Hyphenate,
+                    layout.HyphenChar,
+                    layout.WrapMode);
         }
 
         /// <summary>
@@ -532,6 +601,14 @@ namespace WebApplications.Utilities.Formatting
             return true;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Layout) obj);
+        }
+
         /// <summary>
         /// To the string.
         /// </summary>
@@ -672,6 +749,70 @@ namespace WebApplications.Utilities.Formatting
                     break;
             }
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        public bool Equals([CanBeNull]Layout other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Width.Equals(other.Width) && IndentSize.Equals(other.IndentSize) &&
+                   RightMarginSize.Equals(other.RightMarginSize) && IndentChar.Equals(other.IndentChar) &&
+                   FirstLineIndentSize.Equals(other.FirstLineIndentSize) && TabStops.Equals(other.TabStops) &&
+                   TabSize.Equals(other.TabSize) && TabChar.Equals(other.TabChar) && Alignment.Equals(other.Alignment) &&
+                   SplitWords.Equals(other.SplitWords) && Hyphenate.Equals(other.Hyphenate) &&
+                   HyphenChar.Equals(other.HyphenChar) && WrapMode.Equals(other.WrapMode);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = Width.GetHashCode();
+                hashCode = (hashCode * 397) ^ IndentSize.GetHashCode();
+                hashCode = (hashCode * 397) ^ RightMarginSize.GetHashCode();
+                hashCode = (hashCode * 397) ^ IndentChar.GetHashCode();
+                hashCode = (hashCode * 397) ^ FirstLineIndentSize.GetHashCode();
+                hashCode = (hashCode * 397) ^ TabStops.GetHashCode();
+                hashCode = (hashCode * 397) ^ TabSize.GetHashCode();
+                hashCode = (hashCode * 397) ^ TabChar.GetHashCode();
+                hashCode = (hashCode * 397) ^ Alignment.GetHashCode();
+                hashCode = (hashCode * 397) ^ SplitWords.GetHashCode();
+                hashCode = (hashCode * 397) ^ Hyphenate.GetHashCode();
+                hashCode = (hashCode * 397) ^ HyphenChar.GetHashCode();
+                hashCode = (hashCode * 397) ^ WrapMode.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// Implements the ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(Layout left, Layout right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <summary>
+        /// Implements the !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(Layout left, Layout right)
+        {
+            return !Equals(left, right);
         }
     }
 }

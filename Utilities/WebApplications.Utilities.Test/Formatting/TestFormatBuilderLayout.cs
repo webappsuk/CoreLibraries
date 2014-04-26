@@ -133,7 +133,7 @@ namespace WebApplications.Utilities.Test.Formatting
                     Stopwatch watch = Stopwatch.StartNew();
                     Parallel.For(
                         0,
-                        100,
+                        1000,
                         new ParallelOptions() { MaxDegreeOfParallelism = 8 },
                         i => new FormatBuilder(width, alignment: Alignment.Justify)
                             .AppendFormat(FormatResources.ButIMustExplain, i)

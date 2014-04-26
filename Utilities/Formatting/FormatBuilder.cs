@@ -34,7 +34,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -2402,7 +2401,7 @@ namespace WebApplications.Utilities.Formatting
                     yield return line;
 
                     // Start a new line
-                    if (nextLayout.Width.Value >= writerWidth)
+                    if (nextLayout.Width.Value > writerWidth)
                         nextLayout = nextLayout.Apply(writerWidth);
 
                     layout = nextLayout;
