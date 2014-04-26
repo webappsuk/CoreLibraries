@@ -134,7 +134,7 @@ namespace WebApplications.Utilities.Test.Formatting
                     Parallel.For(
                         0,
                         1000,
-                        new ParallelOptions() { MaxDegreeOfParallelism = 8 },
+                        new ParallelOptions() { MaxDegreeOfParallelism = 1 },
                         i => new FormatBuilder(width, alignment: Alignment.Justify)
                             .AppendFormat(FormatResources.ButIMustExplain, i)
                             .WriteTo(formatTextWriter));

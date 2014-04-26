@@ -95,12 +95,9 @@ namespace WebApplications.Utilities.Formatting
         /// Initializes a new instance of the <see cref="FormatTextWriter" /> class.
         /// </summary>
         /// <param name="writer">The out writer.</param>
-        /// <param name="startPosition">The starting horizontal position.</param>
         /// <exception cref="System.InvalidOperationException">Cannot wrap an ILayoutTextWriter in a FormatTextWriter as this can cause issues with position tracking.</exception>
-        public FormatTextWriter(
-            [NotNull] TextWriter writer,
-            ushort startPosition = 0)
-            : base(new UnderlyingFormatTextWriter(writer, new FormatBuilder(), startPosition))
+        public FormatTextWriter([NotNull] TextWriter writer)
+            : base(new UnderlyingFormatTextWriter(writer, new FormatBuilder(), 0))
         {
             Contract.Requires(writer != null);
             _writer = (UnderlyingFormatTextWriter) Writer;
