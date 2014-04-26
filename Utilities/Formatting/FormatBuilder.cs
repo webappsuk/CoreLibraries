@@ -76,6 +76,10 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         private bool _isReadonly;
 
+        /// <summary>
+        /// Whether layout is required.
+        /// </summary>
+        private bool _isLayoutRequired;
 
         /// <summary>
         /// Gets the initial layout to use when resetting the layout.
@@ -103,6 +107,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder([CanBeNull] Layout layout)
         {
             InitialLayout = Layout.Default.Apply(layout);
+            _isLayoutRequired = InitialLayout != Layout.Default;
             Contract.Assert(InitialLayout.IsFull);
         }
 
@@ -152,6 +157,7 @@ namespace WebApplications.Utilities.Formatting
                 hyphenate,
                 hyphenChar,
                 wrapMode);
+            _isLayoutRequired = InitialLayout != Layout.Default;
             Contract.Assert(InitialLayout.IsFull);
         }
 
@@ -180,6 +186,7 @@ namespace WebApplications.Utilities.Formatting
         public void Clear()
         {
             _chunks.Clear();
+            _isLayoutRequired = InitialLayout != Layout.Default;
         }
 
         /// <summary>
@@ -235,7 +242,7 @@ namespace WebApplications.Utilities.Formatting
             if (IsReadonly)
                 return this;
 
-            FormatBuilder formatBuilder = new FormatBuilder(InitialLayout);
+            FormatBuilder formatBuilder = new FormatBuilder(InitialLayout) {_isLayoutRequired = _isLayoutRequired};
             formatBuilder._chunks.AddRange(_chunks);
             if (makeReadonly)
                 formatBuilder.MakeReadonly();
@@ -969,7 +976,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.AddRange(
                     args != null && args.Length > 0
                         ? Resolve(format.FormatChunks(), args)
-                        : format.FormatChunks());
+                        : format.FormatChunks().SelectMany(Resolve));
             return this;
         }
 
@@ -991,7 +998,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.AddRange(
                     values != null && values.Count > 0
                         ? Resolve(format.FormatChunks(), values)
-                        : format.FormatChunks());
+                        : format.FormatChunks().SelectMany(Resolve));
             return this;
         }
 
@@ -1015,7 +1022,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.AddRange(
                     resolver != null
                         ? Resolve(format.FormatChunks(), resolver)
-                        : format.FormatChunks());
+                        : format.FormatChunks().SelectMany(Resolve));
             return this;
         }
         #endregion
@@ -1052,7 +1059,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.AddRange(
                     args != null && args.Length > 0
                         ? Resolve(format.FormatChunks(), args)
-                        : format.FormatChunks());
+                        : format.FormatChunks().SelectMany(Resolve));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1075,7 +1082,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.AddRange(
                     values != null && values.Count > 0
                         ? Resolve(format.FormatChunks(), values)
-                        : format.FormatChunks());
+                        : format.FormatChunks().SelectMany(Resolve));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1100,7 +1107,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.AddRange(
                     resolver != null
                         ? Resolve(format.FormatChunks(), resolver)
-                        : format.FormatChunks());
+                        : format.FormatChunks().SelectMany(Resolve));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1129,11 +1136,7 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadonly) return this;
 
             FormatChunk chunk = FormatChunk.CreateControl(tag, alignment, format, value);
-
-            if (value != null)
-                _chunks.AddRange(Resolve(chunk));
-            else
-                _chunks.Add(chunk);
+            _chunks.AddRange(Resolve(chunk));
             return this;
         }
 
@@ -1150,12 +1153,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(control.IsControl);
             Contract.Requires(!IsReadonly);
             if (_isReadonly) return this;
-
-            if (control.Value != null)
-                _chunks.AddRange(Resolve(control));
-            else
-                _chunks.Add(control);
-
+            _chunks.AddRange(Resolve(control));
             return this;
         }
         #endregion
@@ -1167,7 +1165,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunk">The chunk.</param>
         /// <returns>An enumeration of chunks.</returns>
         [NotNull]
-        private static IEnumerable<FormatChunk> Resolve([NotNull] FormatChunk chunk)
+        private IEnumerable<FormatChunk> Resolve([NotNull] FormatChunk chunk)
         {
             Contract.Requires(chunk != null);
             Stack<FormatChunk> stack = new Stack<FormatChunk>();
@@ -1206,6 +1204,10 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
+                if (!_isLayoutRequired &&
+                    string.Equals(c.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
+                    _isLayoutRequired = true;
+
                 yield return c;
             } while (true);
         }
@@ -1217,7 +1219,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns></returns>
         [NotNull]
-        private static IEnumerable<FormatChunk> Resolve(
+        private IEnumerable<FormatChunk> Resolve(
             [NotNull] IEnumerable<FormatChunk> chunks,
             [NotNull] object[] values)
         {
@@ -1266,6 +1268,10 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
+                if (!_isLayoutRequired &&
+                    string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
+                    _isLayoutRequired = true;
+
                 if (!found ||
                     (chunk.Value == value))
                 {
@@ -1284,7 +1290,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns></returns>
         [NotNull]
-        private static IEnumerable<FormatChunk> Resolve(
+        private IEnumerable<FormatChunk> Resolve(
             [NotNull] IEnumerable<FormatChunk> chunks,
             [NotNull] IReadOnlyDictionary<string, object> values)
         {
@@ -1330,6 +1336,10 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
+                if (!_isLayoutRequired &&
+                    string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
+                    _isLayoutRequired = true;
+
                 if (!found ||
                     (chunk.Value == value))
                 {
@@ -1348,7 +1358,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <returns></returns>
         [NotNull]
-        private static IEnumerable<FormatChunk> Resolve(
+        private IEnumerable<FormatChunk> Resolve(
             [NotNull] IEnumerable<FormatChunk> chunks,
             [NotNull] Func<FormatChunk, Optional<object>> resolver)
         {
@@ -1391,6 +1401,10 @@ namespace WebApplications.Utilities.Formatting
                     stack.Push(fc);
                     continue;
                 }
+
+                if (!_isLayoutRequired &&
+                    string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
+                    _isLayoutRequired = true;
 
                 if (!resolved.IsAssigned ||
                     (chunk.Value == value))
@@ -2004,7 +2018,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public int WriteTo([CanBeNull] TextWriter writer, int position = 0)
         {
-            return writer == null ? position : WriteTo(_chunks, writer, "G", position);
+            return writer == null || _chunks.Count < 1 ? position : WriteTo(_chunks, writer, "G", position);
         }
 
         /// <summary>
@@ -2020,7 +2034,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
         {
-            if (writer == null) return 0;
+            if (writer == null || _chunks.Count < 1) return 0;
             if (format == null)
                 format = "G";
             return WriteTo(
@@ -2047,7 +2061,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
         {
-            if (writer == null) return position;
+            if (writer == null || _chunks.Count < 1) return position;
             if (format == null)
                 format = "G";
             return WriteTo(
@@ -2072,7 +2086,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            if (writer == null) return 0;
+            if (writer == null || _chunks.Count < 1) return 0;
             if (format == null)
                 format = "G";
             return WriteTo(
@@ -2099,7 +2113,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            if (writer == null) return position;
+            if (writer == null || _chunks.Count < 1) return position;
             if (format == null)
                 format = "G";
             return WriteTo(
@@ -2124,7 +2138,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
-            if (writer == null) return 0;
+            if (writer == null || _chunks.Count < 1) return 0;
             if (format == null)
                 format = "G";
             return WriteTo(
@@ -2151,7 +2165,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
-            if (writer == null) return position;
+            if (writer == null || _chunks.Count < 1) return position;
             if (format == null)
                 format = "G";
             return WriteTo(
@@ -2164,7 +2178,6 @@ namespace WebApplications.Utilities.Formatting
         }
         #endregion
 
-        #region Synchronization wrappers
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
@@ -2188,7 +2201,12 @@ namespace WebApplications.Utilities.Formatting
                 ? DoWrite(chunks, writer, format, position)
                 : serialTextWriter.Context.Invoke(() => DoWrite(chunks, serialTextWriter.Writer, format, position));
         }
-        #endregion
+
+        /// <summary>
+        /// The new line characters.
+        /// </summary>
+        [NotNull]
+        private static char[] _newLineChars = {'\r', '\n'};
 
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
@@ -2229,16 +2247,23 @@ namespace WebApplications.Utilities.Formatting
                 autoWraps = false;
             }
 
+            // If we require layout, run chunks through layout engine.
+            IEnumerable<FormatChunk> enumerable =
+                _isLayoutRequired
+                    ? Align(
+                        GetLines(
+                            GetLineChunks(chunks, format, writer.FormatProvider),
+                            position,
+                            writerWidth),
+                        writerWidth,
+                        autoWraps,
+                        ref position)
+                    : chunks;
+
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
-            foreach (FormatChunk chunk in Align(
-                    GetLines(
-                        GetLineChunks(chunks, format, writer.FormatProvider),
-                        position,
-                        writerWidth),
-                    writerWidth,
-                    autoWraps,
-                    ref position))
+            string result;
+            foreach (FormatChunk chunk in enumerable)
                 // ReSharper disable once PossibleNullReferenceException
                 if (chunk.IsControl &&
                     !writeTags)
@@ -2248,7 +2273,16 @@ namespace WebApplications.Utilities.Formatting
                     // If we have anything to write out, do so before calling the controller.
                     if (sb.Length > 0)
                     {
-                        writer.Write(sb.ToString());
+                        result = sb.ToString();
+                        writer.Write(result);
+                        if (!_isLayoutRequired)
+                        {
+                            // We have to manually find last newline as we're not using the layout engine.
+                            int index = result.LastIndexOfAny(_newLineChars);
+                            position = index < 0
+                                ? result.Length + position
+                                : result.Length - index;
+                        }
                         sb.Clear();
                     }
 
@@ -2258,7 +2292,19 @@ namespace WebApplications.Utilities.Formatting
                     sb.Append(chunk.ToString(format, formatProvider));
 
             if (sb.Length > 0)
-                writer.Write(sb.ToString());
+            {
+                result = sb.ToString();
+                writer.Write(result);
+
+                if (!_isLayoutRequired)
+                {
+                    // We have to manually find last newline as we're not using the layout engine.
+                    int index = result.LastIndexOfAny(_newLineChars);
+                    position = index < 0
+                        ? result.Length + position
+                        : result.Length - index;
+                }
+            }
 
             if (layoutWriter != null)
                 // Get current position from writer.

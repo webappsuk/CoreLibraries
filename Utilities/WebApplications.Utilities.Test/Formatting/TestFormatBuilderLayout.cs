@@ -125,7 +125,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [Timeout(60000)]
         public void TestThreadSafetyNestedLayout()
         {
-            const ushort width = 80;
+            const int width = 80;
             using (StringWriter stringWriter = new StringWriter())
             {
                 using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter, width))
@@ -136,7 +136,7 @@ namespace WebApplications.Utilities.Test.Formatting
                         1000,
                         new ParallelOptions() { MaxDegreeOfParallelism = 1 },
                         i => new FormatBuilder(width, alignment: Alignment.Justify)
-                            .AppendFormat(FormatResources.ButIMustExplain, i)
+                            .Append(FormatResources.ButIMustExplain)
                             .WriteTo(formatTextWriter));
                     watch.Stop();
                     Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
@@ -149,6 +149,36 @@ namespace WebApplications.Utilities.Test.Formatting
                     // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
                     Assert.AreEqual(12501, lines.Length);
                     Assert.AreEqual(width, lines.Select(l => l.Length).Max());
+                }
+            }
+        }
+
+        [TestMethod]
+        [Timeout(60000)]
+        public void TestThreadSafetyNestedLayoutLongLine()
+        {
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter))
+                {
+                    Stopwatch watch = Stopwatch.StartNew();
+                    Parallel.For(
+                        0,
+                        1000,
+                        new ParallelOptions() { MaxDegreeOfParallelism = 8 },
+                        i => new FormatBuilder()
+                            .Append(FormatResources.ButIMustExplain)
+                            .WriteTo(formatTextWriter));
+                    watch.Stop();
+                    Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
+                    Assert.AreEqual(970000, formatTextWriter.Position);
+                    string result = stringWriter.ToString();
+
+                    string[] lines = result
+                        .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                    // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
+                    Assert.AreEqual(1, lines.Length);
                 }
             }
         }

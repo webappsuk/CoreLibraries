@@ -649,25 +649,20 @@ namespace WebApplications.Utilities.Formatting
                         layout = Default.Apply(this);
 
                     int width = layout.Width.Value;
-                    bool elipsis;
                     char[] cArr;
-                    if (width > 1024)
+                    if (width > 512)
                     {
-                        width = 1021;
-                        elipsis = true;
-                        cArr = new char[1024];
-                        cArr[1021] = '.';
-                        cArr[1022] = '.';
-                        cArr[1023] = '.';
+                        width = 509;
+                        cArr = new char[512];
+                        cArr[509] = '=';
+                        cArr[510] = '=';
+                        cArr[511] = '>';
                     }
                     else
-                    {
-                        elipsis = false;
                         cArr = new char[width];
-                    }
 
                     int rm = layout.Width.Value - 1 - layout.RightMarginSize.Value;
-                    for (int i = 0; i < layout.Width.Value; i++)
+                    for (int i = 0; i < width; i++)
                     {
                         bool up = (i == layout.FirstLineIndentSize.Value) ||
                                   (i == rm);
