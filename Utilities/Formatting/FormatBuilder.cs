@@ -30,6 +30,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -225,15 +226,17 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Clone(bool makeReadonly = false)
         {
-            Contract.Ensures(Contract.Result<FormatBuilder>().GetType() == this.GetType(),
+            Contract.Ensures(
+                Contract.Result<FormatBuilder>().GetType() == GetType(),
                 "All classes derived from FormatBuilder should overload this method and return a builder of their own type");
-            Contract.Ensures(!makeReadonly || Contract.Result<FormatBuilder>().IsReadonly,
+            Contract.Ensures(
+                !makeReadonly || Contract.Result<FormatBuilder>().IsReadonly,
                 "Returned builder should be readonly if makeReadonly is true");
 
             if (IsReadonly)
                 return this;
 
-            FormatBuilder formatBuilder = new FormatBuilder();
+            FormatBuilder formatBuilder = new FormatBuilder(InitialLayout);
             formatBuilder._chunks.AddRange(_chunks);
             if (makeReadonly)
                 formatBuilder.MakeReadonly();
@@ -446,7 +449,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append([CanBeNull] object value)
         {
             Contract.Requires(!IsReadonly);
-            if (!_isReadonly && value != null)
+            if (!_isReadonly &&
+                value != null)
                 _chunks.AddRange(Resolve(FormatChunk.Create(value)));
             return this;
         }
@@ -963,12 +967,10 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadonly);
             if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
-            {
                 _chunks.AddRange(
                     args != null && args.Length > 0
                         ? Resolve(format.FormatChunks(), args)
                         : format.FormatChunks());
-            }
             return this;
         }
 
@@ -987,12 +989,10 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadonly);
             if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
-            {
                 _chunks.AddRange(
                     values != null && values.Count > 0
                         ? Resolve(format.FormatChunks(), values)
                         : format.FormatChunks());
-            }
             return this;
         }
 
@@ -1008,17 +1008,15 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendFormat(
             [CanBeNull] string format,
-            [CanBeNull][InstantHandle] Func<FormatChunk, Optional<object>> resolver)
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             Contract.Requires(!IsReadonly);
             if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
-            {
                 _chunks.AddRange(
                     resolver != null
                         ? Resolve(format.FormatChunks(), resolver)
                         : format.FormatChunks());
-            }
             return this;
         }
         #endregion
@@ -1052,12 +1050,10 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadonly);
             if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
-            {
                 _chunks.AddRange(
                     args != null && args.Length > 0
                         ? Resolve(format.FormatChunks(), args)
                         : format.FormatChunks());
-            }
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1077,12 +1073,10 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadonly);
             if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
-            {
                 _chunks.AddRange(
                     values != null && values.Count > 0
                         ? Resolve(format.FormatChunks(), values)
                         : format.FormatChunks());
-            }
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1099,17 +1093,15 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendFormatLine(
             [CanBeNull] string format,
-            [CanBeNull][InstantHandle] Func<FormatChunk, Optional<object>> resolver)
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             Contract.Requires(!IsReadonly);
             if (_isReadonly) return this;
             if (!string.IsNullOrEmpty(format))
-            {
                 _chunks.AddRange(
                     resolver != null
                         ? Resolve(format.FormatChunks(), resolver)
                         : format.FormatChunks());
-            }
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1176,7 +1168,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunk">The chunk.</param>
         /// <returns>An enumeration of chunks.</returns>
         [NotNull]
-        private static IEnumerable<FormatChunk> Resolve([NotNull]FormatChunk chunk)
+        private static IEnumerable<FormatChunk> Resolve([NotNull] FormatChunk chunk)
         {
             Contract.Requires(chunk != null);
             Stack<FormatChunk> stack = new Stack<FormatChunk>();
@@ -1275,7 +1267,8 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
-                if (!found || (chunk.Value == value))
+                if (!found ||
+                    (chunk.Value == value))
                 {
                     yield return chunk;
                     continue;
@@ -1338,7 +1331,8 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
-                if (!found || (chunk.Value == value))
+                if (!found ||
+                    (chunk.Value == value))
                 {
                     yield return chunk;
                     continue;
@@ -1521,7 +1515,9 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref ushort position, [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
+        public string ToString(
+            ref ushort position,
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -1558,7 +1554,10 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref ushort position, [CanBeNull] IFormatProvider formatProvider, [CanBeNull] params object[] values)
+        public string ToString(
+            ref ushort position,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] params object[] values)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
@@ -1683,7 +1682,10 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref ushort position, [CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
+        public string ToString(
+            ref ushort position,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider = null)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
@@ -2302,7 +2304,7 @@ namespace WebApplications.Utilities.Formatting
         public Task<ushort> WriteToAsync(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull]  [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             if (writer == null) return TaskResult<ushort>.Default;
             if (format == null)
@@ -2330,7 +2332,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] TextWriter writer,
             ushort position,
             [CanBeNull] string format,
-            [CanBeNull]  [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
+            [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             if (writer == null) return Task.FromResult(position);
@@ -2407,7 +2409,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <returns>System.UInt16.</returns>
         [PublicAPI]
-        private ushort DoWrite([NotNull, InstantHandle] IEnumerable<FormatChunk> chunks, [NotNull] TextWriter writer, [NotNull] string format, ushort position)
+        private ushort DoWrite(
+            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
+            [NotNull] TextWriter writer,
+            [NotNull] string format,
+            ushort position)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(writer != null);
@@ -2435,14 +2441,13 @@ namespace WebApplications.Utilities.Formatting
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
             foreach (FormatChunk chunk in Align(
-                    GetLines(
-                        GetLineChunks(chunks, format, writer.FormatProvider),
-                        position,
-                        writerWidth),
-                    writerWidth,
-                    autoWraps,
-                    ref position))
-            {
+                GetLines(
+                    GetLineChunks(chunks, format, writer.FormatProvider),
+                    position,
+                    writerWidth),
+                writerWidth,
+                autoWraps,
+                ref position))
                 // ReSharper disable once PossibleNullReferenceException
                 if (chunk.IsControl &&
                     !writeTags)
@@ -2460,7 +2465,6 @@ namespace WebApplications.Utilities.Formatting
                 }
                 else
                     sb.Append(chunk.ToString(format, formatProvider));
-            }
 
             if (sb.Length > 0)
                 writer.Write(sb.ToString());
@@ -2482,7 +2486,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>Task&lt;System.UInt16&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        private async Task<ushort> DoWriteAsync([NotNull, InstantHandle] IEnumerable<FormatChunk> chunks, [NotNull] TextWriter writer, [NotNull] string format, ushort position)
+        private async Task<ushort> DoWriteAsync(
+            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
+            [NotNull] TextWriter writer,
+            [NotNull] string format,
+            ushort position)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(writer != null);
@@ -2510,14 +2518,13 @@ namespace WebApplications.Utilities.Formatting
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
             foreach (FormatChunk chunk in Align(
-                    GetLines(
-                        GetLineChunks(chunks, format, writer.FormatProvider),
-                        position,
-                        writerWidth),
-                    writerWidth,
-                    autoWraps,
-                    ref position))
-            {
+                GetLines(
+                    GetLineChunks(chunks, format, writer.FormatProvider),
+                    position,
+                    writerWidth),
+                writerWidth,
+                autoWraps,
+                ref position))
                 // ReSharper disable once PossibleNullReferenceException
                 if (chunk.IsControl &&
                     !writeTags)
@@ -2537,7 +2544,6 @@ namespace WebApplications.Utilities.Formatting
                 }
                 else
                     sb.Append(chunk.ToString(format, formatProvider));
-            }
 
             if (sb.Length > 0)
                 // ReSharper disable once PossibleNullReferenceException
@@ -2910,9 +2916,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0)
                         {
-                            decimal space = (decimal)(line.End - line.LastWordLength - line.Start) / remaining;
-                            int o = (int)Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
+                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
+                            int o = (int) Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
                         }
                         break;
                     default:
@@ -2964,7 +2970,7 @@ namespace WebApplications.Utilities.Formatting
 
                 // Add any remaining spacers
                 if ((spacers != null) &&
-                          (spacers.Count > 0))
+                    (spacers.Count > 0))
                 {
                     lb.Append(indentChar, spacers.Count);
                     p += spacers.Count;
@@ -2972,7 +2978,7 @@ namespace WebApplications.Utilities.Formatting
 
                 // Calculate our finish position
                 int np = p + indent;
-                position = np < ushort.MaxValue ? (ushort)np : ushort.MaxValue;
+                position = np < ushort.MaxValue ? (ushort) np : ushort.MaxValue;
 
                 if (line.Terminated)
                 {
@@ -3008,5 +3014,258 @@ namespace WebApplications.Utilities.Formatting
             }
             return chunks;
         }
+
+        #region Color Control
+        /// <summary>
+        /// The reset colors control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string ResetColorsTag = "!resetcolors";
+
+        /// <summary>
+        /// The reset colors chunk.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatChunk ResetColorsChunk = FormatChunk.CreateControl(ResetColorsTag);
+
+        /// <summary>
+        /// The foreground color control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string ForegroundColorTag = "!fgcolor";
+
+        /// <summary>
+        /// The background color control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string BackgroundColorTag = "!bgcolor";
+
+        /// <summary>
+        /// The reset foreground color chunk.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatChunk ResetForegroundColorChunk = FormatChunk.CreateControl(ForegroundColorTag);
+
+        /// <summary>
+        /// The reset background color chunk.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatChunk ResetBackgroundColorChunk = FormatChunk.CreateControl(BackgroundColorTag);
+
+        /// <summary>
+        /// Adds a control to reset the foreground and background colors
+        /// </summary>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendResetColors()
+        {
+            return AppendControl(ResetColorsChunk);
+        }
+
+        /// <summary>
+        /// Adds a control to reset the foreground color.
+        /// </summary>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendResetForegroundColor()
+        {
+            return AppendControl(ResetForegroundColorChunk);
+        }
+
+        /// <summary>
+        /// Adds a control to reset the background color.
+        /// </summary>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendResetBackgroundColor()
+        {
+            return AppendControl(ResetBackgroundColorChunk);
+        }
+
+        /// <summary>
+        /// Adds a control to set the foreground color.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendForegroundColor(ConsoleColor color)
+        {
+            Color c = color.ToColor();
+            return AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, c.GetName(), c));
+        }
+
+        /// <summary>
+        /// Adds a control to set the foreground color.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendForegroundColor(Color color)
+        {
+            return AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color.GetName(), color));
+        }
+
+        /// <summary>
+        /// Adds a control to set the foreground color.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendForegroundColor([CanBeNull] string color)
+        {
+            if (string.IsNullOrWhiteSpace(color)) return this;
+            Optional<Color> c = ColorHelper.GetColor(color);
+            return !c.IsAssigned
+                ? this
+                : AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, c.Value.GetName(), c.Value));
+        }
+
+        /// <summary>
+        /// Adds a control to set the background color.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendBackgroundColor(ConsoleColor color)
+        {
+            Color c = color.ToColor();
+            return AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, c.GetName(), c));
+        }
+
+        /// <summary>
+        /// Adds a control to set the background color.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendBackgroundColor(Color color)
+        {
+            return AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color.GetName(), color));
+        }
+
+        /// <summary>
+        /// Adds a control to set the console's background color.
+        /// </summary>
+        /// <param name="color">The color.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendBackgroundColor([CanBeNull] string color)
+        {
+            if (string.IsNullOrWhiteSpace(color)) return this;
+            Optional<Color> c = ColorHelper.GetColor(color);
+            return !c.IsAssigned
+                ? this
+                : AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, c.Value.GetName(), c.Value));
+        }
+        #endregion
+
+        #region Layout Control
+        /// <summary>
+        /// The layout control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string LayoutTag = "!layout";
+
+        /// <summary>
+        /// The reset layout chunk.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatChunk ResetLayoutChunk = FormatChunk.CreateControl(LayoutTag);
+
+        /// <summary>
+        /// Resets the layout.
+        /// </summary>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendResetLayout()
+        {
+            Contract.Requires(!IsReadonly);
+            return AppendControl(ResetLayoutChunk);
+        }
+
+        /// <summary>
+        /// Sets the layout (if outputting to a layout writer).
+        /// </summary>
+        /// <param name="layout">The layout.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLayout([CanBeNull] Layout layout)
+        {
+            Contract.Requires(!IsReadonly);
+            return AppendControl(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
+        }
+
+        /// <summary>
+        /// Sets the layout (if outputting to a layout writer).
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="indentSize">Size of the indent.</param>
+        /// <param name="rightMarginSize">Size of the right margin.</param>
+        /// <param name="indentChar">The indent character.</param>
+        /// <param name="firstLineIndentSize">First size of the line indent.</param>
+        /// <param name="tabStops">The tab stops.</param>
+        /// <param name="tabSize">Size of the tab.</param>
+        /// <param name="tabChar">The tab character.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="splitWords">if set to <see langword="true" /> then words will split across lines.</param>
+        /// <param name="hyphenate">if set to <see langword="true" /> [hyphenate].</param>
+        /// <param name="hyphenChar">The hyphenation character.</param>
+        /// <param name="wrapMode">The line wrap mode.</param>
+        /// <returns>FormatBuilder.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder AppendLayout(
+            Optional<ushort> width = default(Optional<ushort>),
+            Optional<byte> indentSize = default(Optional<byte>),
+            Optional<byte> rightMarginSize = default(Optional<byte>),
+            Optional<char> indentChar = default(Optional<char>),
+            Optional<ushort> firstLineIndentSize = default(Optional<ushort>),
+            Optional<IEnumerable<ushort>> tabStops = default(Optional<IEnumerable<ushort>>),
+            Optional<byte> tabSize = default(Optional<byte>),
+            Optional<char> tabChar = default(Optional<char>),
+            Optional<Alignment> alignment = default(Optional<Alignment>),
+            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<bool> hyphenate = default(Optional<bool>),
+            Optional<char> hyphenChar = default(Optional<char>),
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
+        {
+            Contract.Requires(!IsReadonly);
+            Layout layout = new Layout(
+                width,
+                indentSize,
+                rightMarginSize,
+                indentChar,
+                firstLineIndentSize,
+                tabStops,
+                tabSize,
+                tabChar,
+                alignment,
+                splitWords,
+                hyphenate,
+                hyphenChar,
+                wrapMode);
+            return Append(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
+        }
+        #endregion
     }
 }

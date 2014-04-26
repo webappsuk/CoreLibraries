@@ -76,8 +76,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestCloneLayoutBuilder()
         {
-            FormatBuilder builder = new FormatBuilder()
-                .AppendLayout(50)
+            FormatBuilder builder = new FormatBuilder(50)
                 .AppendLine(FormatResources.LoremIpsum)
                 .AppendForegroundColor("Red")
                 .AppendLine(FormatResources.SedUtPerspiciatis)
@@ -93,23 +92,24 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
+        [Timeout(1000)]
         public void TestThreadSafety()
         {
             const ushort width = 80;
-            using (StringWriter sw = new StringWriter())
+            using (StringWriter stringWriter = new StringWriter())
             {
-                using (FormatTextWriter lw = new FormatTextWriter(sw, width, alignment: Alignment.Justify))
+                using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter, width, alignment: Alignment.Justify))
                 {
                     Stopwatch watch = Stopwatch.StartNew();
                     Parallel.For(
                         0,
                         1000,
                         new ParallelOptions() { MaxDegreeOfParallelism = 8 },
-                        i => lw.Write(FormatResources.ButIMustExplain));
+                        i => formatTextWriter.Write(FormatResources.ButIMustExplain));
                     watch.Stop();
                     Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
-                    Assert.AreEqual(9, lw.Position);
-                    string result = sw.ToString();
+                    Assert.AreEqual(9, formatTextWriter.Position);
+                    string result = stringWriter.ToString();
 
                     string[] lines = result
                         .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -122,12 +122,13 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
+        [Timeout(1000)]
         public void TestThreadSafetyNestedLayout()
         {
             const ushort width = 80;
-            using (StringWriter sw = new StringWriter())
+            using (StringWriter stringWriter = new StringWriter())
             {
-                using (FormatTextWriter lw = new FormatTextWriter(sw, width))
+                using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter, width))
                 {
                     Stopwatch watch = Stopwatch.StartNew();
                     Parallel.For(
@@ -136,11 +137,11 @@ namespace WebApplications.Utilities.Test.Formatting
                         new ParallelOptions() { MaxDegreeOfParallelism = 8 },
                         i => new FormatBuilder(width, alignment: Alignment.Justify)
                             .AppendFormat(FormatResources.ButIMustExplain, i)
-                            .WriteTo(lw));
+                            .WriteTo(formatTextWriter));
                     watch.Stop();
                     Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
-                    Assert.AreEqual(9, lw.Position);
-                    string result = sw.ToString();
+                    Assert.AreEqual(9, formatTextWriter.Position);
+                    string result = stringWriter.ToString();
 
                     string[] lines = result
                         .Split(new[] {Environment.NewLine}, StringSplitOptions.None);
