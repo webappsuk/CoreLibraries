@@ -515,9 +515,9 @@ namespace WebApplications.Utilities.Performance
         private static readonly FormatBuilder _defaultBuilder = new LayoutBuilder(
             new Layout(
                 firstLineIndentSize: 0,
-                indentSize: 0,
+                indentSize: 22,
                 tabStops: new ushort[] {3, 20, 22}))
-            .AppendFormatLine("{CategoryName}{Info:\r\n\t{Name}\t:\t{Value}}");
+            .AppendFormat("{CategoryName}{Info:\r\n\t{Name}\t: {Value}}");
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
