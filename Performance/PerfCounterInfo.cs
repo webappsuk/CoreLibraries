@@ -87,8 +87,7 @@ namespace WebApplications.Utilities.Performance
         /// </summary>
         [NotNull]
         private static readonly FormatBuilder _defaultBuilder =
-            new FormatBuilder(firstLineIndentSize: 0, indentSize: 0)
-                .AppendFormatLine("{Name}\t: {Value}");
+            new FormatBuilder("{Name}\t: {Value}", true);
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.

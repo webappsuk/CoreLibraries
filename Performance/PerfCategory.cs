@@ -513,14 +513,12 @@ namespace WebApplications.Utilities.Performance
         /// The default builder for writing out a performance category.
         /// </summary>
         [NotNull]
-        private static readonly FormatBuilder _defaultBuilder = new FormatBuilder(
-            firstLineIndentSize: 0,
-            indentSize: 22,
-            tabStops: new[] {3, 20, 22})
+        private static readonly FormatBuilder _defaultBuilder = new FormatBuilder(int.MaxValue, 22, tabStops: new[] {3, 20, 22})
             .AppendForegroundColor(Color.Yellow)
             .AppendFormat("{CategoryName}")
             .AppendResetForegroundColor()
-            .AppendFormat("{Info:\r\n\t{Name}\t: {Value}}");
+            .AppendFormat("{Info:\r\n\t{Name}\t: {Value}}")
+            .MakeReadOnly();
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
