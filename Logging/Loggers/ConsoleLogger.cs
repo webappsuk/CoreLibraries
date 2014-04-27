@@ -41,7 +41,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     /// </summary>
     [PublicAPI]
     public sealed class ConsoleLogger : LoggerBase
-    {
+    {/*
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleLogger"/> class.
         /// </summary>
@@ -56,6 +56,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             Contract.Requires(name != null);
         }
+      */
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleLogger"/> class.

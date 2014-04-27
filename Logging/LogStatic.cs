@@ -30,6 +30,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -139,7 +140,19 @@ namespace WebApplications.Utilities.Logging
         [NonSerialized]
         private static readonly CombGuid[] _emptyCombGuidArray = new CombGuid[0];
         
+        /// <summary>
+        /// The log level color name.
+        /// </summary>
+        public const string LogLevelColorName = "LogLevel";
+
         #region Format Tags
+        /// <summary>
+        /// The message format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagHeader = "!header";
+
         /// <summary>
         /// The message format tag.
         /// </summary>
@@ -440,6 +453,8 @@ namespace WebApplications.Utilities.Logging
         {
             // Set logging to all
             ValidLevels = LoggingLevels.All;
+
+            Color.Red.SetName(LogLevelColorName);
 
             // Initialize performance counters
             PerfCounterException =

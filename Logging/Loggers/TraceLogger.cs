@@ -42,6 +42,7 @@ namespace WebApplications.Utilities.Logging.Loggers
     [PublicAPI]
     public sealed class TraceLogger : LoggerBase
     {
+        /*
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceLogger" /> class.
         /// </summary>
@@ -57,6 +58,7 @@ namespace WebApplications.Utilities.Logging.Loggers
             Contract.Requires(name != null);
             Format = format;
         }
+         */
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceLogger" /> class.
@@ -91,9 +93,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         public override Task Add([InstantHandle]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
-            // Check we're actually in a console!
-            if (!ConsoleHelper.IsConsole) return TaskResult.Completed;
-
             FormatBuilder format = Format ?? Log.VerboseFormat;
             // ReSharper disable once PossibleNullReferenceException
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))

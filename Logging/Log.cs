@@ -43,6 +43,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Threading;
+using System.Web.UI;
 using JetBrains.Annotations;
 using Microsoft.SqlServer.Server;
 using ProtoBuf;
@@ -1519,11 +1520,18 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The short format.
         /// </summary>
-        // TODO
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder ShortFormat =
-            new FormatBuilder();
+            new FormatBuilder(120, 33, tabStops: new[] {33})
+                .AppendForegroundColor(Color.DarkCyan)
+                .AppendFormat("{" + FormatTagTimeStamp + ":{Value:HH:mm:ss.ffff}} ")
+                .AppendForegroundColor(LogLevelColorName)
+                .AppendFormat(
+                    "{" + FormatTagLevel + ":{Value}} ")
+                .AppendResetForegroundColor()
+                .AppendFormatLine("\t{" + FormatTagMessage + ":{Value}}")
+                .MakeReadOnly();
 
         /// <summary>
         /// The verbose default format.
@@ -1532,7 +1540,36 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
-            new FormatBuilder();
+            new FormatBuilder(new Layout(120, indentSize: 22, tabStops: new[] {20, 22}))
+                .AppendControl(FormatTagHeader)
+                .AppendFormat("{" + FormatTagMessage + "}")
+                .AppendFormat("{" + FormatTagTimeStamp + "}")
+                .AppendFormat(
+                    "{" + FormatTagLevel + ":\r\n{" + FormatBuilder.ForegroundColorTag +
+                    ":DarkCyan}{Key}{" + FormatBuilder.ForegroundColorTag +
+                    "}\t: {" + FormatBuilder.ForegroundColorTag +
+                    ":" + LogLevelColorName + "}{Value}{" + FormatBuilder.ForegroundColorTag + "}}")
+                .AppendFormat("{" + FormatTagGuid + "}")
+                .AppendFormat(
+                    "{" + FormatTagThreadName + ":\r\n{" + FormatBuilder.ForegroundColorTag +
+                    ":DarkCyan}{Key}{" + FormatBuilder.ForegroundColorTag +
+                    "}\t: {Value}{" + FormatTagThreadID + ": ({Value})}}")
+                .AppendFormat("{" + FormatTagContext + "}")
+                .AppendFormat("{" + FormatTagException + "}")
+                .AppendFormat("{" + FormatTagInnerException + "}")
+                .AppendFormat(
+                    "{" + FormatTagStackTrace + ":\r\n{" + FormatTagHeader + ":-}\r\n{" +
+                    FormatBuilder.ForegroundColorTag +
+                    ":DarkCyan}{Key}{" + FormatBuilder.ForegroundColorTag +
+                    "}{!layout:i6;f3}\r\n{" +
+                    FormatBuilder.ForegroundColorTag +
+                    ":DarkCyan}{Value}{" +
+                    FormatBuilder.ForegroundColorTag +
+                    "}{!layout}}")
+                .AppendLine()
+                .AppendControl(FormatTagHeader)
+                .AppendLine()
+                .MakeReadOnly();
 
         /// <summary>
         /// The full format.
@@ -1655,15 +1692,61 @@ namespace WebApplications.Utilities.Logging
 
             CultureInfo culture = writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
 
+            // Get the width of the writer, for creating headers.
+            int width = format.InitialLayout.Width.Value;
+            ILayoutTextWriter ltw = writer as ILayoutTextWriter;
+            if (ltw != null &&
+                ltw.Width < width) 
+                width = ltw.Width;
+
+            // If there is no width restriction, limit header width.
+            if (width > 512)
+                width = 120;
+
+            // Set the custom color
             format.WriteTo(
                 writer,
                 "g",
                 chunk =>
                 {
                     if (chunk == null ||
-                        !chunk.IsFillPoint ||
-                        chunk.IsControl) return Optional<object>.Unassigned;
+                        !chunk.IsFillPoint)
+                        return Optional<object>.Unassigned;
 
+                    // Handle control chunks first.
+                    if (chunk.IsControl)
+                    {
+                        // ReSharper disable once PossibleNullReferenceException
+                        switch (chunk.Tag.ToLower())
+                        {
+                            case FormatBuilder.ForegroundColorTag:
+                                // Replace the LogLevel colour with this colour.
+                                return string.Equals(
+                                    chunk.Format,
+                                    LogLevelColorName,
+                                    StringComparison.InvariantCultureIgnoreCase)
+                                    ? _level.ToColor()
+                                    : Optional<object>.Unassigned;
+
+                            case FormatTagHeader:
+                                // Create a header based on the format pattern.
+                                string pattern = chunk.Format;
+                                if (string.IsNullOrEmpty(pattern))
+                                    pattern = "=";
+
+                                char[] header = new char[width];
+                                int p = 0;
+                                for (int c = 0; c < width; c++)
+                                    header[c] = pattern[p++ % pattern.Length];
+                                // We need to return a non-control chunk for it to be output.
+                                return FormatChunk.Create(new String(header));
+
+                            default:
+                                return Optional<object>.Unassigned;
+                        }
+                    }
+
+                    FormatBuilder fb;
                     // ReSharper disable once PossibleNullReferenceException
                     switch (chunk.Tag.ToLower())
                     {
@@ -1673,16 +1756,12 @@ namespace WebApplications.Utilities.Logging
                         case "default":
                         case "verbose":
                             return VerboseFormat;
-
                         case "short":
                             return ShortFormat;
-
                         case "all":
                             return AllFormat;
-
                         case "json":
                             return JSONFormat;
-
                         case "xml":
                             return XMLFormat;
 
@@ -1690,112 +1769,246 @@ namespace WebApplications.Utilities.Logging
                          * Log element completion.
                          */
                         case FormatTagMessage:
-                            string message = GetMessage(culture);
-                            return string.IsNullOrWhiteSpace(message)
-                                ? null
-                                : new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_Message, culture) ?? string.Empty,
-                                    message);
+                            return GetElementBuilder(
+                                chunk.Format,
+                                culture,
+                                () => Resources.LogKeys_Message,
+                                GetMessage(culture));
 
                         case FormatTagResource:
                             return string.IsNullOrWhiteSpace(_resourceProperty)
-                                ? null
-                                : new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_Resource, culture) ?? string.Empty,
+                                ? (object)string.Empty
+                                : GetElementBuilder(
+                                    chunk.Format,
+                                    culture,
+                                    () => Resources.LogKeys_Resource,
                                     _resourceProperty);
 
                         case FormatTagCulture:
-                            return new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_Culture, culture) ?? string.Empty,
-                                    culture);
+                            return GetElementBuilder(
+                                chunk.Format,
+                                culture,
+                                () => Resources.LogKeys_Culture,
+                                culture);
 
                         case FormatTagTimeStamp:
-                            return new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_TimeStamp, culture) ?? string.Empty,
-                                    ((CombGuid)_guid).Created);
+                            return GetElementBuilder(
+                                chunk.Format,
+                                culture,
+                                () => Resources.LogKeys_TimeStamp,
+                                ((CombGuid) _guid).Created);
 
                         case FormatTagLevel:
-                            // Set the custom color
-                            ColorHelper.SetName(_level.ToColor(), "LogLevel");
-                            return new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_Level, culture) ?? string.Empty,
-                                    _level);
+                            return GetElementBuilder(
+                                chunk.Format,
+                                culture,
+                                () => Resources.LogKeys_Level,
+                                _level);
 
                         case FormatTagGuid:
-                            return new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_Guid, culture) ?? string.Empty,
-                                    _guid);
+                            return GetElementBuilder(
+                                chunk.Format,
+                                culture,
+                                () => Resources.LogKeys_Guid,
+                                _guid);
 
                         case FormatTagException:
                             return string.IsNullOrWhiteSpace(_exceptionType)
-                                ? null
-                                : new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_Exception, culture) ?? string.Empty,
+                                ? (object)string.Empty
+                                : GetElementBuilder(
+                                    chunk.Format,
+                                    culture,
+                                    () => Resources.LogKeys_Exception,
                                     _exceptionType);
 
                         case FormatTagStackTrace:
-                            return string.IsNullOrWhiteSpace(_stackTrace)
-                                ? null
-                                : new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_StackTrace, culture) ?? string.Empty,
-                                    _stackTrace);
+                            return GetElementBuilder(
+                                chunk.Format,
+                                culture,
+                                () => Resources.LogKeys_StackTrace,
+                                _stackTrace);
 
                         case FormatTagThreadID:
                             return _threadID < 0
-                                ? null
-                                : new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_ThreadID, culture) ?? string.Empty,
+                                ? (object)string.Empty
+                                : GetElementBuilder(
+                                    chunk.Format,
+                                    culture,
+                                    () => Resources.LogKeys_ThreadID,
                                     _threadID);
 
                         case FormatTagThreadName:
                             return string.IsNullOrWhiteSpace(_threadName)
-                                ? null
-                                : new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_ThreadName, culture) ?? string.Empty,
+                                ? (object)string.Empty
+                                : GetElementBuilder(
+                                    chunk.Format,
+                                    culture,
+                                    () => Resources.LogKeys_ThreadName,
                                     _threadName);
 
                         case FormatTagApplicationName:
                             return string.IsNullOrWhiteSpace(ApplicationName)
-                                ? null
-                                : new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_ApplicationName, culture) ?? string.Empty,
+                                ? (object)string.Empty
+                                : GetElementBuilder(
+                                    chunk.Format,
+                                    culture,
+                                    () => Resources.LogKeys_ApplicationName,
                                     ApplicationName);
 
                         case FormatTagApplicationGuid:
-                            return new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_ApplicationGuid, culture) ?? string.Empty,
-                                    ApplicationGuid);
+                            return GetElementBuilder(
+                                chunk.Format,
+                                culture,
+                                () => Resources.LogKeys_ApplicationGuid,
+                                ApplicationGuid);
 
                         case FormatTagStoredProcedure:
                             // TODO This can be a specialized LogElement!
                             return string.IsNullOrWhiteSpace(_storedProcedure)
-                                ? null
-                                : new LogElement(
-                                    Translation.GetResource(() => Resources.LogKeys_StoredProcedure, culture) ??
-                                    string.Empty,
+                                ? (object)string.Empty
+                                : GetElementBuilder(
+                                    chunk.Format,
+                                    culture,
+                                    () => Resources.LogKeys_StoredProcedure,
                                     _storedProcedure + " at line " + _storedProcedureLine.ToString("D"));
 
                         case FormatTagInnerException:
                             // TODO This can be a specialized LogElement!
                             return (_innerExceptionGuids == null) ||
                                    (_innerExceptionGuids.Length < 1)
-                                ? null
-                                : "TODO";
+                                ? (object)string.Empty
+                                : GetElementBuilder(
+                                    chunk.Format,
+                                    culture,
+                                    () => Resources.LogKeys_InnerException,
+                                    "TODO");
 
                         case FormatTagContext:
                             // TODO This can be a specialized LogElement!
                             return (_innerExceptionGuids == null) ||
                                    (_innerExceptionGuids.Length < 1)
-                                ? null
-                                : "TODO";
+                                ? (object)string.Empty
+                                : GetElementBuilder(
+                                    chunk.Format,
+                                    culture,
+                                    () => Resources.LogKeys_Context,
+                                    "TODO");
 
                         default:
                             return Optional<object>.Unassigned;
                     }
                 });
+            ColorHelper.RemoveName(LogLevelColorName);
         }
         #endregion
 
+        #region Element formats
+        /// <summary>
+        /// The default format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly static FormatBuilder ElementDefaultFormat = new FormatBuilder()
+            .AppendLine()
+            .AppendForegroundColor(Color.DarkCyan)
+            .AppendFormat("{Key}")
+            .AppendResetForegroundColor()
+            .AppendFormat("\t: {Value}")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// The default format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly static FormatBuilder ElementNoLineFormat = new FormatBuilder()
+            .AppendForegroundColor(Color.DarkCyan)
+            .AppendFormat("{Key}")
+            .AppendResetForegroundColor()
+            .AppendFormat("\t: {Value}")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// The default format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly static FormatBuilder ElementXMLFormat = new FormatBuilder()
+            .AppendLine()
+            .AppendFormat("<{Key}>{Value}</{Key}>")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// The default format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly static FormatBuilder ElementJSONFormat = new FormatBuilder()
+            .Append(',')
+            .AppendLine()
+            .AppendFormat("\"{Key}\"=\"{Value}\"")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// Gets the element format.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>A <see cref="FormatBuilder"/>.</returns>
+        [CanBeNull]
+        private FormatBuilder GetElementBuilder(
+            [CanBeNull]string format,
+            [CanBeNull]CultureInfo culture,
+            [NotNull] Expression<Func<string>> resource,
+            object value)
+        {
+            if (value == null) return null;
+
+            FormatBuilder builder;
+            if (string.IsNullOrEmpty(format))
+                builder = ElementDefaultFormat.Clone();
+            else
+            {
+                switch (format)
+                {
+                    case "default":
+                    case "verbose":
+                        builder = ElementDefaultFormat.Clone();
+                        break;
+                    case "xml":
+                        builder = ElementXMLFormat.Clone();
+                        break;
+                    case "json":
+                        builder = ElementJSONFormat.Clone();
+                        break;
+                    case "noline":
+                        builder = ElementNoLineFormat.Clone();
+                        break;
+                    default:
+                        builder = new FormatBuilder(format);
+                        break;
+                }
+            }
+
+            Contract.Assert(!builder.IsReadOnly);
+            // Resolve the key and value.
+            return builder
+                .Resolve(
+                    chunk =>
+                    {
+                        if (chunk != null &&
+                            chunk.Tag != null)
+                            switch (chunk.Tag.ToLowerInvariant())
+                            {
+                                case "key":
+                                    return Translation.GetResource(resource, culture) ?? string.Empty;
+                                case "value":
+                                    return value;
+                            }
+                        return Optional<object>.Unassigned;
+                    })
+                .MakeReadOnly();
+        }
+        #endregion
 #if false
         #region AppendTo
 
@@ -2248,6 +2461,7 @@ namespace WebApplications.Utilities.Logging
             Type baseType = null;
 
             StringBuilder sb = new StringBuilder(255);
+            bool first = true;
             foreach (StackFrame sf in frames)
             {
                 Contract.Assert(sf != null);
@@ -2300,7 +2514,10 @@ namespace WebApplications.Utilities.Logging
                 }
 
                 // Add newline if this isn't the first new line.
-                sb.Append(Environment.NewLine);
+                if (first)
+                    first = false;
+                else
+                    sb.Append(Environment.NewLine);
 
                 sb.AppendFormat("   {0} ", wordAt);
 

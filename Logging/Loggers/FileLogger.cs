@@ -103,6 +103,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         public static FormatBuilder DefaultFileNameFormat =
             new FormatBuilder("{ApplicationName}-{DateTime:yyMMddHHmmssffff}", true);
 
+        /*
         /// <summary>
         /// Initializes a new instance of the <see cref="FileLogger" /> class.
         /// </summary>
@@ -154,6 +155,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             Contract.Requires(name != null);
         }
+         */
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileLogger" /> class.
@@ -394,7 +396,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <returns>System.String.</returns>
         /// <exception cref="LoggingException"></exception>
         [NotNull]
-        private static string ValidatePathFormat(
+        private static FormatBuilder ValidatePathFormat(
             [NotNull] string directory,
             [NotNull] FormatBuilder fileNameFormat,
             [NotNull] ref string extension,
