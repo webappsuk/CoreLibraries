@@ -32,7 +32,9 @@ using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -330,7 +332,7 @@ namespace WebApplications.Utilities.Logging
                         Contract.Assert(translation != null);
 
                         _translation = translation;
-                        _messageFormat = translation.MessageFormat;
+                        _messageFormat = translation.Message;
                         _resourceProperty = translation.ResourceProperty;
                         hasMessage = true;
                     }
@@ -348,7 +350,7 @@ namespace WebApplications.Utilities.Logging
                     Contract.Assert(translation != null);
 
                     _translation = translation;
-                    _messageFormat = translation.MessageFormat;
+                    _messageFormat = translation.Message;
                     _resourceProperty = translation.ResourceProperty;
                 }
                 else
@@ -1357,7 +1359,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public DateTime TimeStamp
         {
-            get { return Guid.Created; }
+            get { return ((CombGuid)_guid).Created; }
         }
 
         /// <summary>
@@ -1492,7 +1494,7 @@ namespace WebApplications.Utilities.Logging
 
                     // Grab the format
                     if (_translation != null)
-                        messageFormat = _translation.MessageFormat;
+                        messageFormat = _translation.Message;
                 }
                 catch
                 {
@@ -1513,7 +1515,83 @@ namespace WebApplications.Utilities.Logging
                 _latestMessage = messageFormat;
         }
 
+        #region Standard Formats
+        /// <summary>
+        /// The short format.
+        /// </summary>
+        // TODO
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatBuilder ShortFormat =
+            new FormatBuilder();
+
+        /// <summary>
+        /// The verbose default format.
+        /// </summary>
+        // TODO
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatBuilder VerboseFormat =
+            new FormatBuilder();
+
+        /// <summary>
+        /// The full format.
+        /// </summary>
+        // TODO
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatBuilder AllFormat =
+            new FormatBuilder();
+
+        /// <summary>
+        /// The JSON object format.
+        /// </summary>
+        // TODO
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatBuilder JSONFormat =
+            new FormatBuilder();
+
+        /// <summary>
+        /// The XML Node format.
+        /// </summary>
+        // TODO
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatBuilder XMLFormat =
+            new FormatBuilder();
+        #endregion
+
         #region ToString overloads
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                WriteTo(writer, VerboseFormat);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] IFormatProvider formatProvider)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                WriteTo(writer, VerboseFormat);
+                return writer.ToString();
+            }
+        }
+
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
@@ -1522,242 +1600,204 @@ namespace WebApplications.Utilities.Logging
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
-            return ToString(format, CultureInfo.CurrentCulture, formatProvider);
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                WriteTo(writer, (FormatBuilder)format);
+                return writer.ToString();
+            }
         }
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
-        /// <param name="culture"></param>
+        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type.</param>
         /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
         public string ToString(
-            [CanBeNull] string format,
-            [NotNull] CultureInfo culture,
+            [CanBeNull] FormatBuilder format,
             [CanBeNull] IFormatProvider formatProvider = null)
         {
-            return AppendTo(new LayoutBuilder(), format, culture, formatProvider).ToString();
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public override string ToString()
-        {
-            return ToString(LogFormat.General);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="culture">The culture.</param>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString([NotNull] CultureInfo culture)
-        {
-            return ToString(LogFormat.General, culture);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString([CanBeNull] IFormatProvider formatProvider)
-        {
-            return ToString(null, formatProvider);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="options">The optional options for the format.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        /// <exception cref="System.FormatException">
-        /// </exception>
-        [NotNull]
-        [PublicAPI]
-        public string ToString(LogFormat format, [CanBeNull] string options = null)
-        {
-            return ToString(format, CultureInfo.CurrentCulture, options);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <param name="culture">The culture.</param>
-        /// <param name="options">The optional options for the format.</param>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        /// <exception cref="System.FormatException"></exception>
-        [NotNull]
-        [PublicAPI]
-        public string ToString(LogFormat format, [NotNull] CultureInfo culture, [CanBeNull] string options = null)
-        {
-            return format == LogFormat.None
-                ? String.Empty
-                : AppendTo(new LayoutBuilder(), format, culture, options).ToString();
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                WriteTo(writer, format);
+                return writer.ToString();
+            }
         }
         #endregion
 
+        #region WriteTo overload
+        /// <summary>
+        /// Writes this instance to the <see paramref="writer"/>.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        [PublicAPI]
+        public void WriteTo([NotNull]TextWriter writer, [CanBeNull] string format)
+        {
+            Contract.Requires(writer != null);
+            WriteTo(writer, (FormatBuilder)format);
+        }
+
+        /// <summary>
+        /// Writes this instance to the <see paramref="writer" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        [PublicAPI]
+        public void WriteTo([NotNull]TextWriter writer, [CanBeNull] FormatBuilder format = null)
+        {
+            Contract.Requires(writer != null);
+
+            if (format == null)
+                format = VerboseFormat;
+
+            CultureInfo culture = writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
+
+            format.WriteTo(
+                writer,
+                "g",
+                chunk =>
+                {
+                    if (chunk == null ||
+                        !chunk.IsFillPoint ||
+                        chunk.IsControl) return Optional<object>.Unassigned;
+
+                    // ReSharper disable once PossibleNullReferenceException
+                    switch (chunk.Tag.ToLower())
+                    {
+                        /*
+                         * Standard named formats.
+                         */
+                        case "default":
+                        case "verbose":
+                            return VerboseFormat;
+
+                        case "short":
+                            return ShortFormat;
+
+                        case "all":
+                            return AllFormat;
+
+                        case "json":
+                            return JSONFormat;
+
+                        case "xml":
+                            return XMLFormat;
+
+                        /*
+                         * Log element completion.
+                         */
+                        case FormatTagMessage:
+                            string message = GetMessage(culture);
+                            return string.IsNullOrWhiteSpace(message)
+                                ? null
+                                : new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_Message, culture) ?? string.Empty,
+                                    message);
+
+                        case FormatTagResource:
+                            return string.IsNullOrWhiteSpace(_resourceProperty)
+                                ? null
+                                : new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_Resource, culture) ?? string.Empty,
+                                    _resourceProperty);
+
+                        case FormatTagCulture:
+                            return new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_Culture, culture) ?? string.Empty,
+                                    culture);
+
+                        case FormatTagTimeStamp:
+                            return new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_TimeStamp, culture) ?? string.Empty,
+                                    ((CombGuid)_guid).Created);
+
+                        case FormatTagLevel:
+                            // Set the custom color
+                            ColorHelper.SetName(_level.ToColor(), "LogLevel");
+                            return new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_Level, culture) ?? string.Empty,
+                                    _level);
+
+                        case FormatTagGuid:
+                            return new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_Guid, culture) ?? string.Empty,
+                                    _guid);
+
+                        case FormatTagException:
+                            return string.IsNullOrWhiteSpace(_exceptionType)
+                                ? null
+                                : new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_Exception, culture) ?? string.Empty,
+                                    _exceptionType);
+
+                        case FormatTagStackTrace:
+                            return string.IsNullOrWhiteSpace(_stackTrace)
+                                ? null
+                                : new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_StackTrace, culture) ?? string.Empty,
+                                    _stackTrace);
+
+                        case FormatTagThreadID:
+                            return _threadID < 0
+                                ? null
+                                : new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_ThreadID, culture) ?? string.Empty,
+                                    _threadID);
+
+                        case FormatTagThreadName:
+                            return string.IsNullOrWhiteSpace(_threadName)
+                                ? null
+                                : new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_ThreadName, culture) ?? string.Empty,
+                                    _threadName);
+
+                        case FormatTagApplicationName:
+                            return string.IsNullOrWhiteSpace(ApplicationName)
+                                ? null
+                                : new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_ApplicationName, culture) ?? string.Empty,
+                                    ApplicationName);
+
+                        case FormatTagApplicationGuid:
+                            return new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_ApplicationGuid, culture) ?? string.Empty,
+                                    ApplicationGuid);
+
+                        case FormatTagStoredProcedure:
+                            // TODO This can be a specialized LogElement!
+                            return string.IsNullOrWhiteSpace(_storedProcedure)
+                                ? null
+                                : new LogElement(
+                                    Translation.GetResource(() => Resources.LogKeys_StoredProcedure, culture) ??
+                                    string.Empty,
+                                    _storedProcedure + " at line " + _storedProcedureLine.ToString("D"));
+
+                        case FormatTagInnerException:
+                            // TODO This can be a specialized LogElement!
+                            return (_innerExceptionGuids == null) ||
+                                   (_innerExceptionGuids.Length < 1)
+                                ? null
+                                : "TODO";
+
+                        case FormatTagContext:
+                            // TODO This can be a specialized LogElement!
+                            return (_innerExceptionGuids == null) ||
+                                   (_innerExceptionGuids.Length < 1)
+                                ? null
+                                : "TODO";
+
+                        default:
+                            return Optional<object>.Unassigned;
+                    }
+                });
+        }
+        #endregion
+
+#if false
         #region AppendTo
-
-        /// <summary>
-        /// Appends this log to the <paramref name="builder"/> given.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>The <paramref name="builder"/> that was given.</returns>
-        [NotNull]
-        [PublicAPI]
-        public LayoutBuilder AppendTo([NotNull] LayoutBuilder builder, [CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            return AppendTo(builder, format, CultureInfo.CurrentCulture, formatProvider);
-        }
-
-        /// <summary>
-        /// Appends this log to the <paramref name="builder"/> given.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="culture">The culture.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>The <paramref name="builder"/> that was given.</returns>
-        [NotNull]
-        [PublicAPI]
-        public LayoutBuilder AppendTo(
-            [NotNull] LayoutBuilder builder,
-            [CanBeNull] string format,
-            [NotNull] CultureInfo culture,
-            [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            if (format == null) format = LogFormat.General.ToString();
-
-            if (formatProvider != null)
-            {
-                ICustomFormatter formatter = formatProvider.GetFormat(typeof(Log)) as ICustomFormatter;
-
-                if (formatter != null)
-                    return (LayoutBuilder)builder.Append(formatter.Format(format, this, formatProvider) ?? String.Empty);
-            }
-
-            // Try to get the actual format if specified as an enum.
-            LogFormat logFormat;
-            if (_formats.TryGetValue(format, out logFormat) ||
-                Enum.TryParse(format, true, out logFormat))
-                return AppendTo(builder, logFormat); // TODO
-
-            //// Get format chunks
-            //StringBuilder builder = new StringBuilder(format.Length * 2);
-            foreach (FormatChunk chunk in format.FormatChunks())
-            {
-                Contract.Assert(chunk != null);
-
-                if (chunk.IsControl)
-                {
-                    builder.AppendControl(chunk);
-                    continue;
-                }
-
-                if (!chunk.IsFillPoint ||
-                    string.IsNullOrEmpty(chunk.Tag) ||
-                    (!_formats.TryGetValue(chunk.Tag, out logFormat) &&
-                     !Enum.TryParse(chunk.Tag, true, out logFormat)))
-                {
-                    // TODO Change to overload that takes a single chunk
-                    builder.Append(new[] { chunk });
-                    continue;
-                }
-
-                // Append the formatted options.
-                AppendFormatted(
-                    builder,
-                    logFormat,
-                    culture,
-                    chunk.Format);
-            }
-
-            // Output our formatted string.
-            return builder;
-        }
-
-        /// <summary>
-        /// Appends this log to the <paramref name="builder"/> given.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="culture">The culture.</param>
-        /// <returns>The <paramref name="builder"/> that was given.</returns>
-        [NotNull]
-        [PublicAPI]
-        public LayoutBuilder AppendTo([NotNull] LayoutBuilder builder, [NotNull] CultureInfo culture)
-        {
-            return AppendTo(builder, LogFormat.General, culture);
-        }
-
-        /// <summary>
-        /// Appends this log to the <paramref name="builder"/> given.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns></returns>
-        [NotNull]
-        [PublicAPI]
-        public LayoutBuilder AppendTo([NotNull] LayoutBuilder builder, [CanBeNull] IFormatProvider formatProvider)
-        {
-            return AppendTo(builder, null, formatProvider);
-        }
-
-        /// <summary>
-        /// Appends this log to the <paramref name="builder"/> given.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="options">The options.</param>
-        /// <returns>The <paramref name="builder"/> that was given.</returns>
-        [NotNull]
-        [PublicAPI]
-        public LayoutBuilder AppendTo(
-            [NotNull] LayoutBuilder builder,
-            LogFormat format = LogFormat.General,
-            [CanBeNull] string options = null)
-        {
-            return AppendTo(builder, format, CultureInfo.CurrentCulture, options);
-        }
-
-        /// <summary>
-        /// Appends this log to the <paramref name="builder" /> given.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="culture">The culture.</param>
-        /// <param name="options">The options.</param>
-        /// <returns>The <paramref name="builder"/> that was given.</returns>
-        [NotNull]
-        [PublicAPI]
-        public LayoutBuilder AppendTo(
-            [NotNull] LayoutBuilder builder,
-            LogFormat format,
-            [NotNull] CultureInfo culture,
-            [CanBeNull] string options = null)
-        {
-            if (format == LogFormat.None)
-                return builder;
-            AppendFormatted(builder, format, culture, options);
-            return builder;
-        }
 
         /// <summary>
         /// Appends this log to the <paramref name="builder" /> given.
@@ -1936,8 +1976,8 @@ namespace WebApplications.Utilities.Logging
                             LayoutBuilder cv = new LayoutBuilder();
                             cv.AppendLine(masterFormat == MasterFormat.JSON ? "[" : String.Empty)
                                 .SetLayout(
-                                    indentSize: (byte) (layout.IndentSize.Value + 2),
-                                    firstLineIndentSize: (ushort) (layout.FirstLineIndentSize.Value + 2));
+                                    indentSize: (byte)(layout.IndentSize.Value + 2),
+                                    firstLineIndentSize: (ushort)(layout.FirstLineIndentSize.Value + 2));
 
                             bool cvf = true;
                             string innerKey = keyEscaper("Inner Exception");
@@ -2025,8 +2065,8 @@ namespace WebApplications.Utilities.Logging
                             LayoutBuilder cv = new LayoutBuilder();
                             cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty)
                                 .SetLayout(
-                                    indentSize: (byte) (layout.IndentSize.Value + 2),
-                                    firstLineIndentSize: (ushort) (layout.FirstLineIndentSize.Value + 2));
+                                    indentSize: (byte)(layout.IndentSize.Value + 2),
+                                    firstLineIndentSize: (ushort)(layout.FirstLineIndentSize.Value + 2));
 
                             bool cvf = true;
                             foreach (KeyValuePair<string, string> kvp
@@ -2109,6 +2149,7 @@ namespace WebApplications.Utilities.Logging
             }
         }
         #endregion
+#endif
 
         /// <summary>
         /// Gets the enumerator.

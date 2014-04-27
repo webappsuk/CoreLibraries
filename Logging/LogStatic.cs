@@ -42,6 +42,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Configuration;
+using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging.Configuration;
 using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
@@ -137,17 +138,115 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [NonSerialized]
         private static readonly CombGuid[] _emptyCombGuidArray = new CombGuid[0];
-
+        
+        #region Format Tags
         /// <summary>
-        /// Holds lookup for formats.
+        /// The message format tag.
         /// </summary>
         [NotNull]
-        private static readonly Dictionary<string, LogFormat> _formats =
-            ExtendedEnum<LogFormat>.ValueDetails
-                .SelectMany(
-                    vd => vd.Select(v => new KeyValuePair<string, LogFormat>(v.ToLower(), vd.Value)))
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.InvariantCultureIgnoreCase);
+        [PublicAPI]
+        public const string FormatTagMessage = "message";
 
+        /// <summary>
+        /// The resource format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagResource = "resource";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagCulture = "culture";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagTimeStamp = "time";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagLevel = "level";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagGuid = "guid";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagException = "exception";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagStackTrace = "stack";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagThreadID = "threadid";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagThreadName = "thread";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagApplicationName = "application";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagApplicationGuid = "applicationguid";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagStoredProcedure = "sproc";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagInnerException = "innerexception";
+
+        /// <summary>
+        /// The culture format tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagContext = "context";
+        #endregion
+
+        #region Context Reservations
         /// <summary>
         /// The log reservation.
         /// </summary>
@@ -285,6 +384,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public static readonly string IsTerminatingKey =
             LogContext.ReserveKey("Is Terminating", _logReservation);
+        #endregion
 
         /// <summary>
         /// The logging assembly
@@ -394,9 +494,6 @@ namespace WebApplications.Utilities.Logging
                 return _entryAssembly.Value;
             }
         }
-
-        #region GetResource overloads
-        #endregion
 
         /// <summary>
         ///   Gets the valid <see cref="LoggingLevel">log levels</see>.
@@ -546,9 +643,9 @@ namespace WebApplications.Utilities.Logging
         /// <param name="validLevels">The valid levels.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
-        public static void SetTrace(LogFormat format, LoggingLevels validLevels = LoggingLevels.All)
+        public static void SetTrace([CanBeNull] string format, LoggingLevels validLevels = LoggingLevels.All)
         {
-            SetTrace(format.ToString(), validLevels);
+            SetTrace(format != null ? new FormatBuilder().Append(format) : null, validLevels);
         }
 
         /// <summary>
@@ -557,10 +654,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
         [PublicAPI]
-        public static void SetTrace([CanBeNull] string format = null, LoggingLevels validLevels = LoggingLevels.All)
+        public static void SetTrace([CanBeNull] FormatBuilder format = null, LoggingLevels validLevels = LoggingLevels.All)
         {
-            if (format == null)
-                format = TraceLogger.DefaultFormat;
             TraceLogger traceLogger;
             lock (_loggers)
                 traceLogger = _loggers.Keys.OfType<TraceLogger>().FirstOrDefault();
@@ -582,9 +677,9 @@ namespace WebApplications.Utilities.Logging
         /// <param name="validLevels">The valid levels.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [PublicAPI]
-        public static void SetConsole(LogFormat format, LoggingLevels validLevels = LoggingLevels.All)
+        public static void SetConsole([CanBeNull] string format, LoggingLevels validLevels = LoggingLevels.All)
         {
-            SetConsole(format.ToString(), validLevels);
+            SetConsole(format != null ? new FormatBuilder().Append(format) : null, validLevels);
         }
 
         /// <summary>
@@ -593,11 +688,8 @@ namespace WebApplications.Utilities.Logging
         /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
         [PublicAPI]
-        public static void SetConsole([CanBeNull] string format = null, LoggingLevels validLevels = LoggingLevels.All)
+        public static void SetConsole([CanBeNull] FormatBuilder format = null, LoggingLevels validLevels = LoggingLevels.All)
         {
-            if (format == null)
-                format = ConsoleLogger.DefaultFormat;
-
             ConsoleLogger consoleLogger;
             lock (_loggers)
                 consoleLogger = _loggers.OfType<ConsoleLogger>().FirstOrDefault();

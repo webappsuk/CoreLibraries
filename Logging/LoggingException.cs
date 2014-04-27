@@ -33,6 +33,7 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -1216,6 +1217,7 @@ namespace WebApplications.Utilities.Logging
             return Log.GetPrefixed(prefix);
         }
 
+        #region ToString overloads
         /// <summary>
         ///   Returns a <see cref="string"/> that represents this instance.
         /// </summary>
@@ -1226,7 +1228,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public override string ToString()
         {
-            return Log.ToString(LogFormat.General);
+            return ToString(Log.VerboseFormat);
         }
 
         /// <summary>
@@ -1238,20 +1240,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider)
         {
-            return Log.ToString(null, formatProvider);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        /// <exception cref="System.FormatException"></exception>
-        [NotNull]
-        [PublicAPI]
-        public string ToString(LogFormat format)
-        {
-            return Log.ToString(format);
+            return ToString(Log.VerboseFormat, formatProvider);
         }
 
         /// <summary>
@@ -1263,16 +1252,32 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
-            if (format == null) format = LogFormat.General.ToString();
+            return ToString((FormatBuilder)format, formatProvider);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
+        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [PublicAPI]
+        [NotNull]
+        public string ToString([CanBeNull] FormatBuilder format, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (format == null)
+                format = Log.VerboseFormat;
 
             if (formatProvider != null)
             {
                 ICustomFormatter formatter = formatProvider.GetFormat(GetType()) as ICustomFormatter;
 
                 if (formatter != null)
-                    return formatter.Format(format, this, formatProvider) ?? string.Empty;
+                    return formatter.Format(format.ToString(formatProvider), this, formatProvider) ?? string.Empty;
             }
+
             return Log.ToString(format, formatProvider);
         }
+        #endregion
     }
 }

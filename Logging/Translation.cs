@@ -362,6 +362,26 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
+        /// Gets a translation for a resource property.
+        /// </summary>
+        /// <param name="resource">The resource.</param>
+        /// <param name="culture">The culture.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static string GetResource(
+            [NotNull] Expression<Func<string>> resource,
+            [CanBeNull] CultureInfo culture = null)
+        {
+            Contract.Requires(resource != null);
+
+            Translation value;
+            return TryGet(resource, out value, culture)
+                ? value.Message
+                : null;
+        }
+
+        /// <summary>
         /// Tries to get the resource value, in the <see cref="DefaultCulture">default culture</see>, for the given property name.
         /// </summary>
         /// <param name="typeFullName">Full name of the type.</param>
@@ -737,7 +757,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public readonly string MessageFormat;
+        public readonly string Message;
 
         /// <summary>
         /// The culture
@@ -764,25 +784,25 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="resourceTypeFullName">Full name of the resource type.</param>
         /// <param name="resourceTag">The resource tag.</param>
-        /// <param name="messageFormat">The message format.</param>
+        /// <param name="message">The message format.</param>
         /// <param name="culture">The culture.</param>
         /// <param name="resourceManager">The resource manager.</param>
         private Translation(
             [NotNull] string resourceTypeFullName,
             [NotNull] string resourceTag,
-            [NotNull] string messageFormat,
+            [NotNull] string message,
             [NotNull] CultureInfo culture,
             [NotNull] ResourceManager resourceManager)
         {
             Contract.Requires(resourceTypeFullName != null);
             Contract.Requires(resourceTag != null);
-            Contract.Requires(messageFormat != null);
+            Contract.Requires(message != null);
             Contract.Requires(culture != null);
             Contract.Requires(resourceManager != null);
 
             ResourceTypeFullName = resourceTypeFullName;
             ResourceTag = resourceTag;
-            MessageFormat = messageFormat;
+            Message = message;
             Culture = culture;
             ResourceManager = resourceManager;
         }

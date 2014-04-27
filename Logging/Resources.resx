@@ -327,4 +327,49 @@
   <data name="Contract_Failed_Message" xml:space="preserve">
     <value>{1}. {0}</value>
   </data>
+  <data name="LogKeys_ApplicationGuid" xml:space="preserve">
+    <value>Application GUID</value>
+  </data>
+  <data name="LogKeys_ApplicationName" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="LogKeys_Context" xml:space="preserve">
+    <value>Context</value>
+  </data>
+  <data name="LogKeys_Culture" xml:space="preserve">
+    <value>Culture</value>
+  </data>
+  <data name="LogKeys_Exception" xml:space="preserve">
+    <value>Exception type</value>
+  </data>
+  <data name="LogKeys_Guid" xml:space="preserve">
+    <value>GUID</value>
+  </data>
+  <data name="LogKeys_InnerException" xml:space="preserve">
+    <value>Inner Exception</value>
+  </data>
+  <data name="LogKeys_Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="LogKeys_Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="LogKeys_Resource" xml:space="preserve">
+    <value>Resource</value>
+  </data>
+  <data name="LogKeys_StackTrace" xml:space="preserve">
+    <value>Stack trace</value>
+  </data>
+  <data name="LogKeys_StoredProcedure" xml:space="preserve">
+    <value>Stored Procedure</value>
+  </data>
+  <data name="LogKeys_ThreadID" xml:space="preserve">
+    <value>Thread ID</value>
+  </data>
+  <data name="LogKeys_ThreadName" xml:space="preserve">
+    <value>Thread Name</value>
+  </data>
+  <data name="LogKeys_TimeStamp" xml:space="preserve">
+    <value>Timestamp</value>
+  </data>
 </root>

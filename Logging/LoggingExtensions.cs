@@ -26,9 +26,13 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using Microsoft.SqlServer.Server;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging
@@ -53,7 +57,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public static bool IsValid(this LoggingLevel level, LoggingLevels validLevels)
         {
-            LoggingLevels l = (LoggingLevels) level;
+            LoggingLevels l = (LoggingLevels)level;
             return l == (l & validLevels);
         }
 
@@ -76,20 +80,45 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Adds a log to the given builder.
+        /// The level colors
         /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="log">The log.</param>
-        /// <param name="format">The format.</param>
-        /// <returns></returns>
         [NotNull]
-        [PublicAPI]
-        public static LayoutBuilder AppendLine([NotNull] this LayoutBuilder builder, [NotNull] Log log, [CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            Contract.Requires(builder != null);
-            Contract.Requires(log != null);
+        private static readonly ConcurrentDictionary<LoggingLevel, Color> _levelColors =
+            new ConcurrentDictionary<LoggingLevel, Color>(
+                new Dictionary<LoggingLevel, Color>
+                {
+                    {LoggingLevel.Debugging, Color.DimGray},
+                    {LoggingLevel.Information, Color.Gray},
+                    {LoggingLevel.Notification, Color.LightGray},
+                    {LoggingLevel.SystemNotification, Color.White},
+                    {LoggingLevel.Warning, Color.Yellow},
+                    {LoggingLevel.Error, Color.Tomato},
+                    {LoggingLevel.Critical, Color.Red},
+                    {LoggingLevel.Emergency, Color.Magenta}
+                });
 
-            return (LayoutBuilder)log.AppendTo(builder, format, formatProvider).AppendLine();
+        /// <summary>
+        /// Gets the color of a log level.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <returns>Color.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static Color ToColor(this LoggingLevel level)
+        {
+            return _levelColors[level];
+        }
+
+        /// <summary>
+        /// Gets the color of a log level.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <returns>Color.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static void SetColor(this LoggingLevel level, Color color)
+        {
+            _levelColors[level] = color;
         }
     }
 }

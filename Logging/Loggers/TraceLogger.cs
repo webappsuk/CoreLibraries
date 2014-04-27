@@ -43,10 +43,20 @@ namespace WebApplications.Utilities.Logging.Loggers
     public sealed class TraceLogger : LoggerBase
     {
         /// <summary>
-        /// The default format.
+        /// Initializes a new instance of the <see cref="TraceLogger" /> class.
         /// </summary>
-        [NotNull]
-        public const string DefaultFormat = "Verbose,Header";
+        /// <param name="name">The logger name.</param>
+        /// <param name="validLevels">The valid log levels.</param>
+        /// <param name="format">The format.</param>
+        public TraceLogger(
+            [NotNull] string name,
+            [CanBeNull] string format = null,
+            LoggingLevels validLevels = LoggingLevels.All)
+            : this(name, (FormatBuilder) format, validLevels)
+        {
+            Contract.Requires(name != null);
+            Format = format;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceLogger" /> class.
@@ -56,12 +66,11 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="format">The format.</param>
         public TraceLogger(
             [NotNull] string name,
-            [NotNull] string format = DefaultFormat,
+            [CanBeNull] FormatBuilder format = null,
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, false, validLevels)
         {
             Contract.Requires(name != null);
-            Contract.Requires(format != null);
             Format = format;
         }
 
@@ -70,8 +79,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         /// <value>The format.</value>
         [PublicAPI]
-        [NotNull]
-        public string Format { get; set; }
+        [CanBeNull]
+        public FormatBuilder Format { get; set; }
 
         /// <summary>
         /// Adds the specified logs to storage in batches.
@@ -82,22 +91,18 @@ namespace WebApplications.Utilities.Logging.Loggers
         public override Task Add([InstantHandle]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(logs != null);
+            // Check we're actually in a console!
+            if (!ConsoleHelper.IsConsole) return TaskResult.Completed;
 
-            LayoutBuilder builder = new LayoutBuilder();
-
-            string format = Format;
+            FormatBuilder format = Format ?? Log.VerboseFormat;
             // ReSharper disable once PossibleNullReferenceException
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {
-                Contract.Assert(log != null);
                 token.ThrowIfCancellationRequested();
-                builder.AppendLine(log, format);
+                // ReSharper disable PossibleNullReferenceException
+                log.WriteTo(TraceTextWriter.Default, format);
+                // ReSharper restore PossibleNullReferenceException
             }
-
-            builder.WriteToTrace();
-
-            // We always complete synchronously.
-            // ReSharper disable once AssignNullToNotNullAttribute
             return TaskResult.Completed;
         }
     }

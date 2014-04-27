@@ -37,6 +37,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using Microsoft.SqlServer.Server;
+using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging.Interfaces;
 
 namespace WebApplications.Utilities.Logging.Loggers
@@ -67,10 +69,10 @@ namespace WebApplications.Utilities.Logging.Loggers
         private string _extension;
 
         [NotNull]
-        private string _fileNameFormat;
+        private FormatBuilder _fileNameFormat;
 
         [NotNull]
-        private string _format;
+        private FormatBuilder _format;
 
         /// <summary>
         ///   The current log file being written to.
@@ -81,7 +83,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         private long _maxLog;
 
         [NotNull]
-        private string _pathFormat;
+        private FormatBuilder _pathFormat;
 
         /// <summary>
         /// Initializes static members of the <see cref="FileLogger" /> class.
@@ -91,6 +93,66 @@ namespace WebApplications.Utilities.Logging.Loggers
             // Grab the entry point assembly, or this assembly if the process is unmanaged.
             Assembly a = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
             DefaultDirectory = Path.GetDirectoryName(a.Location) ?? Path.GetTempPath();
+        }
+
+        /// <summary>
+        /// The default file name format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static FormatBuilder DefaultFileNameFormat =
+            new FormatBuilder("{ApplicationName}-{DateTime:yyMMddHHmmssffff}", true);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileLogger" /> class.
+        /// </summary>
+        /// <param name="name">The filename.</param>
+        /// <param name="directory">The directory to log to (default to entry assembly directory).</param>
+        /// <param name="maxLog"><para>The maximum number of log items in a single log file.</para>
+        /// <para>By default this is set to 1,000.</para></param>
+        /// <param name="maxDuration">The maximum time period that a single log file can cover.</param>
+        /// <param name="validLevels"><para>The valid log levels.</para>
+        /// <para>By default allows <see cref="LoggingLevels">all log levels</see>.</para></param>
+        /// <param name="format">The log format (default to "Verbose,Xml").</param>
+        /// <param name="fileNameFormat"><para>The filename format - where {DateTime} is the creation date time.</para>
+        /// <para>By default the format is "{ApplicationName}-{DateTime:yyMMddHHmmssffff}".</para></param>
+        /// <param name="extension"><para>The file extension.</para>
+        /// <para>By default this is set to use "log".</para></param>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="autoFlush">if set to <see langword="true" /> [auto flush].</param>
+        /// <exception cref="LoggingException"><para>
+        ///   <paramref name="maxLog" /> was less than 10, which would result in too many log files to be created.</para>
+        /// <para>-or-</para>
+        /// <para>
+        ///   <paramref name="maxDuration" /> was less than 10 seconds, which would result in too many log files to be created.</para>
+        /// <para>-or-</para>
+        /// <para>
+        ///   <paramref name="directory" /> was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
+        /// <para>-or-</para>
+        /// <para>The <paramref name="fileNameFormat" /> string was either <see cref="string.IsNullOrWhiteSpace">null or whitespace</see>.</para>
+        /// <para>-or-</para>
+        /// <para>An error occurred trying to access the <paramref name="directory" />.</para>
+        /// <para>-or-</para>
+        /// <para>
+        ///   <paramref name="extension" /> was more than 5 characters long.</para>
+        /// <para>-or-</para>
+        /// <para>The <paramref name="fileNameFormat" /> led to an invalid path or created a path that references the wrong <paramref name="directory" />.</para>
+        /// <para>-or-</para>
+        /// <para>File path contained <see cref="Path.GetInvalidPathChars">invalid characters</see>.</para></exception>
+        public FileLogger(
+            [NotNull] string name,
+            [CanBeNull] string directory = null,
+            Int64 maxLog = 1000,
+            TimeSpan maxDuration = default(TimeSpan),
+            LoggingLevels validLevels = LoggingLevels.All,
+            [CanBeNull] string format = null,
+            [CanBeNull] string fileNameFormat = null,
+            [CanBeNull] string extension = null,
+            uint buffer = 65536,
+            bool autoFlush = false)
+            : this(name, directory, maxLog, maxDuration, validLevels, (FormatBuilder)format, (FormatBuilder)fileNameFormat, extension, buffer, autoFlush)
+        {
+            Contract.Requires(name != null);
         }
 
         /// <summary>
@@ -135,38 +197,38 @@ namespace WebApplications.Utilities.Logging.Loggers
             Int64 maxLog = 1000,
             TimeSpan maxDuration = default(TimeSpan),
             LoggingLevels validLevels = LoggingLevels.All,
-            [NotNull] string format = "Verbose,Xml",
-            [NotNull] string fileNameFormat = "{ApplicationName}-{DateTime:yyMMddHHmmssffff}",
+            [CanBeNull] FormatBuilder format = null,
+            [CanBeNull] FormatBuilder fileNameFormat = null,
             [CanBeNull] string extension = null,
             uint buffer = 65536,
             bool autoFlush = false)
             : base(name, false, true, validLevels)
         {
             Contract.Requires(name != null);
-            Contract.Requires(format != null);
-            Contract.Requires(fileNameFormat != null);
             MaxLog = maxLog;
             MaxDuration = maxDuration == default(TimeSpan) ? TimeSpan.FromDays(1) : maxDuration;
             _directory = directory ?? DefaultDirectory;
-            _fileNameFormat = fileNameFormat;
+            _fileNameFormat = fileNameFormat ?? DefaultFileNameFormat;
             _extension = extension ?? string.Empty;
-            _format = format;
+            _format = format ?? Log.VerboseFormat;
             _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, ref _extension, _format);
             Buffer = buffer;
             AutoFlush = autoFlush;
         }
 
-
         /// <summary>
         ///   The directory being logged to.
         /// </summary>
-        [CanBeNull]
+        [NotNull]
         [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
         public string Directory
         {
             get { return _directory; }
             set
             {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                // ReSharper disable once HeuristicUnreachableCode
                 if (value == null) value = DefaultDirectory;
                 if (_directory == value) return;
                 _pathFormat = ValidatePathFormat(value, _fileNameFormat, ref _extension, _format);
@@ -180,15 +242,40 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public string FileNameFormat
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public FormatBuilder FileNameFormat
         {
             get { return _fileNameFormat; }
             set
             {
-                Contract.Requires(value != null);
-                if (_fileNameFormat == value) return;
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                // ReSharper disable once HeuristicUnreachableCode
+                if (value == null) value = DefaultFileNameFormat;
+                if (_fileNameFormat.ToString() == value) return;
                 _pathFormat = ValidatePathFormat(_directory, value, ref _extension, _format);
                 _fileNameFormat = value;
+                CloseFile();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the log format.
+        /// </summary>
+        /// <value>The format.</value>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public FormatBuilder Format
+        {
+            get { return _format; }
+            set
+            {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                // ReSharper disable once HeuristicUnreachableCode
+                if (value == null) value = Log.VerboseFormat;
+                if (_format.ToString() == value) return;
+                _format = value;
+                _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, ref _extension, _format);
                 CloseFile();
             }
         }
@@ -255,25 +342,6 @@ namespace WebApplications.Utilities.Logging.Loggers
         }
 
         /// <summary>
-        /// Gets or sets the log format.
-        /// </summary>
-        /// <value>The format.</value>
-        [NotNull]
-        [PublicAPI]
-        public string Format
-        {
-            get { return _format; }
-            set
-            {
-                Contract.Requires(value != null);
-                if (_format == value) return;
-                _format = value;
-                _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, ref _extension, _format);
-                CloseFile();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the buffer size in bytes.
         /// </summary>
         /// <value>The buffer.</value>
@@ -293,7 +361,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 if (value > int.MaxValue)
                     throw new LoggingException(
                         LoggingLevel.Critical,
-// ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         () => Resources.FileLogger_BufferSize_Too_Big,
                         value.ToMemorySize());
 
@@ -310,6 +378,13 @@ namespace WebApplications.Utilities.Logging.Loggers
         public bool AutoFlush { get; set; }
 
         /// <summary>
+        /// The format tag used to dedupe a file.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string FormatTagDedupe = "dedupe";
+
+        /// <summary>
         /// Validates the path format.
         /// </summary>
         /// <param name="directory">The directory.</param>
@@ -321,13 +396,14 @@ namespace WebApplications.Utilities.Logging.Loggers
         [NotNull]
         private static string ValidatePathFormat(
             [NotNull] string directory,
-            [NotNull] string fileNameFormat,
+            [NotNull] FormatBuilder fileNameFormat,
             [NotNull] ref string extension,
-            [NotNull] string format)
+            [NotNull] FormatBuilder format)
         {
             Contract.Requires(directory != null);
             Contract.Requires(fileNameFormat != null);
             Contract.Requires(extension != null);
+            Contract.Requires(format != null);
 
             if (string.IsNullOrWhiteSpace(directory))
                 directory = DefaultDirectory;
@@ -348,25 +424,16 @@ namespace WebApplications.Utilities.Logging.Loggers
                     directory);
             }
 
-            if (string.IsNullOrWhiteSpace(fileNameFormat))
+            if (fileNameFormat.IsEmpty)
                 // ReSharper disable once AssignNullToNotNullAttribute
                 throw new LoggingException(LoggingLevel.Critical, () => Resources.FileLogger_FileNameFormatNotSpecified);
 
 
             if (string.IsNullOrWhiteSpace(extension))
             {
-                bool isXml = false, isJson = false;
-                LogFormat logFormat;
-                if (Enum.TryParse(format, true, out logFormat))
-                    if (logFormat.HasFlag(LogFormat.Xml))
-                        isXml = true;
-                    else if (logFormat.HasFlag(LogFormat.Json))
-                        isJson = true;
-                Contract.Assert(!(isXml && isJson));
-
-                if (isXml)
+                if (format == Log.XMLFormat)
                     extension = ".xml";
-                else if (isJson)
+                else if (format == Log.JSONFormat)
                     extension = ".json";
                 else
                     extension = ".log";
@@ -389,49 +456,18 @@ namespace WebApplications.Utilities.Logging.Loggers
                 extension = "." + extension;
             }
 
-            string fullFormat = directory + @"\" +
-                                fileNameFormat.Replace("DateTime", "0")
-                                    .Replace("ApplicationName", "2")
-                                    .Replace("ApplicationGuid", "3")
-                                + "{1}" + extension;
+            FormatBuilder pathBuilder = new FormatBuilder()
+                .Append(directory)
+                .Append('\\')
+                .AppendFormat(fileNameFormat);
 
-            // Test the format string
-            string testFormat = string.Format(
-                fullFormat,
-                DateTime.Now,
-                Int32.MaxValue,
-                Log.ApplicationName,
-                Log.ApplicationGuid);
+            // Add a dedupe tag if not already present
+            if (!fileNameFormat.Any(c => c.Tag == FormatTagDedupe))
+                pathBuilder.AppendFormat("{dedupe: ({dedupe:D})}");
 
-            if (testFormat.IndexOfAny(Path.GetInvalidPathChars()) > -1)
-                // ReSharper disable once AssignNullToNotNullAttribute
-                throw new LoggingException(
-                    LoggingLevel.Critical,
-                    () => Resources.FileLogger_FileNameFormatInvalid,
-                    fileNameFormat);
-
-            try
-            {
-                testFormat = Path.GetFullPath(testFormat);
-            }
-            catch (Exception e)
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                throw new LoggingException(
-                    e,
-                    LoggingLevel.Critical,
-                    () => Resources.FileLogger_InvalidPathCreation,
-                    fileNameFormat);
-            }
-
-            if (!testFormat.StartsWith(directory))
-                // ReSharper disable once AssignNullToNotNullAttribute
-                throw new LoggingException(
-                    LoggingLevel.Critical,
-                    () => Resources.FileLogger_PathCreatedOutsideDirectory,
-                    fileNameFormat);
-
-            return fullFormat;
+            return pathBuilder
+                .Append(extension)
+                .MakeReadOnly();
         }
 
         /// <summary>
@@ -463,6 +499,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 // Check if the current file is OK.
                 if ((logFile == null) ||
                     (logFile.Logs > MaxLog) ||
+                    // ReSharper disable once PossibleNullReferenceException
                     (log.TimeStamp - logFile.Start >= MaxDuration))
                 {
                     // Close out the last logfile.
@@ -476,14 +513,29 @@ namespace WebApplications.Utilities.Logging.Loggers
                     string fileName;
                     do
                     {
-                        fileName = string.Format(
-                            _pathFormat,
-                            log.TimeStamp,
-                            dedupe > 1
-                                ? string.Format(" ({0})", dedupe)
-                                : string.Empty,
-                            Log.ApplicationName,
-                            Log.ApplicationGuid);
+                        fileName = _pathFormat.ToString(
+                            chunk =>
+                            {
+
+                                if (chunk == null ||
+                                    !chunk.IsFillPoint ||
+                                    chunk.IsControl) return Optional<object>.Unassigned;
+
+                                // ReSharper disable once PossibleNullReferenceException
+                                switch (chunk.Tag.ToLower())
+                                {
+                                    case Log.FormatTagApplicationName:
+                                        return Log.ApplicationName;
+                                    case Log.FormatTagApplicationGuid:
+                                        return Log.ApplicationGuid;
+                                    case Log.FormatTagTimeStamp:
+                                        return log.TimeStamp;
+                                    case FormatTagDedupe:
+                                        return dedupe < 1 ? (object) null : dedupe;
+                                    default:
+                                        return Optional<object>.Unassigned;
+                                }
+                            });
                         dedupe++;
                     } while (File.Exists(fileName));
 
@@ -519,6 +571,16 @@ namespace WebApplications.Utilities.Logging.Loggers
         }
 
         /// <summary>
+        /// The log file style.
+        /// </summary>
+        private enum LogFileStyle
+        {
+            XML,
+            JSON,
+            Text
+        }
+
+        /// <summary>
         /// A log file.
         /// </summary>
         private class LogFile : IDisposable
@@ -549,13 +611,10 @@ namespace WebApplications.Utilities.Logging.Loggers
 
             [NotNull]
             [PublicAPI]
-            public readonly string Format;
+            public readonly FormatBuilder Format;
 
             [PublicAPI]
-            public readonly bool IsJson;
-
-            [PublicAPI]
-            public readonly bool IsXml;
+            public readonly LogFileStyle Style;
 
             public readonly DateTime Start;
 
@@ -569,31 +628,37 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <param name="format">The format.</param>
             /// <param name="buffer">The buffer.</param>
             /// <param name="start">The start.</param>
-            public LogFile([NotNull] string fileName, [NotNull] string format, uint buffer, DateTime start)
+            public LogFile([NotNull] string fileName, [NotNull] FormatBuilder format, uint buffer, DateTime start)
             {
                 Contract.Requires(fileName != null);
                 Contract.Requires(format != null);
                 Format = format;
                 Start = start;
-                int b = (int) buffer;
+                int b = (int)buffer;
 
-                // Parse format to see if we're outputting XML / JSON.  Note - this only works for LogFormat formats.
-                LogFormat logFormat;
-                if (Enum.TryParse(format, true, out logFormat))
-                    if (logFormat.HasFlag(LogFormat.Xml))
-                        IsXml = true;
-                    else if (logFormat.HasFlag(LogFormat.Json))
-                        IsJson = true;
+                // Calculate style.
+                Style = Format == Log.XMLFormat
+                    ? LogFileStyle.XML
+                    : (Format == Log.JSONFormat
+                        ? LogFileStyle.JSON
+                        : LogFileStyle.Text);
 
                 FileName = fileName;
                 _fileStream = File.Create(fileName, b, FileOptions.Asynchronous | FileOptions.SequentialScan);
 
-                if (IsXml)
-                    WriteLine("<Logs>" + Environment.NewLine + "</Logs>").Wait();
-                else if (IsJson)
-                    WriteLine("[" + Environment.NewLine + "]").Wait();
-                else
-                    Write(Format + Environment.NewLine + Environment.NewLine).Wait();
+                switch (Style)
+                {
+                    case LogFileStyle.XML:
+                        WriteLine("<Logs>" + Environment.NewLine + "</Logs>").Wait();
+                        break;
+                    case LogFileStyle.JSON:
+                        WriteLine("[" + Environment.NewLine + "]").Wait();
+                        break;
+                    default:
+                        Write(Format.ToString() + Environment.NewLine + Environment.NewLine)
+                            .Wait();
+                        break;
+                }
 
                 // ReSharper disable once AssignNullToNotNullAttribute
                 Trace.WriteLine(string.Format(Resources.FileLogger_Started_File, FileName, b.ToMemorySize()));
@@ -629,26 +694,25 @@ namespace WebApplications.Utilities.Logging.Loggers
                 string logStr = log.ToString(Format);
                 Logs++;
 
-                if (IsXml)
+                switch (Style)
                 {
-                    _fileStream.Seek(_xmlSeekOffset, SeekOrigin.End);
-                    await Write(logStr, token);
-                    await WriteLine("</Logs>", token);
-                    return;
+                    case LogFileStyle.XML:
+                        _fileStream.Seek(_xmlSeekOffset, SeekOrigin.End);
+                        await Write(logStr, token);
+                        await WriteLine("</Logs>", token);
+                        return;
+                    case LogFileStyle.JSON:
+                        _fileStream.Seek(_jsonSeekOffset, SeekOrigin.End);
+                        if (Logs > 1)
+                            await WriteLine(",", token);
+
+                        await Write(logStr, token);
+                        await WriteLine("]", token);
+                        return;
+                    default:
+                        await WriteLine(logStr, token);
+                        return;
                 }
-
-                if (IsJson)
-                {
-                    _fileStream.Seek(_jsonSeekOffset, SeekOrigin.End);
-                    if (Logs > 1)
-                        await WriteLine(",", token);
-
-                    await Write(logStr, token);
-                    await WriteLine("]", token);
-                    return;
-                }
-
-                await WriteLine(logStr, token);
             }
 
             /// <summary>

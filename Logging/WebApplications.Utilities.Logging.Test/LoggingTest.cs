@@ -149,13 +149,13 @@ namespace WebApplications.Utilities.Logging.Test
         public void TestToFromDictionary()
         {
             Log initialLog = new Log(_logDictionary);
-            Trace.WriteLine(initialLog.ToString(LogFormat.All));
+            Trace.WriteLine(initialLog.ToString(Log.AllFormat));
             Trace.WriteLine(string.Empty);
 
             Dictionary<string, string> resultDictionary = initialLog.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             Log resultLog = new Log(initialLog);
-            Trace.WriteLine(resultLog.ToString(LogFormat.All));
+            Trace.WriteLine(resultLog.ToString(Log.AllFormat));
             Trace.WriteLine(string.Empty);
 
             Log.Flush().Wait();
@@ -318,19 +318,19 @@ namespace WebApplications.Utilities.Logging.Test
             var culture = Resources.Culture;
 
             Resources.Culture = Translation.DefaultCulture;
-            Trace.WriteLine(log.ToString(LogFormat.Verbose) + Environment.NewLine);
+            Trace.WriteLine(log.ToString(Log.VerboseFormat) + Environment.NewLine);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.Message);
 
             Resources.Culture = CultureInfo.InvariantCulture;
-            Trace.WriteLine(log.ToString(LogFormat.Verbose, Resources.Culture) + Environment.NewLine);
+            Trace.WriteLine(log.ToString(Log.VerboseFormat, Resources.Culture) + Environment.NewLine);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.GetMessage(Resources.Culture));
 
             Resources.Culture = CultureHelper.GetCultureInfo("fr-FR");
-            Trace.WriteLine(log.ToString(LogFormat.Verbose, Resources.Culture) + Environment.NewLine);
+            Trace.WriteLine(log.ToString(Log.VerboseFormat, Resources.Culture) + Environment.NewLine);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.GetMessage(Resources.Culture));
 
             Resources.Culture = CultureHelper.GetCultureInfo("de-DE");
-            Trace.WriteLine(log.ToString(LogFormat.Verbose, Resources.Culture) + Environment.NewLine);
+            Trace.WriteLine(log.ToString(Log.VerboseFormat, Resources.Culture) + Environment.NewLine);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.GetMessage(Resources.Culture));
 
             Resources.Culture = culture;

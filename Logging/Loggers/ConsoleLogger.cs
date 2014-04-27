@@ -43,10 +43,19 @@ namespace WebApplications.Utilities.Logging.Loggers
     public sealed class ConsoleLogger : LoggerBase
     {
         /// <summary>
-        /// The default format.
+        /// Initializes a new instance of the <see cref="ConsoleLogger"/> class.
         /// </summary>
-        [NotNull]
-        public const string DefaultFormat = "{!ConsoleFore:Cyan}[{TimeStamp}] {!ConsoleFore:?}{Level}{!ConsoleFore:White}\t{Message}{!ConsoleFore:Gray}{StackTrace}{!ConsoleFore}\r\n";
+        /// <param name="name">The name.</param>
+        /// <param name="format">The format (see <see cref="Format"/> for more information on usage).</param>
+        /// <param name="validLevels">The valid levels.</param>
+        public ConsoleLogger(
+            [NotNull] string name,
+            [CanBeNull] string format = null,
+            LoggingLevels validLevels = LoggingLevels.All)
+            : this(name, (FormatBuilder)format, validLevels)
+        {
+            Contract.Requires(name != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleLogger"/> class.
@@ -56,13 +65,12 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <param name="validLevels">The valid levels.</param>
         public ConsoleLogger(
             [NotNull] string name,
-            [NotNull] string format = DefaultFormat,
+            [CanBeNull] FormatBuilder format = null,
             LoggingLevels validLevels = LoggingLevels.All)
             : base(name, false, false, validLevels)
         {
             Contract.Requires(name != null);
-            Contract.Requires(format != null);
-            Format = format;
+            Format = format ?? Log.VerboseFormat;
         }
 
         /// <summary>
@@ -78,8 +86,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <para>The '_' colour will use the current consoles default foreground or background colour (depending on whether it is preceeded with '+' or '-').</para>
         /// </remarks>
         [PublicAPI]
-        [NotNull]
-        public string Format { get; set; }
+        [CanBeNull]
+        public FormatBuilder Format { get; set; }
 
         /// <summary>
         /// Adds the specified logs to storage in batches.
@@ -93,46 +101,16 @@ namespace WebApplications.Utilities.Logging.Loggers
             // Check we're actually in a console!
             if (!ConsoleHelper.IsConsole) return TaskResult.Completed;
 
-            string format = Format;
-
-            ConsoleBuilder builder = new ConsoleBuilder();
-
+            FormatBuilder format = Format ?? Log.VerboseFormat;
             // ReSharper disable once PossibleNullReferenceException
             foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
             {
-                Contract.Assert(log != null);
                 token.ThrowIfCancellationRequested();
-                ConsoleBuilder.SetCustomColourName("?", LevelColour(log.Level));
-                builder.AppendLine(log, format);
+                // ReSharper disable PossibleNullReferenceException
+                log.WriteTo(ConsoleTextWriter.Default, format);
+                // ReSharper restore PossibleNullReferenceException
             }
-            ConsoleBuilder.RemoveCustomColour("?");
-
-            builder.WriteToConsole();
             return TaskResult.Completed;
-        }
-
-        /// <summary>
-        /// Gets the default colour for a given logging level.
-        /// </summary>
-        /// <param name="level">The level.</param>
-        /// <returns>ConsoleColor.</returns>
-        private static ConsoleColor LevelColour(LoggingLevel level)
-        {
-            switch (level)
-            {
-                case LoggingLevel.Emergency:
-                case LoggingLevel.Critical:
-                case LoggingLevel.Error:
-                    return ConsoleColor.Red;
-                case LoggingLevel.Warning:
-                case LoggingLevel.SystemNotification:
-                case LoggingLevel.Notification:
-                    return ConsoleColor.Yellow;
-                case LoggingLevel.Debugging:
-                    return ConsoleColor.Gray;
-                default:
-                    return ConsoleColor.White;
-            }
         }
     }
 }
