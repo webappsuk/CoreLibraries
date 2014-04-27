@@ -108,14 +108,14 @@ namespace WebApplications.Utilities.Test.Formatting
                         i => formatTextWriter.Write(FormatResources.ButIMustExplain));
                     watch.Stop();
                     Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
-                    Assert.AreEqual(9, formatTextWriter.Position);
+                    Assert.AreEqual(50, formatTextWriter.Position);
                     string result = stringWriter.ToString();
 
                     string[] lines = result
                         .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
                     // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
-                    Assert.AreEqual(12501, lines.Length);
+                    Assert.AreEqual(12500, lines.Length);
                     Assert.AreEqual(width, lines.Select(l => l.Length).Max());
                 }
             }
@@ -140,14 +140,14 @@ namespace WebApplications.Utilities.Test.Formatting
                             .WriteTo(formatTextWriter));
                     watch.Stop();
                     Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
-                    Assert.AreEqual(9, formatTextWriter.Position);
+                    Assert.AreEqual(50, formatTextWriter.Position);
                     string result = stringWriter.ToString();
 
                     string[] lines = result
                         .Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
                     // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
-                    Assert.AreEqual(12501, lines.Length);
+                    Assert.AreEqual(12500, lines.Length);
                     Assert.AreEqual(width, lines.Select(l => l.Length).Max());
                 }
             }

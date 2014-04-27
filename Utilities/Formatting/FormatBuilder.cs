@@ -36,7 +36,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -557,8 +556,8 @@ namespace WebApplications.Utilities.Formatting
             if (value != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] {FormatChunk.Create(value)},
-                        (Func<FormatChunk, Optional<object>>) null,
+                        new[] { FormatChunk.Create(value) },
+                        (Func<FormatChunk, Optional<object>>)null,
                         ref _isLayoutRequired));
             return this;
         }
@@ -657,8 +656,8 @@ namespace WebApplications.Utilities.Formatting
             if (chunk != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] {chunk},
-                        (Func<FormatChunk, Optional<object>>) null,
+                        new[] { chunk },
+                        (Func<FormatChunk, Optional<object>>)null,
                         ref _isLayoutRequired));
             return this;
         }
@@ -951,8 +950,8 @@ namespace WebApplications.Utilities.Formatting
             if (value != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] {FormatChunk.Create(value)},
-                        (Func<FormatChunk, Optional<object>>) null,
+                        new[] { FormatChunk.Create(value) },
+                        (Func<FormatChunk, Optional<object>>)null,
                         ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -1321,6 +1320,7 @@ namespace WebApplications.Utilities.Formatting
                 chunk =>
                 {
                     int index;
+                    // ReSharper disable once PossibleNullReferenceException
                     return int.TryParse(chunk.Tag, out index) &&
                              (index >= 0) &&
                              (index < values.Length)
@@ -1349,6 +1349,7 @@ namespace WebApplications.Utilities.Formatting
                 chunk =>
                 {
                     object value;
+                    // ReSharper disable once PossibleNullReferenceException
                     return values.TryGetValue(chunk.Tag, out value)
                         ? new Optional<object>(value)
                         : Optional<object>.Unassigned;
@@ -1369,7 +1370,7 @@ namespace WebApplications.Utilities.Formatting
             if ((_chunks.Count < 1) ||
                 (resolver == null))
                 return this;
-            
+
             int index = 0;
             do
             {
@@ -1438,13 +1439,14 @@ namespace WebApplications.Utilities.Formatting
                     ? chunk =>
                     {
                         int index;
+                        // ReSharper disable once PossibleNullReferenceException
                         return int.TryParse(chunk.Tag, out index) &&
                                (index >= 0) &&
                                (index < values.Length)
                             ? new Optional<object>(values[index])
                             : Optional<object>.Unassigned;
                     }
-                    : (Func<FormatChunk, Optional<object>>) null,
+                    : (Func<FormatChunk, Optional<object>>)null,
                 ref isLayoutRequired);
         }
 
@@ -1468,14 +1470,15 @@ namespace WebApplications.Utilities.Formatting
                     ? chunk =>
                     {
                         object value;
+                        // ReSharper disable once PossibleNullReferenceException
                         return values.TryGetValue(chunk.Tag, out value)
                             ? new Optional<object>(value)
                             : Optional<object>.Unassigned;
                     }
-                    : (Func<FormatChunk, Optional<object>>) null,
+                    : (Func<FormatChunk, Optional<object>>)null,
                 ref isLayoutRequired);
         }
-        
+
         /// <summary>
         /// Resolves the specified chunks.
         /// </summary>
@@ -2521,7 +2524,7 @@ namespace WebApplications.Utilities.Formatting
 
                 foreach (char ch in chunk1)
                 {
-                    if (!char.IsWhiteSpace(ch))
+                    if (char.IsLetterOrDigit(ch))
                     {
                         word.Append(ch);
                         continue;
@@ -2684,6 +2687,7 @@ namespace WebApplications.Utilities.Formatting
                             {
                                 // Start a new line, as we are past the current lines width.
                                 newLine = true;
+                                // ReSharper disable once RedundantAssignment
                                 firstLine = false;
                                 continue;
                             }
@@ -2846,9 +2850,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0)
                         {
-                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
-                            int o = (int) Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
+                            decimal space = (decimal)(line.End - line.LastWordLength - line.Start) / remaining;
+                            int o = (int)Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
                         }
                         break;
                     default:
@@ -2879,23 +2883,31 @@ namespace WebApplications.Utilities.Formatting
                         continue;
                     }
 
-                    lb.Append(chunk);
-                    p += chunk.Length;
-
-                    // Check if we have to add justification spaces
-                    if (spacers == null) continue;
-
-                    while ((spacers.Count > 0) &&
-                           (spacers.Peek() <= p))
+                    if (!string.IsNullOrWhiteSpace(chunk))
                     {
-                        lb.Append(indentChar);
-                        spacers.Dequeue();
-                        p++;
+                        lb.Append(chunk);
+                        p += chunk.Length;
+                        continue;
                     }
 
-                    // Check if justification is finished
-                    if (spacers.Count < 1)
-                        spacers = null;
+                    // We have a white-space chunk, check if we have to add justification spaces
+                    if (spacers != null)
+                    {
+                        while ((spacers.Count > 0) &&
+                               (spacers.Peek() <= p))
+                        {
+                            lb.Append(indentChar);
+                            spacers.Dequeue();
+                            p++;
+                        }
+
+                        // Check if justification is finished
+                        if (spacers.Count < 1)
+                            spacers = null;
+                    }
+
+                    lb.Append(chunk);
+                    p += chunk.Length;
                 }
 
                 // Add any remaining spacers
@@ -3141,13 +3153,14 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLayout([CanBeNull] Layout layout)
         {
             Contract.Requires(!IsReadOnly);
-            return AppendControl(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
+            return layout == null
+                ? this
+                : AppendControl(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
         }
 
         /// <summary>
         /// Sets the layout (if outputting to a layout writer).
         /// </summary>
-        /// <param name="builder">The builder.</param>
         /// <param name="width">The width.</param>
         /// <param name="indentSize">Size of the indent.</param>
         /// <param name="rightMarginSize">Size of the right margin.</param>
