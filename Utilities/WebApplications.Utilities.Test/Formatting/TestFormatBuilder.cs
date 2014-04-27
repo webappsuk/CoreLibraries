@@ -86,6 +86,15 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("abc,    4, 5   , ", str);
         }
 
+
+        [TestMethod]
+        public void TestFormatBuilderToStringWhitespaceAndALign()
+        {
+            // Create a format builder with limited width and special characters.
+            FormatBuilder f = new FormatBuilder("{tag}\t\twith tabs\r\nand new lines.", 5);
+            Assert.AreEqual("{tag}\t\twith tabs\r\nand new lines.", f.ToString("f"));
+        }
+
         [TestMethod]
         public void TestCloneFormatBuilder()
         {

@@ -2392,7 +2392,16 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(initialLayout != null);
             if (format == null)
                 format = "g";
-            bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
+            
+            bool writeTags;
+            if (string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase))
+            {
+                writeTags = true;
+                isLayoutRequired = false;
+            }
+            else
+                writeTags = false;
+
             IControllableTextWriter controller = serialWriter as IControllableTextWriter ??
                                                  writer as IControllableTextWriter;
             ILayoutTextWriter layoutWriter = serialWriter as ILayoutTextWriter ?? writer as ILayoutTextWriter;
