@@ -199,6 +199,7 @@
     <Compile Include="Formatting\ColorHelper.cs" />
     <Compile Include="Formatting\ConsoleTextWriter.cs" />
     <Compile Include="Formatting\FormatBuilder.cs" />
+    <Compile Include="Formatting\FormatBuilderConverter.cs" />
     <Compile Include="Formatting\FormatChunk.cs" />
     <Compile Include="Formatting\FormatExtensions.cs" />
     <Compile Include="Formatting\FormattedStringWriter.cs" />

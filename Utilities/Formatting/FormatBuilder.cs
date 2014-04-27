@@ -35,6 +35,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -72,9 +73,9 @@ namespace WebApplications.Utilities.Formatting
         private readonly List<FormatChunk> _chunks = new List<FormatChunk>();
 
         /// <summary>
-        /// Whether this builder is readonly
+        /// Whether this builder is read only
         /// </summary>
-        private bool _isReadonly;
+        private bool _isReadOnly;
 
         /// <summary>
         /// Whether layout is required.
@@ -91,24 +92,47 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public Layout InitialLayout { get; protected set; }
 
+        #region Constructor overloads
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatBuilder" /> class.
         /// </summary>
-        public FormatBuilder()
+        /// <param name="format">The format.</param>
+        /// <param name="isReadOnly">if set to <see langword="true" /> is read only.</param>
+        public FormatBuilder([CanBeNull]string format = null, bool isReadOnly = false)
         {
             InitialLayout = Layout.Default;
-            Contract.Assert(InitialLayout.IsFull);
+            if (!string.IsNullOrEmpty(format))
+                AppendFormat(format);
+            _isReadOnly = isReadOnly;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatBuilder" /> class.
         /// </summary>
         /// <param name="layout">The layout.</param>
-        public FormatBuilder([CanBeNull] Layout layout)
+        /// <param name="isReadOnly">if set to <see langword="true" /> is read only.</param>
+        public FormatBuilder([CanBeNull] Layout layout, bool isReadOnly = false)
         {
             InitialLayout = Layout.Default.Apply(layout);
             _isLayoutRequired = InitialLayout != Layout.Default;
             Contract.Assert(InitialLayout.IsFull);
+            _isReadOnly = isReadOnly;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatBuilder" /> class.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="layout">The layout.</param>
+        /// <param name="isReadOnly">if set to <see langword="true" /> is read only.</param>
+        public FormatBuilder([CanBeNull] string format, [CanBeNull] Layout layout, bool isReadOnly = false)
+        {
+            InitialLayout = Layout.Default.Apply(layout);
+            _isLayoutRequired = InitialLayout != Layout.Default;
+            Contract.Assert(InitialLayout.IsFull);
+            if (!string.IsNullOrEmpty(format))
+                AppendFormat(format);
+            _isReadOnly = isReadOnly;
         }
 
         /// <summary>
@@ -127,9 +151,9 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="hyphenate">The hyphenate.</param>
         /// <param name="hyphenChar">The hyphen character.</param>
         /// <param name="wrapMode">The wrap mode.</param>
-        /// <param name="?">The ?.</param>
+        /// <param name="isReadOnly">if set to <see langword="true" /> is read only.</param>
         public FormatBuilder(
-            Optional<int> width = default(Optional<int>),
+            Optional<int> width,
             Optional<int> indentSize = default(Optional<int>),
             Optional<int> rightMarginSize = default(Optional<int>),
             Optional<char> indentChar = default(Optional<char>),
@@ -141,7 +165,8 @@ namespace WebApplications.Utilities.Formatting
             Optional<bool> splitWords = default(Optional<bool>),
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
-            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
+            bool isReadOnly = false)
         {
             InitialLayout = Layout.Default.Apply(
                 width,
@@ -159,7 +184,65 @@ namespace WebApplications.Utilities.Formatting
                 wrapMode);
             _isLayoutRequired = InitialLayout != Layout.Default;
             Contract.Assert(InitialLayout.IsFull);
+            _isReadOnly = isReadOnly;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatBuilder" /> class.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="indentSize">Size of the indent.</param>
+        /// <param name="rightMarginSize">Size of the right margin.</param>
+        /// <param name="indentChar">The indent character.</param>
+        /// <param name="firstLineIndentSize">First size of the line indent.</param>
+        /// <param name="tabStops">The tab stops.</param>
+        /// <param name="tabSize">Size of the tab.</param>
+        /// <param name="tabChar">The tab character.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="splitWords">The split words.</param>
+        /// <param name="hyphenate">The hyphenate.</param>
+        /// <param name="hyphenChar">The hyphen character.</param>
+        /// <param name="wrapMode">The wrap mode.</param>
+        /// <param name="isReadOnly">if set to <see langword="true" /> is read only.</param>
+        public FormatBuilder(
+            [CanBeNull] string format,
+            Optional<int> width,
+            Optional<int> indentSize = default(Optional<int>),
+            Optional<int> rightMarginSize = default(Optional<int>),
+            Optional<char> indentChar = default(Optional<char>),
+            Optional<int> firstLineIndentSize = default(Optional<int>),
+            Optional<IEnumerable<int>> tabStops = default(Optional<IEnumerable<int>>),
+            Optional<byte> tabSize = default(Optional<byte>),
+            Optional<char> tabChar = default(Optional<char>),
+            Optional<Alignment> alignment = default(Optional<Alignment>),
+            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<bool> hyphenate = default(Optional<bool>),
+            Optional<char> hyphenChar = default(Optional<char>),
+            Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
+            bool isReadOnly = false)
+        {
+            InitialLayout = Layout.Default.Apply(
+                width,
+                indentSize,
+                rightMarginSize,
+                indentChar,
+                firstLineIndentSize,
+                tabStops,
+                tabSize,
+                tabChar,
+                alignment,
+                splitWords,
+                hyphenate,
+                hyphenChar,
+                wrapMode);
+            _isLayoutRequired = InitialLayout != Layout.Default;
+            Contract.Assert(InitialLayout.IsFull);
+            if (!string.IsNullOrEmpty(format))
+                AppendFormat(format);
+            _isReadOnly = isReadOnly;
+        }
+#endregion
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -200,52 +283,54 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Gets a value indicating whether this builder is readonly.
+        /// Gets a value indicating whether this builder is read only.
         /// </summary>
         /// <value>
-        /// <see langword="true" /> if this builder is readonly; otherwise, <see langword="false" />.
+        /// <see langword="true" /> if this builder is read only; otherwise, <see langword="false" />.
         /// </value>
-        /// <remarks>A readonly builder cannot have any more chunks appended, but fill points can still be resolved.</remarks>
+        /// <remarks>A read only builder cannot have any more chunks appended, but fill points can still be resolved.</remarks>
         [PublicAPI]
-        public bool IsReadonly
+        public bool IsReadOnly
         {
-            get { return _isReadonly; }
+            get { return _isReadOnly; }
         }
 
         /// <summary>
-        /// Makes this builder readonly.
+        /// Makes this builder read only.
         /// </summary>
         [PublicAPI]
-        public void MakeReadonly()
+        [NotNull]
+        public FormatBuilder MakeReadOnly()
         {
-            _isReadonly = true;
+            _isReadOnly = true;
+            return this;
         }
 
         /// <summary>
         /// Clones this instance.
         /// </summary>
-        /// <param name="makeReadonly">If set to <see langword="true" />, the returned builder will be readonly.</param>
+        /// <param name="makeReadOnly">If set to <see langword="true" />, the returned builder will be read only.</param>
         /// <returns>
         /// A shallow copy of this builder.
         /// </returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Clone(bool makeReadonly = false)
+        public FormatBuilder Clone(bool makeReadOnly = false)
         {
             Contract.Ensures(
                 Contract.Result<FormatBuilder>().GetType() == GetType(),
                 "All classes derived from FormatBuilder should overload this method and return a builder of their own type");
             Contract.Ensures(
-                !makeReadonly || Contract.Result<FormatBuilder>().IsReadonly,
-                "Returned builder should be readonly if makeReadonly is true");
+                !makeReadOnly || Contract.Result<FormatBuilder>().IsReadOnly,
+                "Returned builder should be read only if makeReadOnly is true");
 
-            if (IsReadonly)
+            if (IsReadOnly)
                 return this;
 
             FormatBuilder formatBuilder = new FormatBuilder(InitialLayout) {_isLayoutRequired = _isLayoutRequired};
             formatBuilder._chunks.AddRange(_chunks);
-            if (makeReadonly)
-                formatBuilder.MakeReadonly();
+            if (makeReadOnly)
+                formatBuilder.MakeReadOnly();
             return formatBuilder;
         }
 
@@ -259,8 +344,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(bool value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -274,8 +359,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(sbyte value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -289,8 +374,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(byte value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -304,8 +389,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(char value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -319,8 +404,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(short value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -334,8 +419,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(int value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -349,8 +434,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(long value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -364,8 +449,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(float value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -379,8 +464,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(double value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -394,8 +479,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(decimal value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -409,8 +494,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(ushort value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -424,8 +509,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(uint value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -439,8 +524,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(ulong value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -454,8 +539,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] object value)
         {
-            Contract.Requires(!IsReadonly);
-            if (!_isReadonly &&
+            Contract.Requires(!IsReadOnly);
+            if (!_isReadOnly &&
                 value != null)
                 _chunks.AddRange(Resolve(FormatChunk.Create(value)));
             return this;
@@ -470,8 +555,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] char[] value)
         {
-            Contract.Requires(!IsReadonly);
-            if (!_isReadonly &&
+            Contract.Requires(!IsReadOnly);
+            if (!_isReadOnly &&
                 (value != null) &&
                 (value.Length > 0))
                 _chunks.Add(FormatChunk.Create(new string(value)));
@@ -489,8 +574,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] char[] value, int startIndex, int charCount)
         {
-            Contract.Requires(!IsReadonly);
-            if (!_isReadonly &&
+            Contract.Requires(!IsReadOnly);
+            if (!_isReadOnly &&
                 (value != null) &&
                 (value.Length > 0) &&
                 (startIndex >= 0) &&
@@ -513,8 +598,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append(char value, int repeatCount)
         {
-            Contract.Requires(!IsReadonly);
-            if (!_isReadonly &&
+            Contract.Requires(!IsReadOnly);
+            if (!_isReadOnly &&
                 repeatCount > 0)
                 _chunks.Add(FormatChunk.Create(new string(value, repeatCount)));
             return this;
@@ -529,8 +614,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] string value)
         {
-            Contract.Requires(!IsReadonly);
-            if (!_isReadonly &&
+            Contract.Requires(!IsReadOnly);
+            if (!_isReadOnly &&
                 !string.IsNullOrEmpty(value))
                 _chunks.Add(FormatChunk.Create(value));
             return this;
@@ -545,8 +630,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] FormatChunk chunk)
         {
-            Contract.Requires(!IsReadonly);
-            if (!_isReadonly &&
+            Contract.Requires(!IsReadOnly);
+            if (!_isReadOnly &&
                 chunk != null)
                 _chunks.AddRange(Resolve(chunk));
             return this;
@@ -561,8 +646,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
-            Contract.Requires(!IsReadonly);
-            if (!_isReadonly &&
+            Contract.Requires(!IsReadOnly);
+            if (!_isReadOnly &&
                 chunks != null)
                 _chunks.AddRange(chunks.SelectMany(Resolve));
             return this;
@@ -577,8 +662,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder Append([CanBeNull] FormatBuilder builder)
         {
-            Contract.Requires(!IsReadonly);
-            if (!_isReadonly &&
+            Contract.Requires(!IsReadOnly);
+            if (!_isReadOnly &&
                 builder != null &&
                 !builder.IsEmpty)
                 _chunks.AddRange(builder);
@@ -595,8 +680,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine()
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -610,8 +695,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(bool value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -626,8 +711,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(sbyte value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -642,8 +727,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(byte value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -658,8 +743,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(char value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -674,8 +759,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(short value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -690,8 +775,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(int value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -706,8 +791,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(long value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -722,8 +807,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(float value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -738,8 +823,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(double value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -754,8 +839,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(decimal value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -770,8 +855,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(ushort value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -786,8 +871,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(uint value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -802,8 +887,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(ulong value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -818,8 +903,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] object value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (value != null)
                 _chunks.AddRange(Resolve(FormatChunk.Create(value)));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -835,8 +920,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] char[] value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if ((value != null) &&
                 (value.Length > 0))
                 _chunks.Add(FormatChunk.Create(new string(value)));
@@ -855,8 +940,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] char[] value, int startIndex, int charCount)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if ((value != null) &&
                 (value.Length > 0) &&
                 (startIndex >= 0) &&
@@ -880,8 +965,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine(char value, int repeatCount)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (repeatCount > 0)
                 _chunks.Add(FormatChunk.Create(new string(value, repeatCount)));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -897,8 +982,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] string value)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (!string.IsNullOrEmpty(value))
                 _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -914,8 +999,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] FormatChunk chunk)
         {
-            Contract.Requires(!IsReadonly);
-            if (!_isReadonly &&
+            Contract.Requires(!IsReadOnly);
+            if (!_isReadOnly &&
                 chunk != null)
                 _chunks.AddRange(Resolve(chunk));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -931,8 +1016,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (chunks != null)
                 _chunks.AddRange(chunks.SelectMany(Resolve));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -948,8 +1033,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLine([CanBeNull] FormatBuilder builder)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (builder != null &&
                 !builder.IsEmpty)
                 _chunks.AddRange(builder);
@@ -970,8 +1055,8 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormat([CanBeNull] string format, [CanBeNull] params object[] args)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (!string.IsNullOrEmpty(format))
                 _chunks.AddRange(
                     args != null && args.Length > 0
@@ -992,8 +1077,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (!string.IsNullOrEmpty(format))
                 _chunks.AddRange(
                     values != null && values.Count > 0
@@ -1016,8 +1101,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (!string.IsNullOrEmpty(format))
                 _chunks.AddRange(
                     resolver != null
@@ -1036,8 +1121,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendFormatLine()
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1053,8 +1138,8 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine([CanBeNull] string format, [CanBeNull] params object[] args)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (!string.IsNullOrEmpty(format))
                 _chunks.AddRange(
                     args != null && args.Length > 0
@@ -1076,8 +1161,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (!string.IsNullOrEmpty(format))
                 _chunks.AddRange(
                     values != null && values.Count > 0
@@ -1101,8 +1186,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             if (!string.IsNullOrEmpty(format))
                 _chunks.AddRange(
                     resolver != null
@@ -1132,8 +1217,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format = null,
             [CanBeNull] object value = null)
         {
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
 
             FormatChunk chunk = FormatChunk.CreateControl(tag, alignment, format, value);
             _chunks.AddRange(Resolve(chunk));
@@ -1151,8 +1236,8 @@ namespace WebApplications.Utilities.Formatting
         {
             Contract.Requires(control != null);
             Contract.Requires(control.IsControl);
-            Contract.Requires(!IsReadonly);
-            if (_isReadonly) return this;
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly) return this;
             _chunks.AddRange(Resolve(control));
             return this;
         }
@@ -2959,7 +3044,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendResetLayout()
         {
-            Contract.Requires(!IsReadonly);
+            Contract.Requires(!IsReadOnly);
             return AppendControl(ResetLayoutChunk);
         }
 
@@ -2972,7 +3057,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendLayout([CanBeNull] Layout layout)
         {
-            Contract.Requires(!IsReadonly);
+            Contract.Requires(!IsReadOnly);
             return AppendControl(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
         }
 
@@ -3011,7 +3096,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
         {
-            Contract.Requires(!IsReadonly);
+            Contract.Requires(!IsReadOnly);
             Layout layout = new Layout(
                 width,
                 indentSize,
@@ -3027,6 +3112,32 @@ namespace WebApplications.Utilities.Formatting
                 hyphenChar,
                 wrapMode);
             return Append(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
+        }
+        #endregion
+
+        #region Conversions
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="FormatBuilder"/>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator FormatBuilder(string format)
+        {
+            return format != null
+                ? new FormatBuilder(format)
+                : null;
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="FormatBuilder"/> to <see cref="System.String"/>.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator string(FormatBuilder format)
+        {
+            return format != null
+                ? format.ToString()
+                : null;
         }
         #endregion
     }
