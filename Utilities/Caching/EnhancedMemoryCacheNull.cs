@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -107,7 +107,10 @@ namespace WebApplications.Utilities.Caching
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
         public override TValue GetOrAdd(
-            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)
+            TKey key,
+            TValue value,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration)
         {
             if (slidingExpiration > _maxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
@@ -134,7 +137,10 @@ namespace WebApplications.Utilities.Caching
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
         public override TValue AddOrUpdate(
-            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)
+            TKey key,
+            TValue value,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration)
         {
             if (slidingExpiration > _maxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;
@@ -200,7 +206,10 @@ namespace WebApplications.Utilities.Caching
         ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
         public override bool TryAdd(
-            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)
+            TKey key,
+            TValue value,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration)
         {
             if (slidingExpiration > _maxSlidingExpiration)
                 slidingExpiration = ObjectCache.NoSlidingExpiration;

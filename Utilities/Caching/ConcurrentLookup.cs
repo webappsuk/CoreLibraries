@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -101,7 +101,7 @@ namespace WebApplications.Utilities.Caching
 
             // Create underlying dictionary.
             _dictionary = new ConcurrentDictionary<TKey, Grouping>(
-                concurrencyLevel < 1 ? 4*Environment.ProcessorCount : concurrencyLevel,
+                concurrencyLevel < 1 ? 4 * Environment.ProcessorCount : concurrencyLevel,
                 capacity < 1 ? 32 : capacity,
                 comparer ?? EqualityComparer<TKey>.Default);
 
@@ -109,9 +109,7 @@ namespace WebApplications.Utilities.Caching
 
             // ReSharper disable AssignNullToNotNullAttribute
             foreach (KeyValuePair<TKey, TValue> kvp in collection)
-            {
                 Add(kvp.Key, kvp.Value);
-            }
             // ReSharper restore AssignNullToNotNullAttribute
         }
 
@@ -267,7 +265,8 @@ namespace WebApplications.Utilities.Caching
             /// <summary>
             ///   The references.
             /// </summary>
-            [NotNull] private readonly ConcurrentDictionary<Guid, TValue> _dictionary =
+            [NotNull]
+            private readonly ConcurrentDictionary<Guid, TValue> _dictionary =
                 new ConcurrentDictionary<Guid, TValue>();
 
             /// <summary>
@@ -292,8 +291,10 @@ namespace WebApplications.Utilities.Caching
             /// <param name="parent">The lookup that the group is contained in.</param>
             /// <param name="key">The key.</param>
             /// <param name="value">The values that correspond to <paramref name="key"/>.</param>
-            internal Grouping([NotNull] ConcurrentLookup<TKey, TValue> parent, [NotNull] TKey key,
-                              [NotNull] TValue value)
+            internal Grouping(
+                [NotNull] ConcurrentLookup<TKey, TValue> parent,
+                [NotNull] TKey key,
+                [NotNull] TValue value)
             {
                 Key = key;
                 _parent = parent;
@@ -340,9 +341,10 @@ namespace WebApplications.Utilities.Caching
             public Grouping Add([NotNull] TValue value)
             {
                 Guid guid = Guid.NewGuid();
-                _dictionary.AddOrUpdate(guid,
-                                        g => value,
-                                        (g, w) => value);
+                _dictionary.AddOrUpdate(
+                    guid,
+                    g => value,
+                    (g, w) => value);
                 return this;
             }
 

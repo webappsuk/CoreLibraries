@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,19 +45,22 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   The time that an element remains in the queue.
         /// </summary>
-        [UsedImplicitly] public readonly TimeSpan CacheExpiry;
+        [UsedImplicitly]
+        public readonly TimeSpan CacheExpiry;
 
         /// <summary>
         ///   If the queue isn't used for this period of time then expired items are cleaned out automatically.
         ///   Normally a queue is only cleaned as it's used.
         ///   <see cref="TimeSpan.Zero"/> indicates the queue is never cleaned out automatically.
         /// </summary>
-        [UsedImplicitly] public readonly TimeSpan CleanAfter;
+        [UsedImplicitly]
+        public readonly TimeSpan CleanAfter;
 
         /// <summary>
         ///   The maximum length of the queue.
         /// </summary>
-        [UsedImplicitly] public readonly int MaximumEntries;
+        [UsedImplicitly]
+        public readonly int MaximumEntries;
 
         /// <summary>
         ///   A lock <see cref="object"/> to ensure that clean is not re-entrant.
@@ -72,7 +75,8 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   Holds the underlying queue.
         /// </summary>
-        [NotNull] private readonly ConcurrentQueue<Wrapper> _queue = new ConcurrentQueue<Wrapper>();
+        [NotNull]
+        private readonly ConcurrentQueue<Wrapper> _queue = new ConcurrentQueue<Wrapper>();
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="CachingQueue&lt;T&gt;"/> class.
@@ -88,14 +92,18 @@ namespace WebApplications.Utilities.Caching
         ///   <para>-or-</para>
         ///   <paramref name="maximumEntries"/> must be at least 1.
         /// </exception>
-        public CachingQueue(TimeSpan cacheExpiry = default(TimeSpan), int maximumEntries = int.MaxValue,
-                            TimeSpan cleanAfter = default(TimeSpan))
+        public CachingQueue(
+            TimeSpan cacheExpiry = default(TimeSpan),
+            int maximumEntries = int.MaxValue,
+            TimeSpan cleanAfter = default(TimeSpan))
         {
             if (cacheExpiry == default(TimeSpan))
                 cacheExpiry = TimeSpan.FromDays(1);
             else if (cacheExpiry < TimeSpan.FromSeconds(1))
-                throw new ArgumentOutOfRangeException("cacheExpiry", cacheExpiry,
-                                                      Resources.CachingQueue_ExpiryTooShort);
+                throw new ArgumentOutOfRangeException(
+                    "cacheExpiry",
+                    cacheExpiry,
+                    Resources.CachingQueue_ExpiryTooShort);
             if (cleanAfter > TimeSpan.Zero)
             {
                 // Create timer.
@@ -106,8 +114,10 @@ namespace WebApplications.Utilities.Caching
                 CleanAfter = TimeSpan.Zero;
 
             if (maximumEntries < 1)
-                throw new ArgumentOutOfRangeException("maximumEntries", maximumEntries,
-                                                      Resources.CachingQueue_MaxEntriesLessThanOne);
+                throw new ArgumentOutOfRangeException(
+                    "maximumEntries",
+                    maximumEntries,
+                    Resources.CachingQueue_MaxEntriesLessThanOne);
 
             CacheExpiry = cacheExpiry;
             MaximumEntries = maximumEntries;
@@ -290,7 +300,8 @@ namespace WebApplications.Utilities.Caching
 
             // Try to clear down excess items.
             Wrapper wrapper;
-            while ((_queue.Count > MaximumEntries) && (_queue.TryDequeue(out wrapper)))
+            while ((_queue.Count > MaximumEntries) &&
+                   (_queue.TryDequeue(out wrapper)))
             {
             }
         }

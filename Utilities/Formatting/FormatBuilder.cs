@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
-    [TypeConverter(typeof(FormatBuilderConverter))]
+    [TypeConverter(typeof (FormatBuilderConverter))]
     public sealed partial class FormatBuilder : IEnumerable<FormatChunk>, IFormattable
     {
         /// <summary>
@@ -99,7 +99,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="isReadOnly">if set to <see langword="true" /> is read only.</param>
-        public FormatBuilder([CanBeNull]string format = null, bool isReadOnly = false)
+        public FormatBuilder([CanBeNull] string format = null, bool isReadOnly = false)
         {
             InitialLayout = Layout.Default;
             if (!string.IsNullOrEmpty(format))
@@ -325,7 +325,7 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadOnly && readOnly)
                 return this;
 
-            FormatBuilder formatBuilder = new FormatBuilder(InitialLayout) { _isLayoutRequired = _isLayoutRequired };
+            FormatBuilder formatBuilder = new FormatBuilder(InitialLayout) {_isLayoutRequired = _isLayoutRequired};
             formatBuilder._chunks.AddRange(_chunks);
             if (readOnly)
                 formatBuilder.MakeReadOnly();
@@ -556,8 +556,8 @@ namespace WebApplications.Utilities.Formatting
             if (value != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] { FormatChunk.Create(value) },
-                        (Func<FormatChunk, Optional<object>>)null,
+                        new[] {FormatChunk.Create(value)},
+                        (Func<FormatChunk, Optional<object>>) null,
                         ref _isLayoutRequired));
             return this;
         }
@@ -656,8 +656,8 @@ namespace WebApplications.Utilities.Formatting
             if (chunk != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] { chunk },
-                        (Func<FormatChunk, Optional<object>>)null,
+                        new[] {chunk},
+                        (Func<FormatChunk, Optional<object>>) null,
                         ref _isLayoutRequired));
             return this;
         }
@@ -675,7 +675,7 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (chunks != null)
-                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>)null, ref _isLayoutRequired));
+                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>) null, ref _isLayoutRequired));
             return this;
         }
 
@@ -950,8 +950,8 @@ namespace WebApplications.Utilities.Formatting
             if (value != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] { FormatChunk.Create(value) },
-                        (Func<FormatChunk, Optional<object>>)null,
+                        new[] {FormatChunk.Create(value)},
+                        (Func<FormatChunk, Optional<object>>) null,
                         ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -1055,8 +1055,8 @@ namespace WebApplications.Utilities.Formatting
             if (chunk != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] { chunk },
-                        (Func<FormatChunk, Optional<object>>)null,
+                        new[] {chunk},
+                        (Func<FormatChunk, Optional<object>>) null,
                         ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -1075,7 +1075,7 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (chunks != null)
-                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>)null, ref _isLayoutRequired));
+                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>) null, ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1270,8 +1270,8 @@ namespace WebApplications.Utilities.Formatting
             FormatChunk chunk = FormatChunk.CreateControl(tag, alignment, format, value);
             _chunks.AddRange(
                 Resolve(
-                    new[] { chunk },
-                    (Func<FormatChunk, Optional<object>>)null,
+                    new[] {chunk},
+                    (Func<FormatChunk, Optional<object>>) null,
                     ref _isLayoutRequired));
             return this;
         }
@@ -1292,8 +1292,8 @@ namespace WebApplications.Utilities.Formatting
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.AddRange(
                 Resolve(
-                    new[] { control },
-                    (Func<FormatChunk, Optional<object>>)null,
+                    new[] {control},
+                    (Func<FormatChunk, Optional<object>>) null,
                     ref _isLayoutRequired));
             return this;
         }
@@ -1322,8 +1322,8 @@ namespace WebApplications.Utilities.Formatting
                     int index;
                     // ReSharper disable once PossibleNullReferenceException
                     return int.TryParse(chunk.Tag, out index) &&
-                             (index >= 0) &&
-                             (index < values.Length)
+                           (index >= 0) &&
+                           (index < values.Length)
                         ? new Optional<object>(values[index])
                         : Optional<object>.Unassigned;
                 });
@@ -1446,7 +1446,7 @@ namespace WebApplications.Utilities.Formatting
                             ? new Optional<object>(values[index])
                             : Optional<object>.Unassigned;
                     }
-                    : (Func<FormatChunk, Optional<object>>)null,
+                    : (Func<FormatChunk, Optional<object>>) null,
                 ref isLayoutRequired);
         }
 
@@ -1475,7 +1475,7 @@ namespace WebApplications.Utilities.Formatting
                             ? new Optional<object>(value)
                             : Optional<object>.Unassigned;
                     }
-                    : (Func<FormatChunk, Optional<object>>)null,
+                    : (Func<FormatChunk, Optional<object>>) null,
                 ref isLayoutRequired);
         }
 
@@ -2165,7 +2165,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public int WriteTo([CanBeNull] TextWriter writer, int position = 0)
         {
-            return writer == null || _chunks.Count < 1 ? position : WriteTo(_chunks, writer, InitialLayout, "G", _isLayoutRequired, position);
+            return writer == null || _chunks.Count < 1
+                ? position
+                : WriteTo(_chunks, writer, InitialLayout, "G", _isLayoutRequired, position);
         }
 
         /// <summary>
@@ -2181,7 +2183,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
         {
-            if (writer == null || _chunks.Count < 1) return 0;
+            if (writer == null ||
+                _chunks.Count < 1) return 0;
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 values != null && values.Length > 0
@@ -2209,7 +2212,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
         {
-            if (writer == null || _chunks.Count < 1) return position;
+            if (writer == null ||
+                _chunks.Count < 1) return position;
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 values != null && values.Length > 0
@@ -2235,7 +2239,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            if (writer == null || _chunks.Count < 1) return 0;
+            if (writer == null ||
+                _chunks.Count < 1) return 0;
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 values != null && values.Count > 0
@@ -2263,7 +2268,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            if (writer == null || _chunks.Count < 1) return position;
+            if (writer == null ||
+                _chunks.Count < 1) return position;
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 values != null && values.Count > 0
@@ -2289,7 +2295,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
-            if (writer == null || _chunks.Count < 1) return 0;
+            if (writer == null ||
+                _chunks.Count < 1) return 0;
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 resolver != null
@@ -2317,7 +2324,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
-            if (writer == null || _chunks.Count < 1) return position;
+            if (writer == null ||
+                _chunks.Count < 1) return position;
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 resolver != null
@@ -2357,14 +2365,22 @@ namespace WebApplications.Utilities.Formatting
             return serialTextWriter == null
                 ? DoWrite(chunks, writer, null, initialLayout, format, isLayoutRequired, position)
                 : serialTextWriter.Context.Invoke(
-                    () => DoWrite(chunks, writer, serialTextWriter.Writer, initialLayout, format, isLayoutRequired, position));
+                    () =>
+                        DoWrite(
+                            chunks,
+                            writer,
+                            serialTextWriter.Writer,
+                            initialLayout,
+                            format,
+                            isLayoutRequired,
+                            position));
         }
 
         /// <summary>
         /// The new line characters.
         /// </summary>
         [NotNull]
-        private static readonly char[] _newLineChars = { '\r', '\n' };
+        private static readonly char[] _newLineChars = {'\r', '\n'};
 
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
@@ -2392,7 +2408,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(initialLayout != null);
             if (format == null)
                 format = "g";
-            
+
             bool writeTags;
             if (string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase))
             {
@@ -2859,9 +2875,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0)
                         {
-                            decimal space = (decimal)(line.End - line.LastWordLength - line.Start) / remaining;
-                            int o = (int)Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
+                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
+                            int o = (int) Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
                         }
                         break;
                     default:

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -61,47 +61,56 @@ namespace WebApplications.Utilities.Enumerations
         /// <summary>
         ///   State: No.
         /// </summary>
-        [UsedImplicitly] public static readonly TriState No = new TriState(255);
+        [UsedImplicitly]
+        public static readonly TriState No = new TriState(255);
 
         /// <summary>
         ///   State: False.
         /// </summary>
-        [UsedImplicitly] public static readonly TriState False = No;
+        [UsedImplicitly]
+        public static readonly TriState False = No;
 
         /// <summary>
         ///   State: Negative.
         /// </summary>
-        [UsedImplicitly] public static readonly TriState Negative = No;
+        [UsedImplicitly]
+        public static readonly TriState Negative = No;
 
         /// <summary>
         ///   State: Unknown.
         /// </summary>
-        [UsedImplicitly] public static readonly TriState Unknown = new TriState(0);
+        [UsedImplicitly]
+        public static readonly TriState Unknown = new TriState(0);
 
         /// <summary>
         ///   State: Undefined.
         /// </summary>
-        [UsedImplicitly] public static readonly TriState Undefined = Unknown;
+        [UsedImplicitly]
+        public static readonly TriState Undefined = Unknown;
 
         /// <summary>
         ///   State: Equal.
         /// </summary>
-        [UsedImplicitly] public static readonly TriState Equal = Unknown;
+        [UsedImplicitly]
+        public static readonly TriState Equal = Unknown;
 
         /// <summary>
         ///   State: Yes.
         /// </summary>
-        [UsedImplicitly] public static readonly TriState Yes = new TriState(1);
+        [UsedImplicitly]
+        public static readonly TriState Yes = new TriState(1);
 
         /// <summary>
         ///   State: True.
         /// </summary>
-        [UsedImplicitly] public static readonly TriState True = Yes;
+        [UsedImplicitly]
+        public static readonly TriState True = Yes;
 
         /// <summary>
         ///   State: Positive.
         /// </summary>
-        [UsedImplicitly] public static readonly TriState Positive = Yes;
+        [UsedImplicitly]
+        public static readonly TriState Positive = Yes;
 
         /// <summary>
         ///   Stores the underlying state.
@@ -249,7 +258,8 @@ namespace WebApplications.Utilities.Enumerations
         /// <returns>The result of the conversion.</returns>
         public static explicit operator TriState(byte value)
         {
-            if ((value > 2) && (value < 255))
+            if ((value > 2) &&
+                (value < 255))
                 throw new InvalidCastException(Resources.TriState_ExplicitByteConversion_ValueGreaterThanThree, value);
             return value.Equals(1) ? Yes : value.Equals(255) ? No : Unknown;
         }

@@ -49,7 +49,9 @@ namespace WebApplications.Utilities.Formatting
         /// otherwise it assumes that the writer/display wraps if you reach the width.
         /// </summary>
         [PublicAPI]
-        [Description("Only adds a new line if the line length is less than Layout width, otherwise it assumes that the display wraps if you reach the width.")]
+        [Description(
+            "Only adds a new line if the line length is less than Layout width, otherwise it assumes that the display wraps if you reach the width."
+            )]
         NewLineOnShort,
 
         /// <summary>
@@ -58,7 +60,9 @@ namespace WebApplications.Utilities.Formatting
         /// <remarks>This should be used when writing to the <see cref="Console"/> as this wraps when if a line length is equal to the width.
         /// This would cause extra blank lines when using a <see cref="Alignment.Justify">justified</see> <see cref="Layout"/> with no right margin.</remarks>
         [PublicAPI]
-        [Description("Adds indent characters to the end of each line till Layout width is reached and lets the display handle wrapping.")]
+        [Description(
+            "Adds indent characters to the end of each line till Layout width is reached and lets the display handle wrapping."
+            )]
         PadToWrap
     }
 }

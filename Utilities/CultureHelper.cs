@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -47,23 +47,27 @@ namespace WebApplications.Utilities
         ///   A lookup of <see cref="CultureInfo"/>s and <see cref="System.Globalization.RegionInfo"/>s
         ///   by currency ISO code (e.g. USD, GBP, JPY).
         /// </summary>
-        [NotNull] private static readonly Dictionary<string, Dictionary<CultureInfo, RegionInfo>> _currencyCultureInfo;
+        [NotNull]
+        private static readonly Dictionary<string, Dictionary<CultureInfo, RegionInfo>> _currencyCultureInfo;
 
         /// <summary>
         ///   A lookup of regions by their English name.
         /// </summary>
-        [NotNull] private static readonly Dictionary<string, RegionInfo> _regionNames;
+        [NotNull]
+        private static readonly Dictionary<string, RegionInfo> _regionNames;
 
         /// <summary>
         ///   All the specified culture names.
         /// </summary>
-        [NotNull] private static readonly Dictionary<string, CultureInfo> _cultureNames;
+        [NotNull]
+        private static readonly Dictionary<string, CultureInfo> _cultureNames;
 
         /// <summary>
         ///   The invariant culture LCID.
         /// </summary>
         /// <seealso cref="System.Globalization.CultureInfo.InvariantCulture"/>
-        [UsedImplicitly] public static readonly int InvariantLCID;
+        [UsedImplicitly]
+        public static readonly int InvariantLCID;
 
         /// <summary>
         ///   Gets the cultures (both specific and neutral) as well as the currency and
@@ -76,9 +80,10 @@ namespace WebApplications.Utilities
             // currency and RegionInfo is only applicable to specific cultures
             CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
             int length = cultures.GetLength(0);
-            _currencyCultureInfo = new Dictionary<string, Dictionary<CultureInfo, RegionInfo>>(length,
-                                                                                               StringComparer
-                                                                                                   .InvariantCultureIgnoreCase);
+            _currencyCultureInfo = new Dictionary<string, Dictionary<CultureInfo, RegionInfo>>(
+                length,
+                StringComparer
+                    .InvariantCultureIgnoreCase);
             _regionNames = new Dictionary<string, RegionInfo>(length, StringComparer.InvariantCultureIgnoreCase);
             _cultureNames = new Dictionary<string, CultureInfo>(length, StringComparer.InvariantCultureIgnoreCase);
             InvariantLCID = CultureInfo.InvariantCulture.LCID;
@@ -108,8 +113,8 @@ namespace WebApplications.Utilities
             // Now add neutral culture names.
             foreach (CultureInfo ci in
                 CultureInfo.GetCultures(CultureTypes.NeutralCultures)
-                           .Distinct()
-                           .Where(ci => !_cultureNames.ContainsKey(ci.Name)))
+                    .Distinct()
+                    .Where(ci => !_cultureNames.ContainsKey(ci.Name)))
                 _cultureNames.Add(ci.Name, ci);
         }
 
@@ -260,8 +265,8 @@ namespace WebApplications.Utilities
             if (string.IsNullOrEmpty(isoCode))
                 return new List<CultureInfo>(0);
             return _currencyCultureInfo.ContainsKey(isoCode)
-                       ? new List<CultureInfo>(_currencyCultureInfo[isoCode].Keys.Distinct())
-                       : Enumerable.Empty<CultureInfo>();
+                ? new List<CultureInfo>(_currencyCultureInfo[isoCode].Keys.Distinct())
+                : Enumerable.Empty<CultureInfo>();
         }
 
         /// <summary>
@@ -283,8 +288,8 @@ namespace WebApplications.Utilities
             if (string.IsNullOrEmpty(isoCode))
                 return new List<RegionInfo>(0);
             return _currencyCultureInfo.ContainsKey(isoCode)
-                       ? new List<RegionInfo>(_currencyCultureInfo[isoCode].Values.Distinct())
-                       : Enumerable.Empty<RegionInfo>();
+                ? new List<RegionInfo>(_currencyCultureInfo[isoCode].Values.Distinct())
+                : Enumerable.Empty<RegionInfo>();
         }
 
         /// <summary>
@@ -305,8 +310,10 @@ namespace WebApplications.Utilities
         /// <seealso cref="CultureInfo"/>
         /// <seealso cref="System.Globalization.RegionInfo"/>
         [NotNull]
-        public static string FormatCurrency(decimal amount, [NotNull] string currencyISO,
-                                            [CanBeNull] string countryISO = null)
+        public static string FormatCurrency(
+            decimal amount,
+            [NotNull] string currencyISO,
+            [CanBeNull] string countryISO = null)
         {
             Contract.Requires(currencyISO != null, Resources.CultureHelper_CurrencyIsoCannotBeNull);
 
@@ -320,7 +327,6 @@ namespace WebApplications.Utilities
             {
                 CultureInfo cinfo = c[0];
                 if (countryISO != null)
-                {
                     // Find best match
                     for (int i = c.Length - 1; i >= 0; i--)
                     {
@@ -330,7 +336,6 @@ namespace WebApplications.Utilities
                         if (r.TwoLetterISORegionName.Equals(countryISO))
                             break;
                     }
-                }
 
                 return FormatCurrency(amount, cinfo);
             }
@@ -396,9 +401,9 @@ namespace WebApplications.Utilities
 
             // Scan regions for name in current culture.
             return culture.TwoLetterISOLanguageName.Equals("en")
-                       ? null
-                       : _regionNames.Values.FirstOrDefault(
-                           info => (info.DisplayName.Equals(name)) || (info.NativeName.Equals(name)));
+                ? null
+                : _regionNames.Values.FirstOrDefault(
+                    info => (info.DisplayName.Equals(name)) || (info.NativeName.Equals(name)));
         }
 
         /// <summary>

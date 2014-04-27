@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,8 @@ namespace WebApplications.Utilities.Configuration
     /// </summary>
     /// <typeparam name="T">The section type.</typeparam>
     [UsedImplicitly]
-    public abstract class ConfigurationSection<T> : ConfigurationSection where T : ConfigurationSection<T>
+    public abstract class ConfigurationSection<T> : ConfigurationSection
+        where T : ConfigurationSection<T>
     {
         #region Delegates
         /// <summary>
@@ -51,69 +52,79 @@ namespace WebApplications.Utilities.Configuration
         /// <param name="sender">The sender (the original configuration).</param>
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         public delegate void ConfigurationChangedEventHandler(
-            [NotNull] object sender, [NotNull] ConfigurationChangedEventArgs e);
+            [NotNull] object sender,
+            [NotNull] ConfigurationChangedEventArgs e);
         #endregion
 
         // ReSharper disable StaticFieldInGenericType
         /// <summary>
         ///   Holds the constructor function.
         /// </summary>
-        [NotNull] private static readonly Func<T> _constructor = typeof (T).ConstructorFunc<T>();
+        [NotNull]
+        private static readonly Func<T> _constructor = typeof (T).ConstructorFunc<T>();
 
         /// <summary>
         /// Calculates the section name.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private static readonly Lazy<string> _sectionName =
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private static readonly Lazy<string> _sectionName =
             new Lazy<string>(
                 () =>
-                    {
-                        // Try to find attribute
-                        ConfigurationSectionAttribute attribute =
-                            (ConfigurationSectionAttribute)
+                {
+                    // Try to find attribute
+                    ConfigurationSectionAttribute attribute =
+                        (ConfigurationSectionAttribute)
                             typeof (T).GetCustomAttributes(typeof (ConfigurationSectionAttribute), false).
-                                       FirstOrDefault();
+                                FirstOrDefault();
 
-                        string sectionName = attribute != null ? attribute.Name : null;
+                    string sectionName = attribute != null ? attribute.Name : null;
 
-                        if (!String.IsNullOrEmpty(sectionName))
-                            return sectionName;
-
-                        // Get type name (after last '.')
-                        sectionName = typeof (T).Name;
-
-                        int len = sectionName.Length;
-
-                        // If it ends with 'configuration' strip it.
-                        if (len > 20 &&
-                            sectionName.EndsWith("configurationsection",
-                                                 StringComparison.CurrentCultureIgnoreCase))
-                            sectionName = sectionName.Substring(0, len -= 20);
-                        else if (len > 13 &&
-                                 sectionName.EndsWith("configuration",
-                                                      StringComparison.CurrentCultureIgnoreCase))
-                            sectionName = sectionName.Substring(0, len -= 13);
-                        else if (len > 7 &&
-                                 sectionName.EndsWith("section",
-                                                      StringComparison.CurrentCultureIgnoreCase))
-                            sectionName = sectionName.Substring(0, len -= 7);
-                        else if (len > 6 &&
-                                 sectionName.EndsWith("config",
-                                                      StringComparison.CurrentCultureIgnoreCase))
-                            sectionName = sectionName.Substring(0, len -= 6);
-
-                        // Convert to lower camel case
-                        sectionName = sectionName.Substring(0, 1).ToLower() + (len > 1
-                                                                                   ? sectionName.
-                                                                                         Substring(1)
-                                                                                   : string.Empty);
+                    if (!String.IsNullOrEmpty(sectionName))
                         return sectionName;
-                    }, LazyThreadSafetyMode.PublicationOnly);
+
+                    // Get type name (after last '.')
+                    sectionName = typeof (T).Name;
+
+                    int len = sectionName.Length;
+
+                    // If it ends with 'configuration' strip it.
+                    if (len > 20 &&
+                        sectionName.EndsWith(
+                            "configurationsection",
+                            StringComparison.CurrentCultureIgnoreCase))
+                        sectionName = sectionName.Substring(0, len -= 20);
+                    else if (len > 13 &&
+                             sectionName.EndsWith(
+                                 "configuration",
+                                 StringComparison.CurrentCultureIgnoreCase))
+                        sectionName = sectionName.Substring(0, len -= 13);
+                    else if (len > 7 &&
+                             sectionName.EndsWith(
+                                 "section",
+                                 StringComparison.CurrentCultureIgnoreCase))
+                        sectionName = sectionName.Substring(0, len -= 7);
+                    else if (len > 6 &&
+                             sectionName.EndsWith(
+                                 "config",
+                                 StringComparison.CurrentCultureIgnoreCase))
+                        sectionName = sectionName.Substring(0, len -= 6);
+
+                    // Convert to lower camel case
+                    sectionName = sectionName.Substring(0, 1).ToLower() + (len > 1
+                        ? sectionName.
+                            Substring(1)
+                        : string.Empty);
+                    return sectionName;
+                },
+                LazyThreadSafetyMode.PublicationOnly);
 
 
         /// <summary>
         ///   Holds the currently active configuration section.
         /// </summary>
-        [CanBeNull] private static T _active;
+        [CanBeNull]
+        private static T _active;
 
         /// <summary>
         ///   Gets the name of the configuration section.
@@ -145,7 +156,11 @@ namespace WebApplications.Utilities.Configuration
         /// </remarks>
         public static T Active
         {
-            [NotNull] get { return _active ?? GetConfiguration(); }
+            [NotNull]
+            get
+            {
+                return _active ?? GetConfiguration();
+            }
             [CanBeNull]
             set
             {
@@ -217,8 +232,8 @@ namespace WebApplications.Utilities.Configuration
             // We get the configuration from different places, depending on whether we are
             // running as a website or an application.
             T configuration = HttpContext.Current == null
-                                  ? ConfigurationManager.GetSection(SectionName) as T
-                                  : WebConfigurationManager.GetSection(SectionName) as T;
+                ? ConfigurationManager.GetSection(SectionName) as T
+                : WebConfigurationManager.GetSection(SectionName) as T;
 
             if (configuration == null)
             {
@@ -263,12 +278,16 @@ namespace WebApplications.Utilities.Configuration
             /// <summary>
             ///   The new Configuration
             /// </summary>
-            [NotNull] [UsedImplicitly] public T NewConfiguration;
+            [NotNull]
+            [UsedImplicitly]
+            public T NewConfiguration;
 
             /// <summary>
             ///   The old configuration (if any).
             /// </summary>
-            [NotNull] [UsedImplicitly] public T OldConfiguration;
+            [NotNull]
+            [UsedImplicitly]
+            public T OldConfiguration;
 
             /// <summary>
             ///   Initializes a new instance of the <see cref="ConfigurationSection&lt;T&gt;.ConfigurationChangedEventArgs"/> class.

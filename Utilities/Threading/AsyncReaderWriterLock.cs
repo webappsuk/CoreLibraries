@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -41,17 +41,21 @@ namespace WebApplications.Utilities.Threading
     /// </remarks>
     public class AsyncReaderWriterLock
     {
-        [NotNull] private readonly Task<IDisposable> _readerReleaser;
+        [NotNull]
+        private readonly Task<IDisposable> _readerReleaser;
 
-        [NotNull] private readonly Queue<TaskCompletionSource<IDisposable>> _waitingWriters =
+        [NotNull]
+        private readonly Queue<TaskCompletionSource<IDisposable>> _waitingWriters =
             new Queue<TaskCompletionSource<IDisposable>>();
 
-        [NotNull] private readonly Task<IDisposable> _writerReleaser;
+        [NotNull]
+        private readonly Task<IDisposable> _writerReleaser;
 
         private int _readersWaiting;
         private int _status;
 
-        [NotNull] private TaskCompletionSource<IDisposable> _waitingReader =
+        [NotNull]
+        private TaskCompletionSource<IDisposable> _waitingReader =
             new TaskCompletionSource<IDisposable>();
 
         /// <summary>
@@ -74,7 +78,8 @@ namespace WebApplications.Utilities.Threading
         {
             lock (_waitingWriters)
             {
-                if (_status >= 0 && _waitingWriters.Count == 0)
+                if (_status >= 0 &&
+                    _waitingWriters.Count == 0)
                 {
                     ++_status;
                     return _readerReleaser;
@@ -113,7 +118,8 @@ namespace WebApplications.Utilities.Threading
             lock (_waitingWriters)
             {
                 --_status;
-                if (_status == 0 && _waitingWriters.Count > 0)
+                if (_status == 0 &&
+                    _waitingWriters.Count > 0)
                 {
                     _status = -1;
                     toWake = _waitingWriters.Dequeue();
@@ -156,7 +162,9 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         private struct Releaser : IDisposable
         {
-            [NotNull] private readonly AsyncReaderWriterLock _toRelease;
+            [NotNull]
+            private readonly AsyncReaderWriterLock _toRelease;
+
             private readonly bool _writer;
 
             internal Releaser([NotNull] AsyncReaderWriterLock toRelease, bool writer)
@@ -169,10 +177,8 @@ namespace WebApplications.Utilities.Threading
             public void Dispose()
             {
                 if (_toRelease != null)
-                {
                     if (_writer) _toRelease.WriterRelease();
                     else _toRelease.ReaderRelease();
-                }
             }
             #endregion
         }

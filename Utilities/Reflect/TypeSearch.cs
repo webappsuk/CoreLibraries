@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -135,7 +135,8 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The generic argument name to search for (if any).
         /// </summary>
-        [CanBeNull] public readonly string GenericArgumentName;
+        [CanBeNull]
+        public readonly string GenericArgumentName;
 
         /// <summary>
         /// The generic argument position to search for (if any; otherwise -1).
@@ -155,7 +156,8 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// A concrete type to search for (if any).
         /// </summary>
-        [CanBeNull] public readonly Type Type;
+        [CanBeNull]
+        public readonly Type Type;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:System.Object"/> class.
@@ -167,9 +169,13 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="isByReference">if set to <see langword="true"/> [is by reference].</param>
         /// <param name="isPointer">if set to <see langword="true"/> [is pointer].</param>
         /// <remarks></remarks>
-        private TypeSearch(Type type = null, string name = null,
-                           GenericArgumentLocation location = GenericArgumentLocation.None, int position = -1,
-                           bool isByReference = false, bool isPointer = false)
+        private TypeSearch(
+            Type type = null,
+            string name = null,
+            GenericArgumentLocation location = GenericArgumentLocation.None,
+            int position = -1,
+            bool isByReference = false,
+            bool isPointer = false)
         {
             Type = type;
             GenericArgumentName = name;
@@ -190,8 +196,8 @@ namespace WebApplications.Utilities.Reflect
             if (type.IsGenericParameter)
             {
                 GenericArgumentLocation = type.DeclaringMethod != null
-                                              ? GenericArgumentLocation.Signature
-                                              : GenericArgumentLocation.Type;
+                    ? GenericArgumentLocation.Signature
+                    : GenericArgumentLocation.Type;
                 GenericArgumentPosition = type.GenericParameterPosition;
                 GenericArgumentName = type.Name;
             }
@@ -205,8 +211,11 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="isByReference">if set to <see langword="true"/> is by reference.</param>
         /// <param name="isPointer">if set to <see langword="true"/> is pointer.</param>
         /// <remarks></remarks>
-        public TypeSearch(GenericArgumentLocation location, int position, bool isByReference = false,
-                          bool isPointer = false)
+        public TypeSearch(
+            GenericArgumentLocation location,
+            int position,
+            bool isByReference = false,
+            bool isPointer = false)
             : this(null, null, location, position, isByReference, isPointer)
         {
             // Validate location
@@ -228,8 +237,11 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="isByReference">if set to <see langword="true"/> is by reference.</param>
         /// <param name="isPointer">if set to <see langword="true"/> is pointer.</param>
         /// <remarks></remarks>
-        public TypeSearch(GenericArgumentLocation location, [NotNull] string name, bool isByReference = false,
-                          bool isPointer = false)
+        public TypeSearch(
+            GenericArgumentLocation location,
+            [NotNull] string name,
+            bool isByReference = false,
+            bool isPointer = false)
             : this(null, name, location, -1, isByReference, isPointer)
         {
             // Validate location

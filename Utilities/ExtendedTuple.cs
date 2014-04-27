@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -74,10 +74,11 @@ namespace WebApplications.Utilities
             Type t = GetIndexType(tuple, index);
             if (!typeof (TItem).IsAssignableFrom(t))
                 throw new InvalidCastException(
-                    string.Format(Resources.ExtendedTuple_CannotCastItemAtIndex,
-                                  index,
-                                  t,
-                                  typeof (TItem)));
+                    string.Format(
+                        Resources.ExtendedTuple_CannotCastItemAtIndex,
+                        index,
+                        t,
+                        typeof (TItem)));
             return (TItem) ExtendedTuple<TTuple>.Indexer(tuple, index);
         }
 
@@ -116,27 +117,27 @@ namespace WebApplications.Utilities
             return _tupleIndexers.GetOrAdd(
                 tupleType,
                 t =>
-                    {
-                        // Create extended tuple type
-                        Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
+                {
+                    // Create extended tuple type
+                    Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
 
-                        // Create parameters
-                        ParameterExpression tupleObjectParameter = Expression.Parameter(typeof (object), "tuple");
-                        ParameterExpression indexParameter = Expression.Parameter(typeof (int), "index");
+                    // Create parameters
+                    ParameterExpression tupleObjectParameter = Expression.Parameter(typeof (object), "tuple");
+                    ParameterExpression indexParameter = Expression.Parameter(typeof (int), "index");
 
-                        // Convert parameter from object to tuple type.
-                        Expression castTuple = tupleObjectParameter.Convert(tupleType);
+                    // Convert parameter from object to tuple type.
+                    Expression castTuple = tupleObjectParameter.Convert(tupleType);
 
-                        // Get the indexer lambda and convert to a constant
-                        Expression lambda = Expression.Constant(
-                            extendedType.GetField("Indexer", BindingFlags.Static | BindingFlags.Public)
-                                        .GetValue(null));
+                    // Get the indexer lambda and convert to a constant
+                    Expression lambda = Expression.Constant(
+                        extendedType.GetField("Indexer", BindingFlags.Static | BindingFlags.Public)
+                            .GetValue(null));
 
-                        return Expression.Lambda<Func<object, int, object>>(
-                            Expression.Invoke(lambda, castTuple, indexParameter),
-                            tupleObjectParameter,
-                            indexParameter).Compile();
-                    });
+                    return Expression.Lambda<Func<object, int, object>>(
+                        Expression.Invoke(lambda, castTuple, indexParameter),
+                        tupleObjectParameter,
+                        indexParameter).Compile();
+                });
         }
 
         /// <summary>
@@ -182,12 +183,12 @@ namespace WebApplications.Utilities
             return _tupleTypes.GetOrAdd(
                 tupleType,
                 t =>
-                    {
-                        // Create extended tuple type
-                        Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
-                        return (Type[]) extendedType.GetProperty("Types", BindingFlags.Static | BindingFlags.Public)
-                                                    .GetValue(null, null);
-                    });
+                {
+                    // Create extended tuple type
+                    Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
+                    return (Type[]) extendedType.GetProperty("Types", BindingFlags.Static | BindingFlags.Public)
+                        .GetValue(null, null);
+                });
             // ReSharper restore AssignNullToNotNullAttribute
         }
 
@@ -213,24 +214,25 @@ namespace WebApplications.Utilities
             return _tupleIterators.GetOrAdd(
                 tupleType,
                 t =>
-                    {
-                        // Create extended tuple type
-                        Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
+                {
+                    // Create extended tuple type
+                    Type extendedType = typeof (ExtendedTuple<>).MakeGenericType(tupleType);
 
-                        // Create parameter
-                        ParameterExpression tupleObjectParameter = Expression.Parameter(typeof (object), "tuple");
+                    // Create parameter
+                    ParameterExpression tupleObjectParameter = Expression.Parameter(typeof (object), "tuple");
 
-                        // Convert parameter from object to tuple type.
-                        Expression castTuple = tupleObjectParameter.Convert(tupleType);
+                    // Convert parameter from object to tuple type.
+                    Expression castTuple = tupleObjectParameter.Convert(tupleType);
 
-                        // Find constructor that takes the tuple type
-                        ConstructorInfo constructor = extendedType.GetConstructor(new[] {tupleType});
+                    // Find constructor that takes the tuple type
+                    ConstructorInfo constructor = extendedType.GetConstructor(new[] {tupleType});
 
-                        // Create a lambda that creates a new ExtendedTuple<tupletype> and casts it to an IEnumerable.
-                        return Expression.Lambda<Func<object, IEnumerable>>(
-                            Expression.New(constructor, castTuple).Convert(typeof (IEnumerable)), tupleObjectParameter).
-                                          Compile();
-                    });
+                    // Create a lambda that creates a new ExtendedTuple<tupletype> and casts it to an IEnumerable.
+                    return Expression.Lambda<Func<object, IEnumerable>>(
+                        Expression.New(constructor, castTuple).Convert(typeof (IEnumerable)),
+                        tupleObjectParameter).
+                        Compile();
+                });
         }
     }
 }

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,8 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Creates index parameters on demand.
         /// </summary>
-        [NotNull] private readonly Lazy<ParameterInfo[]> _indexParameters;
+        [NotNull]
+        private readonly Lazy<ParameterInfo[]> _indexParameters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Property"/> class.
@@ -54,7 +55,8 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="extendedType">The extended type.</param>
         /// <param name="info">The <see cref="System.Reflection.PropertyInfo">property info</see>.</param>
         /// <remarks></remarks>
-        internal Indexer([NotNull] ExtendedType extendedType, [NotNull] PropertyInfo info) : base(extendedType, info)
+        internal Indexer([NotNull] ExtendedType extendedType, [NotNull] PropertyInfo info)
+            : base(extendedType, info)
         {
             Contract.Assert(extendedType.DefaultMember == info.Name);
             _indexParameters = new Lazy<ParameterInfo[]>(info.GetIndexParameters, LazyThreadSafetyMode.PublicationOnly);
@@ -127,8 +129,8 @@ namespace WebApplications.Utilities.Reflect
         public static implicit operator Indexer(PropertyInfo propertyInfo)
         {
             return propertyInfo == null
-                       ? null
-                       : ((ExtendedType) propertyInfo.DeclaringType).GetIndexer(propertyInfo);
+                ? null
+                : ((ExtendedType) propertyInfo.DeclaringType).GetIndexer(propertyInfo);
         }
 
         /// <summary>
@@ -173,8 +175,10 @@ namespace WebApplications.Utilities.Reflect
             }
 
             // Add return type
-            searchTypes[pCount] = Reflection.ExpandParameterType(Info.PropertyType, Reflection.EmptyTypes,
-                                                                 typeGenericArguments);
+            searchTypes[pCount] = Reflection.ExpandParameterType(
+                Info.PropertyType,
+                Reflection.EmptyTypes,
+                typeGenericArguments);
 
             // Search for indexer on new type.
             return et.GetIndexer(searchTypes);

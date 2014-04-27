@@ -39,9 +39,11 @@ namespace WebApplications.Utilities.Threading
     /// <remarks>Do not use with ConfigureAwait(false), as this can result in the continuation running outside the context.</remarks>
     public struct SynchronizationContextAwaiter : INotifyCompletion
     {
-        [NotNull] private readonly SynchronizationContext _context;
+        [NotNull]
+        private readonly SynchronizationContext _context;
 
-        [NotNull] private readonly SendOrPostCallback _executor;
+        [NotNull]
+        private readonly SendOrPostCallback _executor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SynchronizationContextAwaiter"/> struct.

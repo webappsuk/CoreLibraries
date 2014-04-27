@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,25 +43,29 @@ namespace WebApplications.Utilities.Caching
     ///   Article explaining object resurrection: (http://blogs.msdn.com/b/clyon/archive/2006/04/25/583698.aspx)
     /// </remarks>
     [UsedImplicitly]
-    public sealed class ObservableWeakReference<T> : WeakReference<T> where T : class
+    public sealed class ObservableWeakReference<T> : WeakReference<T>
+        where T : class
     {
         // ReSharper disable StaticFieldInGenericType
         /// <summary>
         ///   Whether the type is actually observable.
         /// </summary>
-        [UsedImplicitly] public static readonly bool ObservableFinalize;
+        [UsedImplicitly]
+        public static readonly bool ObservableFinalize;
 
         /// <summary>
         ///   Whether the type is disposable.
         /// </summary>
-        [UsedImplicitly] public static readonly bool Disposable;
+        [UsedImplicitly]
+        public static readonly bool Disposable;
 
         // ReSharper restore StaticFieldInGenericType
 
         /// <summary>
         ///   Keeps track of added handlers.
         /// </summary>
-        [NotNull] private readonly List<EventHandler> _handlers = new List<EventHandler>();
+        [NotNull]
+        private readonly List<EventHandler> _handlers = new List<EventHandler>();
 
         /// <summary>
         ///   Initializes the <see cref="ObservableWeakReference&lt;T&gt;"/> class.
@@ -80,8 +84,10 @@ namespace WebApplications.Utilities.Caching
         ///   If set to <see langword="true"/> then the weak reference will be long.
         ///   If unset will track resurrection if the type does not support dispose.</param>
         /// <param name="handlers">Optional event handlers to add to finalized event.</param>
-        public ObservableWeakReference([NotNull] T target, TriState trackResurrection = default(TriState),
-                                       [NotNull] params EventHandler[] handlers)
+        public ObservableWeakReference(
+            [NotNull] T target,
+            TriState trackResurrection = default(TriState),
+            [NotNull] params EventHandler[] handlers)
             : base(target, trackResurrection == TriState.Unknown ? !Disposable : (trackResurrection == TriState.Yes))
         {
             foreach (EventHandler handler in handlers.Where(handler => handler != null))

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -105,8 +105,10 @@ namespace WebApplications.Utilities.Location
         /// <exception cref="ArgumentOutOfRangeException">
         ///   The specified <paramref name="calculation"/> is outside the allowable <see cref="DistanceCalculation">values</see>.
         /// </exception>
-        public static double Distance(LatLng pointOne, LatLng pointTwo,
-                                      DistanceCalculation calculation = DistanceCalculation.LawOfCosines)
+        public static double Distance(
+            LatLng pointOne,
+            LatLng pointTwo,
+            DistanceCalculation calculation = DistanceCalculation.LawOfCosines)
         {
             switch (calculation)
             {
@@ -119,21 +121,21 @@ namespace WebApplications.Utilities.Location
                     double longitude = pointTwoLongitude - pointOneLongitude;
                     double latitude = pointTwoLatitude - pointOneLatitude;
 
-                    double intermediateResult = Math.Pow(Math.Sin(latitude/2.0), 2.0) +
-                                                Math.Cos(pointOneLatitude)*Math.Cos(pointTwoLatitude)*
-                                                Math.Pow(Math.Sin(longitude/2.0), 2.0);
+                    double intermediateResult = Math.Pow(Math.Sin(latitude / 2.0), 2.0) +
+                                                Math.Cos(pointOneLatitude) * Math.Cos(pointTwoLatitude) *
+                                                Math.Pow(Math.Sin(longitude / 2.0), 2.0);
 
                     // Intermediate result c (great circle distance in Radians).
 
-                    double c = 2.0*Math.Atan2(Math.Sqrt(intermediateResult), Math.Sqrt(1.0 - intermediateResult));
+                    double c = 2.0 * Math.Atan2(Math.Sqrt(intermediateResult), Math.Sqrt(1.0 - intermediateResult));
 
-                    return EarthsRadiusInKilometers*c;
+                    return EarthsRadiusInKilometers * c;
                 case DistanceCalculation.LawOfCosines:
                     return (Math.Acos(
-                        Math.Sin(pointOne.Latitude)*Math.Sin(pointTwo.Latitude) +
-                        Math.Cos(pointOne.Latitude)*Math.Cos(pointTwo.Latitude)*
+                        Math.Sin(pointOne.Latitude) * Math.Sin(pointTwo.Latitude) +
+                        Math.Cos(pointOne.Latitude) * Math.Cos(pointTwo.Latitude) *
                         Math.Cos(pointTwo.Longitude - pointOne.Longitude)
-                                )*EarthsRadiusInKilometers).ToRadians();
+                        ) * EarthsRadiusInKilometers).ToRadians();
                 default:
                     throw new ArgumentOutOfRangeException("calculation");
             }
@@ -150,14 +152,14 @@ namespace WebApplications.Utilities.Location
         public static LatLng MidPoint(LatLng pointOne, LatLng pointTwo)
         {
             double dLon = (pointTwo.Longitude - pointTwo.Longitude).ToRadians();
-            double bx = Math.Cos(pointTwo.Latitude.ToRadians())*Math.Cos(dLon);
-            double by = Math.Cos(pointTwo.Latitude.ToRadians())*Math.Sin(dLon);
+            double bx = Math.Cos(pointTwo.Latitude.ToRadians()) * Math.Cos(dLon);
+            double by = Math.Cos(pointTwo.Latitude.ToRadians()) * Math.Sin(dLon);
 
             double latitude = (Math.Atan2(
                 Math.Sin(pointOne.Latitude.ToRadians()) + Math.Sin(pointTwo.Latitude.ToRadians()),
                 Math.Sqrt(
-                    (Math.Cos(pointOne.Latitude.ToRadians()) + bx)*
-                    (Math.Cos(pointOne.Latitude.ToRadians()) + bx) + by*by))).ToDegrees();
+                    (Math.Cos(pointOne.Latitude.ToRadians()) + bx) *
+                    (Math.Cos(pointOne.Latitude.ToRadians()) + bx) + by * by))).ToDegrees();
 
             double longitude = pointOne.Longitude +
                                Math.Atan2(by, Math.Cos(pointOne.Latitude.ToRadians()) + bx).ToDegrees();

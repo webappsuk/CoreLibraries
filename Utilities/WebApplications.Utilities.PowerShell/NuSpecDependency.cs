@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -38,12 +38,14 @@ namespace WebApplications.Utilities.PowerShell
         /// <summary>
         /// The Id.
         /// </summary>
-        [NotNull] public readonly string Id;
+        [NotNull]
+        public readonly string Id;
 
         /// <summary>
         /// The Version.
         /// </summary>
-        [CanBeNull] public readonly string Version;
+        [CanBeNull]
+        public readonly string Version;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NuSpecDependency"/> struct.
@@ -51,13 +53,16 @@ namespace WebApplications.Utilities.PowerShell
         /// <param name="id">The id.</param>
         /// <param name="version">The version.</param>
         /// <remarks></remarks>
-        public NuSpecDependency(string id, string version = null) : this()
+        public NuSpecDependency(string id, string version = null)
+            : this()
         {
             if (String.IsNullOrWhiteSpace(id))
                 throw new InvalidOperationException(Resources.NuSpecDependency_DependencyIdEmpty);
             if (id.Contains(","))
-                throw new InvalidOperationException(String.Format(Resources.NuSpecDependency_DependencyIdContainsComma,
-                                                                  id));
+                throw new InvalidOperationException(
+                    String.Format(
+                        Resources.NuSpecDependency_DependencyIdContainsComma,
+                        id));
             Id = id.Trim();
             Version = String.IsNullOrWhiteSpace(version) ? null : version.Trim();
         }

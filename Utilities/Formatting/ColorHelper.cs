@@ -45,9 +45,9 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [NotNull]
         private static readonly IReadOnlyDictionary<string, Color> _builtInNamedColors =
-            typeof(Color).GetProperties()
-                .Where(p => p.PropertyType == typeof(Color))
-                .ToDictionary(p => p.Name, p => (Color)p.GetValue(null), StringComparer.InvariantCultureIgnoreCase);
+            typeof (Color).GetProperties()
+                .Where(p => p.PropertyType == typeof (Color))
+                .ToDictionary(p => p.Name, p => (Color) p.GetValue(null), StringComparer.InvariantCultureIgnoreCase);
 
         /// <summary>
         /// The colors by name.
@@ -67,7 +67,10 @@ namespace WebApplications.Utilities.Formatting
         /// <value>The known names.</value>
         [NotNull]
         [PublicAPI]
-        public static IEnumerable<string> KnownNames { get { return _namedColors.Keys.Union(_builtInNamedColors.Keys).Distinct(); } }
+        public static IEnumerable<string> KnownNames
+        {
+            get { return _namedColors.Keys.Union(_builtInNamedColors.Keys).Distinct(); }
+        }
 
         /// <summary>
         /// Gets the named colors.
@@ -103,7 +106,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="name">The name.</param>
         /// <returns>The previous <see cref="Color"/>; otherwise <see cref="Optional{Color}.Unassigned"/>.</returns>
         [PublicAPI]
-        public static Optional<Color> RemoveName([NotNull]string name)
+        public static Optional<Color> RemoveName([NotNull] string name)
         {
             Contract.Requires(name != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(name));
@@ -129,7 +132,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="name">The name.</param>
         /// <returns>The <see cref="Color"/>.</returns>
         [PublicAPI]
-        public static Optional<Color> GetColor([NotNull]string name)
+        public static Optional<Color> GetColor([NotNull] string name)
         {
             Contract.Requires(name != null);
             Contract.Requires(!string.IsNullOrWhiteSpace(name));
@@ -138,7 +141,7 @@ namespace WebApplications.Utilities.Formatting
                 if (_namedColors.TryGetValue(name, out color))
                     return color;
 
-            if (_builtInNamedColors.TryGetValue(name, out color)) 
+            if (_builtInNamedColors.TryGetValue(name, out color))
                 return color;
 
             // Try to parse hex name.

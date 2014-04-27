@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,8 @@ namespace WebApplications.Utilities.Caching
     /// <typeparam name="TKey">The of the key.</typeparam>
     /// <typeparam name="TValue">The type of the values.</typeparam>
     [UsedImplicitly]
-    public class WeakConcurrentLookup<TKey, TValue> : ILookup<TKey, TValue> where TValue : class
+    public class WeakConcurrentLookup<TKey, TValue> : ILookup<TKey, TValue>
+        where TValue : class
     {
         /// <summary>
         ///   A <see cref="bool"/> to indicate whether the lookup supports resurrection.
@@ -54,7 +55,8 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   The underlying weak references.
         /// </summary>
-        [NotNull] private readonly ConcurrentDictionary<TKey, WeakGrouping> _dictionary;
+        [NotNull]
+        private readonly ConcurrentDictionary<TKey, WeakGrouping> _dictionary;
 
         /// <summary>
         ///   A <see cref="bool"/> to indicate whether we are observing finalize.
@@ -64,7 +66,8 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   The value comparer, used to check for equality.
         /// </summary>
-        [NotNull] private readonly IEqualityComparer<TValue> _valueComparer;
+        [NotNull]
+        private readonly IEqualityComparer<TValue> _valueComparer;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="WeakConcurrentLookup&lt;TKey, TValue&gt;"/> class.
@@ -109,8 +112,8 @@ namespace WebApplications.Utilities.Caching
         {
             // Set allow resurrection.
             _allowResurrection = allowResurrection == TriState.Undefined
-                                     ? !ObservableWeakReference<TValue>.Disposable
-                                     : allowResurrection == TriState.Yes;
+                ? !ObservableWeakReference<TValue>.Disposable
+                : allowResurrection == TriState.Yes;
 
             // We are only observing finalization if the type supports it and we're not allowing resurrection.
             _observable = !_allowResurrection && ObservableWeakReference<TValue>.ObservableFinalize;
@@ -119,7 +122,7 @@ namespace WebApplications.Utilities.Caching
 
             // Create underlying dictionary.
             _dictionary = new ConcurrentDictionary<TKey, WeakGrouping>(
-                concurrencyLevel < 1 ? 4*Environment.ProcessorCount : concurrencyLevel,
+                concurrencyLevel < 1 ? 4 * Environment.ProcessorCount : concurrencyLevel,
                 capacity < 1 ? 32 : capacity,
                 comparer ?? EqualityComparer<TKey>.Default);
 
@@ -127,9 +130,7 @@ namespace WebApplications.Utilities.Caching
 
             // ReSharper disable AssignNullToNotNullAttribute
             foreach (KeyValuePair<TKey, TValue> kvp in collection)
-            {
                 Add(kvp.Key, kvp.Value);
-            }
             // ReSharper restore AssignNullToNotNullAttribute
         }
 
@@ -287,7 +288,8 @@ namespace WebApplications.Utilities.Caching
             /// <summary>
             ///   The weak references.
             /// </summary>
-            [NotNull] private readonly ConcurrentDictionary<Guid, WeakReference<TValue>> _dictionary =
+            [NotNull]
+            private readonly ConcurrentDictionary<Guid, WeakReference<TValue>> _dictionary =
                 new ConcurrentDictionary<Guid, WeakReference<TValue>>();
 
             /// <summary>
@@ -312,8 +314,10 @@ namespace WebApplications.Utilities.Caching
             /// <param name="parent">The lookup that the group is contained in.</param>
             /// <param name="key">The key.</param>
             /// <param name="value">The values that correspond to <paramref name="key"/>.</param>
-            internal WeakGrouping([NotNull] WeakConcurrentLookup<TKey, TValue> parent, [NotNull] TKey key,
-                                  [NotNull] TValue value)
+            internal WeakGrouping(
+                [NotNull] WeakConcurrentLookup<TKey, TValue> parent,
+                [NotNull] TKey key,
+                [NotNull] TValue value)
             {
                 Key = key;
                 _parent = parent;
@@ -342,7 +346,8 @@ namespace WebApplications.Utilities.Caching
                 foreach (Guid guid in deadGuids)
                 {
                     WeakReference<TValue> weakReference;
-                    if (!_dictionary.TryRemove(guid, out weakReference) || !_parent._observable) continue;
+                    if (!_dictionary.TryRemove(guid, out weakReference) ||
+                        !_parent._observable) continue;
 
                     ObservableWeakReference<TValue> owf = weakReference as ObservableWeakReference<TValue>;
                     if (owf != null)
@@ -380,34 +385,34 @@ namespace WebApplications.Utilities.Caching
                 WeakReference<TValue> weakReference;
                 if (_parent._observable)
                 {
-                    ObservableWeakReference<TValue> owf = new ObservableWeakReference<TValue>(value,
-                                                                                              _parent._allowResurrection);
+                    ObservableWeakReference<TValue> owf = new ObservableWeakReference<TValue>(
+                        value,
+                        _parent._allowResurrection);
                     owf.Finalized += (s, e) =>
-                        {
-                            WeakReference<TValue> removedValue;
-                            _dictionary.TryRemove(guid, out removedValue);
-                            owf.Dispose();
-                        };
+                    {
+                        WeakReference<TValue> removedValue;
+                        _dictionary.TryRemove(guid, out removedValue);
+                        owf.Dispose();
+                    };
                     weakReference = owf;
                 }
                 else
-                {
                     weakReference = new WeakReference<TValue>(value, _parent._allowResurrection);
-                }
-                _dictionary.AddOrUpdate(guid,
-                                        g => weakReference,
-                                        (g, w) =>
-                                            {
-                                                if ((_parent._observable) &&
-                                                    (w != null))
-                                                {
-                                                    ObservableWeakReference<TValue> o =
-                                                        w as ObservableWeakReference<TValue>;
-                                                    if (o != null)
-                                                        o.Dispose();
-                                                }
-                                                return weakReference;
-                                            });
+                _dictionary.AddOrUpdate(
+                    guid,
+                    g => weakReference,
+                    (g, w) =>
+                    {
+                        if ((_parent._observable) &&
+                            (w != null))
+                        {
+                            ObservableWeakReference<TValue> o =
+                                w as ObservableWeakReference<TValue>;
+                            if (o != null)
+                                o.Dispose();
+                        }
+                        return weakReference;
+                    });
                 return this;
             }
 

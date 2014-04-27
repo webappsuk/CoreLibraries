@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -319,7 +318,7 @@ namespace WebApplications.Utilities.Formatting
             IFormattable fv = Value as IFormattable;
             switch (format.ToLowerInvariant())
             {
-                // Always output's the tag if the chunk has one, otherwise output's the value as normal
+                    // Always output's the tag if the chunk has one, otherwise output's the value as normal
                 case "f":
                     if (Tag != null)
                     {
@@ -339,8 +338,8 @@ namespace WebApplications.Utilities.Formatting
                         value = fv != null ? fv.ToString(Format, formatProvider) : Value.ToString();
                     }
                     break;
-                
-                // Always output's the control tags, otherwise output the value as normal
+
+                    // Always output's the control tags, otherwise output the value as normal
                 case "c":
                     if (Tag != null)
                     {
@@ -361,7 +360,7 @@ namespace WebApplications.Utilities.Formatting
                     }
                     break;
 
-                // Should output the value as normal, but treats unresolved tags as an empty string value
+                    // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
                     if (IsControl) return string.Empty;
 
@@ -371,7 +370,7 @@ namespace WebApplications.Utilities.Formatting
                         : (fv != null ? fv.ToString(Format, formatProvider) : Value.ToString());
                     break;
 
-                // Outputs the value if set, otherwise the format tag. Control tags ignored
+                    // Outputs the value if set, otherwise the format tag. Control tags ignored
                 default:
                     if (IsControl) return string.Empty;
 

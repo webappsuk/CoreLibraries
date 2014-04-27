@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -125,7 +125,8 @@ namespace WebApplications.Utilities
         public static void Set<T>(this SqlDataRecord sqlDataRecord, string columnName, T? value) where T : struct
         {
             sqlDataRecord.SetValue(
-                sqlDataRecord.GetOrdinal(columnName), !value.HasValue ? (object) DBNull.Value : value.Value);
+                sqlDataRecord.GetOrdinal(columnName),
+                !value.HasValue ? (object) DBNull.Value : value.Value);
         }
 
         /// <summary>
@@ -224,7 +225,10 @@ namespace WebApplications.Utilities
         ///   <paramref name="dataReader"/> is <see langword="null"/>.
         /// </exception>
         public static bool TryGetValue<T>(
-            this IDataReader dataReader, string columnName, out T value, T nullValue = default(T))
+            this IDataReader dataReader,
+            string columnName,
+            out T value,
+            T nullValue = default(T))
         {
             int ordinal = -1;
             for (int i = 0; i < dataReader.FieldCount; i++)
@@ -269,7 +273,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.BigInt));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.BigInt));
         }
 
         /// <summary>
@@ -296,7 +303,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.VarBinary));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.VarBinary));
         }
 
         /// <summary>
@@ -323,7 +333,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.Bit));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.Bit));
         }
 
         /// <summary>
@@ -388,7 +401,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.DateTime));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.DateTime));
         }
 
         /// <summary>
@@ -415,7 +431,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.Decimal));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.Decimal));
         }
 
         /// <summary>
@@ -442,7 +461,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.Float));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.Float));
         }
 
         /// <summary>
@@ -469,7 +491,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.Int));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.Int));
         }
 
         /// <summary>
@@ -496,7 +521,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.Real));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.Real));
         }
 
         /// <summary>
@@ -553,7 +581,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.SmallInt));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.SmallInt));
         }
 
         /// <summary>
@@ -580,7 +611,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, SqlDbType.TinyInt));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, SqlDbType.TinyInt));
         }
 
         /// <summary>
@@ -699,7 +733,10 @@ namespace WebApplications.Utilities
             string columnName = "Value")
         {
             return AddWithValue(
-                sqlParameterCollection, parameterName, enumerable, new SqlMetaData(columnName, dbType, maxLength));
+                sqlParameterCollection,
+                parameterName,
+                enumerable,
+                new SqlMetaData(columnName, dbType, maxLength));
         }
 
         /// <summary>
@@ -785,7 +822,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was a <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<Int64> enumerable, string columnName = "Value")
+            this IEnumerable<Int64> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.BigInt));
         }
@@ -805,7 +843,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was a <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<byte[]> enumerable, string columnName = "Value")
+            this IEnumerable<byte[]> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.VarBinary));
         }
@@ -825,7 +864,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<bool> enumerable, string columnName = "Value")
+            this IEnumerable<bool> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.Bit));
         }
@@ -849,7 +889,9 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<string> enumerable, int maxLength = -1, string columnName = "Value")
+            this IEnumerable<string> enumerable,
+            int maxLength = -1,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.NVarChar, maxLength));
         }
@@ -869,7 +911,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<DateTime> enumerable, string columnName = "Value")
+            this IEnumerable<DateTime> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.DateTime));
         }
@@ -889,7 +932,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<Decimal> enumerable, string columnName = "Value")
+            this IEnumerable<Decimal> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.Decimal));
         }
@@ -909,7 +953,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<Double> enumerable, string columnName = "Value")
+            this IEnumerable<Double> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.Float));
         }
@@ -929,7 +974,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<int> enumerable, string columnName = "Value")
+            this IEnumerable<int> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.Int));
         }
@@ -949,7 +995,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<Single> enumerable, string columnName = "Value")
+            this IEnumerable<Single> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.Real));
         }
@@ -969,7 +1016,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<Guid> enumerable, string columnName = "Value")
+            this IEnumerable<Guid> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.UniqueIdentifier));
         }
@@ -989,7 +1037,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<Int16> enumerable, string columnName = "Value")
+            this IEnumerable<Int16> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.SmallInt));
         }
@@ -1009,7 +1058,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="columnName"/> was <see langword="null"/>.
         /// </exception>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue(
-            this IEnumerable<Byte> enumerable, string columnName = "Value")
+            this IEnumerable<Byte> enumerable,
+            string columnName = "Value")
         {
             return ToSqlParameterValue(enumerable, new SqlMetaData(columnName, SqlDbType.TinyInt));
         }
@@ -1028,7 +1078,8 @@ namespace WebApplications.Utilities
         ///   <paramref name="sqlMetaData"/> to not be a <see langword="null"/>.
         /// </remarks>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue<T>(
-            this IEnumerable<T> enumerable, SqlMetaData sqlMetaData)
+            this IEnumerable<T> enumerable,
+            SqlMetaData sqlMetaData)
         {
             Contract.Assert(sqlMetaData != null);
 
@@ -1042,12 +1093,12 @@ namespace WebApplications.Utilities
                 SqlMetaData[] metaData = new[] {sqlMetaData};
                 value = enumerable.Select(
                     o =>
-                        {
-                            Object obj = o;
-                            SqlDataRecord record = new SqlDataRecord(metaData);
-                            record.SetValue(0, (checkNulls && obj == null) ? DBNull.Value : obj);
-                            return record;
-                        }).ToList();
+                    {
+                        Object obj = o;
+                        SqlDataRecord record = new SqlDataRecord(metaData);
+                        record.SetValue(0, (checkNulls && obj == null) ? DBNull.Value : obj);
+                        return record;
+                    }).ToList();
             }
 
             return value;
@@ -1064,22 +1115,26 @@ namespace WebApplications.Utilities
         ///   The converted <paramref name="enumerable"/> as a <see cref="SqlDataRecord"/>.
         /// </returns>
         public static IEnumerable<SqlDataRecord> ToSqlParameterValue<T>(
-            this IEnumerable<T> enumerable, Func<T, SqlDataRecord, bool> convertor, params SqlMetaData[] sqlMetaData)
+            this IEnumerable<T> enumerable,
+            Func<T, SqlDataRecord, bool> convertor,
+            params SqlMetaData[] sqlMetaData)
         {
             Contract.Assert(sqlMetaData != null);
 
             IEnumerable<SqlDataRecord> value = null;
             // Only set the parameters value if we have columns and items in the enumerable.
-            if ((sqlMetaData != null) && (sqlMetaData.Count() > 0) && (enumerable != null) &&
+            if ((sqlMetaData != null) &&
+                (sqlMetaData.Count() > 0) &&
+                (enumerable != null) &&
                 (enumerable.Count() > 0))
             {
                 // Convert enumerable items into SqlDataRecords, where the returned value is not null.
                 List<SqlDataRecord> convertedList = enumerable.Select(
                     o =>
-                        {
-                            SqlDataRecord record = new SqlDataRecord(sqlMetaData);
-                            return convertor(o, record) ? record : null;
-                        }).Where(r => r != null).ToList();
+                    {
+                        SqlDataRecord record = new SqlDataRecord(sqlMetaData);
+                        return convertor(o, record) ? record : null;
+                    }).Where(r => r != null).ToList();
 
                 // If we still have values set the parameter value.
                 if (convertedList.Count() > 0)

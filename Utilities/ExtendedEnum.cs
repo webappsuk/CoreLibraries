@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -365,8 +365,9 @@ namespace WebApplications.Utilities
         ///   The enum of type <typeparamref name="TEnum"/> doesn't contain the <paramref name="value"/> specified.
         /// </exception>
         [UsedImplicitly]
-        public static ExtendedEnum<TEnum>.ValueDetail GetValueDetail<TEnum>(this TEnum value,
-                                                                            bool includeImplicit = false)
+        public static ExtendedEnum<TEnum>.ValueDetail GetValueDetail<TEnum>(
+            this TEnum value,
+            bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
             return ExtendedEnum<TEnum>.GetValueDetail(value, includeImplicit);
@@ -389,8 +390,10 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the <paramref name="valueDetail"/> was found; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public static bool TryGetValueDetail<TEnum>(this TEnum value, out ExtendedEnum<TEnum>.ValueDetail valueDetail,
-                                                    bool includeImplicit = false)
+        public static bool TryGetValueDetail<TEnum>(
+            this TEnum value,
+            out ExtendedEnum<TEnum>.ValueDetail valueDetail,
+            bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
             return ExtendedEnum<TEnum>.TryGetValueDetail(value, out valueDetail, includeImplicit);
@@ -679,7 +682,11 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the flags can be cleared; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public static bool TryClear<TEnum>(this TEnum value, TEnum flags, out TEnum result, bool includeImplicit = false)
+        public static bool TryClear<TEnum>(
+            this TEnum value,
+            TEnum flags,
+            out TEnum result,
+            bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
             return ExtendedEnum<TEnum>.TryClear(value, flags, out result, includeImplicit);
@@ -728,8 +735,11 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the flags can be intersected; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public static bool TryIntersect<TEnum>(this TEnum value, TEnum flags, out TEnum result,
-                                               bool includeImplicit = false)
+        public static bool TryIntersect<TEnum>(
+            this TEnum value,
+            TEnum flags,
+            out TEnum result,
+            bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
             return ExtendedEnum<TEnum>.TryIntersect(value, flags, out result, includeImplicit);
@@ -841,8 +851,10 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the flags can be inverted; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public static bool TryCombine<TEnum>([NotNull] this IEnumerable<TEnum> flags, out TEnum result,
-                                             bool includeImplicit = false)
+        public static bool TryCombine<TEnum>(
+            [NotNull] this IEnumerable<TEnum> flags,
+            out TEnum result,
+            bool includeImplicit = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
             return ExtendedEnum<TEnum>.TryCombine(flags, out result, includeImplicit);
@@ -872,8 +884,10 @@ namespace WebApplications.Utilities
         /// </exception>
         [UsedImplicitly]
         [NotNull]
-        public static IEnumerable<TEnum> SplitFlags<TEnum>(this TEnum flags, bool includeImplicit = false,
-                                                           bool includeCombinations = false)
+        public static IEnumerable<TEnum> SplitFlags<TEnum>(
+            this TEnum flags,
+            bool includeImplicit = false,
+            bool includeCombinations = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
             return ExtendedEnum<TEnum>.SplitFlags(flags, includeImplicit, includeCombinations);
@@ -900,8 +914,11 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if the flags can be split successfully; otherwise returns <see langword="false"/>.
         /// </returns>
         [UsedImplicitly]
-        public static bool TrySplitFlags<TEnum>(this TEnum flags, out IEnumerable<TEnum> result,
-                                                bool includeImplicit = false, bool includeCombinations = false)
+        public static bool TrySplitFlags<TEnum>(
+            this TEnum flags,
+            out IEnumerable<TEnum> result,
+            bool includeImplicit = false,
+            bool includeCombinations = false)
             where TEnum : struct, IComparable, IFormattable, IConvertible
         {
             return ExtendedEnum<TEnum>.TrySplitFlags(flags, out result, includeImplicit, includeCombinations);

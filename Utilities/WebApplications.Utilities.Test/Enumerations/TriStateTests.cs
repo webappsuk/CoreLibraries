@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Enumerations;
@@ -41,64 +40,86 @@ namespace WebApplications.Utilities.Test.Enumerations
         public void TriState_TrueState_IsEquivilantToYesAndPositive()
         {
             Assert.AreEqual(TriState.True, TriState.Yes, "The TriStates 'yes' and 'true' should be equivalent.");
-            Assert.AreEqual(TriState.True, TriState.Positive,
-                            "The TriStates 'positive' and 'true' should be equivalent.");
+            Assert.AreEqual(
+                TriState.True,
+                TriState.Positive,
+                "The TriStates 'positive' and 'true' should be equivalent.");
         }
 
         [TestMethod]
         public void TriState_FalseState_IsEquivilantToNoAndNegotive()
         {
             Assert.AreEqual(TriState.False, TriState.No, "The TriStates 'no' and 'false' should be equivalent.");
-            Assert.AreEqual(TriState.False, TriState.Negative,
-                            "The TriStates 'negotive' and 'false' should be equivalent.");
+            Assert.AreEqual(
+                TriState.False,
+                TriState.Negative,
+                "The TriStates 'negotive' and 'false' should be equivalent.");
         }
 
         [TestMethod]
         public void TriState_UnknownState_IsEquivilantToUndefinedAndEqual()
         {
-            Assert.AreEqual(TriState.Unknown, TriState.Undefined,
-                            "The TriStates 'undefined' and 'unknown' should be equivalent.");
-            Assert.AreEqual(TriState.Unknown, TriState.Equal,
-                            "The TriStates 'equal' and 'unknown' should be equivalent.");
+            Assert.AreEqual(
+                TriState.Unknown,
+                TriState.Undefined,
+                "The TriStates 'undefined' and 'unknown' should be equivalent.");
+            Assert.AreEqual(
+                TriState.Unknown,
+                TriState.Equal,
+                "The TriStates 'equal' and 'unknown' should be equivalent.");
         }
 
         [TestMethod]
         public void TriState_DistinctStates_AreNotEquivilent()
         {
-            Assert.AreNotEqual(TriState.Unknown, TriState.True,
-                               "The TriStates 'true' and 'unknown' should not be equivalent.");
-            Assert.AreNotEqual(TriState.Unknown, TriState.False,
-                               "The TriStates 'false' and 'unknown' should not be equivalent.");
-            Assert.AreNotEqual(TriState.True, TriState.False,
-                               "The TriStates 'false' and 'true' should not be equivalent.");
+            Assert.AreNotEqual(
+                TriState.Unknown,
+                TriState.True,
+                "The TriStates 'true' and 'unknown' should not be equivalent.");
+            Assert.AreNotEqual(
+                TriState.Unknown,
+                TriState.False,
+                "The TriStates 'false' and 'unknown' should not be equivalent.");
+            Assert.AreNotEqual(
+                TriState.True,
+                TriState.False,
+                "The TriStates 'false' and 'true' should not be equivalent.");
         }
 
         [TestMethod]
         public void TriState_ConstructorWithoutValue_DefaultsToUnknown()
         {
-            Assert.AreEqual(TriState.Unknown, new TriState(),
-                            "A TriState instance with no value should be equivalent to 'unknown'.");
+            Assert.AreEqual(
+                TriState.Unknown,
+                new TriState(),
+                "A TriState instance with no value should be equivalent to 'unknown'.");
         }
 
         [TestMethod]
         public void TriState_DefaultValue_DefaultsToUnknown()
         {
-            Assert.AreEqual(TriState.Unknown, default(TriState),
-                            "The default TriState value should be equivalent to 'unknown'.");
+            Assert.AreEqual(
+                TriState.Unknown,
+                default(TriState),
+                "The default TriState value should be equivalent to 'unknown'.");
         }
 
         [TestMethod]
         public void TriState_YesTriState_CastsToTrue()
         {
-            Assert.AreEqual(true, (bool) TriState.Yes,
-                            "The 'yes' TriState should be equal to True when cast to a boolean.");
+            Assert.AreEqual(
+                true,
+                (bool) TriState.Yes,
+                "The 'yes' TriState should be equal to True when cast to a boolean.");
         }
 
         [TestMethod]
         public void TriState_NoTriState_CastsToFalse()
         {
-            Assert.AreEqual(false, (bool) TriState.No,
-                            "The 'no' TriState should be equal to False when cast to a boolean.");
+            Assert.AreEqual(
+                false,
+                (bool) TriState.No,
+                "The 'no' TriState should be equal to False when cast to a boolean.");
         }
 
         [TestMethod]
@@ -135,8 +156,10 @@ namespace WebApplications.Utilities.Test.Enumerations
         [TestMethod]
         public void TriState_NoTriState_CastsToZero()
         {
-            Assert.AreEqual(0, (int) TriState.Unknown,
-                            "The 'unknown' TriState should be equal to 0 when cast to an int.");
+            Assert.AreEqual(
+                0,
+                (int) TriState.Unknown,
+                "The 'unknown' TriState should be equal to 0 when cast to an int.");
         }
 
         [TestMethod]
@@ -186,8 +209,10 @@ namespace WebApplications.Utilities.Test.Enumerations
         [TestMethod]
         public void TriState_NoTriState_CastsToByteZero()
         {
-            Assert.AreEqual(0, (byte) TriState.Unknown,
-                            "The 'unknown' TriState should be equal to 0 when cast to an byte.");
+            Assert.AreEqual(
+                0,
+                (byte) TriState.Unknown,
+                "The 'unknown' TriState should be equal to 0 when cast to an byte.");
         }
 
         [TestMethod]
@@ -205,15 +230,19 @@ namespace WebApplications.Utilities.Test.Enumerations
         [TestMethod]
         public void TriState_CastFromByteZero_EquivilantToUnknown()
         {
-            Assert.AreEqual(TriState.Unknown, (TriState) ((byte) (0)),
-                            "The byte 0 should cast into the 'unknown' TriState.");
+            Assert.AreEqual(
+                TriState.Unknown,
+                (TriState) ((byte) (0)),
+                "The byte 0 should cast into the 'unknown' TriState.");
         }
 
         [TestMethod]
         public void TriState_CastFromByteTwo_EquivilantToUnknown()
         {
-            Assert.AreEqual(TriState.Unknown, (TriState) ((byte) (2)),
-                            "The byte 2 should cast into the 'unknown' TriState.");
+            Assert.AreEqual(
+                TriState.Unknown,
+                (TriState) ((byte) (2)),
+                "The byte 2 should cast into the 'unknown' TriState.");
         }
 
         [TestMethod]
@@ -227,20 +256,24 @@ namespace WebApplications.Utilities.Test.Enumerations
         [TestMethod]
         public void TriState_ToString_DefaultsToYesNoUnknownStyle()
         {
-            TriState testTriState = (Random.Next()%3 - 1);
-            Assert.AreEqual(testTriState.ToString(TriState.Style.YesUnknownNo), testTriState.ToString(),
-                            "The string representation of a TriState should default to YesUnknownNo formatting.");
+            TriState testTriState = (Random.Next() % 3 - 1);
+            Assert.AreEqual(
+                testTriState.ToString(TriState.Style.YesUnknownNo),
+                testTriState.ToString(),
+                "The string representation of a TriState should default to YesUnknownNo formatting.");
         }
 
         [TestMethod]
         [ExpectedException(typeof (ArgumentOutOfRangeException))]
         public void TriState_ToStringWithInvalidStyle_ThrowsArgumentOutOfRangeException()
         {
-            TriState testTriState = (Random.Next()%3 - 1);
+            TriState testTriState = (Random.Next() % 3 - 1);
             const TriState.Style testStyle = (TriState.Style) 4;
-                // note: this test assumes there is no style with value 4
-            Assert.AreEqual("4", testStyle.ToString(),
-                            "For this test to correctly function, the style used should be invalid. When this holds, the string representation of the style is a number.");
+            // note: this test assumes there is no style with value 4
+            Assert.AreEqual(
+                "4",
+                testStyle.ToString(),
+                "For this test to correctly function, the style used should be invalid. When this holds, the string representation of the style is a number.");
             testTriState.ToString(testStyle);
         }
 
@@ -248,64 +281,82 @@ namespace WebApplications.Utilities.Test.Enumerations
         [TestMethod]
         public void TriState_YesStateToStringWithYesUnknownNoFormat_ReturnsYes()
         {
-            Assert.AreEqual("Yes", TriState.Yes.ToString(TriState.Style.YesUnknownNo),
-                            "The string representation of a Yes TriState with YesUnknownNo formatting should be 'Yes'.");
+            Assert.AreEqual(
+                "Yes",
+                TriState.Yes.ToString(TriState.Style.YesUnknownNo),
+                "The string representation of a Yes TriState with YesUnknownNo formatting should be 'Yes'.");
         }
 
         [TestMethod]
         public void TriState_NoStateToStringWithYesUnknownNoFormat_ReturnsNo()
         {
-            Assert.AreEqual("No", TriState.No.ToString(TriState.Style.YesUnknownNo),
-                            "The string representation of a No TriState with YesUnknownNo formatting should be 'No'.");
+            Assert.AreEqual(
+                "No",
+                TriState.No.ToString(TriState.Style.YesUnknownNo),
+                "The string representation of a No TriState with YesUnknownNo formatting should be 'No'.");
         }
 
         [TestMethod]
         public void TriState_UnknownStateToStringWithYesUnknownNoFormat_ReturnsUnknown()
         {
-            Assert.AreEqual("Unknown", TriState.Unknown.ToString(TriState.Style.YesUnknownNo),
-                            "The string representation of an Unknown TriState with YesUnknownNo formatting should be 'Unknown'.");
+            Assert.AreEqual(
+                "Unknown",
+                TriState.Unknown.ToString(TriState.Style.YesUnknownNo),
+                "The string representation of an Unknown TriState with YesUnknownNo formatting should be 'Unknown'.");
         }
 
         [TestMethod]
         public void TriState_YesStateToStringWithTrueUndefinedFalseFormat_ReturnsTrue()
         {
-            Assert.AreEqual("True", TriState.Yes.ToString(TriState.Style.TrueUndefinedFalse),
-                            "The string representation of a Yes TriState with TrueUndefinedFalse formatting should be 'True'.");
+            Assert.AreEqual(
+                "True",
+                TriState.Yes.ToString(TriState.Style.TrueUndefinedFalse),
+                "The string representation of a Yes TriState with TrueUndefinedFalse formatting should be 'True'.");
         }
 
         [TestMethod]
         public void TriState_NoStateToStringWithTrueUndefinedFalseFormat_ReturnsFalse()
         {
-            Assert.AreEqual("False", TriState.No.ToString(TriState.Style.TrueUndefinedFalse),
-                            "The string representation of a No TriState with TrueUndefinedFalse formatting should be 'False'.");
+            Assert.AreEqual(
+                "False",
+                TriState.No.ToString(TriState.Style.TrueUndefinedFalse),
+                "The string representation of a No TriState with TrueUndefinedFalse formatting should be 'False'.");
         }
 
         [TestMethod]
         public void TriState_UnknownStateToStringWithTrueUndefinedFalseFormat_ReturnsUndefined()
         {
-            Assert.AreEqual("Undefined", TriState.Unknown.ToString(TriState.Style.TrueUndefinedFalse),
-                            "The string representation of an Unknown TriState with TrueUndefinedFalse formatting should be 'Undefined'.");
+            Assert.AreEqual(
+                "Undefined",
+                TriState.Unknown.ToString(TriState.Style.TrueUndefinedFalse),
+                "The string representation of an Unknown TriState with TrueUndefinedFalse formatting should be 'Undefined'.");
         }
 
         [TestMethod]
         public void TriState_YesStateToStringWithNegativeEqualPositiveFormat_ReturnsPositive()
         {
-            Assert.AreEqual("Positive", TriState.Yes.ToString(TriState.Style.NegativeEqualPositive),
-                            "The string representation of a Yes TriState with NegativeEqualPositive formatting should be 'Positive'.");
+            Assert.AreEqual(
+                "Positive",
+                TriState.Yes.ToString(TriState.Style.NegativeEqualPositive),
+                "The string representation of a Yes TriState with NegativeEqualPositive formatting should be 'Positive'.");
         }
 
         [TestMethod]
         public void TriState_NoStateToStringWithNegativeEqualPositiveFormat_ReturnsNegative()
         {
-            Assert.AreEqual("Negative", TriState.No.ToString(TriState.Style.NegativeEqualPositive),
-                            "The string representation of a No TriState with NegativeEqualPositive formatting should be 'Negative'.");
+            Assert.AreEqual(
+                "Negative",
+                TriState.No.ToString(TriState.Style.NegativeEqualPositive),
+                "The string representation of a No TriState with NegativeEqualPositive formatting should be 'Negative'.");
         }
 
         [TestMethod]
         public void TriState_UnknownStateToStringWithYesUnknownNoFormat_ReturnsEqual()
         {
-            Assert.AreEqual("Equal", TriState.Unknown.ToString(TriState.Style.NegativeEqualPositive),
-                            "The string representation of an Unknown TriState with NegativeEqualPositive formatting should be 'Equal'.");
+            Assert.AreEqual(
+                "Equal",
+                TriState.Unknown.ToString(TriState.Style.NegativeEqualPositive),
+                "The string representation of an Unknown TriState with NegativeEqualPositive formatting should be 'Equal'.");
         }
 
         // ReSharper restore ImpureMethodCallOnReadonlyValueField
@@ -313,50 +364,59 @@ namespace WebApplications.Utilities.Test.Enumerations
         [TestMethod]
         public void TriState_IFormattableWithFormatG_GivesSameResultAsToStringYesUnknownNo()
         {
-            TriState testTriState = (Random.Next()%3 - 1);
-            Assert.AreEqual(testTriState.ToString("G", null), testTriState.ToString(TriState.Style.YesUnknownNo),
-                            "The result of IFormattable.ToString with format 'G' should be the same as ToString with style YesUnknownNo.");
+            TriState testTriState = (Random.Next() % 3 - 1);
+            Assert.AreEqual(
+                testTriState.ToString("G", null),
+                testTriState.ToString(TriState.Style.YesUnknownNo),
+                "The result of IFormattable.ToString with format 'G' should be the same as ToString with style YesUnknownNo.");
         }
 
         [TestMethod]
         public void TriState_IFormattableWithFormatY_GivesSameResultAsToStringYesUnknownNo()
         {
-            TriState testTriState = (Random.Next()%3 - 1);
-            Assert.AreEqual(testTriState.ToString("Y", null), testTriState.ToString(TriState.Style.YesUnknownNo),
-                            "The result of IFormattable.ToString with format 'Y' should be the same as ToString with style YesUnknownNo.");
+            TriState testTriState = (Random.Next() % 3 - 1);
+            Assert.AreEqual(
+                testTriState.ToString("Y", null),
+                testTriState.ToString(TriState.Style.YesUnknownNo),
+                "The result of IFormattable.ToString with format 'Y' should be the same as ToString with style YesUnknownNo.");
         }
 
         [TestMethod]
         public void TriState_IFormattableWithFormatT_GivesSameResultAsToStringTrueUndefinedFalse()
         {
-            TriState testTriState = (Random.Next()%3 - 1);
-            Assert.AreEqual(testTriState.ToString("T", null), testTriState.ToString(TriState.Style.TrueUndefinedFalse),
-                            "The result of IFormattable.ToString with format 'T' should be the same as ToString with style TrueUndefinedFalse.");
+            TriState testTriState = (Random.Next() % 3 - 1);
+            Assert.AreEqual(
+                testTriState.ToString("T", null),
+                testTriState.ToString(TriState.Style.TrueUndefinedFalse),
+                "The result of IFormattable.ToString with format 'T' should be the same as ToString with style TrueUndefinedFalse.");
         }
 
         [TestMethod]
         public void TriState_IFormattableWithFormatN_GivesSameResultAsToStringNegativeEqualPositive()
         {
-            TriState testTriState = (Random.Next()%3 - 1);
-            Assert.AreEqual(testTriState.ToString("N", null),
-                            testTriState.ToString(TriState.Style.NegativeEqualPositive),
-                            "The result of IFormattable.ToString with format 'N' should be the same as ToString with style NegativeEqualPositive.");
+            TriState testTriState = (Random.Next() % 3 - 1);
+            Assert.AreEqual(
+                testTriState.ToString("N", null),
+                testTriState.ToString(TriState.Style.NegativeEqualPositive),
+                "The result of IFormattable.ToString with format 'N' should be the same as ToString with style NegativeEqualPositive.");
         }
 
         [TestMethod]
         public void TriState_IFormattableWithValidStyle_GivesSameResultAsToString()
         {
             Random randSource = new Random();
-            TriState testTriState = (Random.Next()%3 - 1);
+            TriState testTriState = (Random.Next() % 3 - 1);
             TriState.Style testStyle =
                 (new List<TriState.Style>
-                     {
-                         TriState.Style.YesUnknownNo,
-                         TriState.Style.NegativeEqualPositive,
-                         TriState.Style.TrueUndefinedFalse
-                     }).OrderBy(x => randSource.Next()).First();
-            Assert.AreEqual(testTriState.ToString(testStyle), testTriState.ToString(testStyle.ToString(), null),
-                            "The result of IFormattable.ToString with the string representation of a style as the format should be the same as ToString with that same style.");
+                {
+                    TriState.Style.YesUnknownNo,
+                    TriState.Style.NegativeEqualPositive,
+                    TriState.Style.TrueUndefinedFalse
+                }).OrderBy(x => randSource.Next()).First();
+            Assert.AreEqual(
+                testTriState.ToString(testStyle),
+                testTriState.ToString(testStyle.ToString(), null),
+                "The result of IFormattable.ToString with the string representation of a style as the format should be the same as ToString with that same style.");
         }
 
         [TestMethod]
@@ -364,7 +424,7 @@ namespace WebApplications.Utilities.Test.Enumerations
         public void TriState_IFormattableWithInvalidStyle_ThrowsFormatException()
         {
             Random randSource = new Random();
-            TriState testTriState = (Random.Next()%3 - 1);
+            TriState testTriState = (Random.Next() % 3 - 1);
             String testInvalidStyle = "ThisIsNotAValidStyleType";
             TriState.Style testStyle;
             Assert.IsFalse(Enum.TryParse(testInvalidStyle, false, out testStyle));

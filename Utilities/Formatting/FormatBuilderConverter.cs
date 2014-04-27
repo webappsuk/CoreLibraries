@@ -47,7 +47,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         /// <param name="type">The type.</param>
         /// <returns>System.Object.</returns>
-        public override object ConvertTo([CanBeNull]ITypeDescriptorContext ctx, [CanBeNull]CultureInfo ci, [CanBeNull]object value, [CanBeNull]Type type)
+        public override object ConvertTo(
+            [CanBeNull] ITypeDescriptorContext ctx,
+            [CanBeNull] CultureInfo ci,
+            [CanBeNull] object value,
+            [CanBeNull] Type type)
         {
             return value != null ? value.ToString() : null;
         }
@@ -59,7 +63,10 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="ci">The ci.</param>
         /// <param name="data">The data.</param>
         /// <returns>System.Object.</returns>
-        public override object ConvertFrom([CanBeNull]ITypeDescriptorContext ctx, [CanBeNull]CultureInfo ci, object data)
+        public override object ConvertFrom(
+            [CanBeNull] ITypeDescriptorContext ctx,
+            [CanBeNull] CultureInfo ci,
+            object data)
         {
             string format = data as string;
             return format == null

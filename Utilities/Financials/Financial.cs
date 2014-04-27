@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,9 @@ namespace WebApplications.Utilities.Financials
     public class Financial : IEquatable<Financial>, IFormattable
     {
         private readonly decimal _amount;
-        [NotNull] private readonly CurrencyInfo _currency;
+
+        [NotNull]
+        private readonly CurrencyInfo _currency;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Financial"/> class.
@@ -134,8 +136,11 @@ namespace WebApplications.Utilities.Financials
         /// <param name="inputCharge">The input charge.</param>
         /// <param name="outputCharge">The output charge.</param>
         /// <returns>A <see cref="Financial"/> with the exchange rate and charges applied.</returns>
-        public Financial Exchange([NotNull] CurrencyInfo currency, decimal exchangeRate = decimal.One,
-                                  decimal inputCharge = decimal.Zero, decimal outputCharge = decimal.Zero)
+        public Financial Exchange(
+            [NotNull] CurrencyInfo currency,
+            decimal exchangeRate = decimal.One,
+            decimal inputCharge = decimal.Zero,
+            decimal outputCharge = decimal.Zero)
         {
             if (_currency == currency)
                 return this;
@@ -313,7 +318,8 @@ namespace WebApplications.Utilities.Financials
         public static bool operator ==(Financial a, Financial b)
         {
             if (ReferenceEquals(a, b)) return true;
-            if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
+            if (ReferenceEquals(a, null) ||
+                ReferenceEquals(b, null)) return false;
             return Equals(a._amount, b._amount) &&
                    Equals(a._currency, b._currency);
         }
@@ -342,7 +348,7 @@ namespace WebApplications.Utilities.Financials
         [UsedImplicitly]
         public static Financial operator *([NotNull] Financial a, [NotNull] Financial b)
         {
-            return new Financial(a._currency, a._amount*b._amount);
+            return new Financial(a._currency, a._amount * b._amount);
         }
 
         /// <summary>
@@ -370,7 +376,7 @@ namespace WebApplications.Utilities.Financials
         {
             unchecked
             {
-                return (_currency.GetHashCode()*397) ^ _amount.GetHashCode();
+                return (_currency.GetHashCode() * 397) ^ _amount.GetHashCode();
             }
         }
 
@@ -410,7 +416,7 @@ namespace WebApplications.Utilities.Financials
             {
                 List<CultureInfo> matchingCultures =
                     _currency.Cultures.Where(c => c.TwoLetterISOLanguageName == culture.TwoLetterISOLanguageName)
-                             .ToList();
+                        .ToList();
                 if (matchingCultures.Count > 0)
                     culture = matchingCultures.First();
                 else if (_currency.Cultures.Any())

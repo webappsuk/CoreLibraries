@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -119,9 +119,9 @@ namespace WebApplications.Utilities.Configuration
 
             // Build dictionary of parameters from property.
             Dictionary<string, PInfo> parameters = (from ConfigurationProperty property in Properties
-                                                    select
-                                                        new PInfo(property, this[property])).ToDictionary(
-                                                            info => info.Name);
+                select
+                    new PInfo(property, this[property])).ToDictionary(
+                        info => info.Name);
 
             // Overwrite with elements in parameters collection.
             foreach (ParameterElement element in Parameters)
@@ -129,23 +129,17 @@ namespace WebApplications.Utilities.Configuration
                 PInfo info = new PInfo(element);
                 PInfo i;
                 if (!parameters.TryGetValue(info.Name, out i))
-                {
                     parameters.Add(element.Name, info);
-                }
                 else
-                {
                     parameters[info.Name] = info;
-                }
             }
 
             // Count required and optional parameters.
             int required = 0;
             int optional = 0;
             foreach (PInfo info in parameters.Values)
-            {
                 if (info.IsRequired) required++;
                 else optional++;
-            }
 
             // Find the best matching constructor
             int requiredScore = -1;
@@ -155,8 +149,9 @@ namespace WebApplications.Utilities.Configuration
             ParameterInfo[] parameterInfos = null;
             foreach (
                 ConstructorInfo c in
-                    Type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
-                                         BindingFlags.CreateInstance))
+                    Type.GetConstructors(
+                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
+                        BindingFlags.CreateInstance))
             {
                 // Get parameters;
                 ParameterInfo[] pis = c.GetParameters();
@@ -174,12 +169,13 @@ namespace WebApplications.Utilities.Configuration
                         continue;
 
                     // If we encounter an output or reference value, we will not be able to use the constructer, and so must exclude it
-                    if (pi.IsOut || pi.ParameterType.IsByRef)
+                    if (pi.IsOut ||
+                        pi.ParameterType.IsByRef)
                     {
                         rs = -1;
                         break;
                     }
-                    
+
                     // If the parameter name is unknown, then can't match!
                     if (pi.Name == null)
                     {
@@ -203,7 +199,8 @@ namespace WebApplications.Utilities.Configuration
                     {
                         // If we have a required property and the parameter type is not assignable from the explicit type
                         // then we do not match.
-                        if ((info.Type != null) && (!pi.ParameterType.IsAssignableFrom(info.Type)))
+                        if ((info.Type != null) &&
+                            (!pi.ParameterType.IsAssignableFrom(info.Type)))
                         {
                             rs = -1;
                             break;
@@ -222,7 +219,8 @@ namespace WebApplications.Utilities.Configuration
                     continue;
 
                 // If we have the same required and optional score as our previous winner then we have an ambiguous match.
-                if ((rs == requiredScore) && (os == optionalScore))
+                if ((rs == requiredScore) &&
+                    (os == optionalScore))
                 {
                     isAmbiguous = true;
                     continue;
@@ -259,9 +257,7 @@ namespace WebApplications.Utilities.Configuration
                      (p.ParameterType.IsAssignableFrom(info.Type))))
                 {
                     if (!info.ValueSet)
-                    {
                         info.Type = p.ParameterType;
-                    }
                     value = info.Value;
                     useDefault = false;
                 }
@@ -392,23 +388,23 @@ namespace WebApplications.Utilities.Configuration
                         // Get default converter for type
                         _converter = TypeDescriptor.GetConverter(_type);
                         if (_converter == null)
-                            throw new InvalidOperationException(string.Format(
-                                Resources.PInfo_TypeProperty_CannotCreateDefaultTypeConverter,
-                                Name,
-                                _type));
+                            throw new InvalidOperationException(
+                                string.Format(
+                                    Resources.PInfo_TypeProperty_CannotCreateDefaultTypeConverter,
+                                    Name,
+                                    _type));
                     }
 
                     if (!_converter.CanConvertFrom(typeof (string)))
-                        throw new InvalidOperationException(string.Format(
-                            Resources.PInfo_TypeProperty_ConverterCannotConvertFromString,
-                            _converter.GetType(),
-                            Name));
+                        throw new InvalidOperationException(
+                            string.Format(
+                                Resources.PInfo_TypeProperty_ConverterCannotConvertFromString,
+                                _converter.GetType(),
+                                Name));
 
                     // If we have a null value just create the default anyway.
                     if (_valueStr == null)
-                    {
                         Value = _type.Default();
-                    }
                     else
                     {
                         try
@@ -422,26 +418,29 @@ namespace WebApplications.Utilities.Configuration
                                     Resources.PInfo_TypeProperty_CannotConvertValueStrToDestinationType,
                                     _valueStr,
                                     Name,
-                                    _type), e);
+                                    _type),
+                                e);
                         }
 
                         if (Value != null)
                         {
                             Type valueType = Value.GetType();
                             if (!_type.IsAssignableFrom(valueType))
-                                throw new InvalidOperationException(string.Format(
-                                    Resources.PInfo_TypeProperty_TypeNotAssignableFromConvertedType,
-                                    _converter.GetType(),
-                                    valueType,
-                                    Name,
-                                    _type));
+                                throw new InvalidOperationException(
+                                    string.Format(
+                                        Resources.PInfo_TypeProperty_TypeNotAssignableFromConvertedType,
+                                        _converter.GetType(),
+                                        valueType,
+                                        Name,
+                                        _type));
                         }
                         else if (!_type.IsClass)
-                            throw new InvalidOperationException(string.Format(
-                                Resources.PInfo_TypeProperty_ConveterReturnedNullForNonNullableType,
-                                _converter.GetType(),
-                                Name,
-                                _type));
+                            throw new InvalidOperationException(
+                                string.Format(
+                                    Resources.PInfo_TypeProperty_ConveterReturnedNullForNonNullableType,
+                                    _converter.GetType(),
+                                    Name,
+                                    _type));
                     }
                 }
             }
@@ -462,9 +461,10 @@ namespace WebApplications.Utilities.Configuration
                 get
                 {
                     if (!ValueSet)
-                        throw new InvalidOperationException(string.Format(
-                            Resources.PInfo_ValueProperty_NoValueSet,
-                            Name));
+                        throw new InvalidOperationException(
+                            string.Format(
+                                Resources.PInfo_ValueProperty_NoValueSet,
+                                Name));
                     return _value;
                 }
                 set
@@ -483,10 +483,11 @@ namespace WebApplications.Utilities.Configuration
             /// </returns>
             public override string ToString()
             {
-                return string.Format("{0}{1} = '{2}'",
-                                     IsRequired ? "(REQUIRED)" : string.Empty,
-                                     Name,
-                                     _valueStr);
+                return string.Format(
+                    "{0}{1} = '{2}'",
+                    IsRequired ? "(REQUIRED)" : string.Empty,
+                    Name,
+                    _valueStr);
             }
         }
         #endregion

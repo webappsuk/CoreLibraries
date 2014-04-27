@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -41,12 +41,14 @@ namespace WebApplications.Utilities.Test.Ranges
             short length = (short) Random.Next(1, short.MaxValue);
             short start = (short) Random.Next(short.MinValue, short.MaxValue - length);
             short end = (short) (start + length);
-            short step = (short) Random.Next(1, length/2);
+            short step = (short) Random.Next(1, length / 2);
 
             ShortRange shortRange = new ShortRange(start, end, step);
 
-            Assert.AreNotEqual(string.Empty, shortRange.ToString(),
-                               "String representation of range must not be an empty string");
+            Assert.AreNotEqual(
+                string.Empty,
+                shortRange.ToString(),
+                "String representation of range must not be an empty string");
         }
 
         [TestMethod]
@@ -55,7 +57,7 @@ namespace WebApplications.Utilities.Test.Ranges
             short length = (short) Random.Next(1, short.MaxValue);
             short start = (short) Random.Next(short.MinValue, short.MaxValue - length);
             short end = (short) (start + length);
-            short step = (short) Random.Next(1, length/2);
+            short step = (short) Random.Next(1, length / 2);
 
             ShortRange shortRange = new ShortRange(start, end, step);
 
@@ -67,10 +69,10 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void ShortRange_StepIsLargerThanShortRange_ParametersMatchThoseGiven()
         {
-            short length = (short) Random.Next(1, short.MaxValue/2);
+            short length = (short) Random.Next(1, short.MaxValue / 2);
             short start = (short) Random.Next(short.MinValue, short.MaxValue - length);
             short end = (short) (start + length);
-            short step = (short) (length + Random.Next(1, short.MaxValue/3));
+            short step = (short) (length + Random.Next(1, short.MaxValue / 3));
 
             ShortRange shortRange = new ShortRange(start, end, step);
 
@@ -111,7 +113,7 @@ namespace WebApplications.Utilities.Test.Ranges
             short start = (short) Random.Next(short.MinValue, short.MaxValue - length);
             short end = (short) (start + length);
             // note that the number of steps is limited to 100 or fewer
-            short step = (short) (length/Random.Next(4, Math.Max(4, Math.Min(length/2, 100))));
+            short step = (short) (length / Random.Next(4, Math.Max(4, Math.Min(length / 2, 100))));
 
             // ensure the step is at least 1 (as length of less than four causes it to round down to zero)
             if (step < 1) step = 1;
@@ -132,19 +134,21 @@ namespace WebApplications.Utilities.Test.Ranges
             short start = (short) Random.Next(short.MinValue, short.MaxValue - length);
             short end = (short) (start + length);
             // note that the number of steps is limited to 1000 or fewer
-            short step = (short) (length/Random.Next(4, Math.Max(4, Math.Min(length/2, 1000))));
+            short step = (short) (length / Random.Next(4, Math.Max(4, Math.Min(length / 2, 1000))));
 
             // In case range length is under 4, ensure the step is at least 1
             if (step < 1) step = 1;
 
             //ensure that step size is a factor of the length of the range
-            start += (short) (length%step);
+            start += (short) (length % step);
 
             ShortRange shortRange = new ShortRange(start, end, step);
 
             // Range endpoint is inclusive, so must take into account this extra iteration
-            Assert.AreEqual(length/step + 1, shortRange.Count(),
-                            "Iteration count should be (end-start)/step + 1 where endpoint is included");
+            Assert.AreEqual(
+                length / step + 1,
+                shortRange.Count(),
+                "Iteration count should be (end-start)/step + 1 where endpoint is included");
         }
 
         [TestMethod]
@@ -154,13 +158,13 @@ namespace WebApplications.Utilities.Test.Ranges
             short start = (short) Random.Next(short.MinValue, short.MaxValue - length);
             short end = (short) (start + length);
             // note that the number of steps is limited to 1000 or fewer
-            short step = (short) (length/Random.Next(4, Math.Max(4, Math.Min(length/2, 1000))));
+            short step = (short) (length / Random.Next(4, Math.Max(4, Math.Min(length / 2, 1000))));
 
             // In case range length is under 4, ensure the step is at least 2
             if (step < 2) step = 2;
 
             //ensure that step size is not a factor of the length of the range
-            if (length%step == 0)
+            if (length % step == 0)
             {
                 start += (short) Random.Next(1, step - 1);
                 length = (short) (end - start);
@@ -168,7 +172,7 @@ namespace WebApplications.Utilities.Test.Ranges
 
             ShortRange shortRange = new ShortRange(start, end, step);
 
-            Assert.AreEqual(length/step + 1, shortRange.Count(), "Iteration count should be (start-end)/step +1");
+            Assert.AreEqual(length / step + 1, shortRange.Count(), "Iteration count should be (start-end)/step +1");
         }
 
         [TestMethod]
@@ -178,7 +182,7 @@ namespace WebApplications.Utilities.Test.Ranges
             short start = (short) Random.Next(short.MinValue, short.MaxValue - length);
             short end = (short) (start + length);
             // note that the number of steps is limited to 100 or fewer
-            short step = (short) (length/Random.Next(4, Math.Max(4, Math.Min(length/2, 100))));
+            short step = (short) (length / Random.Next(4, Math.Max(4, Math.Min(length / 2, 100))));
 
             // In case range length is under 4, ensure the step is at least 1
             if (step < 1) step = 1;
@@ -189,10 +193,10 @@ namespace WebApplications.Utilities.Test.Ranges
             foreach (short i in shortRange)
             {
                 if (previous.HasValue)
-                {
-                    Assert.AreEqual(i - previous, step,
-                                    "Difference between iteration values should match the step value supplied");
-                }
+                    Assert.AreEqual(
+                        i - previous,
+                        step,
+                        "Difference between iteration values should match the step value supplied");
                 previous = i;
             }
         }
@@ -201,13 +205,11 @@ namespace WebApplications.Utilities.Test.Ranges
         public void ShortRange_UsingLargestPossibleParameters_IteratesSuccessfully()
         {
             // Step chosen to avoid an unfeasible number of iterations
-            ShortRange shortRange = new ShortRange(short.MinValue, short.MaxValue, short.MaxValue/16);
+            ShortRange shortRange = new ShortRange(short.MinValue, short.MaxValue, short.MaxValue / 16);
 
             bool iterated = false;
             foreach (short i in shortRange)
-            {
                 iterated = true;
-            }
 
             Assert.AreEqual(true, iterated, "When iterating across full range, at least one value should be returned");
         }
@@ -215,34 +217,40 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void ShortRange_NumberBelowRange_BindReturnsStart()
         {
-            short start = (short) Random.Next(short.MinValue/2, short.MaxValue/2);
-            short end = (short) Random.Next(start, short.MaxValue/2);
+            short start = (short) Random.Next(short.MinValue / 2, short.MaxValue / 2);
+            short end = (short) Random.Next(start, short.MaxValue / 2);
             short testValue = (short) Random.Next(short.MinValue, start);
 
-            Assert.AreEqual(start, (new ShortRange(start, end)).Bind(testValue),
-                            "Bind should return the lower bound of the range if the input is below the range");
+            Assert.AreEqual(
+                start,
+                (new ShortRange(start, end)).Bind(testValue),
+                "Bind should return the lower bound of the range if the input is below the range");
         }
 
         [TestMethod]
         public void ShortRange_NumberAboveRange_BindReturnsEnd()
         {
-            short start = (short) Random.Next(short.MinValue/2, short.MaxValue/2);
-            short end = (short) Random.Next(start, short.MaxValue/2);
+            short start = (short) Random.Next(short.MinValue / 2, short.MaxValue / 2);
+            short end = (short) Random.Next(start, short.MaxValue / 2);
             short testValue = (short) Random.Next(end, short.MaxValue);
 
-            Assert.AreEqual(end, (new ShortRange(start, end)).Bind(testValue),
-                            "Bind should return the upper bound of the range if the input is above the range");
+            Assert.AreEqual(
+                end,
+                (new ShortRange(start, end)).Bind(testValue),
+                "Bind should return the upper bound of the range if the input is above the range");
         }
 
         [TestMethod]
         public void ShortRange_NumberWithinRange_BindReturnsInput()
         {
-            short start = (short) Random.Next(short.MinValue/2, short.MaxValue/2);
-            short end = (short) Random.Next(start, short.MaxValue/2);
+            short start = (short) Random.Next(short.MinValue / 2, short.MaxValue / 2);
+            short end = (short) Random.Next(start, short.MaxValue / 2);
             short testValue = (short) Random.Next(start, end);
 
-            Assert.AreEqual(testValue, (new ShortRange(start, end)).Bind(testValue),
-                            "Bind should return the input if it is within the range");
+            Assert.AreEqual(
+                testValue,
+                (new ShortRange(start, end)).Bind(testValue),
+                "Bind should return the input if it is within the range");
         }
     }
 }

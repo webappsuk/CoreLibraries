@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
@@ -13,10 +40,10 @@ namespace WebApplications.Utilities
     /// This is used for setting optional properties.
     /// </remarks>
     public struct Optional<T> : IOptional<T>,
-                                IEquatable<Optional<T>>,
-                                IEquatable<T>,
-                                IComparable<Optional<T>>,
-                                IComparable<T>
+        IEquatable<Optional<T>>,
+        IEquatable<T>,
+        IComparable<Optional<T>>,
+        IComparable<T>
     {
         /// <summary>
         /// The delegate used for methods that return true when successful.
@@ -84,8 +111,8 @@ namespace WebApplications.Utilities
         public int CompareTo(Optional<T> other)
         {
             return _isAssigned
-                       ? (other.IsAssigned ? Comparer<T>.Default.Compare(_value, other.Value) : 1)
-                       : (other.IsAssigned ? -1 : 0);
+                ? (other.IsAssigned ? Comparer<T>.Default.Compare(_value, other.Value) : 1)
+                : (other.IsAssigned ? -1 : 0);
         }
 
         /// <summary>
@@ -128,8 +155,8 @@ namespace WebApplications.Utilities
         {
             return _isAssigned &&
                    (ReferenceEquals(other, null)
-                        ? ReferenceEquals(_value, null)
-                        : EqualityComparer<T>.Default.Equals(_value, other));
+                       ? ReferenceEquals(_value, null)
+                       : EqualityComparer<T>.Default.Equals(_value, other));
         }
 
         /// <summary>
@@ -179,8 +206,8 @@ namespace WebApplications.Utilities
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return (obj is Optional<T> && Equals((Optional<T>)obj)) ||
-                   (obj is T && Equals((T)obj));
+            return (obj is Optional<T> && Equals((Optional<T>) obj)) ||
+                   (obj is T && Equals((T) obj));
         }
 
         /// <summary>
@@ -217,10 +244,10 @@ namespace WebApplications.Utilities
         public override string ToString()
         {
             return _isAssigned
-                       ? (ReferenceEquals(_value, null)
-                              ? "null"
-                              : _value.ToString())
-                       : "Unassigned";
+                ? (ReferenceEquals(_value, null)
+                    ? "null"
+                    : _value.ToString())
+                : "Unassigned";
         }
 
         /// <summary>
@@ -319,11 +346,9 @@ namespace WebApplications.Utilities
             Contract.Requires(tryFunction != null);
             TOut result;
             if (tryFunction(input, out result))
-            {
                 return unassignedOnNull && ReferenceEquals(result, null)
-                           ? Unassigned
-                           : new Optional<T>(result, true);
-            }
+                    ? Unassigned
+                    : new Optional<T>(result, true);
             return Unassigned;
         }
     }

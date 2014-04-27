@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -52,16 +52,14 @@ namespace WebApplications.Utilities.Test
 
             Parallel.Invoke(
                 () =>
-                    {
-                        int count = 0;
+                {
+                    int count = 0;
 // ReSharper disable LoopCanBeConvertedToQuery
-                        foreach (Guid guid in cache.Values)
+                    foreach (Guid guid in cache.Values)
 // ReSharper restore LoopCanBeConvertedToQuery
-                        {
-                            count++;
-                        }
-                        Trace.WriteLine(string.Format("Count was {0}", count));
-                    },
+                        count++;
+                    Trace.WriteLine(string.Format("Count was {0}", count));
+                },
                 cache.Clear);
 
             Trace.WriteLine(cache.ToString());

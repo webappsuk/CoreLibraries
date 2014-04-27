@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -41,8 +41,10 @@ namespace WebApplications.Utilities.Test
         public void StopwatchToString_NullFormatString_NameDefaultsToStopwatch()
         {
             Stopwatch testStopwatch = new Stopwatch();
-            Assert.AreEqual("Stopwatch completed in 0ms.", testStopwatch.ToString(null),
-                            "Where a null format string is provided for the stopwatch name, the name should default to 'Stopwatch'.");
+            Assert.AreEqual(
+                "Stopwatch completed in 0ms.",
+                testStopwatch.ToString(null),
+                "Where a null format string is provided for the stopwatch name, the name should default to 'Stopwatch'.");
         }
 
         [TestMethod]
@@ -50,8 +52,10 @@ namespace WebApplications.Utilities.Test
         {
             String value = Random.RandomString();
             Stopwatch testStopwatch = new Stopwatch();
-            Assert.AreEqual(String.Format("{0} completed in 0ms.", value), testStopwatch.ToString(value),
-                            "Where a format string without additional parameters is provided, this is used for the stopwatch name.");
+            Assert.AreEqual(
+                String.Format("{0} completed in 0ms.", value),
+                testStopwatch.ToString(value),
+                "Where a format string without additional parameters is provided, this is used for the stopwatch name.");
         }
 
         [TestMethod]
@@ -61,9 +65,10 @@ namespace WebApplications.Utilities.Test
             String value2 = Random.RandomString();
             String value3 = Random.RandomString();
             Stopwatch testStopwatch = new Stopwatch();
-            Assert.AreEqual(String.Format("{0} test {2} {1} completed in 0ms.", value1, value2, value3),
-                            testStopwatch.ToString("{0} test {2} {1}", value1, value2, value3),
-                            "Where a format string with parameters is provided, this is formatted and used for the stopwatch name.");
+            Assert.AreEqual(
+                String.Format("{0} test {2} {1} completed in 0ms.", value1, value2, value3),
+                testStopwatch.ToString("{0} test {2} {1}", value1, value2, value3),
+                "Where a format string with parameters is provided, this is formatted and used for the stopwatch name.");
         }
 
         [TestMethod]
@@ -73,12 +78,13 @@ namespace WebApplications.Utilities.Test
             testStopwatch.Start();
             Thread.Sleep(Random.Next(1, 5));
             testStopwatch.Stop();
-            Assert.AreEqual(testStopwatch.ElapsedMilliseconds,
-                            int.Parse(
-                                Regex.Match(testStopwatch.ToString(null), "completed in ([0-9]+).?[0-9]*ms.", RegexOptions.None)
-                                .Groups[1]
-                                .ToString()),
-                            "The number of milliseconds elapsed should be stated in the ToString result.");
+            Assert.AreEqual(
+                testStopwatch.ElapsedMilliseconds,
+                int.Parse(
+                    Regex.Match(testStopwatch.ToString(null), "completed in ([0-9]+).?[0-9]*ms.", RegexOptions.None)
+                        .Groups[1]
+                        .ToString()),
+                "The number of milliseconds elapsed should be stated in the ToString result.");
         }
     }
 }

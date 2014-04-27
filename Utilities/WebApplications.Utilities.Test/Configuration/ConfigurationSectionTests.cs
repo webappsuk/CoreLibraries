@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -48,8 +48,10 @@ namespace WebApplications.Utilities.Test.Configuration
             ConfigurationSectionTestClass configurationSection = GenerateBlankConfigurationSectionTestClass();
             string testString = Random.RandomString(Random.Next(3, 100));
             configurationSection.Xmlns = testString;
-            Assert.AreEqual(testString, configurationSection.Xmlns,
-                            "The Xmlns field should return the same value as it was last set to.");
+            Assert.AreEqual(
+                testString,
+                configurationSection.Xmlns,
+                "The Xmlns field should return the same value as it was last set to.");
         }
 
         [TestMethod]
@@ -57,10 +59,14 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             List<ConfigurationPropertyAttribute> configurationPropertyAttributes =
                 GetConfigurationPropertyAttributesForProperty(typeof (ConfigurationSectionTestClass), "Xmlns");
-            Assert.AreEqual(1, configurationPropertyAttributes.Count,
-                            "There should be exactly one ConfigurationPropertyAttribute for the Xmlns property.");
-            Assert.AreEqual("xmlns", configurationPropertyAttributes.First().Name,
-                            "The name of the ConfigurationPropertyAttribute for the Xmlns property should be 'xmlns'.");
+            Assert.AreEqual(
+                1,
+                configurationPropertyAttributes.Count,
+                "There should be exactly one ConfigurationPropertyAttribute for the Xmlns property.");
+            Assert.AreEqual(
+                "xmlns",
+                configurationPropertyAttributes.First().Name,
+                "The name of the ConfigurationPropertyAttribute for the Xmlns property should be 'xmlns'.");
         }
 
         [TestMethod]
@@ -80,7 +86,9 @@ namespace WebApplications.Utilities.Test.Configuration
             SectionName_ClassNameEndsInWordsConfigurationSection_ClassNameUsedButFirstLetterLowercaseAndWordsConfigurationSectionRemoved
             ()
         {
-            Assert.AreEqual("configurationSectionNameTest", ConfigurationSectionNameTestConfigurationSection.SectionName);
+            Assert.AreEqual(
+                "configurationSectionNameTest",
+                ConfigurationSectionNameTestConfigurationSection.SectionName);
         }
 
         [TestMethod]
@@ -123,9 +131,10 @@ namespace WebApplications.Utilities.Test.Configuration
                     new ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods2>();
             ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods2>.Active =
                 configurationSection;
-            Assert.AreSame(configurationSection,
-                           ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods2>
-                               .Active);
+            Assert.AreSame(
+                configurationSection,
+                ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods2>
+                    .Active);
         }
 
         [TestMethod]
@@ -137,7 +146,7 @@ namespace WebApplications.Utilities.Test.Configuration
             ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods3>
                 configurationSection =
                     new ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods3>
-                        {PropertyWithDefaultValue = "Not the default value"};
+                    {PropertyWithDefaultValue = "Not the default value"};
             ConfigurationSectionWhichIsNotPresentInConfigFileTestClass<UniqueIdentifierForStaticMethods3>.Active =
                 configurationSection;
             Assert.AreNotEqual(
@@ -163,8 +172,9 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             ConfigurationSectionTestClass configurationSection = GenerateBlankConfigurationSectionTestClass();
 
-            Assert.IsFalse(configurationSection.IsActive,
-                           "The IsActive property should be false for a newly created (and thus inactive) configuration section.");
+            Assert.IsFalse(
+                configurationSection.IsActive,
+                "The IsActive property should be false for a newly created (and thus inactive) configuration section.");
         }
 
         [TestMethod]
@@ -174,15 +184,17 @@ namespace WebApplications.Utilities.Test.Configuration
 
             ConfigurationSectionTestClass.Active = configurationSection;
 
-            Assert.IsTrue(configurationSection.IsActive,
-                          "The IsActive property should be false for a newly created (and thus inactive) configuration section.");
+            Assert.IsTrue(
+                configurationSection.IsActive,
+                "The IsActive property should be false for a newly created (and thus inactive) configuration section.");
         }
 
         [TestMethod]
         public void IsReadOnly_ForActiveConfiguration_ReturnsTrue()
         {
-            Assert.IsTrue(ConfigurationSectionTestClass.Active.IsReadOnly(),
-                          "The IsReadOnly method should be true for the active configuration section (obtained from the Active property).");
+            Assert.IsTrue(
+                ConfigurationSectionTestClass.Active.IsReadOnly(),
+                "The IsReadOnly method should be true for the active configuration section (obtained from the Active property).");
         }
 
         [TestMethod]
@@ -190,22 +202,24 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             ConfigurationSectionTestClass configurationSection = GenerateBlankConfigurationSectionTestClass();
 
-            Assert.IsFalse(configurationSection.IsReadOnly(),
-                           "The IsReadOnly method should be false for a newly created (and thus inactive) configuration section.");
+            Assert.IsFalse(
+                configurationSection.IsReadOnly(),
+                "The IsReadOnly method should be false for a newly created (and thus inactive) configuration section.");
         }
 
         [TestMethod]
         public void IsReadOnly_AfterNonExistingSectionIsReloaded_ReturnsFalse()
         {
             ConfigurationSectionTestClass.Active = null;
-                // Load the section (to prove this works even when the contents of the section will be identical)
+            // Load the section (to prove this works even when the contents of the section will be identical)
             ConfigurationSectionTestClass oldConfigurationSection = ConfigurationSectionTestClass.Active;
-                // Store this old instantiation for later
+            // Store this old instantiation for later
 
             ConfigurationSectionTestClass.Active = null; // Force the section to be reloaded
 
-            Assert.IsFalse(oldConfigurationSection.IsReadOnly(),
-                           "The IsReadOnly method for a previous value of Active should be false after the configuration section is reloaded by setting Active to null.");
+            Assert.IsFalse(
+                oldConfigurationSection.IsReadOnly(),
+                "The IsReadOnly method for a previous value of Active should be false after the configuration section is reloaded by setting Active to null.");
         }
 
         /*
@@ -254,8 +268,9 @@ namespace WebApplications.Utilities.Test.Configuration
                 new ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods2>();
             ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods2>.ResetChangedEventCalledFlag();
             ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods2>.Active = configurationSection;
-            Assert.IsTrue(ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods2>.ChangedEventCalled,
-                          "When the Active property is set to a new value, the Changed event should be called.");
+            Assert.IsTrue(
+                ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods2>.ChangedEventCalled,
+                "When the Active property is set to a new value, the Changed event should be called.");
         }
 
         [TestMethod]
@@ -267,8 +282,9 @@ namespace WebApplications.Utilities.Test.Configuration
                 new ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods4>();
             ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods4>.ResetChangedEventCalledFlag();
             ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods4>.Active = configurationSection;
-            Assert.IsTrue(ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods4>.ChangedEventCalled,
-                          "When the Active property is set to a new value, the Changed event should be called.");
+            Assert.IsTrue(
+                ConfigurationSectionWithOnChangedEvent<UniqueIdentifierForStaticMethods4>.ChangedEventCalled,
+                "When the Active property is set to a new value, the Changed event should be called.");
         }
 
         [TestMethod]
@@ -340,8 +356,10 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             SetAndTriggerChangedEvent(
                 (sender, arguments) =>
-                Assert.AreEqual(ConfigurationSectionTestClass.Active, arguments.NewConfiguration,
-                                "The NewConfiguration property of the arguments sent to the Changed event should match the Active property of the ConfigurationSection."));
+                    Assert.AreEqual(
+                        ConfigurationSectionTestClass.Active,
+                        arguments.NewConfiguration,
+                        "The NewConfiguration property of the arguments sent to the Changed event should match the Active property of the ConfigurationSection."));
         }
 
         #region Nested type: ConfigurationSectionNameTest

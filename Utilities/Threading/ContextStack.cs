@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -60,12 +60,14 @@ namespace WebApplications.Utilities.Threading
         ///   where the object is stored in the <see cref="System.Runtime.Remoting.Messaging.CallContext">call
         ///   context</see>, so the only access point is this instance.
         /// </summary>
-        [NotNull] private readonly string _contextKey = Guid.NewGuid().ToString();
+        [NotNull]
+        private readonly string _contextKey = Guid.NewGuid().ToString();
 
         /// <summary>
         ///   Holds all active objects by their index.
         /// </summary>
-        [NotNull] private readonly ConcurrentDictionary<long, T> _objects = new ConcurrentDictionary<long, T>();
+        [NotNull]
+        private readonly ConcurrentDictionary<long, T> _objects = new ConcurrentDictionary<long, T>();
 
         /// <summary>
         ///   Caches the current stack against the Thread Local Storage
@@ -210,7 +212,8 @@ namespace WebApplications.Utilities.Threading
                     throw new InvalidOperationException(
                         string.Format(
                             Resources.ContextStack_Dispose_CannotCloseCleanerRegion,
-                            _threadId, threadId));
+                            _threadId,
+                            threadId));
 
                 if (_oldStack != null)
                     CallContext.LogicalSetData(_stack._contextKey, _oldStack);
@@ -269,8 +272,9 @@ namespace WebApplications.Utilities.Threading
                 stack._objects.AddOrUpdate(_key, value, (k, v) => value);
 
                 _oldStack = CallContext.LogicalGetData(stack._contextKey) as string;
-                CallContext.LogicalSetData(stack._contextKey,
-                                           (_oldStack == null ? string.Empty : _oldStack + "|") + _key);
+                CallContext.LogicalSetData(
+                    stack._contextKey,
+                    (_oldStack == null ? string.Empty : _oldStack + "|") + _key);
             }
 
             #region IDisposable Members

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -42,22 +42,28 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The extended type.
         /// </summary>
-        [NotNull] public readonly ExtendedType ExtendedType;
+        [NotNull]
+        public readonly ExtendedType ExtendedType;
 
         /// <summary>
         ///   The event info object, provides access to event metadata.
         /// </summary>
-        [NotNull] public readonly EventInfo Info;
+        [NotNull]
+        public readonly EventInfo Info;
 
         /// <summary>
         ///   Grabs the add method lazily.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<MethodInfo> _addMethod;
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<MethodInfo> _addMethod;
 
         /// <summary>
         ///   Grabs the remove method lazily.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<MethodInfo> _removeMethod;
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<MethodInfo> _removeMethod;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="Event"/> class.
@@ -114,8 +120,8 @@ namespace WebApplications.Utilities.Reflect
         public static implicit operator Event(EventInfo eventInfo)
         {
             return eventInfo == null
-                       ? null
-                       : ((ExtendedType) eventInfo.DeclaringType).GetEvent(eventInfo);
+                ? null
+                : ((ExtendedType) eventInfo.DeclaringType).GetEvent(eventInfo);
         }
     }
 }

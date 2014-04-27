@@ -87,7 +87,10 @@ namespace WebApplications.Utilities.Formatting
         /// Gets the un-serialized underlying writer, which should only be used if you have already synchronized using the <see cref="Context" />.
         /// </summary>
         /// <value>The writer.</value>
-        public TextWriter Writer { get { return _writer; }}
+        public TextWriter Writer
+        {
+            get { return _writer; }
+        }
 
         /// <summary>
         /// The synchronization context.
@@ -146,7 +149,7 @@ namespace WebApplications.Utilities.Formatting
         {
             // Explicitly pick up a potentially methodimpl'ed Dispose
             if (disposing)
-                Context.Invoke(((IDisposable)_writer).Dispose);
+                Context.Invoke(((IDisposable) _writer).Dispose);
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,8 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The argument type.
         /// </summary>
-        [NotNull] public readonly Type Type;
+        [NotNull]
+        public readonly Type Type;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericArgument"/> struct.
@@ -60,7 +61,8 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="position">The position.</param>
         /// <param name="type">The type.</param>
         /// <remarks></remarks>
-        public GenericArgument(GenericArgumentLocation location, int position, [NotNull] Type type) : this()
+        public GenericArgument(GenericArgumentLocation location, int position, [NotNull] Type type)
+            : this()
         {
             Location = location;
             Position = position;

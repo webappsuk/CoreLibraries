@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -46,14 +46,15 @@ namespace WebApplications.Utilities.Test.Ranges
         private static decimal RandomDecimal(decimal minimum, decimal maximum)
         {
             bool resized = false;
-            if (minimum < decimal.MinValue/10 || maximum > decimal.MaxValue/10)
+            if (minimum < decimal.MinValue / 10 ||
+                maximum > decimal.MaxValue / 10)
             {
                 resized = true;
                 // In this situation maximum-min is likely to be too large, so drop everything down one order of magnitude to do the calculations
                 maximum /= 10;
                 minimum /= 10;
             }
-            return (resized ? 10M : 1M)*(minimum + (decimal) (Random.NextDouble()*(double) (maximum - minimum)));
+            return (resized ? 10M : 1M) * (minimum + (decimal) (Random.NextDouble() * (double) (maximum - minimum)));
         }
 
         /// <summary>
@@ -66,11 +67,11 @@ namespace WebApplications.Utilities.Test.Ranges
         private Tuple<decimal, decimal> RestrictedRandomRange()
         {
             // start by picking an order of magnitude to work on
-            decimal magnitude = 1M/(decimal) Math.Pow(10, Random.Next(0, 24));
+            decimal magnitude = 1M / (decimal) Math.Pow(10, Random.Next(0, 24));
             // pick sizes for the length and starting value which can later be scaled up to the magnitude chosen
             decimal length = RandomDecimal(0, decimal.MaxValue);
             decimal start = RandomDecimal(decimal.MinValue, decimal.MaxValue - length);
-            return new Tuple<decimal, decimal>(start*magnitude, length*magnitude);
+            return new Tuple<decimal, decimal>(start * magnitude, length * magnitude);
         }
 
         [TestMethod]
@@ -79,11 +80,14 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal length = RandomDecimal(1, decimal.MaxValue);
             decimal start = RandomDecimal(decimal.MinValue, decimal.MaxValue - length);
             decimal end = start + length;
-            decimal step = RandomDecimal(1, length/2);
+            decimal step = RandomDecimal(1, length / 2);
 
             DecimalRange decimalRange = new DecimalRange(start, end, step);
 
-            Assert.AreNotEqual("", decimalRange.ToString(), "String representation of range must not be an empty string");
+            Assert.AreNotEqual(
+                "",
+                decimalRange.ToString(),
+                "String representation of range must not be an empty string");
         }
 
         [TestMethod]
@@ -92,7 +96,7 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal length = RandomDecimal(1, decimal.MaxValue);
             decimal start = RandomDecimal(decimal.MinValue, decimal.MaxValue - length);
             decimal end = start + length;
-            decimal step = RandomDecimal(1, length/2);
+            decimal step = RandomDecimal(1, length / 2);
 
             DecimalRange decimalRange = new DecimalRange(start, end, step);
 
@@ -104,10 +108,10 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void DecimalRange_StepIsLargerThanDecimalRange_ParametersMatchThoseGiven()
         {
-            decimal length = RandomDecimal(1, decimal.MaxValue/2);
+            decimal length = RandomDecimal(1, decimal.MaxValue / 2);
             decimal start = RandomDecimal(decimal.MinValue, decimal.MaxValue - length);
             decimal end = start + length;
-            decimal step = length + RandomDecimal(1, decimal.MaxValue/3);
+            decimal step = length + RandomDecimal(1, decimal.MaxValue / 3);
 
             DecimalRange decimalRange = new DecimalRange(start, end, step);
 
@@ -134,7 +138,7 @@ namespace WebApplications.Utilities.Test.Ranges
         [ExpectedException(typeof (ArgumentOutOfRangeException))]
         public void DecimalRange_EndBeforeStart_ThrowsArgumentOutOfRangeException()
         {
-            decimal start = RandomDecimal(decimal.MinValue/2, decimal.MaxValue);
+            decimal start = RandomDecimal(decimal.MinValue / 2, decimal.MaxValue);
             decimal end = RandomDecimal(decimal.MinValue, start);
 
             DecimalRange decimalRange = new DecimalRange(start, end);
@@ -150,7 +154,7 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal length = rangeParams.Item2;
             decimal end = start + length;
             // note that the number of steps is limited to 100 or fewer
-            decimal step = length/rand.Next(4, 100);
+            decimal step = length / rand.Next(4, 100);
 
             DecimalRange decimalRange = new DecimalRange(start, end, step);
 
@@ -171,21 +175,25 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal length = rangeParams.Item2;
             decimal end = start + length;
             // pick a power of ten for the number of steps as decimal uses base 10 for the floating point
-            decimal step = length/(decimal) Math.Pow(10, rand.Next(2, 5));
+            decimal step = length / (decimal) Math.Pow(10, rand.Next(2, 5));
 
             //ensure that step size is a factor of the length of the range
-            start += length%step;
-            length += length%step;
+            start += length % step;
+            length += length % step;
 
             // Test that the attempt to create the correct scenario actually worked, as with floating point values this cannot be certain
-            Assert.AreEqual(0, length%step,
-                            "This test should be using a range length which is an exact multiple of the step size");
+            Assert.AreEqual(
+                0,
+                length % step,
+                "This test should be using a range length which is an exact multiple of the step size");
 
             DecimalRange decimalRange = new DecimalRange(start, end, step);
 
             // Range endpoint is inclusive, so must take into account this extra iteration
-            Assert.AreEqual(length/step + 1, decimalRange.Count(),
-                            "Iteration count should be (end-start)/step + 1 where endpoint is included");
+            Assert.AreEqual(
+                length / step + 1,
+                decimalRange.Count(),
+                "Iteration count should be (end-start)/step + 1 where endpoint is included");
         }
 
         [TestMethod]
@@ -198,20 +206,22 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal length = rangeParams.Item2;
             decimal end = start + length;
             // note that the number of steps is limited to 1000 or fewer
-            decimal step = length/(decimal) (rand.Next(4, 1000) + (rand.NextDouble()*0.8 + 0.1));
+            decimal step = length / (decimal) (rand.Next(4, 1000) + (rand.NextDouble() * 0.8 + 0.1));
 
             //ensure that step size is not a factor of the length of the range
-            if (length%step == 0)
+            if (length % step == 0)
             {
-                decimal offset = (decimal) (rand.NextDouble()*0.8 + 0.1)*step;
+                decimal offset = (decimal) (rand.NextDouble() * 0.8 + 0.1) * step;
                 start += offset;
                 length += offset;
             }
 
             DecimalRange decimalRange = new DecimalRange(start, end, step);
 
-            Assert.AreEqual(Math.Ceiling(length/step), decimalRange.Count(),
-                            "Iteration count should be Ceil((start-end)/step)");
+            Assert.AreEqual(
+                Math.Ceiling(length / step),
+                decimalRange.Count(),
+                "Iteration count should be Ceil((start-end)/step)");
         }
 
         [TestMethod]
@@ -223,12 +233,14 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal start = rangeParams.Item1;
             decimal length = rangeParams.Item2;
             decimal end = start + length;
-            decimal step = length*(decimal) (2 - rand.NextDouble());
+            decimal step = length * (decimal) (2 - rand.NextDouble());
 
             DecimalRange decimalRange = new DecimalRange(start, end, step);
 
-            Assert.AreEqual(1, decimalRange.Count(),
-                            "Iteration count should be one if the step is larger than the range");
+            Assert.AreEqual(
+                1,
+                decimalRange.Count(),
+                "Iteration count should be one if the step is larger than the range");
         }
 
         [TestMethod]
@@ -241,7 +253,7 @@ namespace WebApplications.Utilities.Test.Ranges
             decimal length = rangeParams.Item2;
             decimal end = start + length;
             // note that the number of steps is limited to 100 or fewer
-            decimal step = length/rand.Next(4, 100);
+            decimal step = length / rand.Next(4, 100);
 
             // In case range length is under 4, ensure the step is at least 1
             if (step < 1) step = 1;
@@ -252,10 +264,11 @@ namespace WebApplications.Utilities.Test.Ranges
             foreach (decimal i in decimalRange)
             {
                 if (previous.HasValue)
-                {
-                    Assert.AreEqual((double) (i - previous.Value), (double) step, (double) step*1e-6,
-                                    "Difference between iteration values should match the step value supplied to within one millionth");
-                }
+                    Assert.AreEqual(
+                        (double) (i - previous.Value),
+                        (double) step,
+                        (double) step * 1e-6,
+                        "Difference between iteration values should match the step value supplied to within one millionth");
                 previous = i;
             }
         }
@@ -264,13 +277,11 @@ namespace WebApplications.Utilities.Test.Ranges
         public void DecimalRange_UsingLargestPossibleParameters_IteratesSuccessfully()
         {
             // Step chosen to avoid an unfeasible number of iterations
-            DecimalRange decimalRange = new DecimalRange(decimal.MinValue, decimal.MaxValue, decimal.MaxValue/10);
+            DecimalRange decimalRange = new DecimalRange(decimal.MinValue, decimal.MaxValue, decimal.MaxValue / 10);
 
             bool iterated = false;
             foreach (decimal x in decimalRange)
-            {
                 iterated = true;
-            }
 
             Assert.AreEqual(true, iterated, "When iterating across full range, at least one value should be returned");
         }
@@ -278,34 +289,40 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void DecimalRange_NumberBelowRange_BindReturnsStart()
         {
-            decimal start = RandomDecimal(decimal.MinValue/2, decimal.MaxValue/2);
-            decimal end = RandomDecimal(start, decimal.MaxValue/2);
+            decimal start = RandomDecimal(decimal.MinValue / 2, decimal.MaxValue / 2);
+            decimal end = RandomDecimal(start, decimal.MaxValue / 2);
             decimal testValue = RandomDecimal(decimal.MinValue, start);
 
-            Assert.AreEqual(start, (new DecimalRange(start, end)).Bind(testValue),
-                            "Bind should return the lower bound of the range if the input is below the range");
+            Assert.AreEqual(
+                start,
+                (new DecimalRange(start, end)).Bind(testValue),
+                "Bind should return the lower bound of the range if the input is below the range");
         }
 
         [TestMethod]
         public void DecimalRange_NumberAboveRange_BindReturnsEnd()
         {
-            decimal start = RandomDecimal(decimal.MinValue/2, decimal.MaxValue/2);
-            decimal end = RandomDecimal(start, decimal.MaxValue/2);
+            decimal start = RandomDecimal(decimal.MinValue / 2, decimal.MaxValue / 2);
+            decimal end = RandomDecimal(start, decimal.MaxValue / 2);
             decimal testValue = RandomDecimal(end, decimal.MaxValue);
 
-            Assert.AreEqual(end, (new DecimalRange(start, end)).Bind(testValue),
-                            "Bind should return the upper bound of the range if the input is above the range");
+            Assert.AreEqual(
+                end,
+                (new DecimalRange(start, end)).Bind(testValue),
+                "Bind should return the upper bound of the range if the input is above the range");
         }
 
         [TestMethod]
         public void DecimalRange_NumberWithinRange_BindReturnsInput()
         {
-            decimal start = RandomDecimal(decimal.MinValue/2, decimal.MaxValue/2);
-            decimal end = RandomDecimal(start, decimal.MaxValue/2);
+            decimal start = RandomDecimal(decimal.MinValue / 2, decimal.MaxValue / 2);
+            decimal end = RandomDecimal(start, decimal.MaxValue / 2);
             decimal testValue = RandomDecimal(start, end);
 
-            Assert.AreEqual(testValue, (new DecimalRange(start, end)).Bind(testValue),
-                            "Bind should return the input if it is within the range");
+            Assert.AreEqual(
+                testValue,
+                (new DecimalRange(start, end)).Bind(testValue),
+                "Bind should return the input if it is within the range");
         }
     }
 }

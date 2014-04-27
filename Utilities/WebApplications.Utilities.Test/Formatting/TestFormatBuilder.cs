@@ -29,8 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
 
@@ -175,7 +173,7 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestReadOnly()
         {
             FormatBuilder builder = new FormatBuilder("Test", true);
@@ -191,7 +189,7 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void TestCloneAddsReadonly()
         {
             FormatBuilder builder = new FormatBuilder("Test");
@@ -203,7 +201,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestResolveArray()
         {
             FormatBuilder builder = new FormatBuilder("{0}{1}{2}");
-            builder.Resolve(3,4,5);
+            builder.Resolve(3, 4, 5);
             Assert.AreEqual("345", builder.ToString());
         }
 
@@ -211,12 +209,13 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestResolveDictionary()
         {
             FormatBuilder builder = new FormatBuilder("{A}{B}{C}");
-            builder.Resolve(new Dictionary<string, object>
-            {
-                {"A", 'D'},
-                {"B", "E"},
-                {"C", 3}
-            });
+            builder.Resolve(
+                new Dictionary<string, object>
+                {
+                    {"A", 'D'},
+                    {"B", "E"},
+                    {"C", 3}
+                });
             Assert.AreEqual("DE3", builder.ToString());
         }
 
@@ -224,7 +223,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestResolver()
         {
             FormatBuilder builder = new FormatBuilder("{A}{B}{C}");
-            builder.Resolve(chunk => chunk.Tag == "B" ? 5 : (object)null);
+            builder.Resolve(chunk => chunk.Tag == "B" ? 5 : (object) null);
             Assert.AreEqual("{A}5{C}", builder.ToString());
         }
 
@@ -232,20 +231,21 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestNestedResolver()
         {
             FormatBuilder builder = new FormatBuilder("{t:A {t:nested {t}}}");
-            builder.Resolve(c =>
-            {
-                // This demonstrates how we can perform tag nesting.
-                if (!string.Equals(c.Tag, "t"))
-                    return c.Value;
+            builder.Resolve(
+                c =>
+                {
+                    // This demonstrates how we can perform tag nesting.
+                    if (!string.Equals(c.Tag, "t"))
+                        return c.Value;
 
-                // If the tag doesn't have a format, we output the value.
-                if (string.IsNullOrEmpty(c.Format))
-                    return "tag";
+                    // If the tag doesn't have a format, we output the value.
+                    if (string.IsNullOrEmpty(c.Format))
+                        return "tag";
 
-                // Otherwise we output a format builder for the format, which will itself
-                // be resolved with this resolver.
-                return new FormatBuilder().AppendFormat(c.Format);
-            });
+                    // Otherwise we output a format builder for the format, which will itself
+                    // be resolved with this resolver.
+                    return new FormatBuilder().AppendFormat(c.Format);
+                });
             Assert.AreEqual("A nested tag", builder.ToString());
         }
     }

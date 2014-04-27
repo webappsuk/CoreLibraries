@@ -88,7 +88,8 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task.</returns>
         [PublicAPI]
         [NotNull]
-        [JetBrains.Annotations.Pure,System.Diagnostics.Contracts.Pure]
+        [JetBrains.Annotations.Pure]
+        [System.Diagnostics.Contracts.Pure]
         public Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))
         {
             return _source != null && _source.IsPaused

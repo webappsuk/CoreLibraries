@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ namespace WebApplications.Utilities.Test.Ranges
     {
         private static long RandomLong(long minimum, long maximum)
         {
-            return (long) (minimum + ((ulong) (maximum - minimum)*Random.NextDouble()));
+            return (long) (minimum + ((ulong) (maximum - minimum) * Random.NextDouble()));
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Test.Ranges
             long length = RandomLong(1, long.MaxValue);
             long start = RandomLong(long.MinValue, long.MaxValue - length);
             long end = start + length;
-            long step = RandomLong(1, length/2);
+            long step = RandomLong(1, length / 2);
 
             LongRange longRange = new LongRange(start, end, step);
 
@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Test.Ranges
             long length = RandomLong(1, long.MaxValue);
             long start = RandomLong(long.MinValue, long.MaxValue - length);
             long end = start + length;
-            long step = RandomLong(1, length/2);
+            long step = RandomLong(1, length / 2);
 
             LongRange longRange = new LongRange(start, end, step);
 
@@ -71,10 +71,10 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void LongRange_StepIsLargerThanLongRange_ParametersMatchThoseGiven()
         {
-            long length = RandomLong(1, long.MaxValue/2);
+            long length = RandomLong(1, long.MaxValue / 2);
             long start = RandomLong(long.MinValue, long.MaxValue - length);
             long end = start + length;
-            long step = length + RandomLong(1, long.MaxValue/3);
+            long step = length + RandomLong(1, long.MaxValue / 3);
 
             LongRange longRange = new LongRange(start, end, step);
 
@@ -115,7 +115,7 @@ namespace WebApplications.Utilities.Test.Ranges
             long start = RandomLong(long.MinValue, long.MaxValue - length);
             long end = start + length;
             // note that the number of steps is limited to 100 or fewer
-            long step = length/RandomLong(4, Math.Max(4, Math.Min(length/2, 100)));
+            long step = length / RandomLong(4, Math.Max(4, Math.Min(length / 2, 100)));
 
             // nsure the step is at least 1 (as length of less than four causes it to round down to zero)
             if (step < 1) step = 1;
@@ -136,19 +136,21 @@ namespace WebApplications.Utilities.Test.Ranges
             long start = RandomLong(long.MinValue, long.MaxValue - length);
             long end = start + length;
             // note that the number of steps is limited to 1000 or fewer
-            long step = length/RandomLong(4, Math.Max(4, Math.Min(length/2, 1000)));
+            long step = length / RandomLong(4, Math.Max(4, Math.Min(length / 2, 1000)));
 
             // In case range length is under 4, ensure the step is at least 1
             if (step < 1) step = 1;
 
             //ensure that step size is a factor of the length of the range
-            start += length%step;
+            start += length % step;
 
             LongRange longRange = new LongRange(start, end, step);
 
             // Range endpoint is inclusive, so must take into account this extra iteration
-            Assert.AreEqual(length/step + 1, longRange.Count(),
-                            "Iteration count should be (end-start)/step + 1 where endpoint is included");
+            Assert.AreEqual(
+                length / step + 1,
+                longRange.Count(),
+                "Iteration count should be (end-start)/step + 1 where endpoint is included");
         }
 
         [TestMethod]
@@ -158,13 +160,13 @@ namespace WebApplications.Utilities.Test.Ranges
             long start = RandomLong(long.MinValue, long.MaxValue - length);
             long end = start + length;
             // note that the number of steps is limited to 1000 or fewer
-            long step = length/RandomLong(4, Math.Max(4, Math.Min(length/2, 1000)));
+            long step = length / RandomLong(4, Math.Max(4, Math.Min(length / 2, 1000)));
 
             // In case range length is under 4, ensure the step is at least 2
             if (step < 2) step = 2;
 
             //ensure that step size is not a factor of the length of the range
-            if (length%step == 0)
+            if (length % step == 0)
             {
                 start += RandomLong(1, step - 1);
                 length = end - start;
@@ -172,7 +174,7 @@ namespace WebApplications.Utilities.Test.Ranges
 
             LongRange longRange = new LongRange(start, end, step);
 
-            Assert.AreEqual(length/step + 1, longRange.Count(), "Iteration count should be (start-end)/step +1");
+            Assert.AreEqual(length / step + 1, longRange.Count(), "Iteration count should be (start-end)/step +1");
         }
 
         [TestMethod]
@@ -182,7 +184,7 @@ namespace WebApplications.Utilities.Test.Ranges
             long start = RandomLong(long.MinValue, long.MaxValue - length);
             long end = start + length;
             // note that the number of steps is limited to 100 or fewer
-            long step = length/RandomLong(4, Math.Max(4, Math.Min(length/2, 100)));
+            long step = length / RandomLong(4, Math.Max(4, Math.Min(length / 2, 100)));
 
             // In case range length is under 4, ensure the step is at least 1
             if (step < 1) step = 1;
@@ -193,10 +195,10 @@ namespace WebApplications.Utilities.Test.Ranges
             foreach (long i in longRange)
             {
                 if (previous.HasValue)
-                {
-                    Assert.AreEqual(i - previous, step,
-                                    "Difference between iteration values should match the step value supplied");
-                }
+                    Assert.AreEqual(
+                        i - previous,
+                        step,
+                        "Difference between iteration values should match the step value supplied");
                 previous = i;
             }
         }
@@ -205,13 +207,11 @@ namespace WebApplications.Utilities.Test.Ranges
         public void LongRange_UsingLargestPossibleParameters_IteratesSuccessfully()
         {
             // Step chosen to avoid an unfeasible number of iterations
-            LongRange longRange = new LongRange(long.MinValue, long.MaxValue, long.MaxValue/16);
+            LongRange longRange = new LongRange(long.MinValue, long.MaxValue, long.MaxValue / 16);
 
             bool iterated = false;
             foreach (long i in longRange)
-            {
                 iterated = true;
-            }
 
             Assert.AreEqual(true, iterated, "When iterating across full range, at least one value should be returned");
         }
@@ -219,34 +219,40 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void LongRange_NumberBelowRange_BindReturnsStart()
         {
-            long start = RandomLong(long.MinValue/2, long.MaxValue/2);
-            long end = RandomLong(start, long.MaxValue/2);
+            long start = RandomLong(long.MinValue / 2, long.MaxValue / 2);
+            long end = RandomLong(start, long.MaxValue / 2);
             long testValue = RandomLong(long.MinValue, start);
 
-            Assert.AreEqual(start, (new LongRange(start, end)).Bind(testValue),
-                            "Bind should return the lower bound of the range if the input is below the range");
+            Assert.AreEqual(
+                start,
+                (new LongRange(start, end)).Bind(testValue),
+                "Bind should return the lower bound of the range if the input is below the range");
         }
 
         [TestMethod]
         public void LongRange_NumberAboveRange_BindReturnsEnd()
         {
-            long start = RandomLong(long.MinValue/2, long.MaxValue/2);
-            long end = RandomLong(start, long.MaxValue/2);
+            long start = RandomLong(long.MinValue / 2, long.MaxValue / 2);
+            long end = RandomLong(start, long.MaxValue / 2);
             long testValue = RandomLong(end, long.MaxValue);
 
-            Assert.AreEqual(end, (new LongRange(start, end)).Bind(testValue),
-                            "Bind should return the upper bound of the range if the input is above the range");
+            Assert.AreEqual(
+                end,
+                (new LongRange(start, end)).Bind(testValue),
+                "Bind should return the upper bound of the range if the input is above the range");
         }
 
         [TestMethod]
         public void LongRange_NumberWithinRange_BindReturnsInput()
         {
-            long start = RandomLong(long.MinValue/2, long.MaxValue/2);
-            long end = RandomLong(start, long.MaxValue/2);
+            long start = RandomLong(long.MinValue / 2, long.MaxValue / 2);
+            long end = RandomLong(start, long.MaxValue / 2);
             long testValue = RandomLong(start, end);
 
-            Assert.AreEqual(testValue, (new LongRange(start, end)).Bind(testValue),
-                            "Bind should return the input if it is within the range");
+            Assert.AreEqual(
+                testValue,
+                (new LongRange(start, end)).Bind(testValue),
+                "Bind should return the input if it is within the range");
         }
     }
 }

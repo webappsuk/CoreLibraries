@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -103,10 +103,13 @@ namespace WebApplications.Utilities.Ranges
         /// </returns>
         public override string ToString()
         {
-            return string.Format("{0:dd/MM/yyyy} - {1:dd/MM/yyyy} [{2}]", Start, End,
-                                 Days == 1
-                                     ? string.Format("{0} day", Days)
-                                     : string.Format("{0} days", Days)
+            return string.Format(
+                "{0:dd/MM/yyyy} - {1:dd/MM/yyyy} [{2}]",
+                Start,
+                End,
+                Days == 1
+                    ? string.Format("{0} day", Days)
+                    : string.Format("{0} days", Days)
                 );
         }
     }

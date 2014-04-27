@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -53,8 +53,10 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             ConfigurationElementCollectionTestClass configurationElementCollection =
                 GenerateEmptyConfigurationElementCollectionTestClass();
-            Assert.IsInstanceOfType(configurationElementCollection, typeof (ConfigurationElementCollection),
-                                    "The ConfigurationElementCollection class should extend System.Configuration.ConfigurationElementCollection.");
+            Assert.IsInstanceOfType(
+                configurationElementCollection,
+                typeof (ConfigurationElementCollection),
+                "The ConfigurationElementCollection class should extend System.Configuration.ConfigurationElementCollection.");
         }
 
         [TestMethod]
@@ -96,8 +98,10 @@ namespace WebApplications.Utilities.Test.Configuration
             ConfigurationElementWithGuidKey configurationElement = GenerateConfigurationElementWithGuidKey(out key);
 
             Guid wrongKey = Guid.NewGuid();
-            Assert.AreNotEqual(key, wrongKey,
-                               "The state under test is one where a different key to the internal key is supplied to set the item.");
+            Assert.AreNotEqual(
+                key,
+                wrongKey,
+                "The state under test is one where a different key to the internal key is supplied to set the item.");
 
             configurationElementCollection[wrongKey] = configurationElement;
         }
@@ -111,8 +115,9 @@ namespace WebApplications.Utilities.Test.Configuration
             Guid key;
             ConfigurationElementWithGuidKey configurationElement = GenerateConfigurationElementWithGuidKey(out key);
 
-            Assert.IsFalse(configurationElementCollection.Contains(configurationElement),
-                           "The contains method should always return false for an empty collection.");
+            Assert.IsFalse(
+                configurationElementCollection.Contains(configurationElement),
+                "The contains method should always return false for an empty collection.");
         }
 
         [TestMethod]
@@ -131,8 +136,9 @@ namespace WebApplications.Utilities.Test.Configuration
 
             configurationElementCollection.Add(configurationElementInCollection);
 
-            Assert.IsFalse(configurationElementCollection.Contains(configurationElementNotInCollection),
-                           "The contains method should return false for an element not in the collection.");
+            Assert.IsFalse(
+                configurationElementCollection.Contains(configurationElementNotInCollection),
+                "The contains method should return false for an element not in the collection.");
         }
 
         [TestMethod]
@@ -146,8 +152,9 @@ namespace WebApplications.Utilities.Test.Configuration
 
             configurationElementCollection.Add(configurationElement);
 
-            Assert.IsTrue(configurationElementCollection.Contains(configurationElement),
-                          "After using add to add an element to the ConfigurationElementCollection, the contains method should return true for this element.");
+            Assert.IsTrue(
+                configurationElementCollection.Contains(configurationElement),
+                "After using add to add an element to the ConfigurationElementCollection, the contains method should return true for this element.");
         }
 
         [TestMethod]
@@ -162,8 +169,9 @@ namespace WebApplications.Utilities.Test.Configuration
             configurationElementCollection.Add(configurationElement);
             configurationElementCollection.Remove(configurationElement);
 
-            Assert.IsFalse(configurationElementCollection.Contains(configurationElement),
-                           "After using remove to remove a previously added element from the ConfigurationElementCollection, the contains method should return false for this element.");
+            Assert.IsFalse(
+                configurationElementCollection.Contains(configurationElement),
+                "After using remove to remove a previously added element from the ConfigurationElementCollection, the contains method should return false for this element.");
         }
 
         [TestMethod]
@@ -178,8 +186,9 @@ namespace WebApplications.Utilities.Test.Configuration
             configurationElementCollection.Add(configurationElement);
             configurationElementCollection.Remove(key);
 
-            Assert.IsFalse(configurationElementCollection.Contains(configurationElement),
-                           "After supplying the elements key to remove in order to remove a previously added element from the ConfigurationElementCollection, the contains method should return false for this element.");
+            Assert.IsFalse(
+                configurationElementCollection.Contains(configurationElement),
+                "After supplying the elements key to remove in order to remove a previously added element from the ConfigurationElementCollection, the contains method should return false for this element.");
         }
 
         [TestMethod]
@@ -194,8 +203,9 @@ namespace WebApplications.Utilities.Test.Configuration
             configurationElementCollection.Add(configurationElement);
             configurationElementCollection.Clear();
 
-            Assert.IsFalse(configurationElementCollection.Contains(configurationElement),
-                           "After using remove to remove a previously added element from the ConfigurationElementCollection, the contains method should return false for this element.");
+            Assert.IsFalse(
+                configurationElementCollection.Contains(configurationElement),
+                "After using remove to remove a previously added element from the ConfigurationElementCollection, the contains method should return false for this element.");
         }
 
         [TestMethod]
@@ -209,8 +219,9 @@ namespace WebApplications.Utilities.Test.Configuration
 
             configurationElementCollection[0] = configurationElement;
 
-            Assert.IsTrue(configurationElementCollection.Contains(configurationElement),
-                          "After assigning an element to the ConfigurationElementCollection by index, the contains method should return true for this element.");
+            Assert.IsTrue(
+                configurationElementCollection.Contains(configurationElement),
+                "After assigning an element to the ConfigurationElementCollection by index, the contains method should return true for this element.");
         }
 
         [TestMethod]
@@ -224,8 +235,9 @@ namespace WebApplications.Utilities.Test.Configuration
 
             configurationElementCollection[key] = configurationElement;
 
-            Assert.IsTrue(configurationElementCollection.Contains(configurationElement),
-                          "After assigning an element to the ConfigurationElementCollection by index, the contains method should return true for this element.");
+            Assert.IsTrue(
+                configurationElementCollection.Contains(configurationElement),
+                "After assigning an element to the ConfigurationElementCollection by index, the contains method should return true for this element.");
         }
 
         [TestMethod]
@@ -243,8 +255,9 @@ namespace WebApplications.Utilities.Test.Configuration
                 ((ICollection<ConfigurationElementWithGuidKey>) configurationElementCollection).Remove(
                     configurationElement);
 
-            Assert.IsTrue(wasRemoved,
-                          "The result of ICollection.remove for ConfigurationElementCollection should return true if the element removed was previously added.");
+            Assert.IsTrue(
+                wasRemoved,
+                "The result of ICollection.remove for ConfigurationElementCollection should return true if the element removed was previously added.");
         }
 
         [TestMethod]
@@ -260,8 +273,9 @@ namespace WebApplications.Utilities.Test.Configuration
                 ((ICollection<ConfigurationElementWithGuidKey>) configurationElementCollection).Remove(
                     configurationElement);
 
-            Assert.IsFalse(wasRemoved,
-                           "The result of ICollection.remove for ConfigurationElementCollection should return false if the element removed was never previously added.");
+            Assert.IsFalse(
+                wasRemoved,
+                "The result of ICollection.remove for ConfigurationElementCollection should return false if the element removed was never previously added.");
         }
 
         [TestMethod]
@@ -272,8 +286,9 @@ namespace WebApplications.Utilities.Test.Configuration
 
             configurationElementCollection.CallInternalSetReadOnly();
 
-            Assert.IsTrue(configurationElementCollection.IsReadOnly(),
-                          "The result of IsReadOnly for ConfigurationElementCollection should return true if the SetReadOnly method was previously called.");
+            Assert.IsTrue(
+                configurationElementCollection.IsReadOnly(),
+                "The result of IsReadOnly for ConfigurationElementCollection should return true if the SetReadOnly method was previously called.");
         }
 
         #region Nested type: ConfigurationElementCollectionTestClass

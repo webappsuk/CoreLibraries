@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -48,14 +48,18 @@ namespace WebApplications.Utilities.PowerShell
         public static void Compress([NotNull] string directory, [NotNull] string zipFile, bool force)
         {
             if (!Directory.Exists(directory))
-                throw new DirectoryNotFoundException(String.Format(Resources.Zip_Compress_DirectoryNotFound,
-                                                                   directory));
+                throw new DirectoryNotFoundException(
+                    String.Format(
+                        Resources.Zip_Compress_DirectoryNotFound,
+                        directory));
 
             if (File.Exists(zipFile))
             {
                 if (!force)
-                    throw new InvalidOperationException(String.Format(
-                        Resources.Zip_Compress_CannotOverwriteExistingFile, zipFile));
+                    throw new InvalidOperationException(
+                        String.Format(
+                            Resources.Zip_Compress_CannotOverwriteExistingFile,
+                            zipFile));
 
                 File.Delete(zipFile);
             }
@@ -83,10 +87,9 @@ namespace WebApplications.Utilities.PowerShell
                 Directory.CreateDirectory(directory);
 
             using (ZipFile z = new ZipFile(zipFile))
-            {
-                z.ExtractAll(directory,
-                             force ? ExtractExistingFileAction.OverwriteSilently : ExtractExistingFileAction.Throw);
-            }
+                z.ExtractAll(
+                    directory,
+                    force ? ExtractExistingFileAction.OverwriteSilently : ExtractExistingFileAction.Throw);
         }
     }
 }

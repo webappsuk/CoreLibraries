@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Configuration
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the elements.</typeparam>
     public abstract class ConfigurationElementCollection<TKey, TValue> : ConfigurationElementCollection,
-                                                                         ICollection<TValue>
+        ICollection<TValue>
         where TValue : ConfigurationElement, new()
     {
         /// <summary>
@@ -62,12 +62,11 @@ namespace WebApplications.Utilities.Configuration
                 {
                     TKey elementKey = GetElementKey(value);
                     if (!key.Equals(elementKey))
-                    {
                         throw new InvalidOperationException(
                             String.Format(
                                 Resources.ConfigurationElementCollection_SetElement_KeyMismatch,
-                                key, elementKey));
-                    }
+                                key,
+                                elementKey));
                     BaseAdd(value);
                 }
             }

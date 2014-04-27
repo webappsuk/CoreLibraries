@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -39,8 +39,11 @@ namespace WebApplications.Utilities.Test
         [Flags]
         private enum Colours
         {
-            [System.ComponentModel.Description("Descriptions are retrieved.")] None = 0,
-            [System.ComponentModel.Description("And concatenated.")] DuplicateNoneName = 0,
+            [System.ComponentModel.Description("Descriptions are retrieved.")]
+            None = 0,
+
+            [System.ComponentModel.Description("And concatenated.")]
+            DuplicateNoneName = 0,
             Red = 1,
             Rouge = 1,
             Green = 2,
@@ -138,10 +141,13 @@ namespace WebApplications.Utilities.Test
             Assert.IsFalse(valueDetail.IsCombination);
 
             // Because we have duplicate definitions, the descriptions are concatenated
-            Assert.AreEqual(string.Format("{0}{1}{2}",
-                                          "Descriptions are retrieved.",
-                                          Environment.NewLine,
-                                          "And concatenated."), valueDetail.Description);
+            Assert.AreEqual(
+                string.Format(
+                    "{0}{1}{2}",
+                    "Descriptions are retrieved.",
+                    Environment.NewLine,
+                    "And concatenated."),
+                valueDetail.Description);
 
             /*
              * The 'Mauve' Value is a combination value.
@@ -430,8 +436,9 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void TestGetAllName()
         {
-            Assert.AreEqual(ExtendedEnum<Colours>.AllName,
-                            ExtendedEnum<Colours>.AllValue.GetName(!ExtendedEnum<Colours>.ExplicitAll));
+            Assert.AreEqual(
+                ExtendedEnum<Colours>.AllName,
+                ExtendedEnum<Colours>.AllValue.GetName(!ExtendedEnum<Colours>.ExplicitAll));
         }
         #endregion
 

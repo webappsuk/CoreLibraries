@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -106,9 +106,12 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.AreNotEqual(method7, method5);
             Assert.AreNotEqual(method7, method6);
 
-            Method method8 = et.GetMethod("A", 1, new TypeSearch(GenericArgumentLocation.Type, "T"),
-                                          new TypeSearch(GenericArgumentLocation.Signature, 0, true),
-                                          TypeSearch.Void);
+            Method method8 = et.GetMethod(
+                "A",
+                1,
+                new TypeSearch(GenericArgumentLocation.Type, "T"),
+                new TypeSearch(GenericArgumentLocation.Signature, 0, true),
+                TypeSearch.Void);
             Assert.IsNotNull(method8);
         }
 
@@ -124,8 +127,12 @@ namespace WebApplications.Utilities.Test.Reflect
             // the first parameter uses the type's generic parameter.
             //
             // It actually matches: public void A<T1>(T a, ref T1 b) {}
-            Method concreteMethod = openType.GetMethod("A", 1, typeof (bool), typeof (Guid).MakeByRefType(),
-                                                       TypeSearch.Void);
+            Method concreteMethod = openType.GetMethod(
+                "A",
+                1,
+                typeof (bool),
+                typeof (Guid).MakeByRefType(),
+                TypeSearch.Void);
             Assert.IsNotNull(concreteMethod);
             Assert.IsFalse(concreteMethod.Info.ContainsGenericParameters);
             Assert.IsFalse(concreteMethod.ExtendedType.Type.ContainsGenericParameters);
@@ -194,8 +201,10 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.IsNotNull(constructor);
 
             // Retrieve the generic constructor
-            Constructor genericConstructor = et.GetConstructor(TypeSearch.T1, typeof (string),
-                                                               typeof (ComplexOverloads<int>));
+            Constructor genericConstructor = et.GetConstructor(
+                TypeSearch.T1,
+                typeof (string),
+                typeof (ComplexOverloads<int>));
             Assert.IsNotNull(genericConstructor);
             Assert.AreNotSame(constructor, genericConstructor);
         }
@@ -205,7 +214,9 @@ namespace WebApplications.Utilities.Test.Reflect
         {
             // Retrieve the generic constructor for a generic type, but search for concrete types.
             Constructor genericConstructor = ((ExtendedType) typeof (ComplexOverloads<>)).GetConstructor(
-                typeof (int), typeof (string), typeof (ComplexOverloads<int>));
+                typeof (int),
+                typeof (string),
+                typeof (ComplexOverloads<int>));
             Assert.IsNotNull(genericConstructor);
             Assert.IsFalse(genericConstructor.ExtendedType.Type.ContainsGenericParameters);
 
@@ -238,7 +249,8 @@ namespace WebApplications.Utilities.Test.Reflect
             Method method = et.GetMethod("GetOne", typeof (int));
             Assert.IsNotNull(method);
             Func<ComplexOverloads<int>, int> getOne = method.GetFunc(
-                typeof (ComplexOverloads<int>), typeof (int)) as Func<ComplexOverloads<int>, int>;
+                typeof (ComplexOverloads<int>),
+                typeof (int)) as Func<ComplexOverloads<int>, int>;
             Assert.IsNotNull(getOne);
 
             ComplexOverloads<int> obj = new ComplexOverloads<int>();
@@ -252,8 +264,11 @@ namespace WebApplications.Utilities.Test.Reflect
             Method method = et.GetMethod("Add", typeof (int), typeof (int), typeof (int));
             Assert.IsNotNull(method);
             Func<ComplexOverloads<int>, int, int, int> add = method.GetFunc(
-                typeof (ComplexOverloads<int>), typeof (int), typeof (int), typeof (int)) as
-                                                             Func<ComplexOverloads<int>, int, int, int>;
+                typeof (ComplexOverloads<int>),
+                typeof (int),
+                typeof (int),
+                typeof (int)) as
+                Func<ComplexOverloads<int>, int, int, int>;
             Assert.IsNotNull(add);
             int a = Random.Next();
             int b = Random.Next();
@@ -356,7 +371,7 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.IsNotNull(constructor);
             Func<int, string, ComplexOverloads<int>> constFunc =
                 constructor.GetFunc(typeof (int), typeof (string), typeof (ComplexOverloads<int>)) as
-                Func<int, string, ComplexOverloads<int>>;
+                    Func<int, string, ComplexOverloads<int>>;
             Assert.IsNotNull(constFunc);
             int a = Random.Next();
             string s = Random.RandomString();

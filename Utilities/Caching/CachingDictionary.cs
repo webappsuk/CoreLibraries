@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Caching
     /// <typeparam name="TKey">The type of the keys.</typeparam>
     /// <typeparam name="TValue">The type of the values.</typeparam>
     public class CachingDictionary<TKey, TValue> : CachingDictionaryBase<TKey, TValue>, IDictionary<TKey, TValue>,
-                                                   IDictionary
+        IDictionary
     {
         // ReSharper disable StaticFieldInGenericType
         /// <summary>
@@ -142,7 +142,10 @@ namespace WebApplications.Utilities.Caching
         /// <param name="cacheName">The name of the cache.</param>
         [UsedImplicitly]
         public CachingDictionary(
-            int concurrencyLevel, int capacity, [NotNull] IEqualityComparer<TKey> comparer, string cacheName = null)
+            int concurrencyLevel,
+            int capacity,
+            [NotNull] IEqualityComparer<TKey> comparer,
+            string cacheName = null)
         {
             _keys = new ConcurrentDictionary<TKey, string>(concurrencyLevel, capacity, comparer);
             _cache = string.IsNullOrWhiteSpace(cacheName) ? MemoryCache.Default : new MemoryCache(cacheName);
@@ -197,13 +200,21 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         ICollection IDictionary.Keys
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection) Keys; }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
+            get
+            {
+                return (ICollection) Keys;
+            }
         }
 
         /// <inheritdoc />
         ICollection IDictionary.Values
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection) Values; }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
+            get
+            {
+                return (ICollection) Values;
+            }
         }
 
         /// <inheritdoc />
@@ -317,13 +328,21 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         public ICollection<TKey> Keys
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return this.Select(kvp => kvp.Key).ToList(); }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
+            get
+            {
+                return this.Select(kvp => kvp.Key).ToList();
+            }
         }
 
         /// <inheritdoc />
         public ICollection<TValue> Values
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return this.Select(kvp => kvp.Value).ToList(); }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
+            get
+            {
+                return this.Select(kvp => kvp.Value).ToList();
+            }
         }
 
         /// <inheritdoc />
@@ -389,7 +408,10 @@ namespace WebApplications.Utilities.Caching
 
         /// <inheritdoc />
         public override bool TryAdd(
-            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)
+            TKey key,
+            TValue value,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration)
         {
             string guid = Guid.NewGuid().ToString();
             if (!_keys.TryAdd(key, guid))
@@ -401,11 +423,11 @@ namespace WebApplications.Utilities.Caching
                 guid,
                 new Wrapper(value),
                 new CacheItemPolicy
-                    {
-                        AbsoluteExpiration = absoluteExpiration,
-                        SlidingExpiration = slidingExpiration,
-                        RemovedCallback = a => _keys.TryRemove(key, out guid)
-                    });
+                {
+                    AbsoluteExpiration = absoluteExpiration,
+                    SlidingExpiration = slidingExpiration,
+                    RemovedCallback = a => _keys.TryRemove(key, out guid)
+                });
         }
 
         /// <inheritdoc />
@@ -429,7 +451,10 @@ namespace WebApplications.Utilities.Caching
 
         /// <inheritdoc />
         public override TValue GetOrAdd(
-            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)
+            TKey key,
+            TValue value,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration)
         {
             // Get or add a key
             string guid = _keys.GetOrAdd(key, k => Guid.NewGuid().ToString());
@@ -440,18 +465,21 @@ namespace WebApplications.Utilities.Caching
                 guid,
                 new Wrapper(value),
                 new CacheItemPolicy
-                    {
-                        AbsoluteExpiration = absoluteExpiration,
-                        SlidingExpiration = slidingExpiration,
-                        RemovedCallback = a => _keys.TryRemove(key, out guid)
-                    },
+                {
+                    AbsoluteExpiration = absoluteExpiration,
+                    SlidingExpiration = slidingExpiration,
+                    RemovedCallback = a => _keys.TryRemove(key, out guid)
+                },
                 null);
             return result == null ? value : ((Wrapper) result).Value;
         }
 
         /// <inheritdoc />
         public override TValue AddOrUpdate(
-            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration)
+            TKey key,
+            TValue value,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration)
         {
             // Get or add a key
             string guid = _keys.GetOrAdd(key, k => Guid.NewGuid().ToString());
@@ -462,11 +490,11 @@ namespace WebApplications.Utilities.Caching
                 guid,
                 new Wrapper(value),
                 new CacheItemPolicy
-                    {
-                        AbsoluteExpiration = absoluteExpiration,
-                        SlidingExpiration = slidingExpiration,
-                        RemovedCallback = a => _keys.TryRemove(key, out guid)
-                    },
+                {
+                    AbsoluteExpiration = absoluteExpiration,
+                    SlidingExpiration = slidingExpiration,
+                    RemovedCallback = a => _keys.TryRemove(key, out guid)
+                },
                 null);
             return value;
         }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -67,8 +67,9 @@ namespace WebApplications.Utilities.Test.Extensions
                 Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
             // Edges are such that each entry is dependent on the entry next in the list
             IEnumerable<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
-                enumerable.Skip(1).Zip(enumerable,
-                                       (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b));
+                enumerable.Skip(1).Zip(
+                    enumerable,
+                    (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b));
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             Assert.AreEqual(enumerable.Count(), result.Count());
         }
@@ -80,8 +81,9 @@ namespace WebApplications.Utilities.Test.Extensions
                 Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
             // Edges are such that each entry is dependent on the entry next in the list
             IEnumerable<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
-                enumerable.Skip(1).Zip(enumerable,
-                                       (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b));
+                enumerable.Skip(1).Zip(
+                    enumerable,
+                    (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b));
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             // Correct order for this set of edges is for the output to be the exact reverse of the input
             CollectionAssert.AreEqual(enumerable.Reverse().ToList(), result.ToList());
@@ -118,7 +120,7 @@ namespace WebApplications.Utilities.Test.Extensions
             // Have just one edge which connects the first entry to itself
             IEnumerable<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
                 new List<KeyValuePair<TestReferenceType, TestReferenceType>>
-                    {new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.First())};
+                {new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.First())};
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             result = result.ToList();
         }
@@ -131,7 +133,7 @@ namespace WebApplications.Utilities.Test.Extensions
             // Have just one edge which connects the first entry to itself
             IEnumerable<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
                 new List<KeyValuePair<TestReferenceType, TestReferenceType>>
-                    {new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.First())};
+                {new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.First())};
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             IEnumerable<TestReferenceType> allButLastStep = result.Take(enumerable.Count() - 1).ToList();
         }
@@ -145,10 +147,10 @@ namespace WebApplications.Utilities.Test.Extensions
             // Have just two edges which connects the first and last entries to each other
             IEnumerable<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
                 new List<KeyValuePair<TestReferenceType, TestReferenceType>>
-                    {
-                        new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.Last()),
-                        new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.Last(), enumerable.First())
-                    };
+                {
+                    new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.Last()),
+                    new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.Last(), enumerable.First())
+                };
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             result = result.ToList();
         }
@@ -161,10 +163,10 @@ namespace WebApplications.Utilities.Test.Extensions
             // Have just two edges which connects the first and last entries to each other
             IEnumerable<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
                 new List<KeyValuePair<TestReferenceType, TestReferenceType>>
-                    {
-                        new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.Last()),
-                        new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.Last(), enumerable.First())
-                    };
+                {
+                    new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.Last()),
+                    new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.Last(), enumerable.First())
+                };
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             IEnumerable<TestReferenceType> allButLastTwoSteps = result.Take(enumerable.Count() - 2).ToList();
         }
@@ -177,8 +179,9 @@ namespace WebApplications.Utilities.Test.Extensions
                 Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
             // Edges are such that each entry is dependent on the entry next in the list
             List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
-                enumerable.Skip(1).Zip(enumerable,
-                                       (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
+                enumerable.Skip(1).Zip(
+                    enumerable,
+                    (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
             // Then add loop by connecting first entry to last
             edges.Add(new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.First(), enumerable.Last()));
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
@@ -192,8 +195,9 @@ namespace WebApplications.Utilities.Test.Extensions
                 Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
             // Edges are such that each entry is dependent on the entry next in the list
             List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
-                enumerable.Skip(1).Zip(enumerable,
-                                       (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
+                enumerable.Skip(1).Zip(
+                    enumerable,
+                    (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
             // Introduce duplicate edge
             edges.Add(edges[Random.Next(0, edges.Count)]);
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
@@ -208,7 +212,9 @@ namespace WebApplications.Utilities.Test.Extensions
                 Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
             // Edges are such that each entry is dependent on the entry next in the list
             List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
-                items.Skip(1).Zip(items, (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
+                items.Skip(1)
+                    .Zip(items, (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b))
+                    .ToList();
             // Introduce duplicate item
             items.Add(items[Random.Next(0, items.Count)]);
             IEnumerable<TestReferenceType> result = items.TopologicalSortEdges(edges);
@@ -218,16 +224,19 @@ namespace WebApplications.Utilities.Test.Extensions
         [TestMethod]
         [ExpectedException(typeof (InvalidOperationException))]
         public void
-            TopologicalSortEdges_SimpleDependancyChainWithMissingDependancy_ThrowsAInvalidOperationExceptionOnIteration()
+            TopologicalSortEdges_SimpleDependancyChainWithMissingDependancy_ThrowsAInvalidOperationExceptionOnIteration(
+            )
         {
             IEnumerable<TestReferenceType> enumerable =
                 Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
             // Edges are such that each entry is dependent on the entry next in the list
             List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
-                enumerable.Skip(1).Zip(enumerable,
-                                       (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
+                enumerable.Skip(1).Zip(
+                    enumerable,
+                    (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
             // Then add edge making last item depend on an item which is not in the list
-            edges.Add(new KeyValuePair<TestReferenceType, TestReferenceType>(new TestReferenceType(), enumerable.Last()));
+            edges.Add(
+                new KeyValuePair<TestReferenceType, TestReferenceType>(new TestReferenceType(), enumerable.Last()));
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges).ToList();
         }
 
@@ -238,10 +247,12 @@ namespace WebApplications.Utilities.Test.Extensions
                 Enumerable.Range(1, Random.Next(10, 100)).Select(n => new TestReferenceType()).ToList();
             // Edges are such that each entry is dependent on the entry next in the list
             List<KeyValuePair<TestReferenceType, TestReferenceType>> edges =
-                enumerable.Skip(1).Zip(enumerable,
-                                       (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
+                enumerable.Skip(1).Zip(
+                    enumerable,
+                    (a, b) => new KeyValuePair<TestReferenceType, TestReferenceType>(a, b)).ToList();
             // Then add edge makeing last item depended on by an item which is not in the list
-            edges.Add(new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.Last(), new TestReferenceType()));
+            edges.Add(
+                new KeyValuePair<TestReferenceType, TestReferenceType>(enumerable.Last(), new TestReferenceType()));
             IEnumerable<TestReferenceType> result = enumerable.TopologicalSortEdges(edges);
             Assert.AreEqual(enumerable.Count(), result.Count());
         }
@@ -280,9 +291,9 @@ namespace WebApplications.Utilities.Test.Extensions
             IEnumerable<int> enumerable = Enumerable.Range(1, Random.Next(10, 100)).ToList();
             // reverse is added just to prove sorting actually occurs, as original order is a correct solution
             List<int> result =
-                enumerable.Reverse().TopologicalSortDependencies(n => n > 1 ? new List<int> {n/2} : new List<int>()).
+                enumerable.Reverse().TopologicalSortDependencies(n => n > 1 ? new List<int> {n / 2} : new List<int>()).
                     ToList();
-            Assert.IsTrue(result.Select((i, n) => i > result.IndexOf(n/2)).All(b => b));
+            Assert.IsTrue(result.Select((i, n) => i > result.IndexOf(n / 2)).All(b => b));
         }
 
         [TestMethod]
@@ -292,8 +303,8 @@ namespace WebApplications.Utilities.Test.Extensions
             // reverse is added just to prove sorting actually occurs, as original order is a correct solution
             List<int> result =
                 enumerable.Reverse().TopologicalSortDependants(
-                    n => Enumerable.Range(0, 2).Select(i => n*2 + i).Where(m => m <= enumerable.Count())).ToList();
-            Assert.IsTrue(result.Select((i, n) => i > result.IndexOf(n/2)).All(b => b));
+                    n => Enumerable.Range(0, 2).Select(i => n * 2 + i).Where(m => m <= enumerable.Count())).ToList();
+            Assert.IsTrue(result.Select((i, n) => i > result.IndexOf(n / 2)).All(b => b));
         }
 
         [TestMethod]

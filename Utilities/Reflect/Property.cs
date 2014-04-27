@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -47,24 +47,31 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The extended type.
         /// </summary>
-        [NotNull] public readonly ExtendedType ExtendedType;
+        [NotNull]
+        public readonly ExtendedType ExtendedType;
 
         /// <summary>
         ///   The property info object, which provides access to property metadata. 
         /// </summary>
-        [NotNull] public readonly PropertyInfo Info;
+        [NotNull]
+        public readonly PropertyInfo Info;
 
-        [NotNull] private readonly Lazy<Field> _automaticField;
+        [NotNull]
+        private readonly Lazy<Field> _automaticField;
 
         /// <summary>
         ///   Grabs the getter method lazily.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<MethodInfo> _getMethod;
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<MethodInfo> _getMethod;
 
         /// <summary>
         ///   Grabs the setter method lazily.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<MethodInfo> _setMethod;
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<MethodInfo> _setMethod;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="Property"/> class.
@@ -83,44 +90,49 @@ namespace WebApplications.Utilities.Reflect
             // Tries to find the underlying field for an automatic property.
             _automaticField = new Lazy<Field>(
                 () =>
+                {
+                    MethodInfo getMethod;
+                    MethodBody methodBody;
+
+                    // If the get/set accessor is missing or we can't retrieve the method body for the get accessor,
+                    // then we're not an automatic property.
+                    if (!info.CanRead ||
+                        !info.CanWrite ||
+                        ((getMethod = info.GetGetMethod()) == null) ||
+                        ((methodBody = getMethod.GetMethodBody()) == null))
+                        return null;
+
+                    // Evaluate MSIL to resolve underlying field that is accessed.
+                    byte[] getter = methodBody.GetILAsByteArray();
+                    byte ldfld = (byte) (info.GetGetMethod().IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld).Value;
+                    byte[] fieldToken = getter.SkipWhile(b => b != ldfld).Skip(1).Take(4).ToArray();
+                    if (fieldToken.Length != 4)
+                        return null;
+
+                    // Grab the field
+                    FieldInfo field;
+                    try
                     {
-                        MethodInfo getMethod;
-                        MethodBody methodBody;
+                        Type[] typeArguments = ExtendedType.GenericArguments.Select(g => g.Type).ToArray();
+                        if (typeArguments.Length < 1)
+                            typeArguments = null;
+                        field = info.DeclaringType.Module.ResolveField(
+                            BitConverter.ToInt32(fieldToken, 0),
+                            typeArguments,
+                            null);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
 
-                        // If the get/set accessor is missing or we can't retrieve the method body for the get accessor,
-                        // then we're not an automatic property.
-                        if (!info.CanRead || !info.CanWrite || ((getMethod = info.GetGetMethod()) == null) ||
-                            ((methodBody = getMethod.GetMethodBody()) == null))
-                            return null;
-
-                        // Evaluate MSIL to resolve underlying field that is accessed.
-                        byte[] getter = methodBody.GetILAsByteArray();
-                        byte ldfld = (byte) (info.GetGetMethod().IsStatic ? OpCodes.Ldsfld : OpCodes.Ldfld).Value;
-                        byte[] fieldToken = getter.SkipWhile(b => b != ldfld).Skip(1).Take(4).ToArray();
-                        if (fieldToken.Length != 4)
-                            return null;
-
-                        // Grab the field
-                        FieldInfo field;
-                        try
-                        {
-                            Type[] typeArguments = ExtendedType.GenericArguments.Select(g => g.Type).ToArray();
-                            if (typeArguments.Length < 1)
-                                typeArguments = null;
-                            field = info.DeclaringType.Module.ResolveField(BitConverter.ToInt32(fieldToken, 0),
-                                                                           typeArguments, null);
-                        }
-                        catch
-                        {
-                            return null;
-                        }
-
-                        // Compilers don't strictly have to add this attribute, so could relax this check, but this ensures
-                        // that we are indeed looking at an automatic property.
-                        return field != null && field.IsDefined(typeof (CompilerGeneratedAttribute), false)
-                                   ? field
-                                   : null;
-                    }, LazyThreadSafetyMode.PublicationOnly);
+                    // Compilers don't strictly have to add this attribute, so could relax this check, but this ensures
+                    // that we are indeed looking at an automatic property.
+                    return field != null && field.IsDefined(typeof (CompilerGeneratedAttribute), false)
+                        ? field
+                        : null;
+                },
+                LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
@@ -192,8 +204,8 @@ namespace WebApplications.Utilities.Reflect
         public static implicit operator Property(PropertyInfo propertyInfo)
         {
             return propertyInfo == null
-                       ? null
-                       : ((ExtendedType) propertyInfo.DeclaringType).GetProperty(propertyInfo);
+                ? null
+                : ((ExtendedType) propertyInfo.DeclaringType).GetProperty(propertyInfo);
         }
 
         /// <summary>
@@ -317,7 +329,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Create value parameter expression
             ParameterExpression valueParameterExpression = Expression.Parameter(
-                valueType, "value");
+                valueType,
+                "value");
             Expression valueExpression = valueParameterExpression;
 
             // Convert value parameter if necessary
@@ -364,7 +377,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(
-                parameterType, "target");
+                parameterType,
+                "target");
 
             // Cast parameter if necessary
             Expression expression = parameterExpression;
@@ -377,7 +391,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Create value parameter expression
             ParameterExpression valueParameterExpression = Expression.Parameter(
-                valueType, "value");
+                valueType,
+                "value");
             Expression valueExpression = valueParameterExpression;
 
             // Convert value parameter if necessary
@@ -397,7 +412,7 @@ namespace WebApplications.Utilities.Reflect
             // Create lambda and compile
             return
                 Expression.Lambda<Action<T, TValue>>(expression, parameterExpression, valueParameterExpression)
-                          .Compile();
+                    .Compile();
         }
     }
 }

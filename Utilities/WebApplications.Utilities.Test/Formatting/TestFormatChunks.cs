@@ -1,8 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System.Linq;
-using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
 
@@ -14,7 +37,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestNull()
         {
-            FormatChunk[] chunks = ((string)null).FormatChunks().ToArray();
+            FormatChunk[] chunks = ((string) null).FormatChunks().ToArray();
             Assert.AreEqual(0, chunks.Length);
         }
 
@@ -211,20 +234,26 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestNestedChunks()
         {
             // Any character that appears after a '\' will always be added. This only has an effect for the '{', '}' and '\' characters, all others do not need to be escaped
-            FormatChunk[] chunks = @"This: {Tag:Is a very {complicated: {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}}} and some trailing text".FormatChunks().ToArray();
+            FormatChunk[] chunks =
+                @"This: {Tag:Is a very {complicated: {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}}} and some trailing text"
+                    .FormatChunks().ToArray();
 
             // ReSharper disable PossibleNullReferenceException
             Assert.AreEqual(3, chunks.Length);
             Assert.AreEqual("This: ", chunks[0].Value);
             Assert.AreEqual("Tag", chunks[1].Tag);
-            Assert.AreEqual(@"Is a very {complicated: {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}}", chunks[1].Format);
+            Assert.AreEqual(
+                @"Is a very {complicated: {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}}",
+                chunks[1].Format);
             Assert.AreEqual(" and some trailing text", chunks[2].Value);
 
             chunks = chunks[1].Format.FormatChunks().ToArray();
             Assert.AreEqual(2, chunks.Length);
             Assert.AreEqual("Is a very ", chunks[0].Value);
             Assert.AreEqual("complicated", chunks[1].Tag);
-            Assert.AreEqual(@" {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}", chunks[1].Format);
+            Assert.AreEqual(
+                @" {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}",
+                chunks[1].Format);
 
             chunks = chunks[1].Format.FormatChunks().ToArray();
             Assert.AreEqual(5, chunks.Length);

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,8 @@ namespace WebApplications.Utilities.Caching
     /// </summary>
     /// <typeparam name="T">The type of the referenced element.</typeparam>
     [UsedImplicitly]
-    public class WeakReference<T> where T : class
+    public class WeakReference<T>
+        where T : class
     {
         /// <summary>
         ///   The underlying weak reference.

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         /// The maximum capacity which can be created.
         /// </summary>
-        public const long MaxCapacity = int.MaxValue*(long) 4096;
+        public const long MaxCapacity = int.MaxValue * (long) 4096;
 
         /// <summary>
         /// The maximum capacity of the queue.  As items are queued beyond the capacity, items are dequeued automatically.
@@ -71,7 +71,8 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         /// Underlying array of chunks.
         /// </summary>
-        [NotNull] private readonly Chunk[] _chunks;
+        [NotNull]
+        private readonly Chunk[] _chunks;
 
         /// <summary>
         /// Points at the start of the elements that are being written to.
@@ -91,14 +92,16 @@ namespace WebApplications.Utilities.Caching
         public CyclicConcurrentQueue(long capacity)
         {
             if (capacity > MaxCapacity - 1)
-                throw new ArgumentOutOfRangeException("capacity",
-                                                      Resources.
-                                                          LimitedConcurrentQueue_LimitedConcurrentQueue_Maximum_Capacity,
-                                                      MaxCapacity.ToString());
+                throw new ArgumentOutOfRangeException(
+                    "capacity",
+                    Resources.
+                        LimitedConcurrentQueue_LimitedConcurrentQueue_Maximum_Capacity,
+                    MaxCapacity.ToString());
             if (capacity < 1)
-                throw new ArgumentOutOfRangeException("capacity",
-                                                      Resources.
-                                                          LimitedConcurrentQueue_LimitedConcurrentQueue_Minimum_Capacity);
+                throw new ArgumentOutOfRangeException(
+                    "capacity",
+                    Resources.
+                        LimitedConcurrentQueue_LimitedConcurrentQueue_Minimum_Capacity);
             Capacity = capacity;
             _tail = 0;
             _head = 0;
@@ -114,7 +117,7 @@ namespace WebApplications.Utilities.Caching
                 numChunks >>= 1;
                 _chunkSizeLog2++;
             }
-            if ((numChunks*_chunkSize) < capacity)
+            if ((numChunks * _chunkSize) < capacity)
                 numChunks++;
 
             _chunks = new Chunk[numChunks];
@@ -144,11 +147,11 @@ namespace WebApplications.Utilities.Caching
             foreach (T item in collection)
             {
                 _chunks[chunkNum].Array[index] = item;
-                index = (index + 1)%_chunkSize;
+                index = (index + 1) % _chunkSize;
                 if (index == 0)
                     chunkNum++;
                 _head++;
-                if (_head%capacity == 0)
+                if (_head % capacity == 0)
                 {
                     index = 0;
                     chunkNum = 0;
@@ -156,9 +159,7 @@ namespace WebApplications.Utilities.Caching
             }
             // If a wrap around occurred, ensure the tail catches up
             if (_head > capacity)
-            {
                 _tail = _head - capacity;
-            }
         }
 
         /// <summary>
@@ -561,7 +562,8 @@ namespace WebApplications.Utilities.Caching
             /// <summary>
             /// The array.
             /// </summary>
-            [NotNull] public readonly T[] Array;
+            [NotNull]
+            public readonly T[] Array;
 
             /// <summary>
             /// The chunk size.

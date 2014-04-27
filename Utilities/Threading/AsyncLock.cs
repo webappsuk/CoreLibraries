@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,8 +40,11 @@ namespace WebApplications.Utilities.Threading
     /// </remarks>
     public class AsyncLock
     {
-        [NotNull] private readonly Task<IDisposable> _releaser;
-        [NotNull] private readonly AsyncSemaphore _semaphore;
+        [NotNull]
+        private readonly Task<IDisposable> _releaser;
+
+        [NotNull]
+        private readonly AsyncSemaphore _semaphore;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncLock" /> class.
@@ -63,10 +66,13 @@ namespace WebApplications.Utilities.Threading
         {
             Task wait = _semaphore.WaitAsync(token);
             return wait.IsCompleted
-                       ? _releaser
-                       : wait.ContinueWith((_, state) => (IDisposable) new Releaser((AsyncLock) state),
-                                           this, token,
-                                           TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                ? _releaser
+                : wait.ContinueWith(
+                    (_, state) => (IDisposable) new Releaser((AsyncLock) state),
+                    this,
+                    token,
+                    TaskContinuationOptions.ExecuteSynchronously,
+                    TaskScheduler.Default);
         }
 
         #region Nested type: Releaser

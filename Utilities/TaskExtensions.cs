@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,8 @@ namespace WebApplications.Utilities
                     tcs.SetResult(true);
                     break;
                 case TaskStatus.Faulted:
-                    if ((task.Exception == null) || (task.Exception.InnerExceptions == null))
+                    if ((task.Exception == null) ||
+                        (task.Exception.InnerExceptions == null))
                         tcs.SetException(
                             new InvalidOperationException(
                                 Resources.TaskExtensions_SetFromTask_TaskStateFaulted));
@@ -124,7 +125,8 @@ namespace WebApplications.Utilities
                     tcs.SetResult(task.Result);
                     break;
                 case TaskStatus.Faulted:
-                    if ((task.Exception == null) || (task.Exception.InnerExceptions == null))
+                    if ((task.Exception == null) ||
+                        (task.Exception.InnerExceptions == null))
                         tcs.SetException(
                             new InvalidOperationException(
                                 Resources.TaskExtensions_SetFromTask_TaskStateFaulted));
@@ -161,7 +163,8 @@ namespace WebApplications.Utilities
             if (task == null) throw new ArgumentNullException("task");
 
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>(state);
-            task.ContinueWith(_ =>
+            task.ContinueWith(
+                _ =>
                 {
                     tcs.SetFromTask(task);
                     if (callback != null) callback(tcs.Task);
@@ -188,7 +191,8 @@ namespace WebApplications.Utilities
             [CanBeNull] object state)
         {
             TaskCompletionSource<TResult> tcs = new TaskCompletionSource<TResult>(state);
-            task.ContinueWith(_ =>
+            task.ContinueWith(
+                _ =>
                 {
                     tcs.SetFromTask(task);
                     if (callback != null) callback(tcs.Task);
@@ -272,8 +276,9 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
-        public static Task<TNewResult> After<TResult, TNewResult>([CanBeNull] this Task<TResult> task,
-                                                                  [NotNull] Func<Task<TResult>, TNewResult> continuation)
+        public static Task<TNewResult> After<TResult, TNewResult>(
+            [CanBeNull] this Task<TResult> task,
+            [NotNull] Func<Task<TResult>, TNewResult> continuation)
         {
             return After(task, continuation, Task<TNewResult>.Factory.CreationOptions);
         }
@@ -301,9 +306,10 @@ namespace WebApplications.Utilities
         ///   An exception will be thrown if <paramref name="task"/> is ended prematurely by an exception.
         /// </remarks>
         [UsedImplicitly]
-        public static Task<TNewResult> After<TResult, TNewResult>([CanBeNull] this Task<TResult> task,
-                                                                  [NotNull] Func<Task<TResult>, TNewResult> continuation,
-                                                                  TaskCreationOptions creationOptions)
+        public static Task<TNewResult> After<TResult, TNewResult>(
+            [CanBeNull] this Task<TResult> task,
+            [NotNull] Func<Task<TResult>, TNewResult> continuation,
+            TaskCreationOptions creationOptions)
         {
             // If the antecedent task is null just start the continuation (but pass in null).
             if ((task == null))
@@ -312,31 +318,32 @@ namespace WebApplications.Utilities
             // Create a continuation.
             return task.ContinueWith(
                 t =>
+                {
+                    if (t == null)
+                        return continuation(null);
+
+                    if (t.Exception != null)
+                        throw t.Exception;
+
+                    if (t.IsCanceled)
+                        throw new TaskCanceledException(Resources.TaskExtensions_After_AntecedentTaskCancelled);
+
+                    switch (t.Status)
                     {
-                        if (t == null)
-                            return continuation(null);
-
-                        if (t.Exception != null)
-                            throw t.Exception;
-
-                        if (t.IsCanceled)
+                        case TaskStatus.RanToCompletion:
+                            // We're OK to continue
+                            return continuation(t);
+                        case TaskStatus.Canceled:
                             throw new TaskCanceledException(Resources.TaskExtensions_After_AntecedentTaskCancelled);
-
-                        switch (t.Status)
-                        {
-                            case TaskStatus.RanToCompletion:
-                                // We're OK to continue
-                                return continuation(t);
-                            case TaskStatus.Canceled:
-                                throw new TaskCanceledException(Resources.TaskExtensions_After_AntecedentTaskCancelled);
-                            case TaskStatus.Faulted:
-                                throw new InvalidOperationException(
-                                    Resources.TaskExtensions_After_AntecedentTaskInFaultedState);
-                            default:
-                                throw new InvalidOperationException(
-                                    Resources.TaskExtensions_After_AntecedentTaskInvalidState);
-                        }
-                    }, creationOptions.GetEquivalentContinuationOptions());
+                        case TaskStatus.Faulted:
+                            throw new InvalidOperationException(
+                                Resources.TaskExtensions_After_AntecedentTaskInFaultedState);
+                        default:
+                            throw new InvalidOperationException(
+                                Resources.TaskExtensions_After_AntecedentTaskInvalidState);
+                    }
+                },
+                creationOptions.GetEquivalentContinuationOptions());
         }
 
         /// <summary>
@@ -358,10 +365,11 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
-        public static Task<TNewResult> AfterAll<TResult, TNewResult>([CanBeNull] this IEnumerable<Task<TResult>> tasks,
-                                                                     [NotNull] Func<IEnumerable<Task<TResult>>, TNewResult>
-                                                                         continuation,
-                                                                     TaskCreationOptions creationOptions)
+        public static Task<TNewResult> AfterAll<TResult, TNewResult>(
+            [CanBeNull] this IEnumerable<Task<TResult>> tasks,
+            [NotNull] Func<IEnumerable<Task<TResult>>, TNewResult>
+                continuation,
+            TaskCreationOptions creationOptions)
         {
             if (tasks == null) tasks = Enumerable.Empty<Task<TResult>>();
             Task<TResult>[] taskArray = tasks.ToArray();
@@ -373,57 +381,59 @@ namespace WebApplications.Utilities
             return Task<TNewResult>.Factory.ContinueWhenAll(
                 taskArray,
                 antecedents =>
+                {
+                    if ((antecedents == null) ||
+                        (antecedents.Length < 1))
+                        return continuation(null);
+
+                    List<Task<TResult>> taskList = new List<Task<TResult>>();
+                    List<Exception> exceptions = new List<Exception>();
+                    foreach (Task<TResult> antecedent in antecedents)
                     {
-                        if ((antecedents == null) || (antecedents.Length < 1))
-                            return continuation(null);
+                        if (antecedent == null)
+                            continue;
 
-                        List<Task<TResult>> taskList = new List<Task<TResult>>();
-                        List<Exception> exceptions = new List<Exception>();
-                        foreach (Task<TResult> antecedent in antecedents)
+                        if (antecedent.Exception != null)
                         {
-                            if (antecedent == null)
-                                continue;
+                            if (antecedent.Exception.InnerExceptions != null)
+                                exceptions.AddRange(antecedent.Exception.InnerExceptions);
+                            else
+                                exceptions.Add(antecedent.Exception);
+                            continue;
+                        }
 
-                            if (antecedent.Exception != null)
-                            {
-                                if (antecedent.Exception.InnerExceptions != null)
-                                    exceptions.AddRange(antecedent.Exception.InnerExceptions);
-                                else
-                                    exceptions.Add(antecedent.Exception);
-                                continue;
-                            }
+                        if (antecedent.IsCanceled)
+                            throw new TaskCanceledException(
+                                Resources.TaskExtensions_AfterAll_AntecedentTaskCancelled);
 
-                            if (antecedent.IsCanceled)
+                        switch (antecedent.Status)
+                        {
+                            case TaskStatus.RanToCompletion:
+                                // We're OK to continue
+                                taskList.Add(antecedent);
+                                break;
+                            case TaskStatus.Canceled:
                                 throw new TaskCanceledException(
                                     Resources.TaskExtensions_AfterAll_AntecedentTaskCancelled);
-
-                            switch (antecedent.Status)
-                            {
-                                case TaskStatus.RanToCompletion:
-                                    // We're OK to continue
-                                    taskList.Add(antecedent);
-                                    break;
-                                case TaskStatus.Canceled:
-                                    throw new TaskCanceledException(
-                                        Resources.TaskExtensions_AfterAll_AntecedentTaskCancelled);
-                                case TaskStatus.Faulted:
-                                    exceptions.Add(
-                                        new InvalidOperationException(
-                                            Resources.TaskExtensions_AfterAll_AntecedentTaskInFaultedState));
-                                    break;
-                                default:
-                                    exceptions.Add(
-                                        new InvalidOperationException(
-                                            Resources.TaskExtensions_AfterAll_AntecedentTaskInvalidState));
-                                    break;
-                            }
+                            case TaskStatus.Faulted:
+                                exceptions.Add(
+                                    new InvalidOperationException(
+                                        Resources.TaskExtensions_AfterAll_AntecedentTaskInFaultedState));
+                                break;
+                            default:
+                                exceptions.Add(
+                                    new InvalidOperationException(
+                                        Resources.TaskExtensions_AfterAll_AntecedentTaskInvalidState));
+                                break;
                         }
-                        if (exceptions.Count > 0)
-                            throw new AggregateException(exceptions);
+                    }
+                    if (exceptions.Count > 0)
+                        throw new AggregateException(exceptions);
 
-                        // No exceptions or cancellations
-                        return continuation(taskList);
-                    }, creationOptions.GetEquivalentContinuationOptions());
+                    // No exceptions or cancellations
+                    return continuation(taskList);
+                },
+                creationOptions.GetEquivalentContinuationOptions());
         }
 
         /// <summary>
@@ -474,11 +484,13 @@ namespace WebApplications.Utilities
                     .UnsafeRegisterWaitForSingleObject(
                         currentHandle,
                         delegate
-                            {
-                                // Signal the manual reset event.
-                                newHandle.Set();
-                            },
-                        null, -1, true);
+                        {
+                            // Signal the manual reset event.
+                            newHandle.Set();
+                        },
+                        null,
+                        -1,
+                        true);
             }
 
             // Cancel all waits when we finally get the signal.
@@ -486,11 +498,13 @@ namespace WebApplications.Utilities
                 .UnsafeRegisterWaitForSingleObject(
                     newHandle,
                     delegate
-                        {
-                            foreach (RegisteredWaitHandle waiter in waitHandles)
-                                waiter.Unregister(null);
-                        },
-                    null, -1, true);
+                    {
+                        foreach (RegisteredWaitHandle waiter in waitHandles)
+                            waiter.Unregister(null);
+                    },
+                    null,
+                    -1,
+                    true);
 
             return newHandle;
         }
@@ -519,7 +533,9 @@ namespace WebApplications.Utilities
                 .UnsafeRegisterWaitForSingleObject(
                     handle,
                     (s, t) => WaitAllCallback(newHandle, handleQueue),
-                    null, -1, true);
+                    null,
+                    -1,
+                    true);
 
             // Return the new handle.
             return newHandle;
@@ -533,8 +549,9 @@ namespace WebApplications.Utilities
         /// <exception cref="System.Security.SecurityException">
         ///   The caller does not have the required permission.
         /// </exception>
-        private static void WaitAllCallback([NotNull] ManualResetEvent newHandle,
-                                            [NotNull] Queue<WaitHandle> handleQueue)
+        private static void WaitAllCallback(
+            [NotNull] ManualResetEvent newHandle,
+            [NotNull] Queue<WaitHandle> handleQueue)
         {
             // If the queue is empty we're done.
             if (handleQueue.Count < 1)
@@ -547,7 +564,9 @@ namespace WebApplications.Utilities
                 .UnsafeRegisterWaitForSingleObject(
                     nextHandle,
                     (s, t) => WaitAllCallback(newHandle, handleQueue),
-                    null, -1, true);
+                    null,
+                    -1,
+                    true);
         }
 
         /// <summary>
@@ -570,12 +589,13 @@ namespace WebApplications.Utilities
         ///   <see cref="System.Threading.Tasks.TaskCompletionSource&lt;TResult&gt;">TaskCompletionSource&lt;TResult&gt;</see>.
         /// </returns>
         [UsedImplicitly]
-        public static Task<TResult> FromAsync<TResult>([NotNull] this IAsyncResult asyncResult,
-                                                       [NotNull] Func<IAsyncResult, TResult> endMethod,
-                                                       [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
-                                                       TaskCreationOptions creationOptions = TaskCreationOptions.None,
-                                                       [CanBeNull] TaskScheduler scheduler = null,
-                                                       CancellationToken cancellationToken = default(CancellationToken))
+        public static Task<TResult> FromAsync<TResult>(
+            [NotNull] this IAsyncResult asyncResult,
+            [NotNull] Func<IAsyncResult, TResult> endMethod,
+            [CanBeNull] Action<IAsyncResult> cancellationMethod = null,
+            TaskCreationOptions creationOptions = TaskCreationOptions.None,
+            [CanBeNull] TaskScheduler scheduler = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             bool cancellable = cancellationToken != CancellationToken.None;
 
@@ -588,40 +608,40 @@ namespace WebApplications.Utilities
             // Create the continuation task that will run once the APM method completes.
             Task t = new Task(
                 () =>
+                {
+                    Exception exception = null;
+                    OperationCanceledException canceledException = null;
+                    TResult result = default(TResult);
+                    try
                     {
-                        Exception exception = null;
-                        OperationCanceledException canceledException = null;
-                        TResult result = default(TResult);
-                        try
-                        {
-                            result = endMethod(asyncResult);
-                        }
-                        catch (OperationCanceledException ex)
-                        {
-                            canceledException = ex;
-                        }
-                        catch (Exception ex)
-                        {
-                            exception = ex;
-                        }
-                        finally
-                        {
-                            if ((canceledException != null) || cancellationToken.IsCancellationRequested)
-                                // The task was cancelled
-                                // note we don't call the cancellation method as the APM call is already finished.
-                                tcs.TrySetCanceled();
-                            else if (exception != null)
-                                tcs.TrySetException(exception);
-                            else
-                                tcs.TrySetResult(result);
-                        }
-                    },
+                        result = endMethod(asyncResult);
+                    }
+                    catch (OperationCanceledException ex)
+                    {
+                        canceledException = ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        exception = ex;
+                    }
+                    finally
+                    {
+                        if ((canceledException != null) ||
+                            cancellationToken.IsCancellationRequested)
+                            // The task was cancelled
+                            // note we don't call the cancellation method as the APM call is already finished.
+                            tcs.TrySetCanceled();
+                        else if (exception != null)
+                            tcs.TrySetException(exception);
+                        else
+                            tcs.TrySetResult(result);
+                    }
+                },
                 cancellationToken,
                 creationOptions);
 
             // If we're already complete run the continuation task.
             if (asyncResult.IsCompleted)
-            {
                 try
                 {
                     t.RunSynchronously(scheduler);
@@ -630,7 +650,6 @@ namespace WebApplications.Utilities
                 {
                     tcs.TrySetException(ex);
                 }
-            }
             else
             {
                 // We're not complete so get the wait handle.
@@ -644,38 +663,41 @@ namespace WebApplications.Utilities
                 RegisteredWaitHandle endTaskWaiter = ThreadPool.RegisterWaitForSingleObject(
                     waitHandle,
                     (state, timeout) =>
+                    {
+                        if (cancellationToken.IsCancellationRequested)
                         {
-                            if (cancellationToken.IsCancellationRequested)
-                            {
-                                // We cancelled before APM completed so we need to notify
-                                // Cancellation method (if any)
-                                if (cancellationMethod != null)
-                                    try
-                                    {
-                                        cancellationMethod(asyncResult);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        // If cancellation failed set the exception.
-                                        tcs.TrySetException(e);
-                                        return;
-                                    }
+                            // We cancelled before APM completed so we need to notify
+                            // Cancellation method (if any)
+                            if (cancellationMethod != null)
+                                try
+                                {
+                                    cancellationMethod(asyncResult);
+                                }
+                                catch (Exception e)
+                                {
+                                    // If cancellation failed set the exception.
+                                    tcs.TrySetException(e);
+                                    return;
+                                }
 
-                                // Set the completion source to cancelled
-                                tcs.TrySetCanceled();
-                                return;
-                            }
+                            // Set the completion source to cancelled
+                            tcs.TrySetCanceled();
+                            return;
+                        }
 
-                            // We have a result from the APM call, run the continuation task.
-                            try
-                            {
-                                t.RunSynchronously(scheduler);
-                            }
-                            catch (Exception ex)
-                            {
-                                tcs.TrySetException(ex);
-                            }
-                        }, null, -1, true);
+                        // We have a result from the APM call, run the continuation task.
+                        try
+                        {
+                            t.RunSynchronously(scheduler);
+                        }
+                        catch (Exception ex)
+                        {
+                            tcs.TrySetException(ex);
+                        }
+                    },
+                    null,
+                    -1,
+                    true);
             }
 
             // Return the task completion source's task.
@@ -714,15 +736,15 @@ namespace WebApplications.Utilities
                 callbackHandle = ThreadPool.RegisterWaitForSingleObject(
                     handle,
                     (state, timedOut) =>
-                        {
-                            tcs.SetResult(null);
+                    {
+                        tcs.SetResult(null);
 
-                            // We take a lock here to make sure the outer method has completed setting the local variable callbackHandle.
-                            lock (localVariableInitLock)
-                            {
-                                callbackHandle.Unregister(null);
-                            }
-                        },
+                        // We take a lock here to make sure the outer method has completed setting the local variable callbackHandle.
+                        lock (localVariableInitLock)
+                        {
+                            callbackHandle.Unregister(null);
+                        }
+                    },
                     null,
                     Timeout.Infinite,
                     executeOnlyOnce: true);
@@ -772,11 +794,12 @@ namespace WebApplications.Utilities
         public static Task WithCancellation([NotNull] this Task task, CancellationToken cancellationToken)
         {
             Contract.Requires(task != null);
-            if (task.IsCompleted || !cancellationToken.CanBeCanceled)
+            if (task.IsCompleted ||
+                !cancellationToken.CanBeCanceled)
                 return task;
 
             return cancellationToken.IsCancellationRequested
-                ? new Task(() => {}, cancellationToken)
+                ? new Task(() => { }, cancellationToken)
                 : WithCancellationInternal(task, cancellationToken);
         }
 
@@ -814,7 +837,8 @@ namespace WebApplications.Utilities
         public static Task<T> WithCancellation<T>([NotNull] this Task<T> task, CancellationToken cancellationToken)
         {
             Contract.Requires(task != null);
-            if (task.IsCompleted || !cancellationToken.CanBeCanceled)
+            if (task.IsCompleted ||
+                !cancellationToken.CanBeCanceled)
                 return task;
 
             return cancellationToken.IsCancellationRequested
@@ -831,7 +855,9 @@ namespace WebApplications.Utilities
         /// <returns></returns>
         /// <exception cref="System.OperationCanceledException"></exception>
         [NotNull]
-        private static async Task<T> WithCancellationInternal<T>([NotNull] Task<T> task, CancellationToken cancellationToken)
+        private static async Task<T> WithCancellationInternal<T>(
+            [NotNull] Task<T> task,
+            CancellationToken cancellationToken)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(s => ((TaskCompletionSource<bool>) s).TrySetResult(true), tcs))
@@ -846,7 +872,7 @@ namespace WebApplications.Utilities
         /// <param name="context">The context.</param>
         /// <returns>SynchronizationContextAwaiter.</returns>
         [PublicAPI]
-        public static SynchronizationContextAwaiter GetAwaiter([NotNull]this SynchronizationContext context)
+        public static SynchronizationContextAwaiter GetAwaiter([NotNull] this SynchronizationContext context)
         {
             Contract.Requires(context != null);
             return new SynchronizationContextAwaiter(context);

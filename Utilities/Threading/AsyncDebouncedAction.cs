@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,11 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using JetBrains.Annotations;
 using System;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Threading
 {
@@ -91,7 +91,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="minimumGap">The minimum gap, is the time left after a successful execution before the action can be run again.</param>
         [PublicAPI]
         public AsyncDebouncedAction(
-            [NotNull]Func<CancellationToken, Task> action,
+            [NotNull] Func<CancellationToken, Task> action,
             TimeSpan duration = default(TimeSpan),
             TimeSpan minimumGap = default(TimeSpan))
         {

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,6 @@ namespace WebApplications.Utilities
             // Use optimistic locking to see if we're initialised
             // Most of the time we will be initialised so we won't get a lock.
             if (!singleton.IsInitialised)
-            {
                 lock (singleton._initialisationLock)
                 {
                     // Once we have a lock, we need to re-check, incase a different thread
@@ -90,7 +89,6 @@ namespace WebApplications.Utilities
                     // We are now initialised (so long as an exception isn't thrown).
                     singleton.IsInitialised = true;
                 }
-            }
             return singleton;
         }
 

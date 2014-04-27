@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,13 +43,15 @@ namespace WebApplications.Utilities
     /// and its raw values as a <see cref="long"/>.
     /// </summary>
     /// <typeparam name="TEnum">The enum type.</typeparam>
-    public static class ExtendedEnum<TEnum> where TEnum : struct, IComparable, IFormattable, IConvertible
+    public static class ExtendedEnum<TEnum>
+        where TEnum : struct, IComparable, IFormattable, IConvertible
     {
         // ReSharper disable StaticFieldInGenericType
         /// <summary>
         /// A <see cref="bool"/> for whether the type is actually an enum.
         /// </summary>
-        [UsedImplicitly] public static readonly bool IsEnum;
+        [UsedImplicitly]
+        public static readonly bool IsEnum;
 
         /// <summary>
         /// A <see cref="bool"/> for whether the enum is a flag enum.
@@ -59,12 +61,15 @@ namespace WebApplications.Utilities
         /// enumeration constants don't overlap.
         /// </remarks>
         /// <seealso cref="System.FlagsAttribute"/>
-        [UsedImplicitly] public static readonly bool IsFlag;
+        [UsedImplicitly]
+        public static readonly bool IsFlag;
 
         /// <summary>
         /// The enumerator for all explicitly defined enum values.
         /// </summary>
-        [UsedImplicitly] [NotNull] public static readonly IEnumerable<ValueDetail> ValueDetails;
+        [UsedImplicitly]
+        [NotNull]
+        public static readonly IEnumerable<ValueDetail> ValueDetails;
 
         /// <summary>
         /// Contains the value details cached in reverse.
@@ -73,7 +78,9 @@ namespace WebApplications.Utilities
         /// This is used for performance at the cost of a small memory hit, without a pre-reversed collection every time
         /// a build occurred a copy would need to be made by LINQ to reverse.
         /// </remarks>
-        [UsedImplicitly] [NotNull] public static readonly IEnumerable<ValueDetail> ValueDetailsReversed;
+        [UsedImplicitly]
+        [NotNull]
+        public static readonly IEnumerable<ValueDetail> ValueDetailsReversed;
 
         #region Convenient value accessor properties.
         // ReSharper disable PossibleNullReferenceException
@@ -208,7 +215,8 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The <see cref="ValueDetail"/> that represents no flags set.
         /// </summary>
-        [NotNull] private static readonly ValueDetail _noneValueDetail;
+        [NotNull]
+        private static readonly ValueDetail _noneValueDetail;
 
         /// <summary>
         /// Returns the <see cref="ValueDetail"/> that represents no flags set.
@@ -282,7 +290,8 @@ namespace WebApplications.Utilities
         /// <summary>
         /// A <see cref="ValueDetail"/> that represents all of the flags being set.
         /// </summary>
-        [NotNull] private static readonly ValueDetail _allValueDetail;
+        [NotNull]
+        private static readonly ValueDetail _allValueDetail;
 
         /// <summary>
         /// Returns the <see cref="ValueDetail"/> that represents all of the flags being set.
@@ -359,25 +368,29 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Looks up the <see cref="ValueDetail"/> from its value (the enum).
         /// </summary>
-        [NotNull] private static readonly Dictionary<TEnum, ValueDetail> _valueLookup =
+        [NotNull]
+        private static readonly Dictionary<TEnum, ValueDetail> _valueLookup =
             new Dictionary<TEnum, ValueDetail>();
 
         /// <summary>
         /// Looks up the <see cref="ValueDetail"/> from its raw value.
         /// </summary>
-        [NotNull] private static readonly Dictionary<long, ValueDetail> _rawValueLookup =
+        [NotNull]
+        private static readonly Dictionary<long, ValueDetail> _rawValueLookup =
             new Dictionary<long, ValueDetail>();
 
         /// <summary>
         /// Looks up the <see cref="ValueDetail"/> from its name.
         /// </summary>
-        [NotNull] private static readonly Dictionary<string, ValueDetail> _nameLookup =
+        [NotNull]
+        private static readonly Dictionary<string, ValueDetail> _nameLookup =
             new Dictionary<string, ValueDetail>();
 
         /// <summary>
         /// A cache of the implicit value details so that when requested they can be retrieved rather than recomputed.
         /// </summary>
-        [NotNull] private static readonly CachingDictionary<long, ValueDetail> _implicitLookup;
+        [NotNull]
+        private static readonly CachingDictionary<long, ValueDetail> _implicitLookup;
         #endregion
 
         // ReSharper restore StaticFieldInGenericType
@@ -420,10 +433,11 @@ namespace WebApplications.Utilities
                     .GetCustomAttributes(typeof (DescriptionAttribute), false)
                     .Cast<DescriptionAttribute>()
                     .Where(d => d != null && !string.IsNullOrWhiteSpace(d.Description))
-                    .Aggregate(string.Empty,
-                               (t, d) =>
-                               // ReSharper disable PossibleNullReferenceException
-                               t + (t == string.Empty ? string.Empty : Environment.NewLine) + d.Description);
+                    .Aggregate(
+                        string.Empty,
+                        (t, d) =>
+                            // ReSharper disable PossibleNullReferenceException
+                            t + (t == string.Empty ? string.Empty : Environment.NewLine) + d.Description);
                 // ReSharper restore PossibleNullReferenceException
 
                 // Calculate number of flags
@@ -450,10 +464,8 @@ namespace WebApplications.Utilities
                 // Check if we've already seen the value (essentially a duplicate name).
                 ValueDetail valueDetail;
                 if (_valueLookup.TryGetValue(value, out valueDetail))
-                {
                     // We've already loaded the same value before, this is a duplicate definition
                     valueDetail.AddDefinition(name, description);
-                }
                 else
                 {
                     // This is the first time we've seen this value, create a new value details object
@@ -491,8 +503,13 @@ namespace WebApplications.Utilities
 
             // Set or create the none value detail
             _noneValueDetail = noneValueDetail ??
-                               new ValueDetail((TEnum) Enum.ToObject(typeof (TEnum), 0L), 0L, 0, string.Empty, false,
-                                               string.Empty);
+                               new ValueDetail(
+                                   (TEnum) Enum.ToObject(typeof (TEnum), 0L),
+                                   0L,
+                                   0,
+                                   string.Empty,
+                                   false,
+                                   string.Empty);
 
             // Try to find or create an explicit all value from the long equivalent.
             if (!_rawValueLookup.TryGetValue(allRawValue, out _allValueDetail))
@@ -528,20 +545,26 @@ namespace WebApplications.Utilities
         public static void Check(TriState isFlag = default(TriState))
         {
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
             if (isFlag == TriState.Undefined)
                 return;
             if (isFlag == TriState.Yes)
             {
                 if (!IsFlag)
-                    throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
-                                                              typeof (TEnum).FullName));
+                    throw new ArgumentException(
+                        string.Format(
+                            Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
+                            typeof (TEnum).FullName));
                 return;
             }
             if (IsFlag)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsFlagEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsFlagEnum,
+                        typeof (TEnum).FullName));
         }
 
         /// <summary>
@@ -676,9 +699,7 @@ namespace WebApplications.Utilities
 
                 // Try looking up the name first.
                 if (_nameLookup.TryGetValue(nt, out vd))
-                {
                     l = vd.RawValue;
-                }
                 else if ((!long.TryParse(nt, out l)) ||
                          ((l & ~_allValueDetail.RawValue) != 0))
                 {
@@ -772,9 +793,12 @@ namespace WebApplications.Utilities
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
             ValueDetail valueDetail;
             if (!TryGetValueDetail(value, out valueDetail, includeImplicit))
-                throw new ArgumentOutOfRangeException("value",
-                                                      string.Format(Resources.ExtendedEnumGeneric_DoesNotContainValue,
-                                                                    typeof (TEnum).FullName, value));
+                throw new ArgumentOutOfRangeException(
+                    "value",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_DoesNotContainValue,
+                        typeof (TEnum).FullName,
+                        value));
             return valueDetail;
         }
 
@@ -793,10 +817,12 @@ namespace WebApplications.Utilities
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
             ValueDetail valueDetail;
             if (!TryGetValueDetail(rawValue, out valueDetail, includeImplicit))
-                throw new ArgumentOutOfRangeException("rawValue",
-                                                      string.Format(
-                                                          Resources.ExtendedEnumGeneric_DoesNotContainRawValue,
-                                                          typeof (TEnum).FullName, rawValue));
+                throw new ArgumentOutOfRangeException(
+                    "rawValue",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_DoesNotContainRawValue,
+                        typeof (TEnum).FullName,
+                        rawValue));
             return valueDetail;
         }
 
@@ -815,9 +841,12 @@ namespace WebApplications.Utilities
             Check(includeImplicit ? TriState.Yes : TriState.Undefined);
             ValueDetail valueDetail;
             if (!TryGetValueDetail(name, out valueDetail, includeImplicit))
-                throw new ArgumentOutOfRangeException("name",
-                                                      string.Format(Resources.ExtendedEnumGeneric_DoesNotContainName,
-                                                                    typeof (TEnum).FullName, name));
+                throw new ArgumentOutOfRangeException(
+                    "name",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_DoesNotContainName,
+                        typeof (TEnum).FullName,
+                        name));
             return valueDetail;
         }
 
@@ -831,8 +860,10 @@ namespace WebApplications.Utilities
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value detail was found; otherwise returns <see langword="false"/>.</returns>
         [UsedImplicitly]
-        public static bool TryGetValueDetail(TEnum value, [NotNull] out ValueDetail valueDetail,
-                                             bool includeImplicit = false)
+        public static bool TryGetValueDetail(
+            TEnum value,
+            [NotNull] out ValueDetail valueDetail,
+            bool includeImplicit = false)
         {
             // ReSharper disable AssignNullToNotNullAttribute
             valueDetail = null;
@@ -840,7 +871,8 @@ namespace WebApplications.Utilities
 
             // If we're not an enum, or we're asking to include implicit values and we're not a flag
             // then we've failed.
-            if ((!IsEnum) || (includeImplicit && !IsFlag))
+            if ((!IsEnum) ||
+                (includeImplicit && !IsFlag))
                 return false;
 
             // Return the explicit value detail, or try to create an implicit one.
@@ -858,8 +890,10 @@ namespace WebApplications.Utilities
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value detail was found; otherwise returns <see langword="false"/>.</returns>
         [UsedImplicitly]
-        public static bool TryGetValueDetail(long rawValue, [NotNull] out ValueDetail valueDetail,
-                                             bool includeImplicit = false)
+        public static bool TryGetValueDetail(
+            long rawValue,
+            [NotNull] out ValueDetail valueDetail,
+            bool includeImplicit = false)
         {
             // ReSharper disable AssignNullToNotNullAttribute
             valueDetail = null;
@@ -867,7 +901,8 @@ namespace WebApplications.Utilities
 
             // If we're not an enum, or we're asking to include implicit values and we're not a flag
             // then we've failed.
-            if ((!IsEnum) || (includeImplicit && !IsFlag))
+            if ((!IsEnum) ||
+                (includeImplicit && !IsFlag))
                 return false;
 
             // Return the explicit value detail, or try to create an implicit one.
@@ -885,8 +920,10 @@ namespace WebApplications.Utilities
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the value detail was found; otherwise returns <see langword="false"/>.</returns>
         [UsedImplicitly]
-        public static bool TryGetValueDetail([NotNull] string name, [NotNull] out ValueDetail valueDetail,
-                                             bool includeImplicit = false)
+        public static bool TryGetValueDetail(
+            [NotNull] string name,
+            [NotNull] out ValueDetail valueDetail,
+            bool includeImplicit = false)
         {
             // ReSharper disable AssignNullToNotNullAttribute
             valueDetail = null;
@@ -894,7 +931,8 @@ namespace WebApplications.Utilities
 
             // If we're not an enum, or we're asking to include implicit values and we're not a flag
             // then we've failed.
-            if ((!IsEnum) || (includeImplicit && !IsFlag))
+            if ((!IsEnum) ||
+                (includeImplicit && !IsFlag))
                 return false;
 
             // If the name is explicit we will find it in the lookup.
@@ -930,9 +968,12 @@ namespace WebApplications.Utilities
 
             long rawValue;
             if (!TryGetLong(value, out rawValue, includeImplicit))
-                throw new ArgumentOutOfRangeException("value",
-                                                      string.Format(Resources.ExtendedEnumGeneric_DoesNotContainValue,
-                                                                    typeof (TEnum).FullName, value));
+                throw new ArgumentOutOfRangeException(
+                    "value",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_DoesNotContainValue,
+                        typeof (TEnum).FullName,
+                        value));
             return rawValue;
         }
 
@@ -953,9 +994,12 @@ namespace WebApplications.Utilities
 
             long rawValue;
             if (!TryGetLong(name, out rawValue, includeImplicit))
-                throw new ArgumentOutOfRangeException("name",
-                                                      string.Format(Resources.ExtendedEnumGeneric_DoesNotContainName,
-                                                                    typeof (TEnum).FullName, name));
+                throw new ArgumentOutOfRangeException(
+                    "name",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_DoesNotContainName,
+                        typeof (TEnum).FullName,
+                        name));
             return rawValue;
         }
 
@@ -974,7 +1018,8 @@ namespace WebApplications.Utilities
             rawValue = 0L;
             // If we're not an enum, or we're asking to include implicit values and we're not a flag
             // then we've failed.
-            if ((!IsEnum) || (includeImplicit && !IsFlag))
+            if ((!IsEnum) ||
+                (includeImplicit && !IsFlag))
                 return false;
 
             // If we know the value anyway return true.
@@ -1010,7 +1055,8 @@ namespace WebApplications.Utilities
             rawValue = 0L;
             // If we're not an enum, or we're asking to include implicit values and we're not a flag
             // then we've failed.
-            if ((!IsEnum) || (includeImplicit && !IsFlag))
+            if ((!IsEnum) ||
+                (includeImplicit && !IsFlag))
                 return false;
 
             // If we know the value anyway return true.
@@ -1128,9 +1174,12 @@ namespace WebApplications.Utilities
 
             TEnum value;
             if (!TryGetValue(name, out value, includeImplicit))
-                throw new ArgumentOutOfRangeException("name",
-                                                      string.Format(Resources.ExtendedEnumGeneric_DoesNotContainName,
-                                                                    typeof (TEnum).FullName, name));
+                throw new ArgumentOutOfRangeException(
+                    "name",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_DoesNotContainName,
+                        typeof (TEnum).FullName,
+                        name));
             return value;
         }
 
@@ -1151,10 +1200,12 @@ namespace WebApplications.Utilities
 
             TEnum value;
             if (!TryGetValue(rawValue, out value, includeImplicit))
-                throw new ArgumentOutOfRangeException("rawValue",
-                                                      string.Format(
-                                                          Resources.ExtendedEnumGeneric_DoesNotContainRawValue,
-                                                          typeof (TEnum).FullName, rawValue));
+                throw new ArgumentOutOfRangeException(
+                    "rawValue",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_DoesNotContainRawValue,
+                        typeof (TEnum).FullName,
+                        rawValue));
             return value;
         }
 
@@ -1173,7 +1224,8 @@ namespace WebApplications.Utilities
             value = default(TEnum);
             // If we're not an enum, or we're asking to include implicit values and we're not a flag
             // then we've failed.
-            if ((!IsEnum) || (includeImplicit && !IsFlag))
+            if ((!IsEnum) ||
+                (includeImplicit && !IsFlag))
                 return false;
 
             // If we know the value anyway return true.
@@ -1211,7 +1263,8 @@ namespace WebApplications.Utilities
             value = default(TEnum);
             // If we're not an enum, or we're asking to include implicit values and we're not a flag
             // then we've failed.
-            if ((!IsEnum) || (includeImplicit && !IsFlag))
+            if ((!IsEnum) ||
+                (includeImplicit && !IsFlag))
                 return false;
 
             // First see if we know the raw value anyway.
@@ -1284,7 +1337,8 @@ namespace WebApplications.Utilities
         public static bool TryGetDescription(TEnum value, [NotNull] out string description)
         {
             ValueDetail valueDetail;
-            if (!IsEnum || !TryGetValueDetail(value, out valueDetail))
+            if (!IsEnum ||
+                !TryGetValueDetail(value, out valueDetail))
             {
                 description = string.Empty;
                 return false;
@@ -1304,7 +1358,8 @@ namespace WebApplications.Utilities
         public static bool TryGetDescription(long rawValue, [NotNull] out string description)
         {
             ValueDetail valueDetail;
-            if (!IsEnum || !TryGetValueDetail(rawValue, out valueDetail))
+            if (!IsEnum ||
+                !TryGetValueDetail(rawValue, out valueDetail))
             {
                 description = string.Empty;
                 return false;
@@ -1324,7 +1379,8 @@ namespace WebApplications.Utilities
         public static bool TryGetDescription([NotNull] string name, [NotNull] out string description)
         {
             ValueDetail valueDetail;
-            if (!IsEnum || !TryGetValueDetail(name, out valueDetail))
+            if (!IsEnum ||
+                !TryGetValueDetail(name, out valueDetail))
             {
                 description = string.Empty;
                 return false;
@@ -1364,8 +1420,10 @@ namespace WebApplications.Utilities
         public static TEnum Parse([NotNull] String value)
         {
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
 
             ValueDetail valueDetail;
             // Quick direct lookup of name will resolve majority of cases.
@@ -1403,8 +1461,10 @@ namespace WebApplications.Utilities
         public static TEnum Parse([NotNull] String value, bool ignoreCase)
         {
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
 
             ValueDetail valueDetail;
             // Quick direct lookup of name will resolve majority of cases.
@@ -1425,8 +1485,10 @@ namespace WebApplications.Utilities
         public static bool TryParse([NotNull] String value, out TEnum result)
         {
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
 
             // Quick direct lookup of name will resolve majority of cases.
             ValueDetail valueDetail;
@@ -1450,8 +1512,10 @@ namespace WebApplications.Utilities
         public static bool TryParse([NotNull] String value, bool ignoreCase, out TEnum result)
         {
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
 
             // Quick direct lookup of name will resolve majority of cases.
             ValueDetail valueDetail;
@@ -1478,7 +1542,8 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static bool AreSet(TEnum value, TEnum flags, bool includeImplicit = false)
         {
-            if (!IsEnum || !IsFlag)
+            if (!IsEnum ||
+                !IsFlag)
                 return false;
 
             long rawValue;
@@ -1502,7 +1567,8 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static bool AreClear(TEnum value, TEnum flags, bool includeImplicit = false)
         {
-            if (!IsEnum || !IsFlag)
+            if (!IsEnum ||
+                !IsFlag)
                 return false;
 
             long rawValue;
@@ -1536,18 +1602,25 @@ namespace WebApplications.Utilities
         {
             // Ensure we're a flag enum.
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
             if (!IsFlag)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
+                        typeof (TEnum).FullName));
 
             TEnum result;
             if (!TrySet(value, flags, out result, includeImplicit))
-                throw new ArgumentOutOfRangeException("value",
-                                                      string.Format(
-                                                          Resources.ExtendedEnumGeneric_Set_CouldNotSetFlags,
-                                                          value, typeof (TEnum).FullName, flags));
+                throw new ArgumentOutOfRangeException(
+                    "value",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_Set_CouldNotSetFlags,
+                        value,
+                        typeof (TEnum).FullName,
+                        flags));
             return result;
         }
 
@@ -1564,7 +1637,8 @@ namespace WebApplications.Utilities
         public static bool TrySet(TEnum value, TEnum flags, out TEnum result, bool includeImplicit = false)
         {
             result = default(TEnum);
-            if (!IsEnum || !IsFlag)
+            if (!IsEnum ||
+                !IsFlag)
                 return false;
 
             long rawValue;
@@ -1599,18 +1673,25 @@ namespace WebApplications.Utilities
         {
             // Ensure we're a flag enum.
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
             if (!IsFlag)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
+                        typeof (TEnum).FullName));
 
             TEnum result;
             if (!TryClear(value, flags, out result, includeImplicit))
-                throw new ArgumentOutOfRangeException("value",
-                                                      string.Format(
-                                                          Resources.ExtendedEnumGeneric_Clear_CouldNotClearFlags,
-                                                          value, typeof (TEnum).FullName, flags));
+                throw new ArgumentOutOfRangeException(
+                    "value",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_Clear_CouldNotClearFlags,
+                        value,
+                        typeof (TEnum).FullName,
+                        flags));
             return result;
         }
 
@@ -1627,7 +1708,8 @@ namespace WebApplications.Utilities
         public static bool TryClear(TEnum value, TEnum flags, out TEnum result, bool includeImplicit = false)
         {
             result = default(TEnum);
-            if (!IsEnum || !IsFlag)
+            if (!IsEnum ||
+                !IsFlag)
                 return false;
 
             long rawValue;
@@ -1662,18 +1744,25 @@ namespace WebApplications.Utilities
         {
             // Ensure we're a flag enum.
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
             if (!IsFlag)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
+                        typeof (TEnum).FullName));
 
             TEnum result;
             if (!TryIntersect(value, flags, out result, includeImplicit))
-                throw new ArgumentOutOfRangeException("value",
-                                                      string.Format(
-                                                          Resources.ExtendedEnumGeneric_Intersect_CouldNotIntersectFlags,
-                                                          value, typeof (TEnum).FullName, flags));
+                throw new ArgumentOutOfRangeException(
+                    "value",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_Intersect_CouldNotIntersectFlags,
+                        value,
+                        typeof (TEnum).FullName,
+                        flags));
             return result;
         }
 
@@ -1690,7 +1779,8 @@ namespace WebApplications.Utilities
         public static bool TryIntersect(TEnum value, TEnum flags, out TEnum result, bool includeImplicit = false)
         {
             result = default(TEnum);
-            if (!IsEnum || !IsFlag)
+            if (!IsEnum ||
+                !IsFlag)
                 return false;
 
             long rawValue;
@@ -1724,18 +1814,24 @@ namespace WebApplications.Utilities
         {
             // Ensure we're a flag enum.
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
             if (!IsFlag)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
+                        typeof (TEnum).FullName));
 
             TEnum result;
             if (!TryInvert(value, out result, includeImplicit))
-                throw new ArgumentOutOfRangeException("value",
-                                                      string.Format(
-                                                          Resources.ExtendedEnumGeneric_Invert_CouldNotInvertFlags,
-                                                          value, typeof (TEnum).FullName));
+                throw new ArgumentOutOfRangeException(
+                    "value",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_Invert_CouldNotInvertFlags,
+                        value,
+                        typeof (TEnum).FullName));
             return result;
         }
 
@@ -1751,7 +1847,8 @@ namespace WebApplications.Utilities
         public static bool TryInvert(TEnum value, out TEnum result, bool includeImplicit = false)
         {
             result = default(TEnum);
-            if (!IsEnum || !IsFlag)
+            if (!IsEnum ||
+                !IsFlag)
                 return false;
 
             long rawValue;
@@ -1782,18 +1879,23 @@ namespace WebApplications.Utilities
         {
             // Ensure we're a flag enum.
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
             if (!IsFlag)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
+                        typeof (TEnum).FullName));
 
             TEnum result;
             if (!TryCombine(flags, out result, includeImplicit))
-                throw new ArgumentOutOfRangeException("flags",
-                                                      string.Format(
-                                                          Resources.ExtendedEnumGeneric_Combine_CouldNotCombineFlags,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentOutOfRangeException(
+                    "flags",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_Combine_CouldNotCombineFlags,
+                        typeof (TEnum).FullName));
             return result;
         }
 
@@ -1807,10 +1909,14 @@ namespace WebApplications.Utilities
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the flags can be inverted; otherwise returns <see langword="false"/>.</returns>
         [UsedImplicitly]
-        public static bool TryCombine([NotNull] IEnumerable<TEnum> flags, out TEnum result, bool includeImplicit = false)
+        public static bool TryCombine(
+            [NotNull] IEnumerable<TEnum> flags,
+            out TEnum result,
+            bool includeImplicit = false)
         {
             result = default(TEnum);
-            if (!IsEnum || !IsFlag)
+            if (!IsEnum ||
+                !IsFlag)
                 return false;
 
             long rLong = 0L;
@@ -1843,24 +1949,31 @@ namespace WebApplications.Utilities
         /// </exception>
         [UsedImplicitly]
         [NotNull]
-        public static IEnumerable<TEnum> SplitFlags(TEnum flags, bool includeImplicit = false,
-                                                    bool includeCombinations = false)
+        public static IEnumerable<TEnum> SplitFlags(
+            TEnum flags,
+            bool includeImplicit = false,
+            bool includeCombinations = false)
         {
             // Ensure we're a flag enum.
             if (!IsEnum)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotAnEnum,
+                        typeof (TEnum).FullName));
             if (!IsFlag)
-                throw new ArgumentException(string.Format(Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentException(
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_TypeIsNotFlagEnum,
+                        typeof (TEnum).FullName));
 
             IEnumerable<TEnum> result;
             if (!TrySplitFlags(flags, out result, includeImplicit, includeCombinations))
-                throw new ArgumentOutOfRangeException("flags",
-                                                      string.Format(
-                                                          Resources.ExtendedEnumGeneric_SplitFlags_CouldNotSplitFlags,
-                                                          flags,
-                                                          typeof (TEnum).FullName));
+                throw new ArgumentOutOfRangeException(
+                    "flags",
+                    string.Format(
+                        Resources.ExtendedEnumGeneric_SplitFlags_CouldNotSplitFlags,
+                        flags,
+                        typeof (TEnum).FullName));
             return result ?? Enumerable.Empty<TEnum>();
         }
 
@@ -1876,11 +1989,15 @@ namespace WebApplications.Utilities
         /// <para>By default this is set to <see langword="false"/>.</para></param>
         /// <returns>Returns <see langword="true"/> if the flags can be split successfully; otherwise returns <see langword="false"/>.</returns>
         [UsedImplicitly]
-        public static bool TrySplitFlags(TEnum flags, out IEnumerable<TEnum> result, bool includeImplicit = false,
-                                         bool includeCombinations = false)
+        public static bool TrySplitFlags(
+            TEnum flags,
+            out IEnumerable<TEnum> result,
+            bool includeImplicit = false,
+            bool includeCombinations = false)
         {
             result = Enumerable.Empty<TEnum>();
-            if (!IsEnum || !IsFlag)
+            if (!IsEnum ||
+                !IsFlag)
                 return false;
 
             long fLong;
@@ -1903,7 +2020,8 @@ namespace WebApplications.Utilities
                     continue;
 
                 // Skip combination flags if we're not using them
-                if (!includeCombinations && valueDetail.Flags > 1)
+                if (!includeCombinations &&
+                    valueDetail.Flags > 1)
                     continue;
 
                 // Skip flags that don't match
@@ -1946,7 +2064,8 @@ namespace WebApplications.Utilities
             /// <remarks>
             /// If this is a non-flag enum then this value will always be 1.
             /// </remarks>
-            [UsedImplicitly] public readonly ushort Flags;
+            [UsedImplicitly]
+            public readonly ushort Flags;
 
             /// <summary>
             /// Whether the value is explicitly defined.
@@ -1954,22 +2073,27 @@ namespace WebApplications.Utilities
             /// <remarks>
             /// If this is a non-flag enum then this value will always be <see langword="true"/>.
             /// </remarks>
-            [UsedImplicitly] public readonly bool IsExplicit;
+            [UsedImplicitly]
+            public readonly bool IsExplicit;
 
             /// <summary>
             /// The raw value of the enum as a <see cref="long"/>.
             /// </summary>
-            [UsedImplicitly] public readonly long RawValue;
+            [UsedImplicitly]
+            public readonly long RawValue;
 
             /// <summary>
             /// The actual enum value.
             /// </summary>
-            [UsedImplicitly] public readonly TEnum Value;
+            [UsedImplicitly]
+            public readonly TEnum Value;
 
             /// <summary>
             /// All known value names.
             /// </summary>
-            [NotNull] [UsedImplicitly] private readonly List<string> _names;
+            [NotNull]
+            [UsedImplicitly]
+            private readonly List<string> _names;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ValueDetail"/> struct.
@@ -2079,13 +2203,14 @@ namespace WebApplications.Utilities
             /// </returns>
             public override string ToString()
             {
-                return string.Format("'{0}' = {1}{2}{3}",
-                                     Name,
-                                     RawValue,
-                                     Flags > 1 ? string.Format(" [{0} flags]", Flags) : string.Empty,
-                                     string.IsNullOrWhiteSpace(Description)
-                                         ? string.Empty
-                                         : Environment.NewLine + Description
+                return string.Format(
+                    "'{0}' = {1}{2}{3}",
+                    Name,
+                    RawValue,
+                    Flags > 1 ? string.Format(" [{0} flags]", Flags) : string.Empty,
+                    string.IsNullOrWhiteSpace(Description)
+                        ? string.Empty
+                        : Environment.NewLine + Description
                     );
             }
 

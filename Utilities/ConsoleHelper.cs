@@ -34,10 +34,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Formatting;
-using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
 {
@@ -77,7 +74,9 @@ namespace WebApplications.Utilities
         /// <param name="csbe">The console screen buffer info.</param>
         /// <returns><see langword="true" /> if successful, <see langword="false" /> otherwise.</returns>
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool GetConsoleScreenBufferInfoEx(IntPtr hConsoleOutput, ref ConsoleScreenBufferInfoEx csbe);
+        private static extern bool GetConsoleScreenBufferInfoEx(
+            IntPtr hConsoleOutput,
+            ref ConsoleScreenBufferInfoEx csbe);
 
         /// <summary>
         /// The handle for the standard output (see WinBase.h).
@@ -105,6 +104,7 @@ namespace WebApplications.Utilities
         {
             [PublicAPI]
             public short X;
+
             [PublicAPI]
             public short Y;
         }
@@ -117,10 +117,13 @@ namespace WebApplications.Utilities
         {
             [PublicAPI]
             public short Left;
+
             [PublicAPI]
             public short Top;
+
             [PublicAPI]
             public short Right;
+
             [PublicAPI]
             public short Bottom;
         }
@@ -137,7 +140,7 @@ namespace WebApplications.Utilities
             [PublicAPI]
             public ColorRef(Color color)
             {
-                ColorDWORD = color.R + (((uint)color.G) << 8) + (((uint)color.B) << 16);
+                ColorDWORD = color.R + (((uint) color.G) << 8) + (((uint) color.B) << 16);
             }
 
             [PublicAPI]
@@ -149,8 +152,10 @@ namespace WebApplications.Utilities
             [PublicAPI]
             public Color GetColor()
             {
-                return Color.FromArgb((int)(0x000000FFU & ColorDWORD),
-                                      (int)(0x0000FF00U & ColorDWORD) >> 8, (int)(0x00FF0000U & ColorDWORD) >> 16);
+                return Color.FromArgb(
+                    (int) (0x000000FFU & ColorDWORD),
+                    (int) (0x0000FF00U & ColorDWORD) >> 8,
+                    (int) (0x00FF0000U & ColorDWORD) >> 16);
             }
 
             /* For future use, we can technically set the colors and update the console window.
@@ -170,18 +175,25 @@ namespace WebApplications.Utilities
         {
             [PublicAPI]
             public int BufferSize;
+
             [PublicAPI]
             public Coord WindowSize;
+
             [PublicAPI]
             public Coord CursorPosition;
+
             [PublicAPI]
             public ushort Attributes;
+
             [PublicAPI]
             public SmallRect Window;
+
             [PublicAPI]
             public Coord MaximumWindowSize;
+
             [PublicAPI]
             public ushort PopupAttributes;
+
             [PublicAPI]
             public bool FullscreenSupported;
 
@@ -217,14 +229,13 @@ namespace WebApplications.Utilities
             Process p = Process.GetCurrentProcess();
             ShowWindow(p.MainWindowHandle, 3); //SW_MAXIMIZE = 3
         }
-        
+
         /// <summary>
         /// Initializes static members of the <see cref="ConsoleHelper"/> class.
         /// </summary>
         static ConsoleHelper()
         {
             if (Environment.UserInteractive)
-            {
                 try
                 {
                     IsConsole = Console.CursorLeft >= Int32.MinValue;
@@ -234,12 +245,10 @@ namespace WebApplications.Utilities
                     // Try to attach to parent process's console window
                     IsConsole = AttachConsole(0xFFFFFFFF);
                 }
-            }
             else
                 IsConsole = false;
-            
+
             if (IsConsole)
-            {
                 try
                 {
                     ConsoleScreenBufferInfoEx csbe = new ConsoleScreenBufferInfoEx();
@@ -275,7 +284,6 @@ namespace WebApplications.Utilities
                 {
                     _consoleColors = _defaultConsoleColors;
                 }
-            }
             else
                 _consoleColors = _defaultConsoleColors;
 

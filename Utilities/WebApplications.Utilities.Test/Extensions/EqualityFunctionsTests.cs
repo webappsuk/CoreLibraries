@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -68,8 +68,9 @@ namespace WebApplications.Utilities.Test.Extensions
             public bool EqualsCalled { get; private set; }
             public bool ReturnValue { get; private set; }
 
-            public bool Equals(TestTypeWithEqualsWithTooManyParameters other,
-                               TestTypeWithEqualsWithTooManyParameters extra)
+            public bool Equals(
+                TestTypeWithEqualsWithTooManyParameters other,
+                TestTypeWithEqualsWithTooManyParameters extra)
             {
                 EqualsCalled = true;
                 return ReturnValue;
@@ -179,8 +180,9 @@ namespace WebApplications.Utilities.Test.Extensions
         {
             Func<object, object, bool> equalityFunction = typeof (int).GetTypeEqualityFunction();
             int value = Random.Next();
-            Assert.IsTrue(equalityFunction(value, value),
-                          "The function returned by GetTypeEqualityFunction for type int should return true when both inputs are equal.");
+            Assert.IsTrue(
+                equalityFunction(value, value),
+                "The function returned by GetTypeEqualityFunction for type int should return true when both inputs are equal.");
         }
 
         [TestMethod]
@@ -188,8 +190,9 @@ namespace WebApplications.Utilities.Test.Extensions
         {
             Func<object, object, bool> equalityFunction = typeof (int).GetTypeEqualityFunction();
             int value = Random.Next();
-            Assert.IsFalse(equalityFunction(value, value - Random.Next()),
-                           "The function returned by GetTypeEqualityFunction for type int should return false when both inputs are different.");
+            Assert.IsFalse(
+                equalityFunction(value, value - Random.Next()),
+                "The function returned by GetTypeEqualityFunction for type int should return false when both inputs are different.");
         }
 
         [ExpectedException(typeof (InvalidCastException))]
@@ -199,8 +202,9 @@ namespace WebApplications.Utilities.Test.Extensions
             Func<object, object, bool> equalityFunction = typeof (int).GetTypeEqualityFunction();
             int value = Random.Next();
             Assert.IsFalse(
-                equalityFunction(value.ToString(CultureInfo.InvariantCulture),
-                                 value.ToString(CultureInfo.InvariantCulture)),
+                equalityFunction(
+                    value.ToString(CultureInfo.InvariantCulture),
+                    value.ToString(CultureInfo.InvariantCulture)),
                 "The function returned by GetTypeEqualityFunction for type int should always return false when inputs are not ints.");
         }
 
@@ -211,10 +215,13 @@ namespace WebApplications.Utilities.Test.Extensions
             TestTypeWithEquals testObject = new TestTypeWithEquals(returnValue);
 
             Func<object, object, bool> equalityFunction = typeof (TestTypeWithEquals).GetTypeEqualityFunction();
-            Assert.AreEqual(returnValue, equalityFunction(testObject, new TestTypeWithEquals(!returnValue)),
-                            "The function returned by GetTypeEqualityFunction should call the most appropriate custom Equals method for a custom type.");
-            Assert.IsTrue(testObject.EqualsCalled,
-                          "The function returned by GetTypeEqualityFunction should call the most appropriate custom Equals method for a custom type.");
+            Assert.AreEqual(
+                returnValue,
+                equalityFunction(testObject, new TestTypeWithEquals(!returnValue)),
+                "The function returned by GetTypeEqualityFunction should call the most appropriate custom Equals method for a custom type.");
+            Assert.IsTrue(
+                testObject.EqualsCalled,
+                "The function returned by GetTypeEqualityFunction should call the most appropriate custom Equals method for a custom type.");
         }
 
         [TestMethod]
@@ -224,10 +231,13 @@ namespace WebApplications.Utilities.Test.Extensions
             TestTypeWithStaticEquals testObject = new TestTypeWithStaticEquals(returnValue);
 
             Func<object, object, bool> equalityFunction = typeof (TestTypeWithStaticEquals).GetTypeEqualityFunction();
-            Assert.AreEqual(returnValue, equalityFunction(testObject, testObject),
-                            "The function returned by GetTypeEqualityFunction should call the most appropriate custom Equals method for a custom type.");
-            Assert.IsTrue(TestTypeWithStaticEquals.EqualsCalled,
-                          "The function returned by GetTypeEqualityFunction should call the most appropriate custom Equals method for a custom type.");
+            Assert.AreEqual(
+                returnValue,
+                equalityFunction(testObject, testObject),
+                "The function returned by GetTypeEqualityFunction should call the most appropriate custom Equals method for a custom type.");
+            Assert.IsTrue(
+                TestTypeWithStaticEquals.EqualsCalled,
+                "The function returned by GetTypeEqualityFunction should call the most appropriate custom Equals method for a custom type.");
         }
 
         [TestMethod]
@@ -240,10 +250,12 @@ namespace WebApplications.Utilities.Test.Extensions
 
             Func<object, object, bool> equalityFunction =
                 typeof (TestTypeWithStaticEqualsWithTooFewParameters).GetTypeEqualityFunction();
-            Assert.IsTrue(equalityFunction(testObject, testObject),
-                          "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
-            Assert.IsFalse(TestTypeWithStaticEqualsWithTooFewParameters.EqualsCalled,
-                           "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
+            Assert.IsTrue(
+                equalityFunction(testObject, testObject),
+                "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
+            Assert.IsFalse(
+                TestTypeWithStaticEqualsWithTooFewParameters.EqualsCalled,
+                "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
         }
 
         [TestMethod]
@@ -255,10 +267,12 @@ namespace WebApplications.Utilities.Test.Extensions
 
             Func<object, object, bool> equalityFunction =
                 typeof (TestTypeWithEqualsWithTooManyParameters).GetTypeEqualityFunction();
-            Assert.IsTrue(equalityFunction(testObject, testObject),
-                          "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
-            Assert.IsFalse(testObject.EqualsCalled,
-                           "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
+            Assert.IsTrue(
+                equalityFunction(testObject, testObject),
+                "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
+            Assert.IsFalse(
+                testObject.EqualsCalled,
+                "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
         }
 
         [TestMethod]
@@ -270,10 +284,12 @@ namespace WebApplications.Utilities.Test.Extensions
 
             Func<object, object, bool> equalityFunction =
                 typeof (TestTypeWithStaticEqualsWithWrongTypes).GetTypeEqualityFunction();
-            Assert.IsTrue(equalityFunction(testObject, testObject),
-                          "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
-            Assert.IsFalse(TestTypeWithStaticEqualsWithWrongTypes.EqualsCalled,
-                           "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
+            Assert.IsTrue(
+                equalityFunction(testObject, testObject),
+                "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
+            Assert.IsFalse(
+                TestTypeWithStaticEqualsWithWrongTypes.EqualsCalled,
+                "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
         }
 
         [TestMethod]
@@ -285,10 +301,12 @@ namespace WebApplications.Utilities.Test.Extensions
 
             Func<object, object, bool> equalityFunction =
                 typeof (TestTypeWithEqualsWithWrongType).GetTypeEqualityFunction();
-            Assert.IsTrue(equalityFunction(testObject, testObject),
-                          "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
-            Assert.IsFalse(testObject.EqualsCalled,
-                           "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
+            Assert.IsTrue(
+                equalityFunction(testObject, testObject),
+                "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
+            Assert.IsFalse(
+                testObject.EqualsCalled,
+                "The function returned by GetTypeEqualityFunction should fall back on object.Equals when custom methods do no accept the correct parameters.");
         }
     }
 }

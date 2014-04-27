@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -42,13 +42,15 @@ namespace WebApplications.Utilities.Test.Configuration
         /// <exception cref="ArgumentException">Thrown if the list to choose from contains no items.</exception>
         protected static Type ChooseRandomTypeFromList(List<Type> types)
         {
-            if (types == null || !types.Any())
+            if (types == null ||
+                !types.Any())
                 throw new ArgumentException("The list of types to choose from must contain at least one item.");
             return types.ElementAt(Random.Next(0, types.Count()));
         }
 
         protected static List<ConfigurationPropertyAttribute> GetConfigurationPropertyAttributesForProperty(
-            Type classToTest, string propertyName)
+            Type classToTest,
+            string propertyName)
         {
             MemberInfo propertyInfo = classToTest.GetMember(propertyName).First();
             return

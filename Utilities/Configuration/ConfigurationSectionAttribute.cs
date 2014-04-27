@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,8 @@ namespace WebApplications.Utilities.Configuration
         /// <summary>
         ///   The configuration section's name.
         /// </summary>
-        [NotNull] public readonly string Name;
+        [NotNull]
+        public readonly string Name;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="ConfigurationSectionAttribute"/> class.

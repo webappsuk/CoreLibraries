@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,9 @@ namespace WebApplications.Utilities
         // block and we have to do range checking on our own and since there will then be 
         // exception throwing in our code there is a good chance that the JIT won't inline.
         // maximum BigArray size = BLOCK_SIZE * Int.MaxValue
-        [NotNull] private readonly T[][] _elements;
+        [NotNull]
+        private readonly T[][] _elements;
+
         private readonly ulong _length;
 
 
@@ -81,7 +83,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public BigArray(ulong size)
         {
-            int numBlocks = (int) Math.Ceiling((double) size/BlockSize);
+            int numBlocks = (int) Math.Ceiling((double) size / BlockSize);
 
             _length = size;
             _elements = new T[numBlocks][];
@@ -286,22 +288,21 @@ namespace WebApplications.Utilities
         public int CompareTo(object other, [NotNull] IComparer comparer)
         {
             if (other == null)
-            {
                 return 1;
-            }
 
             BigArray<T> o = other as BigArray<T>;
 
-            if (o == null || _length != o._length)
-            {
-                throw new ArgumentException(String.Format("The other must be a BigArray of type '{0}'.", typeof (T)),
-                                            "other");
-            }
+            if (o == null ||
+                _length != o._length)
+                throw new ArgumentException(
+                    String.Format("The other must be a BigArray of type '{0}'.", typeof (T)),
+                    "other");
 
             ulong i = 0;
             int c = 0;
 
-            while (i < o._length && c == 0)
+            while (i < o._length &&
+                   c == 0)
             {
                 object left = this[i];
                 object right = o[i];
@@ -326,7 +327,8 @@ namespace WebApplications.Utilities
 
             BigArray<T> o = other as BigArray<T>;
 
-            if (o == null || o.Length != Length)
+            if (o == null ||
+                o.Length != Length)
                 return false;
 
             ulong i = 0;

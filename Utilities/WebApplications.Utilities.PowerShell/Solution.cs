@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -48,8 +48,9 @@ namespace WebApplications.Utilities.PowerShell
         /// Parse projects.
         /// </summary>
         private static readonly Regex _parseProjects =
-            new Regex(@"Project\s*\([^)]*\)\s*=\s*\""(?<name>.[^""]+)\""\s*,\s*\""(?<filename>.[^""]+)\""",
-                      RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            new Regex(
+                @"Project\s*\([^)]*\)\s*=\s*\""(?<name>.[^""]+)\""\s*,\s*\""(?<filename>.[^""]+)\""",
+                RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
         /// <summary>
         /// Cache of solutions in a directory.
@@ -60,12 +61,16 @@ namespace WebApplications.Utilities.PowerShell
         /// <summary>
         /// The directory.
         /// </summary>
-        [NotNull] [UsedImplicitly] public readonly string Directory;
+        [NotNull]
+        [UsedImplicitly]
+        public readonly string Directory;
 
         /// <summary>
         /// The solution name.
         /// </summary>
-        [NotNull] [UsedImplicitly] public readonly string Name;
+        [NotNull]
+        [UsedImplicitly]
+        public readonly string Name;
 
         /// <summary>
         /// The loading task.
@@ -156,15 +161,16 @@ namespace WebApplications.Utilities.PowerShell
                 return Projects
                     .SelectMany(p => p.DependencyNames)
                     .Distinct()
-                    .Select(p =>
-                                {
-                                    IEnumerable<SolutionProject> sps =
-                                        SolutionProject.Get(p).Where(
-                                            sp => !string.IsNullOrWhiteSpace(sp.Project.NuSpecPath));
-                                    if (sps.Count() != 1)
-                                        return (SolutionProject) null;
-                                    return sps.First();
-                                })
+                    .Select(
+                        p =>
+                        {
+                            IEnumerable<SolutionProject> sps =
+                                SolutionProject.Get(p).Where(
+                                    sp => !string.IsNullOrWhiteSpace(sp.Project.NuSpecPath));
+                            if (sps.Count() != 1)
+                                return (SolutionProject) null;
+                            return sps.First();
+                        })
                     .Where(sp => sp != null)
                     .Distinct();
             }
@@ -241,52 +247,53 @@ namespace WebApplications.Utilities.PowerShell
 
             _projects = task.ContinueWith(
                 t =>
+                {
+                    try
                     {
-                        try
-                        {
-                            fs.Close();
+                        fs.Close();
 
-                            if ((t == null) ||
-                                (t.Exception != null) ||
-                                (t.Status != TaskStatus.RanToCompletion))
-                                return Enumerable.Empty<SolutionProject>();
-
-                            // If we did not receive the entire file, the end of the
-                            // data buffer will contain garbage.
-                            if (t.Result < data.Length)
-                                Array.Resize(ref data, t.Result);
-
-                            // Decode to string
-                            string contents = new UTF8Encoding().GetString(data);
-
-                            List<SolutionProject> projects = new List<SolutionProject>();
-                            // Look for project definitions
-                            foreach (Match match in _parseProjects.Matches(contents))
-                            {
-                                if (!match.Success ||
-                                    !match.Groups["name"].Success ||
-                                    !match.Groups["filename"].Success)
-                                    continue;
-
-                                string name = match.Groups["name"].Value;
-                                string pFile = Path.Combine(Directory, match.Groups["filename"].Value);
-
-                                // If we have a valid project file add it.
-                                if (!String.IsNullOrWhiteSpace(name) &&
-                                    !String.IsNullOrWhiteSpace(pFile) &&
-                                    pFile.EndsWith("proj", StringComparison.InvariantCultureIgnoreCase) &&
-                                    File.Exists(pFile))
-                                    projects.Add(new SolutionProject(this, pFile, name));
-                            }
-
-                            return projects;
-                        }
-                        catch
-                        {
-                            // Suppress errors
+                        if ((t == null) ||
+                            (t.Exception != null) ||
+                            (t.Status != TaskStatus.RanToCompletion))
                             return Enumerable.Empty<SolutionProject>();
+
+                        // If we did not receive the entire file, the end of the
+                        // data buffer will contain garbage.
+                        if (t.Result < data.Length)
+                            Array.Resize(ref data, t.Result);
+
+                        // Decode to string
+                        string contents = new UTF8Encoding().GetString(data);
+
+                        List<SolutionProject> projects = new List<SolutionProject>();
+                        // Look for project definitions
+                        foreach (Match match in _parseProjects.Matches(contents))
+                        {
+                            if (!match.Success ||
+                                !match.Groups["name"].Success ||
+                                !match.Groups["filename"].Success)
+                                continue;
+
+                            string name = match.Groups["name"].Value;
+                            string pFile = Path.Combine(Directory, match.Groups["filename"].Value);
+
+                            // If we have a valid project file add it.
+                            if (!String.IsNullOrWhiteSpace(name) &&
+                                !String.IsNullOrWhiteSpace(pFile) &&
+                                pFile.EndsWith("proj", StringComparison.InvariantCultureIgnoreCase) &&
+                                File.Exists(pFile))
+                                projects.Add(new SolutionProject(this, pFile, name));
                         }
-                    }, TaskContinuationOptions.LongRunning);
+
+                        return projects;
+                    }
+                    catch
+                    {
+                        // Suppress errors
+                        return Enumerable.Empty<SolutionProject>();
+                    }
+                },
+                TaskContinuationOptions.LongRunning);
         }
 
         /// <summary>
@@ -312,8 +319,11 @@ namespace WebApplications.Utilities.PowerShell
         /// <remarks></remarks>
         [UsedImplicitly]
         [NotNull]
-        public static IEnumerable<Solution> GetAll([NotNull] string rootPath, bool recursive = false,
-                                                   bool force = false, bool includeHidden = false)
+        public static IEnumerable<Solution> GetAll(
+            [NotNull] string rootPath,
+            bool recursive = false,
+            bool force = false,
+            bool includeHidden = false)
         {
             // Get solutions
             IEnumerable<Solution> solutions =
@@ -321,45 +331,45 @@ namespace WebApplications.Utilities.PowerShell
                     .GetOrAdd(
                         rootPath,
                         rp =>
-                            {
-                                // If this is not a valid directory return empty.
-                                if (!System.IO.Directory.Exists(rp))
-                                    return Enumerable.Empty<Solution>();
+                        {
+                            // If this is not a valid directory return empty.
+                            if (!System.IO.Directory.Exists(rp))
+                                return Enumerable.Empty<Solution>();
 
-                                // Create a list of parsed solution files in this directory
-                                // and union with all files from sub directories (recursively)
-                                // Skips hidden files & folders automatically.
-                                List<Solution> s =
-                                    System.IO.Directory.EnumerateFiles(rp, "*.sln", SearchOption.TopDirectoryOnly)
-                                        .Select(fn => new FileInfo(fn))
-                                        .Where(
-                                            f =>
+                            // Create a list of parsed solution files in this directory
+                            // and union with all files from sub directories (recursively)
+                            // Skips hidden files & folders automatically.
+                            List<Solution> s =
+                                System.IO.Directory.EnumerateFiles(rp, "*.sln", SearchOption.TopDirectoryOnly)
+                                    .Select(fn => new FileInfo(fn))
+                                    .Where(
+                                        f =>
                                             (f.Attributes & FileAttributes.Hidden) == 0)
-                                        .Select(f => Get(f.FullName))
-                                        .ToList();
+                                    .Select(f => Get(f.FullName))
+                                    .ToList();
 
-                                // Ensure everything is loaded.
-                                foreach (
-                                    IEnumerable<string> d in
-                                        from solution in s
-                                        from project in solution.Projects
-                                        select project.DependencyNames)
-                                {
-                                }
+                            // Ensure everything is loaded.
+                            foreach (
+                                IEnumerable<string> d in
+                                    from solution in s
+                                    from project in solution.Projects
+                                    select project.DependencyNames)
+                            {
+                            }
 
-                                return s;
-                            }) ?? Enumerable.Empty<Solution>();
+                            return s;
+                        }) ?? Enumerable.Empty<Solution>();
 
             // If we're not recursive just return, otherwise union with sub-directories
             // which of course is itself recursive.
             return !recursive
-                       ? solutions
-                       : solutions.Union(
-                           System.IO.Directory.EnumerateDirectories(rootPath, "*", SearchOption.TopDirectoryOnly)
-                               .Select(dn => new DirectoryInfo(dn))
-                               .Where(d => (d.Attributes & FileAttributes.Hidden) == 0)
-                               .SelectMany(d => GetAll(d.FullName, true, force, includeHidden))
-                             );
+                ? solutions
+                : solutions.Union(
+                    System.IO.Directory.EnumerateDirectories(rootPath, "*", SearchOption.TopDirectoryOnly)
+                        .Select(dn => new DirectoryInfo(dn))
+                        .Where(d => (d.Attributes & FileAttributes.Hidden) == 0)
+                        .SelectMany(d => GetAll(d.FullName, true, force, includeHidden))
+                    );
         }
 
         /// <summary>
@@ -372,8 +382,9 @@ namespace WebApplications.Utilities.PowerShell
         /// <remarks></remarks>
         [NotNull]
         [UsedImplicitly]
-        public static IEnumerable<Solution> GetNugetBuildOrder([NotNull] string rootPath,
-                                                               [CanBeNull] string solutionPath = null)
+        public static IEnumerable<Solution> GetNugetBuildOrder(
+            [NotNull] string rootPath,
+            [CanBeNull] string solutionPath = null)
         {
             // Get all projects that have nuspecs (without duplications).
             return GetAll(rootPath, true)
@@ -398,29 +409,34 @@ namespace WebApplications.Utilities.PowerShell
         /// </exception>
         public override string ToString()
         {
-            return String.Format(Resources.Solution_ToString,
-                                 Environment.NewLine,
-                                 '\t',
-                                 Name,
-                                 FileName,
-                                 SolutionProjects.Any()
-                                     ? SolutionProjects.Aggregate(String.Empty,
-                                                                  (t, p) => string.Format("{0}{1}{2}{2}{3}",
-                                                                                          t,
-                                                                                          Environment.NewLine,
-                                                                                          '\t',
-                                                                                          p))
-                                     : "None",
-                                 SolutionProjectDependencies.Any()
-                                     ? SolutionProjectDependencies.Aggregate(String.Empty,
-                                                                             (t, p) =>
-                                                                             string.Format("{0}{1}{2}{2}{3}:{4}",
-                                                                                           t,
-                                                                                           Environment.NewLine,
-                                                                                           '\t',
-                                                                                           p.Solution.Name,
-                                                                                           p.ProjectName))
-                                     : "None");
+            return String.Format(
+                Resources.Solution_ToString,
+                Environment.NewLine,
+                '\t',
+                Name,
+                FileName,
+                SolutionProjects.Any()
+                    ? SolutionProjects.Aggregate(
+                        String.Empty,
+                        (t, p) => string.Format(
+                            "{0}{1}{2}{2}{3}",
+                            t,
+                            Environment.NewLine,
+                            '\t',
+                            p))
+                    : "None",
+                SolutionProjectDependencies.Any()
+                    ? SolutionProjectDependencies.Aggregate(
+                        String.Empty,
+                        (t, p) =>
+                            string.Format(
+                                "{0}{1}{2}{2}{3}:{4}",
+                                t,
+                                Environment.NewLine,
+                                '\t',
+                                p.Solution.Name,
+                                p.ProjectName))
+                    : "None");
         }
     }
 }

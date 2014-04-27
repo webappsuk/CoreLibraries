@@ -26,17 +26,11 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data.Odbc;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Text;
-using System.Threading;
-using System.Web.SessionState;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -108,7 +102,6 @@ namespace WebApplications.Utilities.Formatting
                 if (c == FormatBuilder.OpenChar)
                     openCount++;
                 else if (c == FormatBuilder.CloseChar)
-                {
                     if (openCount == 0)
                     {
                         // Reached end of fill point
@@ -118,7 +111,6 @@ namespace WebApplications.Utilities.Formatting
                     }
                     else
                         openCount--;
-                }
             }
 
             if (chunk.Length > 0)
@@ -148,7 +140,7 @@ namespace WebApplications.Utilities.Formatting
                     if (String.IsNullOrWhiteSpace(chunk.Format))
                         writer.ResetForegroundColor();
                     else if (chunk.Value is Color)
-                        writer.SetForegroundColor((Color)chunk.Value);
+                        writer.SetForegroundColor((Color) chunk.Value);
                     else
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
@@ -162,7 +154,7 @@ namespace WebApplications.Utilities.Formatting
                     if (String.IsNullOrWhiteSpace(chunk.Format))
                         writer.ResetBackgroundColor();
                     else if (chunk.Value is Color)
-                        writer.SetBackgroundColor((Color)chunk.Value);
+                        writer.SetBackgroundColor((Color) chunk.Value);
                     else
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
@@ -203,7 +195,10 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A laid out TextWriter.</returns>
         [NotNull]
         [PublicAPI]
-        public static FormatTextWriter Format([NotNull] this TextWriter writer, [CanBeNull] Layout layout = null, ushort startPosition = 0)
+        public static FormatTextWriter Format(
+            [NotNull] this TextWriter writer,
+            [CanBeNull] Layout layout = null,
+            ushort startPosition = 0)
         {
             Contract.Requires(writer != null);
             Contract.Ensures(Contract.Result<TextWriter>() != null);

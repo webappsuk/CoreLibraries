@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -38,21 +38,21 @@ namespace WebApplications.Utilities.Test
         public void TestEqualityBuilder()
         {
             IEnumerable<Tester> a = new List<Tester>
-                                        {
-                                            new Tester(1, 2),
-                                            new Tester(3, 4),
-                                            new Tester(4, 10),
-                                            new Tester(10, 12),
-                                            new Tester(14, 432)
-                                        };
+            {
+                new Tester(1, 2),
+                new Tester(3, 4),
+                new Tester(4, 10),
+                new Tester(10, 12),
+                new Tester(14, 432)
+            };
             IEnumerable<Tester> b = new List<Tester>
-                                        {
-                                            new Tester(1, 2),
-                                            new Tester(3, 4),
-                                            new Tester(4, 10),
-                                            new Tester(10, 12),
-                                            new Tester(14, 432)
-                                        };
+            {
+                new Tester(1, 2),
+                new Tester(3, 4),
+                new Tester(4, 10),
+                new Tester(10, 12),
+                new Tester(14, 432)
+            };
 
             // Demonstrate that standard method returns false as references are different
             Assert.IsFalse(a.SequenceEqual(b));
@@ -66,21 +66,21 @@ namespace WebApplications.Utilities.Test
         {
             // Create two identical lists, save for the order.
             IEnumerable<Tester> a = new List<Tester>
-                                        {
-                                            new Tester(1, 2),
-                                            new Tester(14, 432),
-                                            new Tester(4, 10),
-                                            new Tester(3, 4),
-                                            new Tester(10, 12)
-                                        };
+            {
+                new Tester(1, 2),
+                new Tester(14, 432),
+                new Tester(4, 10),
+                new Tester(3, 4),
+                new Tester(10, 12)
+            };
             IEnumerable<Tester> b = new List<Tester>
-                                        {
-                                            new Tester(1, 2),
-                                            new Tester(3, 4),
-                                            new Tester(4, 10),
-                                            new Tester(10, 12),
-                                            new Tester(14, 432)
-                                        };
+            {
+                new Tester(1, 2),
+                new Tester(3, 4),
+                new Tester(4, 10),
+                new Tester(10, 12),
+                new Tester(14, 432)
+            };
 
             // Create comparer that compares A then B
             ComparerBuilder<Tester> comparer =

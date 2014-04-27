@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -39,7 +38,6 @@ namespace WebApplications.Utilities.Formatting
     /// </summary>
     public class Layout : IFormattable, IEquatable<Layout>
     {
-
         /// <summary>
         /// The default layout (as specified by the current layout writer).
         /// </summary>
@@ -459,7 +457,7 @@ namespace WebApplications.Utilities.Formatting
                 return false;
             }
 
-            string[] parts = input.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = input.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
             layout = Empty;
             if (parts.Length < 1)
                 return true;
@@ -522,7 +520,7 @@ namespace WebApplications.Utilities.Formatting
                         bool ok = true;
                         tabStops = new Optional<IEnumerable<int>>(
                             s
-                                .Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
+                                .Split(new[] {'|'}, StringSplitOptions.RemoveEmptyEntries)
                                 .Select(
                                     tp =>
                                     {
@@ -601,8 +599,8 @@ namespace WebApplications.Utilities.Formatting
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Layout)obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Layout) obj);
         }
 
         /// <summary>
@@ -639,9 +637,9 @@ namespace WebApplications.Utilities.Formatting
             StringBuilder sb = new StringBuilder();
             switch (format.ToLowerInvariant())
             {
-                // Creates a string for indicating the positions of margins and tab stops
+                    // Creates a string for indicating the positions of margins and tab stops
                 case "l":
-                    var layout = this;
+                    Layout layout = this;
                     bool partial = !layout.IsFull;
 
                     // If we have a partial layout, apply it to the default layout so we can display it.
@@ -683,7 +681,7 @@ namespace WebApplications.Utilities.Formatting
                     }
                     return new string(cArr);
 
-                // Creates a compact string that can be easily parsed back into a layout
+                    // Creates a compact string that can be easily parsed back into a layout
                 case "f":
                     if (Width.IsAssigned)
                         sb.Append('w').Append(Width.Value).Append(';');
@@ -720,7 +718,7 @@ namespace WebApplications.Utilities.Formatting
                         sb.Remove(sb.Length - 1, 1);
                     break;
 
-                // Creates a nice, human readable string
+                    // Creates a nice, human readable string
                 default:
                     if (Width.IsAssigned)
                         sb.Append("Width = ").Append(Width.Value).Append(", ");
@@ -765,7 +763,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-        public bool Equals([CanBeNull]Layout other)
+        public bool Equals([CanBeNull] Layout other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -25,13 +25,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using JetBrains.Annotations;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Reflect;
@@ -106,7 +106,13 @@ namespace WebApplications.Utilities.Test.Reflect
             Trace.WriteLine(
                 s.ToString(
                     "Reflecting '{0}' of '{1}' types in '{2}' assemblies [{3} type load errors, {4} argument exceptions, {5} not supported] - {6} methods found.",
-                    rCount, tCount, aCount, tlCount, aeCount, nsCount, mCount));
+                    rCount,
+                    tCount,
+                    aCount,
+                    tlCount,
+                    aeCount,
+                    nsCount,
+                    mCount));
         }
 
         [TestMethod]
@@ -122,12 +128,18 @@ namespace WebApplications.Utilities.Test.Reflect
                     <ReflectionTestClass<String>, int, int, int>();
             Assert.IsNotNull(func, "The lambda returned must not be null.");
             // Note that there is no simple way to test if we have the correct function, so we instead test that parameters are received correctly
-            Assert.AreEqual(a + b, func(testInstance, a, b),
-                            "When called, the lambda returned by GetMethod should return the value the requested function returns.");
-            Assert.AreEqual(a, testInstance.InstanceFunctionInputA,
-                            "When called with parameters, the lambda calls the requested function using these parameters.");
-            Assert.AreEqual(b, testInstance.InstanceFunctionInputB,
-                            "When called with parameters, the lambda calls the requested function using these parameters.");
+            Assert.AreEqual(
+                a + b,
+                func(testInstance, a, b),
+                "When called, the lambda returned by GetMethod should return the value the requested function returns.");
+            Assert.AreEqual(
+                a,
+                testInstance.InstanceFunctionInputA,
+                "When called with parameters, the lambda calls the requested function using these parameters.");
+            Assert.AreEqual(
+                b,
+                testInstance.InstanceFunctionInputB,
+                "When called with parameters, the lambda calls the requested function using these parameters.");
         }
 
         [TestMethod]
@@ -139,8 +151,10 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.IsNotNull(method, "The lambda returned must not be null.");
             // Note that there is no simple way to test if we have the correct function, so we instead test that parameters are received correctly
             method(value);
-            Assert.AreEqual(value, ReflectionTestClass<Guid>.StaticMethodInput,
-                            "When called with parameters, the lambda calls the requested method using these parameters.");
+            Assert.AreEqual(
+                value,
+                ReflectionTestClass<Guid>.StaticMethodInput,
+                "When called with parameters, the lambda calls the requested method using these parameters.");
         }
 
         [TestMethod]
@@ -154,8 +168,10 @@ namespace WebApplications.Utilities.Test.Reflect
             Assert.IsNotNull(method, "The lambda returned must not be null.");
             // Note that there is no simple way to test if we have the correct function, so we instead test that parameters are received correctly
             method(testInstance, value);
-            Assert.AreEqual(value, testInstance.InstanceMethodInput,
-                            "When called with parameters, the lambda calls the requested method using these parameters.");
+            Assert.AreEqual(
+                value,
+                testInstance.InstanceMethodInput,
+                "When called with parameters, the lambda calls the requested method using these parameters.");
         }
 
         [TestMethod]
@@ -176,8 +192,10 @@ namespace WebApplications.Utilities.Test.Reflect
             Func<ReflectionTestClass<Guid>, int> getA =
                 typeof (ReflectionTestClass<Guid>).GetGetter<ReflectionTestClass<Guid>, int>("A");
             testInstance.A = value;
-            Assert.AreEqual(testInstance.A, getA(testInstance),
-                            "The lambda function returned by GetGetter should return the value of the field given as the parameter.");
+            Assert.AreEqual(
+                testInstance.A,
+                getA(testInstance),
+                "The lambda function returned by GetGetter should return the value of the field given as the parameter.");
         }
 
         [TestMethod]
@@ -188,8 +206,10 @@ namespace WebApplications.Utilities.Test.Reflect
             Func<ReflectionTestClass<Guid>, int> getB =
                 typeof (ReflectionTestClass<Guid>).GetGetter<ReflectionTestClass<Guid>, int>("B");
             testInstance.B = value;
-            Assert.AreEqual(value, getB(testInstance),
-                            "The lambda function returned by GetGetter should return the value of the requested property.");
+            Assert.AreEqual(
+                value,
+                getB(testInstance),
+                "The lambda function returned by GetGetter should return the value of the requested property.");
         }
 
         [TestMethod]
@@ -198,8 +218,10 @@ namespace WebApplications.Utilities.Test.Reflect
             ReflectionTestClass<Guid> testInstance = new ReflectionTestClass<Guid>(Guid.NewGuid());
             Func<ReflectionTestClass<Guid>> getLast =
                 typeof (ReflectionTestClass<Guid>).GetGetter<ReflectionTestClass<Guid>>("Last");
-            Assert.AreEqual(testInstance, getLast(),
-                            "The lambda function returned by GetGetter should return the value of the requested property.");
+            Assert.AreEqual(
+                testInstance,
+                getLast(),
+                "The lambda function returned by GetGetter should return the value of the requested property.");
         }
 
         [TestMethod]
@@ -211,8 +233,10 @@ namespace WebApplications.Utilities.Test.Reflect
             Action<ReflectionTestClass<Guid>, int> setA =
                 typeof (ReflectionTestClass<Guid>).GetSetter<ReflectionTestClass<Guid>, int>("A");
             setA(testInstance, value);
-            Assert.AreEqual(value, testInstance.A,
-                            "The lambda function returned by GetSetter should change the value of the specified field.");
+            Assert.AreEqual(
+                value,
+                testInstance.A,
+                "The lambda function returned by GetSetter should change the value of the specified field.");
         }
 
         [TestMethod]
@@ -464,8 +488,9 @@ namespace WebApplications.Utilities.Test.Reflect
             {
                 StaticFunctionInputA = a;
                 StaticFunctionInputB = b;
-                Assert.IsNotNull(StaticFunctionOutput,
-                                 "The StaticFunctionOutput field must be set in order to test the output of the static function");
+                Assert.IsNotNull(
+                    StaticFunctionOutput,
+                    "The StaticFunctionOutput field must be set in order to test the output of the static function");
                 return StaticFunctionOutput.Value;
             }
 
@@ -473,8 +498,9 @@ namespace WebApplications.Utilities.Test.Reflect
             {
                 InstanceFunctionInputA = a;
                 InstanceFunctionInputB = b;
-                Assert.IsNotNull(InstanceFunctionOutput,
-                                 "The InstanceFunctionOutput field must be set in order to test the output of the instance function");
+                Assert.IsNotNull(
+                    InstanceFunctionOutput,
+                    "The InstanceFunctionOutput field must be set in order to test the output of the instance function");
                 return InstanceFunctionOutput.Value;
             }
 
@@ -545,8 +571,11 @@ namespace WebApplications.Utilities.Test.Reflect
             /// <returns>An <see cref="T:System.Object"/> that represents the converted value.</returns>
             /// <exception cref="T:System.ArgumentNullException">The <paramref name="destinationType"/> parameter is null. </exception>
             /// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
-            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
-                                             Type destinationType)
+            public override object ConvertTo(
+                ITypeDescriptorContext context,
+                CultureInfo culture,
+                object value,
+                Type destinationType)
             {
                 if (destinationType == typeof (int))
                     return value != null ? ((TypeConverterTest) value).Value : 0;
@@ -580,7 +609,7 @@ namespace WebApplications.Utilities.Test.Reflect
         [TestMethod]
         public void TestAddFunc()
         {
-            Func<int, int, int> func = typeof(int).AddFunc<int>();
+            Func<int, int, int> func = typeof (int).AddFunc<int>();
             Assert.IsTrue(func(6, 6) == 12);
             Assert.IsTrue(func(12, 6) == 18);
         }
@@ -588,7 +617,7 @@ namespace WebApplications.Utilities.Test.Reflect
         [TestMethod]
         public void TestSubstractFunc()
         {
-            Func<int, int, int> func = typeof(int).SubtractFunc<int>();
+            Func<int, int, int> func = typeof (int).SubtractFunc<int>();
             Assert.IsTrue(func(6, 6) == 0);
             Assert.IsTrue(func(12, 6) == 6);
             Assert.IsTrue(func(6, 12) == -6);
@@ -597,7 +626,7 @@ namespace WebApplications.Utilities.Test.Reflect
         [TestMethod]
         public void TestLessThanFunc()
         {
-            Func<string, string, bool> func = typeof(int).LessThanFunc<string>();
+            Func<string, string, bool> func = typeof (int).LessThanFunc<string>();
             Assert.IsTrue(func("5", "6"));
             Assert.IsFalse(func("7", "6"));
             Assert.IsFalse(func("7", "7"));
@@ -606,7 +635,7 @@ namespace WebApplications.Utilities.Test.Reflect
         [TestMethod]
         public void TestLessThanOrEqualToFunc()
         {
-            Func<string, string, bool> func = typeof(int).LessThanOrEqualFunc<string>();
+            Func<string, string, bool> func = typeof (int).LessThanOrEqualFunc<string>();
             Assert.IsTrue(func("5", "6"));
             Assert.IsFalse(func("7", "6"));
             Assert.IsTrue(func("7", "7"));
@@ -615,7 +644,7 @@ namespace WebApplications.Utilities.Test.Reflect
         [TestMethod]
         public void TestGreaterThanFunc()
         {
-            Func<string, string, bool> func = typeof(int).GreaterThanFunc<string>();
+            Func<string, string, bool> func = typeof (int).GreaterThanFunc<string>();
             Assert.IsTrue(func("6", "5"));
             Assert.IsFalse(func("6", "7"));
             Assert.IsFalse(func("7", "7"));
@@ -624,7 +653,7 @@ namespace WebApplications.Utilities.Test.Reflect
         [TestMethod]
         public void TestGreaterThanOrEqualToFunc()
         {
-            Func<string, string, bool> func = typeof(int).GreaterThanOrEqualFunc<string>();
+            Func<string, string, bool> func = typeof (int).GreaterThanOrEqualFunc<string>();
             Assert.IsTrue(func("6", "5"));
             Assert.IsFalse(func("6", "7"));
             Assert.IsTrue(func("7", "7"));
@@ -633,7 +662,7 @@ namespace WebApplications.Utilities.Test.Reflect
         [TestMethod]
         public void TestAndAlsoFunc()
         {
-            Func<bool, bool, bool> func = typeof(bool).AndAlsoFunc<bool>();
+            Func<bool, bool, bool> func = typeof (bool).AndAlsoFunc<bool>();
             Assert.IsTrue(func(true, true));
             Assert.IsFalse(func(true, false));
             Assert.IsFalse(func(false, true));
@@ -643,7 +672,7 @@ namespace WebApplications.Utilities.Test.Reflect
         [TestMethod]
         public void TestOrElseFunc()
         {
-            Func<string, string, bool> func = typeof(bool).OrElseFunc<string>();
+            Func<string, string, bool> func = typeof (bool).OrElseFunc<string>();
             Assert.IsTrue(func("True", "True"));
             Assert.IsTrue(func("True", "False"));
             Assert.IsTrue(func("False", "True"));

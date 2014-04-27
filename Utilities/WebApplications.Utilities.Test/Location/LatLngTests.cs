@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,12 +40,12 @@ namespace WebApplications.Utilities.Test.Location
 
         private static double RandomLat()
         {
-            return Random.NextDouble()*(_MaxLat - _MinLat) + _MinLat;
+            return Random.NextDouble() * (_MaxLat - _MinLat) + _MinLat;
         }
 
         private static double RandomLng()
         {
-            return Random.NextDouble()*(_MaxLng - _MinLng) + _MinLng;
+            return Random.NextDouble() * (_MaxLng - _MinLng) + _MinLng;
         }
 
         [TestMethod]
@@ -69,8 +69,10 @@ namespace WebApplications.Utilities.Test.Location
             LatLng testLatLngA = new LatLng(lat, lng);
             LatLng testLatLngB = new LatLng(lat, lng);
 
-            Assert.AreEqual(testLatLngA, testLatLngB,
-                            "Two LatLng instances describing the same location should be equivalant");
+            Assert.AreEqual(
+                testLatLngA,
+                testLatLngB,
+                "Two LatLng instances describing the same location should be equivalant");
         }
 
         [TestMethod]
@@ -79,8 +81,10 @@ namespace WebApplications.Utilities.Test.Location
             LatLng testLatLngA = new LatLng(RandomLat(), RandomLng());
             LatLng testLatLngB = new LatLng(RandomLat(), RandomLng());
 
-            Assert.AreEqual(LatLng.Distance(testLatLngA, testLatLngB), testLatLngA.DistanceTo(testLatLngB),
-                            "DistanceTo method should give the same result as static Distance method");
+            Assert.AreEqual(
+                LatLng.Distance(testLatLngA, testLatLngB),
+                testLatLngA.DistanceTo(testLatLngB),
+                "DistanceTo method should give the same result as static Distance method");
         }
 
         [TestMethod]
@@ -89,8 +93,10 @@ namespace WebApplications.Utilities.Test.Location
             LatLng testLatLngA = new LatLng(RandomLat(), RandomLng());
             LatLng testLatLngB = new LatLng(RandomLat(), RandomLng());
 
-            Assert.AreEqual(LatLng.MidPoint(testLatLngA, testLatLngB), testLatLngA.MidpointTo(testLatLngB),
-                            "MidpointTo method should give the same result as static Midpoint method");
+            Assert.AreEqual(
+                LatLng.MidPoint(testLatLngA, testLatLngB),
+                testLatLngA.MidpointTo(testLatLngB),
+                "MidpointTo method should give the same result as static Midpoint method");
         }
     }
 }

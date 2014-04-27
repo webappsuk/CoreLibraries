@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,8 @@ namespace WebApplications.Utilities.PowerShell
         /// <summary>
         /// Dependencies.
         /// </summary>
-        [NotNull] private Task<IEnumerable<string>> _packageDependencies;
+        [NotNull]
+        private Task<IEnumerable<string>> _packageDependencies;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Project"/> class.
@@ -146,15 +147,16 @@ namespace WebApplications.Utilities.PowerShell
             {
                 return DependencyNames
                     .Distinct()
-                    .Select(p =>
-                                {
-                                    IEnumerable<SolutionProject> sps =
-                                        SolutionProject.Get(p).Where(
-                                            sp => !string.IsNullOrWhiteSpace(sp.Project.NuSpecPath));
-                                    if (sps.Count() != 1)
-                                        return (SolutionProject) null;
-                                    return sps.First();
-                                })
+                    .Select(
+                        p =>
+                        {
+                            IEnumerable<SolutionProject> sps =
+                                SolutionProject.Get(p).Where(
+                                    sp => !string.IsNullOrWhiteSpace(sp.Project.NuSpecPath));
+                            if (sps.Count() != 1)
+                                return (SolutionProject) null;
+                            return sps.First();
+                        })
                     .Where(sp => sp != null)
                     .Distinct();
             }
@@ -215,47 +217,54 @@ namespace WebApplications.Utilities.PowerShell
                 // Parse file asynchronously
                 FileInfo fi = new FileInfo(config);
                 byte[] data = new byte[fi.Length];
-                FileStream fs = new FileStream(config, FileMode.Open, FileAccess.Read, FileShare.Read, data.Length, true);
+                FileStream fs = new FileStream(
+                    config,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read,
+                    data.Length,
+                    true);
 
                 Task<int> task = Task<int>.Factory.FromAsync(fs.BeginRead, fs.EndRead, data, 0, data.Length, null);
 
                 _packageDependencies = task.ContinueWith(
                     t =>
+                    {
+                        try
                         {
-                            try
-                            {
-                                fs.Close();
+                            fs.Close();
 
-                                if ((t == null) ||
-                                    (t.Exception != null) ||
-                                    (t.Status != TaskStatus.RanToCompletion))
-                                    return Enumerable.Empty<string>();
-
-                                // If we did not receive the entire file, the end of the
-                                // data buffer will contain garbage.
-                                if (t.Result < data.Length)
-                                    Array.Resize(ref data, t.Result);
-
-                                // Load config XML.
-                                XDocument document;
-                                using (MemoryStream stream = new MemoryStream(data))
-                                    document = XDocument.Load(stream);
-
-                                // Get package elements
-                                return (from element in document.Descendants("package")
-                                        select element.Attribute("id")
-                                        into attribute
-                                        where
-                                            (attribute != null) &&
-                                            (!String.IsNullOrWhiteSpace(attribute.Value))
-                                        select attribute.Value).ToList();
-                            }
-                            catch
-                            {
-                                // Suppress errors
+                            if ((t == null) ||
+                                (t.Exception != null) ||
+                                (t.Status != TaskStatus.RanToCompletion))
                                 return Enumerable.Empty<string>();
-                            }
-                        }, TaskContinuationOptions.LongRunning);
+
+                            // If we did not receive the entire file, the end of the
+                            // data buffer will contain garbage.
+                            if (t.Result < data.Length)
+                                Array.Resize(ref data, t.Result);
+
+                            // Load config XML.
+                            XDocument document;
+                            using (MemoryStream stream = new MemoryStream(data))
+                                document = XDocument.Load(stream);
+
+                            // Get package elements
+                            return (from element in document.Descendants("package")
+                                select element.Attribute("id")
+                                into attribute
+                                where
+                                    (attribute != null) &&
+                                    (!String.IsNullOrWhiteSpace(attribute.Value))
+                                select attribute.Value).ToList();
+                        }
+                        catch
+                        {
+                            // Suppress errors
+                            return Enumerable.Empty<string>();
+                        }
+                    },
+                    TaskContinuationOptions.LongRunning);
             }
         }
 

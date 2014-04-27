@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -46,17 +46,21 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The extended type.
         /// </summary>
-        [NotNull] public readonly ExtendedType ExtendedType;
+        [NotNull]
+        public readonly ExtendedType ExtendedType;
 
         /// <summary>
         ///   The constructor info.
         /// </summary>
-        [NotNull] public readonly ConstructorInfo Info;
+        [NotNull]
+        public readonly ConstructorInfo Info;
 
         /// <summary>
         /// Create enumeration of parameters on demand.
         /// </summary>
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)] [NotNull] private readonly Lazy<ParameterInfo[]> _parameters;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        [NotNull]
+        private readonly Lazy<ParameterInfo[]> _parameters;
 
         /// <summary>
         /// Initializes the <see cref="Constructor"/> class.
@@ -153,8 +157,8 @@ namespace WebApplications.Utilities.Reflect
         public static implicit operator Constructor(ConstructorInfo constructorInfo)
         {
             return constructorInfo == null
-                       ? null
-                       : ((ExtendedType) constructorInfo.DeclaringType).GetConstructor(constructorInfo);
+                ? null
+                : ((ExtendedType) constructorInfo.DeclaringType).GetConstructor(constructorInfo);
         }
 
         /// <summary>
@@ -278,10 +282,8 @@ namespace WebApplications.Utilities.Reflect
                         return null;
                 }
                 else
-                {
                     // No conversion necessary.
                     pExpressions[i] = parameterExpressions[i];
-                }
             }
 
             // Create call expression, instance methods use the first parameter of the Func<> as the instance, static

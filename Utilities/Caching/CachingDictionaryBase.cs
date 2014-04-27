@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -246,10 +246,16 @@ namespace WebApplications.Utilities.Caching
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
         public TValue AddOrUpdate(
-            TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+            TKey key,
+            Func<TKey, TValue> addValueFactory,
+            Func<TKey, TValue, TValue> updateValueFactory)
         {
             return AddOrUpdate(
-                key, addValueFactory, updateValueFactory, AbsoluteExpiration(), DefaultSlidingExpiration);
+                key,
+                addValueFactory,
+                updateValueFactory,
+                AbsoluteExpiration(),
+                DefaultSlidingExpiration);
         }
 
         /// <summary>
@@ -270,7 +276,11 @@ namespace WebApplications.Utilities.Caching
             DateTimeOffset absoluteExpiration)
         {
             return AddOrUpdate(
-                key, addValueFactory, updateValueFactory, absoluteExpiration, DefaultSlidingExpiration);
+                key,
+                addValueFactory,
+                updateValueFactory,
+                absoluteExpiration,
+                DefaultSlidingExpiration);
         }
 
         /// <summary>
@@ -294,7 +304,11 @@ namespace WebApplications.Utilities.Caching
             TimeSpan slidingExpiration)
         {
             return AddOrUpdate(
-                key, addValueFactory, updateValueFactory, AbsoluteExpiration(), slidingExpiration);
+                key,
+                addValueFactory,
+                updateValueFactory,
+                AbsoluteExpiration(),
+                slidingExpiration);
         }
 
         /// <summary>
@@ -382,7 +396,10 @@ namespace WebApplications.Utilities.Caching
         ///   Either the inserted or retrieved value depending on whether there's already an existing entry with the same key.
         /// </returns>
         public abstract TValue GetOrAdd(
-            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration);
+            TKey key,
+            TValue value,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration);
 
         /// <summary>
         ///   Inserts a new entry into the cache using the specified key, the factory to create the value, the absolute expiration
@@ -405,8 +422,8 @@ namespace WebApplications.Utilities.Caching
         {
             TValue value;
             return TryGetValue(key, out value)
-                       ? value
-                       : GetOrAdd(key, addValueFactory(key), absoluteExpiration, slidingExpiration);
+                ? value
+                : GetOrAdd(key, addValueFactory(key), absoluteExpiration, slidingExpiration);
         }
 
         /// <summary>
@@ -423,7 +440,10 @@ namespace WebApplications.Utilities.Caching
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
         public abstract TValue AddOrUpdate(
-            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration);
+            TKey key,
+            TValue value,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration);
 
         /// <summary>
         ///   Inserts a new entry into the cache using the specified key and the add/update factories
@@ -468,7 +488,10 @@ namespace WebApplications.Utilities.Caching
         ///   Returns <see langword="true"/> if the entry was inserted successfully; otherwise returns <see langword="false"/>.
         /// </returns>
         public abstract bool TryAdd(
-            TKey key, TValue value, DateTimeOffset absoluteExpiration, TimeSpan slidingExpiration);
+            TKey key,
+            TValue value,
+            DateTimeOffset absoluteExpiration,
+            TimeSpan slidingExpiration);
 
         /// <summary>
         ///   Calculate the default absolute expiration.
@@ -476,8 +499,8 @@ namespace WebApplications.Utilities.Caching
         private DateTimeOffset AbsoluteExpiration()
         {
             return DefaultAbsoluteExpiration < TimeSpan.MaxValue
-                       ? DateTimeOffset.Now.Add(DefaultAbsoluteExpiration)
-                       : DateTimeOffset.MaxValue;
+                ? DateTimeOffset.Now.Add(DefaultAbsoluteExpiration)
+                : DateTimeOffset.MaxValue;
         }
     }
 }

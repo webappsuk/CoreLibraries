@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -146,18 +146,20 @@ namespace WebApplications.Utilities.Threading
         /// </returns>
         [UsedImplicitly]
         [NotNull]
-        public static AsyncCallback WrapCallback([NotNull] AsyncCallback callback, T data,
-                                                 SynchronizationContext syncContext = null)
+        public static AsyncCallback WrapCallback(
+            [NotNull] AsyncCallback callback,
+            T data,
+            SynchronizationContext syncContext = null)
         {
             if (callback == null)
                 return null;
 
             ApmWrapper wrapper = new ApmWrapper
-                {
-                    Data = data,
-                    AsyncCallback = callback,
-                    SyncContext = syncContext
-                };
+            {
+                Data = data,
+                AsyncCallback = callback,
+                SyncContext = syncContext
+            };
             return wrapper.AsyncCallbackInternal;
         }
 
@@ -281,13 +283,9 @@ namespace WebApplications.Utilities.Threading
             {
                 AsyncResult = result;
                 if (SyncContext == null)
-                {
                     AsyncCallback(this);
-                }
                 else
-                {
                     SyncContext.Post(PostCallback, this);
-                }
             }
 
             /// <summary>

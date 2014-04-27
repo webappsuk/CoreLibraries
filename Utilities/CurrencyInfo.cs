@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -105,8 +105,11 @@ namespace WebApplications.Utilities
         ///   The exponent, which is the number of decimals available in the currency.
         /// </param>
         /// <param name="fullName">The currency's full name.</param>
-        private CurrencyInfo([NotNull] string code, int isoNumber, [CanBeNull] int? exponent,
-                             [NotNull] string fullName)
+        private CurrencyInfo(
+            [NotNull] string code,
+            int isoNumber,
+            [CanBeNull] int? exponent,
+            [NotNull] string fullName)
         {
             Code = code;
             ISONumber = isoNumber;
@@ -156,7 +159,8 @@ namespace WebApplications.Utilities
         private static void CreateCurrencyInfo(DictionaryEntry entry)
         {
             string currencyCode = entry.Key.ToString();
-            if ((currencyCode.Length != 3) || (_currencyInfos.ContainsKey(currencyCode)))
+            if ((currencyCode.Length != 3) ||
+                (_currencyInfos.ContainsKey(currencyCode)))
                 return;
 
             string[] details = entry.Value.ToString().Split(',');

@@ -44,6 +44,7 @@ namespace WebApplications.Utilities.Threading
     {
         [NotNull]
         private readonly object _lock = new object();
+
         [NotNull]
         private readonly ConcurrentQueue<CallbackInfo> _queue = new ConcurrentQueue<CallbackInfo>();
 
@@ -115,17 +116,19 @@ namespace WebApplications.Utilities.Threading
 
                     CallbackInfo callback;
                     while (_queue.TryDequeue(out callback))
-                    {
                         try
                         {
                             callback.Callback(callback.State);
                         }
                         catch (Exception e)
                         {
-                            throw new Exception(string.Format("Exception in posted callback on {0}: {1}",
-                                GetType().FullName, e.Message), e);
+                            throw new Exception(
+                                string.Format(
+                                    "Exception in posted callback on {0}: {1}",
+                                    GetType().FullName,
+                                    e.Message),
+                                e);
                         }
-                    }
                 }
                 finally
                 {

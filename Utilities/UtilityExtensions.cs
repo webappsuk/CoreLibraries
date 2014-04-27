@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.SqlTypes;
 using System.Diagnostics.Contracts;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -71,15 +70,15 @@ namespace WebApplications.Utilities
         /// Characters to escape for JSON (and their new value).
         /// </summary>
         private static readonly Dictionary<char, string> _jsonEscapedCharacters = new Dictionary<char, string>
-            {
-                {'\\', @"\\"},
-                {'\"', @"\"""},
-                {'\b', @"\b"},
-                {'\f', @"\f"},
-                {'\n', @"\n"},
-                {'\r', @"\r"},
-                {'\t', @"\t"}
-            };
+        {
+            {'\\', @"\\"},
+            {'\"', @"\"""},
+            {'\b', @"\b"},
+            {'\f', @"\f"},
+            {'\n', @"\n"},
+            {'\r', @"\r"},
+            {'\t', @"\t"}
+        };
 
         /// <summary>
         ///   The Epoch date time (used by JavaScript).
@@ -87,48 +86,92 @@ namespace WebApplications.Utilities
         public static readonly DateTime EpochStart = new DateTime(1970, 1, 1);
 
         private static readonly string[] _onesMapping = new[]
-            {
-                "Zero", "One", "Two", "Three", "Four", "Five", "Six",
-                "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
-                "Thirteen", "Fourteen", "Fifteen", "Sixteen",
-                "Seventeen", "Eighteen", "Nineteen"
-            };
+        {
+            "Zero",
+            "One",
+            "Two",
+            "Three",
+            "Four",
+            "Five",
+            "Six",
+            "Seven",
+            "Eight",
+            "Nine",
+            "Ten",
+            "Eleven",
+            "Twelve",
+            "Thirteen",
+            "Fourteen",
+            "Fifteen",
+            "Sixteen",
+            "Seventeen",
+            "Eighteen",
+            "Nineteen"
+        };
 
         private static readonly string[] _tensMapping = new[]
-            {
-                "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy"
-                ,
-                "Eighty", "Ninety"
-            };
+        {
+            "Twenty",
+            "Thirty",
+            "Forty",
+            "Fifty",
+            "Sixty",
+            "Seventy"
+            ,
+            "Eighty",
+            "Ninety"
+        };
 
         private static readonly string[] _groupMapping = new[]
-            {
-                "Hundred", "Thousand", "Million", "Billion", "Trillion"
-                ,
-                "Quadrillion", "Quintillion", "Sextillian",
-                "Septillion",
-                "Octillion", "Nonillion", "Decillion", "Undecillion",
-                "Duodecillion", "Tredecillion", "Quattuordecillion",
-                "Quindecillion", "Sexdecillion", "Septendecillion",
-                "Octodecillion", "Novemdecillion", "Vigintillion",
-                "Unvigintillion", "Duovigintillion", "Tresvigintillion"
-                ,
-                "Quattuorvigintillion", "Quinquavigintillion",
-                "Sesvigintillion",
-                "Septemvigintillion", "Octovigintillion",
-                "Vigintinonillion",
-                "Trigintillion", "Untrigintillion", "Duotrigintillion",
-                "Trestrigintillion"
-            };
+        {
+            "Hundred",
+            "Thousand",
+            "Million",
+            "Billion",
+            "Trillion"
+            ,
+            "Quadrillion",
+            "Quintillion",
+            "Sextillian",
+            "Septillion",
+            "Octillion",
+            "Nonillion",
+            "Decillion",
+            "Undecillion",
+            "Duodecillion",
+            "Tredecillion",
+            "Quattuordecillion",
+            "Quindecillion",
+            "Sexdecillion",
+            "Septendecillion",
+            "Octodecillion",
+            "Novemdecillion",
+            "Vigintillion",
+            "Unvigintillion",
+            "Duovigintillion",
+            "Tresvigintillion"
+            ,
+            "Quattuorvigintillion",
+            "Quinquavigintillion",
+            "Sesvigintillion",
+            "Septemvigintillion",
+            "Octovigintillion",
+            "Vigintinonillion",
+            "Trigintillion",
+            "Untrigintillion",
+            "Duotrigintillion",
+            "Trestrigintillion"
+        };
 
         /// <summary>
         ///   The default split characters for splitting strings.
         /// </summary>
-        public static readonly char[] DefaultSplitChars = new[] { ' ', ',', '\t', '\r', '\n', '|' };
+        public static readonly char[] DefaultSplitChars = new[] {' ', ',', '\t', '\r', '\n', '|'};
 
-        private static readonly Regex _htmlRegex = new Regex(@"<[^<>]*>",
-                                                             RegexOptions.Compiled | RegexOptions.IgnoreCase |
-                                                             RegexOptions.Multiline);
+        private static readonly Regex _htmlRegex = new Regex(
+            @"<[^<>]*>",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase |
+            RegexOptions.Multiline);
 
         [NotNull]
         private static readonly Regex _lineSplitter = new Regex(@"\r?\n|\r", RegexOptions.Compiled);
@@ -142,7 +185,6 @@ namespace WebApplications.Utilities
         {
             string suf = "th";
             if (((number % 100) / 10) != 1)
-            {
                 switch (number % 10)
                 {
                     case 1:
@@ -155,7 +197,6 @@ namespace WebApplications.Utilities
                         suf = "rd";
                         break;
                 }
-            }
             return number + suf;
         }
 
@@ -168,7 +209,6 @@ namespace WebApplications.Utilities
         {
             string suf = "th";
             if (((number % 100) / 10) != 1)
-            {
                 switch (number % 10)
                 {
                     case 1:
@@ -181,7 +221,6 @@ namespace WebApplications.Utilities
                         suf = "rd";
                         break;
                 }
-            }
             return suf;
         }
 
@@ -221,32 +260,28 @@ namespace WebApplications.Utilities
         /// </returns>
         public static string ToEnglish(this double number)
         {
-            string integerString = ToEnglishProcessInteger((long)number);
+            string integerString = ToEnglishProcessInteger((long) number);
             int precision = 0;
 
             if (number.ToString().Contains('.'))
-            {
                 precision = number.ToString().Split('.')[1].Length;
-            }
 
             number = Math.Round(Math.Abs(number), precision) % 1;
 
             int decimalDigits = 0;
 
             if (number > 0)
-            {
                 while (number < 1 ||
                        (number - Math.Floor(number) > 1e-10))
                 {
                     number *= 10;
                     decimalDigits++;
                 }
-            }
 
             string decimalString = null;
             while (decimalDigits-- > 0)
             {
-                int digit = (int)(number % 10);
+                int digit = (int) (number % 10);
                 number /= 10;
                 decimalString = _onesMapping[digit] + " " + decimalString;
             }
@@ -273,10 +308,9 @@ namespace WebApplications.Utilities
             if (number < 1)
                 retVal = _onesMapping[0];
             else
-            {
                 while (number >= 1)
                 {
-                    int numberToProcess = (number >= 1e16) ? 0 : (int)(number % 1000);
+                    int numberToProcess = (number >= 1e16) ? 0 : (int) (number % 1000);
                     number = number / 1000;
 
                     string groupDescription = ToEnglishProcessGroup(numberToProcess);
@@ -289,7 +323,6 @@ namespace WebApplications.Utilities
 
                     @group++;
                 }
-            }
 
             return
                 String.Format(
@@ -377,14 +410,14 @@ namespace WebApplications.Utilities
                             BindingFlags.FlattenHierarchy | BindingFlags.Public |
                             BindingFlags.InvokeMethod | BindingFlags.Instance |
                             BindingFlags.Static)
-                          .Where(
-                              mi => (mi.Name == "Equals") &&
-                                    ((pCount = (plist = mi.GetParameters()).Count()) < 3) &&
-                                    (pCount > 0) && plist[0].ParameterType.IsAssignableFrom(t) &&
-                                    (mi.IsStatic
-                                         ? (pCount == 2) &&
-                                           plist[1].ParameterType.IsAssignableFrom(t)
-                                         : (pCount == 1))))
+                            .Where(
+                                mi => (mi.Name == "Equals") &&
+                                      ((pCount = (plist = mi.GetParameters()).Count()) < 3) &&
+                                      (pCount > 0) && plist[0].ParameterType.IsAssignableFrom(t) &&
+                                      (mi.IsStatic
+                                          ? (pCount == 2) &&
+                                            plist[1].ParameterType.IsAssignableFrom(t)
+                                          : (pCount == 1))))
                             .First();
 
                     return equalsMethod.Func<object, object, bool>(false);
@@ -465,7 +498,9 @@ namespace WebApplications.Utilities
         ///   Returns <see langword="true"/> if both of the enumerable objects are the same size and contain the same elements.
         /// </returns>
         public static bool DeepEquals<T>(
-            this IEnumerable<T> enumerableA, IEnumerable<T> enumerableB, IEqualityComparer<T> comparer)
+            this IEnumerable<T> enumerableA,
+            IEnumerable<T> enumerableB,
+            IEqualityComparer<T> comparer)
         {
             // Check for nulls
             if (enumerableA == null)
@@ -522,11 +557,11 @@ namespace WebApplications.Utilities
         public static bool DeepEqualsSimple<T>(this IEnumerable<T> enumerableA, IEnumerable<T> enumerableB)
         {
             return enumerableA == null
-                       ? enumerableB == null
-                       : enumerableB == null
-                             ? false
-                             : enumerableA.Count() == enumerableB.Count() &&
-                               enumerableA.All(i => enumerableB.Contains(i));
+                ? enumerableB == null
+                : enumerableB == null
+                    ? false
+                    : enumerableA.Count() == enumerableB.Count() &&
+                      enumerableA.All(i => enumerableB.Contains(i));
         }
 
         /// <summary>
@@ -546,14 +581,16 @@ namespace WebApplications.Utilities
         ///   <para>If the lists are sorted then use <see cref="System.Linq.Enumerable"/>'s Sequence Equal.</para>
         /// </remarks>
         public static bool DeepEqualsSimple<T>(
-            this IEnumerable<T> enumerableA, IEnumerable<T> enumerableB, IEqualityComparer<T> comparer)
+            this IEnumerable<T> enumerableA,
+            IEnumerable<T> enumerableB,
+            IEqualityComparer<T> comparer)
         {
             return enumerableA == null
-                       ? enumerableB == null
-                       : enumerableB == null
-                             ? false
-                             : (enumerableA.Count() == enumerableB.Count() &&
-                                enumerableA.All(i => enumerableB.Contains(i, comparer)));
+                ? enumerableB == null
+                : enumerableB == null
+                    ? false
+                    : (enumerableA.Count() == enumerableB.Count() &&
+                       enumerableA.All(i => enumerableB.Contains(i, comparer)));
         }
 
         /// <summary>
@@ -568,8 +605,10 @@ namespace WebApplications.Utilities
         /// </exception>
         public static Dictionary<string, string> ToDictionary(this NameValueCollection collection)
         {
-            return collection.Cast<string>().ToDictionary(key => key, key => collection[key],
-                                                          StringComparer.CurrentCultureIgnoreCase);
+            return collection.Cast<string>().ToDictionary(
+                key => key,
+                key => collection[key],
+                StringComparer.CurrentCultureIgnoreCase);
         }
 
         /// <summary>
@@ -582,7 +621,7 @@ namespace WebApplications.Utilities
             if (input == null)
                 return "null";
             // TODO establish approx. increase in length of JSON encoding.
-            StringBuilder stringBuilder = new StringBuilder((int)(input.Length * 1.3) + 2);
+            StringBuilder stringBuilder = new StringBuilder((int) (input.Length * 1.3) + 2);
             stringBuilder.AppendJSON(input);
             return stringBuilder.ToString();
         }
@@ -663,19 +702,22 @@ namespace WebApplications.Utilities
         /// </param>
         /// <returns>The enumerator to iterate through the retrieved objects.</returns>
         /// <exception cref="NullReferenceException"><paramref name="integers"/> is <see langword="null"/>.</exception>
-        public static IEnumerable<T> GetObjectsById<T>(this string integers, Func<int, T> getObject,
-                                                       char[] splitChars = null, bool executeImmediately = false)
+        public static IEnumerable<T> GetObjectsById<T>(
+            this string integers,
+            Func<int, T> getObject,
+            char[] splitChars = null,
+            bool executeImmediately = false)
         {
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
                     {
                         int id;
-                        return Int32.TryParse(s, out id) ? (int?)id : null;
+                        return Int32.TryParse(s, out id) ? (int?) id : null;
                     }).Where(id => id.HasValue)
-                        .Distinct()
-                        .Select(id => getObject(id.Value));
-            if (!typeof(T).IsValueType)
+                    .Distinct()
+                    .Select(id => getObject(id.Value));
+            if (!typeof (T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -703,19 +745,22 @@ namespace WebApplications.Utilities
         /// </param>
         /// <returns>The enumerator to iterate through the retrieved objects.</returns>
         /// <exception cref="NullReferenceException"><paramref name="integers"/> is <see langword="null"/>.</exception>
-        public static IEnumerable<T> GetObjectsById16<T>(this string integers, Func<short, T> getObject,
-                                                         char[] splitChars = null, bool executeImmediately = false)
+        public static IEnumerable<T> GetObjectsById16<T>(
+            this string integers,
+            Func<short, T> getObject,
+            char[] splitChars = null,
+            bool executeImmediately = false)
         {
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
                     {
                         Int16 id;
-                        return Int16.TryParse(s, out id) ? (Int16?)id : null;
+                        return Int16.TryParse(s, out id) ? (Int16?) id : null;
                     }).Where(id => id.HasValue)
-                        .Distinct()
-                        .Select(id => getObject(id.Value));
-            if (!typeof(T).IsValueType)
+                    .Distinct()
+                    .Select(id => getObject(id.Value));
+            if (!typeof (T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -743,19 +788,22 @@ namespace WebApplications.Utilities
         /// </param>
         /// <returns>The enumerator to iterate through the retrieved objects.</returns>
         /// <exception cref="NullReferenceException"><paramref name="integers"/> is <see langword="null"/>.</exception>
-        public static IEnumerable<T> GetObjectsById64<T>(this string integers, Func<long, T> getObject,
-                                                         char[] splitChars = null, bool executeImmediately = false)
+        public static IEnumerable<T> GetObjectsById64<T>(
+            this string integers,
+            Func<long, T> getObject,
+            char[] splitChars = null,
+            bool executeImmediately = false)
         {
             IEnumerable<T> enumeration =
                 integers.Split(splitChars ?? DefaultSplitChars, StringSplitOptions.RemoveEmptyEntries).Select(
                     s =>
                     {
                         Int64 id;
-                        return Int64.TryParse(s, out id) ? (Int64?)id : null;
+                        return Int64.TryParse(s, out id) ? (Int64?) id : null;
                     }).Where(id => id.HasValue)
-                        .Distinct()
-                        .Select(id => getObject(id.Value));
-            if (!typeof(T).IsValueType)
+                    .Distinct()
+                    .Select(id => getObject(id.Value));
+            if (!typeof (T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -776,8 +824,8 @@ namespace WebApplications.Utilities
         public static string XmlEscape(this string raw)
         {
             string stripped = String.IsNullOrEmpty(raw)
-                                  ? raw
-                                  : new string(raw.Where(c => c.IsValidXmlChar()).ToArray());
+                ? raw
+                : new string(raw.Where(c => c.IsValidXmlChar()).ToArray());
             return SecurityElement.Escape(stripped);
         }
 
@@ -864,13 +912,11 @@ namespace WebApplications.Utilities
                 using (Stream stream = assembly.GetManifestResourceStream(filename))
                 {
                     if (stream == null)
-                    {
                         throw new InvalidOperationException(
                             String.Format(
                                 Resources.Extensions_EmbeddedXml_CouldntLoadEmbeddedResource,
                                 filename,
                                 assembly));
-                    }
                     return XDocument.Load(stream);
                 }
             }
@@ -904,7 +950,9 @@ namespace WebApplications.Utilities
         ///   Couldn't load the embedded resource from the specified <paramref name="assembly"/>.
         /// </exception>
         public static XmlSchemaSet GetEmbeddedXmlSchemaSet(
-            this Assembly assembly, string filename, string targetNamespace = "")
+            this Assembly assembly,
+            string filename,
+            string targetNamespace = "")
         {
             try
             {
@@ -916,13 +964,11 @@ namespace WebApplications.Utilities
                 using (Stream stream = assembly.GetManifestResourceStream(filename))
                 {
                     if (stream == null)
-                    {
                         throw new InvalidOperationException(
                             String.Format(
                                 Resources.Extensions_EmbeddedXml_CouldntLoadEmbeddedResource,
                                 filename,
                                 assembly));
-                    }
 
                     using (XmlReader reader = XmlReader.Create(stream))
                     {
@@ -956,7 +1002,7 @@ namespace WebApplications.Utilities
         /// </remarks>
         public static Int64 GetEpochTime(this DateTime dateTime)
         {
-            return (Int64)(dateTime - EpochStart).TotalMilliseconds;
+            return (Int64) (dateTime - EpochStart).TotalMilliseconds;
         }
 
         /// <summary>
@@ -992,21 +1038,15 @@ namespace WebApplications.Utilities
             int depthCounter = 0;
             StringBuilder builder = new StringBuilder(input.Length);
             foreach (char c in input)
-            {
                 if (c == '<')
-                {
                     depthCounter++;
-                }
                 else if (depthCounter > 0)
                 {
                     if (c == '>')
                         depthCounter--;
                 }
                 else
-                {
                     builder.Append(c);
-                }
-            }
             return builder.ToString();
         }
 
@@ -1028,17 +1068,19 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentOutOfRangeException">
         ///   <paramref name="maxLength"/> is less than the <paramref name="ellipsisLength"/>.
         /// </exception>
-        public static string Truncate(this string valueToTruncate, int maxLength,
-                                      TruncateOptions options = TruncateOptions.None, string ellipsisString = "...",
-                                      int ellipsisLength = -1)
+        public static string Truncate(
+            this string valueToTruncate,
+            int maxLength,
+            TruncateOptions options = TruncateOptions.None,
+            string ellipsisString = "...",
+            int ellipsisLength = -1)
         {
-            if (String.IsNullOrEmpty(valueToTruncate) || valueToTruncate.Length <= maxLength)
+            if (String.IsNullOrEmpty(valueToTruncate) ||
+                valueToTruncate.Length <= maxLength)
                 return valueToTruncate ?? String.Empty;
 
             if (ellipsisLength < 0)
-            {
                 ellipsisLength = ellipsisString.Length;
-            }
 
             bool includeEllipsis = (options & TruncateOptions.IncludeEllipsis) == TruncateOptions.IncludeEllipsis;
             bool finishWord = (options & TruncateOptions.FinishWord) == TruncateOptions.FinishWord;
@@ -1066,10 +1108,12 @@ namespace WebApplications.Utilities
             else
                 retValue = "";
 
-            return String.Format("{0}{1}", retValue,
-                                 includeEllipsis && retValue.Length < valueToTruncate.Length
-                                     ? ellipsisString
-                                     : String.Empty);
+            return String.Format(
+                "{0}{1}",
+                retValue,
+                includeEllipsis && retValue.Length < valueToTruncate.Length
+                    ? ellipsisString
+                    : String.Empty);
         }
 
         /// <summary>
@@ -1102,10 +1146,11 @@ namespace WebApplications.Utilities
         /// </returns>
         [CanBeNull]
         [PublicAPI]
-        public static string SafeFormat([CanBeNull]this string format, [CanBeNull]params object[] parameters)
+        public static string SafeFormat([CanBeNull] this string format, [CanBeNull] params object[] parameters)
         {
             if (string.IsNullOrWhiteSpace(format)) return null;
-            if (parameters == null || parameters.Length < 1)
+            if (parameters == null ||
+                parameters.Length < 1)
                 return format;
 
             try
@@ -1128,10 +1173,15 @@ namespace WebApplications.Utilities
         /// <returns>Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.</returns>
         [CanBeNull]
         [PublicAPI]
-        public static string SafeFormat([CanBeNull]this string format, [CanBeNull]string formatOptions, [CanBeNull]IFormatProvider formatProvider, [CanBeNull]params object[] parameters)
+        public static string SafeFormat(
+            [CanBeNull] this string format,
+            [CanBeNull] string formatOptions,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] params object[] parameters)
         {
             if (string.IsNullOrWhiteSpace(format)) return null;
-            if (parameters == null || parameters.Length < 1)
+            if (parameters == null ||
+                parameters.Length < 1)
                 return format;
 
             try
@@ -1247,7 +1297,7 @@ namespace WebApplications.Utilities
                             builder.Append(c);
                             continue;
                         }
-                        builder.Append((Char)n4);
+                        builder.Append((Char) n4);
                         i += 4;
                         break;
                     case 'U':
@@ -1274,7 +1324,8 @@ namespace WebApplications.Utilities
                         }
                         int j = 0;
                         StringBuilder dx = new StringBuilder(4);
-                        while ((i + j) < str.Length && (j < 4))
+                        while ((i + j) < str.Length &&
+                               (j < 4))
                         {
                             char h = str[i + j++];
                             if (!HexDigitsLower.Contains(h)) break;
@@ -1287,7 +1338,7 @@ namespace WebApplications.Utilities
                             builder.Append(c);
                             continue;
                         }
-                        builder.Append((Char)nx);
+                        builder.Append((Char) nx);
                         i += j;
                         break;
                     default:
@@ -1352,13 +1403,11 @@ namespace WebApplications.Utilities
                         if (Char.GetUnicodeCategory(c) != UnicodeCategory.Control)
                             builder.Append(c);
                         else
-                        {
                             builder.Append(@"\u")
                                 .Append(HexDigitsLower[c >> 12 & 0x0F])
                                 .Append(HexDigitsLower[c >> 8 & 0x0F])
                                 .Append(HexDigitsLower[c >> 4 & 0x0F])
                                 .Append(HexDigitsLower[c & 0x0F]);
-                        }
                         break;
                 }
             }
@@ -1429,8 +1478,10 @@ namespace WebApplications.Utilities
         /// <seealso cref="T:WebApplications.Utilities.Threading.ApmWrap`1"/>
         [Obsolete("Consider using TPL or Async.")]
         [NotNull]
-        public static AsyncCallback WrapCallback<T>([NotNull] this AsyncCallback callback, T data,
-                                                    SynchronizationContext syncContext = null)
+        public static AsyncCallback WrapCallback<T>(
+            [NotNull] this AsyncCallback callback,
+            T data,
+            SynchronizationContext syncContext = null)
         {
             return ApmWrap<T>.WrapCallback(callback, data, syncContext);
         }
@@ -1452,13 +1503,13 @@ namespace WebApplications.Utilities
             int[] orderedIndices = indices
                 .Where(i => i < length && i > -1)
                 .OrderBy(i => i)
-                .Concat(new[] { length })
+                .Concat(new[] {length})
                 .ToArray();
 
             // If there is only one index we return the original
             // aray in a single element enumeration.
             if (orderedIndices.Length < 2)
-                return new[] { array };
+                return new[] {array};
 
             T[][] arrays = new T[orderedIndices.Length][];
             int start = 0;
@@ -1495,8 +1546,9 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>);
         }
+
         /// <summary>
         /// Determines whether the specified value is optional.
         /// </summary>
@@ -1520,7 +1572,7 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>)
                 ? type.GetGenericArguments()[0]
                 : type;
         }
@@ -1536,9 +1588,9 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>)
                 ? type
-                : typeof(Optional<>).MakeGenericType(type);
+                : typeof (Optional<>).MakeGenericType(type);
         }
 
         /// <summary>
@@ -1558,7 +1610,7 @@ namespace WebApplications.Utilities
             Contract.Requires(type != null);
 
             if (!type.IsGenericType ||
-                (type.GetGenericTypeDefinition() != typeof(Optional<>)))
+                (type.GetGenericTypeDefinition() != typeof (Optional<>)))
                 return type.Default();
 
             return _optionalDefaultAssigneds.GetOrAdd(
@@ -1566,13 +1618,13 @@ namespace WebApplications.Utilities
                 t =>
                 {
                     if (!t.IsOptional())
-                        t = typeof(Optional<>).MakeGenericType(t);
+                        t = typeof (Optional<>).MakeGenericType(t);
                     return
                         t.GetField(
                             "DefaultAssigned",
                             BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly |
                             BindingFlags.GetField)
-                         .GetValue(null);
+                            .GetValue(null);
                 });
         }
 
@@ -1641,7 +1693,7 @@ namespace WebApplications.Utilities
             Contract.Requires(type != null);
 
             type = GetNonOptionalType(type);
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>);
         }
 
         /// <summary>
@@ -1659,7 +1711,7 @@ namespace WebApplications.Utilities
             if (!type.IsClass &&
                 !type.IsInterface &&
                 !type.IsNullableType())
-                type = typeof(Nullable<>).MakeGenericType(type);
+                type = typeof (Nullable<>).MakeGenericType(type);
             return type;
         }
 
@@ -1720,7 +1772,8 @@ namespace WebApplications.Utilities
         /// <returns><see langword="true" /> if the specified value is null; otherwise, <see langword="false" />.</returns>
         public static bool IsNull(this object value)
         {
-            if (ReferenceEquals(value, null) || ReferenceEquals(value, DBNull.Value))
+            if (ReferenceEquals(value, null) ||
+                ReferenceEquals(value, DBNull.Value))
                 return true;
             INullable nullable = value as INullable;
             return !ReferenceEquals(nullable, null) && nullable.IsNull;
@@ -1856,14 +1909,12 @@ namespace WebApplications.Utilities
 
                 // Note that scope is actually a uint not a long, but uint isn't CLS compliant so the framework
                 // uses a long - we don't need to waste the extra 4 bytes though.
-                uint scope = (uint)ipAddress.ScopeId;
+                uint scope = (uint) ipAddress.ScopeId;
                 byte[] scopeBytes = BitConverter.GetBytes(scope);
                 Array.Copy(scopeBytes, 0, bytes, offset, 4);
             }
             else
-            {
                 Contract.Assert(bytes.Length == 4);
-            }
             return bytes;
         }
 
@@ -1901,7 +1952,9 @@ namespace WebApplications.Utilities
         /// <param name="equalityComparer">The equality comparer.</param>
         /// <returns><see langword="true" /> if all the elements of the enumerable are distinct, <see langword="false" /> otherwise.</returns>
         /// <remarks>TODO move into core library.</remarks>
-        public static bool AreDistinct<T>([NotNull]this IEnumerable<T> enumerable, [CanBeNull] IEqualityComparer<T> equalityComparer = null)
+        public static bool AreDistinct<T>(
+            [NotNull] this IEnumerable<T> enumerable,
+            [CanBeNull] IEqualityComparer<T> equalityComparer = null)
         {
             Contract.Requires(enumerable != null);
             ICollection<T> collection = (enumerable as ICollection<T>) ?? enumerable.ToArray();
@@ -2167,9 +2220,7 @@ namespace WebApplications.Utilities
             using (IEnumerator<TSource> sourceIterator = source.GetEnumerator())
             {
                 if (!sourceIterator.MoveNext())
-                {
                     throw new InvalidOperationException("Sequence was empty");
-                }
                 TSource min = sourceIterator.Current;
                 TKey minKey = selector(min);
                 while (sourceIterator.MoveNext())
@@ -2233,7 +2284,7 @@ namespace WebApplications.Utilities
         /// <param name="source">The source.</param>
         /// <param name="comparer">The comparer.</param>
         /// <returns>``0.</returns>
-        public static T Min<T>([NotNull]this IEnumerable<T> source, [NotNull]Comparer<T> comparer)
+        public static T Min<T>([NotNull] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
             Contract.Requires(source != null);
@@ -2244,16 +2295,14 @@ namespace WebApplications.Utilities
             if (ReferenceEquals(value, null))
             {
                 foreach (T x in source)
-                {
-                    if (x != null && (value == null || comparer.Compare(x, value) < 0))
+                    if (x != null &&
+                        (value == null || comparer.Compare(x, value) < 0))
                         value = x;
-                }
                 return value;
             }
 
             bool hasValue = false;
             foreach (T x in source)
-            {
                 if (hasValue)
                 {
                     if (comparer.Compare(x, value) < 0)
@@ -2264,7 +2313,6 @@ namespace WebApplications.Utilities
                     value = x;
                     hasValue = true;
                 }
-            }
             return value;
         }
 
@@ -2275,7 +2323,7 @@ namespace WebApplications.Utilities
         /// <param name="source">The source.</param>
         /// <param name="comparer">The comparer.</param>
         /// <returns>``0.</returns>
-        public static T Max<T>([NotNull]this IEnumerable<T> source, [NotNull]Comparer<T> comparer)
+        public static T Max<T>([NotNull] this IEnumerable<T> source, [NotNull] Comparer<T> comparer)
             where T : IComparable<T>
         {
             Contract.Requires(source != null);
@@ -2286,16 +2334,14 @@ namespace WebApplications.Utilities
             if (ReferenceEquals(value, null))
             {
                 foreach (T x in source)
-                {
-                    if (x != null && (value == null || comparer.Compare(x, value) > 0))
+                    if (x != null &&
+                        (value == null || comparer.Compare(x, value) > 0))
                         value = x;
-                }
                 return value;
             }
 
             bool hasValue = false;
             foreach (T x in source)
-            {
                 if (hasValue)
                 {
                     if (comparer.Compare(x, value) > 0)
@@ -2306,7 +2352,6 @@ namespace WebApplications.Utilities
                     value = x;
                     hasValue = true;
                 }
-            }
             return value;
         }
         #endregion
@@ -2314,13 +2359,18 @@ namespace WebApplications.Utilities
         #region ToMemorySize
         [NotNull]
         private static readonly string[] _memoryUnitsLong =
-            {
-                " byte", " kilobyte", " megabyte", " gigabyte",
-                " terabyte", " petabyte", " exabyte"
-            };
+        {
+            " byte",
+            " kilobyte",
+            " megabyte",
+            " gigabyte",
+            " terabyte",
+            " petabyte",
+            " exabyte"
+        };
 
         [NotNull]
-        private static readonly string[] _memoryUnitsShort = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+        private static readonly string[] _memoryUnitsShort = {"B", "KB", "MB", "GB", "TB", "PB", "EB"};
 
         /// <summary>
         /// Converts a number of bytes to a friendly memory size.
@@ -2330,10 +2380,13 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this short bytes, bool longUnits = false, uint decimalPlaces = 1,
-                                          double breakPoint = 512D)
+        public static string ToMemorySize(
+            this short bytes,
+            bool longUnits = false,
+            uint decimalPlaces = 1,
+            double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2344,10 +2397,13 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this ushort bytes, bool longUnits = false, uint decimalPlaces = 1,
-                                          double breakPoint = 512D)
+        public static string ToMemorySize(
+            this ushort bytes,
+            bool longUnits = false,
+            uint decimalPlaces = 1,
+            double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2358,10 +2414,13 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this int bytes, bool longUnits = false, uint decimalPlaces = 1,
-                                          double breakPoint = 512D)
+        public static string ToMemorySize(
+            this int bytes,
+            bool longUnits = false,
+            uint decimalPlaces = 1,
+            double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2372,10 +2431,13 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this uint bytes, bool longUnits = false, uint decimalPlaces = 1,
-                                          double breakPoint = 512D)
+        public static string ToMemorySize(
+            this uint bytes,
+            bool longUnits = false,
+            uint decimalPlaces = 1,
+            double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2386,10 +2448,13 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this long bytes, bool longUnits = false, uint decimalPlaces = 1,
-                                          double breakPoint = 512D)
+        public static string ToMemorySize(
+            this long bytes,
+            bool longUnits = false,
+            uint decimalPlaces = 1,
+            double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2400,10 +2465,13 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this ulong bytes, bool longUnits = false, uint decimalPlaces = 1,
-                                          double breakPoint = 512D)
+        public static string ToMemorySize(
+            this ulong bytes,
+            bool longUnits = false,
+            uint decimalPlaces = 1,
+            double breakPoint = 512D)
         {
-            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2414,8 +2482,11 @@ namespace WebApplications.Utilities
         /// <param name="decimalPlaces">The number of decimal places between 0 and 16 (ignored for bytes).</param>
         /// <param name="breakPoint">The break point between 0 and 1024 (or 0D to base on decimal points).</param>
         /// <returns>System.String.</returns>
-        public static string ToMemorySize(this double bytes, bool longUnits = false, uint decimalPlaces = 1,
-                                          double breakPoint = 512D)
+        public static string ToMemorySize(
+            this double bytes,
+            bool longUnits = false,
+            uint decimalPlaces = 1,
+            double breakPoint = 512D)
         {
             if (decimalPlaces < 1) decimalPlaces = 0;
             else if (decimalPlaces > 16) decimalPlaces = 16;
@@ -2434,11 +2505,12 @@ namespace WebApplications.Utilities
                 unit++;
                 maxDecimalPlaces = Math.Min(decimalPlaces, maxDecimalPlaces + 3);
             }
-            return string.Format("{0:N" + maxDecimalPlaces + "}{1}",
-                                 amount,
-                                 longUnits
-                                     ? _memoryUnitsLong[unit]
-                                     : _memoryUnitsShort[unit]);
+            return string.Format(
+                "{0:N" + maxDecimalPlaces + "}{1}",
+                amount,
+                longUnits
+                    ? _memoryUnitsLong[unit]
+                    : _memoryUnitsShort[unit]);
         }
         #endregion
 
@@ -2480,7 +2552,7 @@ namespace WebApplications.Utilities
         {
             int mod = value % modulus;
             if (mod < 0) mod += modulus;
-            return (short)mod;
+            return (short) mod;
         }
 
         /// <summary>
@@ -2492,7 +2564,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ushort Mod(this ushort value, ushort modulus)
         {
-            return (ushort)(value % modulus);
+            return (ushort) (value % modulus);
         }
 
         /// <summary>
@@ -2563,12 +2635,16 @@ namespace WebApplications.Utilities
         /// <exception cref="InvalidOperationException">The dependencies are cyclical.</exception>
         [NotNull]
         [UsedImplicitly]
-        public static IEnumerable<T> TopologicalSortDependants<T>([NotNull] this IEnumerable<T> enumerable,
-                                                                  [NotNull] Func<T, IEnumerable<T>> getDependants)
+        public static IEnumerable<T> TopologicalSortDependants<T>(
+            [NotNull] this IEnumerable<T> enumerable,
+            [NotNull] Func<T, IEnumerable<T>> getDependants)
         {
             // Create a dictionary of dependencies.
-            return TopologicalSortEdges(enumerable, enumerable.SelectMany(getDependants,
-                                                                          (e, d) => new KeyValuePair<T, T>(e, d)));
+            return TopologicalSortEdges(
+                enumerable,
+                enumerable.SelectMany(
+                    getDependants,
+                    (e, d) => new KeyValuePair<T, T>(e, d)));
         }
 
         /// <summary>
@@ -2590,12 +2666,16 @@ namespace WebApplications.Utilities
         /// </exception>
         [NotNull]
         [UsedImplicitly]
-        public static IEnumerable<T> TopologicalSortDependencies<T>([NotNull] this IEnumerable<T> enumerable,
-                                                                    [NotNull] Func<T, IEnumerable<T>> getDependencies)
+        public static IEnumerable<T> TopologicalSortDependencies<T>(
+            [NotNull] this IEnumerable<T> enumerable,
+            [NotNull] Func<T, IEnumerable<T>> getDependencies)
         {
             // Create a dictionary of dependencies.
-            return TopologicalSortEdges(enumerable, enumerable.SelectMany(getDependencies,
-                                                                          (e, d) => new KeyValuePair<T, T>(d, e)));
+            return TopologicalSortEdges(
+                enumerable,
+                enumerable.SelectMany(
+                    getDependencies,
+                    (e, d) => new KeyValuePair<T, T>(d, e)));
         }
 
         /// <summary>
@@ -2611,8 +2691,9 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentException">There are duplicates in <paramref name="enumerable"/>.</exception>
         [NotNull]
         [UsedImplicitly]
-        public static IEnumerable<T> TopologicalSortEdges<T>([NotNull] this IEnumerable<T> enumerable,
-                                                             [NotNull] IEnumerable<KeyValuePair<T, T>> edges)
+        public static IEnumerable<T> TopologicalSortEdges<T>(
+            [NotNull] this IEnumerable<T> enumerable,
+            [NotNull] IEnumerable<KeyValuePair<T, T>> edges)
         {
             // Create lookup dictionaries from edges
             Dictionary<T, List<T>> dependants = new Dictionary<T, List<T>>();
@@ -2630,10 +2711,12 @@ namespace WebApplications.Utilities
             foreach (KeyValuePair<T, T> kvp in edges)
             {
                 List<T> l;
-                if ((dependencies.TryGetValue(kvp.Value, out l)) && (!l.Contains(kvp.Key)))
+                if ((dependencies.TryGetValue(kvp.Value, out l)) &&
+                    (!l.Contains(kvp.Key)))
                     l.Add(kvp.Key);
 
-                if ((dependants.TryGetValue(kvp.Key, out l)) && (!l.Contains(kvp.Value)))
+                if ((dependants.TryGetValue(kvp.Key, out l)) &&
+                    (!l.Contains(kvp.Value)))
                     l.Add(kvp.Value);
             }
 
@@ -2672,14 +2755,13 @@ namespace WebApplications.Utilities
         }
         #endregion
 
-
         /// <summary>
         /// Gets the semantic version of an assembly.
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <returns></returns>
         [NotNull]
-        public static SemanticVersion SemanticVersion([NotNull]this Assembly assembly)
+        public static SemanticVersion SemanticVersion([NotNull] this Assembly assembly)
         {
             Contract.Requires(assembly != null);
 
@@ -2693,12 +2775,12 @@ namespace WebApplications.Utilities
             SemanticVersion result;
             if ((attribute != null) &&
                 Utilities.SemanticVersion.TryParse(
-                attribute.SemanticVersion
+                    attribute.SemanticVersion
                         .Replace("{Major}", version.Major.ToString("D"))
                         .Replace("{Minor}", version.Minor.ToString("D"))
                         .Replace("{Build}", version.Build.ToString("D"))
                         .Replace("{Revision}", version.Revision.ToString("D")),
-                        out result))
+                    out result))
                 return result;
 
             // Create a semantic version from the assembly version directly.
@@ -2709,6 +2791,7 @@ namespace WebApplications.Utilities
         [NotNull]
         private static readonly ConcurrentDictionary<Type, Func<IEnumerable, ISet>> _hashCollectionCreators =
             new ConcurrentDictionary<Type, Func<IEnumerable, ISet>>();
+
         /// <summary>
         /// Creates a strongly typed <see cref="HashCollection{T}" /> from the value or values.
         /// </summary>
@@ -2723,44 +2806,50 @@ namespace WebApplications.Utilities
                 elementType,
                 t =>
                 {
-                    Type hashCollectionType = typeof(HashCollection<>).MakeGenericType(t);
-                    Type strongEnumerableType = typeof(IEnumerable<>).MakeGenericType(t);
+                    Type hashCollectionType = typeof (HashCollection<>).MakeGenericType(t);
+                    Type strongEnumerableType = typeof (IEnumerable<>).MakeGenericType(t);
 
                     ConstructorInfo constructor = hashCollectionType.GetConstructor(Type.EmptyTypes);
                     MethodInfo addMethod = hashCollectionType.GetMethod(
-                        "Add", BindingFlags.Public | BindingFlags.Instance);
+                        "Add",
+                        BindingFlags.Public | BindingFlags.Instance);
                     Contract.Assert(addMethod != null);
 
-                    ParameterExpression valuesParameter = Expression.Parameter(typeof(IEnumerable), "values");
+                    ParameterExpression valuesParameter = Expression.Parameter(typeof (IEnumerable), "values");
                     ParameterExpression strongEnumerable = Expression.Variable(
-                        strongEnumerableType, "strongEnumarble");
+                        strongEnumerableType,
+                        "strongEnumarble");
                     ParameterExpression result = Expression.Variable(hashCollectionType, "result");
 
                     return Expression.Lambda<Func<IEnumerable, ISet>>(
                         Expression.Block(
-                            new[] { result },
+                            new[] {result},
                             Expression.Assign(result, Expression.New(constructor)),
                             Expression.IfThen(
                                 Expression.ReferenceNotEqual(
-                                    valuesParameter, Expression.Constant(null, typeof(IEnumerable))),
+                                    valuesParameter,
+                                    Expression.Constant(null, typeof (IEnumerable))),
                                 Expression.Block(
-                                    new[] { strongEnumerable },
+                                    new[] {strongEnumerable},
                                     Expression.Assign(
-                                        strongEnumerable, Expression.TypeAs(valuesParameter, strongEnumerableType)),
+                                        strongEnumerable,
+                                        Expression.TypeAs(valuesParameter, strongEnumerableType)),
                                     Expression.IfThenElse(
                                         Expression.ReferenceNotEqual(
-                                            strongEnumerable, Expression.Constant(null, strongEnumerableType)),
+                                            strongEnumerable,
+                                            Expression.Constant(null, strongEnumerableType)),
                                         strongEnumerable.ForEach(
                                             item =>
-                                            Expression.Call(result, addMethod, item)),
+                                                Expression.Call(result, addMethod, item)),
                                         Expression.IfThen(
                                             Expression.ReferenceNotEqual(
-                                                valuesParameter, Expression.Constant(null, valuesParameter.Type)),
+                                                valuesParameter,
+                                                Expression.Constant(null, valuesParameter.Type)),
                                             valuesParameter.ForEach(
                                                 item =>
-                                                Expression.Call(result, addMethod, Expression.Convert(item, t)))
+                                                    Expression.Call(result, addMethod, Expression.Convert(item, t)))
                                             )))),
-                            Expression.Convert(result, typeof(ISet))),
+                            Expression.Convert(result, typeof (ISet))),
                         valuesParameter
                         ).Compile();
                 })(values);
@@ -2770,8 +2859,9 @@ namespace WebApplications.Utilities
         /// The <see cref="IEnumerator.MoveNext" /> method.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _enumeratorMoveNextMethod = typeof(IEnumerator).GetMethod(
-            "MoveNext", BindingFlags.Public | BindingFlags.Instance);
+        private static readonly MethodInfo _enumeratorMoveNextMethod = typeof (IEnumerator).GetMethod(
+            "MoveNext",
+            BindingFlags.Public | BindingFlags.Instance);
 
         /// <summary>
         /// Takes an input source enumerable expression (must be of type <see cref="IEnumerable{T}" />) and creates a foreach loop,
@@ -2783,9 +2873,10 @@ namespace WebApplications.Utilities
         /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
         [NotNull]
         public static Expression ForEach(
-            [NotNull] this Expression sourceEnumerable, [NotNull] Func<Expression, Expression> getBody)
+            [NotNull] this Expression sourceEnumerable,
+            [NotNull] Func<Expression, Expression> getBody)
         {
-            return ForEach(sourceEnumerable, item => new[] { getBody(item) });
+            return ForEach(sourceEnumerable, item => new[] {getBody(item)});
         }
 
         /// <summary>
@@ -2798,30 +2889,32 @@ namespace WebApplications.Utilities
         /// <exception cref="System.ArgumentException">The source enumerable is not of an enumerable type;sourceEnumerable</exception>
         [NotNull]
         public static Expression ForEach(
-            [NotNull] this Expression sourceEnumerable, [NotNull] Func<Expression, IEnumerable<Expression>> getBody)
+            [NotNull] this Expression sourceEnumerable,
+            [NotNull] Func<Expression, IEnumerable<Expression>> getBody)
         {
             Contract.Requires(sourceEnumerable != null);
 
             Type enumerableType = sourceEnumerable.Type;
             Type elementType;
             Type enumeratorType;
-            if (enumerableType == typeof(IEnumerable))
+            if (enumerableType == typeof (IEnumerable))
             {
-                elementType = typeof(object);
-                enumeratorType = typeof(IEnumerator);
+                elementType = typeof (object);
+                enumeratorType = typeof (IEnumerator);
             }
             else if ((enumerableType.IsGenericType) &&
-                     (enumerableType.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+                     (enumerableType.GetGenericTypeDefinition() == typeof (IEnumerable<>)))
             {
                 elementType = enumerableType.GetGenericArguments().Single();
-                enumeratorType = typeof(IEnumerator<>).MakeGenericType(elementType);
+                enumeratorType = typeof (IEnumerator<>).MakeGenericType(elementType);
             }
             else
                 throw new ArgumentException("The source enumerable is not of an enumerable type", "sourceEnumerable");
             //TODO Translate?
 
             MethodInfo getEnumeratorMethod = enumerableType.GetMethod(
-                "GetEnumerator", BindingFlags.Public | BindingFlags.Instance);
+                "GetEnumerator",
+                BindingFlags.Public | BindingFlags.Instance);
             PropertyInfo currentProperty = enumeratorType.GetProperty("Current", elementType);
 
             ParameterExpression enumerator = Expression.Variable(enumeratorType, "enumerator");
@@ -2831,7 +2924,7 @@ namespace WebApplications.Utilities
             if (expressions.Length < 1) return Expression.Empty();
 
             return Expression.Block(
-                new[] { enumerator },
+                new[] {enumerator},
                 Expression.Assign(enumerator, Expression.Call(sourceEnumerable, getEnumeratorMethod)),
                 Expression.Loop(
                     Expression.IfThenElse(
@@ -2850,7 +2943,7 @@ namespace WebApplications.Utilities
         [NotNull]
         public static Expression Blockify(
             this IEnumerable<Expression> expressions,
-            [NotNull]IEnumerable<ParameterExpression> locals)
+            [NotNull] IEnumerable<ParameterExpression> locals)
         {
             Contract.Requires(locals != null);
             return expressions.Blockify(locals.ToArray());
@@ -2872,16 +2965,14 @@ namespace WebApplications.Utilities
             Expression[] e = (expressions ?? Enumerable.Empty<Expression>()).ToArray();
             if ((locals != null) &&
                 (locals.Length > 0))
-            {
                 return e.Length > 0
-                           ? (Expression)Expression.Block(locals, e)
-                           : Expression.Empty();
-            }
+                    ? (Expression) Expression.Block(locals, e)
+                    : Expression.Empty();
             return e.Length > 1
-                       ? Expression.Block(e)
-                       : (e.Length > 0
-                              ? e[0]
-                              : Expression.Empty());
+                ? Expression.Block(e)
+                : (e.Length > 0
+                    ? e[0]
+                    : Expression.Empty());
         }
 
         /// <summary>
@@ -2924,7 +3015,8 @@ namespace WebApplications.Utilities
         /// <returns>IEnumerable{Expression}.</returns>
         [NotNull]
         public static IEnumerable<Expression> UnBlockify(
-            [NotNull] this Expression expression, [NotNull] out IEnumerable<ParameterExpression> variables)
+            [NotNull] this Expression expression,
+            [NotNull] out IEnumerable<ParameterExpression> variables)
         {
             Contract.Requires(expression != null);
             Contract.Ensures(Contract.ValueAtReturn(out variables) != null);
@@ -2935,7 +3027,7 @@ namespace WebApplications.Utilities
             {
                 // We don't have a block.
                 variables = Enumerable.Empty<ParameterExpression>();
-                return new[] { expression };
+                return new[] {expression};
             }
             Contract.Assert(block.Variables != null);
             Contract.Assert(block.Expressions != null);
@@ -2981,8 +3073,8 @@ namespace WebApplications.Utilities
 
             BlockExpression b = block as BlockExpression;
             return b == null
-                       ? Expression.Block(variables, block)
-                       : Expression.Block(b.Variables.Concat(v), b.Expressions);
+                ? Expression.Block(variables, block)
+                : Expression.Block(b.Variables.Concat(v), b.Expressions);
         }
 
         /// <summary>
@@ -3022,8 +3114,8 @@ namespace WebApplications.Utilities
 
             BlockExpression b = block as BlockExpression;
             return b == null
-                       ? Expression.Block(new[] { block }.Concat(expressions))
-                       : Expression.Block(b.Variables, b.Expressions.Concat(expressions));
+                ? Expression.Block(new[] {block}.Concat(expressions))
+                : Expression.Block(b.Variables, b.Expressions.Concat(expressions));
         }
     }
 }

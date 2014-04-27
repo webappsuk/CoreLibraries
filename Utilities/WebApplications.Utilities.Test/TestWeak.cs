@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -51,26 +51,29 @@ namespace WebApplications.Utilities.Test
             int unreferencedNullCount = 0;
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            Parallel.For(0, elements, l =>
-                                          {
-                                              // Include nulls ~25% of the time.
-                                              TestClass t;
-                                              if (random.Next(4) < 3)
-                                                  t = new TestClass(random.Next(int.MinValue, int.MaxValue));
-                                              else
-                                              {
-                                                  t = null;
-                                                  Interlocked.Increment(ref nullCount);
-                                              }
+            Parallel.For(
+                0,
+                elements,
+                l =>
+                {
+                    // Include nulls ~25% of the time.
+                    TestClass t;
+                    if (random.Next(4) < 3)
+                        t = new TestClass(random.Next(int.MinValue, int.MaxValue));
+                    else
+                    {
+                        t = null;
+                        Interlocked.Increment(ref nullCount);
+                    }
 
-                                              weakConcurrentDictionary.Add(l, t);
+                    weakConcurrentDictionary.Add(l, t);
 
-                                              // Only keep references ~33% of the time.
-                                              if (random.Next(3) == 0)
-                                                  referenceDictionary.AddOrUpdate(l, t, (k, v) => t);
-                                              else if (t == null)
-                                                  Interlocked.Increment(ref unreferencedNullCount);
-                                          });
+                    // Only keep references ~33% of the time.
+                    if (random.Next(3) == 0)
+                        referenceDictionary.AddOrUpdate(l, t, (k, v) => t);
+                    else if (t == null)
+                        Interlocked.Increment(ref unreferencedNullCount);
+                });
             stopwatch.Stop();
             Trace.WriteLine(stopwatch.ToString("Populating dictionaries with {0} elements", elements));
 
@@ -79,7 +82,7 @@ namespace WebApplications.Utilities.Test
             long bytes = GC.GetTotalMemory(true);
             stopwatch.Stop();
             Trace.WriteLine(stopwatch.ToString("Garbage collection"));
-            Trace.WriteLine(string.Format("Memory: {0}K", bytes/1024));
+            Trace.WriteLine(string.Format("Memory: {0}K", bytes / 1024));
 
             // Check that we have l
             Assert.IsTrue(referenceDictionary.Count <= elements);
@@ -115,13 +118,14 @@ namespace WebApplications.Utilities.Test
 
             // Check everything that's still referenced is available.
             stopwatch.Restart();
-            Parallel.ForEach(referenceDictionary,
-                             kvp =>
-                                 {
-                                     TestClass value;
-                                     Assert.IsTrue(weakConcurrentDictionary.TryGetValue(kvp.Key, out value));
-                                     Assert.AreEqual(kvp.Value, value);
-                                 });
+            Parallel.ForEach(
+                referenceDictionary,
+                kvp =>
+                {
+                    TestClass value;
+                    Assert.IsTrue(weakConcurrentDictionary.TryGetValue(kvp.Key, out value));
+                    Assert.AreEqual(kvp.Value, value);
+                });
             stopwatch.Stop();
             Trace.WriteLine(stopwatch.ToString("Checking '{0}' elements", weakCount));
         }
@@ -140,26 +144,29 @@ namespace WebApplications.Utilities.Test
             int unreferencedNullCount = 0;
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            Parallel.For(0, elements, l =>
-                                          {
-                                              // Include nulls ~25% of the time.
-                                              ObservableTestClass t;
-                                              if (random.Next(4) < 3)
-                                                  t = new ObservableTestClass(random.Next(int.MinValue, int.MaxValue));
-                                              else
-                                              {
-                                                  t = null;
-                                                  Interlocked.Increment(ref nullCount);
-                                              }
+            Parallel.For(
+                0,
+                elements,
+                l =>
+                {
+                    // Include nulls ~25% of the time.
+                    ObservableTestClass t;
+                    if (random.Next(4) < 3)
+                        t = new ObservableTestClass(random.Next(int.MinValue, int.MaxValue));
+                    else
+                    {
+                        t = null;
+                        Interlocked.Increment(ref nullCount);
+                    }
 
-                                              weakConcurrentDictionary.Add(l, t);
+                    weakConcurrentDictionary.Add(l, t);
 
-                                              // Only keep references ~33% of the time.
-                                              if (random.Next(3) == 0)
-                                                  referenceDictionary.AddOrUpdate(l, t, (k, v) => t);
-                                              else if (t == null)
-                                                  Interlocked.Increment(ref unreferencedNullCount);
-                                          });
+                    // Only keep references ~33% of the time.
+                    if (random.Next(3) == 0)
+                        referenceDictionary.AddOrUpdate(l, t, (k, v) => t);
+                    else if (t == null)
+                        Interlocked.Increment(ref unreferencedNullCount);
+                });
             stopwatch.Stop();
             Trace.WriteLine(stopwatch.ToString("Populating dictionaries with {0} elements", elements));
 
@@ -168,7 +175,7 @@ namespace WebApplications.Utilities.Test
             long bytes = GC.GetTotalMemory(true);
             stopwatch.Stop();
             Trace.WriteLine(stopwatch.ToString("Garbage collection"));
-            Trace.WriteLine(string.Format("Memory: {0}K", bytes/1024));
+            Trace.WriteLine(string.Format("Memory: {0}K", bytes / 1024));
 
             // Check that we have l
             Assert.IsTrue(referenceDictionary.Count <= elements);
@@ -204,13 +211,14 @@ namespace WebApplications.Utilities.Test
 
             // Check everything that's still referenced is available.
             stopwatch.Restart();
-            Parallel.ForEach(referenceDictionary,
-                             kvp =>
-                                 {
-                                     ObservableTestClass value;
-                                     Assert.IsTrue(weakConcurrentDictionary.TryGetValue(kvp.Key, out value));
-                                     Assert.AreEqual(kvp.Value, value);
-                                 });
+            Parallel.ForEach(
+                referenceDictionary,
+                kvp =>
+                {
+                    ObservableTestClass value;
+                    Assert.IsTrue(weakConcurrentDictionary.TryGetValue(kvp.Key, out value));
+                    Assert.AreEqual(kvp.Value, value);
+                });
             stopwatch.Stop();
             Trace.WriteLine(stopwatch.ToString("Checking '{0}' elements", weakCount));
         }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,39 +40,41 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Maps underlying image format GUIDs to their enumeration equivalent.
         /// </summary>
-        [NotNull] private static readonly IReadOnlyDictionary<Guid, GraphicFormat> _graphicFormatsByGuid = new Dictionary
+        [NotNull]
+        private static readonly IReadOnlyDictionary<Guid, GraphicFormat> _graphicFormatsByGuid = new Dictionary
             <Guid, GraphicFormat>
-            {
-                // Memory Bitmap
-                {new Guid("b96b3caa-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Bmp},
-                // Normal Bitmap
-                {new Guid("b96b3cab-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Bmp},
-                {new Guid("b96b3cac-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Emf},
-                {new Guid("b96b3cad-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Wmf},
-                {new Guid("b96b3cb0-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Gif},
-                {new Guid("b96b3cae-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Jpeg},
-                {new Guid("b96b3caf-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Png},
-                {new Guid("b96b3cb1-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Tiff},
-                //{new Guid("b96b3cb2-0728-11d3-9d7b-0000f81ef32e"), ImageFormat.Exif},
-                {new Guid("b96b3cb5-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Icon}
-            };
+        {
+            // Memory Bitmap
+            {new Guid("b96b3caa-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Bmp},
+            // Normal Bitmap
+            {new Guid("b96b3cab-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Bmp},
+            {new Guid("b96b3cac-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Emf},
+            {new Guid("b96b3cad-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Wmf},
+            {new Guid("b96b3cb0-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Gif},
+            {new Guid("b96b3cae-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Jpeg},
+            {new Guid("b96b3caf-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Png},
+            {new Guid("b96b3cb1-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Tiff},
+            //{new Guid("b96b3cb2-0728-11d3-9d7b-0000f81ef32e"), ImageFormat.Exif},
+            {new Guid("b96b3cb5-0728-11d3-9d7b-0000f81ef32e"), GraphicFormat.Icon}
+        };
 
         /// <summary>
         /// Maps the image format enumeration to the system equivalent.
         /// </summary>
-        [NotNull] private static readonly Dictionary<GraphicFormat, ImageFormat> _graphicFormats =
+        [NotNull]
+        private static readonly Dictionary<GraphicFormat, ImageFormat> _graphicFormats =
             new Dictionary<GraphicFormat, ImageFormat>
-                {
-                    {GraphicFormat.Bmp, ImageFormat.Bmp},
-                    {GraphicFormat.Emf, ImageFormat.Emf},
-                    {GraphicFormat.Wmf, ImageFormat.Wmf},
-                    {GraphicFormat.Gif, ImageFormat.Gif},
-                    {GraphicFormat.Jpeg, ImageFormat.Jpeg},
-                    {GraphicFormat.Png, ImageFormat.Png},
-                    {GraphicFormat.Tiff, ImageFormat.Tiff},
-                    //{ImageFormat.Exif, ImageFormat.Exif},
-                    {GraphicFormat.Icon, ImageFormat.Icon}
-                };
+            {
+                {GraphicFormat.Bmp, ImageFormat.Bmp},
+                {GraphicFormat.Emf, ImageFormat.Emf},
+                {GraphicFormat.Wmf, ImageFormat.Wmf},
+                {GraphicFormat.Gif, ImageFormat.Gif},
+                {GraphicFormat.Jpeg, ImageFormat.Jpeg},
+                {GraphicFormat.Png, ImageFormat.Png},
+                {GraphicFormat.Tiff, ImageFormat.Tiff},
+                //{ImageFormat.Exif, ImageFormat.Exif},
+                {GraphicFormat.Icon, ImageFormat.Icon}
+            };
 
         /// <summary>
         /// Converts a system image format to the Traveller enumeration equivalent.
@@ -112,7 +114,6 @@ namespace WebApplications.Utilities
         {
             int length = bytes.Length;
             if (length > 2)
-            {
                 switch (bytes[0])
                 {
                     case 0x00:
@@ -178,7 +179,6 @@ namespace WebApplications.Utilities
                             return GraphicFormat.Jpeg;
                         break;
                 }
-            }
             throw new ArgumentOutOfRangeException("bytes");
         }
     }

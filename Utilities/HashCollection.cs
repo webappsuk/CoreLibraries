@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -7,7 +34,6 @@ using JetBrains.Annotations;
 
 namespace WebApplications.Utilities
 {
-
     /// <summary>
     /// Implements a <see cref="HashSet{T}" /> with <see cref="ICollection" /> support, allowing extraction of non-generic
     /// information.
@@ -126,7 +152,7 @@ namespace WebApplications.Utilities
         bool ISet.Add(object item)
         {
             Contract.Assert(item == null || item is T);
-            return Add((T)item);
+            return Add((T) item);
         }
 
         /// <summary>
@@ -136,7 +162,7 @@ namespace WebApplications.Utilities
         /// <returns>true if the element is added to the set; false if the element is already in the set.</returns>
         public bool Remove(object item)
         {
-            return base.Remove((T)item);
+            return base.Remove((T) item);
         }
 
         /// <summary>
@@ -149,7 +175,7 @@ namespace WebApplications.Utilities
         public bool Contains(object item)
         {
             Contract.Assert(item == null || item is T);
-            return base.Contains((T)item);
+            return base.Contains((T) item);
         }
 
         /// <summary>
@@ -187,7 +213,10 @@ namespace WebApplications.Utilities
         /// Gets the number of elements that are contained in a set.
         /// </summary>
         /// <value>The count.</value>
-        int ICollection.Count { get { return Count; } }
+        int ICollection.Count
+        {
+            get { return Count; }
+        }
 
         /// <summary>
         /// Modifies the current set so that it contains only elements that are present either in the current set or in the
@@ -331,7 +360,10 @@ namespace WebApplications.Utilities
         /// Gets the type of the objects stored in the set.
         /// </summary>
         /// <value>The type.</value>
-        public Type Type { get { return typeof(T); } }
+        public Type Type
+        {
+            get { return typeof (T); }
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -414,7 +446,7 @@ namespace WebApplications.Utilities
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
             // ReSharper disable once RedundantCast
-            return ((HashSet<T>)this).ToArray().Cast<object>().GetEnumerator();
+            return ((HashSet<T>) this).ToArray().Cast<object>().GetEnumerator();
         }
 
         /// <summary>

@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
@@ -8,9 +35,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
-using System.Web.UI;
 using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Utilities
 {
@@ -18,18 +43,20 @@ namespace WebApplications.Utilities
     /// Stores a semantic version number for a program.
     /// </summary>
     [Serializable]
-    public sealed class SemanticVersion : IComparable, IComparable<SemanticVersion>, IEquatable<SemanticVersion>, ISerializable
+    public sealed class SemanticVersion : IComparable, IComparable<SemanticVersion>, IEquatable<SemanticVersion>,
+        ISerializable
     {
         /// <summary>
         /// The characters that are valid in the pre-release and build part strings
         /// </summary>
         [NotNull]
-        private static readonly HashSet<char> _validChars = new HashSet<char>("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.");
+        private static readonly HashSet<char> _validChars =
+            new HashSet<char>("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.");
 
         /// <summary>
         /// The dot delimiter for splitting pre-release parts
         /// </summary>
-        private static readonly char[] _dotDelimiter = { '.' };
+        private static readonly char[] _dotDelimiter = {'.'};
 
         /// <summary>
         /// Version zero
@@ -77,8 +104,10 @@ namespace WebApplications.Utilities
             Minor = minor;
             Patch = patch;
 
-            if (preRelease.IsAssigned && preRelease.Value == null) preRelease = string.Empty;
-            if (build.IsAssigned && build.Value == null) build = string.Empty;
+            if (preRelease.IsAssigned &&
+                preRelease.Value == null) preRelease = string.Empty;
+            if (build.IsAssigned &&
+                build.Value == null) build = string.Empty;
 
             PreRelease = preRelease;
             Build = build;
@@ -161,7 +190,8 @@ namespace WebApplications.Utilities
                         s.Append('*');
 
                     return s.ToString();
-                }, LazyThreadSafetyMode.PublicationOnly);
+                },
+                LazyThreadSafetyMode.PublicationOnly);
         }
 
         /// <summary>
@@ -208,7 +238,9 @@ namespace WebApplications.Utilities
             Contract.EndContractBlock();
             if ((preRelease.Value != null) &&
                 (!IsValidPart(preRelease.Value)))
-                throw new ArgumentOutOfRangeException("preRelease", preRelease,
+                throw new ArgumentOutOfRangeException(
+                    "preRelease",
+                    preRelease,
                     "The pre-release string contains invalid characters.");
             if ((build != null) &&
                 (!IsValidPart(build.Value)))
@@ -224,13 +256,13 @@ namespace WebApplications.Utilities
         /// <param name="preRelease">The optional preRelease version.</param>
         public SemanticVersion([NotNull] Version version, [CanBeNull] string preRelease = "")
             : this(
-            version.Major,
-            version.Minor,
-            version.Build > -1 ? version.Build : 0,
-            preRelease,
-            version.Revision > -1
-                ? string.Format("build.{0}", version.Revision)
-                : null)
+                version.Major,
+                version.Minor,
+                version.Build > -1 ? version.Build : 0,
+                preRelease,
+                version.Revision > -1
+                    ? string.Format("build.{0}", version.Revision)
+                    : null)
         {
             Contract.Requires(version != null);
         }
@@ -341,7 +373,13 @@ namespace WebApplications.Utilities
         public SemanticVersion GetFull()
         {
             return IsPartial
-                ? new SemanticVersion(Major.Value, Minor.Value, Patch.Value, PreRelease.Value ?? string.Empty, Build.Value ?? string.Empty, false)
+                ? new SemanticVersion(
+                    Major.Value,
+                    Minor.Value,
+                    Patch.Value,
+                    PreRelease.Value ?? string.Empty,
+                    Build.Value ?? string.Empty,
+                    false)
                 : this;
         }
 
@@ -507,7 +545,7 @@ namespace WebApplications.Utilities
         /// <param name="version">The version.</param>
         /// <returns></returns>
         [NotNull]
-        public static explicit operator Version([NotNull]SemanticVersion version)
+        public static explicit operator Version([NotNull] SemanticVersion version)
         {
             Contract.Requires(version != null);
 
@@ -527,7 +565,7 @@ namespace WebApplications.Utilities
         /// <param name="version">The version.</param>
         /// <returns></returns>
         [NotNull]
-        public static implicit operator SemanticVersion([NotNull]Version version)
+        public static implicit operator SemanticVersion([NotNull] Version version)
         {
             Contract.Requires(version != null);
             return new SemanticVersion(version);
@@ -575,7 +613,7 @@ namespace WebApplications.Utilities
         public int CompareTo([CanBeNull] object obj)
         {
             SemanticVersion otherVersion = obj as SemanticVersion;
-            return null != otherVersion ? this.CompareTo(otherVersion) : int.MaxValue;
+            return null != otherVersion ? CompareTo(otherVersion) : int.MaxValue;
         }
 
         /// <summary>
@@ -622,16 +660,16 @@ namespace WebApplications.Utilities
             if (ReferenceEquals(this, other))
                 return 0;
 
-            int result = this.Major.CompareTo(other.Major);
+            int result = Major.CompareTo(other.Major);
             if (result != 0)
                 return result;
 
-            result = this.Minor.CompareTo(other.Minor);
+            result = Minor.CompareTo(other.Minor);
             if (result != 0)
                 return result;
 
-            result = this.Patch.CompareTo(other.Patch);
-            return result != 0 
+            result = Patch.CompareTo(other.Patch);
+            return result != 0
                 ? result
                 : ComparePrereleaseVersions(PreRelease, other.PreRelease);
         }
@@ -649,13 +687,19 @@ namespace WebApplications.Utilities
             if (ReferenceEquals(this, other))
                 return true;
 
-            if (Major.IsAssigned && other.Major.IsAssigned && (Major.Value != other.Major.Value))
+            if (Major.IsAssigned &&
+                other.Major.IsAssigned &&
+                (Major.Value != other.Major.Value))
                 return false;
 
-            if (Minor.IsAssigned && other.Minor.IsAssigned && (Minor.Value != other.Minor.Value))
+            if (Minor.IsAssigned &&
+                other.Minor.IsAssigned &&
+                (Minor.Value != other.Minor.Value))
                 return false;
 
-            if (Patch.IsAssigned && other.Patch.IsAssigned && (Patch.Value != other.Patch.Value))
+            if (Patch.IsAssigned &&
+                other.Patch.IsAssigned &&
+                (Patch.Value != other.Patch.Value))
                 return false;
 
             if ((PreRelease.IsAssigned && other.PreRelease.IsAssigned && (PreRelease.Value != other.PreRelease.Value)))
@@ -682,8 +726,8 @@ namespace WebApplications.Utilities
             if (ReferenceEquals(this, obj))
                 return true;
 
-            var other = obj as SemanticVersion;
-            return null != other && this.Equals(other);
+            SemanticVersion other = obj as SemanticVersion;
+            return null != other && Equals(other);
         }
 
         /// <summary>
@@ -706,10 +750,10 @@ namespace WebApplications.Utilities
             if (ReferenceEquals(other, null))
                 return false;
 
-            return this.Major == other.Major
-                   && this.Minor == other.Minor
-                   && this.Patch == other.Patch
-                   && this.PreRelease == other.PreRelease;
+            return Major == other.Major
+                   && Minor == other.Minor
+                   && Patch == other.Patch
+                   && PreRelease == other.PreRelease;
         }
 
         /// <summary>
@@ -721,10 +765,10 @@ namespace WebApplications.Utilities
         public override int GetHashCode()
         {
             int hashCode = 17;
-            hashCode = (hashCode * 37) + this.Major.GetHashCode();
-            hashCode = (hashCode * 37) + this.Minor.GetHashCode();
-            hashCode = (hashCode * 37) + this.Patch.GetHashCode();
-            hashCode = (hashCode * 37) + this.PreRelease.GetHashCode();
+            hashCode = (hashCode * 37) + Major.GetHashCode();
+            hashCode = (hashCode * 37) + Minor.GetHashCode();
+            hashCode = (hashCode * 37) + Patch.GetHashCode();
+            hashCode = (hashCode * 37) + PreRelease.GetHashCode();
             return hashCode;
         }
 
@@ -801,13 +845,15 @@ namespace WebApplications.Utilities
 
             for (int i = 0; i < max; i++)
             {
-                if (i == parts1.Length && i != parts2.Length)
+                if (i == parts1.Length &&
+                    i != parts2.Length)
                 {
                     result = -1;
                     break;
                 }
 
-                if (i != parts1.Length && i == parts2.Length)
+                if (i != parts1.Length &&
+                    i == parts2.Length)
                 {
                     result = 1;
                     break;
@@ -824,14 +870,10 @@ namespace WebApplications.Utilities
                     int.TryParse(part2, NumberStyles.None, CultureInfo.InvariantCulture, out value2))
                     result = value1.CompareTo(value2);
                 else
-                {
                     result = string.Compare(part1, part2, StringComparison.Ordinal);
-                }
 
                 if (0 != result)
-                {
                     break;
-                }
             }
 
             return result;
@@ -848,7 +890,10 @@ namespace WebApplications.Utilities
             if (version == null) return null;
             SemanticVersion semanticVersion;
             if (!TryParse(version, out semanticVersion))
-                throw new ArgumentOutOfRangeException("version", version, "The specified semantic version string was not valid.");
+                throw new ArgumentOutOfRangeException(
+                    "version",
+                    version,
+                    "The specified semantic version string was not valid.");
             return semanticVersion;
         }
 
@@ -858,7 +903,7 @@ namespace WebApplications.Utilities
         /// <param name="version">The semantic version number to be parsed.</param>
         /// <param name="semanticVersion">The semantic version.</param>
         /// <returns><see langword="true" /> if the version was parsed successfully, <see langword="false" /> otherwise.</returns>
-        public static bool TryParse([CanBeNull]string version, [CanBeNull]out SemanticVersion semanticVersion)
+        public static bool TryParse([CanBeNull] string version, [CanBeNull] out SemanticVersion semanticVersion)
         {
             semanticVersion = null;
             if (string.IsNullOrEmpty(version)) return false;
@@ -886,14 +931,13 @@ namespace WebApplications.Utilities
                     builder.Append(c);
                 }
                 else
-                {
                     switch (p)
                     {
-                        // Major
+                            // Major
                         case 0:
-                        // Minor
+                            // Minor
                         case 1:
-                        // Patch
+                            // Patch
                         case 2:
                             // The first three parts expect integers.
                             switch (c)
@@ -947,15 +991,14 @@ namespace WebApplications.Utilities
                             Contract.Assert(false);
                             break;
                     }
-                }
 
                 bool end = index >= version.Length;
                 if (!end &&
                     (np < 0)) continue;
 
                 // We can't finish with a '.' part seperator.
-                if (end && 
-                    (np < 3) && 
+                if (end &&
+                    (np < 3) &&
                     (np > 0))
                     return false;
 

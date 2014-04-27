@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ namespace WebApplications.Utilities.Threading
         /// <param name="minimumGap">The minimum gap, is the time left after a successful execution before the function can be run again.</param>
         [PublicAPI]
         public AsyncDebouncedFunction(
-            [NotNull]Func<CancellationToken, Task<TResult>> function,
+            [NotNull] Func<CancellationToken, Task<TResult>> function,
             TimeSpan duration = default(TimeSpan),
             TimeSpan minimumGap = default(TimeSpan))
         {

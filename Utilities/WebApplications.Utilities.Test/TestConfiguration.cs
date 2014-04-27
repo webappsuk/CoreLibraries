@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,25 +40,24 @@ namespace WebApplications.Utilities.Test
         public void TestConstructor()
         {
             ConfigurationSection<TestConfigurationSection>.Changed += (o, e) =>
-                                                                          {
-                                                                              Assert.IsNotNull(o);
-                                                                              Assert.IsNotNull(e);
-                                                                              Assert.IsNotNull(e.OldConfiguration);
-                                                                              Assert.IsNotNull(e.NewConfiguration);
-                                                                              Assert.AreEqual(e.NewConfiguration,
-                                                                                              TestConfigurationSection.
-                                                                                                  Active);
-                                                                              Assert.IsTrue(e.NewConfiguration.IsActive);
-                                                                          };
+            {
+                Assert.IsNotNull(o);
+                Assert.IsNotNull(e);
+                Assert.IsNotNull(e.OldConfiguration);
+                Assert.IsNotNull(e.NewConfiguration);
+                Assert.AreEqual(
+                    e.NewConfiguration,
+                    TestConfigurationSection.
+                        Active);
+                Assert.IsTrue(e.NewConfiguration.IsActive);
+            };
             TestConfigurationSection section = new TestConfigurationSection();
             string a = section.String;
             string b = section.String2;
 
             TestConfigurationSection configuration = TestConfigurationSection.Active;
             if (configuration.IsReadOnly())
-            {
                 configuration = new TestConfigurationSection();
-            }
             configuration.String2 = "Another string";
             /*string name = configuration.Constructors.First().Name;
             configuration.Constructors.Remove(name);
@@ -92,8 +91,12 @@ namespace WebApplications.Utilities.Test
             TimeSpan = timeSpan;
         }
 
-        public TestObject(string name, int intValue, int optional = 2, int attribParam = 4,
-                          TimeSpan timeSpan = default(TimeSpan))
+        public TestObject(
+            string name,
+            int intValue,
+            int optional = 2,
+            int attribParam = 4,
+            TimeSpan timeSpan = default(TimeSpan))
         {
             Name = name;
             IntValue = intValue;

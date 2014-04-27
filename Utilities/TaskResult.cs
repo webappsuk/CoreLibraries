@@ -38,37 +38,43 @@ namespace WebApplications.Utilities
         /// <summary>
         /// The completed result
         /// </summary>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static readonly Task Completed;
 
         /// <summary>
         /// A task that returns a <see langword="true"/>
         /// </summary>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static readonly Task<bool> True;
 
         /// <summary>
         /// A task that returns a <see langword="false"/>
         /// </summary>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static readonly Task<bool> False;
 
         /// <summary>
         /// A task that returns a <c>0</c>
         /// </summary>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static readonly Task<int> Zero;
 
         /// <summary>
         /// A task that returns <see cref="System.Int32.MinValue"/>
         /// </summary>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static readonly Task<int> MinInt;
 
         /// <summary>
         /// A task that returns <see cref="System.Int32.MaxValue"/>
         /// </summary>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static readonly Task<int> MaxInt;
 
         /// <summary>
@@ -96,7 +102,8 @@ namespace WebApplications.Utilities
         /// <summary>
         /// A task that returns the <see langword="default"/> value for the type <typeparamref name="T"/>.
         /// </summary>
-        [NotNull, PublicAPI]
+        [NotNull]
+        [PublicAPI]
         public static readonly Task<T> Default;
 
         /// <summary>

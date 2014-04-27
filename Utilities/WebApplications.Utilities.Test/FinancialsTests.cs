@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ namespace WebApplications.Utilities.Test
     {
         private readonly decimal _amount = Random.RandomDecimal();
         private readonly CurrencyInfo _gbp = CurrencyInfo.Get("GBP");
+
         [TestMethod]
         public void TestConstructorSetsCurrencyInfoPropertyToExpectedValue()
         {
@@ -238,8 +239,8 @@ namespace WebApplications.Utilities.Test
             Financial financialA = new Financial(_gbp, amountA);
             Financial financialB = new Financial(_gbp, amountB);
 
-            Financial result = financialA*financialB;
-            Assert.AreEqual(amountA*amountB, result.Amount);
+            Financial result = financialA * financialB;
+            Assert.AreEqual(amountA * amountB, result.Amount);
         }
 
         [TestMethod]
@@ -392,14 +393,16 @@ namespace WebApplications.Utilities.Test
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
-                // No Euro in GB, but Ireland has and also at least speaks English (en).
+            // No Euro in GB, but Ireland has and also at least speaks English (en).
             Financial financial = new Financial(currencyInfo, amount);
             String currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             List<String> expectedFormats =
-                currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == currentLanguage).Select(mc =>
-                                                                                                       String.Format(
-                                                                                                           mc, "{0:C}",
-                                                                                                           amount)).
+                currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == currentLanguage).Select(
+                    mc =>
+                        String.Format(
+                            mc,
+                            "{0:C}",
+                            amount)).
                     ToList();
             CollectionAssert.Contains(expectedFormats, financial.ToString());
         }
@@ -410,10 +413,11 @@ namespace WebApplications.Utilities.Test
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("GBP");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("De-de");
-                // No pound in Germany, nor any German speaking countries.
+            // No pound in Germany, nor any German speaking countries.
             Financial financial = new Financial(currencyInfo, amount);
-            List<String> expectedFormats = currencyInfo.Cultures.Select(mc =>
-                                                                        String.Format(mc, "{0:C}", amount)).ToList();
+            List<String> expectedFormats = currencyInfo.Cultures.Select(
+                mc =>
+                    String.Format(mc, "{0:C}", amount)).ToList();
             CollectionAssert.Contains(expectedFormats, financial.ToString());
         }
 
@@ -533,16 +537,18 @@ namespace WebApplications.Utilities.Test
             Decimal amount = Random.RandomDecimal();
             CurrencyInfo currencyInfo = CurrencyInfo.Get("EUR");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-fr");
-                // Now if CurrentUICulture is used instead, we get French formatting.
+            // Now if CurrentUICulture is used instead, we get French formatting.
             CultureInfo provider = new CultureInfo("en-GB");
-                // No Euro in GB, but Ireland has and also at least speaks English (en).
+            // No Euro in GB, but Ireland has and also at least speaks English (en).
             Financial financial = new Financial(currencyInfo, amount);
             String correctLanguage = provider.TwoLetterISOLanguageName;
             List<String> expectedFormats =
-                currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == correctLanguage).Select(mc =>
-                                                                                                       String.Format(
-                                                                                                           mc, "{0:C}",
-                                                                                                           amount)).
+                currencyInfo.Cultures.Where(c => c.TwoLetterISOLanguageName == correctLanguage).Select(
+                    mc =>
+                        String.Format(
+                            mc,
+                            "{0:C}",
+                            amount)).
                     ToList();
             String actualFormat = String.Format(provider, "{0:C}", financial);
             CollectionAssert.Contains(expectedFormats, actualFormat);
@@ -556,8 +562,9 @@ namespace WebApplications.Utilities.Test
             CultureInfo provider = new CultureInfo("De-de"); // No pound in Germany, nor any German speaking countries.
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-ca");
             Financial financial = new Financial(currencyInfo, amount);
-            List<String> expectedFormats = currencyInfo.Cultures.Select(mc =>
-                                                                        String.Format(mc, "{0:C}", amount)).ToList();
+            List<String> expectedFormats = currencyInfo.Cultures.Select(
+                mc =>
+                    String.Format(mc, "{0:C}", amount)).ToList();
             String actualFormat = String.Format(provider, "{0:C}", financial);
             CollectionAssert.Contains(expectedFormats, actualFormat);
         }

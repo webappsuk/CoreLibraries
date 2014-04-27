@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -56,13 +56,24 @@ namespace WebApplications.Utilities.Test
         {
             Random randSource = new Random();
             testValues = new List<int>(Enumerable.Range(1, 17).Select(x => randSource.Next()));
-            testTuple = new Tuple<int, String, bool>(testValues[0], testValues[1].ToString(), testValues[2]%2 == 0);
+            testTuple = new Tuple<int, String, bool>(testValues[0], testValues[1].ToString(), testValues[2] % 2 == 0);
             testTupleType = typeof (Tuple<int, String, bool>);
             testNestedTuple = new Tuple
                 <int, int, int, int, int, int, int, Tuple<int, int, int, int, int, int, int, Tuple<int, int, int>>>(
-                testValues[0], testValues[1], testValues[2], testValues[3], testValues[4], testValues[5], testValues[6],
+                testValues[0],
+                testValues[1],
+                testValues[2],
+                testValues[3],
+                testValues[4],
+                testValues[5],
+                testValues[6],
                 new Tuple<int, int, int, int, int, int, int, Tuple<int, int, int>>(
-                    testValues[7], testValues[8], testValues[9], testValues[10], testValues[11], testValues[12],
+                    testValues[7],
+                    testValues[8],
+                    testValues[9],
+                    testValues[10],
+                    testValues[11],
+                    testValues[12],
                     testValues[13],
                     new Tuple<int, int, int>(testValues[14], testValues[15], testValues[16])));
             testNestedTupleType =
@@ -80,12 +91,18 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void GetIndexType_TupleInstance_ReturnsTypeForGivenIndex()
         {
-            Assert.AreEqual(typeof (int), testTuple.GetIndexType(0),
-                            "The GetIndexType tuple extension method should return the type used for a particular index.");
-            Assert.AreEqual(typeof (String), testTuple.GetIndexType(1),
-                            "The GetIndexType tuple extension method should return the type used for a particular index.");
-            Assert.AreEqual(typeof (bool), testTuple.GetIndexType(2),
-                            "The GetIndexType tuple extension method should return the type used for a particular index.");
+            Assert.AreEqual(
+                typeof (int),
+                testTuple.GetIndexType(0),
+                "The GetIndexType tuple extension method should return the type used for a particular index.");
+            Assert.AreEqual(
+                typeof (String),
+                testTuple.GetIndexType(1),
+                "The GetIndexType tuple extension method should return the type used for a particular index.");
+            Assert.AreEqual(
+                typeof (bool),
+                testTuple.GetIndexType(2),
+                "The GetIndexType tuple extension method should return the type used for a particular index.");
         }
 
         [TestMethod]
@@ -105,12 +122,18 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void GetTupleItem_TupleInstance_ReturnsValueForGivenIndex()
         {
-            Assert.AreEqual(testValues[0], testTuple.GetTupleItem<Tuple<int, String, bool>, int>(0),
-                            "The GetTupleItem tuple extension method should return the value at a particular index.");
-            Assert.AreEqual(testValues[1].ToString(), testTuple.GetTupleItem<Tuple<int, String, bool>, String>(1),
-                            "The GetTupleItem tuple extension method should return the value at a particular index.");
-            Assert.AreEqual(testValues[2]%2 == 0, testTuple.GetTupleItem<Tuple<int, String, bool>, bool>(2),
-                            "The GetTupleItem tuple extension method should return the value at a particular index.");
+            Assert.AreEqual(
+                testValues[0],
+                testTuple.GetTupleItem<Tuple<int, String, bool>, int>(0),
+                "The GetTupleItem tuple extension method should return the value at a particular index.");
+            Assert.AreEqual(
+                testValues[1].ToString(),
+                testTuple.GetTupleItem<Tuple<int, String, bool>, String>(1),
+                "The GetTupleItem tuple extension method should return the value at a particular index.");
+            Assert.AreEqual(
+                testValues[2] % 2 == 0,
+                testTuple.GetTupleItem<Tuple<int, String, bool>, bool>(2),
+                "The GetTupleItem tuple extension method should return the value at a particular index.");
         }
 
         [TestMethod]
@@ -118,7 +141,7 @@ namespace WebApplications.Utilities.Test
         public void GetTupleItem_TupleInstanceWithInvalidCast_InvalidCastException()
         {
             int value = testTuple.GetTupleItem<Tuple<int, String, bool>, int>(1);
-                // note that the type for index=1 is String, not int
+            // note that the type for index=1 is String, not int
         }
 
         /// <summary>
@@ -130,8 +153,10 @@ namespace WebApplications.Utilities.Test
         {
             Type[] types = testTuple.GetIndexTypes();
 
-            Assert.AreEqual(3, types.Length,
-                            "The GetIndexTypes tuple extension method should return a list with a matching length to the tuple.");
+            Assert.AreEqual(
+                3,
+                types.Length,
+                "The GetIndexTypes tuple extension method should return a list with a matching length to the tuple.");
         }
 
         /// <summary>
@@ -143,12 +168,18 @@ namespace WebApplications.Utilities.Test
         {
             Type[] types = testTuple.GetIndexTypes();
 
-            Assert.AreEqual(typeof (int), types[0],
-                            "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
-            Assert.AreEqual(typeof (String), types[1],
-                            "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
-            Assert.AreEqual(typeof (bool), types[2],
-                            "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
+            Assert.AreEqual(
+                typeof (int),
+                types[0],
+                "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
+            Assert.AreEqual(
+                typeof (String),
+                types[1],
+                "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
+            Assert.AreEqual(
+                typeof (bool),
+                types[2],
+                "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
         }
 
         /// <summary>
@@ -160,12 +191,18 @@ namespace WebApplications.Utilities.Test
         {
             Type[] types = testTupleType.GetIndexTypes();
 
-            Assert.AreEqual(typeof (int), types[0],
-                            "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
-            Assert.AreEqual(typeof (String), types[1],
-                            "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
-            Assert.AreEqual(typeof (bool), types[2],
-                            "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
+            Assert.AreEqual(
+                typeof (int),
+                types[0],
+                "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
+            Assert.AreEqual(
+                typeof (String),
+                types[1],
+                "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
+            Assert.AreEqual(
+                typeof (bool),
+                types[2],
+                "The GetIndexTypes tuple extension method should return a list where the nth element is the type of the nth element of the tuple.");
         }
 
         /// <summary>
@@ -177,8 +214,10 @@ namespace WebApplications.Utilities.Test
         {
             Func<int, object> indexer = testNestedTuple.GetTupleIndexer();
             for (int i = 0; i < testValues.Count; i++)
-                Assert.AreEqual(testValues[i], indexer(i),
-                                "The GetTupleIndexer extension method should return an lambda function which returns the value at a given index of the tuple. ");
+                Assert.AreEqual(
+                    testValues[i],
+                    indexer(i),
+                    "The GetTupleIndexer extension method should return an lambda function which returns the value at a given index of the tuple. ");
         }
 
         [TestMethod]
@@ -209,8 +248,10 @@ namespace WebApplications.Utilities.Test
             Func<object, int, object> indexer = testNestedTupleType.GetTupleIndexer();
 
             for (int i = 0; i < testValues.Count; i++)
-                Assert.AreEqual(testValues[i], indexer(testNestedTuple, i),
-                                "The returned lambda from the GetTupleIndexer extension method should return the values of the tuple instance supplied at the requested index. ");
+                Assert.AreEqual(
+                    testValues[i],
+                    indexer(testNestedTuple, i),
+                    "The returned lambda from the GetTupleIndexer extension method should return the values of the tuple instance supplied at the requested index. ");
         }
 
         [TestMethod]
@@ -249,8 +290,10 @@ namespace WebApplications.Utilities.Test
         {
             int i = 0;
             foreach (object o in testNestedTuple.GetTupleIterator())
-                Assert.AreEqual(testValues[i++], (int) o,
-                                "The GetTupleIterator extension method should return an iterator which iterates through all values of the tuple. ");
+                Assert.AreEqual(
+                    testValues[i++],
+                    (int) o,
+                    "The GetTupleIterator extension method should return an iterator which iterates through all values of the tuple. ");
         }
 
         /// <summary>
@@ -263,8 +306,10 @@ namespace WebApplications.Utilities.Test
             Func<object, IEnumerable> iterator = testNestedTupleType.GetTupleIterator();
             int i = 0;
             foreach (object o in iterator(testNestedTuple))
-                Assert.AreEqual(testValues[i++], (int) o,
-                                "The GetTupleIterator extension method should return an iterator which iterates through all values of the tuple instance supplied. ");
+                Assert.AreEqual(
+                    testValues[i++],
+                    (int) o,
+                    "The GetTupleIterator extension method should return an iterator which iterates through all values of the tuple instance supplied. ");
         }
 
         [TestMethod]
@@ -277,23 +322,35 @@ namespace WebApplications.Utilities.Test
         [TestMethod]
         public void ExtendedTuple_Indexes_ReturnValueForGivenIndex()
         {
-            Assert.AreEqual(testValues[0], testExtendedTuple[0],
-                            "The ExtendedTuple wrapper should allow the values of the tuple to be referenced by index.");
-            Assert.AreEqual(testValues[1].ToString(), testExtendedTuple[1],
-                            "The ExtendedTuple wrapper should allow the values of the tuple to be referenced by index.");
-            Assert.AreEqual(testValues[2]%2 == 0, testExtendedTuple[2],
-                            "The ExtendedTuple wrapper should allow the values of the tuple to be referenced by index.");
+            Assert.AreEqual(
+                testValues[0],
+                testExtendedTuple[0],
+                "The ExtendedTuple wrapper should allow the values of the tuple to be referenced by index.");
+            Assert.AreEqual(
+                testValues[1].ToString(),
+                testExtendedTuple[1],
+                "The ExtendedTuple wrapper should allow the values of the tuple to be referenced by index.");
+            Assert.AreEqual(
+                testValues[2] % 2 == 0,
+                testExtendedTuple[2],
+                "The ExtendedTuple wrapper should allow the values of the tuple to be referenced by index.");
         }
 
         [TestMethod]
         public void ExtendedTuple_GetItem_ReturnsValueForGivenIndex()
         {
-            Assert.AreEqual(testValues[0], testExtendedTuple.GetItem<int>(0),
-                            "The GetItem method of the ExtendedTuple wrapper should return values of the tuple at the requested index.");
-            Assert.AreEqual(testValues[1].ToString(), testExtendedTuple.GetItem<String>(1),
-                            "The GetItem method of the ExtendedTuple wrapper should return values of the tuple at the requested index.");
-            Assert.AreEqual(testValues[2]%2 == 0, testExtendedTuple.GetItem<bool>(2),
-                            "The GetItem method of the ExtendedTuple wrapper should return values of the tuple at the requested index.");
+            Assert.AreEqual(
+                testValues[0],
+                testExtendedTuple.GetItem<int>(0),
+                "The GetItem method of the ExtendedTuple wrapper should return values of the tuple at the requested index.");
+            Assert.AreEqual(
+                testValues[1].ToString(),
+                testExtendedTuple.GetItem<String>(1),
+                "The GetItem method of the ExtendedTuple wrapper should return values of the tuple at the requested index.");
+            Assert.AreEqual(
+                testValues[2] % 2 == 0,
+                testExtendedTuple.GetItem<bool>(2),
+                "The GetItem method of the ExtendedTuple wrapper should return values of the tuple at the requested index.");
         }
 
         [TestMethod]

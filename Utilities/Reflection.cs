@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -65,14 +65,14 @@ namespace WebApplications.Utilities
         /// </summary>
         [NotNull]
         public static readonly MethodInfo ToStringMethodInfo =
-            ExtendedType.Get(typeof(object)).GetMethod("ToString", typeof(string));
+            ExtendedType.Get(typeof (object)).GetMethod("ToString", typeof (string));
 
         /// <summary>
         ///   The <see cref="Expression"/> to get the <see cref="CultureInfo.CurrentCulture">current CultureInfo</see>.
         /// </summary>
         [NotNull]
         public static readonly Expression CurrentCultureExpression =
-            Expression.Call(ExtendedType.Get(typeof(CultureInfo)).GetProperty("CurrentCulture").GetMethod);
+            Expression.Call(ExtendedType.Get(typeof (CultureInfo)).GetProperty("CurrentCulture").GetMethod);
 
         /// <summary>
         ///   <see cref="Regex"/> for matching generic types.
@@ -230,13 +230,11 @@ namespace WebApplications.Utilities
             {
                 // Cannot support static constructors (cannot be called directly!)
                 if (isStatic)
-                {
                     throw new ArgumentOutOfRangeException(
                         "methodBase",
                         String.Format(
                             Resources.Reflection_GetFunc_MethodIsStaticConstructor,
                             methodBase));
-                }
 
                 constructorInfo = methodBase as ConstructorInfo;
                 methodInfo = null;
@@ -246,25 +244,21 @@ namespace WebApplications.Utilities
                 methodInfo = methodBase as MethodInfo;
                 constructorInfo = null;
                 if ((methodInfo == null) ||
-                    (methodInfo.ReturnType == typeof(void)))
-                {
+                    (methodInfo.ReturnType == typeof (void)))
                     throw new ArgumentOutOfRangeException(
                         "methodBase",
                         String.Format(
                             Resources.Reflection_GetFunc_MethodHasNoReturnType,
                             methodBase));
-                }
             }
 
             int count = funcTypes.Count();
             if (count < 1)
-            {
                 throw new ArgumentOutOfRangeException(
                     "funcTypes",
                     String.Format(
                         Resources.Reflection_GetFunc_NoFuncTypesSpecified,
                         methodBase));
-            }
 
             // Validate method info
             ParameterInfo[] parameterInfos = methodBase.GetParameters();
@@ -282,13 +276,11 @@ namespace WebApplications.Utilities
             methodTypes.Add(isConstructor ? methodBase.ReflectedType : methodInfo.ReturnType);
 
             if (methodTypes.Count() != count)
-            {
                 throw new ArgumentOutOfRangeException(
                     "methodBase",
                     String.Format(
                         Resources.Reflection_GetFunc_IncorrectParameterCount,
                         methodBase));
-            }
 
             // Create expressions
             ParameterExpression[] parameterExpressions = new ParameterExpression[count - 1];
@@ -304,7 +296,6 @@ namespace WebApplications.Utilities
                 {
                     // Check assignability
                     if (checkParameterAssignability && !methodType.IsAssignableFrom(funcType))
-                    {
                         throw new ArgumentOutOfRangeException(
                             "methodBase",
                             String.Format(
@@ -312,7 +303,6 @@ namespace WebApplications.Utilities
                                 methodBase,
                                 funcType,
                                 methodType));
-                    }
 
                     // Create parameter expression
                     expression = parameterExpressions[i] = Expression.Parameter(funcType);
@@ -327,7 +317,6 @@ namespace WebApplications.Utilities
 
                 // Check assignability
                 if (checkParameterAssignability && !funcType.IsAssignableFrom(methodType))
-                {
                     throw new ArgumentOutOfRangeException(
                         "methodBase",
                         String.Format(
@@ -335,24 +324,19 @@ namespace WebApplications.Utilities
                             methodBase,
                             methodType,
                             funcType));
-                }
 
                 if (isConstructor)
-                {
                     // We are a constructor so use the New expression.
                     expression = Expression.New(constructorInfo, pExpressions);
-                }
                 else
-                {
                     // Create call expression, instance methods use the first parameter of the Func<> as the instance, static
                     // methods do not supply an instance.
                     expression = isStatic
-                                     ? Expression.Call(methodInfo, pExpressions)
-                                     : Expression.Call(
-                                         pExpressions[0],
-                                         methodInfo,
-                                         pExpressions.Skip(1));
-                }
+                        ? Expression.Call(methodInfo, pExpressions)
+                        : Expression.Call(
+                            pExpressions[0],
+                            methodInfo,
+                            pExpressions.Skip(1));
 
                 // Check if we need to do a cast to the func result type
                 if (funcType != methodType)
@@ -410,13 +394,11 @@ namespace WebApplications.Utilities
             methodTypes.AddRange(parameterInfos.Select(pi => pi.ParameterType));
 
             if (methodTypes.Count() != count)
-            {
                 throw new ArgumentOutOfRangeException(
                     "methodInfo",
                     String.Format(
                         Resources.Reflection_GetAction_IncorrectParameterCount,
                         methodInfo));
-            }
 
             // Create expressions
             ParameterExpression[] parameterExpressions = new ParameterExpression[count];
@@ -429,7 +411,6 @@ namespace WebApplications.Utilities
                 Type methodType = methodTypes[i];
                 // Check assignability
                 if (checkParameterAssignability && !methodType.IsAssignableFrom(funcType))
-                {
                     throw new ArgumentOutOfRangeException(
                         "methodInfo",
                         String.Format(
@@ -437,7 +418,6 @@ namespace WebApplications.Utilities
                             methodInfo,
                             funcType,
                             methodType));
-                }
 
                 // Create parameter expression
                 expression = parameterExpressions[i] = Expression.Parameter(funcType);
@@ -453,12 +433,14 @@ namespace WebApplications.Utilities
             // Create call expression, instance methods use the first parameter of the action as the instance, static
             // methods do not supply an instance.
             expression = isStatic
-                             ? Expression.Call(methodInfo, pExpressions)
-                             : Expression.Call(
-                                 pExpressions[0], methodInfo, pExpressions.Skip(1));
+                ? Expression.Call(methodInfo, pExpressions)
+                : Expression.Call(
+                    pExpressions[0],
+                    methodInfo,
+                    pExpressions.Skip(1));
             return
                 Expression.Lambda(Expression.Block(expression), parameterExpressions).
-                           Compile();
+                    Compile();
         }
 
         /// <summary>
@@ -538,7 +520,7 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static Func<TIn, TOut> GetConversion<TIn, TOut>()
         {
-            return GetConversion<TIn, TOut>(typeof(TIn));
+            return GetConversion<TIn, TOut>(typeof (TIn));
         }
 
         /// <summary>
@@ -551,7 +533,7 @@ namespace WebApplications.Utilities
         [UsedImplicitly]
         public static Func<object, object> GetConversion()
         {
-            return GetConversion<object, object>(typeof(object));
+            return GetConversion<object, object>(typeof (object));
         }
 
         /// <summary>
@@ -584,25 +566,26 @@ namespace WebApplications.Utilities
         public static Func<TIn, TOut> GetConversion<TIn, TOut>([NotNull] this Type inputType, Type outputType = null)
         {
             if (outputType == null)
-                outputType = typeof(TOut);
+                outputType = typeof (TOut);
 
-            return (Func<TIn, TOut>)_converters.GetOrAdd(
-                string.Format("{0}|{1}|{2}|{3}",
-                              typeof(TIn).FullName,
-                              inputType.FullName,
-                              outputType.FullName,
-                              typeof(TOut).FullName),
+            return (Func<TIn, TOut>) _converters.GetOrAdd(
+                string.Format(
+                    "{0}|{1}|{2}|{3}",
+                    typeof (TIn).FullName,
+                    inputType.FullName,
+                    outputType.FullName,
+                    typeof (TOut).FullName),
                 k =>
                 {
                     // Build the expression as a series of conversions.
-                    ParameterExpression parameterExpression = Expression.Parameter(typeof(TIn), "inputValue");
+                    ParameterExpression parameterExpression = Expression.Parameter(typeof (TIn), "inputValue");
                     Expression body = parameterExpression;
                     return !body.TryConvert(inputType, out body) ||
                            !body.TryConvert(outputType, out body) ||
-                           !body.TryConvert(typeof(TOut), out body)
-                               ? (object)null
-                               : Expression.Lambda<Func<TIn, TOut>>(Expression.Block(body), parameterExpression)
-                                           .Compile();
+                           !body.TryConvert(typeof (TOut), out body)
+                        ? (object) null
+                        : Expression.Lambda<Func<TIn, TOut>>(Expression.Block(body), parameterExpression)
+                            .Compile();
                 });
         }
 
@@ -624,9 +607,10 @@ namespace WebApplications.Utilities
             Expression outputExpression;
             if (!TryConvert(expression, outputType, out outputExpression))
                 throw new InvalidOperationException(
-                    string.Format(Resources.Reflection_Convert_ConversionFailed,
-                                  expression.Type,
-                                  outputType));
+                    string.Format(
+                        Resources.Reflection_Convert_ConversionFailed,
+                        expression.Type,
+                        outputType));
             return outputExpression;
         }
 
@@ -644,8 +628,10 @@ namespace WebApplications.Utilities
         ///   ToString() conversion, IConvertible and TypeConverters. It also prevents exceptions being thrown.
         /// </remarks>
         [UsedImplicitly]
-        public static bool TryConvert([NotNull] this Expression expression, [NotNull] Type outputType,
-                                      [NotNull] out Expression outputExpression)
+        public static bool TryConvert(
+            [NotNull] this Expression expression,
+            [NotNull] Type outputType,
+            [NotNull] out Expression outputExpression)
         {
             ExtendedType et = outputType;
             return et.TryConvert(expression, out outputExpression);
@@ -756,7 +742,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static bool CanConvertTo([NotNull] this Type type, [NotNull] Type destinationType)
         {
-            return ((ExtendedType)type).CanConvertTo(destinationType);
+            return ((ExtendedType) type).CanConvertTo(destinationType);
         }
 
         /// <summary>
@@ -773,9 +759,10 @@ namespace WebApplications.Utilities
         public static MethodInfo GetEquivalent([NotNull] this MethodInfo methodInfo, [NotNull] Type declaringType)
         {
             return methodInfo.DeclaringType == declaringType
-                       ? methodInfo
-                       : declaringType.GetMethod(methodInfo.Name,
-                                                 methodInfo.GetParameters().Select(p => p.ParameterType).ToArray());
+                ? methodInfo
+                : declaringType.GetMethod(
+                    methodInfo.Name,
+                    methodInfo.GetParameters().Select(p => p.ParameterType).ToArray());
         }
 
         /// <summary>
@@ -803,8 +790,8 @@ namespace WebApplications.Utilities
                 value = null;
             }
             return (value == null) && (parameter.ParameterType.IsValueType)
-                       ? Activator.CreateInstance(parameter.ParameterType, true)
-                       : value;
+                ? Activator.CreateInstance(parameter.ParameterType, true)
+                : value;
         }
 
         /// <summary>
@@ -818,7 +805,7 @@ namespace WebApplications.Utilities
         {
             return !type.IsValueType ? null : Activator.CreateInstance(type, true);
         }
-        
+
         /// <summary>
         /// Simplifies the full name, removing the specified assemblies, version, culture info and public keys (including in nested generic types).
         /// </summary>
@@ -826,7 +813,9 @@ namespace WebApplications.Utilities
         /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        public static string SimplifiedTypeFullName([NotNull] this Type type, [CanBeNull] params string[] excludedAssemblies)
+        public static string SimplifiedTypeFullName(
+            [NotNull] this Type type,
+            [CanBeNull] params string[] excludedAssemblies)
         {
             Contract.Requires(type != null);
             return SimplifiedTypeFullName(type.AssemblyQualifiedName, excludedAssemblies);
@@ -839,22 +828,23 @@ namespace WebApplications.Utilities
         /// <param name="excludedAssemblies">The excluded assemblies (if none specified defaults to mscorlib and calling assembly).</param>
         /// <returns>System.String.</returns>
         [NotNull]
-        public static string SimplifiedTypeFullName([NotNull] string typeAssemblyQualifiedName, [CanBeNull] params string[] excludedAssemblies)
+        public static string SimplifiedTypeFullName(
+            [NotNull] string typeAssemblyQualifiedName,
+            [CanBeNull] params string[] excludedAssemblies)
         {
             Contract.Requires(typeAssemblyQualifiedName != null);
             HashSet<string> exclude = (excludedAssemblies == null) ||
                                       (excludedAssemblies.Length < 1)
-                ? new HashSet<string> { "mscorlib" }
+                ? new HashSet<string> {"mscorlib"}
                 : new HashSet<string>(excludedAssemblies);
             StringBuilder builder = new StringBuilder(typeAssemblyQualifiedName.Length);
             StringBuilder assemblyBuilder = new StringBuilder(typeAssemblyQualifiedName.Length);
             int state = 0;
             int depth = 0;
             foreach (char c in typeAssemblyQualifiedName)
-            {
                 switch (state)
                 {
-                    // Type name
+                        // Type name
                     case 0:
                         builder.Append(c);
                         switch (c)
@@ -874,7 +864,7 @@ namespace WebApplications.Utilities
                         }
                         break;
 
-                    // Assembly name
+                        // Assembly name
                     case 1:
                         switch (c)
                         {
@@ -899,17 +889,17 @@ namespace WebApplications.Utilities
                         }
                         break;
 
-                    // Version
+                        // Version
                     case 2:
                         if (c == ',') state++;
                         break;
 
-                    // Culture
+                        // Culture
                     case 3:
                         if (c == ',') state++;
                         break;
 
-                    // Public Key Token
+                        // Public Key Token
                     case 4:
                         if (c == ']')
                         {
@@ -921,10 +911,9 @@ namespace WebApplications.Utilities
                         }
                         break;
                 }
-            }
             return depth > 0
-                       ? typeAssemblyQualifiedName
-                       : builder.ToString();
+                ? typeAssemblyQualifiedName
+                : builder.ToString();
         }
 
         /// <summary>
@@ -938,16 +927,26 @@ namespace WebApplications.Utilities
         /// <param name="isOutputType">if set to <see langword="true" /> then the type is an output so casts are performed to the search type, rather than from the search type..</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this Type type, TypeSearch typeSearch, bool allowCasts = true,
-                                   bool allowTypeClosures = true, bool allowSignatureClosures = true,
-                                   bool isOutputType = false)
+        public static bool Matches(
+            this Type type,
+            TypeSearch typeSearch,
+            bool allowCasts = true,
+            bool allowTypeClosures = true,
+            bool allowSignatureClosures = true,
+            bool isOutputType = false)
         {
             bool requiresCast;
             GenericArgumentLocation closureLocation;
             int closurePosition;
             Type closureType;
-            bool match = Matches(type, typeSearch, out requiresCast, out closureLocation, out closurePosition,
-                                 out closureType, isOutputType);
+            bool match = Matches(
+                type,
+                typeSearch,
+                out requiresCast,
+                out closureLocation,
+                out closurePosition,
+                out closureType,
+                isOutputType);
             if (!match) return false;
             if (requiresCast) return allowCasts;
             switch (closureLocation)
@@ -972,9 +971,14 @@ namespace WebApplications.Utilities
         /// <param name="isOutputType">if set to <see langword="true" /> then the type is an output so casts are performed to the search type, rather than from the search type..</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static bool Matches(this Type type, TypeSearch typeSearch, out bool requiresCast,
-                                   out GenericArgumentLocation closureLocation, out int closurePosition,
-                                   out Type closureType, bool isOutputType = false)
+        public static bool Matches(
+            this Type type,
+            TypeSearch typeSearch,
+            out bool requiresCast,
+            out GenericArgumentLocation closureLocation,
+            out int closurePosition,
+            out Type closureType,
+            bool isOutputType = false)
         {
             requiresCast = false;
             closureLocation = GenericArgumentLocation.None;
@@ -995,15 +999,16 @@ namespace WebApplications.Utilities
             // TODO Arguably, we need to be able to check whether the Expression.Convert works.
             if (typeSearch.Type != null &&
                 (isOutputType
-                     ? type.CanConvertTo(typeSearch.Type)
-                     : typeSearch.Type.CanConvertTo(type)))
+                    ? type.CanConvertTo(typeSearch.Type)
+                    : typeSearch.Type.CanConvertTo(type)))
             {
                 requiresCast = true;
                 return true;
             }
 
             // If we have a reference or pointer type - retrieve the element type.
-            if (type.IsByRef || type.IsPointer)
+            if (type.IsByRef ||
+                type.IsPointer)
             {
                 if (!type.HasElementType) return false;
                 type = type.GetElementType();
@@ -1018,12 +1023,12 @@ namespace WebApplications.Utilities
                 // If we were looking for an actual type, andf the type is a generic parameter
                 // then we need to perform a closure.
                 closureLocation = type.DeclaringMethod != null
-                                      ? GenericArgumentLocation.Signature
-                                      : GenericArgumentLocation.Type;
+                    ? GenericArgumentLocation.Signature
+                    : GenericArgumentLocation.Type;
                 closurePosition = type.GenericParameterPosition;
                 closureType = (typeSearch.IsByReference || typeSearch.IsPointer) && typeSearch.Type.HasElementType
-                                  ? typeSearch.Type.GetElementType()
-                                  : typeSearch.Type;
+                    ? typeSearch.Type.GetElementType()
+                    : typeSearch.Type;
 
                 // Check closure type is valid for constraint
 
@@ -1091,8 +1096,12 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this ISignature signature, bool allowCasts, bool allowTypeClosures,
-                                   bool allowSignatureClosures, params TypeSearch[] types)
+        public static bool Matches(
+            this ISignature signature,
+            bool allowCasts,
+            bool allowTypeClosures,
+            bool allowSignatureClosures,
+            params TypeSearch[] types)
         {
             return Matches(signature, allowCasts, allowTypeClosures, allowSignatureClosures, 0, types);
         }
@@ -1108,14 +1117,24 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this ISignature signature, bool allowCasts, bool allowTypeClosures,
-                                   bool allowSignatureClosures, int genericArguments, params TypeSearch[] types)
+        public static bool Matches(
+            this ISignature signature,
+            bool allowCasts,
+            bool allowTypeClosures,
+            bool allowSignatureClosures,
+            int genericArguments,
+            params TypeSearch[] types)
         {
             bool[] castsRequired;
             Type[] typeClosures;
             Type[] methodClosures;
-            bool match = Matches(signature, out castsRequired, out typeClosures, out methodClosures, genericArguments,
-                                 types);
+            bool match = Matches(
+                signature,
+                out castsRequired,
+                out typeClosures,
+                out methodClosures,
+                genericArguments,
+                types);
             if (!match) return false;
             if (castsRequired.Length > 0) return allowCasts;
             if (typeClosures.Length > 0) return allowTypeClosures;
@@ -1133,9 +1152,12 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this ISignature signature, [NotNull] out bool[] castsRequired,
-                                   [NotNull] out Type[] typeClosures, [NotNull] out Type[] signatureClosures,
-                                   params TypeSearch[] types)
+        public static bool Matches(
+            this ISignature signature,
+            [NotNull] out bool[] castsRequired,
+            [NotNull] out Type[] typeClosures,
+            [NotNull] out Type[] signatureClosures,
+            params TypeSearch[] types)
         {
             return Matches(signature, out castsRequired, out typeClosures, out signatureClosures, 0, types);
         }
@@ -1151,9 +1173,13 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true"/> if matches; otherwise <see langword="false"/></returns>
         /// <remarks></remarks>
-        public static bool Matches(this ISignature signature, [NotNull] out bool[] castsRequired,
-                                   [NotNull] out Type[] typeClosures, [NotNull] out Type[] signatureClosures,
-                                   int genericArguments, params TypeSearch[] types)
+        public static bool Matches(
+            this ISignature signature,
+            [NotNull] out bool[] castsRequired,
+            [NotNull] out Type[] typeClosures,
+            [NotNull] out Type[] signatureClosures,
+            int genericArguments,
+            params TypeSearch[] types)
         {
             castsRequired = EmptyBools;
             signatureClosures = typeClosures = EmptyTypes;
@@ -1178,9 +1204,9 @@ namespace WebApplications.Utilities
             // Grab signature generic arguments safely.
             IEnumerable<GenericArgument> sga = signature.SignatureGenericArguments;
             GenericArgument[] signatureArguments = sga == null
-                                                       ? EmptyGenericArguments
-                                                       : sga.Where(g => g.Location == GenericArgumentLocation.Signature)
-                                                            .ToArray();
+                ? EmptyGenericArguments
+                : sga.Where(g => g.Location == GenericArgumentLocation.Signature)
+                    .ToArray();
 
             // Check we have right number of generic arguments on the signature.
             if (signatureArguments.Length != genericArguments)
@@ -1189,8 +1215,8 @@ namespace WebApplications.Utilities
             // Grab type generic arguments safely.
             IEnumerable<GenericArgument> tga = signature.TypeGenericArguments;
             GenericArgument[] typeArguments = tga == null
-                                                  ? EmptyGenericArguments
-                                                  : tga.Where(g => g.Location == GenericArgumentLocation.Type).ToArray();
+                ? EmptyGenericArguments
+                : tga.Where(g => g.Location == GenericArgumentLocation.Type).ToArray();
 
             // Initialise output arrays
             castsRequired = new bool[parameters.Length + 1];
@@ -1198,7 +1224,7 @@ namespace WebApplications.Utilities
             signatureClosures = new Type[signatureArguments.Length];
 
             // Check return type
-            Type returnType = signature.ReturnType ?? typeof(void);
+            Type returnType = signature.ReturnType ?? typeof (void);
             TypeSearch returnTypeSearch = types.Last();
             Contract.Assert(returnTypeSearch != null);
             bool requiresCast;
@@ -1207,10 +1233,21 @@ namespace WebApplications.Utilities
             Type closureType;
 
             if (
-                !returnType.Matches(returnTypeSearch, out requiresCast, out closureLocation, out closurePosition,
-                                    out closureType, true) ||
-                !UpdateSearchContext(ref castsRequired[parameters.Length], typeClosures, signatureClosures, requiresCast,
-                                     closureLocation, closurePosition, closureType))
+                !returnType.Matches(
+                    returnTypeSearch,
+                    out requiresCast,
+                    out closureLocation,
+                    out closurePosition,
+                    out closureType,
+                    true) ||
+                !UpdateSearchContext(
+                    ref castsRequired[parameters.Length],
+                    typeClosures,
+                    signatureClosures,
+                    requiresCast,
+                    closureLocation,
+                    closurePosition,
+                    closureType))
                 return false;
 
             // If we have more than one search we need to check parameters.
@@ -1225,16 +1262,19 @@ namespace WebApplications.Utilities
                     te.MoveNext();
                     Contract.Assert(pe.Current != null);
                     Contract.Assert(te.Current != null);
-                    Type t = (Type)pe.Current;
-                    TypeSearch s = ((TypeSearch)te.Current);
+                    Type t = (Type) pe.Current;
+                    TypeSearch s = ((TypeSearch) te.Current);
                     if (!t.Matches(s, out requiresCast, out closureLocation, out closurePosition, out closureType) ||
-                        !UpdateSearchContext(ref castsRequired[parameter++], typeClosures, signatureClosures,
-                                             requiresCast, closureLocation,
-                                             closurePosition, closureType))
-                    {
+                        !UpdateSearchContext(
+                            ref castsRequired[parameter++],
+                            typeClosures,
+                            signatureClosures,
+                            requiresCast,
+                            closureLocation,
+                            closurePosition,
+                            closureType))
                         // Parameter failed to match.
                         return false;
-                    }
                 }
             }
             return true;
@@ -1252,10 +1292,14 @@ namespace WebApplications.Utilities
         /// <param name="closureType">Type of the closure.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        private static bool UpdateSearchContext(ref bool castRequired, [NotNull] Type[] typeClosures,
-                                                [NotNull] Type[] methodClosures, bool requiresCast,
-                                                GenericArgumentLocation closureLocation, int closurePosition,
-                                                Type closureType)
+        private static bool UpdateSearchContext(
+            ref bool castRequired,
+            [NotNull] Type[] typeClosures,
+            [NotNull] Type[] methodClosures,
+            bool requiresCast,
+            GenericArgumentLocation closureLocation,
+            int closurePosition,
+            Type closureType)
         {
             Contract.Assert(closureLocation != GenericArgumentLocation.Any);
 
@@ -1286,7 +1330,6 @@ namespace WebApplications.Utilities
                 {
                     // Check if the types match.
                     if (t != closureType)
-                    {
                         // If the existing type can be assigned from the closure type we're OK
                         if (!t.IsAssignableFrom(closureType))
                         {
@@ -1297,12 +1340,9 @@ namespace WebApplications.Utilities
                             // As the closure type is a base, update our method closure type.
                             methodClosures[closurePosition] = closureType;
                         }
-                    }
                 }
                 else
-                {
                     methodClosures[closurePosition] = closureType;
-                }
             }
             else
             {
@@ -1316,7 +1356,6 @@ namespace WebApplications.Utilities
                 {
                     // Check if the types match.
                     if (t != closureType)
-                    {
                         // If the existing type can be assigned from the closure type we're OK
                         if (!t.IsAssignableFrom(closureType))
                         {
@@ -1327,12 +1366,9 @@ namespace WebApplications.Utilities
                             // As the closure type is a base, update our type closure type.
                             typeClosures[closurePosition] = closureType;
                         }
-                    }
                 }
                 else
-                {
                     typeClosures[closurePosition] = closureType;
-                }
             }
             return true;
         }
@@ -1358,8 +1394,10 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments,
-                                           params TypeSearch[] types)
+        public static ISignature BestMatch(
+            this IEnumerable<ISignature> signatures,
+            int genericArguments,
+            params TypeSearch[] types)
         {
             bool[] castsRequired;
             return BestMatch(signatures, genericArguments, true, true, out castsRequired, types);
@@ -1374,8 +1412,11 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, bool allowClosure, bool allowCasts,
-                                           params TypeSearch[] types)
+        public static ISignature BestMatch(
+            this IEnumerable<ISignature> signatures,
+            bool allowClosure,
+            bool allowCasts,
+            params TypeSearch[] types)
         {
             bool[] castsRequired;
             return BestMatch(signatures, 0, allowClosure, allowCasts, out castsRequired, types);
@@ -1391,8 +1432,12 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments,
-                                           bool allowClosure, bool allowCasts, params TypeSearch[] types)
+        public static ISignature BestMatch(
+            this IEnumerable<ISignature> signatures,
+            int genericArguments,
+            bool allowClosure,
+            bool allowCasts,
+            params TypeSearch[] types)
         {
             bool[] castsRequired;
             return BestMatch(signatures, genericArguments, allowClosure, allowCasts, out castsRequired, types);
@@ -1409,9 +1454,13 @@ namespace WebApplications.Utilities
         /// <param name="types">The types to match against (last type should be return type).</param>
         /// <returns><see langword="true" /> if matches; otherwise <see langword="false" /></returns>
         /// <remarks></remarks>
-        public static ISignature BestMatch(this IEnumerable<ISignature> signatures, int genericArguments,
-                                           bool allowClosure, bool allowCasts, out bool[] castsRequired,
-                                           params TypeSearch[] types)
+        public static ISignature BestMatch(
+            this IEnumerable<ISignature> signatures,
+            int genericArguments,
+            bool allowClosure,
+            bool allowCasts,
+            out bool[] castsRequired,
+            params TypeSearch[] types)
         {
             // Holds matches along with order.
             ISignature bestMatch = null;
@@ -1423,7 +1472,6 @@ namespace WebApplications.Utilities
             int signatureClosureCount = int.MaxValue;
 
             if (signatures != null)
-            {
                 foreach (ISignature signature in signatures)
                 {
                     // Match method signature
@@ -1474,7 +1522,6 @@ namespace WebApplications.Utilities
                     signatureClosures = sc;
                     signatureClosureCount = scc;
                 }
-            }
 
             // If we don't have a match return null.
             if (bestMatch == null) return null;
@@ -1482,8 +1529,8 @@ namespace WebApplications.Utilities
             // Check to see if we have to close the signature
             return typeClosures.Any(c => c != null) ||
                    signatureClosures.Any(c => c != null)
-                       ? bestMatch.Close(typeClosures, signatureClosures)
-                       : bestMatch;
+                ? bestMatch.Close(typeClosures, signatureClosures)
+                : bestMatch;
         }
 
 
@@ -1495,8 +1542,10 @@ namespace WebApplications.Utilities
         /// <param name="typeArguments">The type arguments.</param>
         /// <returns>Given a parameter type, will expand the type based on a set of signature and type arguments.</returns>
         /// <remarks></remarks>
-        internal static Type ExpandParameterType([NotNull] Type parameterType, [NotNull] Type[] signatureArguments,
-                                                 [NotNull] Type[] typeArguments)
+        internal static Type ExpandParameterType(
+            [NotNull] Type parameterType,
+            [NotNull] Type[] signatureArguments,
+            [NotNull] Type[] typeArguments)
         {
             // Deal with pointers/references.
             Type t = parameterType;
@@ -1510,8 +1559,8 @@ namespace WebApplications.Utilities
 
                 // Grab the relevant type.
                 Type nt = t.DeclaringMethod != null
-                              ? signatureArguments[position]
-                              : typeArguments[position];
+                    ? signatureArguments[position]
+                    : typeArguments[position];
                 Contract.Assert(nt != null);
                 if (parameterType.IsByRef)
                     parameterType = nt.MakeByRefType();
@@ -1549,11 +1598,11 @@ namespace WebApplications.Utilities
         /// <returns>An addition function.</returns>
         public static Func<T, T, T> AddFunc<T>()
         {
-            Type type = typeof(T);
+            Type type = typeof (T);
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof(byte)) ||
-                (type == typeof(sbyte)))
-                type = typeof(short);
+            if ((type == typeof (byte)) ||
+                (type == typeof (sbyte)))
+                type = typeof (short);
             return ExpressionFunc<T, T, T>((l, r) => Expression.Add(l, r), type, type);
         }
 
@@ -1566,15 +1615,15 @@ namespace WebApplications.Utilities
         /// <returns>An addition function.</returns>
         public static Func<TLHS, TRHS, TResult> AddFunc<TLHS, TRHS, TResult>()
         {
-            Type typeLHS = typeof(TLHS);
-            Type typeRHS = typeof(TRHS);
+            Type typeLHS = typeof (TLHS);
+            Type typeRHS = typeof (TRHS);
             // Workaround for the fact that bytes don't have addition operators.
-            if ((typeLHS == typeof(byte)) ||
-                (typeLHS == typeof(sbyte)))
-                typeLHS = typeof(short);
-            if ((typeRHS == typeof(byte)) ||
-                (typeRHS == typeof(sbyte)))
-                typeRHS = typeof(short);
+            if ((typeLHS == typeof (byte)) ||
+                (typeLHS == typeof (sbyte)))
+                typeLHS = typeof (short);
+            if ((typeRHS == typeof (byte)) ||
+                (typeRHS == typeof (sbyte)))
+                typeRHS = typeof (short);
             return ExpressionFunc<TLHS, TRHS, TResult>((l, r) => Expression.Add(l, r), typeLHS, typeRHS);
         }
 
@@ -1587,9 +1636,9 @@ namespace WebApplications.Utilities
         public static Func<T, T, T> AddFunc<T>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof(byte)) ||
-                (type == typeof(sbyte)))
-                type = typeof(short);
+            if ((type == typeof (byte)) ||
+                (type == typeof (sbyte)))
+                type = typeof (short);
             return ExpressionFunc<T, T, T>((l, r) => Expression.Add(l, r), type, type);
         }
 
@@ -1603,9 +1652,9 @@ namespace WebApplications.Utilities
         public static Func<TParam, TParam, TResult> AddFunc<TParam, TResult>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof(byte)) ||
-                (type == typeof(sbyte)))
-                type = typeof(short);
+            if ((type == typeof (byte)) ||
+                (type == typeof (sbyte)))
+                type = typeof (short);
             return ExpressionFunc<TParam, TParam, TResult>((l, r) => Expression.Add(l, r), type, type);
         }
 
@@ -1618,16 +1667,17 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS of the addition.</param>
         /// <param name="typeRHS">The actual type of the RHS of the addition.</param>
         /// <returns>An addition function.</returns>
-        public static Func<TLHS, TRHS, TResult> AddFunc<TLHS, TRHS, TResult>([NotNull] this Type typeLHS,
-                                                                             [NotNull] Type typeRHS)
+        public static Func<TLHS, TRHS, TResult> AddFunc<TLHS, TRHS, TResult>(
+            [NotNull] this Type typeLHS,
+            [NotNull] Type typeRHS)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((typeLHS == typeof(byte)) ||
-                (typeLHS == typeof(sbyte)))
-                typeLHS = typeof(short);
-            if ((typeRHS == typeof(byte)) ||
-                (typeRHS == typeof(sbyte)))
-                typeRHS = typeof(short);
+            if ((typeLHS == typeof (byte)) ||
+                (typeLHS == typeof (sbyte)))
+                typeLHS = typeof (short);
+            if ((typeRHS == typeof (byte)) ||
+                (typeRHS == typeof (sbyte)))
+                typeRHS = typeof (short);
             return ExpressionFunc<TLHS, TRHS, TResult>((l, r) => Expression.Add(l, r), typeLHS, typeRHS);
         }
 
@@ -1640,9 +1690,9 @@ namespace WebApplications.Utilities
         public static Func<T, T, T> SubtractFunc<T>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof(byte)) ||
-                (type == typeof(sbyte)))
-                type = typeof(short);
+            if ((type == typeof (byte)) ||
+                (type == typeof (sbyte)))
+                type = typeof (short);
             return ExpressionFunc<T, T, T>((l, r) => Expression.Subtract(l, r), type, type);
         }
 
@@ -1656,9 +1706,9 @@ namespace WebApplications.Utilities
         public static Func<TParam, TParam, TResult> SubtractFunc<TParam, TResult>([NotNull] this Type type)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((type == typeof(byte)) ||
-                (type == typeof(sbyte)))
-                type = typeof(short);
+            if ((type == typeof (byte)) ||
+                (type == typeof (sbyte)))
+                type = typeof (short);
             return ExpressionFunc<TParam, TParam, TResult>((l, r) => Expression.Subtract(l, r), type, type);
         }
 
@@ -1671,16 +1721,17 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS of the subtraction.</param>
         /// <param name="typeRHS">The actual type of the RHS of the subtraction.</param>
         /// <returns>A subtraction function.</returns>
-        public static Func<TLHS, TRHS, TResult> SubtractFunc<TLHS, TRHS, TResult>([NotNull] this Type typeLHS,
-                                                                                  [NotNull] Type typeRHS)
+        public static Func<TLHS, TRHS, TResult> SubtractFunc<TLHS, TRHS, TResult>(
+            [NotNull] this Type typeLHS,
+            [NotNull] Type typeRHS)
         {
             // Workaround for the fact that bytes don't have addition operators.
-            if ((typeLHS == typeof(byte)) ||
-                (typeLHS == typeof(sbyte)))
-                typeLHS = typeof(short);
-            if ((typeRHS == typeof(byte)) ||
-                (typeRHS == typeof(sbyte)))
-                typeRHS = typeof(short);
+            if ((typeLHS == typeof (byte)) ||
+                (typeLHS == typeof (sbyte)))
+                typeLHS = typeof (short);
+            if ((typeRHS == typeof (byte)) ||
+                (typeRHS == typeof (sbyte)))
+                typeRHS = typeof (short);
             return ExpressionFunc<TLHS, TRHS, TResult>((l, r) => Expression.Subtract(l, r), typeLHS, typeRHS);
         }
 
@@ -1691,7 +1742,7 @@ namespace WebApplications.Utilities
         /// <returns>A less than comparison function.</returns>
         public static Func<T, T, bool> LessThanFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.LessThan(l, r), typeof(T), typeof(T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.LessThan(l, r), typeof (T), typeof (T));
         }
 
         /// <summary>
@@ -1713,8 +1764,9 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS of the comparison.</param>
         /// <param name="typeRHS">The actual type of the RHS of the comparison.</param>
         /// <returns>A less than comparison function.</returns>
-        public static Func<TLHS, TRHS, bool> LessThanFunc<TLHS, TRHS>([NotNull] this Type typeLHS,
-                                                                      [NotNull] Type typeRHS)
+        public static Func<TLHS, TRHS, bool> LessThanFunc<TLHS, TRHS>(
+            [NotNull] this Type typeLHS,
+            [NotNull] Type typeRHS)
         {
             return ExpressionFunc<TLHS, TRHS, bool>((l, r) => Expression.LessThan(l, r), typeLHS, typeRHS);
         }
@@ -1726,7 +1778,7 @@ namespace WebApplications.Utilities
         /// <returns>A less than or equal comparison function.</returns>
         public static Func<T, T, bool> LessThanOrEqualFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.LessThanOrEqual(l, r), typeof(T), typeof(T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.LessThanOrEqual(l, r), typeof (T), typeof (T));
         }
 
         /// <summary>
@@ -1748,8 +1800,9 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS of the comparison.</param>
         /// <param name="typeRHS">The actual type of the RHS of the comparison.</param>
         /// <returns>A less than or equal comparison function.</returns>
-        public static Func<TLHS, TRHS, bool> LessThanOrEqualFunc<TLHS, TRHS>([NotNull] this Type typeLHS,
-                                                                             [NotNull] Type typeRHS)
+        public static Func<TLHS, TRHS, bool> LessThanOrEqualFunc<TLHS, TRHS>(
+            [NotNull] this Type typeLHS,
+            [NotNull] Type typeRHS)
         {
             return ExpressionFunc<TLHS, TRHS, bool>((l, r) => Expression.LessThanOrEqual(l, r), typeLHS, typeRHS);
         }
@@ -1761,7 +1814,7 @@ namespace WebApplications.Utilities
         /// <returns>A greater than comparison function.</returns>
         public static Func<T, T, bool> GreaterThanFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.GreaterThan(l, r), typeof(T), typeof(T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.GreaterThan(l, r), typeof (T), typeof (T));
         }
 
         /// <summary>
@@ -1783,8 +1836,9 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS for the comparison.</param>
         /// <param name="typeRHS">The actual type of the RHS for the comparison.</param>
         /// <returns>A greater than comparison function.</returns>
-        public static Func<TLHS, TRHS, bool> GreaterThanFunc<TLHS, TRHS>([NotNull] this Type typeLHS,
-                                                                         [NotNull] Type typeRHS)
+        public static Func<TLHS, TRHS, bool> GreaterThanFunc<TLHS, TRHS>(
+            [NotNull] this Type typeLHS,
+            [NotNull] Type typeRHS)
         {
             return ExpressionFunc<TLHS, TRHS, bool>((l, r) => Expression.GreaterThan(l, r), typeLHS, typeRHS);
         }
@@ -1796,7 +1850,7 @@ namespace WebApplications.Utilities
         /// <returns>A greater than or equal comparison function.</returns>
         public static Func<T, T, bool> GreaterThanOrEqualFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.GreaterThanOrEqual(l, r), typeof(T), typeof(T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.GreaterThanOrEqual(l, r), typeof (T), typeof (T));
         }
 
         /// <summary>
@@ -1818,8 +1872,9 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS for the comparison.</param>
         /// <param name="typeRHS">The actual type of the RHS for the comparison.</param>
         /// <returns>A greater than or equal comparison function.</returns>
-        public static Func<TLHS, TRHS, bool> GreaterThanOrEqualFunc<TLHS, TRHS>([NotNull] this Type typeLHS,
-                                                                                [NotNull] Type typeRHS)
+        public static Func<TLHS, TRHS, bool> GreaterThanOrEqualFunc<TLHS, TRHS>(
+            [NotNull] this Type typeLHS,
+            [NotNull] Type typeRHS)
         {
             return ExpressionFunc<TLHS, TRHS, bool>((l, r) => Expression.GreaterThanOrEqual(l, r), typeLHS, typeRHS);
         }
@@ -1831,7 +1886,7 @@ namespace WebApplications.Utilities
         /// <returns>A conditional AND operator function that only evaluates the second operand if the first operand evaluates true.</returns>
         public static Func<T, T, bool> AndAlsoFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.AndAlso(l, r), typeof(T), typeof(T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.AndAlso(l, r), typeof (T), typeof (T));
         }
 
         /// <summary>
@@ -1853,7 +1908,9 @@ namespace WebApplications.Utilities
         /// <param name="typeLHS">The actual type of the LHS for the conditional operation.</param>
         /// <param name="typeRHS">The actual type of the RHS for the conditional operation.</param>
         /// <returns>A conditional AND operator function that only evaluates the second operand if the first operand evaluates true.</returns>
-        public static Func<TLHS, TRHS, bool> AndAlsoFunc<TLHS, TRHS>([NotNull] this Type typeLHS, [NotNull] Type typeRHS)
+        public static Func<TLHS, TRHS, bool> AndAlsoFunc<TLHS, TRHS>(
+            [NotNull] this Type typeLHS,
+            [NotNull] Type typeRHS)
         {
             return ExpressionFunc<TLHS, TRHS, bool>((l, r) => Expression.AndAlso(l, r), typeLHS, typeRHS);
         }
@@ -1865,7 +1922,7 @@ namespace WebApplications.Utilities
         /// <returns>A conditional OR operator function that only evaluates the second operand if the first operand evaluates false.</returns>
         public static Func<T, T, bool> OrElseFunc<T>()
         {
-            return ExpressionFunc<T, T, bool>((l, r) => Expression.OrElse(l, r), typeof(T), typeof(T));
+            return ExpressionFunc<T, T, bool>((l, r) => Expression.OrElse(l, r), typeof (T), typeof (T));
         }
 
         /// <summary>
@@ -1903,29 +1960,31 @@ namespace WebApplications.Utilities
         /// <param name="typeRHS">The actual type of the RHS of the addition.</param>
         /// <returns>An addition function.</returns>
         public static Func<TLHS, TRHS, TResult> ExpressionFunc<TLHS, TRHS, TResult>(
-            this Func<Expression, Expression, Expression> binaryFunc, [NotNull] Type typeLHS, [NotNull] Type typeRHS)
+            this Func<Expression, Expression, Expression> binaryFunc,
+            [NotNull] Type typeLHS,
+            [NotNull] Type typeRHS)
         {
             // Create input parameter expressions
-            ParameterExpression parameterAExpression = Expression.Parameter(typeof(TLHS), "a");
-            ParameterExpression parameterBExpression = Expression.Parameter(typeof(TRHS), "b");
+            ParameterExpression parameterAExpression = Expression.Parameter(typeof (TLHS), "a");
+            ParameterExpression parameterBExpression = Expression.Parameter(typeof (TRHS), "b");
 
-            Expression lhs = typeLHS != typeof(TLHS)
-                                 ? Convert(parameterAExpression, typeLHS)
-                                 : parameterAExpression;
-            Expression rhs = typeRHS != typeof(TRHS)
-                                 ? Convert(parameterBExpression, typeRHS)
-                                 : parameterBExpression;
+            Expression lhs = typeLHS != typeof (TLHS)
+                ? Convert(parameterAExpression, typeLHS)
+                : parameterAExpression;
+            Expression rhs = typeRHS != typeof (TRHS)
+                ? Convert(parameterBExpression, typeRHS)
+                : parameterBExpression;
 
             // Create lambda for addition and compile
             Expression expression = binaryFunc(lhs, rhs);
-            if (expression.Type != typeof(TResult))
-                expression = Expression.Convert(expression, typeof(TResult));
+            if (expression.Type != typeof (TResult))
+                expression = Expression.Convert(expression, typeof (TResult));
 
             return (Func<TLHS, TRHS, TResult>)
-                   Expression.Lambda(
-                       expression,
-                       parameterAExpression,
-                       parameterBExpression).Compile();
+                Expression.Lambda(
+                    expression,
+                    parameterAExpression,
+                    parameterBExpression).Compile();
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ namespace WebApplications.Utilities.Test.Caching
         public void Count_InitialCollectionContainsDuplicatesKeys_MatchesNumberOfUniqueKeys()
         {
             List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
-            int numberOfDuplicates = Random.Next(1, keys.Count/2);
+            int numberOfDuplicates = Random.Next(1, keys.Count / 2);
             List<KeyValuePair<Guid, string>> collection = keys.Concat(keys.Take(numberOfDuplicates)).Select(
                 key => new KeyValuePair<Guid, string>(key, Random.RandomString(20))
                 ).ToList();
@@ -85,7 +85,7 @@ namespace WebApplications.Utilities.Test.Caching
         public void GetEnumerator_InitialCollectionContainsDuplicatesKeys_GroupingKeysMatchUniqueCollectionKeys()
         {
             List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
-            int numberOfDuplicates = Random.Next(1, keys.Count/2);
+            int numberOfDuplicates = Random.Next(1, keys.Count / 2);
             List<KeyValuePair<Guid, string>> collection = keys.Concat(keys.Take(numberOfDuplicates)).Select(
                 key => new KeyValuePair<Guid, string>(key, Random.RandomString(20))
                 ).ToList();
@@ -97,7 +97,7 @@ namespace WebApplications.Utilities.Test.Caching
         public void GetEnumerator_InitialCollectionContainsDuplicatesKeys_GroupingsMatchCollectionEntriesMatchingKey()
         {
             List<Guid> keys = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
-            int numberOfDuplicates = Random.Next(1, keys.Count/2);
+            int numberOfDuplicates = Random.Next(1, keys.Count / 2);
             List<KeyValuePair<Guid, string>> collection = keys.Concat(keys.Take(numberOfDuplicates)).Select(
                 key => new KeyValuePair<Guid, string>(key, Random.RandomString(20))
                 ).ToList();
@@ -106,7 +106,8 @@ namespace WebApplications.Utilities.Test.Caching
             {
                 Assert.IsNotNull(grouping);
                 CollectionAssert.AreEquivalent(
-                    collection.Where(e => e.Key == grouping.Key).Select(e => e.Value).ToList(), grouping.ToList());
+                    collection.Where(e => e.Key == grouping.Key).Select(e => e.Value).ToList(),
+                    grouping.ToList());
             }
         }
 

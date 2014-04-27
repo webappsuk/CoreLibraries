@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -46,56 +45,103 @@ namespace WebApplications.Utilities.Test.SemanticVersions
             new Tuple<string, SemanticVersion, string>("*.*.*-*", SemanticVersion.Any, "*"),
             new Tuple<string, SemanticVersion, string>("*.*.*+*", SemanticVersion.Any, "*"),
             new Tuple<string, SemanticVersion, string>("*.*.*-*+*", SemanticVersion.Any, "*"),
-            
             new Tuple<string, SemanticVersion, string>("1.*", new SemanticVersion(1), "1.*"),
             new Tuple<string, SemanticVersion, string>("1.*.*", new SemanticVersion(1), "1.*"),
             new Tuple<string, SemanticVersion, string>("1.*.*-*", new SemanticVersion(1), "1.*"),
             new Tuple<string, SemanticVersion, string>("1.*.*+*", new SemanticVersion(1), "1.*"),
             new Tuple<string, SemanticVersion, string>("1.*.*-*+*", new SemanticVersion(1), "1.*"),
-            
-            new Tuple<string, SemanticVersion, string>("1.2.*", new SemanticVersion(1,2), "1.2.*"),
-            new Tuple<string, SemanticVersion, string>("1.2.*-*", new SemanticVersion(1,2), "1.2.*"),
-            new Tuple<string, SemanticVersion, string>("1.2.*+*", new SemanticVersion(1,2), "1.2.*"),
-            new Tuple<string, SemanticVersion, string>("1.2.*-*+*", new SemanticVersion(1,2), "1.2.*"),
-            
-            new Tuple<string, SemanticVersion, string>("1.2.3-*", new SemanticVersion(1,2,3), "1.2.3-*"),
+            new Tuple<string, SemanticVersion, string>("1.2.*", new SemanticVersion(1, 2), "1.2.*"),
+            new Tuple<string, SemanticVersion, string>("1.2.*-*", new SemanticVersion(1, 2), "1.2.*"),
+            new Tuple<string, SemanticVersion, string>("1.2.*+*", new SemanticVersion(1, 2), "1.2.*"),
+            new Tuple<string, SemanticVersion, string>("1.2.*-*+*", new SemanticVersion(1, 2), "1.2.*"),
+            new Tuple<string, SemanticVersion, string>("1.2.3-*", new SemanticVersion(1, 2, 3), "1.2.3-*"),
             // Note that an absent pre-release or build is consider partial in an partial semantic version, but considered null in a full semantic version.
-            new Tuple<string, SemanticVersion, string>("1.2.3+*", new SemanticVersion(1,2,3), "1.2.3-*"),
-            new Tuple<string, SemanticVersion, string>("1.2.3-*+*", new SemanticVersion(1,2,3), "1.2.3-*"),
-
-            new Tuple<string, SemanticVersion, string>("1.2.3-a+*", new SemanticVersion(1,2,3, "a"), "1.2.3-a+*"),
+            new Tuple<string, SemanticVersion, string>("1.2.3+*", new SemanticVersion(1, 2, 3), "1.2.3-*"),
+            new Tuple<string, SemanticVersion, string>("1.2.3-*+*", new SemanticVersion(1, 2, 3), "1.2.3-*"),
+            new Tuple<string, SemanticVersion, string>("1.2.3-a+*", new SemanticVersion(1, 2, 3, "a"), "1.2.3-a+*"),
 
             // Complex partials
             new Tuple<string, SemanticVersion, string>("*.1", new SemanticVersion(Optional<int>.Unassigned, 1), "*.1.*"),
-            new Tuple<string, SemanticVersion, string>("*.1.*", new SemanticVersion(Optional<int>.Unassigned, 1), "*.1.*"),
-            new Tuple<string, SemanticVersion, string>("*.1.*-*", new SemanticVersion(Optional<int>.Unassigned, 1), "*.1.*"),
-            new Tuple<string, SemanticVersion, string>("*.1.*-*+*", new SemanticVersion(Optional<int>.Unassigned, 1), "*.1.*"),
-            
-            new Tuple<string, SemanticVersion, string>("*.*.1", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, 1), "*.*.1-*"),
-            new Tuple<string, SemanticVersion, string>("*.*.1-*", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, 1), "*.*.1-*"),
-            new Tuple<string, SemanticVersion, string>("*.*.1+*", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, 1), "*.*.1-*"),
-            new Tuple<string, SemanticVersion, string>("*.*.1-*+*", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, 1), "*.*.1-*"),
-            
-            new Tuple<string, SemanticVersion, string>("*.*.*-", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<int>.Unassigned, null), "*.*.*-+*"),
-            new Tuple<string, SemanticVersion, string>("*.*.*-+*", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<int>.Unassigned, null), "*.*.*-+*"),
-            
-            new Tuple<string, SemanticVersion, string>("*.*.*-*+", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<string>.Unassigned, null), "*.*.*-*+"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.1.*",
+                new SemanticVersion(Optional<int>.Unassigned, 1),
+                "*.1.*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.1.*-*",
+                new SemanticVersion(Optional<int>.Unassigned, 1),
+                "*.1.*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.1.*-*+*",
+                new SemanticVersion(Optional<int>.Unassigned, 1),
+                "*.1.*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.1",
+                new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, 1),
+                "*.*.1-*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.1-*",
+                new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, 1),
+                "*.*.1-*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.1+*",
+                new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, 1),
+                "*.*.1-*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.1-*+*",
+                new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, 1),
+                "*.*.1-*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.*-",
+                new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<int>.Unassigned, null),
+                "*.*.*-+*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.*-+*",
+                new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<int>.Unassigned, null),
+                "*.*.*-+*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.*-*+",
+                new SemanticVersion(
+                    Optional<int>.Unassigned,
+                    Optional<int>.Unassigned,
+                    Optional<int>.Unassigned,
+                    Optional<string>.Unassigned,
+                    null),
+                "*.*.*-*+"),
             
             // '-' is valid in pre-release and build strings!
-            new Tuple<string, SemanticVersion, string>("*.*.*--", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<int>.Unassigned, "-"), "*.*.*--+*"),
-            new Tuple<string, SemanticVersion, string>("*.*.*-*+-", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<string>.Unassigned, "-"), "*.*.*-*+-"),
-            new Tuple<string, SemanticVersion, string>("*.*.*--+-", new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<int>.Unassigned, "-", "-"), "*.*.*--+-"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.*--",
+                new SemanticVersion(Optional<int>.Unassigned, Optional<int>.Unassigned, Optional<int>.Unassigned, "-"),
+                "*.*.*--+*"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.*-*+-",
+                new SemanticVersion(
+                    Optional<int>.Unassigned,
+                    Optional<int>.Unassigned,
+                    Optional<int>.Unassigned,
+                    Optional<string>.Unassigned,
+                    "-"),
+                "*.*.*-*+-"),
+            new Tuple<string, SemanticVersion, string>(
+                "*.*.*--+-",
+                new SemanticVersion(
+                    Optional<int>.Unassigned,
+                    Optional<int>.Unassigned,
+                    Optional<int>.Unassigned,
+                    "-",
+                    "-"),
+                "*.*.*--+-"),
 
 
             // Full
-            new Tuple<string, SemanticVersion, string>("1.2.3", new SemanticVersion(1,2,3, null, null), "1.2.3"),
-            new Tuple<string, SemanticVersion, string>("1.2.3-a", new SemanticVersion(1,2,3, "a", null), "1.2.3-a"),
-            new Tuple<string, SemanticVersion, string>("1.2.3-a+b", new SemanticVersion(1,2,3, "a", "b"), "1.2.3-a+b"),
-            new Tuple<string, SemanticVersion, string>("1.2.3+b", new SemanticVersion(1,2,3, null, "b"), "1.2.3+b"),
-            new Tuple<string, SemanticVersion, string>("1.2.3-", new SemanticVersion(1,2,3, null, null), "1.2.3"),
-            new Tuple<string, SemanticVersion, string>("1.2.3+",  new SemanticVersion(1,2,3, null, null), "1.2.3"),
-            new Tuple<string, SemanticVersion, string>("1.2.3-+", new SemanticVersion(1,2,3, null, null), "1.2.3"),
-            new Tuple<string, SemanticVersion, string>("1.2.3+-", new SemanticVersion(1,2,3, null, "-"), "1.2.3+-"),
+            new Tuple<string, SemanticVersion, string>("1.2.3", new SemanticVersion(1, 2, 3, null, null), "1.2.3"),
+            new Tuple<string, SemanticVersion, string>("1.2.3-a", new SemanticVersion(1, 2, 3, "a", null), "1.2.3-a"),
+            new Tuple<string, SemanticVersion, string>("1.2.3-a+b", new SemanticVersion(1, 2, 3, "a", "b"), "1.2.3-a+b"),
+            new Tuple<string, SemanticVersion, string>("1.2.3+b", new SemanticVersion(1, 2, 3, null, "b"), "1.2.3+b"),
+            new Tuple<string, SemanticVersion, string>("1.2.3-", new SemanticVersion(1, 2, 3, null, null), "1.2.3"),
+            new Tuple<string, SemanticVersion, string>("1.2.3+", new SemanticVersion(1, 2, 3, null, null), "1.2.3"),
+            new Tuple<string, SemanticVersion, string>("1.2.3-+", new SemanticVersion(1, 2, 3, null, null), "1.2.3"),
+            new Tuple<string, SemanticVersion, string>("1.2.3+-", new SemanticVersion(1, 2, 3, null, "-"), "1.2.3+-"),
         };
 
         [NotNull]
@@ -142,23 +188,61 @@ namespace WebApplications.Utilities.Test.SemanticVersions
             new SemanticVersion(1, 0, 0, null, "build.2"),
         };
 
-        [NotNull] private readonly Tuple<bool, SemanticVersion, SemanticVersion>[] _matchTests =
+        [NotNull]
+        private readonly Tuple<bool, SemanticVersion, SemanticVersion>[] _matchTests =
         {
-            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1)),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 2)),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 2, 3)),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 2, 3, "a")),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 2, 3, "a", "b")),
-
-            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(minor: 2)),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(patch: 3)),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(preRelease: "a")),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(true, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(build: "b")),
-            
-            new Tuple<bool, SemanticVersion, SemanticVersion>(false, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, 1)),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(false, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, patch: 1)),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(false, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, preRelease: "b")),
-            new Tuple<bool, SemanticVersion, SemanticVersion>(false, new SemanticVersion(1, 2, 3, "a", "b"), new SemanticVersion(1, build: "a")),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                true,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(1)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                true,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(1, 2)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                true,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(1, 2, 3)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                true,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(1, 2, 3, "a")),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                true,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(1, 2, 3, "a", "b")),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                true,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(minor: 2)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                true,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(patch: 3)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                true,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(preRelease: "a")),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                true,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(build: "b")),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                false,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(1, 1)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                false,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(1, patch: 1)),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                false,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(1, preRelease: "b")),
+            new Tuple<bool, SemanticVersion, SemanticVersion>(
+                false,
+                new SemanticVersion(1, 2, 3, "a", "b"),
+                new SemanticVersion(1, build: "a")),
         };
 
         [TestMethod]
@@ -187,14 +271,22 @@ namespace WebApplications.Utilities.Test.SemanticVersions
                 }
                 if (!semanticVersion.Equals(tuple.Item2))
                 {
-                    Trace.WriteLine(string.Format("The '{0}' semantic version does not match the returned SemanticVersion '{1}'.", tuple.Item2, semanticVersion));
+                    Trace.WriteLine(
+                        string.Format(
+                            "The '{0}' semantic version does not match the returned SemanticVersion '{1}'.",
+                            tuple.Item2,
+                            semanticVersion));
                     success = false;
                     continue;
                 }
-                var resultString = semanticVersion.ToString();
+                string resultString = semanticVersion.ToString();
                 if (!resultString.Equals(tuple.Item3))
                 {
-                    Trace.WriteLine(string.Format("The '{0}' semantic version string does not match the returned SemanticVersion.ToString() '{1}'.", tuple.Item3, resultString));
+                    Trace.WriteLine(
+                        string.Format(
+                            "The '{0}' semantic version string does not match the returned SemanticVersion.ToString() '{1}'.",
+                            tuple.Item3,
+                            resultString));
                     success = false;
                     continue;
                 }
@@ -212,11 +304,16 @@ namespace WebApplications.Utilities.Test.SemanticVersions
                 SemanticVersion semanticVersion;
                 if (SemanticVersion.TryParse(invalid, out semanticVersion))
                 {
-                    Trace.WriteLine(string.Format("Successfully parsed '{0}' as semantic version '{1}', when supposedly invalid.", invalid, semanticVersion));
+                    Trace.WriteLine(
+                        string.Format(
+                            "Successfully parsed '{0}' as semantic version '{1}', when supposedly invalid.",
+                            invalid,
+                            semanticVersion));
                     success = false;
                     continue;
                 }
-                Trace.WriteLine(string.Format("The '{0}' semantic version was successfully parsed as invalid.", invalid));
+                Trace.WriteLine(
+                    string.Format("The '{0}' semantic version was successfully parsed as invalid.", invalid));
             }
             Assert.IsTrue(success, "Some tests failed.");
         }
@@ -281,14 +378,13 @@ namespace WebApplications.Utilities.Test.SemanticVersions
                 SemanticVersion b = pair.Item3;
 
                 bool matches = a.Matches(b);
-                Trace.Write(matches 
-                    ? string.Format("'{0}' matches '{1}'", a, b) 
-                    : string.Format("'{0}' does not match '{1}'", a, b));
+                Trace.Write(
+                    matches
+                        ? string.Format("'{0}' matches '{1}'", a, b)
+                        : string.Format("'{0}' does not match '{1}'", a, b));
 
                 if (matchExpected == matches)
-                {
                     Trace.WriteLine(" as expected");
-                }
                 else
                 {
                     Trace.WriteLine(" which is not expected");
@@ -309,7 +405,7 @@ namespace WebApplications.Utilities.Test.SemanticVersions
         [TestMethod]
         public void SemanticVersion_GetFull()
         {
-            SemanticVersion partial = new SemanticVersion(1,2,3);
+            SemanticVersion partial = new SemanticVersion(1, 2, 3);
             Assert.IsNotNull(partial);
             Assert.IsTrue(partial.IsPartial);
             SemanticVersion full = partial.GetFull();

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -99,7 +99,7 @@ namespace WebApplications.Utilities.Test.Caching
         public void ToArray_InitialCollectionSmallerThanCapacity_MatchesInitialCollection()
         {
             List<Guid> initialValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
-            long capacity = initialValues.Count + (long) (Random.NextDouble()*(MaxCapacity - initialValues.Count));
+            long capacity = initialValues.Count + (long) (Random.NextDouble() * (MaxCapacity - initialValues.Count));
             CyclicConcurrentQueue<Guid> cyclicConcurrentQueue = CreateCyclicConcurrentQueue(initialValues, capacity);
             CollectionAssert.AreEqual(initialValues.ToArray(), cyclicConcurrentQueue.ToArray());
         }
@@ -110,15 +110,16 @@ namespace WebApplications.Utilities.Test.Caching
             List<Guid> initialValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
             long capacity = Random.Next(5, initialValues.Count);
             CyclicConcurrentQueue<Guid> cyclicConcurrentQueue = CreateCyclicConcurrentQueue(initialValues, capacity);
-            CollectionAssert.AreEqual(initialValues.Skip(initialValues.Count - (int) capacity).ToArray(),
-                                      cyclicConcurrentQueue.ToArray());
+            CollectionAssert.AreEqual(
+                initialValues.Skip(initialValues.Count - (int) capacity).ToArray(),
+                cyclicConcurrentQueue.ToArray());
         }
 
         [TestMethod]
         public void Count_InitialCollectionSmallerThanCapacity_MatchesInitialCollection()
         {
             List<Guid> initialValues = Enumerable.Range(1, Random.Next(10, 100)).Select(n => Guid.NewGuid()).ToList();
-            long capacity = initialValues.Count + (long) (Random.NextDouble()*(MaxCapacity - initialValues.Count));
+            long capacity = initialValues.Count + (long) (Random.NextDouble() * (MaxCapacity - initialValues.Count));
             CyclicConcurrentQueue<Guid> cyclicConcurrentQueue = CreateCyclicConcurrentQueue(initialValues, capacity);
             Assert.AreEqual(initialValues.Count, cyclicConcurrentQueue.Count());
         }
@@ -170,9 +171,7 @@ namespace WebApplications.Utilities.Test.Caching
             long capacity = initialValues.Count + addedValues.Count + Random.Next(1, 100);
             CyclicConcurrentQueue<int> cyclicConcurrentQueue = CreateCyclicConcurrentQueue(initialValues, capacity);
             foreach (int addedValue in addedValues)
-            {
                 cyclicConcurrentQueue.Enqueue(addedValue);
-            }
             List<int> expectedValues = initialValues.Concat(addedValues).ToList();
             CollectionAssert.AreEqual(expectedValues, cyclicConcurrentQueue.ToList());
         }
@@ -181,12 +180,10 @@ namespace WebApplications.Utilities.Test.Caching
         public void ToList_ItemsEnqueuedToExceedCapacity_EarlierValuesOverridenWhenPastCapacity()
         {
             List<int> values = Enumerable.Range(1, Random.Next(100, 1000)).Select(n => Random.Next()).ToList();
-            long capacity = Random.Next(20, values.Count/2);
+            long capacity = Random.Next(20, values.Count / 2);
             CyclicConcurrentQueue<int> cyclicConcurrentQueue = CreateCyclicConcurrentQueue<int>(capacity);
             foreach (int value in values)
-            {
                 cyclicConcurrentQueue.Enqueue(value);
-            }
             List<int> expectedValues = values.Skip(values.Count - (int) capacity).ToList();
             CollectionAssert.AreEqual(expectedValues, cyclicConcurrentQueue.ToList());
         }
@@ -197,18 +194,17 @@ namespace WebApplications.Utilities.Test.Caching
             ()
         {
             List<int> values = Enumerable.Range(1, Random.Next(100, 1000)).Select(n => Random.Next()).ToList();
-            long capacity = Random.Next(20, values.Count/2);
-            int amountToDequeue = Random.Next(1, (int) capacity/2);
+            long capacity = Random.Next(20, values.Count / 2);
+            int amountToDequeue = Random.Next(1, (int) capacity / 2);
             CyclicConcurrentQueue<int> cyclicConcurrentQueue = CreateCyclicConcurrentQueue<int>(capacity);
             foreach (int value in values)
-            {
                 cyclicConcurrentQueue.Enqueue(value);
-            }
             for (int i = 0; i < amountToDequeue; i++)
             {
                 int dequeued;
-                Assert.IsTrue(cyclicConcurrentQueue.TryDequeue(out dequeued),
-                              "This test should always succeed when attempting to Dequeue elements.");
+                Assert.IsTrue(
+                    cyclicConcurrentQueue.TryDequeue(out dequeued),
+                    "This test should always succeed when attempting to Dequeue elements.");
             }
             List<int> expectedValues = values.Skip(values.Count - (int) capacity).Skip(amountToDequeue).ToList();
             CollectionAssert.AreEqual(expectedValues, cyclicConcurrentQueue.ToList());
@@ -257,9 +253,7 @@ namespace WebApplications.Utilities.Test.Caching
             int firstItem = Random.Next();
             cyclicConcurrentQueue.Enqueue(firstItem);
             foreach (int enqueuedItem in enqueuedItems)
-            {
                 cyclicConcurrentQueue.Enqueue(enqueuedItem);
-            }
             int dequeued;
             cyclicConcurrentQueue.TryDequeue(out dequeued);
             Assert.AreEqual(firstItem, dequeued);
@@ -274,13 +268,9 @@ namespace WebApplications.Utilities.Test.Caching
             int previousCount = cyclicConcurrentQueue.Count();
             int dequeued;
             if (cyclicConcurrentQueue.TryDequeue(out dequeued))
-            {
                 Assert.AreEqual(previousCount - 1, cyclicConcurrentQueue.Count());
-            }
             else
-            {
                 Assert.Inconclusive("Could not successfully dequeue an item.");
-            }
         }
 
         [TestMethod]
@@ -308,14 +298,12 @@ namespace WebApplications.Utilities.Test.Caching
             long capacity = Random.Next(10, MaxCapacity);
             //Note: Using random choice for each number takes too long
             IEnumerable<int> enqueuedItems = Enumerable.Range(1, Random.Next(2, (int) capacity - 1));
-                //.Select(n=>Random.Next());
+            //.Select(n=>Random.Next());
             CyclicConcurrentQueue<int> cyclicConcurrentQueue = CreateCyclicConcurrentQueue<int>(capacity);
             int firstItem = Random.Next();
             cyclicConcurrentQueue.Enqueue(firstItem);
             foreach (int enqueuedItem in enqueuedItems)
-            {
                 cyclicConcurrentQueue.Enqueue(enqueuedItem);
-            }
             int peeked;
             cyclicConcurrentQueue.TryPeek(out peeked);
             Assert.AreEqual(firstItem, peeked);
@@ -343,13 +331,9 @@ namespace WebApplications.Utilities.Test.Caching
             int previousCount = cyclicConcurrentQueue.Count();
             int peeked;
             if (cyclicConcurrentQueue.TryPeek(out peeked))
-            {
                 Assert.AreEqual(previousCount, cyclicConcurrentQueue.Count());
-            }
             else
-            {
                 Assert.Inconclusive("Could not successfully peek at an item.");
-            }
         }
 
         [TestMethod]
@@ -385,17 +369,17 @@ namespace WebApplications.Utilities.Test.Caching
 
                 //Add extra values
                 foreach (int enqueuedValue in enqueuedValues)
-                {
                     cyclicConcurrentQueue.Enqueue(enqueuedValue);
-                }
 
                 //Finish iterating
                 while (enumerator.MoveNext())
                     iterationResult.Add(enumerator.Current);
             }
-            Assert.IsTrue(capacity >= iterationResult.Count,
-                          "Iteration count ({0}) should always be smaller than the capacity ({1})",
-                          iterationResult.Count, capacity);
+            Assert.IsTrue(
+                capacity >= iterationResult.Count,
+                "Iteration count ({0}) should always be smaller than the capacity ({1})",
+                iterationResult.Count,
+                capacity);
         }
 
         [TestMethod]
@@ -415,12 +399,15 @@ namespace WebApplications.Utilities.Test.Caching
             long capacity = values.Count + Random.Next(1, 1000);
             CyclicConcurrentQueue<Guid> cyclicConcurrentQueue = CreateCyclicConcurrentQueue(values, capacity);
             ConcurrentBag<Guid> dequeuedValues = new ConcurrentBag<Guid>();
-            Parallel.For(0, values.Count, i =>
-                                              {
-                                                  Guid value;
-                                                  cyclicConcurrentQueue.TryDequeue(out value);
-                                                  dequeuedValues.Add(value);
-                                              });
+            Parallel.For(
+                0,
+                values.Count,
+                i =>
+                {
+                    Guid value;
+                    cyclicConcurrentQueue.TryDequeue(out value);
+                    dequeuedValues.Add(value);
+                });
             CollectionAssert.AreEquivalent(values, dequeuedValues);
             Assert.AreEqual(0, cyclicConcurrentQueue.Count);
         }

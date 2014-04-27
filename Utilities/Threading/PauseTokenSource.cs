@@ -57,7 +57,6 @@ namespace WebApplications.Utilities.Threading
                 if (value)
                     Interlocked.CompareExchange(ref _paused, new TaskCompletionSource<bool>(), null);
                 else
-                {
                     while (true)
                     {
                         TaskCompletionSource<bool> tcs = _paused;
@@ -66,7 +65,6 @@ namespace WebApplications.Utilities.Threading
                         tcs.SetResult(true);
                         break;
                     }
-                }
             }
         }
 
@@ -86,7 +84,8 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task.</returns>
         [PublicAPI]
         [NotNull]
-        [Pure, System.Diagnostics.Contracts.Pure]
+        [Pure]
+        [System.Diagnostics.Contracts.Pure]
         internal Task WaitWhilePausedAsync(CancellationToken token = default(CancellationToken))
         {
             TaskCompletionSource<bool> cur = _paused;

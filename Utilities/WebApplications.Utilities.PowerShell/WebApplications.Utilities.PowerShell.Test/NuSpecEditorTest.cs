@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -56,18 +56,16 @@ namespace WebApplications.Utilities.PowerShell.Test
 
             // Write out resource steam to file.
             using (BinaryReader reader = new BinaryReader(testAssembly.GetManifestResourceStream(resourceName)))
+            using (BinaryWriter writer = new BinaryWriter(new FileStream(NuSpecPath, FileMode.Create)))
             {
-                using (BinaryWriter writer = new BinaryWriter(new FileStream(NuSpecPath, FileMode.Create)))
+                long bytesLeft = reader.BaseStream.Length;
+                while (bytesLeft > 0)
                 {
-                    long bytesLeft = reader.BaseStream.Length;
-                    while (bytesLeft > 0)
-                    {
-                        // 65535L is < Int32.MaxValue, so no need to test for overflow
-                        byte[] chunk = reader.ReadBytes((int) Math.Min(bytesLeft, 65536L));
-                        writer.Write(chunk);
+                    // 65535L is < Int32.MaxValue, so no need to test for overflow
+                    byte[] chunk = reader.ReadBytes((int) Math.Min(bytesLeft, 65536L));
+                    writer.Write(chunk);
 
-                        bytesLeft -= chunk.Length;
-                    }
+                    bytesLeft -= chunk.Length;
                 }
             }
 
@@ -90,9 +88,12 @@ namespace WebApplications.Utilities.PowerShell.Test
             NuSpecEditor editor = new NuSpecEditor(NuSpecPath);
 
             Assert.IsNotNull(editor, "The nuspec editor object was not found!");
-            Assert.AreEqual(NuSpecPath, editor.Path,
-                            "The nuspec path as reported by the editor '{0}' did not match the expected path '{1}.",
-                            editor.Path, NuSpecPath);
+            Assert.AreEqual(
+                NuSpecPath,
+                editor.Path,
+                "The nuspec path as reported by the editor '{0}' did not match the expected path '{1}.",
+                editor.Path,
+                NuSpecPath);
 
             Assert.IsNotNull(editor.Document, "The nuspec editor did not load the XML Document from the spec.");
             Assert.IsNotNull(editor.MetadataElement, "The nuspec editor did not find the metadata element.");
@@ -136,18 +137,23 @@ namespace WebApplications.Utilities.PowerShell.Test
             NuSpecDependency existingDependency =
                 editor.Dependencies.FirstOrDefault(d => !String.IsNullOrWhiteSpace(d.Version));
 
-            Assert.AreNotEqual(default(NuSpecDependency), existingDependency,
-                               "The nuspec did not already contain a pre-existing versioned dependency");
+            Assert.AreNotEqual(
+                default(NuSpecDependency),
+                existingDependency,
+                "The nuspec did not already contain a pre-existing versioned dependency");
 
             // Neither of these should require chagnes
             editor.EnsureDependency(existingDependency.Id);
             editor.EnsureDependency(existingDependency);
 
-            Assert.AreNotEqual(default(NuSpecDependency), editor.Dependencies.FirstOrDefault(
-                d => d.Id.Equals(existingDependency.Id, StringComparison.OrdinalIgnoreCase) &&
-                     (d.Version != null) &&
-                     d.Version.Equals(existingDependency.Version, StringComparison.OrdinalIgnoreCase)),
-                               "The existing dependency '{0}' disappeared!", existingDependency);
+            Assert.AreNotEqual(
+                default(NuSpecDependency),
+                editor.Dependencies.FirstOrDefault(
+                    d => d.Id.Equals(existingDependency.Id, StringComparison.OrdinalIgnoreCase) &&
+                         (d.Version != null) &&
+                         d.Version.Equals(existingDependency.Version, StringComparison.OrdinalIgnoreCase)),
+                "The existing dependency '{0}' disappeared!",
+                existingDependency);
 
             Assert.IsFalse(editor.HasChanges, "Editor should not have registered any changes yet.");
 
@@ -155,15 +161,21 @@ namespace WebApplications.Utilities.PowerShell.Test
             string newDepVers = Guid.NewGuid().ToString();
             editor.EnsureDependency(newDepId);
             editor.EnsureDependency(new NuSpecDependency(newDepId, newDepVers));
-            Assert.AreNotEqual(default(NuSpecDependency), editor.Dependencies.SingleOrDefault(
-                d => d.Id.Equals(newDepId, StringComparison.OrdinalIgnoreCase) &&
-                     (d.Version != null) &&
-                     d.Version.Equals(newDepVers, StringComparison.OrdinalIgnoreCase)),
-                               "The '{0}, {1}' dependency was not added.", newDepId, newDepVers);
+            Assert.AreNotEqual(
+                default(NuSpecDependency),
+                editor.Dependencies.SingleOrDefault(
+                    d => d.Id.Equals(newDepId, StringComparison.OrdinalIgnoreCase) &&
+                         (d.Version != null) &&
+                         d.Version.Equals(newDepVers, StringComparison.OrdinalIgnoreCase)),
+                "The '{0}, {1}' dependency was not added.",
+                newDepId,
+                newDepVers);
             Assert.IsTrue(editor.HasChanges, "Editor should have registered a change.");
 
-            Assert.AreEqual(dcount + 1, editor.Dependencies.Count(),
-                            "The number of dependencies should have increased by one!");
+            Assert.AreEqual(
+                dcount + 1,
+                editor.Dependencies.Count(),
+                "The number of dependencies should have increased by one!");
         }
 
         [TestMethod]
@@ -195,33 +207,43 @@ namespace WebApplications.Utilities.PowerShell.Test
 
             // Check dependencies added
             Assert.IsTrue(editor.HasChanges, "Editor should have registered a change.");
-            Assert.AreEqual(dcount + addCount, editor.Dependencies.Count(),
-                            "The number of dependencies should have increased by one!");
+            Assert.AreEqual(
+                dcount + addCount,
+                editor.Dependencies.Count(),
+                "The number of dependencies should have increased by one!");
             foreach (NuSpecDependency dependency in dependencies)
-            {
-                Assert.AreNotEqual(default(NuSpecDependency), editor.Dependencies.SingleOrDefault(
-                    d => d.Id.Equals(dependency.Id, StringComparison.OrdinalIgnoreCase) &&
-                         (dependency.Version == null) || ((d.Version != null) &&
-                                                          d.Version.Equals(dependency.Version,
-                                                                           StringComparison.OrdinalIgnoreCase))),
-                                   "The '{0}, {1}' dependency was not added.", dependency.Id, dependency.Version);
-            }
+                Assert.AreNotEqual(
+                    default(NuSpecDependency),
+                    editor.Dependencies.SingleOrDefault(
+                        d => d.Id.Equals(dependency.Id, StringComparison.OrdinalIgnoreCase) &&
+                             (dependency.Version == null) || ((d.Version != null) &&
+                                                              d.Version.Equals(
+                                                                  dependency.Version,
+                                                                  StringComparison.OrdinalIgnoreCase))),
+                    "The '{0}, {1}' dependency was not added.",
+                    dependency.Id,
+                    dependency.Version);
 
             // Remove dependencies in one go
             editor.RemoveDependencies(String.Join(";", dependencies));
 
             // Check dependencies were removed
-            Assert.AreEqual(dcount, editor.Dependencies.Count(),
-                            "The number of dependencies should have been restored after removal!");
+            Assert.AreEqual(
+                dcount,
+                editor.Dependencies.Count(),
+                "The number of dependencies should have been restored after removal!");
             foreach (NuSpecDependency dependency in dependencies)
-            {
-                Assert.AreEqual(default(NuSpecDependency), editor.Dependencies.SingleOrDefault(
-                    d => d.Id.Equals(dependency.Id, StringComparison.OrdinalIgnoreCase) &&
-                         (dependency.Version == null) || ((d.Version != null) &&
-                                                          d.Version.Equals(dependency.Version,
-                                                                           StringComparison.OrdinalIgnoreCase))),
-                                "The '{0}, {1}' dependency was not removed.", dependency.Id, dependency.Version);
-            }
+                Assert.AreEqual(
+                    default(NuSpecDependency),
+                    editor.Dependencies.SingleOrDefault(
+                        d => d.Id.Equals(dependency.Id, StringComparison.OrdinalIgnoreCase) &&
+                             (dependency.Version == null) || ((d.Version != null) &&
+                                                              d.Version.Equals(
+                                                                  dependency.Version,
+                                                                  StringComparison.OrdinalIgnoreCase))),
+                    "The '{0}, {1}' dependency was not removed.",
+                    dependency.Id,
+                    dependency.Version);
         }
     }
 }

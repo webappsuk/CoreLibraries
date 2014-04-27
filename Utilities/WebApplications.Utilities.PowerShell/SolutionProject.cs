@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -54,17 +54,23 @@ namespace WebApplications.Utilities.PowerShell
         /// <summary>
         /// The project.
         /// </summary>
-        [NotNull] [UsedImplicitly] public readonly Project Project;
+        [NotNull]
+        [UsedImplicitly]
+        public readonly Project Project;
 
         /// <summary>
         /// The name of the project in the solution.
         /// </summary>
-        [NotNull] [UsedImplicitly] public readonly string ProjectName;
+        [NotNull]
+        [UsedImplicitly]
+        public readonly string ProjectName;
 
         /// <summary>
         /// The solution.
         /// </summary>
-        [NotNull] [UsedImplicitly] public readonly Solution Solution;
+        [NotNull]
+        [UsedImplicitly]
+        public readonly Solution Solution;
 
         private EventHandler _finalized;
 
@@ -75,8 +81,10 @@ namespace WebApplications.Utilities.PowerShell
         /// <param name="projectFileName">Name of the project file.</param>
         /// <param name="projectName">Name of the project.</param>
         /// <remarks></remarks>
-        internal SolutionProject([NotNull] Solution solution, [NotNull] string projectFileName,
-                                 [NotNull] string projectName)
+        internal SolutionProject(
+            [NotNull] Solution solution,
+            [NotNull] string projectFileName,
+            [NotNull] string projectName)
         {
             Solution = solution;
             Project = Project.Get(projectFileName);
@@ -137,7 +145,10 @@ namespace WebApplications.Utilities.PowerShell
         /// <remarks></remarks>
         public override string ToString()
         {
-            return string.Format("{0}{1}", ProjectName, !string.IsNullOrWhiteSpace(Project.NuSpecPath) ? " *NUGET*" : "");
+            return string.Format(
+                "{0}{1}",
+                ProjectName,
+                !string.IsNullOrWhiteSpace(Project.NuSpecPath) ? " *NUGET*" : "");
         }
 
         /// <inheritdoc />

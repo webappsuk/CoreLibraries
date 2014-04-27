@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -50,8 +50,10 @@ namespace WebApplications.Utilities.Test.Configuration
         [TestMethod]
         public void ParameterElement_Extends_ConfigurationElement()
         {
-            Assert.IsInstanceOfType(_parameterElement, typeof (ConfigurationElement),
-                                    "The ParameterElement class should extend System.Configuration.ConfigurationElement.");
+            Assert.IsInstanceOfType(
+                _parameterElement,
+                typeof (ConfigurationElement),
+                "The ParameterElement class should extend System.Configuration.ConfigurationElement.");
         }
 
         [TestMethod]
@@ -59,8 +61,10 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             string testString = Random.RandomString(Random.Next(3, 100));
             _parameterElement.Name = testString;
-            Assert.AreEqual(testString, _parameterElement.Name,
-                            "The Name field should return the same value as it was last set to.");
+            Assert.AreEqual(
+                testString,
+                _parameterElement.Name,
+                "The Name field should return the same value as it was last set to.");
         }
 
         [TestMethod]
@@ -68,10 +72,14 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             List<ConfigurationPropertyAttribute> configurationPropertyAttributes =
                 GetConfigurationPropertyAttributesForProperty(typeof (ParameterElement), "Name");
-            Assert.AreEqual(1, configurationPropertyAttributes.Count,
-                            "There should be exactly one ConfigurationPropertyAttribute for the Name property.");
-            Assert.AreEqual("name", configurationPropertyAttributes.First().Name,
-                            "The name of the ConfigurationPropertyAttribute for the Name property should be 'name'.");
+            Assert.AreEqual(
+                1,
+                configurationPropertyAttributes.Count,
+                "There should be exactly one ConfigurationPropertyAttribute for the Name property.");
+            Assert.AreEqual(
+                "name",
+                configurationPropertyAttributes.First().Name,
+                "The name of the ConfigurationPropertyAttribute for the Name property should be 'name'.");
         }
 
         [TestMethod]
@@ -79,8 +87,10 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             string testString = Random.RandomString(Random.Next(3, 100));
             _parameterElement.Value = testString;
-            Assert.AreEqual(testString, _parameterElement.Value,
-                            "The Value field should return the same value as it was last set to.");
+            Assert.AreEqual(
+                testString,
+                _parameterElement.Value,
+                "The Value field should return the same value as it was last set to.");
         }
 
         [TestMethod]
@@ -95,10 +105,14 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             List<ConfigurationPropertyAttribute> configurationPropertyAttributes =
                 GetConfigurationPropertyAttributesForProperty(typeof (ParameterElement), "Value");
-            Assert.AreEqual(1, configurationPropertyAttributes.Count,
-                            "There should be exactly one ConfigurationPropertyAttribute for the Value property.");
-            Assert.AreEqual("value", configurationPropertyAttributes.First().Name,
-                            "The name of the ConfigurationPropertyAttribute for the Value property should be 'value'.");
+            Assert.AreEqual(
+                1,
+                configurationPropertyAttributes.Count,
+                "There should be exactly one ConfigurationPropertyAttribute for the Value property.");
+            Assert.AreEqual(
+                "value",
+                configurationPropertyAttributes.First().Name,
+                "The name of the ConfigurationPropertyAttribute for the Value property should be 'value'.");
         }
 
         [TestMethod]
@@ -106,8 +120,10 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             bool testValue = Random.NextDouble() < 0.5;
             _parameterElement.IsRequired = testValue;
-            Assert.AreEqual(testValue, _parameterElement.IsRequired,
-                            "The IsRequired field should return the same value as it was last set to.");
+            Assert.AreEqual(
+                testValue,
+                _parameterElement.IsRequired,
+                "The IsRequired field should return the same value as it was last set to.");
         }
 
         [TestMethod]
@@ -115,10 +131,14 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             List<ConfigurationPropertyAttribute> configurationPropertyAttributes =
                 GetConfigurationPropertyAttributesForProperty(typeof (ParameterElement), "IsRequired");
-            Assert.AreEqual(1, configurationPropertyAttributes.Count,
-                            "There should be exactly one ConfigurationPropertyAttribute for the IsRequired property.");
-            Assert.AreEqual("required", configurationPropertyAttributes.First().Name,
-                            "The name of the ConfigurationPropertyAttribute for the IsRequired property should be 'required'.");
+            Assert.AreEqual(
+                1,
+                configurationPropertyAttributes.Count,
+                "There should be exactly one ConfigurationPropertyAttribute for the IsRequired property.");
+            Assert.AreEqual(
+                "required",
+                configurationPropertyAttributes.First().Name,
+                "The name of the ConfigurationPropertyAttribute for the IsRequired property should be 'required'.");
         }
 
         [TestMethod]
@@ -128,8 +148,10 @@ namespace WebApplications.Utilities.Test.Configuration
                 ChooseRandomTypeFromList(
                     (new List<Type> {typeof (int), typeof (char), typeof (bool), typeof (DateTime), typeof (double)}));
             _parameterElement.Type = testType;
-            Assert.AreEqual(testType, _parameterElement.Type,
-                            "The Type field should return the same value as it was last set to.");
+            Assert.AreEqual(
+                testType,
+                _parameterElement.Type,
+                "The Type field should return the same value as it was last set to.");
         }
 
         [TestMethod]
@@ -144,10 +166,14 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             List<ConfigurationPropertyAttribute> configurationPropertyAttributes =
                 GetConfigurationPropertyAttributesForProperty(typeof (ParameterElement), "Type");
-            Assert.AreEqual(1, configurationPropertyAttributes.Count,
-                            "There should be exactly one ConfigurationPropertyAttribute for the Type property.");
-            Assert.AreEqual("type", configurationPropertyAttributes.First().Name,
-                            "The name of the ConfigurationPropertyAttribute for the Type property should be 'type'.");
+            Assert.AreEqual(
+                1,
+                configurationPropertyAttributes.Count,
+                "There should be exactly one ConfigurationPropertyAttribute for the Type property.");
+            Assert.AreEqual(
+                "type",
+                configurationPropertyAttributes.First().Name,
+                "The name of the ConfigurationPropertyAttribute for the Type property should be 'type'.");
         }
 
         [TestMethod]
@@ -166,15 +192,17 @@ namespace WebApplications.Utilities.Test.Configuration
             Type testType =
                 ChooseRandomTypeFromList(
                     (new List<Type>
-                         {
-                             typeof (InfiniteIntConverter),
-                             typeof (TypeNameConverter),
-                             typeof (TimeSpanMinutesConverter),
-                             typeof (WhiteSpaceTrimStringConverter)
-                         }));
+                    {
+                        typeof (InfiniteIntConverter),
+                        typeof (TypeNameConverter),
+                        typeof (TimeSpanMinutesConverter),
+                        typeof (WhiteSpaceTrimStringConverter)
+                    }));
             _parameterElement.TypeConverter = testType;
-            Assert.AreEqual(testType, _parameterElement.TypeConverter,
-                            "The TypeConverter field should return the same value as it was last set to.");
+            Assert.AreEqual(
+                testType,
+                _parameterElement.TypeConverter,
+                "The TypeConverter field should return the same value as it was last set to.");
         }
 
         [TestMethod]
@@ -189,10 +217,14 @@ namespace WebApplications.Utilities.Test.Configuration
         {
             List<ConfigurationPropertyAttribute> configurationPropertyAttributes =
                 GetConfigurationPropertyAttributesForProperty(typeof (ParameterElement), "TypeConverter");
-            Assert.AreEqual(1, configurationPropertyAttributes.Count,
-                            "There should be exactly one ConfigurationPropertyAttribute for the TypeConverter property.");
-            Assert.AreEqual("typeConverter", configurationPropertyAttributes.First().Name,
-                            "The name of the ConfigurationPropertyAttribute for the TypeConverter property should be 'typeConverter'.");
+            Assert.AreEqual(
+                1,
+                configurationPropertyAttributes.Count,
+                "There should be exactly one ConfigurationPropertyAttribute for the TypeConverter property.");
+            Assert.AreEqual(
+                "typeConverter",
+                configurationPropertyAttributes.First().Name,
+                "The name of the ConfigurationPropertyAttribute for the TypeConverter property should be 'typeConverter'.");
         }
     }
 }

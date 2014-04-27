@@ -1,25 +1,28 @@
-﻿ 
- 
-#region © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
-// Solution: WebApplications.Utilities 
-// Project: WebApplications.Utilities
-// File: TaskExtensionOverloads.cs
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
 // 
-// This software, its object code and source code and all modifications made to
-// the same (the “Software”) are, and shall at all times remain, the proprietary
-// information and intellectual property rights of Web Applications (UK) Limited. 
-// You are only entitled to use the Software as expressly permitted by Web
-// Applications (UK) Limited within the Software Customisation and
-// Licence Agreement (the “Agreement”).  Any copying, modification, decompiling,
-// distribution, licensing, sale, transfer or other use of the Software other than
-// as expressly permitted in the Agreement is expressly forbidden.  Web
-// Applications (UK) Limited reserves its rights to take action against you and
-// your employer in accordance with its contractual and common law rights
-// (including injunctive relief) should you breach the terms of the Agreement or
-// otherwise infringe its copyright or other intellectual property rights in the
-// Software.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
 // 
-// © Copyright Web Applications (UK) Ltd, 2011.  All rights reserved.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
 using System;
@@ -30,9 +33,9 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities
 {
 
-	#region Stack with 2 items.
+    #region Stack with 2 items.
     /// <summary>
-    /// A stack of <see cref="Tuple{T1, T2}"/>.
+    /// A stack of <see cref="Tuple{T1,T2}"/>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
@@ -50,7 +53,7 @@ namespace WebApplications.Utilities
         {
             Push(new Tuple<T1, T2>(item1, item2));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2}"/>.
         /// </summary>
@@ -65,7 +68,7 @@ namespace WebApplications.Utilities
             item1 = tuple.Item1;
             item2 = tuple.Item2;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2}"/> without removing it.
         /// </summary>
@@ -81,9 +84,9 @@ namespace WebApplications.Utilities
             item2 = tuple.Item2;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 3 items.
+    #region Stack with 3 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3}"/>.
     /// </summary>
@@ -106,7 +109,7 @@ namespace WebApplications.Utilities
         {
             Push(new Tuple<T1, T2, T3>(item1, item2, item3));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3}"/>.
         /// </summary>
@@ -124,7 +127,7 @@ namespace WebApplications.Utilities
             item2 = tuple.Item2;
             item3 = tuple.Item3;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3}"/> without removing it.
         /// </summary>
@@ -143,9 +146,9 @@ namespace WebApplications.Utilities
             item3 = tuple.Item3;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 4 items.
+    #region Stack with 4 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4}"/>.
     /// </summary>
@@ -171,7 +174,7 @@ namespace WebApplications.Utilities
         {
             Push(new Tuple<T1, T2, T3, T4>(item1, item2, item3, item4));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4}"/>.
         /// </summary>
@@ -192,7 +195,7 @@ namespace WebApplications.Utilities
             item3 = tuple.Item3;
             item4 = tuple.Item4;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4}"/> without removing it.
         /// </summary>
@@ -214,9 +217,9 @@ namespace WebApplications.Utilities
             item4 = tuple.Item4;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 5 items.
+    #region Stack with 5 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5}"/>.
     /// </summary>
@@ -245,7 +248,7 @@ namespace WebApplications.Utilities
         {
             Push(new Tuple<T1, T2, T3, T4, T5>(item1, item2, item3, item4, item5));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5}"/>.
         /// </summary>
@@ -269,7 +272,7 @@ namespace WebApplications.Utilities
             item4 = tuple.Item4;
             item5 = tuple.Item5;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5}"/> without removing it.
         /// </summary>
@@ -294,9 +297,9 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 6 items.
+    #region Stack with 6 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6}"/>.
     /// </summary>
@@ -328,7 +331,7 @@ namespace WebApplications.Utilities
         {
             Push(new Tuple<T1, T2, T3, T4, T5, T6>(item1, item2, item3, item4, item5, item6));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6}"/>.
         /// </summary>
@@ -355,7 +358,7 @@ namespace WebApplications.Utilities
             item5 = tuple.Item5;
             item6 = tuple.Item6;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6}"/> without removing it.
         /// </summary>
@@ -383,9 +386,9 @@ namespace WebApplications.Utilities
             item6 = tuple.Item6;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 7 items.
+    #region Stack with 7 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7}"/>.
     /// </summary>
@@ -420,7 +423,7 @@ namespace WebApplications.Utilities
         {
             Push(new Tuple<T1, T2, T3, T4, T5, T6, T7>(item1, item2, item3, item4, item5, item6, item7));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7}"/>.
         /// </summary>
@@ -450,7 +453,7 @@ namespace WebApplications.Utilities
             item6 = tuple.Item6;
             item7 = tuple.Item7;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7}"/> without removing it.
         /// </summary>
@@ -481,9 +484,9 @@ namespace WebApplications.Utilities
             item7 = tuple.Item7;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 8 items.
+    #region Stack with 8 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
     /// </summary>
@@ -519,9 +522,18 @@ namespace WebApplications.Utilities
             T7 item7,
             T8 item8)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8>(item8)));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8>(item8)));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
         /// </summary>
@@ -554,7 +566,7 @@ namespace WebApplications.Utilities
             item7 = tuple.Item7;
             item8 = tuple.Rest.Item1;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8}"/> without removing it.
         /// </summary>
@@ -588,9 +600,9 @@ namespace WebApplications.Utilities
             item8 = tuple.Rest.Item1;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 9 items.
+    #region Stack with 9 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
     /// </summary>
@@ -629,9 +641,18 @@ namespace WebApplications.Utilities
             T8 item8,
             T9 item9)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9>(item8, item9)));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9>(item8, item9)));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
         /// </summary>
@@ -667,7 +688,7 @@ namespace WebApplications.Utilities
             item8 = tuple.Rest.Item1;
             item9 = tuple.Rest.Item2;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/> without removing it.
         /// </summary>
@@ -704,9 +725,9 @@ namespace WebApplications.Utilities
             item9 = tuple.Rest.Item2;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 10 items.
+    #region Stack with 10 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
     /// </summary>
@@ -721,7 +742,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T9">The type of item 9.</typeparam>
     /// <typeparam name="T10">The type of item 10.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}" />.
@@ -748,9 +770,18 @@ namespace WebApplications.Utilities
             T9 item9,
             T10 item10)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10>(item8, item9, item10)));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10>(item8, item9, item10)));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
         /// </summary>
@@ -789,7 +820,7 @@ namespace WebApplications.Utilities
             item9 = tuple.Rest.Item2;
             item10 = tuple.Rest.Item3;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/> without removing it.
         /// </summary>
@@ -829,9 +860,9 @@ namespace WebApplications.Utilities
             item10 = tuple.Rest.Item3;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 11 items.
+    #region Stack with 11 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
     /// </summary>
@@ -847,7 +878,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T10">The type of item 10.</typeparam>
     /// <typeparam name="T11">The type of item 11.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}" />.
@@ -876,9 +908,18 @@ namespace WebApplications.Utilities
             T10 item10,
             T11 item11)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11>(item8, item9, item10, item11)));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11>(item8, item9, item10, item11)));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
         /// </summary>
@@ -920,7 +961,7 @@ namespace WebApplications.Utilities
             item10 = tuple.Rest.Item3;
             item11 = tuple.Rest.Item4;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/> without removing it.
         /// </summary>
@@ -963,9 +1004,9 @@ namespace WebApplications.Utilities
             item11 = tuple.Rest.Item4;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 12 items.
+    #region Stack with 12 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
     /// </summary>
@@ -982,7 +1023,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T11">The type of item 11.</typeparam>
     /// <typeparam name="T12">The type of item 12.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}" />.
@@ -1013,9 +1055,18 @@ namespace WebApplications.Utilities
             T11 item11,
             T12 item12)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12>(item8, item9, item10, item11, item12)));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12>(item8, item9, item10, item11, item12)));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
         /// </summary>
@@ -1060,7 +1111,7 @@ namespace WebApplications.Utilities
             item11 = tuple.Rest.Item4;
             item12 = tuple.Rest.Item5;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/> without removing it.
         /// </summary>
@@ -1106,9 +1157,9 @@ namespace WebApplications.Utilities
             item12 = tuple.Rest.Item5;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 13 items.
+    #region Stack with 13 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
     /// </summary>
@@ -1126,7 +1177,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T12">The type of item 12.</typeparam>
     /// <typeparam name="T13">The type of item 13.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}" />.
@@ -1159,9 +1211,18 @@ namespace WebApplications.Utilities
             T12 item12,
             T13 item13)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13>(item8, item9, item10, item11, item12, item13)));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13>(item8, item9, item10, item11, item12, item13)));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
         /// </summary>
@@ -1209,7 +1270,7 @@ namespace WebApplications.Utilities
             item12 = tuple.Rest.Item5;
             item13 = tuple.Rest.Item6;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/> without removing it.
         /// </summary>
@@ -1258,9 +1319,9 @@ namespace WebApplications.Utilities
             item13 = tuple.Rest.Item6;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 14 items.
+    #region Stack with 14 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
     /// </summary>
@@ -1279,7 +1340,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T13">The type of item 13.</typeparam>
     /// <typeparam name="T14">The type of item 14.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}" />.
@@ -1314,9 +1376,18 @@ namespace WebApplications.Utilities
             T13 item13,
             T14 item14)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14>(item8, item9, item10, item11, item12, item13, item14)));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13, T14>(item8, item9, item10, item11, item12, item13, item14)));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
         /// </summary>
@@ -1367,7 +1438,7 @@ namespace WebApplications.Utilities
             item13 = tuple.Rest.Item6;
             item14 = tuple.Rest.Item7;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/> without removing it.
         /// </summary>
@@ -1419,9 +1490,9 @@ namespace WebApplications.Utilities
             item14 = tuple.Rest.Item7;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 15 items.
+    #region Stack with 15 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
     /// </summary>
@@ -1441,7 +1512,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T14">The type of item 14.</typeparam>
     /// <typeparam name="T15">The type of item 15.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}" />.
@@ -1478,9 +1550,26 @@ namespace WebApplications.Utilities
             T14 item14,
             T15 item15)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15>(item15))));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15>(item15))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
         /// </summary>
@@ -1534,7 +1623,7 @@ namespace WebApplications.Utilities
             item14 = tuple.Rest.Item7;
             item15 = tuple.Rest.Rest.Item1;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/> without removing it.
         /// </summary>
@@ -1589,9 +1678,9 @@ namespace WebApplications.Utilities
             item15 = tuple.Rest.Rest.Item1;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 16 items.
+    #region Stack with 16 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
     /// </summary>
@@ -1612,7 +1701,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T15">The type of item 15.</typeparam>
     /// <typeparam name="T16">The type of item 16.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}" />.
@@ -1651,9 +1741,26 @@ namespace WebApplications.Utilities
             T15 item15,
             T16 item16)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16>(item15, item16))));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16>(item15, item16))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
         /// </summary>
@@ -1710,7 +1817,7 @@ namespace WebApplications.Utilities
             item15 = tuple.Rest.Rest.Item1;
             item16 = tuple.Rest.Rest.Item2;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/> without removing it.
         /// </summary>
@@ -1768,9 +1875,9 @@ namespace WebApplications.Utilities
             item16 = tuple.Rest.Rest.Item2;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 17 items.
+    #region Stack with 17 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
     /// </summary>
@@ -1792,7 +1899,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T16">The type of item 16.</typeparam>
     /// <typeparam name="T17">The type of item 17.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}" />.
@@ -1833,9 +1941,26 @@ namespace WebApplications.Utilities
             T16 item16,
             T17 item17)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17>(item15, item16, item17))));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17>(item15, item16, item17))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
         /// </summary>
@@ -1875,7 +2000,8 @@ namespace WebApplications.Utilities
             out T16 item16,
             out T17 item17)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> tuple = Pop();
+            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> tuple =
+                Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -1895,7 +2021,7 @@ namespace WebApplications.Utilities
             item16 = tuple.Rest.Rest.Item2;
             item17 = tuple.Rest.Rest.Item3;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/> without removing it.
         /// </summary>
@@ -1935,7 +2061,8 @@ namespace WebApplications.Utilities
             out T16 item16,
             out T17 item17)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> tuple = Peek();
+            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>> tuple =
+                Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -1956,9 +2083,9 @@ namespace WebApplications.Utilities
             item17 = tuple.Rest.Rest.Item3;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 18 items.
+    #region Stack with 18 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
     /// </summary>
@@ -1981,7 +2108,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T17">The type of item 17.</typeparam>
     /// <typeparam name="T18">The type of item 18.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}" />.
@@ -2024,9 +2152,27 @@ namespace WebApplications.Utilities
             T17 item17,
             T18 item18)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18>(item15, item16, item17, item18))));
+            Push(
+                new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>
+                    (
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18>(item15, item16, item17, item18))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
         /// </summary>
@@ -2068,7 +2214,8 @@ namespace WebApplications.Utilities
             out T17 item17,
             out T18 item18)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> tuple = Pop();
+            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> tuple =
+                Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -2089,7 +2236,7 @@ namespace WebApplications.Utilities
             item17 = tuple.Rest.Rest.Item3;
             item18 = tuple.Rest.Rest.Item4;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/> without removing it.
         /// </summary>
@@ -2131,7 +2278,8 @@ namespace WebApplications.Utilities
             out T17 item17,
             out T18 item18)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> tuple = Peek();
+            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>> tuple =
+                Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -2153,9 +2301,9 @@ namespace WebApplications.Utilities
             item18 = tuple.Rest.Rest.Item4;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 19 items.
+    #region Stack with 19 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
     /// </summary>
@@ -2179,7 +2327,8 @@ namespace WebApplications.Utilities
     /// <typeparam name="T18">The type of item 18.</typeparam>
     /// <typeparam name="T19">The type of item 19.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> :
+        Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}" />.
@@ -2224,9 +2373,28 @@ namespace WebApplications.Utilities
             T18 item18,
             T19 item19)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19>(item15, item16, item17, item18, item19))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>
+                    (
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19>(item15, item16, item17, item18, item19))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
         /// </summary>
@@ -2270,7 +2438,8 @@ namespace WebApplications.Utilities
             out T18 item18,
             out T19 item19)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> tuple = Pop();
+            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>
+                tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -2292,7 +2461,7 @@ namespace WebApplications.Utilities
             item18 = tuple.Rest.Rest.Item4;
             item19 = tuple.Rest.Rest.Item5;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/> without removing it.
         /// </summary>
@@ -2336,7 +2505,8 @@ namespace WebApplications.Utilities
             out T18 item18,
             out T19 item19)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>> tuple = Peek();
+            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>
+                tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -2359,9 +2529,9 @@ namespace WebApplications.Utilities
             item19 = tuple.Rest.Rest.Item5;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 20 items.
+    #region Stack with 20 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
     /// </summary>
@@ -2386,7 +2556,12 @@ namespace WebApplications.Utilities
     /// <typeparam name="T19">The type of item 19.</typeparam>
     /// <typeparam name="T20">The type of item 20.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> :
+        Stack
+            <
+                Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                        Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}" />.
@@ -2433,9 +2608,28 @@ namespace WebApplications.Utilities
             T19 item19,
             T20 item20)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20>(item15, item16, item17, item18, item19, item20))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19, T20>(item15, item16, item17, item18, item19, item20))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
         /// </summary>
@@ -2481,7 +2675,9 @@ namespace WebApplications.Utilities
             out T19 item19,
             out T20 item20)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>
+                    > tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -2504,7 +2700,7 @@ namespace WebApplications.Utilities
             item19 = tuple.Rest.Rest.Item5;
             item20 = tuple.Rest.Rest.Item6;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/> without removing it.
         /// </summary>
@@ -2550,7 +2746,9 @@ namespace WebApplications.Utilities
             out T19 item19,
             out T20 item20)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>
+                    > tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -2574,9 +2772,9 @@ namespace WebApplications.Utilities
             item20 = tuple.Rest.Rest.Item6;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 21 items.
+    #region Stack with 21 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
     /// </summary>
@@ -2602,7 +2800,12 @@ namespace WebApplications.Utilities
     /// <typeparam name="T20">The type of item 20.</typeparam>
     /// <typeparam name="T21">The type of item 21.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> :
+        Stack
+            <
+                Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                        Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}" />.
@@ -2651,9 +2854,35 @@ namespace WebApplications.Utilities
             T20 item20,
             T21 item21)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21>(item15, item16, item17, item18, item19, item20, item21))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19, T20, T21>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
         /// </summary>
@@ -2701,7 +2930,9 @@ namespace WebApplications.Utilities
             out T20 item20,
             out T21 item21)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -2725,7 +2956,7 @@ namespace WebApplications.Utilities
             item20 = tuple.Rest.Rest.Item6;
             item21 = tuple.Rest.Rest.Item7;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/> without removing it.
         /// </summary>
@@ -2773,7 +3004,9 @@ namespace WebApplications.Utilities
             out T20 item20,
             out T21 item21)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>> tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -2798,9 +3031,9 @@ namespace WebApplications.Utilities
             item21 = tuple.Rest.Rest.Item7;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 22 items.
+    #region Stack with 22 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
     /// </summary>
@@ -2827,7 +3060,14 @@ namespace WebApplications.Utilities
     /// <typeparam name="T21">The type of item 21.</typeparam>
     /// <typeparam name="T22">The type of item 22.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>
+                            >>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}" />.
@@ -2878,9 +3118,36 @@ namespace WebApplications.Utilities
             T21 item21,
             T22 item22)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22>(item22)))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22>(item22)))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
         /// </summary>
@@ -2930,7 +3197,10 @@ namespace WebApplications.Utilities
             out T21 item21,
             out T22 item22)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> tuple
+                        = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -2955,7 +3225,7 @@ namespace WebApplications.Utilities
             item21 = tuple.Rest.Rest.Item7;
             item22 = tuple.Rest.Rest.Rest.Item1;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/> without removing it.
         /// </summary>
@@ -3005,7 +3275,10 @@ namespace WebApplications.Utilities
             out T21 item21,
             out T22 item22)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>> tuple
+                        = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -3031,9 +3304,9 @@ namespace WebApplications.Utilities
             item22 = tuple.Rest.Rest.Rest.Item1;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 23 items.
+    #region Stack with 23 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
     /// </summary>
@@ -3061,7 +3334,15 @@ namespace WebApplications.Utilities
     /// <typeparam name="T22">The type of item 22.</typeparam>
     /// <typeparam name="T23">The type of item 23.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}" />.
@@ -3114,9 +3395,37 @@ namespace WebApplications.Utilities
             T22 item22,
             T23 item23)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23>(item22, item23)))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23>(item22, item23)))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
         /// </summary>
@@ -3168,7 +3477,10 @@ namespace WebApplications.Utilities
             out T22 item22,
             out T23 item23)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>
+                tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -3194,7 +3506,7 @@ namespace WebApplications.Utilities
             item22 = tuple.Rest.Rest.Rest.Item1;
             item23 = tuple.Rest.Rest.Rest.Item2;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/> without removing it.
         /// </summary>
@@ -3246,7 +3558,10 @@ namespace WebApplications.Utilities
             out T22 item22,
             out T23 item23)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>
+                tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -3273,9 +3588,9 @@ namespace WebApplications.Utilities
             item23 = tuple.Rest.Rest.Rest.Item2;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 24 items.
+    #region Stack with 24 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
     /// </summary>
@@ -3304,7 +3619,15 @@ namespace WebApplications.Utilities
     /// <typeparam name="T23">The type of item 23.</typeparam>
     /// <typeparam name="T24">The type of item 24.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}" />.
@@ -3359,9 +3682,39 @@ namespace WebApplications.Utilities
             T23 item23,
             T24 item24)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24>(item22, item23, item24)))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>
+                        >(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24>(item22, item23, item24)))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
         /// </summary>
@@ -3415,7 +3768,11 @@ namespace WebApplications.Utilities
             out T23 item23,
             out T24 item24)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>
+                            >> tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -3442,7 +3799,7 @@ namespace WebApplications.Utilities
             item23 = tuple.Rest.Rest.Rest.Item2;
             item24 = tuple.Rest.Rest.Rest.Item3;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/> without removing it.
         /// </summary>
@@ -3496,7 +3853,11 @@ namespace WebApplications.Utilities
             out T23 item23,
             out T24 item24)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>
+                            >> tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -3524,9 +3885,9 @@ namespace WebApplications.Utilities
             item24 = tuple.Rest.Rest.Rest.Item3;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 25 items.
+    #region Stack with 25 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
     /// </summary>
@@ -3556,7 +3917,15 @@ namespace WebApplications.Utilities
     /// <typeparam name="T24">The type of item 24.</typeparam>
     /// <typeparam name="T25">The type of item 25.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}" />.
@@ -3613,9 +3982,40 @@ namespace WebApplications.Utilities
             T24 item24,
             T25 item25)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25>(item22, item23, item24, item25)))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25>(item22, item23, item24, item25)))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
         /// </summary>
@@ -3671,7 +4071,11 @@ namespace WebApplications.Utilities
             out T24 item24,
             out T25 item25)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -3699,7 +4103,7 @@ namespace WebApplications.Utilities
             item24 = tuple.Rest.Rest.Rest.Item3;
             item25 = tuple.Rest.Rest.Rest.Item4;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/> without removing it.
         /// </summary>
@@ -3755,7 +4159,11 @@ namespace WebApplications.Utilities
             out T24 item24,
             out T25 item25)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>> tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -3784,9 +4192,9 @@ namespace WebApplications.Utilities
             item25 = tuple.Rest.Rest.Rest.Item4;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 26 items.
+    #region Stack with 26 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
     /// </summary>
@@ -3817,7 +4225,15 @@ namespace WebApplications.Utilities
     /// <typeparam name="T25">The type of item 25.</typeparam>
     /// <typeparam name="T26">The type of item 26.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}" />.
@@ -3876,9 +4292,40 @@ namespace WebApplications.Utilities
             T25 item25,
             T26 item26)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26>(item22, item23, item24, item25, item26)))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26>(item22, item23, item24, item25, item26)))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
         /// </summary>
@@ -3936,7 +4383,11 @@ namespace WebApplications.Utilities
             out T25 item25,
             out T26 item26)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -3965,7 +4416,7 @@ namespace WebApplications.Utilities
             item25 = tuple.Rest.Rest.Rest.Item4;
             item26 = tuple.Rest.Rest.Rest.Item5;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/> without removing it.
         /// </summary>
@@ -4023,7 +4474,11 @@ namespace WebApplications.Utilities
             out T25 item25,
             out T26 item26)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>> tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -4053,9 +4508,9 @@ namespace WebApplications.Utilities
             item26 = tuple.Rest.Rest.Rest.Item5;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 27 items.
+    #region Stack with 27 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
     /// </summary>
@@ -4087,7 +4542,15 @@ namespace WebApplications.Utilities
     /// <typeparam name="T26">The type of item 26.</typeparam>
     /// <typeparam name="T27">The type of item 27.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26, T27> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}" />.
@@ -4148,9 +4611,40 @@ namespace WebApplications.Utilities
             T26 item26,
             T27 item27)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27>(item22, item23, item24, item25, item26, item27)))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26, T27>(item22, item23, item24, item25, item26, item27)))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
         /// </summary>
@@ -4210,7 +4704,12 @@ namespace WebApplications.Utilities
             out T26 item26,
             out T27 item27)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> tuple =
+                                Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -4240,7 +4739,7 @@ namespace WebApplications.Utilities
             item26 = tuple.Rest.Rest.Rest.Item5;
             item27 = tuple.Rest.Rest.Rest.Item6;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/> without removing it.
         /// </summary>
@@ -4300,7 +4799,12 @@ namespace WebApplications.Utilities
             out T26 item26,
             out T27 item27)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>> tuple =
+                                Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -4331,9 +4835,9 @@ namespace WebApplications.Utilities
             item27 = tuple.Rest.Rest.Rest.Item6;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 28 items.
+    #region Stack with 28 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
     /// </summary>
@@ -4366,7 +4870,16 @@ namespace WebApplications.Utilities
     /// <typeparam name="T27">The type of item 27.</typeparam>
     /// <typeparam name="T28">The type of item 28.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26, T27, T28> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>
+                    >
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}" />.
@@ -4429,9 +4942,47 @@ namespace WebApplications.Utilities
             T27 item27,
             T28 item28)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28>(item22, item23, item24, item25, item26, item27, item28)))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26, T27, T28>(
+                                item22,
+                                item23,
+                                item24,
+                                item25,
+                                item26,
+                                item27,
+                                item28)))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
         /// </summary>
@@ -4493,7 +5044,12 @@ namespace WebApplications.Utilities
             out T27 item27,
             out T28 item28)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> tuple =
+                                Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -4524,7 +5080,7 @@ namespace WebApplications.Utilities
             item27 = tuple.Rest.Rest.Rest.Item6;
             item28 = tuple.Rest.Rest.Rest.Item7;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/> without removing it.
         /// </summary>
@@ -4586,7 +5142,12 @@ namespace WebApplications.Utilities
             out T27 item27,
             out T28 item28)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>> tuple =
+                                Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -4618,9 +5179,9 @@ namespace WebApplications.Utilities
             item28 = tuple.Rest.Rest.Rest.Item7;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 29 items.
+    #region Stack with 29 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
     /// </summary>
@@ -4654,7 +5215,17 @@ namespace WebApplications.Utilities
     /// <typeparam name="T28">The type of item 28.</typeparam>
     /// <typeparam name="T29">The type of item 29.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26, T27, T28, T29> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple
+                                        <T15, T16, T17, T18, T19, T20, T21,
+                                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}" />.
@@ -4719,9 +5290,49 @@ namespace WebApplications.Utilities
             T28 item28,
             T29 item29)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29>(item29))))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple
+                            <T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>(
+                                item22,
+                                item23,
+                                item24,
+                                item25,
+                                item26,
+                                item27,
+                                item28,
+                                new Tuple<T29>(item29))))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
         /// </summary>
@@ -4785,7 +5396,13 @@ namespace WebApplications.Utilities
             out T28 item28,
             out T29 item29)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>
+                                    >>> tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -4817,7 +5434,7 @@ namespace WebApplications.Utilities
             item28 = tuple.Rest.Rest.Rest.Item7;
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/> without removing it.
         /// </summary>
@@ -4881,7 +5498,13 @@ namespace WebApplications.Utilities
             out T28 item28,
             out T29 item29)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>
+                                    >>> tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -4914,9 +5537,9 @@ namespace WebApplications.Utilities
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 30 items.
+    #region Stack with 30 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
     /// </summary>
@@ -4951,7 +5574,17 @@ namespace WebApplications.Utilities
     /// <typeparam name="T29">The type of item 29.</typeparam>
     /// <typeparam name="T30">The type of item 30.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26, T27, T28, T29, T30> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple
+                                        <T15, T16, T17, T18, T19, T20, T21,
+                                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}" />.
@@ -5018,9 +5651,52 @@ namespace WebApplications.Utilities
             T29 item29,
             T30 item30)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30>(item29, item30))))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>
+                    >(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple
+                        <T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple
+                            <T15, T16, T17, T18, T19, T20, T21,
+                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>(
+                                item22,
+                                item23,
+                                item24,
+                                item25,
+                                item26,
+                                item27,
+                                item28,
+                                new Tuple<T29, T30>(item29, item30))))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
         /// </summary>
@@ -5086,7 +5762,13 @@ namespace WebApplications.Utilities
             out T29 item29,
             out T30 item30)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -5119,7 +5801,7 @@ namespace WebApplications.Utilities
             item29 = tuple.Rest.Rest.Rest.Rest.Item1;
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/> without removing it.
         /// </summary>
@@ -5185,7 +5867,13 @@ namespace WebApplications.Utilities
             out T29 item29,
             out T30 item30)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>> tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -5219,9 +5907,9 @@ namespace WebApplications.Utilities
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 31 items.
+    #region Stack with 31 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
     /// </summary>
@@ -5257,7 +5945,17 @@ namespace WebApplications.Utilities
     /// <typeparam name="T30">The type of item 30.</typeparam>
     /// <typeparam name="T31">The type of item 31.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple
+                                        <T15, T16, T17, T18, T19, T20, T21,
+                                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}" />.
@@ -5326,9 +6024,54 @@ namespace WebApplications.Utilities
             T30 item30,
             T31 item31)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31>(item29, item30, item31))))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple
+                    <T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>
+                    >(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple
+                        <T15, T16, T17, T18, T19, T20, T21,
+                        Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple
+                            <T15, T16, T17, T18, T19, T20, T21,
+                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>(
+                                item22,
+                                item23,
+                                item24,
+                                item25,
+                                item26,
+                                item27,
+                                item28,
+                                new Tuple<T29, T30, T31>(item29, item30, item31))))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
         /// </summary>
@@ -5396,7 +6139,13 @@ namespace WebApplications.Utilities
             out T30 item30,
             out T31 item31)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -5430,7 +6179,7 @@ namespace WebApplications.Utilities
             item30 = tuple.Rest.Rest.Rest.Rest.Item2;
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/> without removing it.
         /// </summary>
@@ -5498,7 +6247,13 @@ namespace WebApplications.Utilities
             out T30 item30,
             out T31 item31)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>> tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -5533,9 +6288,9 @@ namespace WebApplications.Utilities
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 32 items.
+    #region Stack with 32 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
     /// </summary>
@@ -5572,7 +6327,17 @@ namespace WebApplications.Utilities
     /// <typeparam name="T31">The type of item 31.</typeparam>
     /// <typeparam name="T32">The type of item 32.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple
+                                        <T15, T16, T17, T18, T19, T20, T21,
+                                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}" />.
@@ -5643,9 +6408,54 @@ namespace WebApplications.Utilities
             T31 item31,
             T32 item32)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32>(item29, item30, item31, item32))))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple
+                    <T15, T16, T17, T18, T19, T20, T21,
+                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple
+                        <T15, T16, T17, T18, T19, T20, T21,
+                        Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple
+                            <T15, T16, T17, T18, T19, T20, T21,
+                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>(
+                                item22,
+                                item23,
+                                item24,
+                                item25,
+                                item26,
+                                item27,
+                                item28,
+                                new Tuple<T29, T30, T31, T32>(item29, item30, item31, item32))))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
         /// </summary>
@@ -5715,7 +6525,13 @@ namespace WebApplications.Utilities
             out T31 item31,
             out T32 item32)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -5750,7 +6566,7 @@ namespace WebApplications.Utilities
             item31 = tuple.Rest.Rest.Rest.Rest.Item3;
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/> without removing it.
         /// </summary>
@@ -5820,7 +6636,14 @@ namespace WebApplications.Utilities
             out T31 item31,
             out T32 item32)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>> tuple =
+                                        Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -5856,9 +6679,9 @@ namespace WebApplications.Utilities
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 33 items.
+    #region Stack with 33 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
     /// </summary>
@@ -5896,7 +6719,17 @@ namespace WebApplications.Utilities
     /// <typeparam name="T32">The type of item 32.</typeparam>
     /// <typeparam name="T33">The type of item 33.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple
+                                        <T15, T16, T17, T18, T19, T20, T21,
+                                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}" />.
@@ -5969,9 +6802,54 @@ namespace WebApplications.Utilities
             T32 item32,
             T33 item33)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32, T33>(item29, item30, item31, item32, item33))))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple
+                    <T15, T16, T17, T18, T19, T20, T21,
+                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple
+                        <T15, T16, T17, T18, T19, T20, T21,
+                        Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple
+                            <T15, T16, T17, T18, T19, T20, T21,
+                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>(
+                                item22,
+                                item23,
+                                item24,
+                                item25,
+                                item26,
+                                item27,
+                                item28,
+                                new Tuple<T29, T30, T31, T32, T33>(item29, item30, item31, item32, item33))))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
         /// </summary>
@@ -6043,7 +6921,14 @@ namespace WebApplications.Utilities
             out T32 item32,
             out T33 item33)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> tuple =
+                                        Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -6079,7 +6964,7 @@ namespace WebApplications.Utilities
             item32 = tuple.Rest.Rest.Rest.Rest.Item4;
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/> without removing it.
         /// </summary>
@@ -6151,7 +7036,14 @@ namespace WebApplications.Utilities
             out T32 item32,
             out T33 item33)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>> tuple =
+                                        Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -6188,9 +7080,9 @@ namespace WebApplications.Utilities
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 34 items.
+    #region Stack with 34 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
     /// </summary>
@@ -6229,7 +7121,19 @@ namespace WebApplications.Utilities
     /// <typeparam name="T33">The type of item 33.</typeparam>
     /// <typeparam name="T34">The type of item 34.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple
+                                        <T15, T16, T17, T18, T19, T20, T21,
+                                            Tuple
+                                                <T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>
+                                            >>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}" />.
@@ -6304,9 +7208,54 @@ namespace WebApplications.Utilities
             T33 item33,
             T34 item34)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32, T33, T34>(item29, item30, item31, item32, item33, item34))))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple
+                    <T15, T16, T17, T18, T19, T20, T21,
+                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple
+                        <T15, T16, T17, T18, T19, T20, T21,
+                        Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple
+                            <T15, T16, T17, T18, T19, T20, T21,
+                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>(
+                                item22,
+                                item23,
+                                item24,
+                                item25,
+                                item26,
+                                item27,
+                                item28,
+                                new Tuple<T29, T30, T31, T32, T33, T34>(item29, item30, item31, item32, item33, item34))))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
         /// </summary>
@@ -6380,7 +7329,14 @@ namespace WebApplications.Utilities
             out T33 item33,
             out T34 item34)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>
+                tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -6417,7 +7373,7 @@ namespace WebApplications.Utilities
             item33 = tuple.Rest.Rest.Rest.Rest.Item5;
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/> without removing it.
         /// </summary>
@@ -6491,7 +7447,14 @@ namespace WebApplications.Utilities
             out T33 item33,
             out T34 item34)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>
+                tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -6529,9 +7492,9 @@ namespace WebApplications.Utilities
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
         }
     }
-	#endregion
+    #endregion
 
-	#region Stack with 35 items.
+    #region Stack with 35 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
     /// </summary>
@@ -6571,7 +7534,19 @@ namespace WebApplications.Utilities
     /// <typeparam name="T34">The type of item 34.</typeparam>
     /// <typeparam name="T35">The type of item 35.</typeparam>
     [UsedImplicitly]
-    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>>
+    public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
+        T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> :
+            Stack
+                <
+                    Tuple
+                        <T1, T2, T3, T4, T5, T6, T7,
+                            Tuple
+                                <T8, T9, T10, T11, T12, T13, T14,
+                                    Tuple
+                                        <T15, T16, T17, T18, T19, T20, T21,
+                                            Tuple
+                                                <T22, T23, T24, T25, T26, T27, T28,
+                                                    Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>>
     {
         /// <summary>
         /// Inserts an object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}" />.
@@ -6648,9 +7623,61 @@ namespace WebApplications.Utilities
             T34 item34,
             T35 item35)
         {
-            Push(new Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>(item1, item2, item3, item4, item5, item6, item7, new Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>(item8, item9, item10, item11, item12, item13, item14, new Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>(item15, item16, item17, item18, item19, item20, item21, new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>(item22, item23, item24, item25, item26, item27, item28, new Tuple<T29, T30, T31, T32, T33, T34, T35>(item29, item30, item31, item32, item33, item34, item35))))));
+            Push(
+                new Tuple
+                    <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                    <T8, T9, T10, T11, T12, T13, T14,
+                    Tuple
+                    <T15, T16, T17, T18, T19, T20, T21,
+                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>(
+                    item1,
+                    item2,
+                    item3,
+                    item4,
+                    item5,
+                    item6,
+                    item7,
+                    new Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                        Tuple
+                        <T15, T16, T17, T18, T19, T20, T21,
+                        Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>(
+                        item8,
+                        item9,
+                        item10,
+                        item11,
+                        item12,
+                        item13,
+                        item14,
+                        new Tuple
+                            <T15, T16, T17, T18, T19, T20, T21,
+                            Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>(
+                            item15,
+                            item16,
+                            item17,
+                            item18,
+                            item19,
+                            item20,
+                            item21,
+                            new Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>(
+                                item22,
+                                item23,
+                                item24,
+                                item25,
+                                item26,
+                                item27,
+                                item28,
+                                new Tuple<T29, T30, T31, T32, T33, T34, T35>(
+                                    item29,
+                                    item30,
+                                    item31,
+                                    item32,
+                                    item33,
+                                    item34,
+                                    item35))))));
         }
-	    
+
         /// <summary>
         /// Removes and returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
         /// </summary>
@@ -6726,7 +7753,14 @@ namespace WebApplications.Utilities
             out T34 item34,
             out T35 item35)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>> tuple = Pop();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>
+                    > tuple = Pop();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -6764,7 +7798,7 @@ namespace WebApplications.Utilities
             item34 = tuple.Rest.Rest.Rest.Rest.Item6;
             item35 = tuple.Rest.Rest.Rest.Rest.Item7;
         }
-	    
+
         /// <summary>
         /// Returns the object at the top of the <see cref="Stack{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/> without removing it.
         /// </summary>
@@ -6840,7 +7874,14 @@ namespace WebApplications.Utilities
             out T34 item34,
             out T35 item35)
         {
-            Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>> tuple = Peek();
+            Tuple
+                <T1, T2, T3, T4, T5, T6, T7,
+                    Tuple
+                        <T8, T9, T10, T11, T12, T13, T14,
+                            Tuple
+                                <T15, T16, T17, T18, T19, T20, T21,
+                                    Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>
+                    > tuple = Peek();
             Contract.Assert(tuple != null);
             item1 = tuple.Item1;
             item2 = tuple.Item2;
@@ -6879,6 +7920,5 @@ namespace WebApplications.Utilities
             item35 = tuple.Rest.Rest.Rest.Rest.Item7;
         }
     }
-	#endregion
+    #endregion
 }
- 

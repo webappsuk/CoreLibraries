@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,36 +45,51 @@ namespace WebApplications.Utilities.PowerShell
     [UsedImplicitly]
     public class NuSpecEditor
     {
-        [NotNull] public readonly XName DependenciesXName;
-        [NotNull] public readonly XName DependencyXName;
+        [NotNull]
+        public readonly XName DependenciesXName;
+
+        [NotNull]
+        public readonly XName DependencyXName;
 
         /// <summary>
         /// The raw XML Document.
         /// </summary>
-        [NotNull] public readonly XDocument Document;
+        [NotNull]
+        public readonly XDocument Document;
 
-        [NotNull] public readonly XName FileXName;
-        [NotNull] public readonly XName FilesXName;
+        [NotNull]
+        public readonly XName FileXName;
 
-        [NotNull] public readonly XName MetadataXName;
+        [NotNull]
+        public readonly XName FilesXName;
+
+        [NotNull]
+        public readonly XName MetadataXName;
 
         /// <summary>
         /// The nuspec namespace.
         /// </summary>
-        [NotNull] public readonly XNamespace Namespace;
+        [NotNull]
+        public readonly XNamespace Namespace;
 
         /// <summary>
         /// The package element.
         /// </summary>
-        [NotNull] public readonly XElement PacakgeElement;
+        [NotNull]
+        public readonly XElement PacakgeElement;
 
         /// <summary>
         /// The nuget specification file path.
         /// </summary>
-        [NotNull] public readonly string Path;
+        [NotNull]
+        public readonly string Path;
 
-        [NotNull] public readonly XName ReferenceXName;
-        [NotNull] public readonly XName ReferencesXName;
+        [NotNull]
+        public readonly XName ReferenceXName;
+
+        [NotNull]
+        public readonly XName ReferencesXName;
+
         private XElement _dependenciesElement;
         private XElement _filesElement;
 
@@ -94,7 +109,8 @@ namespace WebApplications.Utilities.PowerShell
 
             Document = XDocument.Load(path, LoadOptions.PreserveWhitespace);
 
-            if ((Document == null) || (Document.Root == null))
+            if ((Document == null) ||
+                (Document.Root == null))
                 throw new FormatException(
                     String.Format(Resources.NuSpecEditor_InvalidXmlDocumentRootNode, path));
 
@@ -338,27 +354,29 @@ namespace WebApplications.Utilities.PowerShell
             get
             {
                 return DependenciesElement.Elements()
-                    .Select(e =>
-                                {
-                                    if ((e == null) ||
-                                        (e.Name != DependencyXName))
-                                        return default(NuSpecDependency);
-                                    XAttribute idattr = e.Attributes("id").FirstOrDefault();
-                                    if (idattr == null)
-                                        return default(NuSpecDependency);
-                                    string id = idattr.Value;
-                                    if (String.IsNullOrWhiteSpace(id) || id.Contains(","))
-                                        return default(NuSpecDependency);
-                                    XAttribute versionAttr = e.Attributes("version").FirstOrDefault();
-                                    string version = null;
-                                    if (versionAttr != null)
-                                    {
-                                        version = versionAttr.Value;
-                                        if (String.IsNullOrWhiteSpace(version))
-                                            version = null;
-                                    }
-                                    return new NuSpecDependency(id, version);
-                                }).Where(d => d != default(NuSpecDependency)).ToList();
+                    .Select(
+                        e =>
+                        {
+                            if ((e == null) ||
+                                (e.Name != DependencyXName))
+                                return default(NuSpecDependency);
+                            XAttribute idattr = e.Attributes("id").FirstOrDefault();
+                            if (idattr == null)
+                                return default(NuSpecDependency);
+                            string id = idattr.Value;
+                            if (String.IsNullOrWhiteSpace(id) ||
+                                id.Contains(","))
+                                return default(NuSpecDependency);
+                            XAttribute versionAttr = e.Attributes("version").FirstOrDefault();
+                            string version = null;
+                            if (versionAttr != null)
+                            {
+                                version = versionAttr.Value;
+                                if (String.IsNullOrWhiteSpace(version))
+                                    version = null;
+                            }
+                            return new NuSpecDependency(id, version);
+                        }).Where(d => d != default(NuSpecDependency)).ToList();
             }
         }
 
@@ -419,21 +437,23 @@ namespace WebApplications.Utilities.PowerShell
         public void EnsureDependency(NuSpecDependency dependency)
         {
             XElement dependencyElement = DependenciesElement.Elements()
-                .FirstOrDefault(e =>
-                                e != null &&
-                                e.Name == DependencyXName &&
-                                e.Attributes("id").FirstOrDefault(
-                                    a => a.Value.Equals(dependency.Id, StringComparison.OrdinalIgnoreCase)) != null);
+                .FirstOrDefault(
+                    e =>
+                        e != null &&
+                        e.Name == DependencyXName &&
+                        e.Attributes("id").FirstOrDefault(
+                            a => a.Value.Equals(dependency.Id, StringComparison.OrdinalIgnoreCase)) != null);
 
 
             if (dependencyElement == null)
             {
                 // Add the dependency element
-                dependencyElement = new XElement(DependencyXName,
-                                                 new XAttribute("id", dependency.Id),
-                                                 String.IsNullOrWhiteSpace(dependency.Version)
-                                                     ? null
-                                                     : new XAttribute("version", dependency.Version));
+                dependencyElement = new XElement(
+                    DependencyXName,
+                    new XAttribute("id", dependency.Id),
+                    String.IsNullOrWhiteSpace(dependency.Version)
+                        ? null
+                        : new XAttribute("version", dependency.Version));
                 DependenciesElement.Add(dependencyElement);
                 HasChanges = true;
                 return;
@@ -464,7 +484,8 @@ namespace WebApplications.Utilities.PowerShell
         /// <remarks></remarks>
         public void RemoveDependencies(string ids)
         {
-            if ((_dependenciesElement == null) || (String.IsNullOrWhiteSpace(ids)))
+            if ((_dependenciesElement == null) ||
+                (String.IsNullOrWhiteSpace(ids)))
                 return;
 
             List<string> allIds =
@@ -476,11 +497,13 @@ namespace WebApplications.Utilities.PowerShell
 
             // Remove matching dependency nodes.
             foreach (XElement match in _dependenciesElement.Elements()
-                .Where(e =>
-                       e != null &&
-                       e.Name == DependencyXName &&
-                       e.Attributes("id").FirstOrDefault(a => allIds.Contains(a.Value, StringComparer.OrdinalIgnoreCase)) !=
-                       null)
+                .Where(
+                    e =>
+                        e != null &&
+                        e.Name == DependencyXName &&
+                        e.Attributes("id")
+                        .FirstOrDefault(a => allIds.Contains(a.Value, StringComparer.OrdinalIgnoreCase)) !=
+                        null)
                 .ToList())
             {
                 match.Remove();
@@ -502,15 +525,17 @@ namespace WebApplications.Utilities.PowerShell
         /// <remarks></remarks>
         public void RemoveDependencies(Regex idregex)
         {
-            if ((_dependenciesElement == null) || (idregex == null))
+            if ((_dependenciesElement == null) ||
+                (idregex == null))
                 return;
 
             // Remove matching dependency nodes.
             foreach (XElement match in _dependenciesElement.Elements()
-                .Where(e =>
-                       e != null &&
-                       e.Name == DependencyXName &&
-                       e.Attributes("id").FirstOrDefault(a => idregex.IsMatch(a.Value)) != null).ToList())
+                .Where(
+                    e =>
+                        e != null &&
+                        e.Name == DependencyXName &&
+                        e.Attributes("id").FirstOrDefault(a => idregex.IsMatch(a.Value)) != null).ToList())
             {
                 match.Remove();
                 HasChanges = true;

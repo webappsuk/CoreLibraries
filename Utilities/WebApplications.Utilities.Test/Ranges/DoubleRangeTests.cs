@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -48,25 +48,17 @@ namespace WebApplications.Utilities.Test.Ranges
 
             bool negative = false;
             if (minimum < 0)
-            {
                 if (maximum > 0)
-                {
                     // either select from min->zero or from zero->max; choose with probability which based on the relative linear (not logarithmic) size of these ranges
-                    if (Random.NextDouble() < maximum/(maximum - minimum))
-                    {
+                    if (Random.NextDouble() < maximum / (maximum - minimum))
                         lMin = Math.Log(double.Epsilon);
-                    }
                     else
                     {
                         lMax = Math.Log(double.Epsilon);
                         negative = true;
                     }
-                }
                 else
-                {
                     negative = true;
-                }
-            }
 
             if (negative)
             {
@@ -75,7 +67,7 @@ namespace WebApplications.Utilities.Test.Ranges
                 lMax = temp;
             }
 
-            return (negative ? -1 : 1)*Math.Exp(lMin + ((lMax - lMin)*Random.NextDouble()));
+            return (negative ? -1 : 1) * Math.Exp(lMin + ((lMax - lMin) * Random.NextDouble()));
         }
 
         /// <summary>
@@ -88,12 +80,13 @@ namespace WebApplications.Utilities.Test.Ranges
         {
             // start by picking an order of magnitude to work on, note that the lower bound must be sqrt(epsilon) as we later multiply by another float
             double magnitude =
-                Math.Exp(Random.NextDouble()*(Math.Log(double.MaxValue) - Math.Log(double.Epsilon)/2) +
-                         Math.Log(double.Epsilon)/2);
+                Math.Exp(
+                    Random.NextDouble() * (Math.Log(double.MaxValue) - Math.Log(double.Epsilon) / 2) +
+                    Math.Log(double.Epsilon) / 2);
             // pick sizes for the length and starting value which can later be scaled up to the magnitude chosen
-            double length = Random.NextDouble()*2;
-            double start = Random.NextDouble()*(2 - length) - 1;
-            return new Tuple<double, double>(start*magnitude, length*magnitude);
+            double length = Random.NextDouble() * 2;
+            double start = Random.NextDouble() * (2 - length) - 1;
+            return new Tuple<double, double>(start * magnitude, length * magnitude);
         }
 
         [TestMethod]
@@ -102,7 +95,7 @@ namespace WebApplications.Utilities.Test.Ranges
             double length = RandomDouble(1, double.MaxValue);
             double start = RandomDouble(double.MinValue, double.MaxValue - length);
             double end = start + length;
-            double step = RandomDouble(1, length/2);
+            double step = RandomDouble(1, length / 2);
 
             DoubleRange doubleRange = new DoubleRange(start, end, step);
 
@@ -117,7 +110,7 @@ namespace WebApplications.Utilities.Test.Ranges
             double length = RandomDouble(1, double.MaxValue);
             double start = RandomDouble(double.MinValue, double.MaxValue - length);
             double end = start + length;
-            double step = RandomDouble(1, length/2);
+            double step = RandomDouble(1, length / 2);
 
             DoubleRange doubleRange = new DoubleRange(start, end, step);
 
@@ -131,10 +124,10 @@ namespace WebApplications.Utilities.Test.Ranges
         {
             Random rand = new Random();
 
-            double length = RandomDouble(1, double.MaxValue/2);
+            double length = RandomDouble(1, double.MaxValue / 2);
             double start = RandomDouble(double.MinValue, double.MaxValue - length);
             double end = start + length;
-            double step = length + RandomDouble(1, double.MaxValue/3);
+            double step = length + RandomDouble(1, double.MaxValue / 3);
 
             DoubleRange doubleRange = new DoubleRange(start, end, step);
 
@@ -165,7 +158,7 @@ namespace WebApplications.Utilities.Test.Ranges
         {
             Random rand = new Random();
 
-            double start = RandomDouble(double.MinValue/2, double.MaxValue);
+            double start = RandomDouble(double.MinValue / 2, double.MaxValue);
             double end = RandomDouble(double.MinValue, start);
 
             DoubleRange doubleRange = new DoubleRange(start, end);
@@ -181,7 +174,7 @@ namespace WebApplications.Utilities.Test.Ranges
             double length = rangeParams.Item2;
             double end = start + length;
             // note that the number of steps is limited to 100 or fewer
-            double step = length/rand.Next(4, 100);
+            double step = length / rand.Next(4, 100);
 
             DoubleRange doubleRange = new DoubleRange(start, end, step);
 
@@ -202,20 +195,22 @@ namespace WebApplications.Utilities.Test.Ranges
             double length = rangeParams.Item2;
             double end = start + length;
             // note that the number of steps is limited to 1000 or fewer
-            double step = length/(rand.Next(4, 1000) + (rand.NextDouble()*0.8 + 0.1));
+            double step = length / (rand.Next(4, 1000) + (rand.NextDouble() * 0.8 + 0.1));
 
             //ensure that step size is not a factor of the length of the range
-            if (length%step == 0)
+            if (length % step == 0)
             {
-                double offset = (rand.NextDouble()*0.8 + 0.1)*step;
+                double offset = (rand.NextDouble() * 0.8 + 0.1) * step;
                 start += offset;
                 length += offset;
             }
 
             DoubleRange doubleRange = new DoubleRange(start, end, step);
 
-            Assert.AreEqual(Math.Ceiling(length/step), doubleRange.Count(),
-                            "Iteration count should be Ceil((start-end)/step)");
+            Assert.AreEqual(
+                Math.Ceiling(length / step),
+                doubleRange.Count(),
+                "Iteration count should be Ceil((start-end)/step)");
         }
 
         [TestMethod]
@@ -227,11 +222,14 @@ namespace WebApplications.Utilities.Test.Ranges
             double start = rangeParams.Item1;
             double length = rangeParams.Item2;
             double end = start + length;
-            double step = length*(2 - rand.NextDouble());
+            double step = length * (2 - rand.NextDouble());
 
             DoubleRange doubleRange = new DoubleRange(start, end, step);
 
-            Assert.AreEqual(1, doubleRange.Count(), "Iteration count should be one if the step is larger than the range");
+            Assert.AreEqual(
+                1,
+                doubleRange.Count(),
+                "Iteration count should be one if the step is larger than the range");
         }
 
         [TestMethod]
@@ -244,7 +242,7 @@ namespace WebApplications.Utilities.Test.Ranges
             double length = rangeParams.Item2;
             double end = start + length;
             // note that the number of steps is limited to 100 or fewer
-            double step = length/rand.Next(4, 100);
+            double step = length / rand.Next(4, 100);
 
             // In case range length is under 4, ensure the step is at least 1
             if (step < 1) step = 1;
@@ -255,10 +253,11 @@ namespace WebApplications.Utilities.Test.Ranges
             foreach (double i in doubleRange)
             {
                 if (previous.HasValue)
-                {
-                    Assert.AreEqual(i - previous.Value, step, step*1e-6,
-                                    "Difference between iteration values should match the step value supplied to within one millionth");
-                }
+                    Assert.AreEqual(
+                        i - previous.Value,
+                        step,
+                        step * 1e-6,
+                        "Difference between iteration values should match the step value supplied to within one millionth");
                 previous = i;
             }
         }
@@ -267,13 +266,11 @@ namespace WebApplications.Utilities.Test.Ranges
         public void DoubleRange_UsingLargestPossibleParameters_IteratesSuccessfully()
         {
             // Step chosen to avoid an unfeasible number of iterations
-            DoubleRange doubleRange = new DoubleRange(double.MinValue, double.MaxValue, double.MaxValue/16);
+            DoubleRange doubleRange = new DoubleRange(double.MinValue, double.MaxValue, double.MaxValue / 16);
 
             bool iterated = false;
             foreach (double x in doubleRange)
-            {
                 iterated = true;
-            }
 
             Assert.AreEqual(true, iterated, "When iterating across full range, at least one value should be returned");
         }
@@ -281,34 +278,40 @@ namespace WebApplications.Utilities.Test.Ranges
         [TestMethod]
         public void DoubleRange_NumberBelowRange_BindReturnsStart()
         {
-            double start = RandomDouble(double.MinValue/2, double.MaxValue/2);
-            double end = RandomDouble(start, double.MaxValue/2);
+            double start = RandomDouble(double.MinValue / 2, double.MaxValue / 2);
+            double end = RandomDouble(start, double.MaxValue / 2);
             double testValue = RandomDouble(double.MinValue, start);
 
-            Assert.AreEqual(start, (new DoubleRange(start, end)).Bind(testValue),
-                            "Bind should return the lower bound of the range if the input is below the range");
+            Assert.AreEqual(
+                start,
+                (new DoubleRange(start, end)).Bind(testValue),
+                "Bind should return the lower bound of the range if the input is below the range");
         }
 
         [TestMethod]
         public void DoubleRange_NumberAboveRange_BindReturnsEnd()
         {
-            double start = RandomDouble(double.MinValue/2, double.MaxValue/2);
-            double end = RandomDouble(start, double.MaxValue/2);
+            double start = RandomDouble(double.MinValue / 2, double.MaxValue / 2);
+            double end = RandomDouble(start, double.MaxValue / 2);
             double testValue = RandomDouble(end, double.MaxValue);
 
-            Assert.AreEqual(end, (new DoubleRange(start, end)).Bind(testValue),
-                            "Bind should return the upper bound of the range if the input is above the range");
+            Assert.AreEqual(
+                end,
+                (new DoubleRange(start, end)).Bind(testValue),
+                "Bind should return the upper bound of the range if the input is above the range");
         }
 
         [TestMethod]
         public void DoubleRange_NumberWithinRange_BindReturnsInput()
         {
-            double start = RandomDouble(double.MinValue/2, double.MaxValue/2);
-            double end = RandomDouble(start, double.MaxValue/2);
+            double start = RandomDouble(double.MinValue / 2, double.MaxValue / 2);
+            double end = RandomDouble(start, double.MaxValue / 2);
             double testValue = RandomDouble(start, end);
 
-            Assert.AreEqual(testValue, (new DoubleRange(start, end)).Bind(testValue),
-                            "Bind should return the input if it is within the range");
+            Assert.AreEqual(
+                testValue,
+                (new DoubleRange(start, end)).Bind(testValue),
+                "Bind should return the input if it is within the range");
         }
     }
 }

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -229,7 +229,8 @@ namespace WebApplications.Utilities.PowerShell
                 _solutions = Task<ConcurrentBag<Solution>>.Factory.StartNew(() => new ConcurrentBag<Solution>());
                 _projects = Task<ConcurrentBag<Project>>.Factory.StartNew(() => new ConcurrentBag<Project>());
                 _subDirectories =
-                    Task<ConcurrentBag<SolutionDirectory>>.Factory.StartNew(() => new ConcurrentBag<SolutionDirectory>());
+                    Task<ConcurrentBag<SolutionDirectory>>.Factory.StartNew(
+                        () => new ConcurrentBag<SolutionDirectory>());
                 return;
             }
 
@@ -259,8 +260,9 @@ namespace WebApplications.Utilities.PowerShell
             CancellationTokenSource newSource = new CancellationTokenSource();
 
             // Swap out old source
-            CancellationTokenSource oldSource = Interlocked.Exchange(ref _cancellationTokenSource,
-                                                                     new CancellationTokenSource());
+            CancellationTokenSource oldSource = Interlocked.Exchange(
+                ref _cancellationTokenSource,
+                new CancellationTokenSource());
             if (oldSource != null)
             {
                 // Cancel old source.
@@ -281,11 +283,12 @@ namespace WebApplications.Utilities.PowerShell
                 ref _solutions,
                 Task<ConcurrentBag<Solution>>.Factory.StartNew(
                     () => new ConcurrentBag<Solution>(
-                              Directory.EnumerateFiles(FullPath, "*.sln", SearchOption.TopDirectoryOnly)
-                                  .TakeWhile(fileInfo => !ct.IsCancellationRequested)
-                                  .Select(fn => new FileInfo(fn))
-                                  .Where(f => (f.Attributes & FileAttributes.Hidden) == 0)
-                                  .Select(f => Solution.Get(f.FullName))), ct));
+                        Directory.EnumerateFiles(FullPath, "*.sln", SearchOption.TopDirectoryOnly)
+                            .TakeWhile(fileInfo => !ct.IsCancellationRequested)
+                            .Select(fn => new FileInfo(fn))
+                            .Where(f => (f.Attributes & FileAttributes.Hidden) == 0)
+                            .Select(f => Solution.Get(f.FullName))),
+                    ct));
 
             // If we had a task, dispose it.
             if (oldSolutionTask != null)
@@ -298,11 +301,12 @@ namespace WebApplications.Utilities.PowerShell
                 ref _projects,
                 Task<ConcurrentBag<Project>>.Factory.StartNew(
                     () => new ConcurrentBag<Project>(
-                              Directory.EnumerateFiles(FullPath, "*proj", SearchOption.TopDirectoryOnly)
-                                  .TakeWhile(fileInfo => !ct.IsCancellationRequested)
-                                  .Select(fn => new FileInfo(fn))
-                                  .Where(f => (f.Attributes & FileAttributes.Hidden) == 0)
-                                  .Select(f => Project.Get(f.FullName))), ct));
+                        Directory.EnumerateFiles(FullPath, "*proj", SearchOption.TopDirectoryOnly)
+                            .TakeWhile(fileInfo => !ct.IsCancellationRequested)
+                            .Select(fn => new FileInfo(fn))
+                            .Where(f => (f.Attributes & FileAttributes.Hidden) == 0)
+                            .Select(f => Project.Get(f.FullName))),
+                    ct));
 
             // If we had a task, dispose it.
             if (oldProjectsTask != null)
@@ -314,11 +318,12 @@ namespace WebApplications.Utilities.PowerShell
                 ref _subDirectories,
                 Task<ConcurrentBag<SolutionDirectory>>.Factory.StartNew(
                     () => new ConcurrentBag<SolutionDirectory>(
-                              Directory.EnumerateDirectories(FullPath, string.Empty, SearchOption.TopDirectoryOnly)
-                                  .TakeWhile(fileInfo => !ct.IsCancellationRequested)
-                                  .Select(dn => new DirectoryInfo(dn))
-                                  .Where(d => (d.Attributes & FileAttributes.Hidden) == 0)
-                                  .Select(d => Get(d.FullName))), ct));
+                        Directory.EnumerateDirectories(FullPath, string.Empty, SearchOption.TopDirectoryOnly)
+                            .TakeWhile(fileInfo => !ct.IsCancellationRequested)
+                            .Select(dn => new DirectoryInfo(dn))
+                            .Where(d => (d.Attributes & FileAttributes.Hidden) == 0)
+                            .Select(d => Get(d.FullName))),
+                    ct));
 
             // If we had a task, dispose it.
             if (oldDirectoriesTask != null)

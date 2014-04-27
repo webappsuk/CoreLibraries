@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2012.  All rights reserved.
-// Copyright (c) 2012, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ namespace WebApplications.Utilities.Test
             {
                 StringBuilder sb = new StringBuilder();
                 for (int a = 0; a < size; a++)
-                    sb.Append(CharacterPool[(int) (random.NextDouble()*CharacterPool.Length)]);
+                    sb.Append(CharacterPool[(int) (random.NextDouble() * CharacterPool.Length)]);
 
                 string testString = sb.ToString();
                 GetHash(hashAlgorithm, testString);
@@ -96,13 +96,17 @@ namespace WebApplications.Utilities.Test
                 string.Format(
                     "{1}ms\t{2} chars x {3}\t{0}",
                     hashAlgorithm.GetType(),
-                    stopwatch.ElapsedTicks*1000/Stopwatch.Frequency,
+                    stopwatch.ElapsedTicks * 1000 / Stopwatch.Frequency,
                     size,
                     count));
         }
 
         private void TestIntelligentHash(
-            HashAlgorithm hashAlgorithm, HashAlgorithm hashAlgorithm2, int count, int size, int breakPoint)
+            HashAlgorithm hashAlgorithm,
+            HashAlgorithm hashAlgorithm2,
+            int count,
+            int size,
+            int breakPoint)
         {
             // Create test string of relevant length.
             Random random = new Random();
@@ -113,7 +117,7 @@ namespace WebApplications.Utilities.Test
             {
                 StringBuilder sb = new StringBuilder();
                 for (int a = 0; a < size; a++)
-                    sb.Append(CharacterPool[(int) (random.NextDouble()*CharacterPool.Length)]);
+                    sb.Append(CharacterPool[(int) (random.NextDouble() * CharacterPool.Length)]);
 
                 string testString = sb.ToString();
                 string hash = GetHash(testString.Length < breakPoint ? hashAlgorithm : hashAlgorithm2, testString);
@@ -123,7 +127,7 @@ namespace WebApplications.Utilities.Test
                 string.Format(
                     "{1}ms\t{2} chars x {3}\t{0}",
                     "INTELLIGENT",
-                    stopwatch.ElapsedTicks*1000/Stopwatch.Frequency,
+                    stopwatch.ElapsedTicks * 1000 / Stopwatch.Frequency,
                     size,
                     count));
         }
@@ -139,7 +143,7 @@ namespace WebApplications.Utilities.Test
             {
                 StringBuilder sb = new StringBuilder();
                 for (int a = 0; a < size; a++)
-                    sb.Append(CharacterPool[(int) (random.NextDouble()*CharacterPool.Length)]);
+                    sb.Append(CharacterPool[(int) (random.NextDouble() * CharacterPool.Length)]);
 
                 string testString = sb.ToString();
                 string hash = GetHash(new SHA1Managed(), testString);
@@ -149,7 +153,7 @@ namespace WebApplications.Utilities.Test
                 string.Format(
                     "{1}ms\t{2} chars x {3}\t{0}",
                     "SHA1Managed constructed",
-                    stopwatch.ElapsedTicks*1000/Stopwatch.Frequency,
+                    stopwatch.ElapsedTicks * 1000 / Stopwatch.Frequency,
                     size,
                     count));
         }

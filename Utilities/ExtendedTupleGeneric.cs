@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,9 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Accepts a <see cref="Tuple"/> and an index and returns the item at that index.
         /// </summary>
-        [NotNull] [UsedImplicitly] public static readonly Func<T, int, object> Indexer;
+        [NotNull]
+        [UsedImplicitly]
+        public static readonly Func<T, int, object> Indexer;
 
         /// <summary>
         ///   An <see cref="Array"/> containing the types of all the items in the <see cref="Tuple"/>.
@@ -55,12 +57,15 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Accepts a <see cref="Tuple"/> and returns its size (the number of items).
         /// </summary>
-        [UsedImplicitly] public static readonly int Size;
+        [UsedImplicitly]
+        public static readonly int Size;
 
         /// <summary>
         ///   Holds the instance of the extended <see cref="Tuple"/>.
         /// </summary>
-        [NotNull] [UsedImplicitly] public readonly T Tuple;
+        [NotNull]
+        [UsedImplicitly]
+        public readonly T Tuple;
 
         /// <summary>
         ///   Initialises the current <see cref="Tuple"/> type.
@@ -70,8 +75,10 @@ namespace WebApplications.Utilities
             Type tupleType = typeof (T);
             if ((!tupleType.IsGenericType) ||
                 (!tupleType.GetGenericTypeDefinition().FullName.StartsWith("System.Tuple`")))
-                throw new InvalidOperationException(String.Format(Resources.ExtendedTuple_TypeIsNotValidTuple,
-                                                                  typeof (T)));
+                throw new InvalidOperationException(
+                    String.Format(
+                        Resources.ExtendedTuple_TypeIsNotValidTuple,
+                        typeof (T)));
 
             // Create the tuple parameter.
             ParameterExpression tupleParameter = Expression.Parameter(typeof (T), "tuple");
@@ -115,9 +122,10 @@ namespace WebApplications.Utilities
                         recurse = true;
 
                     // Get the relevant property accessor
-                    MethodInfo propertyMethod = tupleType.GetProperty(propertyName,
-                                                                      BindingFlags.Public | BindingFlags.Instance |
-                                                                      BindingFlags.DeclaredOnly).GetGetMethod();
+                    MethodInfo propertyMethod = tupleType.GetProperty(
+                        propertyName,
+                        BindingFlags.Public | BindingFlags.Instance |
+                        BindingFlags.DeclaredOnly).GetGetMethod();
                     if (propertyMethod == null)
                         throw new InvalidOperationException(
                             string.Format(Resources.ExtendedTuple_CouldNotFindProperty, tupleType, propertyName));
@@ -161,8 +169,9 @@ namespace WebApplications.Utilities
             Indexer = Expression.Lambda<Func<T, int, object>>(
                 Expression.Block(
                     Expression.IfThen(
-                        Expression.Or(Expression.LessThan(indexParameter, Expression.Constant(0)),
-                                      Expression.GreaterThanOrEqual(indexParameter, Expression.Constant(Size))),
+                        Expression.Or(
+                            Expression.LessThan(indexParameter, Expression.Constant(0)),
+                            Expression.GreaterThanOrEqual(indexParameter, Expression.Constant(Size))),
                         Expression.Throw(Expression.Constant(new IndexOutOfRangeException()))),
                     Expression.Switch(
                         indexParameter,
@@ -239,10 +248,11 @@ namespace WebApplications.Utilities
             Type t = _types[index];
             if (!typeof (TItem).IsAssignableFrom(t))
                 throw new InvalidCastException(
-                    string.Format(Resources.ExtendedTuple_CannotCastItemAtIndex,
-                                  index,
-                                  t,
-                                  typeof (TItem)));
+                    string.Format(
+                        Resources.ExtendedTuple_CannotCastItemAtIndex,
+                        index,
+                        t,
+                        typeof (TItem)));
             return (TItem) this[index];
         }
     }

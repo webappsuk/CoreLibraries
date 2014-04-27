@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,20 +44,24 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   Holds all singletons of the type <typeparamref name="TSingleton"/>.
         /// </summary>
-        [UsedImplicitly] protected static readonly ConcurrentDictionary<TKey, TSingleton> Singletons =
+        [UsedImplicitly]
+        protected static readonly ConcurrentDictionary<TKey, TSingleton> Singletons =
             new ConcurrentDictionary<TKey, TSingleton>();
 
         /// <summary>
         ///   Holds a function to create a singleton.
         /// </summary>
-        [UsedImplicitly] protected static readonly Func<TKey, TSingleton> Constructor;
+        [UsedImplicitly]
+        protected static readonly Func<TKey, TSingleton> Constructor;
 
         // ReSharper restore StaticFieldInGenericType
 
         /// <summary>
         ///   The singleton key.
         /// </summary>
-        [UsedImplicitly] [NotNull] protected readonly TKey Key;
+        [UsedImplicitly]
+        [NotNull]
+        protected readonly TKey Key;
 
         /// <summary>
         ///   Gets the singleton's type constructor.

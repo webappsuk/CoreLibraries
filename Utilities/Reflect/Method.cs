@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -47,31 +47,40 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The extended type.
         /// </summary>
-        [NotNull] public readonly ExtendedType ExtendedType;
+        [NotNull]
+        public readonly ExtendedType ExtendedType;
 
         /// <summary>
         ///   The method info.
         /// </summary>
-        [NotNull] public readonly MethodInfo Info;
+        [NotNull]
+        public readonly MethodInfo Info;
 
         /// <summary>
         /// Creates array of generic arguments on demand.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<List<GenericArgument>>
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<List<GenericArgument>>
             _genericArguments;
 
         /// <summary>
         /// Create enumeration of parameters on demand.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private readonly Lazy<ParameterInfo[]> _parameters;
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly Lazy<ParameterInfo[]> _parameters;
 
         /// <summary>
         /// Caches closed methods.
         /// </summary>
-        [NotNull] [DebuggerBrowsable(DebuggerBrowsableState.Never)] private Lazy<ConcurrentDictionary<string, Method>>
+        [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private Lazy<ConcurrentDictionary<string, Method>>
             _closedMethods =
                 new Lazy<ConcurrentDictionary<string, Method>>(
-                    () => new ConcurrentDictionary<string, Method>(), LazyThreadSafetyMode.PublicationOnly);
+                    () => new ConcurrentDictionary<string, Method>(),
+                    LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// Initializes the <see cref="Method"/> class.
@@ -85,8 +94,8 @@ namespace WebApplications.Utilities.Reflect
             Info = info;
             _genericArguments = new Lazy<List<GenericArgument>>(
                 () => info.GetGenericArguments()
-                          .Select((g, i) => new GenericArgument(GenericArgumentLocation.Signature, i, g))
-                          .ToList(),
+                    .Select((g, i) => new GenericArgument(GenericArgumentLocation.Signature, i, g))
+                    .ToList(),
                 LazyThreadSafetyMode.PublicationOnly);
             _parameters = new Lazy<ParameterInfo[]>(info.GetParameters, LazyThreadSafetyMode.PublicationOnly);
         }
@@ -217,16 +226,16 @@ namespace WebApplications.Utilities.Reflect
             return _closedMethods.Value.GetOrAdd(
                 key,
                 k =>
+                {
+                    try
                     {
-                        try
-                        {
-                            return new Method(ExtendedType, Info.MakeGenericMethod(gta));
-                        }
-                        catch (ArgumentException)
-                        {
-                            return null;
-                        }
-                    });
+                        return new Method(ExtendedType, Info.MakeGenericMethod(gta));
+                    }
+                    catch (ArgumentException)
+                    {
+                        return null;
+                    }
+                });
         }
 
         /// <summary>
@@ -338,17 +347,15 @@ namespace WebApplications.Utilities.Reflect
                         return null;
                 }
                 else
-                {
                     // No conversion necessary.
                     pExpressions[i] = parameterExpressions[i];
-                }
             }
 
             // Create call expression, instance methods use the first parameter of the Func<> as the instance, static
             // methods do not supply an instance.
             Expression expression = isStatic
-                                        ? Expression.Call(Info, pExpressions)
-                                        : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
+                ? Expression.Call(Info, pExpressions)
+                : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
 
             // Check if we have a return type.
             if (Info.ReturnType != typeof (void))
@@ -356,7 +363,9 @@ namespace WebApplications.Utilities.Reflect
                 // Discard result by wrapping in a block and 'returning' void.
                 LabelTarget returnTarget = Expression.Label();
                 expression = Expression.Block(
-                    expression, Expression.Return(returnTarget), Expression.Label(returnTarget));
+                    expression,
+                    Expression.Return(returnTarget),
+                    Expression.Label(returnTarget));
             }
 
             return Expression.Lambda(expression, parameterExpressions).Compile();
@@ -446,17 +455,15 @@ namespace WebApplications.Utilities.Reflect
                         return null;
                 }
                 else
-                {
                     // No conversion necessary.
                     pExpressions[i] = parameterExpressions[i];
-                }
             }
 
             // Create call expression, instance methods use the first parameter of the Func<> as the instance, static
             // methods do not supply an instance.
             Expression expression = isStatic
-                                        ? Expression.Call(Info, pExpressions)
-                                        : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
+                ? Expression.Call(Info, pExpressions)
+                : Expression.Call(pExpressions[0], Info, pExpressions.Skip(1));
 
             // Check if we need to do a cast to the func result type
             if (funcTypes[tCount - 1] != Info.ReturnType &&

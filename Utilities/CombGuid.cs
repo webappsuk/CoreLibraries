@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,17 +43,19 @@ namespace WebApplications.Utilities
     [ComVisible(true)]
     [UsedImplicitly]
     public struct CombGuid : IFormattable, IComparable, IComparable<CombGuid>, IEquatable<CombGuid>, IComparable<Guid>,
-                             IEquatable<Guid>
+        IEquatable<Guid>
     {
         /// <summary>
         ///   The empty <see cref="CombGuid"/>.
         /// </summary>
-        [UsedImplicitly] public static readonly CombGuid Empty;
+        [UsedImplicitly]
+        public static readonly CombGuid Empty;
 
         /// <summary>
         ///   The <see cref="System.Guid"/> component of the <see cref="CombGuid"/>.
         /// </summary>
-        [UsedImplicitly] public readonly Guid Guid;
+        [UsedImplicitly]
+        public readonly Guid Guid;
 
         /// <summary>
         ///   The base UTC date time used during new <see cref="System.DateTime"/> calculations.
@@ -558,7 +560,7 @@ namespace WebApplications.Utilities
             // Convert to a byte array  
             // Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333  
             byte[] daysArray = BitConverter.GetBytes((dateTime.Date - _baseDate).Days);
-            byte[] msecsArray = BitConverter.GetBytes((long) ((dateTime - dateTime.Date).TotalMilliseconds/3.333333));
+            byte[] msecsArray = BitConverter.GetBytes((long) ((dateTime - dateTime.Date).TotalMilliseconds / 3.333333));
 
             // We place the first four bytes of the msecs array into the last four bytes of the GUID (in reverse).
             guidArray[15] = msecsArray[0];
@@ -604,7 +606,7 @@ namespace WebApplications.Utilities
             daysArray[1] = guidArray[10];
 
             return _baseDate.AddDays(BitConverter.ToInt32(daysArray, 0))
-                            .AddMilliseconds(BitConverter.ToInt64(msecsArray, 0)*3.333333);
+                .AddMilliseconds(BitConverter.ToInt64(msecsArray, 0) * 3.333333);
         }
 
         /// <summary>

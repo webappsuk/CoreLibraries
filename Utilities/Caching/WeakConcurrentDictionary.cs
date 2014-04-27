@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,8 @@ namespace WebApplications.Utilities.Caching
         /// <summary>
         ///   The underlying weak references.
         /// </summary>
-        [NotNull] private readonly ConcurrentDictionary<TKey, WeakReference<TValue>> _dictionary;
+        [NotNull]
+        private readonly ConcurrentDictionary<TKey, WeakReference<TValue>> _dictionary;
 
         /// <summary>
         ///   A <see cref="bool"/> to indicate whether we are observing finalize.
@@ -101,14 +102,14 @@ namespace WebApplications.Utilities.Caching
         {
             // Create underlying dictionary.
             _dictionary = new ConcurrentDictionary<TKey, WeakReference<TValue>>(
-                concurrencyLevel < 1 ? 4*Environment.ProcessorCount : concurrencyLevel,
+                concurrencyLevel < 1 ? 4 * Environment.ProcessorCount : concurrencyLevel,
                 capacity < 1 ? 32 : capacity,
                 comparer ?? EqualityComparer<TKey>.Default);
 
             // Set allow resurrection.
             _allowResurrection = allowResurrection == TriState.Undefined
-                                     ? !ObservableWeakReference<TValue>.Disposable
-                                     : allowResurrection == TriState.Yes;
+                ? !ObservableWeakReference<TValue>.Disposable
+                : allowResurrection == TriState.Yes;
 
             // We are only observing finalization if the type supports it and we're not allowing resurrection.
             _observable = !_allowResurrection && ObservableWeakReference<TValue>.ObservableFinalize;
@@ -193,16 +194,12 @@ namespace WebApplications.Utilities.Caching
         {
             KeyValuePair<TKey, TValue>[] array1 = array as KeyValuePair<TKey, TValue>[];
             if (array1 != null)
-            {
                 CopyToPairs(array1, index);
-            }
             else
             {
                 DictionaryEntry[] array2 = array as DictionaryEntry[];
                 if (array2 != null)
-                {
                     CopyToEntries(array2, index);
-                }
                 else
                 {
                     object[] array3 = array as object[];
@@ -228,13 +225,21 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         ICollection IDictionary.Keys
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection) Keys; }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
+            get
+            {
+                return (ICollection) Keys;
+            }
         }
 
         /// <inheritdoc />
         ICollection IDictionary.Values
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection) Values; }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
+            get
+            {
+                return (ICollection) Values;
+            }
         }
 
         /// <inheritdoc />
@@ -331,12 +336,10 @@ namespace WebApplications.Utilities.Caching
                 // This will remove dead keys whilst counting.
                 int count = 0;
                 using (IEnumerator<KeyValuePair<TKey, TValue>> e = GetEnumerator())
-                {
                     checked
                     {
                         while (e.MoveNext()) count++;
                     }
-                }
                 return count;
             }
         }
@@ -344,14 +347,22 @@ namespace WebApplications.Utilities.Caching
         /// <inheritdoc />
         public ICollection<TKey> Keys
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection<TKey>) this.Select(kvp => kvp.Key); }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
+            get
+            {
+                return (ICollection<TKey>) this.Select(kvp => kvp.Key);
+            }
         }
 
 
         /// <inheritdoc />
         public ICollection<TValue> Values
         {
-            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")] get { return (ICollection<TValue>) this.Select(kvp => kvp.Value); }
+            [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
+            get
+            {
+                return (ICollection<TValue>) this.Select(kvp => kvp.Value);
+            }
         }
 
         /// <inheritdoc />
@@ -430,21 +441,20 @@ namespace WebApplications.Utilities.Caching
         /// <param name="weakReference">The weak reference.</param>
         private void RegisterFinalize([NotNull] TKey key, [CanBeNull] WeakReference<TValue> weakReference)
         {
-            if (!_observable || (weakReference == null)) return;
+            if (!_observable ||
+                (weakReference == null)) return;
             ObservableWeakReference<TValue> owf = weakReference as ObservableWeakReference<TValue>;
             if (owf == null) return;
             owf.Finalized += (s, e) =>
-                {
-                    WeakReference<TValue> oldwr;
+            {
+                WeakReference<TValue> oldwr;
 
-                    if (_dictionary.TryRemove(key, out oldwr) &&
-                        (oldwr != weakReference))
-                    {
-                        // If we removed something else, add it back!
-                        _dictionary.TryAdd(key, oldwr);
-                    }
-                    owf.Dispose();
-                };
+                if (_dictionary.TryRemove(key, out oldwr) &&
+                    (oldwr != weakReference))
+                    // If we removed something else, add it back!
+                    _dictionary.TryAdd(key, oldwr);
+                owf.Dispose();
+            };
         }
 
         /// <summary>
@@ -453,7 +463,8 @@ namespace WebApplications.Utilities.Caching
         /// <param name="weakReference">The weak reference.</param>.
         private void UnregisterFinalize([CanBeNull] WeakReference<TValue> weakReference)
         {
-            if (!_observable || (weakReference == null)) return;
+            if (!_observable ||
+                (weakReference == null)) return;
             ObservableWeakReference<TValue> owf = weakReference as ObservableWeakReference<TValue>;
             if (owf == null) return;
             owf.Dispose();
@@ -570,8 +581,8 @@ namespace WebApplications.Utilities.Caching
             TValue value;
             // It is possible we have got a GC'd object, in which case call add or update.
             return !weakReference.TryGetTarget(out value)
-                       ? AddOrUpdate(key, valueFactory, (k, v) => valueFactory(k))
-                       : value;
+                ? AddOrUpdate(key, valueFactory, (k, v) => valueFactory(k))
+                : value;
         }
 
         /// <summary>
@@ -599,7 +610,8 @@ namespace WebApplications.Utilities.Caching
         /// </returns>
         [UsedImplicitly]
         public TValue AddOrUpdate(
-            [NotNull] TKey key, [NotNull] Func<TKey, TValue> addValueFactory,
+            [NotNull] TKey key,
+            [NotNull] Func<TKey, TValue> addValueFactory,
             [NotNull] Func<TKey, TValue, TValue> updateValueFactory)
         {
             WeakReference<TValue> weakReference = _dictionary
@@ -607,21 +619,21 @@ namespace WebApplications.Utilities.Caching
                     key,
                     k => Wrap(key, addValueFactory(k)),
                     (k, v) =>
+                    {
+                        TValue value;
+                        if (v == null)
+                            return Wrap(key, updateValueFactory(k, default(TValue)));
+
+                        if (v.TryGetTarget(out value))
                         {
-                            TValue value;
-                            if (v == null)
-                                return Wrap(key, updateValueFactory(k, default(TValue)));
+                            v.Target = updateValueFactory(key, value);
+                            return v;
+                        }
 
-                            if (v.TryGetTarget(out value))
-                            {
-                                v.Target = updateValueFactory(key, value);
-                                return v;
-                            }
+                        UnregisterFinalize(v);
 
-                            UnregisterFinalize(v);
-
-                            return Wrap(key, addValueFactory(k));
-                        });
+                        return Wrap(key, addValueFactory(k));
+                    });
 
             // Now retrieve the new value
             TValue newValue;
@@ -639,8 +651,10 @@ namespace WebApplications.Utilities.Caching
         ///   Either the inserted or updated value depending on whether there's already an existing entry with the same key.
         /// </returns>
         [UsedImplicitly]
-        public TValue AddOrUpdate([NotNull] TKey key, TValue addValue,
-                                  [NotNull] Func<TKey, TValue, TValue> updateValueFactory)
+        public TValue AddOrUpdate(
+            [NotNull] TKey key,
+            TValue addValue,
+            [NotNull] Func<TKey, TValue, TValue> updateValueFactory)
         {
             return AddOrUpdate(key, k => addValue, updateValueFactory);
         }
@@ -653,9 +667,7 @@ namespace WebApplications.Utilities.Caching
         private void CopyToObjects([NotNull] object[] array, int index)
         {
             foreach (KeyValuePair<TKey, TValue> kvp in this)
-            {
                 array[index++] = kvp;
-            }
         }
 
         /// <summary>

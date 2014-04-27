@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,12 +44,14 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// The extended type.
         /// </summary>
-        [NotNull] public readonly ExtendedType ExtendedType;
+        [NotNull]
+        public readonly ExtendedType ExtendedType;
 
         /// <summary>
         /// The underlying <see cref="FieldInfo"/>.
         /// </summary>
-        [NotNull] public readonly FieldInfo Info;
+        [NotNull]
+        public readonly FieldInfo Info;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Field"/> class.
@@ -93,8 +95,8 @@ namespace WebApplications.Utilities.Reflect
         public static implicit operator Field(FieldInfo fieldInfo)
         {
             return fieldInfo == null
-                       ? null
-                       : ((ExtendedType) fieldInfo.DeclaringType).GetField(fieldInfo);
+                ? null
+                : ((ExtendedType) fieldInfo.DeclaringType).GetField(fieldInfo);
         }
 
         /// <summary>
@@ -203,7 +205,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Create value parameter expression
             ParameterExpression valueParameterExpression = Expression.Parameter(
-                valueType, "value");
+                valueType,
+                "value");
             Expression valueExpression = valueParameterExpression;
 
             // Cast value if necessary
@@ -246,7 +249,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Create input parameter expression
             ParameterExpression parameterExpression = Expression.Parameter(
-                parameterType, "target");
+                parameterType,
+                "target");
 
             // Cast parameter if necessary
             Expression expression = parameterExpression;
@@ -259,7 +263,8 @@ namespace WebApplications.Utilities.Reflect
 
             // Create value parameter expression
             ParameterExpression valueParameterExpression = Expression.Parameter(
-                valueType, "value");
+                valueType,
+                "value");
 
             Expression valueExpression = valueParameterExpression;
             if ((valueType != fieldType) &&
@@ -278,7 +283,7 @@ namespace WebApplications.Utilities.Reflect
             // Create lambda and compile
             return
                 Expression.Lambda<Action<T, TValue>>(expression, parameterExpression, valueParameterExpression)
-                          .Compile();
+                    .Compile();
         }
     }
 }

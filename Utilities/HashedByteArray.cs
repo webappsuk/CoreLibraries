@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,9 +40,11 @@ namespace WebApplications.Utilities
     /// </summary>
     public class HashedByteArray : IEquatable<HashedByteArray>, IEquatable<byte[]>, IEnumerable<byte>
     {
-        [NotNull] private readonly byte[] _data;
+        [NotNull]
+        private readonly byte[] _data;
 
-        [NotNull] private readonly Lazy<string> _encoded;
+        [NotNull]
+        private readonly Lazy<string> _encoded;
 
         /// <summary>
         /// A large prime number.
@@ -73,7 +75,9 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="data">The data.</param>
         public HashedByteArray([NotNull] byte[] data)
-            : this(data, new Lazy<string>(() => Convert.ToBase64String(data), LazyThreadSafetyMode.ExecutionAndPublication))
+            : this(
+                data,
+                new Lazy<string>(() => Convert.ToBase64String(data), LazyThreadSafetyMode.ExecutionAndPublication))
         {
         }
 
@@ -91,21 +95,18 @@ namespace WebApplications.Utilities
             _data = data;
             long length = data.LongLength;
             if (length > 32)
-            {
                 unchecked
                 {
                     // Pick 32 values evenly spread through byte array,
                     // hashing based on every byte would take too long,
                     // as a hash doesn't guarantee equality we're only trying
                     // to minimize collisions without compromising speed.
-                    double step = (double)length / 32;
+                    double step = (double) length / 32;
                     _hash = LargePrime;
                     for (double ix = 0; ix < length; ix += step)
                         _hash = (_hash * SmallPrime) + data[(long) ix];
                 }
-            }
             else if (length > 8)
-            {
                 unchecked
                 {
                     // Create a long hash of the bytes.
@@ -113,7 +114,6 @@ namespace WebApplications.Utilities
                     for (int ix = 0; ix < length; ix++)
                         _hash = (_hash * SmallPrime) + data[ix];
                 }
-            }
             else if (length > 4)
             {
                 if (length != 8)
@@ -179,8 +179,8 @@ namespace WebApplications.Utilities
         public bool Equals(byte[] other)
         {
             return !ReferenceEquals(other, null) &&
-                _data.LongLength == other.LongLength && 
-                _data.SequenceEqual(other);
+                   _data.LongLength == other.LongLength &&
+                   _data.SequenceEqual(other);
         }
         #endregion
 
@@ -236,10 +236,7 @@ namespace WebApplications.Utilities
         /// integer hash code.</returns>
         public long HashCode
         {
-            get
-            {
-                return _hash;
-            }
+            get { return _hash; }
         }
 
         /// <summary>
@@ -252,11 +249,9 @@ namespace WebApplications.Utilities
             if (ReferenceEquals(obj, null)) return false;
             HashedByteArray other = obj as HashedByteArray;
             if (!ReferenceEquals(other, null))
-            {
                 return (_hash == other._hash) &&
                        (_data.LongLength == other._data.LongLength) &&
                        ((_data.LongLength < 9) || _data.SequenceEqual(other._data));
-            }
 
             byte[] bytes = obj as byte[];
             return !ReferenceEquals(bytes, null) &&

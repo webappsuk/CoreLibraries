@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2013.  All rights reserved.
-// Copyright (c) 2013, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -83,7 +83,6 @@ namespace WebApplications.Utilities.Ranges
         public Range(TValue start, TValue end)
         {
             if (_lessThan(end, start))
-            {
                 throw new ArgumentOutOfRangeException(
                     "start",
                     start,
@@ -92,7 +91,6 @@ namespace WebApplications.Utilities.Ranges
                         start,
                         end,
                         typeof (TValue)));
-            }
             _start = start;
             _end = end;
         }
@@ -109,7 +107,6 @@ namespace WebApplications.Utilities.Ranges
         public Range(TValue start, TValue end, TStep step)
         {
             if (_lessThan(end, start))
-            {
                 throw new ArgumentOutOfRangeException(
                     "start",
                     start,
@@ -118,7 +115,6 @@ namespace WebApplications.Utilities.Ranges
                         start,
                         end,
                         typeof (TValue)));
-            }
             _start = start;
             _end = end;
             _step = step;
@@ -268,8 +264,8 @@ namespace WebApplications.Utilities.Ranges
             unchecked
             {
                 int hashCode = EqualityComparer<TValue>.Default.GetHashCode(_end);
-                hashCode = (hashCode*397) ^ EqualityComparer<TValue>.Default.GetHashCode(_start);
-                hashCode = (hashCode*397) ^ EqualityComparer<TStep>.Default.GetHashCode(_step);
+                hashCode = (hashCode * 397) ^ EqualityComparer<TValue>.Default.GetHashCode(_start);
+                hashCode = (hashCode * 397) ^ EqualityComparer<TStep>.Default.GetHashCode(_step);
                 return hashCode;
             }
         }

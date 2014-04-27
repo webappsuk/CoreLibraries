@@ -1,11 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+// Copyright (c) 2014, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
 
@@ -41,7 +65,11 @@ namespace WebApplications.Utilities.Test.Formatting
                     .AppendLayout(alignment: Alignment.Right)
                     .AppendLine(FormatResources.AtVeroEos)
                     .AppendLine()
-                    .AppendLayout(alignment: Alignment.Centre, firstLineIndentSize: 4, indentSize: 4, rightMarginSize: 4)
+                    .AppendLayout(
+                        alignment: Alignment.Centre,
+                        firstLineIndentSize: 4,
+                        indentSize: 4,
+                        rightMarginSize: 4)
                     .AppendLine(FormatResources.AtVeroEos).ToString();
 
             // Simulate console wrapping
@@ -55,15 +83,16 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.IsFalse(text.Contains('\n'), "Text should not contain new line characters");
             Assert.IsTrue(text.Length % width == 0, "Text length should be a multiple of the width");
         }
-        
+
         [TestMethod]
         public void TestTabStops()
         {
             FormatBuilder builder = new FormatBuilder();
             builder
-                .AppendLayout(50,
+                .AppendLayout(
+                    50,
                     firstLineIndentSize: 1,
-                    tabStops: new[] { 6, 9, 20, 30, 40 })
+                    tabStops: new[] {6, 9, 20, 30, 40})
                 .Append("A\tTab Stop\tAnother");
 
             int position = 0;
@@ -85,7 +114,7 @@ namespace WebApplications.Utilities.Test.Formatting
 
             FormatBuilder clone = builder.Clone();
 
-            Assert.IsInstanceOfType(clone, typeof(FormatBuilder));
+            Assert.IsInstanceOfType(clone, typeof (FormatBuilder));
 
             Assert.IsTrue(builder.SequenceEqual(clone), "Chunks are not equal");
             Assert.AreEqual(builder.ToString(), clone.ToString());
@@ -97,27 +126,29 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             const ushort width = 80;
             using (StringWriter stringWriter = new StringWriter())
+            using (
+                FormatTextWriter formatTextWriter = new FormatTextWriter(
+                    stringWriter,
+                    width,
+                    alignment: Alignment.Justify))
             {
-                using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter, width, alignment: Alignment.Justify))
-                {
-                    Stopwatch watch = Stopwatch.StartNew();
-                    Parallel.For(
-                        0,
-                        1000,
-                        new ParallelOptions() { MaxDegreeOfParallelism = 8 },
-                        i => formatTextWriter.Write(FormatResources.ButIMustExplain));
-                    watch.Stop();
-                    Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
-                    Assert.AreEqual(50, formatTextWriter.Position);
-                    string result = stringWriter.ToString();
+                Stopwatch watch = Stopwatch.StartNew();
+                Parallel.For(
+                    0,
+                    1000,
+                    new ParallelOptions() {MaxDegreeOfParallelism = 8},
+                    i => formatTextWriter.Write(FormatResources.ButIMustExplain));
+                watch.Stop();
+                Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
+                Assert.AreEqual(50, formatTextWriter.Position);
+                string result = stringWriter.ToString();
 
-                    string[] lines = result
-                        .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                string[] lines = result
+                    .Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
-                    // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
-                    Assert.AreEqual(12500, lines.Length);
-                    Assert.AreEqual(width, lines.Select(l => l.Length).Max());
-                }
+                // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
+                Assert.AreEqual(12500, lines.Length);
+                Assert.AreEqual(width, lines.Select(l => l.Length).Max());
             }
         }
 
@@ -127,29 +158,27 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             const int width = 80;
             using (StringWriter stringWriter = new StringWriter())
+            using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter, width))
             {
-                using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter, width))
-                {
-                    Stopwatch watch = Stopwatch.StartNew();
-                    Parallel.For(
-                        0,
-                        1000,
-                        new ParallelOptions() { MaxDegreeOfParallelism = 1 },
-                        i => new FormatBuilder(width, alignment: Alignment.Justify)
-                            .Append(FormatResources.ButIMustExplain)
-                            .WriteTo(formatTextWriter));
-                    watch.Stop();
-                    Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
-                    Assert.AreEqual(50, formatTextWriter.Position);
-                    string result = stringWriter.ToString();
+                Stopwatch watch = Stopwatch.StartNew();
+                Parallel.For(
+                    0,
+                    1000,
+                    new ParallelOptions() {MaxDegreeOfParallelism = 1},
+                    i => new FormatBuilder(width, alignment: Alignment.Justify)
+                        .Append(FormatResources.ButIMustExplain)
+                        .WriteTo(formatTextWriter));
+                watch.Stop();
+                Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
+                Assert.AreEqual(50, formatTextWriter.Position);
+                string result = stringWriter.ToString();
 
-                    string[] lines = result
-                        .Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+                string[] lines = result
+                    .Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
-                    // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
-                    Assert.AreEqual(12500, lines.Length);
-                    Assert.AreEqual(width, lines.Select(l => l.Length).Max());
-                }
+                // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
+                Assert.AreEqual(12500, lines.Length);
+                Assert.AreEqual(width, lines.Select(l => l.Length).Max());
             }
         }
 
@@ -158,28 +187,26 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestThreadSafetyNestedLayoutLongLine()
         {
             using (StringWriter stringWriter = new StringWriter())
+            using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter))
             {
-                using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter))
-                {
-                    Stopwatch watch = Stopwatch.StartNew();
-                    Parallel.For(
-                        0,
-                        1000,
-                        new ParallelOptions() { MaxDegreeOfParallelism = 8 },
-                        i => new FormatBuilder()
-                            .Append(FormatResources.ButIMustExplain)
-                            .WriteTo(formatTextWriter));
-                    watch.Stop();
-                    Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
-                    Assert.AreEqual(970000, formatTextWriter.Position);
-                    string result = stringWriter.ToString();
+                Stopwatch watch = Stopwatch.StartNew();
+                Parallel.For(
+                    0,
+                    1000,
+                    new ParallelOptions() {MaxDegreeOfParallelism = 8},
+                    i => new FormatBuilder()
+                        .Append(FormatResources.ButIMustExplain)
+                        .WriteTo(formatTextWriter));
+                watch.Stop();
+                Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
+                Assert.AreEqual(970000, formatTextWriter.Position);
+                string result = stringWriter.ToString();
 
-                    string[] lines = result
-                        .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                string[] lines = result
+                    .Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
-                    // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
-                    Assert.AreEqual(1, lines.Length);
-                }
+                // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
+                Assert.AreEqual(1, lines.Length);
             }
         }
     }
