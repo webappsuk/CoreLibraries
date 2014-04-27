@@ -408,4 +408,7 @@
   <data name="FormatWriter_IsClosed" xml:space="preserve">
     <value>Cannot write to a closed FormatWriter.</value>
   </data>
+  <data name="FormatBuilder_ReadOnly" xml:space="preserve">
+    <value>Cannot modify a read only FormatBuilder.</value>
+  </data>
 </root>

@@ -439,6 +439,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot modify a read only FormatBuilder..
+        /// </summary>
+        internal static string FormatBuilder_ReadOnly {
+            get {
+                return ResourceManager.GetString("FormatBuilder_ReadOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot write to a closed FormatWriter..
         /// </summary>
         internal static string FormatWriter_IsClosed {

@@ -92,7 +92,7 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
-        [Timeout(1000)]
+        [Timeout(10000)]
         public void TestThreadSafety()
         {
             const ushort width = 80;

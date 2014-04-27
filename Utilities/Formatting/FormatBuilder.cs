@@ -244,7 +244,7 @@ namespace WebApplications.Utilities.Formatting
                 AppendFormat(format);
             _isReadOnly = isReadOnly;
         }
-#endregion
+        #endregion
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -311,27 +311,24 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Clones this instance.
         /// </summary>
-        /// <param name="makeReadOnly">If set to <see langword="true" />, the returned builder will be read only.</param>
+        /// <param name="readOnly">If set to <see langword="true" />, the returned builder will be read only.</param>
         /// <returns>
         /// A shallow copy of this builder.
         /// </returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Clone(bool makeReadOnly = false)
+        public FormatBuilder Clone(bool readOnly = false)
         {
             Contract.Ensures(
-                Contract.Result<FormatBuilder>().GetType() == GetType(),
-                "All classes derived from FormatBuilder should overload this method and return a builder of their own type");
-            Contract.Ensures(
-                !makeReadOnly || Contract.Result<FormatBuilder>().IsReadOnly,
-                "Returned builder should be read only if makeReadOnly is true");
+                !readOnly || Contract.Result<FormatBuilder>().IsReadOnly,
+                "Returned builder should be read only if readOnly is true");
 
-            if (IsReadOnly)
+            if (_isReadOnly && readOnly)
                 return this;
 
-            FormatBuilder formatBuilder = new FormatBuilder(InitialLayout) {_isLayoutRequired = _isLayoutRequired};
+            FormatBuilder formatBuilder = new FormatBuilder(InitialLayout) { _isLayoutRequired = _isLayoutRequired };
             formatBuilder._chunks.AddRange(_chunks);
-            if (makeReadOnly)
+            if (readOnly)
                 formatBuilder.MakeReadOnly();
             return formatBuilder;
         }
@@ -347,7 +344,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(bool value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -362,7 +360,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(sbyte value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -377,7 +376,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(byte value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -392,7 +392,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(char value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -407,7 +408,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(short value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -422,7 +424,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(int value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -437,7 +440,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(long value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -452,7 +456,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(float value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -467,7 +472,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(double value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -482,7 +488,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(decimal value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -497,7 +504,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(ushort value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -512,7 +520,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(uint value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -527,7 +536,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(ulong value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -542,9 +552,14 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append([CanBeNull] object value)
         {
             Contract.Requires(!IsReadOnly);
-            if (!_isReadOnly &&
-                value != null)
-                _chunks.AddRange(Resolve(FormatChunk.Create(value)));
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (value != null)
+                _chunks.AddRange(
+                    Resolve(
+                        new[] {FormatChunk.Create(value)},
+                        (Func<FormatChunk, Optional<object>>) null,
+                        ref _isLayoutRequired));
             return this;
         }
 
@@ -558,8 +573,9 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append([CanBeNull] char[] value)
         {
             Contract.Requires(!IsReadOnly);
-            if (!_isReadOnly &&
-                (value != null) &&
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if ((value != null) &&
                 (value.Length > 0))
                 _chunks.Add(FormatChunk.Create(new string(value)));
             return this;
@@ -577,8 +593,9 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append([CanBeNull] char[] value, int startIndex, int charCount)
         {
             Contract.Requires(!IsReadOnly);
-            if (!_isReadOnly &&
-                (value != null) &&
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if ((value != null) &&
                 (value.Length > 0) &&
                 (startIndex >= 0) &&
                 (charCount >= 0))
@@ -601,8 +618,9 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append(char value, int repeatCount)
         {
             Contract.Requires(!IsReadOnly);
-            if (!_isReadOnly &&
-                repeatCount > 0)
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (repeatCount > 0)
                 _chunks.Add(FormatChunk.Create(new string(value, repeatCount)));
             return this;
         }
@@ -617,8 +635,9 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append([CanBeNull] string value)
         {
             Contract.Requires(!IsReadOnly);
-            if (!_isReadOnly &&
-                !string.IsNullOrEmpty(value))
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (!string.IsNullOrEmpty(value))
                 _chunks.Add(FormatChunk.Create(value));
             return this;
         }
@@ -633,9 +652,14 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append([CanBeNull] FormatChunk chunk)
         {
             Contract.Requires(!IsReadOnly);
-            if (!_isReadOnly &&
-                chunk != null)
-                _chunks.AddRange(Resolve(chunk));
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (chunk != null)
+                _chunks.AddRange(
+                    Resolve(
+                        new[] {chunk},
+                        (Func<FormatChunk, Optional<object>>) null,
+                        ref _isLayoutRequired));
             return this;
         }
 
@@ -649,9 +673,10 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
             Contract.Requires(!IsReadOnly);
-            if (!_isReadOnly &&
-                chunks != null)
-                _chunks.AddRange(chunks.SelectMany(Resolve));
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (chunks != null)
+                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>)null, ref _isLayoutRequired));
             return this;
         }
 
@@ -665,8 +690,9 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder Append([CanBeNull] FormatBuilder builder)
         {
             Contract.Requires(!IsReadOnly);
-            if (!_isReadOnly &&
-                builder != null &&
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (builder != null &&
                 !builder.IsEmpty)
                 _chunks.AddRange(builder);
             return this;
@@ -683,7 +709,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine()
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -698,7 +725,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(bool value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -714,7 +742,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(sbyte value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -730,7 +759,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(byte value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -746,7 +776,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(char value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -762,7 +793,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(short value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -778,7 +810,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(int value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -794,7 +827,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(long value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -810,7 +844,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(float value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -826,7 +861,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(double value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -842,7 +878,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(decimal value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -858,7 +895,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(ushort value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -874,7 +912,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(uint value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -890,7 +929,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(ulong value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -906,9 +946,14 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine([CanBeNull] object value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (value != null)
-                _chunks.AddRange(Resolve(FormatChunk.Create(value)));
+                _chunks.AddRange(
+                    Resolve(
+                        new[] {FormatChunk.Create(value)},
+                        (Func<FormatChunk, Optional<object>>) null,
+                        ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -923,7 +968,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine([CanBeNull] char[] value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if ((value != null) &&
                 (value.Length > 0))
                 _chunks.Add(FormatChunk.Create(new string(value)));
@@ -943,7 +989,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine([CanBeNull] char[] value, int startIndex, int charCount)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if ((value != null) &&
                 (value.Length > 0) &&
                 (startIndex >= 0) &&
@@ -968,7 +1015,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine(char value, int repeatCount)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (repeatCount > 0)
                 _chunks.Add(FormatChunk.Create(new string(value, repeatCount)));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -985,7 +1033,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine([CanBeNull] string value)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(value))
                 _chunks.Add(FormatChunk.Create(value));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -1002,9 +1051,14 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine([CanBeNull] FormatChunk chunk)
         {
             Contract.Requires(!IsReadOnly);
-            if (!_isReadOnly &&
-                chunk != null)
-                _chunks.AddRange(Resolve(chunk));
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (chunk != null)
+                _chunks.AddRange(
+                    Resolve(
+                        new[] { chunk },
+                        (Func<FormatChunk, Optional<object>>)null,
+                        ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1019,9 +1073,10 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (chunks != null)
-                _chunks.AddRange(chunks.SelectMany(Resolve));
+                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>)null, ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1036,7 +1091,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendLine([CanBeNull] FormatBuilder builder)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (builder != null &&
                 !builder.IsEmpty)
                 _chunks.AddRange(builder);
@@ -1058,12 +1114,10 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendFormat([CanBeNull] string format, [CanBeNull] params object[] args)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
-                _chunks.AddRange(
-                    args != null && args.Length > 0
-                        ? Resolve(format.FormatChunks(), args)
-                        : format.FormatChunks().SelectMany(Resolve));
+                _chunks.AddRange(Resolve(format.FormatChunks(), args, ref _isLayoutRequired));
             return this;
         }
 
@@ -1080,12 +1134,10 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
-                _chunks.AddRange(
-                    values != null && values.Count > 0
-                        ? Resolve(format.FormatChunks(), values)
-                        : format.FormatChunks().SelectMany(Resolve));
+                _chunks.AddRange(Resolve(format.FormatChunks(), values, ref _isLayoutRequired));
             return this;
         }
 
@@ -1104,12 +1156,10 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
-                _chunks.AddRange(
-                    resolver != null
-                        ? Resolve(format.FormatChunks(), resolver)
-                        : format.FormatChunks().SelectMany(Resolve));
+                _chunks.AddRange(Resolve(format.FormatChunks(), resolver, ref _isLayoutRequired));
             return this;
         }
         #endregion
@@ -1124,7 +1174,8 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendFormatLine()
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1141,12 +1192,10 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendFormatLine([CanBeNull] string format, [CanBeNull] params object[] args)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
-                _chunks.AddRange(
-                    args != null && args.Length > 0
-                        ? Resolve(format.FormatChunks(), args)
-                        : format.FormatChunks().SelectMany(Resolve));
+                _chunks.AddRange(Resolve(format.FormatChunks(), args, ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1164,12 +1213,10 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
-                _chunks.AddRange(
-                    values != null && values.Count > 0
-                        ? Resolve(format.FormatChunks(), values)
-                        : format.FormatChunks().SelectMany(Resolve));
+                _chunks.AddRange(Resolve(format.FormatChunks(), values, ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1189,12 +1236,10 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
-                _chunks.AddRange(
-                    resolver != null
-                        ? Resolve(format.FormatChunks(), resolver)
-                        : format.FormatChunks().SelectMany(Resolve));
+                _chunks.AddRange(Resolve(format.FormatChunks(), resolver, ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1220,10 +1265,15 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] object value = null)
         {
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
 
             FormatChunk chunk = FormatChunk.CreateControl(tag, alignment, format, value);
-            _chunks.AddRange(Resolve(chunk));
+            _chunks.AddRange(
+                Resolve(
+                    new[] { chunk },
+                    (Func<FormatChunk, Optional<object>>)null,
+                    ref _isLayoutRequired));
             return this;
         }
 
@@ -1239,64 +1289,133 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(control != null);
             Contract.Requires(control.IsControl);
             Contract.Requires(!IsReadOnly);
-            if (_isReadOnly) return this;
-            _chunks.AddRange(Resolve(control));
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            _chunks.AddRange(
+                Resolve(
+                    new[] { control },
+                    (Func<FormatChunk, Optional<object>>)null,
+                    ref _isLayoutRequired));
             return this;
         }
         #endregion
 
         #region Resolve Overloads
         /// <summary>
-        /// Resolves the specified chunk.
+        /// Resolves any tags.
         /// </summary>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>An enumeration of chunks.</returns>
+        /// <param name="values">The values.</param>
+        /// <returns>This instance.</returns>
         [NotNull]
-        private IEnumerable<FormatChunk> Resolve([NotNull] FormatChunk chunk)
+        [PublicAPI]
+        public FormatBuilder Resolve([CanBeNull] params object[] values)
         {
-            Contract.Requires(chunk != null);
-            Stack<FormatChunk> stack = new Stack<FormatChunk>();
-            stack.Push(chunk);
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if ((_chunks.Count < 1) ||
+                (values == null) ||
+                (values.Length < 1))
+                return this;
+
+            return Resolve(
+                chunk =>
+                {
+                    int index;
+                    return int.TryParse(chunk.Tag, out index) &&
+                             (index >= 0) &&
+                             (index < values.Length)
+                        ? new Optional<object>(values[index])
+                        : Optional<object>.Unassigned;
+                });
+        }
+
+        /// <summary>
+        /// Resolves any tags.
+        /// </summary>
+        /// <param name="values">The values.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Resolve([CanBeNull] IReadOnlyDictionary<string, object> values)
+        {
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if ((_chunks.Count < 1) ||
+                (values == null) ||
+                (values.Count < 1))
+                return this;
+
+            return Resolve(
+                chunk =>
+                {
+                    object value;
+                    return values.TryGetValue(chunk.Tag, out value)
+                        ? new Optional<object>(value)
+                        : Optional<object>.Unassigned;
+                });
+        }
+
+        /// <summary>
+        /// Resolves any tags.
+        /// </summary>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>This instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public FormatBuilder Resolve([CanBeNull] Func<FormatChunk, Optional<object>> resolver)
+        {
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if ((_chunks.Count < 1) ||
+                (resolver == null))
+                return this;
+            
+            int index = 0;
             do
             {
-                FormatChunk c;
-                if (stack.Count > 0)
-                    c = stack.Pop();
-                else
-                    yield break;
+                FormatChunk chunk = _chunks[index++];
 
-                if (c == null) continue;
+                if (chunk == null) continue;
 
-                if (!c.IsFillPoint)
-                {
-                    yield return c;
+                if (!chunk.IsFillPoint)
                     continue;
-                }
 
-                object value = c.Value;
+                if (!_isLayoutRequired &&
+                    string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
+                    _isLayoutRequired = true;
+
+                Optional<object> resolved = resolver(chunk);
+                object value = resolved.IsAssigned ? resolved.Value : chunk.Value;
 
                 IEnumerable<FormatChunk> cs = value as IEnumerable<FormatChunk>;
                 if (cs != null)
                 {
-                    // Push chunks in reverse order.
-                    foreach (FormatChunk ic in cs.Reverse())
-                        stack.Push(ic);
+                    FormatChunk[] cArray = cs.ToArray();
+                    if (cArray.Length < 1)
+                        _chunks.RemoveAt(index - 1);
+                    else
+                    {
+                        _chunks[index - 1] = cArray[0];
+                        if (cArray.Length > 1)
+                            _chunks.InsertRange(index, cArray.Skip(1));
+                    }
                     continue;
                 }
 
                 FormatChunk fc = value as FormatChunk;
                 if (fc != null)
                 {
-                    stack.Push(fc);
+                    _chunks[index - 1] = fc;
                     continue;
                 }
 
-                if (!_isLayoutRequired &&
-                    string.Equals(c.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
-                    _isLayoutRequired = true;
+                if (!resolved.IsAssigned ||
+                    (chunk.Value == value))
+                    continue;
 
-                yield return c;
-            } while (true);
+                _chunks[index - 1] = FormatChunk.Create(chunk, value);
+            } while (index < _chunks.Count);
+            return this;
         }
 
         /// <summary>
@@ -1304,70 +1423,29 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="chunks">The chunks.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
         /// <returns></returns>
         [NotNull]
-        private IEnumerable<FormatChunk> Resolve(
+        private static IEnumerable<FormatChunk> Resolve(
             [NotNull] IEnumerable<FormatChunk> chunks,
-            [NotNull] object[] values)
+            [CanBeNull] object[] values,
+            ref bool isLayoutRequired)
         {
             Contract.Requires(chunks != null);
-            Contract.Requires(values != null);
-            Stack<FormatChunk> stack = new Stack<FormatChunk>();
-            IEnumerator<FormatChunk> ce = chunks.GetEnumerator();
-            do
-            {
-                FormatChunk chunk;
-                if (stack.Count > 0)
-                    chunk = stack.Pop();
-                else if (!ce.MoveNext())
-                    yield break;
-                else chunk = ce.Current;
-
-                if (chunk == null) continue;
-
-                if (!chunk.IsFillPoint)
-                {
-                    yield return chunk;
-                    continue;
-                }
-
-                int i;
-                bool found = int.TryParse(chunk.Tag, out i) &&
-                             (i >= 0) &&
-                             (i < values.Length);
-                object value = found
-                    ? values[i]
-                    : chunk.Value;
-
-                IEnumerable<FormatChunk> cs = value as IEnumerable<FormatChunk>;
-                if (cs != null)
-                {
-                    // Push chunks in reverse order.
-                    foreach (FormatChunk c in cs.Reverse())
-                        stack.Push(c);
-                    continue;
-                }
-
-                FormatChunk fc = value as FormatChunk;
-                if (fc != null)
-                {
-                    stack.Push(fc);
-                    continue;
-                }
-
-                if (!_isLayoutRequired &&
-                    string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
-                    _isLayoutRequired = true;
-
-                if (!found ||
-                    (chunk.Value == value))
-                {
-                    yield return chunk;
-                    continue;
-                }
-
-                yield return FormatChunk.Create(chunk, value);
-            } while (true);
+            return Resolve(
+                chunks,
+                values != null && values.Length >= 1
+                    ? chunk =>
+                    {
+                        int index;
+                        return int.TryParse(chunk.Tag, out index) &&
+                               (index >= 0) &&
+                               (index < values.Length)
+                            ? new Optional<object>(values[index])
+                            : Optional<object>.Unassigned;
+                    }
+                    : (Func<FormatChunk, Optional<object>>) null,
+                ref isLayoutRequired);
         }
 
         /// <summary>
@@ -1375,102 +1453,71 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="chunks">The chunks.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
         /// <returns></returns>
         [NotNull]
-        private IEnumerable<FormatChunk> Resolve(
+        private static IEnumerable<FormatChunk> Resolve(
             [NotNull] IEnumerable<FormatChunk> chunks,
-            [NotNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            ref bool isLayoutRequired)
         {
             Contract.Requires(chunks != null);
-            Contract.Requires(values != null);
-            Stack<FormatChunk> stack = new Stack<FormatChunk>();
-            IEnumerator<FormatChunk> ce = chunks.GetEnumerator();
-            do
-            {
-                FormatChunk chunk;
-                if (stack.Count > 0)
-                    chunk = stack.Pop();
-                else if (!ce.MoveNext())
-                    yield break;
-                else chunk = ce.Current;
-
-                if (chunk == null) continue;
-
-                if (!chunk.IsFillPoint)
-                {
-                    yield return chunk;
-                    continue;
-                }
-
-                object value;
-                bool found = values.TryGetValue(chunk.Tag, out value);
-                if (!found)
-                    value = chunk.Value;
-
-                IEnumerable<FormatChunk> cs = value as IEnumerable<FormatChunk>;
-                if (cs != null)
-                {
-                    // Push chunks in reverse order.
-                    foreach (FormatChunk c in cs.Reverse())
-                        stack.Push(c);
-                    continue;
-                }
-
-                FormatChunk fc = value as FormatChunk;
-                if (fc != null)
-                {
-                    stack.Push(fc);
-                    continue;
-                }
-
-                if (!_isLayoutRequired &&
-                    string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
-                    _isLayoutRequired = true;
-
-                if (!found ||
-                    (chunk.Value == value))
-                {
-                    yield return chunk;
-                    continue;
-                }
-
-                yield return FormatChunk.Create(chunk, value);
-            } while (true);
+            return Resolve(
+                chunks,
+                values != null && values.Count >= 1
+                    ? chunk =>
+                    {
+                        object value;
+                        return values.TryGetValue(chunk.Tag, out value)
+                            ? new Optional<object>(value)
+                            : Optional<object>.Unassigned;
+                    }
+                    : (Func<FormatChunk, Optional<object>>) null,
+                ref isLayoutRequired);
         }
-
+        
         /// <summary>
         /// Resolves the specified chunks.
         /// </summary>
         /// <param name="chunks">The chunks.</param>
         /// <param name="resolver">The resolver.</param>
+        /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
         /// <returns></returns>
         [NotNull]
-        private IEnumerable<FormatChunk> Resolve(
+        private static List<FormatChunk> Resolve(
             [NotNull] IEnumerable<FormatChunk> chunks,
-            [NotNull] Func<FormatChunk, Optional<object>> resolver)
+            [CanBeNull] Func<FormatChunk, Optional<object>> resolver,
+            ref bool isLayoutRequired)
         {
             Contract.Requires(chunks != null);
-            Contract.Requires(resolver != null);
             Stack<FormatChunk> stack = new Stack<FormatChunk>();
             IEnumerator<FormatChunk> ce = chunks.GetEnumerator();
+            List<FormatChunk> results = new List<FormatChunk>();
             do
             {
                 FormatChunk chunk;
                 if (stack.Count > 0)
                     chunk = stack.Pop();
                 else if (!ce.MoveNext())
-                    yield break;
+                    return results;
                 else chunk = ce.Current;
 
                 if (chunk == null) continue;
 
                 if (!chunk.IsFillPoint)
                 {
-                    yield return chunk;
+                    results.Add(chunk);
                     continue;
                 }
 
-                Optional<object> resolved = resolver(chunk);
+                if (!isLayoutRequired &&
+                    string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
+                    isLayoutRequired = true;
+
+                Optional<object> resolved =
+                    resolver != null
+                        ? resolver(chunk)
+                        : Optional<object>.Unassigned;
                 object value = resolved.IsAssigned ? resolved.Value : chunk.Value;
 
                 IEnumerable<FormatChunk> cs = value as IEnumerable<FormatChunk>;
@@ -1489,18 +1536,14 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
-                if (!_isLayoutRequired &&
-                    string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
-                    _isLayoutRequired = true;
-
                 if (!resolved.IsAssigned ||
                     (chunk.Value == value))
                 {
-                    yield return chunk;
+                    results.Add(chunk);
                     continue;
                 }
 
-                yield return FormatChunk.Create(chunk, value);
+                results.Add(FormatChunk.Create(chunk, value));
             } while (true);
         }
         #endregion
@@ -1954,7 +1997,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteToConsole()
         {
-            WriteTo(_chunks, ConsoleTextWriter.Default, "G", 0);
+            if (_chunks.Count < 1) return;
+            WriteTo(_chunks, ConsoleTextWriter.Default, InitialLayout, "G", _isLayoutRequired, 0);
         }
 
         /// <summary>
@@ -1967,14 +2011,16 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
         {
-            if (format == null)
-                format = "G";
+            if (_chunks.Count < 1) return;
+            bool isLayoutRequired = _isLayoutRequired;
             WriteTo(
                 values != null && values.Length > 0
-                    ? Resolve(_chunks, values)
+                    ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 ConsoleTextWriter.Default,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 0);
         }
 
@@ -1988,14 +2034,16 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            if (format == null)
-                format = "G";
+            if (_chunks.Count < 1) return;
+            bool isLayoutRequired = _isLayoutRequired;
             WriteTo(
                 values != null && values.Count > 0
-                    ? Resolve(_chunks, values)
+                    ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 ConsoleTextWriter.Default,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 0);
         }
 
@@ -2009,14 +2057,16 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
-            if (format == null)
-                format = "G";
+            if (_chunks.Count < 1) return;
+            bool isLayoutRequired = _isLayoutRequired;
             WriteTo(
                 resolver != null
-                    ? Resolve(_chunks, resolver)
+                    ? Resolve(_chunks, resolver, ref isLayoutRequired)
                     : _chunks,
                 ConsoleTextWriter.Default,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 0);
         }
         #endregion
@@ -2028,7 +2078,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public void WriteToTrace()
         {
-            WriteTo(_chunks, TraceTextWriter.Default, "G", 0);
+            if (_chunks.Count < 1) return;
+            WriteTo(_chunks, TraceTextWriter.Default, InitialLayout, "G", _isLayoutRequired, 0);
         }
 
         /// <summary>
@@ -2041,14 +2092,16 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
         {
-            if (format == null)
-                format = "G";
+            if (_chunks.Count < 1) return;
+            bool isLayoutRequired = _isLayoutRequired;
             WriteTo(
                 values != null && values.Length > 0
-                    ? Resolve(_chunks, values)
+                    ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 TraceTextWriter.Default,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 0);
         }
 
@@ -2062,14 +2115,16 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
-            if (format == null)
-                format = "G";
+            if (_chunks.Count < 1) return;
+            bool isLayoutRequired = _isLayoutRequired;
             WriteTo(
                 values != null && values.Count > 0
-                    ? Resolve(_chunks, values)
+                    ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 TraceTextWriter.Default,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 0);
         }
 
@@ -2083,14 +2138,16 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
-            if (format == null)
-                format = "G";
+            if (_chunks.Count < 1) return;
+            bool isLayoutRequired = _isLayoutRequired;
             WriteTo(
                 resolver != null
-                    ? Resolve(_chunks, resolver)
+                    ? Resolve(_chunks, resolver, ref isLayoutRequired)
                     : _chunks,
                 TraceTextWriter.Default,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 0);
         }
         #endregion
@@ -2105,7 +2162,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public int WriteTo([CanBeNull] TextWriter writer, int position = 0)
         {
-            return writer == null || _chunks.Count < 1 ? position : WriteTo(_chunks, writer, "G", position);
+            return writer == null || _chunks.Count < 1 ? position : WriteTo(_chunks, writer, InitialLayout, "G", _isLayoutRequired, position);
         }
 
         /// <summary>
@@ -2122,14 +2179,15 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] params object[] values)
         {
             if (writer == null || _chunks.Count < 1) return 0;
-            if (format == null)
-                format = "G";
+            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 values != null && values.Length > 0
-                    ? Resolve(_chunks, values)
+                    ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 writer,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 0);
         }
 
@@ -2149,14 +2207,15 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] params object[] values)
         {
             if (writer == null || _chunks.Count < 1) return position;
-            if (format == null)
-                format = "G";
+            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 values != null && values.Length > 0
-                    ? Resolve(_chunks, values)
+                    ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 writer,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 position);
         }
 
@@ -2174,14 +2233,15 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if (writer == null || _chunks.Count < 1) return 0;
-            if (format == null)
-                format = "G";
+            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 values != null && values.Count > 0
-                    ? Resolve(_chunks, values)
+                    ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 writer,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 0);
         }
 
@@ -2201,14 +2261,15 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             if (writer == null || _chunks.Count < 1) return position;
-            if (format == null)
-                format = "G";
+            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 values != null && values.Count > 0
-                    ? Resolve(_chunks, values)
+                    ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 writer,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 position);
         }
 
@@ -2226,14 +2287,15 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             if (writer == null || _chunks.Count < 1) return 0;
-            if (format == null)
-                format = "G";
+            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 resolver != null
-                    ? Resolve(_chunks, resolver)
+                    ? Resolve(_chunks, resolver, ref isLayoutRequired)
                     : _chunks,
                 writer,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 0);
         }
 
@@ -2253,14 +2315,15 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             if (writer == null || _chunks.Count < 1) return position;
-            if (format == null)
-                format = "G";
+            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
                 resolver != null
-                    ? Resolve(_chunks, resolver)
+                    ? Resolve(_chunks, resolver, ref isLayoutRequired)
                     : _chunks,
                 writer,
+                InitialLayout,
                 format,
+                isLayoutRequired,
                 position);
         }
         #endregion
@@ -2270,31 +2333,35 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="chunks">The chunks.</param>
         /// <param name="writer">The writer.</param>
+        /// <param name="initialLayout">The initial layout.</param>
         /// <param name="format">The format.</param>
+        /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
         /// <param name="position">The position.</param>
         /// <returns>System.UInt16.</returns>
         [PublicAPI]
-        private int WriteTo(
+        private static int WriteTo(
             [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
-            [NotNull] string format,
+            [NotNull] Layout initialLayout,
+            [CanBeNull] string format,
+            bool isLayoutRequired,
             int position)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(writer != null);
-            Contract.Requires(format != null);
+            Contract.Requires(initialLayout != null);
             ISerialTextWriter serialTextWriter = writer as ISerialTextWriter;
             return serialTextWriter == null
-                ? DoWrite(chunks, writer, null, format, position)
+                ? DoWrite(chunks, writer, null, initialLayout, format, isLayoutRequired, position)
                 : serialTextWriter.Context.Invoke(
-                    () => DoWrite(chunks, writer, serialTextWriter.Writer, format, position));
+                    () => DoWrite(chunks, writer, serialTextWriter.Writer, initialLayout, format, isLayoutRequired, position));
         }
 
         /// <summary>
         /// The new line characters.
         /// </summary>
         [NotNull]
-        private static readonly char[] _newLineChars = {'\r', '\n'};
+        private static readonly char[] _newLineChars = { '\r', '\n' };
 
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
@@ -2302,25 +2369,31 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunks">The chunks.</param>
         /// <param name="writer">The writer.</param>
         /// <param name="serialWriter">The serial writer.</param>
+        /// <param name="initialLayout">The initial layout.</param>
         /// <param name="format">The format.</param>
+        /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
         /// <param name="position">The position.</param>
         /// <returns>System.UInt16.</returns>
         [PublicAPI]
-        private int DoWrite(
+        private static int DoWrite(
             [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
             [CanBeNull] TextWriter serialWriter,
-            [NotNull] string format,
+            [NotNull] Layout initialLayout,
+            [CanBeNull] string format,
+            bool isLayoutRequired,
             int position)
         {
             Contract.Requires(chunks != null);
             Contract.Requires(writer != null);
-            Contract.Requires(format != null);
-            
+            Contract.Requires(initialLayout != null);
+            if (format == null)
+                format = "g";
             bool writeTags = string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase);
-            IControllableTextWriter controller = serialWriter as IControllableTextWriter ??  writer as IControllableTextWriter;
+            IControllableTextWriter controller = serialWriter as IControllableTextWriter ??
+                                                 writer as IControllableTextWriter;
             ILayoutTextWriter layoutWriter = serialWriter as ILayoutTextWriter ?? writer as ILayoutTextWriter;
-            
+
             if (serialWriter != null) writer = serialWriter;
             IFormatProvider formatProvider = writer.FormatProvider;
 
@@ -2340,17 +2413,19 @@ namespace WebApplications.Utilities.Formatting
             }
 
             // If we require layout, run chunks through layout engine.
-            bool lr = _isLayoutRequired || writerWidth < int.MaxValue;
+            bool lr = isLayoutRequired || writerWidth < int.MaxValue;
             IEnumerable<FormatChunk> enumerable = lr
-                    ? Align(
-                        GetLines(
-                            GetLineChunks(chunks, format, writer.FormatProvider),
-                            position,
-                            writerWidth),
-                        writerWidth,
-                        autoWraps,
-                        ref position)
-                    : chunks;
+                ? Align(
+                    GetLines(
+                        GetLineChunks(chunks, format, writer.FormatProvider),
+                        initialLayout,
+                        position,
+                        writerWidth),
+                    initialLayout,
+                    writerWidth,
+                    autoWraps,
+                    ref position)
+                : chunks;
 
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
             StringBuilder sb = new StringBuilder();
@@ -2482,21 +2557,24 @@ namespace WebApplications.Utilities.Formatting
         /// Gets the lines from an enumeration of chunks.
         /// </summary>
         /// <param name="chunks">The chunks.</param>
+        /// <param name="initialLayout">The initial layout.</param>
         /// <param name="position">The position.</param>
         /// <param name="writerWidth">The writer's width.</param>
         /// <returns>IEnumerable&lt;System.String&gt;.</returns>
         [NotNull]
-        private IEnumerable<Line> GetLines(
+        private static IEnumerable<Line> GetLines(
             [NotNull] Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> chunks,
+            [NotNull] Layout initialLayout,
             int position,
             int writerWidth)
         {
             Contract.Requires(chunks != null);
+            Contract.Requires(initialLayout != null);
             Contract.Requires(chunks.Item1 != null);
             Contract.Requires(chunks.Item2 != null);
 
             // Only grab the layout at the start of each line.
-            Layout nextLayout = InitialLayout;
+            Layout nextLayout = initialLayout;
             if (nextLayout.Width.Value >= writerWidth)
                 nextLayout = nextLayout.Apply(writerWidth);
 
@@ -2589,10 +2667,10 @@ namespace WebApplications.Utilities.Formatting
 
                             if (newLayout != null)
                                 nextLayout = ReferenceEquals(newLayout, Layout.Default)
-                                    ? InitialLayout
+                                    ? initialLayout
                                     : nextLayout.Apply(newLayout);
                             else if (string.IsNullOrEmpty(controlChunk.Format))
-                                nextLayout = InitialLayout;
+                                nextLayout = initialLayout;
                             else if (Layout.TryParse(controlChunk.Format, out newLayout))
                                 nextLayout = nextLayout.Apply(newLayout);
 
@@ -2724,19 +2802,22 @@ namespace WebApplications.Utilities.Formatting
         /// Aligns the specified lines.
         /// </summary>
         /// <param name="lines">The lines.</param>
+        /// <param name="initialLayout">The initial layout.</param>
         /// <param name="writerWidth">Width of the writer.</param>
         /// <param name="autoWraps">if set to <see langword="true" /> then the writer automatically wraps on reaching width.</param>
         /// <param name="position">The position.</param>
         /// <returns>An enumeration of terminated lines, laid out for writing.</returns>
         [NotNull]
-        private IEnumerable<FormatChunk> Align(
+        private static IEnumerable<FormatChunk> Align(
             [NotNull] [InstantHandle] IEnumerable<Line> lines,
+            [NotNull] Layout initialLayout,
             int writerWidth,
             bool autoWraps,
             ref int position)
         {
             Contract.Requires(lines != null);
-            StringBuilder lb = new StringBuilder(InitialLayout.Width.Value < 1024 ? InitialLayout.Width.Value : 1024);
+            Contract.Requires(initialLayout != null);
+            StringBuilder lb = new StringBuilder(initialLayout.Width.Value < 1024 ? initialLayout.Width.Value : 1024);
             bool dontIndentFirstLine = position > 0;
 
             List<FormatChunk> chunks = new List<FormatChunk>();
