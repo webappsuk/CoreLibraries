@@ -25,6 +25,16 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+/* Master List
+         * TODO Add Context formatting
+         * TODO Improve stack trace formatting (with colour!)
+         * TODO Improve sproc format
+         * TODO Add Inner Exception formatting.
+         * TODO Fix file name builder?
+         * TODO Fix '\t' roundtripping in FormatBuilder.AppendFormat()...
+         * TODO Add FormatBuilder equality (chunk equality)?
+         */
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1536,11 +1546,10 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The verbose default format.
         /// </summary>
-        // TODO
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
-            new FormatBuilder(new Layout(120, indentSize: 22, tabStops: new[] {20, 22}))
+            new FormatBuilder(new Layout(120, 22, tabStops: new[] {20, 22}))
                 .AppendControl(FormatTagHeader)
                 .AppendFormat("{" + FormatTagMessage + "}")
                 .AppendFormat("{" + FormatTagTimeStamp + "}")
@@ -1574,7 +1583,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The full format.
         /// </summary>
-        // TODO
+        // TODO Create AllFormat
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder AllFormat =
@@ -1583,7 +1592,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The JSON object format.
         /// </summary>
-        // TODO
+        // TODO Create JSONFormat
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder JSONFormat =
@@ -1592,7 +1601,7 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// The XML Node format.
         /// </summary>
-        // TODO
+        // TODO Create XMLFormat
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder XMLFormat =
@@ -1881,7 +1890,7 @@ namespace WebApplications.Utilities.Logging
                                     chunk.Format,
                                     culture,
                                     () => Resources.LogKeys_InnerException,
-                                    "TODO");
+                                    "TODO - Handle Inner Exception GUIDs nicely");
 
                         case FormatTagContext:
                             // TODO This can be a specialized LogElement!
@@ -1892,7 +1901,7 @@ namespace WebApplications.Utilities.Logging
                                     chunk.Format,
                                     culture,
                                     () => Resources.LogKeys_Context,
-                                    "TODO");
+                                    "TODO - Handle Context nicely!");
 
                         default:
                             return Optional<object>.Unassigned;
