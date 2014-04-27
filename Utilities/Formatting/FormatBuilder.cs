@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Drawing;
@@ -42,6 +43,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
+    [TypeConverter(typeof(FormatBuilderConverter))]
     public sealed partial class FormatBuilder : IEnumerable<FormatChunk>, IFormattable
     {
         /// <summary>
