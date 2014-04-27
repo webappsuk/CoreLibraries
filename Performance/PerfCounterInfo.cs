@@ -86,9 +86,9 @@ namespace WebApplications.Utilities.Performance
         /// The default builder for writing out information.
         /// </summary>
         [NotNull]
-        private static readonly FormatBuilder _defaultBuilder = new LayoutBuilder(
-            new Layout(firstLineIndentSize: 0, indentSize: 0))
-            .AppendFormatLine("{Name} : {Value}");
+        private static readonly FormatBuilder _defaultBuilder =
+            new FormatBuilder(firstLineIndentSize: 0, indentSize: 0)
+                .AppendFormatLine("{Name}\t: {Value}");
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.

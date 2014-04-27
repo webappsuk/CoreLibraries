@@ -31,6 +31,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
@@ -512,12 +513,14 @@ namespace WebApplications.Utilities.Performance
         /// The default builder for writing out a performance category.
         /// </summary>
         [NotNull]
-        private static readonly FormatBuilder _defaultBuilder = new LayoutBuilder(
-            new Layout(
-                firstLineIndentSize: 0,
-                indentSize: 22,
-                tabStops: new ushort[] {3, 20, 22}))
-            .AppendFormat("{CategoryName}{Info:\r\n\t{Name}\t: {Value}}");
+        private static readonly FormatBuilder _defaultBuilder = new FormatBuilder(
+            firstLineIndentSize: 0,
+            indentSize: 22,
+            tabStops: new[] {3, 20, 22})
+            .AppendForegroundColor(Color.Yellow)
+            .AppendFormat("{CategoryName}")
+            .AppendResetForegroundColor()
+            .AppendFormat("{Info:\r\n\t{Name}\t: {Value}}");
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
