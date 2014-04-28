@@ -2966,8 +2966,7 @@ namespace WebApplications.Utilities.Formatting
                 }
 
                 // Calculate our finish position
-                int np = p + indent;
-                position = np < int.MaxValue ? np : int.MaxValue;
+                position = p + indent;
 
                 if (line.Terminated)
                 {
