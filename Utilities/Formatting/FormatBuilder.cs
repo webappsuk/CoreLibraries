@@ -267,10 +267,12 @@ namespace WebApplications.Utilities.Formatting
         /// Clears this instance.
         /// </summary>
         [PublicAPI]
-        public void Clear()
+        [NotNull]
+        public FormatBuilder Clear()
         {
             _chunks.Clear();
             _isLayoutRequired = InitialLayout != Layout.Default;
+            return this;
         }
 
         /// <summary>
@@ -2527,6 +2529,7 @@ namespace WebApplications.Utilities.Formatting
 
             StringBuilder word = new StringBuilder();
             bool lastCharR = false;
+            char lastCharSymb = '\0';
             foreach (FormatChunk chunk in chunks)
             {
                 // ReSharper disable once PossibleNullReferenceException
@@ -2551,15 +2554,35 @@ namespace WebApplications.Utilities.Formatting
                 {
                     if (char.IsLetterOrDigit(ch))
                     {
+                        if (lastCharSymb != '\0')
+                        {
+                            // This letter follows a non alpha numeric, so split the word, unless the character was an
+                            // apostrophe, i.e. keep "Craig's" and "I'm" as one word.
+                            if (lastCharSymb != '\'' &&
+                                word.Length > 0)
+                            {
+                                words.Add(word.ToString());
+                                word.Clear();
+                            }
+                            lastCharSymb = '\0';
+                        }
                         word.Append(ch);
                         continue;
                     }
                     if (word.Length > 0)
                     {
+                        if (lastCharSymb == '\0' &&
+                            !char.IsWhiteSpace(ch))
+                        {
+                            lastCharSymb = ch;
+                            word.Append(ch);
+                            continue;
+                        }
                         words.Add(word.ToString());
                         word.Clear();
                     }
 
+                    lastCharSymb = '\0';
                     if (ch == '\n')
                     {
                         // Skip '\n' after '\r'
@@ -2873,9 +2896,9 @@ namespace WebApplications.Utilities.Formatting
                     case Alignment.Justify:
                         indent = line.Start;
                         int remaining = line.Remaining;
-                        if (remaining > 0)
+                        if (remaining > 0 && line.LastWhiteSpace > 0)
                         {
-                            decimal space = (decimal) (line.End - line.LastWordLength - line.Start) / remaining;
+                            decimal space = (decimal) (line.LastWhiteSpace - line.Start) / remaining;
                             int o = (int) Math.Round(space / 2);
                             spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
                         }
@@ -2908,10 +2931,10 @@ namespace WebApplications.Utilities.Formatting
                         continue;
                     }
 
+                    p += chunk.Length;
                     if (!string.IsNullOrWhiteSpace(chunk))
                     {
                         lb.Append(chunk);
-                        p += chunk.Length;
                         continue;
                     }
 
@@ -2932,7 +2955,6 @@ namespace WebApplications.Utilities.Formatting
                     }
 
                     lb.Append(chunk);
-                    p += chunk.Length;
                 }
 
                 // Add any remaining spacers

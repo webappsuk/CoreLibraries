@@ -28,8 +28,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -152,19 +154,6 @@ namespace WebApplications.Utilities.Formatting
             }
 
             /// <summary>
-            /// Gets the last word's length
-            /// </summary>
-            /// <value>The last word's of the length.</value>
-            public int LastWordLength
-            {
-                get
-                {
-                    string lastWord = _chunks.LastOrDefault();
-                    return string.IsNullOrEmpty(lastWord) ? 0 : lastWord.Length;
-                }
-            }
-
-            /// <summary>
             /// Adds the specified chunk to this line.
             /// </summary>
             /// <param name="chunk">The chunk.</param>
@@ -188,6 +177,34 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(chunk.IsControl);
                 _chunks.Add(null);
                 _controls.Add(chunk);
+            }
+
+            /// <summary>
+            /// Gets the last white space location.
+            /// </summary>
+            /// <value>The last white space.</value>
+            [PublicAPI]
+            public int LastWhiteSpace
+            {
+                get
+                {
+                    bool seenWord = false;
+                    int pos = Position;
+                    int c = _chunks.Count;
+                    do
+                    {
+                        string chunk = _chunks[--c];
+                        if (chunk == null) continue;
+                        pos -= chunk.Length;
+                        if (!string.IsNullOrWhiteSpace(chunk))
+                        {
+                            seenWord = true;
+                            continue;
+                        }
+                        if (seenWord) return pos;
+                    } while (c > 0);
+                    return -1;
+                }
             }
 
             /// <summary>
@@ -277,6 +294,33 @@ namespace WebApplications.Utilities.Formatting
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
+            }
+
+            /// <summary>
+            /// Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+            public override string ToString()
+            {
+                return ToString(null);
+            }
+
+            /// <summary>
+            /// Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+            [PublicAPI]
+            [NotNull]
+            public string ToString([CanBeNull] IFormatProvider provider)
+            {
+                // Used during debugging only!
+                StringBuilder builder = new StringBuilder(End);
+                if (Start > 0)
+                    builder.Append(' ', Start);
+                foreach (var chunk in _chunks)
+                    if (chunk != null)
+                        builder.Append(chunk.ToString(provider));
+                return builder.ToString();
             }
         }
     }

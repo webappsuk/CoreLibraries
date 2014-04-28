@@ -1152,7 +1152,7 @@ namespace WebApplications.Utilities.Test.Extensions
                 "JoinNotNullOrEmpty as string extension has failed.");
             Assert.AreEqual(
                 "string1,string2",
-                stringsToJoin.JoinNotNullOrWhitespace(","),
+                stringsToJoin.JoinNotNullOrWhiteSpace(","),
                 "JoinNotNullOrWhitespace as string extension has failed.");
         }
 

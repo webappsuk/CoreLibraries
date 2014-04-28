@@ -136,7 +136,7 @@ namespace WebApplications.Utilities.Test.Formatting
                 Parallel.For(
                     0,
                     1000,
-                    new ParallelOptions() {MaxDegreeOfParallelism = 8},
+                    new ParallelOptions {MaxDegreeOfParallelism = 8},
                     i => formatTextWriter.Write(FormatResources.ButIMustExplain));
                 watch.Stop();
                 Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
@@ -164,7 +164,7 @@ namespace WebApplications.Utilities.Test.Formatting
                 Parallel.For(
                     0,
                     1000,
-                    new ParallelOptions() {MaxDegreeOfParallelism = 1},
+                    new ParallelOptions {MaxDegreeOfParallelism = 1},
                     i => new FormatBuilder(width, alignment: Alignment.Justify)
                         .Append(FormatResources.ButIMustExplain)
                         .WriteTo(formatTextWriter));
@@ -208,6 +208,27 @@ namespace WebApplications.Utilities.Test.Formatting
                 // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
                 Assert.AreEqual(1, lines.Length);
             }
+        }
+
+        [TestMethod]
+        public void TestKeepPunctuationTogether()
+        {
+            FormatBuilder builder = new FormatBuilder(11, alignment: Alignment.Justify).Append("A test line.");
+            Assert.AreEqual("A      test\r\nline.", builder.ToString());
+
+            builder = new FormatBuilder(80, alignment: Alignment.Justify)
+                .Append(
+                    "{0}\tBut I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give!£$%$£%1£$%£$%£$%£$%£$%£$ you.");
+            Assert.AreEqual("{0}     But  I must explain  to  you how  all this  mistaken  idea of denouncing\r\npleasure  and praising  pain  was born and  I will give!£$%$£%1£$%£$%£$%£$%£$%£$\r\nyou.", builder.ToString());
+
+            // Split on hyphen
+            builder = new FormatBuilder(12, alignment: Alignment.Justify).Append("A test line-split.");
+            Assert.AreEqual("A test line-\r\nsplit.", builder.ToString());
+
+            // Try to keep apostrophies together
+            builder = new FormatBuilder(12, alignment: Alignment.Justify).Append("A test line's split.");
+            Assert.AreEqual("A       test\r\nline's\r\nsplit.", builder.ToString());
+
         }
     }
 }

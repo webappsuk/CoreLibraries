@@ -1830,16 +1830,16 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Joins elements that are not null or whitespace with the separator.
+        /// Joins elements that are not null or white space with the separator.
         /// </summary>
         /// <param name="elements">The elements.</param>
         /// <param name="separator">The separator.</param>
         /// <returns>The joined elements.</returns>
         [NotNull]
-        public static string JoinNotNullOrWhitespace([NotNull] this IEnumerable<string> elements, string separator = "")
+        public static string JoinNotNullOrWhiteSpace([NotNull] this IEnumerable<string> elements, [NotNull]string separator = "")
         {
             Contract.Requires(elements != null);
-
+            Contract.Requires(separator != null);
             StringBuilder builder = new StringBuilder();
             bool any = false;
             foreach (string element in elements)
