@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
-    [TypeConverter(typeof (FormatBuilderConverter))]
+    [TypeConverter(typeof(FormatBuilderConverter))]
     public sealed partial class FormatBuilder : IEnumerable<FormatChunk>, IFormattable
     {
         /// <summary>
@@ -148,7 +148,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="tabSize">Size of the tab.</param>
         /// <param name="tabChar">The tab character.</param>
         /// <param name="alignment">The alignment.</param>
-        /// <param name="splitWords">The split words.</param>
+        /// <param name="splitLength">The split length.</param>
         /// <param name="hyphenate">The hyphenate.</param>
         /// <param name="hyphenChar">The hyphen character.</param>
         /// <param name="wrapMode">The wrap mode.</param>
@@ -163,7 +163,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
-            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<byte> splitLength = default(Optional<byte>),
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
@@ -179,7 +179,7 @@ namespace WebApplications.Utilities.Formatting
                 tabSize,
                 tabChar,
                 alignment,
-                splitWords,
+                splitLength,
                 hyphenate,
                 hyphenChar,
                 wrapMode);
@@ -201,7 +201,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="tabSize">Size of the tab.</param>
         /// <param name="tabChar">The tab character.</param>
         /// <param name="alignment">The alignment.</param>
-        /// <param name="splitWords">The split words.</param>
+        /// <param name="splitLength">The split length.</param>
         /// <param name="hyphenate">The hyphenate.</param>
         /// <param name="hyphenChar">The hyphen character.</param>
         /// <param name="wrapMode">The wrap mode.</param>
@@ -217,7 +217,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
-            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<byte> splitLength = default(Optional<byte>),
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
@@ -233,7 +233,7 @@ namespace WebApplications.Utilities.Formatting
                 tabSize,
                 tabChar,
                 alignment,
-                splitWords,
+                splitLength,
                 hyphenate,
                 hyphenChar,
                 wrapMode);
@@ -327,7 +327,7 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadOnly && readOnly)
                 return this;
 
-            FormatBuilder formatBuilder = new FormatBuilder(InitialLayout) {_isLayoutRequired = _isLayoutRequired};
+            FormatBuilder formatBuilder = new FormatBuilder(InitialLayout) { _isLayoutRequired = _isLayoutRequired };
             formatBuilder._chunks.AddRange(_chunks);
             if (readOnly)
                 formatBuilder.MakeReadOnly();
@@ -558,8 +558,8 @@ namespace WebApplications.Utilities.Formatting
             if (value != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] {FormatChunk.Create(value)},
-                        (Func<FormatChunk, Optional<object>>) null,
+                        new[] { FormatChunk.Create(value) },
+                        (Func<FormatChunk, Optional<object>>)null,
                         ref _isLayoutRequired));
             return this;
         }
@@ -658,8 +658,8 @@ namespace WebApplications.Utilities.Formatting
             if (chunk != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] {chunk},
-                        (Func<FormatChunk, Optional<object>>) null,
+                        new[] { chunk },
+                        (Func<FormatChunk, Optional<object>>)null,
                         ref _isLayoutRequired));
             return this;
         }
@@ -677,7 +677,7 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (chunks != null)
-                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>) null, ref _isLayoutRequired));
+                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>)null, ref _isLayoutRequired));
             return this;
         }
 
@@ -952,8 +952,8 @@ namespace WebApplications.Utilities.Formatting
             if (value != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] {FormatChunk.Create(value)},
-                        (Func<FormatChunk, Optional<object>>) null,
+                        new[] { FormatChunk.Create(value) },
+                        (Func<FormatChunk, Optional<object>>)null,
                         ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -1057,8 +1057,8 @@ namespace WebApplications.Utilities.Formatting
             if (chunk != null)
                 _chunks.AddRange(
                     Resolve(
-                        new[] {chunk},
-                        (Func<FormatChunk, Optional<object>>) null,
+                        new[] { chunk },
+                        (Func<FormatChunk, Optional<object>>)null,
                         ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
@@ -1077,7 +1077,7 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (chunks != null)
-                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>) null, ref _isLayoutRequired));
+                _chunks.AddRange(Resolve(chunks, (Func<FormatChunk, Optional<object>>)null, ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
             return this;
         }
@@ -1272,8 +1272,8 @@ namespace WebApplications.Utilities.Formatting
             FormatChunk chunk = FormatChunk.CreateControl(tag, alignment, format, value);
             _chunks.AddRange(
                 Resolve(
-                    new[] {chunk},
-                    (Func<FormatChunk, Optional<object>>) null,
+                    new[] { chunk },
+                    (Func<FormatChunk, Optional<object>>)null,
                     ref _isLayoutRequired));
             return this;
         }
@@ -1294,8 +1294,8 @@ namespace WebApplications.Utilities.Formatting
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             _chunks.AddRange(
                 Resolve(
-                    new[] {control},
-                    (Func<FormatChunk, Optional<object>>) null,
+                    new[] { control },
+                    (Func<FormatChunk, Optional<object>>)null,
                     ref _isLayoutRequired));
             return this;
         }
@@ -1448,7 +1448,7 @@ namespace WebApplications.Utilities.Formatting
                             ? new Optional<object>(values[index])
                             : Optional<object>.Unassigned;
                     }
-                    : (Func<FormatChunk, Optional<object>>) null,
+                    : (Func<FormatChunk, Optional<object>>)null,
                 ref isLayoutRequired);
         }
 
@@ -1477,7 +1477,7 @@ namespace WebApplications.Utilities.Formatting
                             ? new Optional<object>(value)
                             : Optional<object>.Unassigned;
                     }
-                    : (Func<FormatChunk, Optional<object>>) null,
+                    : (Func<FormatChunk, Optional<object>>)null,
                 ref isLayoutRequired);
         }
 
@@ -2382,7 +2382,7 @@ namespace WebApplications.Utilities.Formatting
         /// The new line characters.
         /// </summary>
         [NotNull]
-        private static readonly char[] _newLineChars = {'\r', '\n'};
+        private static readonly char[] _newLineChars = { '\r', '\n' };
 
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
@@ -2647,7 +2647,7 @@ namespace WebApplications.Utilities.Formatting
                     true);
             bool firstLine = false;
 
-            bool splitWords = layout.SplitWords.Value;
+            byte splitLength = layout.SplitLength.Value;
             int hyphenate = layout.Hyphenate.Value ? 1 : 0;
 
             // ReSharper disable PossibleNullReferenceException
@@ -2679,7 +2679,7 @@ namespace WebApplications.Utilities.Formatting
                         layout.Width.Value - layout.RightMarginSize.Value,
                         firstLine);
                     firstLine = false;
-                    splitWords = layout.SplitWords.Value;
+                    splitLength = layout.SplitLength.Value;
                     hyphenate = layout.Hyphenate.Value ? 1 : 0;
                     newLine = false;
                     position = 0;
@@ -2760,7 +2760,7 @@ namespace WebApplications.Utilities.Formatting
                                 start,
                                 line.End,
                                 firstLine);
-                            splitWords = layout.SplitWords.Value;
+                            splitLength = layout.SplitLength.Value;
                             hyphenate = layout.Hyphenate.Value ? 1 : 0;
                         }
                         else
@@ -2770,7 +2770,7 @@ namespace WebApplications.Utilities.Formatting
                 char c = word[0];
 
                 // Check if we're at the start of a line.
-                bool split = splitWords;
+                byte split = splitLength;
                 if (line.IsEmpty)
                 {
                     // Skip spaces at the start of a line, if we have an alignment
@@ -2782,7 +2782,7 @@ namespace WebApplications.Utilities.Formatting
                     }
 
                     // We split this word if it's too long, as we're going from the start of a line.
-                    split = true;
+                    split = 1;
                 }
 
                 // Check for newline
@@ -2827,18 +2827,23 @@ namespace WebApplications.Utilities.Formatting
                 if (word.Length <= remaining)
                 {
                     line.Add(word);
-                    {
-                        word = null;
-                        continue;
-                    }
+                    word = null;
+                    continue;
                 }
 
                 // The word is too long to fit on the current line.
-                if (split &&
-                    (remaining > hyphenate))
+                int maxSplit = word.Length - split;
+                if ((split > 0) &&
+                    (remaining >= (hyphenate + splitLength)) &&
+                    (maxSplit >= split))
                 {
                     // Split the current word to fill remaining space
                     int splitPoint = remaining - hyphenate;
+
+                    // Can only split if enough characters are left on line.
+                    if (splitPoint > maxSplit)
+                        splitPoint = maxSplit;
+                    
                     string part = word.Substring(0, splitPoint);
                     if (hyphenate > 0) part += layout.HyphenChar;
                     line.Add(part);
@@ -2898,9 +2903,9 @@ namespace WebApplications.Utilities.Formatting
                         int remaining = line.Remaining;
                         if (remaining > 0 && line.LastWhiteSpace > 0)
                         {
-                            decimal space = (decimal) (line.LastWhiteSpace - line.Start) / remaining;
-                            int o = (int) Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
+                            decimal space = (decimal)(line.LastWhiteSpace - line.Start) / remaining;
+                            int o = (int)Math.Round(space / 2);
+                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
                         }
                         break;
                     default:
@@ -3216,7 +3221,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="tabSize">Size of the tab.</param>
         /// <param name="tabChar">The tab character.</param>
         /// <param name="alignment">The alignment.</param>
-        /// <param name="splitWords">if set to <see langword="true" /> then words will split across lines.</param>
+        /// <param name="splitLength">if set to <see langword="true" /> then words will split across lines.</param>
         /// <param name="hyphenate">if set to <see langword="true" /> [hyphenate].</param>
         /// <param name="hyphenChar">The hyphenation character.</param>
         /// <param name="wrapMode">The line wrap mode.</param>
@@ -3233,7 +3238,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
-            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<byte> splitLength = default(Optional<byte>),
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
@@ -3249,7 +3254,7 @@ namespace WebApplications.Utilities.Formatting
                 tabSize,
                 tabChar,
                 alignment,
-                splitWords,
+                splitLength,
                 hyphenate,
                 hyphenChar,
                 wrapMode);

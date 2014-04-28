@@ -34,7 +34,7 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
-    /// Defines a layout for use with a <see cref="LayoutBuilder"/>.
+    /// Defines a layout for use with a <see cref="FormatBuilder"/>.
     /// </summary>
     public class Layout : IFormattable, IEquatable<Layout>
     {
@@ -52,7 +52,7 @@ namespace WebApplications.Utilities.Formatting
             4,
             ' ',
             Formatting.Alignment.Left,
-            false,
+            0,
             false,
             '-',
             LayoutWrapMode.NewLine);
@@ -119,11 +119,12 @@ namespace WebApplications.Utilities.Formatting
         public readonly Optional<Alignment> Alignment;
 
         /// <summary>
-        /// Whether to split words onto new lines, or move the entire word onto a newline.  Note if the word is longer than the line length
-        /// it will always split.
+        /// If this value is zero then words will only be split if they are longer than an entire line; otherwise the word will 
+        /// only be split at a point that has at least this number of character's on either side of the split (recommended value is 3,
+        /// to handle splitting of words with apostrophes).
         /// </summary>
         [PublicAPI]
-        public readonly Optional<bool> SplitWords;
+        public readonly Optional<byte> SplitLength;
 
         /// <summary>
         /// Whether to add a hyphen when splitting words.
@@ -162,7 +163,7 @@ namespace WebApplications.Utilities.Formatting
                        TabSize.IsAssigned &&
                        TabChar.IsAssigned &&
                        Alignment.IsAssigned &&
-                       SplitWords.IsAssigned &&
+                       SplitLength.IsAssigned &&
                        Hyphenate.IsAssigned &&
                        HyphenChar.IsAssigned &&
                        WrapMode.IsAssigned;
@@ -188,7 +189,7 @@ namespace WebApplications.Utilities.Formatting
                        !TabSize.IsAssigned &&
                        !TabChar.IsAssigned &&
                        !Alignment.IsAssigned &&
-                       !SplitWords.IsAssigned &&
+                       !SplitLength.IsAssigned &&
                        !Hyphenate.IsAssigned &&
                        !HyphenChar.IsAssigned &&
                        !WrapMode.IsAssigned;
@@ -207,7 +208,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="tabSize">Size of the tab.</param>
         /// <param name="tabChar">The tab character.</param>
         /// <param name="alignment">The alignment.</param>
-        /// <param name="splitWords">if set to <see langword="true" /> then words will split across lines.</param>
+        /// <param name="splitLength">if set to <see langword="true" /> then words will split across lines.</param>
         /// <param name="hyphenate">if set to <see langword="true" /> [hyphenate].</param>
         /// <param name="hyphenChar">The hyphenation character.</param>
         /// <param name="wrapMode">The line wrap mode.</param>
@@ -221,7 +222,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
-            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<byte> splitLength = default(Optional<byte>),
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
@@ -276,7 +277,7 @@ namespace WebApplications.Utilities.Formatting
             TabSize = tabSize;
             TabChar = tabChar;
             Alignment = alignment;
-            SplitWords = splitWords;
+            SplitLength = splitLength;
             Hyphenate = hyphenate;
             HyphenChar = hyphenChar;
             WrapMode = wrapMode;
@@ -294,7 +295,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="tabSize">Size of the tab.</param>
         /// <param name="tabChar">The tab character.</param>
         /// <param name="alignment">The alignment.</param>
-        /// <param name="splitWords">The split words.</param>
+        /// <param name="splitLength">The split length.</param>
         /// <param name="hyphenate">The hyphenate.</param>
         /// <param name="hyphenChar">The hyphen character.</param>
         /// <param name="wrapMode">The line wrap mode.</param>
@@ -313,7 +314,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
-            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<byte> splitLength = default(Optional<byte>),
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
@@ -363,10 +364,10 @@ namespace WebApplications.Utilities.Formatting
                 apply = true;
             else alignment = Alignment;
 
-            if ((splitWords.IsAssigned) &&
-                (splitWords != SplitWords))
+            if ((splitLength.IsAssigned) &&
+                (splitLength != SplitLength))
                 apply = true;
-            else splitWords = SplitWords;
+            else splitLength = SplitLength;
 
             if ((hyphenate.IsAssigned) &&
                 (hyphenate != Hyphenate))
@@ -395,7 +396,7 @@ namespace WebApplications.Utilities.Formatting
                     tabSize,
                     tabChar,
                     alignment,
-                    splitWords,
+                    splitLength,
                     hyphenate,
                     hyphenChar,
                     wrapMode)
@@ -423,7 +424,7 @@ namespace WebApplications.Utilities.Formatting
                     layout.TabSize,
                     layout.TabChar,
                     layout.Alignment,
-                    layout.SplitWords,
+                    layout.SplitLength,
                     layout.Hyphenate,
                     layout.HyphenChar,
                     layout.WrapMode);
@@ -471,7 +472,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<byte> tabSize = default(Optional<byte>);
             Optional<char> tabChar = default(Optional<char>);
             Optional<Alignment> alignment = default(Optional<Alignment>);
-            Optional<bool> splitWords = default(Optional<bool>);
+            Optional<byte> splitLength = default(Optional<byte>);
             Optional<bool> hyphenate = default(Optional<bool>);
             Optional<char> hyphenChar = default(Optional<char>);
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>);
@@ -551,10 +552,10 @@ namespace WebApplications.Utilities.Formatting
                         alignment = a;
                         break;
                     case 's':
-                        bool sb;
-                        if (!bool.TryParse(s, out sb))
+                        byte sb;
+                        if (!byte.TryParse(s, out sb))
                             return false;
-                        splitWords = sb;
+                        splitLength = sb;
                         break;
                     case 'h':
                         bool h;
@@ -588,14 +589,19 @@ namespace WebApplications.Utilities.Formatting
                 tabSize,
                 tabChar,
                 alignment,
-                splitWords,
+                splitLength,
                 hyphenate,
                 hyphenChar,
                 wrapMode);
             return true;
         }
 
-        public override bool Equals(object obj)
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns><see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
+        public override bool Equals([CanBeNull]object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -704,8 +710,8 @@ namespace WebApplications.Utilities.Formatting
                         sb.Append('T').Append(TabChar.Value).Append(';');
                     if (Alignment.IsAssigned)
                         sb.Append('a').Append(Alignment.Value).Append(';');
-                    if (SplitWords.IsAssigned)
-                        sb.Append('s').Append(SplitWords.Value).Append(';');
+                    if (SplitLength.IsAssigned)
+                        sb.Append('s').Append(SplitLength.Value).Append(';');
                     if (Hyphenate.IsAssigned)
                         sb.Append('h').Append(Hyphenate.Value).Append(';');
                     if (HyphenChar.IsAssigned)
@@ -741,8 +747,8 @@ namespace WebApplications.Utilities.Formatting
                         sb.Append("Tab Char = '").Append(TabChar.Value).Append("', ");
                     if (Alignment.IsAssigned)
                         sb.Append("Alignment = ").Append(Alignment.Value).Append(", ");
-                    if (SplitWords.IsAssigned)
-                        sb.Append("Split Words = ").Append(SplitWords.Value).Append(", ");
+                    if (SplitLength.IsAssigned)
+                        sb.Append("Split Words = ").Append(SplitLength.Value).Append(", ");
                     if (Hyphenate.IsAssigned)
                         sb.Append("Hyphenate = ").Append(Hyphenate.Value).Append(", ");
                     if (HyphenChar.IsAssigned)
@@ -771,7 +777,7 @@ namespace WebApplications.Utilities.Formatting
                    RightMarginSize.Equals(other.RightMarginSize) && IndentChar.Equals(other.IndentChar) &&
                    FirstLineIndentSize.Equals(other.FirstLineIndentSize) && TabStops.Equals(other.TabStops) &&
                    TabSize.Equals(other.TabSize) && TabChar.Equals(other.TabChar) && Alignment.Equals(other.Alignment) &&
-                   SplitWords.Equals(other.SplitWords) && Hyphenate.Equals(other.Hyphenate) &&
+                   SplitLength.Equals(other.SplitLength) && Hyphenate.Equals(other.Hyphenate) &&
                    HyphenChar.Equals(other.HyphenChar) && WrapMode.Equals(other.WrapMode);
         }
 
@@ -792,7 +798,7 @@ namespace WebApplications.Utilities.Formatting
                 hashCode = (hashCode * 397) ^ TabSize.GetHashCode();
                 hashCode = (hashCode * 397) ^ TabChar.GetHashCode();
                 hashCode = (hashCode * 397) ^ Alignment.GetHashCode();
-                hashCode = (hashCode * 397) ^ SplitWords.GetHashCode();
+                hashCode = (hashCode * 397) ^ SplitLength.GetHashCode();
                 hashCode = (hashCode * 397) ^ Hyphenate.GetHashCode();
                 hashCode = (hashCode * 397) ^ HyphenChar.GetHashCode();
                 hashCode = (hashCode * 397) ^ WrapMode.GetHashCode();

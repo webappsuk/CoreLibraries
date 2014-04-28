@@ -228,7 +228,6 @@ namespace WebApplications.Utilities.Test.Formatting
             // Try to keep apostrophies together
             builder = new FormatBuilder(12, alignment: Alignment.Justify).Append("A test line's split.");
             Assert.AreEqual("A       test\r\nline's\r\nsplit.", builder.ToString());
-
         }
     }
 }

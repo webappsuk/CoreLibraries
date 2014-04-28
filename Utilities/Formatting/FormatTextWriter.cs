@@ -132,7 +132,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="tabSize">Size of the tab.</param>
         /// <param name="tabChar">The tab character.</param>
         /// <param name="alignment">The alignment.</param>
-        /// <param name="splitWords">The split words.</param>
+        /// <param name="splitLength">The split length.</param>
         /// <param name="hyphenate">The hyphenate.</param>
         /// <param name="hyphenChar">The hyphen character.</param>
         /// <param name="wrapMode">The wrap mode.</param>
@@ -148,7 +148,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
-            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<byte> splitLength = default(Optional<byte>),
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>),
@@ -165,7 +165,7 @@ namespace WebApplications.Utilities.Formatting
                            tabSize,
                            tabChar,
                            alignment,
-                           splitWords,
+                           splitLength,
                            hyphenate,
                            hyphenChar,
                            wrapMode),
@@ -204,7 +204,7 @@ namespace WebApplications.Utilities.Formatting
                             newLayout.TabSize,
                             newLayout.TabChar,
                             newLayout.Alignment,
-                            newLayout.SplitWords,
+                            newLayout.SplitLength,
                             newLayout.Hyphenate,
                             newLayout.HyphenChar,
                             newLayout.WrapMode));
@@ -224,7 +224,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="tabSize">Size of the tab.</param>
         /// <param name="tabChar">The tab character.</param>
         /// <param name="alignment">The alignment.</param>
-        /// <param name="splitWords">if set to <see langword="true" /> then words will split across lines.</param>
+        /// <param name="splitLength">if set to <see langword="true" /> then words will split across lines.</param>
         /// <param name="hyphenate">if set to <see langword="true" /> [hyphenate].</param>
         /// <param name="hyphenChar">The hyphenation character.</param>
         /// <param name="wrapMode">The line wrap mode.</param>
@@ -241,7 +241,7 @@ namespace WebApplications.Utilities.Formatting
             Optional<byte> tabSize = default(Optional<byte>),
             Optional<char> tabChar = default(Optional<char>),
             Optional<Alignment> alignment = default(Optional<Alignment>),
-            Optional<bool> splitWords = default(Optional<bool>),
+            Optional<byte> splitLength = default(Optional<byte>),
             Optional<bool> hyphenate = default(Optional<bool>),
             Optional<char> hyphenChar = default(Optional<char>),
             Optional<LayoutWrapMode> wrapMode = default(Optional<LayoutWrapMode>))
@@ -255,7 +255,7 @@ namespace WebApplications.Utilities.Formatting
                 !tabSize.IsAssigned &&
                 !tabChar.IsAssigned &&
                 !alignment.IsAssigned &&
-                !splitWords.IsAssigned &&
+                !splitLength.IsAssigned &&
                 !hyphenate.IsAssigned &&
                 !hyphenChar.IsAssigned &&
                 !wrapMode.IsAssigned)
@@ -278,7 +278,7 @@ namespace WebApplications.Utilities.Formatting
                                 tabSize,
                                 tabChar,
                                 alignment,
-                                splitWords,
+                                splitLength,
                                 hyphenate,
                                 hyphenChar,
                                 wrapMode));
