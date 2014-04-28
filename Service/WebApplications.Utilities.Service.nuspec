@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://nuget.webappuk.com/license.htm</licenseUrl>
+    <iconUrl>https://nuget.webappuk.com/nuget.png</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <summary>Service utilities for .NET.</summary>
+    <description>$description$</description>
+    <tags>Utility Utilities Service</tags>
+    <references>
+      <group targetFramework="net45">
+        <reference file="WebApplications.Utilities.Service.dll" />
+      </group>
+    </references>
+  </metadata>
+  <files>
+    <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
+  </files>
+</package>
