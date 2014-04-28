@@ -96,9 +96,9 @@ namespace WebApplications.Utilities.Test.Formatting
                 .Append("A\tTab Stop\tAnother");
 
             int position = 0;
-            Assert.AreEqual(" A    Tab Stop      Another", builder.ToString(ref position));
+            Assert.AreEqual(" A    Tab Stop      Another", builder.ToString(null, ref position));
             Assert.AreEqual(27, position);
-            Assert.AreEqual("A  Tab Stop  Another", builder.ToString(ref position));
+            Assert.AreEqual("A  Tab Stop  Another", builder.ToString(null, ref position));
             Assert.AreEqual(47, position);
         }
 

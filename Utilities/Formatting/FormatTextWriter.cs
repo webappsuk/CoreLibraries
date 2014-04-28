@@ -415,7 +415,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -427,7 +427,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -439,7 +439,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(buffer);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -451,7 +451,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -463,7 +463,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -475,7 +475,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -487,7 +487,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -499,7 +499,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -511,7 +511,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -523,7 +523,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -535,7 +535,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -547,7 +547,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -561,7 +561,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(format != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(format, arg0);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -576,7 +576,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(arg != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(format, arg);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -591,7 +591,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(buffer != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(buffer, index, count);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -606,7 +606,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(format != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(format, arg0, arg1);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -626,7 +626,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(format != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(format, arg0, arg1, arg2);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -637,7 +637,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine();
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -649,7 +649,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -661,7 +661,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -673,7 +673,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(buffer);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -685,7 +685,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -697,7 +697,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -709,7 +709,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -721,7 +721,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -733,7 +733,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -745,7 +745,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -757,7 +757,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -769,7 +769,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -781,7 +781,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -795,7 +795,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(format != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(format, arg0);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -810,7 +810,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(arg != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(format, arg);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -825,7 +825,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(buffer != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(buffer, index, count);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -840,7 +840,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(format != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(format, arg0, arg1);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -860,7 +860,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(format != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(format, arg0, arg1, arg2);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
             }
 
@@ -876,7 +876,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
                 return TaskResult.Completed;
             }
@@ -896,7 +896,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(buffer != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.Append(buffer, index, count);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
                 return TaskResult.Completed;
             }
@@ -913,7 +913,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormat(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
                 return TaskResult.Completed;
             }
@@ -928,7 +928,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine();
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
                 return TaskResult.Completed;
             }
@@ -945,7 +945,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
                 return TaskResult.Completed;
             }
@@ -965,7 +965,7 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Requires(buffer != null);
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendLine(buffer, index, count);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
                 return TaskResult.Completed;
             }
@@ -982,7 +982,7 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Assert(Builder.IsEmpty);
                 Builder.AppendFormatLine(value);
-                Position = Builder.WriteTo(_writer, Position);
+                Position = Builder.WriteTo(_writer, null, Position);
                 Builder.Clear();
                 return TaskResult.Completed;
             }

@@ -1588,16 +1588,17 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="values">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] params object[] values)
+        public string ToString([CanBeNull]Layout layout, ref int position, [CanBeNull] params object[] values)
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, position, null, values);
+                position = WriteTo(writer, layout, position, null, values);
                 return writer.ToString();
             }
         }
@@ -1623,16 +1624,17 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="values">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(ref int position, [CanBeNull] IReadOnlyDictionary<string, object> values)
+        public string ToString([CanBeNull]Layout layout, ref int position, [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, position, null, values);
+                position = WriteTo(writer, layout, position, null, values);
                 return writer.ToString();
             }
         }
@@ -1658,18 +1660,20 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="resolver">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
         public string ToString(
+            [CanBeNull]Layout layout, 
             ref int position,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, position, null, resolver);
+                position = WriteTo(writer, layout, position, null, resolver);
                 return writer.ToString();
             }
         }
@@ -1696,6 +1700,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
@@ -1703,13 +1708,14 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
+            [CanBeNull]Layout layout, 
             ref int position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, position, null, values);
+                position = WriteTo(writer, layout, position, null, values);
                 return writer.ToString();
             }
         }
@@ -1738,6 +1744,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
@@ -1745,13 +1752,14 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
+            [CanBeNull]Layout layout, 
             ref int position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, position, null, values);
+                position = WriteTo(writer, layout, position, null, values);
                 return writer.ToString();
             }
         }
@@ -1780,6 +1788,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="resolver">The values.</param>
@@ -1787,13 +1796,14 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
+            [CanBeNull]Layout layout, 
             ref int position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, position, null, resolver);
+                position = WriteTo(writer, layout, position, null, resolver);
                 return writer.ToString();
             }
         }
@@ -1823,6 +1833,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="format">The format.
         /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
@@ -1831,13 +1842,14 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
+            [CanBeNull]Layout layout, 
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider = null)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, position, format);
+                position = WriteTo(writer, layout, position, format);
                 return writer.ToString();
             }
         }
@@ -1867,6 +1879,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="format">The format.
         /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
@@ -1876,6 +1889,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
+            [CanBeNull]Layout layout, 
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -1883,7 +1897,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, position, format, values);
+                position = WriteTo(writer, layout, position, format, values);
                 return writer.ToString();
             }
         }
@@ -1920,6 +1934,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="format">The format.
         /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
@@ -1929,6 +1944,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
+            [CanBeNull]Layout layout, 
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -1936,7 +1952,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, position, format, values);
+                position = WriteTo(writer, layout, position, format, values);
                 return writer.ToString();
             }
         }
@@ -1973,6 +1989,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="format">The format.
         /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
@@ -1982,6 +1999,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
+            [CanBeNull]Layout layout, 
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -1989,7 +2007,7 @@ namespace WebApplications.Utilities.Formatting
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, position, format, resolver);
+                position = WriteTo(writer, layout, position, format, resolver);
                 return writer.ToString();
             }
         }
@@ -2163,13 +2181,20 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="position">The start position.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
-        public int WriteTo([CanBeNull] TextWriter writer, int position = 0)
+        public int WriteTo([CanBeNull] TextWriter writer, [CanBeNull] Layout layout = null, int position = 0)
         {
             return writer == null || _chunks.Count < 1
                 ? position
-                : WriteTo(_chunks, writer, InitialLayout, "G", _isLayoutRequired, position);
+                : WriteTo(
+                    _chunks,
+                    writer,
+                    layout == null ? InitialLayout : InitialLayout.Apply(layout),
+                    "G",
+                    _isLayoutRequired,
+                    position);
         }
 
         /// <summary>
@@ -2203,6 +2228,7 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The start position.</param>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
@@ -2210,6 +2236,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
+            [CanBeNull] Layout layout,
             int position,
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
@@ -2222,7 +2249,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 writer,
-                InitialLayout,
+                layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
                 isLayoutRequired,
                 position);
@@ -2259,6 +2286,7 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The start position.</param>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
@@ -2266,6 +2294,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
+            [CanBeNull] Layout layout,
             int position,
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
@@ -2278,7 +2307,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, values, ref isLayoutRequired)
                     : _chunks,
                 writer,
-                InitialLayout,
+                layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
                 isLayoutRequired,
                 position);
@@ -2315,6 +2344,7 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The start position.</param>
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
@@ -2322,6 +2352,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
+            [CanBeNull] Layout layout,
             int position,
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<FormatChunk, Optional<object>> resolver)
@@ -2334,7 +2365,7 @@ namespace WebApplications.Utilities.Formatting
                     ? Resolve(_chunks, resolver, ref isLayoutRequired)
                     : _chunks,
                 writer,
-                InitialLayout,
+                layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
                 isLayoutRequired,
                 position);
