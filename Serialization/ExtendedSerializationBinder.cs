@@ -76,7 +76,7 @@ namespace WebApplications.Utilities.Serialization
         /// <seealso cref="System.Reflection.AssemblyName"/>
         public override Type BindToType(string assemblyName, string typeName)
         {
-            return _typeMap.GetOrAdd(Reflection.SimplifiedTypeFullName(new[] {typeName, assemblyName}.JoinNotNullOrWhitespace(",")),
+            return _typeMap.GetOrAdd(Reflection.SimplifiedTypeFullName(new[] {typeName, assemblyName}.JoinNotNullOrWhiteSpace(",")),
                                      sn => Type.GetType(sn));
         }
 
@@ -108,7 +108,7 @@ namespace WebApplications.Utilities.Serialization
         [UsedImplicitly]
         public static void MapType([NotNull] string assemblyName, [NotNull] string typeName, [NotNull] Type newType)
         {
-            _typeMap.AddOrUpdate(Reflection.SimplifiedTypeFullName(new[] {typeName, assemblyName}.JoinNotNullOrWhitespace(",")), newType,
+            _typeMap.AddOrUpdate(Reflection.SimplifiedTypeFullName(new[] {typeName, assemblyName}.JoinNotNullOrWhiteSpace(",")), newType,
                                  (n, t) => newType);
         }
     }
