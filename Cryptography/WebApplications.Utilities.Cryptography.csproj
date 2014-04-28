@@ -125,15 +125,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-<<<<<<< HEAD
     <Reference Include="WebApplications.Utilities, Version=5.0.5227.21029, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\WebApplications.Utilities.5.0.5227.21029\lib\net45\WebApplications.Utilities.dll</HintPath>
-=======
-    <Reference Include="WebApplications.Utilities, Version=5.0.5226.18727, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.5.0.5226.18727\lib\net45\WebApplications.Utilities.dll</HintPath>
->>>>>>> 9a4aa2977b81ba2ba17c9cf1d1c5acd31fe5de51
     </Reference>
   </ItemGroup>
   <ItemGroup>
