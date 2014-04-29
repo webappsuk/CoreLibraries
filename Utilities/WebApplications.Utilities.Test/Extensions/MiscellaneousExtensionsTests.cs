@@ -917,9 +917,9 @@ namespace WebApplications.Utilities.Test.Extensions
             int b = Random.Next(0, 256);
             const string formatString = "Test string to format with invalid format: {1:z} and {0}";
             Assert.AreEqual(
-                formatString,
+                string.Format("Test string to format with invalid format: {1} and {0}", a,b),
                 formatString.SafeFormat(a, b),
-                "SafeFormat should silently return the string if the string is not a valid format string.");
+                "SafeFormat should fall back to the default format if the format is invalid.");
         }
 
         [TestMethod]

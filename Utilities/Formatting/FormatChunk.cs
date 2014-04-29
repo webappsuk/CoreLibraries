@@ -368,8 +368,26 @@ namespace WebApplications.Utilities.Formatting
                         if (IsResolved && Value != null)
                         {
                             // Get the formattable value (if any).
-                            IFormattable fc = Value as IFormattable;
-                            value = fc != null ? fc.ToString(Format, formatProvider) : Value.ToString();
+                            if (!string.IsNullOrEmpty(Format))
+                            {
+                                IFormattable fc = Value as IFormattable;
+                                if (fc != null)
+                                {
+                                    try
+                                    {
+                                        value = fc.ToString(Format, formatProvider);
+                                    }
+                                    catch
+                                    {
+                                        // Just use normal ToString() as format was invalid.
+                                        value = Value.ToString();
+                                    }
+                                }
+                                else
+                                    value = Value.ToString();
+                            }
+                            else
+                                value = Value.ToString();
                         }
                         else
                             value = string.Empty;
@@ -397,8 +415,26 @@ namespace WebApplications.Utilities.Formatting
                         if (IsResolved && Value != null)
                         {
                             // Get the formattable value (if any).
-                            IFormattable fc = Value as IFormattable;
-                            value = fc != null ? fc.ToString(Format, formatProvider) : Value.ToString();
+                            if (!string.IsNullOrEmpty(Format))
+                            {
+                                IFormattable fc = Value as IFormattable;
+                                if (fc != null)
+                                {
+                                    try
+                                    {
+                                        value = fc.ToString(Format, formatProvider);
+                                    }
+                                    catch
+                                    {
+                                        // Just use normal ToString() as format was invalid.
+                                        value = Value.ToString();
+                                    }
+                                }
+                                else
+                                    value = Value.ToString();
+                            }
+                            else
+                                value = Value.ToString();
                         }
                         else
                             value = string.Empty;
@@ -413,8 +449,26 @@ namespace WebApplications.Utilities.Formatting
                     if (IsResolved && Value != null)
                     {
                         // Get the formattable value (if any).
-                        IFormattable fc = Value as IFormattable;
-                        value = fc != null ? fc.ToString(Format, formatProvider) : Value.ToString();
+                        if (!string.IsNullOrEmpty(Format))
+                        {
+                            IFormattable fc = Value as IFormattable;
+                            if (fc != null)
+                            {
+                                try
+                                {
+                                    value = fc.ToString(Format, formatProvider);
+                                }
+                                catch
+                                {
+                                    // Just use normal ToString() as format was invalid.
+                                    value = Value.ToString();
+                                }
+                            }
+                            else
+                                value = Value.ToString();
+                        }
+                        else
+                            value = Value.ToString();
                     }
                     else
                         value = string.Empty;
@@ -443,8 +497,26 @@ namespace WebApplications.Utilities.Formatting
                         if (IsResolved && Value != null)
                         {
                             // Get the formattable value (if any).
-                            IFormattable fc = Value as IFormattable;
-                            value = fc != null ? fc.ToString(Format, formatProvider) : Value.ToString();
+                            if (!string.IsNullOrEmpty(Format))
+                            {
+                                IFormattable fc = Value as IFormattable;
+                                if (fc != null)
+                                {
+                                    try
+                                    {
+                                        value = fc.ToString(Format, formatProvider);
+                                    }
+                                    catch
+                                    {
+                                        // Just use normal ToString() as format was invalid.
+                                        value = Value.ToString();
+                                    }
+                                }
+                                else 
+                                    value = Value.ToString();
+                            }
+                            else
+                                value = Value.ToString();
                         }
                         else
                             value = string.Empty;
