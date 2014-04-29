@@ -139,7 +139,7 @@ namespace WebApplications.Utilities.Formatting
 
                     if (String.IsNullOrWhiteSpace(chunk.Format))
                         writer.ResetForegroundColor();
-                    else if (chunk.Value is Color)
+                    else if (chunk.Value.IsAssigned && chunk.Value.Value is Color)
                         writer.SetForegroundColor((Color) chunk.Value);
                     else
                     {
@@ -153,7 +153,7 @@ namespace WebApplications.Utilities.Formatting
 
                     if (String.IsNullOrWhiteSpace(chunk.Format))
                         writer.ResetBackgroundColor();
-                    else if (chunk.Value is Color)
+                    else if (chunk.Value.IsAssigned && chunk.Value.Value is Color)
                         writer.SetBackgroundColor((Color) chunk.Value);
                     else
                     {

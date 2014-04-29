@@ -37,10 +37,26 @@ namespace WebApplications.Utilities.Formatting
     public class FormatChunk : IEquatable<FormatChunk>, IFormattable
     {
         /// <summary>
-        /// The empty format chunk.
+        /// The unassigned format chunk.
         /// </summary>
         [NotNull]
-        public static readonly FormatChunk Empty = new FormatChunk(null, null, null, string.Empty, false);
+        public static readonly FormatChunk Unassigned = new FormatChunk(
+            null,
+            null,
+            null,
+            default(Optional<object>),
+            false);
+
+        /// <summary>
+        /// The empty string format chunk.
+        /// </summary>
+        [NotNull]
+        public static readonly FormatChunk Empty = new FormatChunk(
+            null,
+            null,
+            null,
+            new Optional<object>(string.Empty),
+            false);
 
         /// <summary>
         /// Control chunks are never written out when you call <see cref="ToString()"/>, but can be used by consumers of a <see cref="FormatBuilder"/> to
@@ -71,17 +87,27 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// The chunk Value, if any.
         /// </summary>
-        [CanBeNull]
         [PublicAPI]
-        public readonly object Value;
+        public readonly Optional<object> Value;
 
         /// <summary>
         /// Gets a value indicating whether this instance is a fill point.
         /// </summary>
         /// <value><see langword="true" /> if this instance is a fill point; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
         public bool IsFillPoint
         {
             get { return Tag != null; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is resolved.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is resolved; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
+        public bool IsResolved
+        {
+            get { return Value.IsAssigned; }
         }
 
         /// <summary>
@@ -90,7 +116,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="tag"></param>
         /// <param name="alignment"></param>
         /// <param name="format"></param>
-        /// <param name="value">The Value.</param>
+        /// <param name="value">The value.</param>
         /// <param name="isControl">if set to <see langword="true" /> this is a hidden control chunk.</param>
         /// <remarks>This does not chunk the Value, however if the value is a string that starts and ends with the
         /// <see cref="FormatBuilder.OpenChar" /> and
@@ -99,7 +125,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string tag,
             [CanBeNull] int? alignment,
             [CanBeNull] string format,
-            [CanBeNull] object value,
+            Optional<object> value,
             bool isControl)
         {
             Contract.Requires(tag != null || value != null);
@@ -120,11 +146,13 @@ namespace WebApplications.Utilities.Formatting
         /// <see cref="FormatBuilder.CloseChar"/> characters, then it splits out the relevant parts.</remarks>
         [NotNull]
         [PublicAPI]
-        public static FormatChunk Create([CanBeNull] object value)
+        public static FormatChunk Create(Optional<object> value)
         {
-            if (value == null) return Empty;
-            string str = value as string;
-            if (str == null) return new FormatChunk(null, null, null, value, false);
+            if (!value.IsAssigned) return Unassigned;
+
+            string str = value.Value as string;
+            if (str == null)
+                return new FormatChunk(null, null, null, value, false);
 
             if (str.Length < 1) return Empty;
 
@@ -132,7 +160,8 @@ namespace WebApplications.Utilities.Formatting
             // Is this a fill point?
             if (end < 1 ||
                 str[0] != FormatBuilder.OpenChar ||
-                str[end] != FormatBuilder.CloseChar) return new FormatChunk(null, null, null, str, false);
+                str[end] != FormatBuilder.CloseChar)
+                return new FormatChunk(null, null, null, value, false);
 
             // Find alignment splitter and format splitter characters
             int al = str.IndexOf(FormatBuilder.AlignmentChar);
@@ -147,7 +176,8 @@ namespace WebApplications.Utilities.Formatting
             {
                 sp++;
                 int flen = end - sp;
-                if (flen < 1) return new FormatChunk(null, null, null, str, false);
+                if (flen < 1)
+                    return new FormatChunk(null, null, null, value, false);
                 format = str.Substring(sp, end - sp);
                 end = sp - 1;
             }
@@ -158,12 +188,12 @@ namespace WebApplications.Utilities.Formatting
                 al++;
                 int allen = end - al;
                 if (allen < 1)
-                    return new FormatChunk(null, null, null, str, false);
+                    return new FormatChunk(null, null, null, value, false);
 
                 string alstr = str.Substring(al, allen).Trim();
                 int a;
                 if (!int.TryParse(alstr, out a))
-                    return new FormatChunk(null, null, null, str, false);
+                    return new FormatChunk(null, null, null, value, false);
                 alignment = a;
                 end = al - 1;
             }
@@ -174,13 +204,13 @@ namespace WebApplications.Utilities.Formatting
             if (str[1] == FormatBuilder.ControlChar)
             {
                 isControl = true;
-                if (end < 3) return new FormatChunk(null, null, null, str, false);
+                if (end < 3) return new FormatChunk(null, null, null, value, false);
             }
             else
                 isControl = false;
             tag = str.Substring(1, end - 1);
 
-            return new FormatChunk(tag, alignment, format, null, isControl);
+            return new FormatChunk(tag, alignment, format, Optional<object>.Unassigned, isControl);
         }
 
         /// <summary>
@@ -191,7 +221,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns></returns>
         [NotNull]
         [PublicAPI]
-        public static FormatChunk Create([NotNull] FormatChunk chunk, [CanBeNull] object value)
+        public static FormatChunk Create([NotNull] FormatChunk chunk, Optional<object> value)
         {
             Contract.Requires(chunk != null);
             return new FormatChunk(chunk.Tag, chunk.Alignment, chunk.Format, value, chunk.IsControl);
@@ -216,10 +246,10 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string tag,
             [CanBeNull] int? alignment = null,
             [CanBeNull] string format = null,
-            [CanBeNull] object value = null)
+            Optional<object> value = default(Optional<object>))
         {
             return string.IsNullOrEmpty(tag)
-                ? Empty
+                ? Unassigned
                 : new FormatChunk(
                     tag[0] == FormatBuilder.ControlChar ? tag : FormatBuilder.ControlChar + tag,
                     alignment,
@@ -238,7 +268,7 @@ namespace WebApplications.Utilities.Formatting
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((FormatChunk) obj);
+            return Equals((FormatChunk)obj);
         }
 
         /// <summary>
@@ -315,14 +345,14 @@ namespace WebApplications.Utilities.Formatting
             bool pad;
             string value;
 
-            IFormattable fv = Value as IFormattable;
             switch (format.ToLowerInvariant())
             {
-                    // Always output's the tag if the chunk has one, otherwise output's the value as normal
+                // Always output's the tag if the chunk has one, otherwise output's the value as normal
                 case "f":
+                    // We don't pad format strings
+                    pad = false;
                     if (Tag != null)
                     {
-                        pad = false;
                         value = string.Format(
                             "{{{0}{1}{2}}}",
                             Tag,
@@ -334,14 +364,21 @@ namespace WebApplications.Utilities.Formatting
                     else
                     {
                         Contract.Assert(Value != null);
-                        pad = true;
-                        value = fv != null ? fv.ToString(Format, formatProvider) : Value.ToString();
+                        if (Value.IsAssigned && Value.Value != null)
+                        {
+                            // Get the formattable value (if any).
+                            IFormattable fc = Value.Value as IFormattable;
+                            value = fc != null ? fc.ToString(Format, formatProvider) : Value.Value.ToString();
+                        }
+                        else
+                            value = string.Empty;
                     }
                     break;
 
-                    // Always output's the control tags, otherwise output the value as normal
+                // Always output's the control tags, otherwise output the value as normal
                 case "c":
-                    if (Tag != null)
+                    if (Tag != null &&
+                        (IsControl || !Value.IsAssigned))
                     {
                         pad = false;
                         value = string.Format(
@@ -356,25 +393,38 @@ namespace WebApplications.Utilities.Formatting
                     {
                         Contract.Assert(Value != null);
                         pad = true;
-                        value = fv != null ? fv.ToString(Format, formatProvider) : Value.ToString();
+                        if (Value.IsAssigned && Value.Value != null)
+                        {
+                            // Get the formattable value (if any).
+                            IFormattable fc = Value.Value as IFormattable;
+                            value = fc != null ? fc.ToString(Format, formatProvider) : Value.Value.ToString();
+                        }
+                        else
+                            value = string.Empty;
                     }
                     break;
 
-                    // Should output the value as normal, but treats unresolved tags as an empty string value
+                // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
                     if (IsControl) return string.Empty;
 
                     pad = true;
-                    value = Value == null
-                        ? null
-                        : (fv != null ? fv.ToString(Format, formatProvider) : Value.ToString());
+                    if (Value.IsAssigned && Value.Value != null)
+                    {
+                        // Get the formattable value (if any).
+                        IFormattable fc = Value.Value as IFormattable;
+                        value = fc != null ? fc.ToString(Format, formatProvider) : Value.Value.ToString();
+                    }
+                    else
+                        value = string.Empty;
                     break;
 
-                    // Outputs the value if set, otherwise the format tag. Control tags ignored
+                // Outputs the value if set, otherwise the format tag. Control tags ignored
                 default:
                     if (IsControl) return string.Empty;
 
-                    if (Value == null)
+                    if (!Value.IsAssigned && 
+                        Tag != null)
                     {
                         Contract.Assert(Tag != null);
                         pad = false;
@@ -388,14 +438,18 @@ namespace WebApplications.Utilities.Formatting
                     }
                     else
                     {
-                        pad = true;
-                        value = fv != null ? fv.ToString(Format, formatProvider) : Value.ToString();
+                        pad = true; 
+                        if (Value.IsAssigned && Value.Value != null)
+                        {
+                            // Get the formattable value (if any).
+                            IFormattable fc = Value.Value as IFormattable;
+                            value = fc != null ? fc.ToString(Format, formatProvider) : Value.Value.ToString();
+                        }
+                        else
+                            value = string.Empty;
                     }
                     break;
             }
-
-            if (value == null)
-                value = string.Empty;
 
             if (pad && Alignment != null)
                 return Alignment.Value > 0

@@ -155,21 +155,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("F"));
             Assert.AreEqual(
                 "A nested tag",
-                builder.ToString(
-                    c =>
-                    {
-                        // This demonstrates how we can perform tag nesting.
-                        if (!string.Equals(c.Tag, "t"))
-                            return c.Value;
-
-                        // If the tag doesn't have a format, we output the value.
-                        if (string.IsNullOrEmpty(c.Format))
-                            return "tag";
-
-                        // Otherwise we output a format builder for the format, which will itself
-                        // be resolved with this resolver.
-                        return new FormatBuilder().AppendFormat(c.Format);
-                    }));
+                builder.ToString(tag => string.Equals(tag, "t") ? "tag" : Optional<object>.Unassigned));
         }
 
         [TestMethod]
@@ -223,7 +209,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestResolver()
         {
             FormatBuilder builder = new FormatBuilder("{A}{B}{C}");
-            builder.Resolve(chunk => chunk.Tag == "B" ? 5 : (object) null);
+            builder.Resolve(tag => tag == "B" ? 5 : (object) null);
             Assert.AreEqual("{A}5{C}", builder.ToString());
         }
 
@@ -231,21 +217,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestNestedResolver()
         {
             FormatBuilder builder = new FormatBuilder("{t:A {t:nested {t}}}");
-            builder.Resolve(
-                c =>
-                {
-                    // This demonstrates how we can perform tag nesting.
-                    if (!string.Equals(c.Tag, "t"))
-                        return c.Value;
-
-                    // If the tag doesn't have a format, we output the value.
-                    if (string.IsNullOrEmpty(c.Format))
-                        return "tag";
-
-                    // Otherwise we output a format builder for the format, which will itself
-                    // be resolved with this resolver.
-                    return new FormatBuilder().AppendFormat(c.Format);
-                });
+            builder.Resolve(tag => string.Equals(tag, "t") ? "tag" : Optional<object>.Unassigned);
             Assert.AreEqual("A nested tag", builder.ToString());
         }
     }

@@ -256,10 +256,9 @@ namespace WebApplications.Utilities.Formatting
                 // Only support tabstop on left/non alignments
                 if (alignment.IsAssigned &&
                     tabStops.IsAssigned)
-                    tabStops = (!tabStops.IsNull) &&
+                    tabStops = (tabStops.Value != null) &&
                                ((alignment.Value == Formatting.Alignment.Left) ||
                                 (alignment.Value == Formatting.Alignment.None))
-                        // ReSharper disable once AssignNullToNotNullAttribute
                         ? tabStops.Value
                             .Where(t => t > 0 && t < width.Value)
                             .OrderBy(t => t)
