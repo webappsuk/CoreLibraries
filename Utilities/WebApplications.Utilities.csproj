@@ -205,10 +205,12 @@
     <Compile Include="Formatting\FormattedStringWriter.cs" />
     <Compile Include="Formatting\IColoredTextWriter.cs" />
     <Compile Include="Formatting\IControllableTextWriter.cs" />
+    <Compile Include="Formatting\IFormattableWrite.cs" />
     <Compile Include="Formatting\ILayoutTextWriter.cs" />
     <Compile Include="Formatting\ISerialTextWriter.cs" />
     <Compile Include="Formatting\FormatBuilderLine.cs" />
     <Compile Include="Formatting\ITextWriter.cs" />
+    <Compile Include="Formatting\IWritable.cs" />
     <Compile Include="Formatting\Layout.cs" />
     <Compile Include="Formatting\LayoutWrapMode.cs" />
     <Compile Include="Formatting\FormatTextWriter.cs" />

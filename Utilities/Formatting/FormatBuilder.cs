@@ -43,7 +43,7 @@ namespace WebApplications.Utilities.Formatting
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
     [TypeConverter(typeof(FormatBuilderConverter))]
-    public sealed partial class FormatBuilder : IEnumerable<FormatChunk>, IFormattable, IEquatable<FormatBuilder>
+    public sealed partial class FormatBuilder : IEnumerable<FormatChunk>, IFormattable, IWriteable, IEquatable<FormatBuilder>
     {
         /// <summary>
         /// The first character of a fill point.
@@ -2325,6 +2325,29 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
+        /// <returns>The end position.</returns>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public void WriteTo(
+            [CanBeNull] TextWriter writer, string format)
+        {
+            if (writer == null ||
+                _chunks.Count < 1) return;
+            bool isLayoutRequired = _isLayoutRequired;
+            WriteTo(
+                _chunks,
+                writer,
+                InitialLayout,
+                format,
+                isLayoutRequired,
+                0);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
@@ -2582,19 +2605,100 @@ namespace WebApplications.Utilities.Formatting
             else
                 writeTags = false;
 
-            IControllableTextWriter controller = serialWriter as IControllableTextWriter ??
-                                                 writer as IControllableTextWriter;
+            // ReSharper disable SuspiciousTypeConversion.Global
+            IControllableTextWriter controller = serialWriter as IControllableTextWriter ?? writer as IControllableTextWriter;
+            // ReSharper restore SuspiciousTypeConversion.Global
             ILayoutTextWriter layoutWriter = serialWriter as ILayoutTextWriter ?? writer as ILayoutTextWriter;
             IColoredTextWriter coloredTextWriter = serialWriter as IColoredTextWriter ?? writer as IColoredTextWriter;
-
             if (serialWriter != null) writer = serialWriter;
             IFormatProvider formatProvider = writer.FormatProvider;
+
+            /*
+             * If we're not using a layout writer, and we don't require layout, then we need to manually track position.
+             * so the code is subtly different.
+             */
+            if (layoutWriter == null && !isLayoutRequired)
+            {
+                foreach (FormatChunk chunk in chunks)
+                    // ReSharper disable once PossibleNullReferenceException
+                    if (chunk.IsControl &&
+                        !writeTags)
+                    {
+                        if (controller != null)
+                            controller.OnControlChunk(chunk, format, formatProvider);
+
+                        if (coloredTextWriter == null)
+                            continue;
+
+                        // Handle colored output.
+                        // ReSharper disable PossibleNullReferenceException
+                        switch (chunk.Tag.ToLowerInvariant())
+                            // ReSharper restore PossibleNullReferenceException
+                        {
+                            case ResetColorsTag:
+                                coloredTextWriter.ResetColors();
+                                continue;
+                            case ForegroundColorTag:
+                                if (String.IsNullOrWhiteSpace(chunk.Format))
+                                    coloredTextWriter.ResetForegroundColor();
+                                else if (chunk.IsResolved &&
+                                         chunk.Value is Color)
+                                    coloredTextWriter.SetForegroundColor((Color) chunk.Value);
+                                else
+                                {
+                                    // ReSharper disable once AssignNullToNotNullAttribute
+                                    Optional<Color> color = ColorHelper.GetColor(chunk.Format);
+                                    if (color.IsAssigned)
+                                        coloredTextWriter.SetForegroundColor(color.Value);
+                                }
+                                continue;
+                            case BackgroundColorTag:
+                                if (String.IsNullOrWhiteSpace(chunk.Format))
+                                    coloredTextWriter.ResetBackgroundColor();
+                                else if (chunk.IsResolved &&
+                                         chunk.Value is Color)
+                                    coloredTextWriter.SetBackgroundColor((Color) chunk.Value);
+                                else
+                                {
+                                    // ReSharper disable once AssignNullToNotNullAttribute
+                                    Optional<Color> color = ColorHelper.GetColor(chunk.Format);
+                                    if (color.IsAssigned)
+                                        coloredTextWriter.SetBackgroundColor(color.Value);
+                                }
+                                continue;
+                            default:
+                                continue;
+                        }
+                    }
+                    else
+                    {
+                        // Get the chunk as a string
+                        string result = chunk.ToString(format, writer.FormatProvider);
+                        if (result.Length < 1) continue;
+                        writer.Write(result);
+
+                        // The result is a chunk, so we need to find the distance since the last newline.
+                        int index = result.LastIndexOfAny(_newLineChars);
+                        position = index < 0
+                            ? result.Length + position
+                            : result.Length - index;
+                    }
+
+                // Get current position from writer.
+                return position;
+            }
+
+            /*
+             * We don't have a layout writer so we have to track horizontal position ourselves.
+             */
+            
+            // If we require layout, run chunks through layout engine.
+            // Get current state from the writer.
 
             int writerWidth;
             bool autoWraps;
             if (layoutWriter != null)
             {
-                // Get current state from the writer.
                 position = layoutWriter.Position;
                 writerWidth = layoutWriter.Width;
                 autoWraps = layoutWriter.AutoWraps;
@@ -2606,8 +2710,8 @@ namespace WebApplications.Utilities.Formatting
             }
 
             // If we require layout, run chunks through layout engine.
-            bool lr = isLayoutRequired || writerWidth < int.MaxValue;
-            IEnumerable<FormatChunk> enumerable = lr
+            IEnumerable<FormatChunk> enumerable = isLayoutRequired ||
+                                     (writerWidth < int.MaxValue)
                 ? Align(
                     GetLines(
                         GetLineChunks(chunks, format, writer.FormatProvider),
@@ -2621,33 +2725,11 @@ namespace WebApplications.Utilities.Formatting
                 : chunks;
 
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
-            StringBuilder sb = new StringBuilder();
-            string result;
             foreach (FormatChunk chunk in enumerable)
                 // ReSharper disable once PossibleNullReferenceException
                 if (chunk.IsControl &&
                     !writeTags)
                 {
-                    if (controller == null &&
-                        coloredTextWriter == null)
-                        continue;
-                    
-                    // If we have anything to write out, do so before calling the controller.
-                    if (sb.Length > 0)
-                    {
-                        result = sb.ToString();
-                        writer.Write(result);
-                        if (!lr)
-                        {
-                            // We have to manually find last newline as we're not using the layout engine.
-                            int index = result.LastIndexOfAny(_newLineChars);
-                            position = index < 0
-                                ? result.Length + position
-                                : result.Length - index;
-                        }
-                        sb.Clear();
-                    }
-
                     if (controller != null)
                         controller.OnControlChunk(chunk, format, formatProvider);
 
@@ -2666,7 +2748,7 @@ namespace WebApplications.Utilities.Formatting
                                 coloredTextWriter.ResetForegroundColor();
                             else if (chunk.IsResolved &&
                                      chunk.Value is Color)
-                                coloredTextWriter.SetForegroundColor((Color) chunk.Value);
+                                coloredTextWriter.SetForegroundColor((Color)chunk.Value);
                             else
                             {
                                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -2680,7 +2762,7 @@ namespace WebApplications.Utilities.Formatting
                                 coloredTextWriter.ResetBackgroundColor();
                             else if (chunk.IsResolved &&
                                      chunk.Value is Color)
-                                coloredTextWriter.SetBackgroundColor((Color) chunk.Value);
+                                coloredTextWriter.SetBackgroundColor((Color)chunk.Value);
                             else
                             {
                                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -2694,28 +2776,12 @@ namespace WebApplications.Utilities.Formatting
                     }
                 }
                 else
-                    sb.Append(chunk.ToString(format, formatProvider));
+                    chunk.WriteTo(writer, format);
 
-            if (sb.Length > 0)
-            {
-                result = sb.ToString();
-                writer.Write(result);
-
-                if (!lr)
-                {
-                    // We have to manually find last newline as we're not using the layout engine.
-                    int index = result.LastIndexOfAny(_newLineChars);
-                    position = index < 0
-                        ? result.Length + position
-                        : result.Length - index;
-                }
-            }
-
-            if (layoutWriter != null)
-                // Get current position from writer.
-                layoutWriter.Position = position;
-
-            return position;
+            // Get current position from writer if we have one, otherwise our current position should be accurate anyway.
+            return layoutWriter == null
+                ? position
+                : layoutWriter.Position;
         }
 
         /// <summary>

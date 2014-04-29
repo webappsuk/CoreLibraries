@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -34,7 +35,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// A format chunk, holds information about a chunk of formatted Value.
     /// </summary>
-    public class FormatChunk : IEquatable<FormatChunk>, IFormattable
+    public class FormatChunk : IEquatable<FormatChunk>, IFormattable, IWriteable
     {
         /// <summary>
         /// The unassigned format chunk.
@@ -328,7 +329,11 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return ToString(null, null);
+            using (TextWriter writer = new StringWriter())
+            {
+                WriteTo(writer);
+                return writer.ToString();
+            }
         }
 
         /// <summary>
@@ -338,7 +343,24 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
         [StringFormatMethod("format")]
-        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider)
+        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            using (TextWriter writer = new StringWriter(formatProvider))
+            {
+                WriteTo(writer, format);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// TODO This is in serious need of a rewrite!
+        /// Writes this instance to the <see paramref="writer" />, using the optional <see paramref="format" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public void WriteTo(TextWriter writer, string format = null)
         {
             if (format == null)
                 format = "g";
@@ -353,7 +375,6 @@ namespace WebApplications.Utilities.Formatting
                     // We don't pad format strings
                     pad = false;
                     if (Tag != null)
-                    {
                         value = string.Format(
                             "{{{0}{1}{2}}}",
                             Tag,
@@ -361,34 +382,29 @@ namespace WebApplications.Utilities.Formatting
                                 ? FormatBuilder.AlignmentChar + Alignment.Value.ToString("D")
                                 : string.Empty,
                             !string.IsNullOrEmpty(Format) ? FormatBuilder.FormatChar + Format : string.Empty);
-                    }
                     else
                     {
                         Contract.Assert(Value != null);
                         if (IsResolved && Value != null)
-                        {
                             // Get the formattable value (if any).
                             if (!string.IsNullOrEmpty(Format))
                             {
                                 IFormattable fc = Value as IFormattable;
                                 if (fc != null)
-                                {
                                     try
                                     {
-                                        value = fc.ToString(Format, formatProvider);
+                                        value = fc.ToString(Format, writer.FormatProvider);
                                     }
                                     catch
                                     {
                                         // Just use normal ToString() as format was invalid.
                                         value = Value.ToString();
                                     }
-                                }
                                 else
                                     value = Value.ToString();
                             }
                             else
                                 value = Value.ToString();
-                        }
                         else
                             value = string.Empty;
                     }
@@ -413,29 +429,25 @@ namespace WebApplications.Utilities.Formatting
                         Contract.Assert(Value != null);
                         pad = true;
                         if (IsResolved && Value != null)
-                        {
                             // Get the formattable value (if any).
                             if (!string.IsNullOrEmpty(Format))
                             {
                                 IFormattable fc = Value as IFormattable;
                                 if (fc != null)
-                                {
                                     try
                                     {
-                                        value = fc.ToString(Format, formatProvider);
+                                        value = fc.ToString(Format, writer.FormatProvider);
                                     }
                                     catch
                                     {
                                         // Just use normal ToString() as format was invalid.
                                         value = Value.ToString();
                                     }
-                                }
                                 else
                                     value = Value.ToString();
                             }
                             else
                                 value = Value.ToString();
-                        }
                         else
                             value = string.Empty;
                     }
@@ -443,40 +455,36 @@ namespace WebApplications.Utilities.Formatting
 
                 // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
-                    if (IsControl) return string.Empty;
+                    if (IsControl) return;
 
                     pad = true;
                     if (IsResolved && Value != null)
-                    {
                         // Get the formattable value (if any).
                         if (!string.IsNullOrEmpty(Format))
                         {
                             IFormattable fc = Value as IFormattable;
                             if (fc != null)
-                            {
                                 try
                                 {
-                                    value = fc.ToString(Format, formatProvider);
+                                    value = fc.ToString(Format, writer.FormatProvider);
                                 }
                                 catch
                                 {
                                     // Just use normal ToString() as format was invalid.
                                     value = Value.ToString();
                                 }
-                            }
                             else
                                 value = Value.ToString();
                         }
                         else
                             value = Value.ToString();
-                    }
                     else
                         value = string.Empty;
                     break;
 
                 // Outputs the value if set, otherwise the format tag. Control tags ignored
                 default:
-                    if (IsControl) return string.Empty;
+                    if (IsControl) return;
 
                     if (!IsResolved &&
                         Tag != null)
@@ -495,29 +503,25 @@ namespace WebApplications.Utilities.Formatting
                     {
                         pad = true;
                         if (IsResolved && Value != null)
-                        {
                             // Get the formattable value (if any).
                             if (!string.IsNullOrEmpty(Format))
                             {
                                 IFormattable fc = Value as IFormattable;
                                 if (fc != null)
-                                {
                                     try
                                     {
-                                        value = fc.ToString(Format, formatProvider);
+                                        value = fc.ToString(Format, writer.FormatProvider);
                                     }
                                     catch
                                     {
                                         // Just use normal ToString() as format was invalid.
                                         value = Value.ToString();
                                     }
-                                }
-                                else 
+                                else
                                     value = Value.ToString();
                             }
                             else
                                 value = Value.ToString();
-                        }
                         else
                             value = string.Empty;
                     }
@@ -525,11 +529,11 @@ namespace WebApplications.Utilities.Formatting
             }
 
             if (pad && Alignment != null)
-                return Alignment.Value > 0
+                value = Alignment.Value > 0
                     ? value.PadLeft(Alignment.Value)
                     : value.PadRight(-Alignment.Value);
 
-            return value;
+            writer.Write(value);
         }
     }
 }

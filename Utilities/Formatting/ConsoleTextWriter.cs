@@ -122,18 +122,6 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Assert(Console.CursorLeft > 0);
                 return Console.CursorLeft;
             }
-            // Ignore position updates.
-            set
-            {
-                if (!ConsoleHelper.IsConsole)
-                    Context.Invoke(
-                        () =>
-                        {
-                            ILayoutTextWriter lw = Writer as ILayoutTextWriter;
-                            if (lw != null)
-                                lw.Position = value;
-                        });
-            }
         }
 
         /// <summary>

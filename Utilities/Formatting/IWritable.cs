@@ -31,30 +31,16 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
-    /// Indicates a <see cref="TextWriter"/> provides positional information for a <see cref="FormatBuilder"/>.
+    /// Indicates the object supports writing to a <see cref="TextWriter"/>.
     /// </summary>
-    public interface ILayoutTextWriter : ITextWriter
+    [PublicAPI]
+    public interface IWriteable
     {
         /// <summary>
-        /// Gets the width of the console.
+        /// Writes this instance to the <see paramref="writer"/>, using the optional <see paramref="format"/>.
         /// </summary>
-        /// <value>
-        /// The width of the console.
-        /// </value>
-        [PublicAPI]
-        int Width { get; }
-
-        /// <summary>
-        /// Gets or sets the current horizontal position.
-        /// </summary>
-        /// <value>The position.</value>
-        [PublicAPI]
-        int Position { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether the writer automatically wraps on reaching <see cref="Width"/>.
-        /// </summary>
-        /// <value><see langword="true" /> if the writer automatically wraps; otherwise, <see langword="false" />.</value>
-        bool AutoWraps { get; }
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        void WriteTo([NotNull]TextWriter writer, [CanBeNull]string format);
     }
 }
