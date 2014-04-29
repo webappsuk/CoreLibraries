@@ -146,19 +146,6 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
-        public void TestNestedResolution()
-        {
-            FormatBuilder builder = new FormatBuilder()
-                .AppendFormat("{t:A {t:nested {t}}}");
-            Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("G"));
-            Assert.AreEqual(string.Empty, builder.ToString("S"));
-            Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("F"));
-            Assert.AreEqual(
-                "A nested tag",
-                builder.ToString(tag => string.Equals(tag, "t") ? "tag" : Optional<object>.Unassigned));
-        }
-
-        [TestMethod]
         [ExpectedException(typeof (InvalidOperationException))]
         public void TestReadOnly()
         {
@@ -209,7 +196,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestResolver()
         {
             FormatBuilder builder = new FormatBuilder("{A}{B}{C}");
-            builder.Resolve(tag => tag == "B" ? 5 : (object) null);
+            builder.Resolve(tag => tag == "B" ? 5 : Optional<object>.Unassigned);
             Assert.AreEqual("{A}5{C}", builder.ToString());
         }
 
@@ -219,6 +206,18 @@ namespace WebApplications.Utilities.Test.Formatting
             FormatBuilder builder = new FormatBuilder("{t:A {t:nested {t}}}");
             builder.Resolve(tag => string.Equals(tag, "t") ? "tag" : Optional<object>.Unassigned);
             Assert.AreEqual("A nested tag", builder.ToString());
+        }
+
+        [TestMethod]
+        public void TestNestedResolution()
+        {
+            FormatBuilder builder = new FormatBuilder("{t:A {t:nested {t}}}");
+            Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("G"));
+            Assert.AreEqual(string.Empty, builder.ToString("S"));
+            Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("F"));
+            Assert.AreEqual(
+                "A nested tag",
+                builder.ToString(tag => string.Equals(tag, "t") ? "tag" : Optional<object>.Unassigned));
         }
     }
 }

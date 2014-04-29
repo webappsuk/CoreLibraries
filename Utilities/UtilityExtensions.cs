@@ -1137,64 +1137,6 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// A safe <see cref="string" /> format.
-        /// </summary>
-        /// <param name="format">The format string.</param>
-        /// <param name="parameters">The values used in the format string.</param>
-        /// <returns>
-        /// Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.
-        /// </returns>
-        [CanBeNull]
-        [PublicAPI]
-        public static string SafeFormat([CanBeNull] this string format, [CanBeNull] params object[] parameters)
-        {
-            if (string.IsNullOrWhiteSpace(format)) return null;
-            if (parameters == null ||
-                parameters.Length < 1)
-                return format;
-
-            try
-            {
-                return new FormatBuilder().AppendFormat(format, parameters).ToString();
-            }
-            catch (FormatException)
-            {
-                return format;
-            }
-        }
-
-        /// <summary>
-        /// A safe <see cref="string" /> format.
-        /// </summary>
-        /// <param name="format">The format string.</param>
-        /// <param name="formatOptions">The format options string. <seealso cref="FormatBuilder.ToString{String,IFormatProvider}"/></param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <param name="parameters">The values used in the format string.</param>
-        /// <returns>Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.</returns>
-        [CanBeNull]
-        [PublicAPI]
-        public static string SafeFormat(
-            [CanBeNull] this string format,
-            [CanBeNull] string formatOptions,
-            [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] params object[] parameters)
-        {
-            if (string.IsNullOrWhiteSpace(format)) return null;
-            if (parameters == null ||
-                parameters.Length < 1)
-                return format;
-
-            try
-            {
-                return new FormatBuilder().AppendFormat(format, parameters).ToString(formatOptions, formatProvider);
-            }
-            catch (FormatException)
-            {
-                return format;
-            }
-        }
-
-        /// <summary>
         /// The lower-case hexadecimal digits.
         /// </summary>
         [NotNull]

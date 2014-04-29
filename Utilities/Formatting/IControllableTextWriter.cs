@@ -44,6 +44,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
         [PublicAPI]
+        [StringFormatMethod("format")]
         void OnControlChunk(
             [NotNull] FormatChunk controlChunk,
             [CanBeNull] string format,

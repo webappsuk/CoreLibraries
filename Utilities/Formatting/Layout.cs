@@ -624,6 +624,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString([CanBeNull] string format)
         {
             return ToString(format, null);

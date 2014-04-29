@@ -36,6 +36,7 @@ using System.Xml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using WebApplications.Testing;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Test.Extensions
 {

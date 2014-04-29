@@ -41,6 +41,51 @@ namespace WebApplications.Utilities.Formatting
     /// </summary>
     public static class FormatExtensions
     {
+
+        /// <summary>
+        /// A safe <see cref="string" /> format.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="parameters">The values used in the format string.</param>
+        /// <returns>
+        /// Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.
+        /// </returns>
+        [CanBeNull]
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public static string SafeFormat([CanBeNull] this string format, [CanBeNull] params object[] parameters)
+        {
+            if (string.IsNullOrWhiteSpace(format)) return null;
+            if (parameters == null ||
+                parameters.Length < 1)
+                return format;
+            return new FormatBuilder().AppendFormat(format, parameters).ToString();
+        }
+
+        /// <summary>
+        /// A safe <see cref="string" /> format.
+        /// </summary>
+        /// <param name="format">The format string.</param>
+        /// <param name="formatOptions">The format options string. <seealso cref="FormatBuilder.ToString(String, IFormatProvider)"/></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="parameters">The values used in the format string.</param>
+        /// <returns>Returns the formatted <see cref="string" /> if successful; otherwise returns the <paramref name="format" /> string.</returns>
+        [CanBeNull]
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public static string SafeFormat(
+            [CanBeNull] this string format,
+            [CanBeNull] string formatOptions,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] params object[] parameters)
+        {
+            if (string.IsNullOrWhiteSpace(format)) return null;
+            if (parameters == null ||
+                parameters.Length < 1)
+                return format;
+            return new FormatBuilder().AppendFormat(format, parameters).ToString(formatOptions, formatProvider);
+        }
+
         /// <summary>
         /// Chunks a format string safely.
         /// </summary>
@@ -50,6 +95,7 @@ namespace WebApplications.Utilities.Formatting
         /// A '\' before any other character will be ignored. Escapes within a fill point will be kept in case the chunks format is another format string.</remarks>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public static IEnumerable<FormatChunk> FormatChunks([CanBeNull] this string format)
         {
             if (String.IsNullOrEmpty(format))
@@ -139,7 +185,7 @@ namespace WebApplications.Utilities.Formatting
 
                     if (String.IsNullOrWhiteSpace(chunk.Format))
                         writer.ResetForegroundColor();
-                    else if (chunk.Value.IsAssigned && chunk.Value.Value is Color)
+                    else if (chunk.IsResolved && chunk.Value is Color)
                         writer.SetForegroundColor((Color) chunk.Value);
                     else
                     {
@@ -153,7 +199,7 @@ namespace WebApplications.Utilities.Formatting
 
                     if (String.IsNullOrWhiteSpace(chunk.Format))
                         writer.ResetBackgroundColor();
-                    else if (chunk.Value.IsAssigned && chunk.Value.Value is Color)
+                    else if (chunk.IsResolved && chunk.Value is Color)
                         writer.SetBackgroundColor((Color) chunk.Value);
                     else
                     {

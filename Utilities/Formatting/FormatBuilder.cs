@@ -99,6 +99,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="isReadOnly">if set to <see langword="true" /> is read only.</param>
+        [StringFormatMethod("format")]
         public FormatBuilder([CanBeNull] string format = null, bool isReadOnly = false)
         {
             InitialLayout = Layout.Default;
@@ -126,6 +127,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="layout">The layout.</param>
         /// <param name="isReadOnly">if set to <see langword="true" /> is read only.</param>
+        [StringFormatMethod("format")]
         public FormatBuilder([CanBeNull] string format, [CanBeNull] Layout layout, bool isReadOnly = false)
         {
             InitialLayout = Layout.Default.Apply(layout);
@@ -206,6 +208,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="hyphenChar">The hyphen character.</param>
         /// <param name="wrapMode">The wrap mode.</param>
         /// <param name="isReadOnly">if set to <see langword="true" /> is read only.</param>
+        [StringFormatMethod("format")]
         public FormatBuilder(
             [CanBeNull] string format,
             Optional<int> width,
@@ -1130,6 +1133,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public FormatBuilder AppendFormat(
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
@@ -1152,6 +1156,7 @@ namespace WebApplications.Utilities.Formatting
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public FormatBuilder AppendFormat(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<string, Optional<object>> resolver)
@@ -1209,6 +1214,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine(
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
@@ -1232,6 +1238,7 @@ namespace WebApplications.Utilities.Formatting
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<string, Optional<object>> resolver)
@@ -1259,6 +1266,7 @@ namespace WebApplications.Utilities.Formatting
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public FormatBuilder AppendControl(
             [CanBeNull] string tag,
             [CanBeNull] int? alignment = null,
@@ -1383,7 +1391,7 @@ namespace WebApplications.Utilities.Formatting
 
                 if (chunk == null) continue;
 
-                if (!chunk.IsFillPoint)
+                if (chunk.Tag == null)
                     continue;
 
                 if (!_isLayoutRequired &&
@@ -1401,8 +1409,9 @@ namespace WebApplications.Utilities.Formatting
                     resolved = Optional<object>.Unassigned;
 
                 // If we haven't resolved the value, get the chunks value.
-                if (!resolved.IsAssigned)
-                    resolved = chunk.Value;
+                if (!resolved.IsAssigned &&
+                    chunk.IsResolved)
+                    resolved = new Optional<object>(chunk.Value);
 
                 // If we have no resolved value, or the resolved value is null, we're done
                 if (!resolved.IsAssigned)
@@ -1411,7 +1420,7 @@ namespace WebApplications.Utilities.Formatting
                 // Check for resolved to null.
                 if (resolved.Value == null)
                 {
-                    if (chunk.Value.Value == null) continue;
+                    if (chunk.IsResolved && chunk.Value == null) continue;
 
                     _chunks[index - 1] = FormatChunk.Create(chunk, resolved);
                     continue;
@@ -1449,7 +1458,8 @@ namespace WebApplications.Utilities.Formatting
                     bool hasFillPoint = false;
                     foreach (FormatChunk subFormatChunk in chunk.Format.FormatChunks())
                     {
-                        if (subFormatChunk != null && subFormatChunk.IsFillPoint) hasFillPoint = true;
+                        // ReSharper disable once PossibleNullReferenceException
+                        if (subFormatChunk.Tag != null) hasFillPoint = true;
                         subFormatChunks.Add(subFormatChunk);
                     }
 
@@ -1463,7 +1473,7 @@ namespace WebApplications.Utilities.Formatting
                     }
                 }
 
-                if (chunk.Value == resolved)
+                if (chunk.IsResolved && chunk.Value == resolved.Value)
                     continue;
 
                 _chunks[index - 1] = FormatChunk.Create(chunk, resolved);
@@ -1549,7 +1559,9 @@ namespace WebApplications.Utilities.Formatting
             IEnumerator<FormatChunk> ce = chunks.GetEnumerator();
             List<FormatChunk> results = new List<FormatChunk>();
             // Holds any resolutions as we go.
-            Dictionary<string, Optional<object>> resolutions = new Dictionary<string, Optional<object>>();
+            Dictionary<string, Optional<object>> resolutions = resolver != null
+                ? new Dictionary<string, Optional<object>>()
+                : null;
             do
             {
                 FormatChunk chunk;
@@ -1561,7 +1573,7 @@ namespace WebApplications.Utilities.Formatting
 
                 if (chunk == null) continue;
 
-                if (!chunk.IsFillPoint)
+                if (chunk.Tag == null)
                 {
                     results.Add(chunk);
                     continue;
@@ -1573,7 +1585,8 @@ namespace WebApplications.Utilities.Formatting
 
                 // Resolve the tag if it's the first time we've seen it.
                 Optional<object> resolved;
-                if (!resolutions.TryGetValue(chunk.Tag, out resolved))
+                if (resolver != null &&
+                    !resolutions.TryGetValue(chunk.Tag, out resolved))
                 {
                     resolved = resolver(chunk.Tag);
                     resolutions[chunk.Tag] = resolved;
@@ -1582,8 +1595,9 @@ namespace WebApplications.Utilities.Formatting
                     resolved = Optional<object>.Unassigned;
 
                 // If we haven't resolved the value, get the chunks value.
-                if (!resolved.IsAssigned)
-                    resolved = chunk.Value;
+                if (!resolved.IsAssigned &&
+                    chunk.IsResolved)
+                    resolved = new Optional<object>(chunk.Value);
 
                 // If we have no resolved value, or the resolved value is null, we're done
                 if (!resolved.IsAssigned)
@@ -1596,7 +1610,7 @@ namespace WebApplications.Utilities.Formatting
                 if (resolved.Value == null)
                 {
                     results.Add(
-                        chunk.Value.Value == null
+                        chunk.IsResolved && chunk.Value == null
                             ? chunk
                             : FormatChunk.Create(chunk, resolved));
                     continue;
@@ -1628,7 +1642,8 @@ namespace WebApplications.Utilities.Formatting
                     bool hasFillPoint = false;
                     foreach (FormatChunk subFormatChunk in chunk.Format.FormatChunks())
                     {
-                        if (subFormatChunk != null && subFormatChunk.IsFillPoint) hasFillPoint = true;
+                        // ReSharper disable once PossibleNullReferenceException
+                        if (subFormatChunk.Tag != null) hasFillPoint = true;
                         subFormatChunks.Add(subFormatChunk);
                     }
 
@@ -1639,7 +1654,7 @@ namespace WebApplications.Utilities.Formatting
                     }
                 }
 
-                if (chunk.Value == resolved)
+                if (chunk.IsResolved && chunk.Value == resolved.Value)
                 {
                     results.Add(chunk);
                     continue;
@@ -1918,6 +1933,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>A <see cref="System.String"/> that represents this instance. </returns>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
@@ -1930,7 +1946,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
         /// <param name="position">The position.</param>
         /// <param name="format">The format.
         /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
@@ -1938,6 +1954,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString(
             [CanBeNull]Layout layout,
             ref int position,
@@ -1961,6 +1978,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -1985,6 +2003,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString(
             [CanBeNull]Layout layout,
             ref int position,
@@ -2016,6 +2035,7 @@ namespace WebApplications.Utilities.Formatting
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -2040,6 +2060,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString(
             [CanBeNull]Layout layout,
             ref int position,
@@ -2071,6 +2092,7 @@ namespace WebApplications.Utilities.Formatting
         /// </returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -2095,6 +2117,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString(
             [CanBeNull]Layout layout,
             ref int position,
@@ -2127,6 +2150,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public void WriteToConsole(
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
@@ -2150,6 +2174,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public void WriteToConsole(
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
@@ -2173,6 +2198,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public void WriteToConsole(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<string, Optional<object>> resolver)
@@ -2208,6 +2234,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public void WriteToTrace(
             [CanBeNull] string format,
             [CanBeNull] params object[] values)
@@ -2231,6 +2258,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public void WriteToTrace(
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values)
@@ -2254,6 +2282,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public void WriteToTrace(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] Func<string, Optional<object>> resolver)
@@ -2302,6 +2331,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
@@ -2331,6 +2361,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2360,6 +2391,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
@@ -2389,6 +2421,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2418,6 +2451,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
@@ -2447,6 +2481,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
+        [StringFormatMethod("format")]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
@@ -2478,8 +2513,9 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
         /// <param name="position">The position.</param>
-        /// <returns>System.UInt16.</returns>
+        /// <returns>The final position.</returns>
         [PublicAPI]
+        [StringFormatMethod("format")]
         private static int WriteTo(
             [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
@@ -2522,8 +2558,9 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
         /// <param name="position">The position.</param>
-        /// <returns>System.UInt16.</returns>
+        /// <returns>The final position.</returns>
         [PublicAPI]
+        [StringFormatMethod("format")]
         private static int DoWrite(
             [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [NotNull] TextWriter writer,
@@ -2646,6 +2683,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="provider">The format provider.</param>
         /// <returns>An enumeration of chunks.</returns>
         [NotNull]
+        [StringFormatMethod("format")]
         private static Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> GetLineChunks(
             [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
             [CanBeNull] string format,
@@ -2843,8 +2881,8 @@ namespace WebApplications.Utilities.Formatting
                         if (string.Equals(controlChunk.Tag, "!layout", StringComparison.InvariantCultureIgnoreCase))
                         {
                             Layout newLayout;
-                            if ((controlChunk.Value.IsAssigned) &&
-                                ((newLayout = controlChunk.Value.Value as Layout) != null))
+                            if ((controlChunk.IsResolved) &&
+                                ((newLayout = controlChunk.Value as Layout) != null))
                                 nextLayout = ReferenceEquals(newLayout, Layout.Default)
                                     ? initialLayout
                                     : nextLayout.Apply(newLayout);
@@ -3396,6 +3434,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>The result of the conversion.</returns>
+        [StringFormatMethod("format")]
         public static implicit operator FormatBuilder(string format)
         {
             return format != null

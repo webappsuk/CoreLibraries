@@ -165,6 +165,9 @@ namespace WebApplications.Utilities.Ranges
         /// <returns>
         /// A <see cref="System.String"/> that represents this instance.
         /// </returns>
+        [NotNull]
+        [PublicAPI]
+        [StringFormatMethod("format")]
         public string ToString(string format)
         {
             return string.Format("{0} - {1}", Start.ToString(format), End.ToString(format));
