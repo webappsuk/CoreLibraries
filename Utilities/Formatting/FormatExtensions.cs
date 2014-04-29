@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using JetBrains.Annotations;
@@ -41,7 +40,6 @@ namespace WebApplications.Utilities.Formatting
     /// </summary>
     public static class FormatExtensions
     {
-
         /// <summary>
         /// A safe <see cref="string" /> format.
         /// </summary>
@@ -162,7 +160,7 @@ namespace WebApplications.Utilities.Formatting
             if (chunk.Length > 0)
                 yield return FormatChunk.Create(chunk.ToString());
         }
-        
+
         /// <summary>
         /// Produces a serialized version of the specified writer, using <see cref="SerializingSynchronizationContext" />, that
         /// will write output serially.

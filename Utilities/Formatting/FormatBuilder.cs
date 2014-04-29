@@ -1270,8 +1270,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendControl(
             [CanBeNull] string tag,
             [CanBeNull] int? alignment = null,
-            [CanBeNull] string format = null,
-            [CanBeNull] object value = null)
+            [CanBeNull] string format = null, Optional<object> value = default(Optional<object>))
         {
             Contract.Requires(!IsReadOnly);
             if (_isReadOnly)
@@ -3329,10 +3328,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendForegroundColor([CanBeNull] string color)
         {
             if (string.IsNullOrWhiteSpace(color)) return this;
-            Optional<Color> c = ColorHelper.GetColor(color);
-            return !c.IsAssigned
-                ? this
-                : AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, c.Value.GetName(), c.Value));
+            AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color));
         }
 
         /// <summary>
@@ -3370,10 +3366,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendBackgroundColor([CanBeNull] string color)
         {
             if (string.IsNullOrWhiteSpace(color)) return this;
-            Optional<Color> c = ColorHelper.GetColor(color);
-            return !c.IsAssigned
-                ? this
-                : AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, c.Value.GetName(), c.Value));
+            AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color));
         }
         #endregion
 
