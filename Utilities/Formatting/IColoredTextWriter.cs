@@ -34,7 +34,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Interface that indicates a <see cref="TextWriter"/> supports color.
     /// </summary>
-    public interface IColoredTextWriter : IControllableTextWriter
+    public interface IColoredTextWriter : ITextWriter
     {
         /// <summary>
         /// Resets the foreground and background colors of the writer.

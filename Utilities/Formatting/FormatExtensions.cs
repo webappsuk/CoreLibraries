@@ -162,58 +162,7 @@ namespace WebApplications.Utilities.Formatting
             if (chunk.Length > 0)
                 yield return FormatChunk.Create(chunk.ToString());
         }
-
-        /// <summary>
-        /// Sets the color based on the <see paramref="chunk" />
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns><see langword="true" /> if the <see paramref="chunk"/> was a color control, <see langword="false" /> otherwise.</returns>
-        [PublicAPI]
-        public static bool SetColor([NotNull] this IColoredTextWriter writer, [NotNull] FormatChunk chunk)
-        {
-            Contract.Requires(writer != null);
-            Contract.Requires(chunk != null);
-            Contract.Requires(chunk.IsControl);
-            // ReSharper disable once PossibleNullReferenceException
-            switch (chunk.Tag.ToLowerInvariant())
-            {
-                case FormatBuilder.ResetColorsTag:
-                    writer.ResetColors();
-                    return true;
-                case FormatBuilder.ForegroundColorTag:
-
-                    if (String.IsNullOrWhiteSpace(chunk.Format))
-                        writer.ResetForegroundColor();
-                    else if (chunk.IsResolved && chunk.Value is Color)
-                        writer.SetForegroundColor((Color) chunk.Value);
-                    else
-                    {
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        Optional<Color> color = ColorHelper.GetColor(chunk.Format);
-                        if (color.IsAssigned)
-                            writer.SetForegroundColor(color.Value);
-                    }
-                    return true;
-                case FormatBuilder.BackgroundColorTag:
-
-                    if (String.IsNullOrWhiteSpace(chunk.Format))
-                        writer.ResetBackgroundColor();
-                    else if (chunk.IsResolved && chunk.Value is Color)
-                        writer.SetBackgroundColor((Color) chunk.Value);
-                    else
-                    {
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        Optional<Color> color = ColorHelper.GetColor(chunk.Format);
-                        if (color.IsAssigned)
-                            writer.SetBackgroundColor(color.Value);
-                    }
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
+        
         /// <summary>
         /// Produces a serialized version of the specified writer, using <see cref="SerializingSynchronizationContext" />, that
         /// will write output serially.

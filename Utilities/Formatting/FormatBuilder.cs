@@ -43,7 +43,7 @@ namespace WebApplications.Utilities.Formatting
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
     [TypeConverter(typeof(FormatBuilderConverter))]
-    public sealed partial class FormatBuilder : IEnumerable<FormatChunk>, IFormattable
+    public sealed partial class FormatBuilder : IEnumerable<FormatChunk>, IFormattable, IEquatable<FormatBuilder>
     {
         /// <summary>
         /// The first character of a fill point.
@@ -1382,7 +1382,8 @@ namespace WebApplications.Utilities.Formatting
                 return this;
 
             // Holds any resolutions as we go.
-            Dictionary<string, Optional<object>> resolutions = new Dictionary<string, Optional<object>>();
+            Dictionary<string, Optional<object>> resolutions =
+                new Dictionary<string, Optional<object>>(StringComparer.InvariantCultureIgnoreCase);
 
             int index = 0;
             do
@@ -1558,7 +1559,7 @@ namespace WebApplications.Utilities.Formatting
             List<FormatChunk> results = new List<FormatChunk>();
             // Holds any resolutions as we go.
             Dictionary<string, Optional<object>> resolutions = resolver != null
-                ? new Dictionary<string, Optional<object>>()
+                ? new Dictionary<string, Optional<object>>(StringComparer.InvariantCultureIgnoreCase)
                 : null;
             do
             {
@@ -2585,6 +2586,7 @@ namespace WebApplications.Utilities.Formatting
             IControllableTextWriter controller = serialWriter as IControllableTextWriter ??
                                                  writer as IControllableTextWriter;
             ILayoutTextWriter layoutWriter = serialWriter as ILayoutTextWriter ?? writer as ILayoutTextWriter;
+            IColoredTextWriter coloredTextWriter = serialWriter as IColoredTextWriter ?? writer as IColoredTextWriter;
 
             if (serialWriter != null) writer = serialWriter;
             IFormatProvider formatProvider = writer.FormatProvider;
@@ -2627,8 +2629,10 @@ namespace WebApplications.Utilities.Formatting
                 if (chunk.IsControl &&
                     !writeTags)
                 {
-                    if (controller == null) continue;
-
+                    if (controller == null &&
+                        coloredTextWriter == null)
+                        continue;
+                    
                     // If we have anything to write out, do so before calling the controller.
                     if (sb.Length > 0)
                     {
@@ -2645,7 +2649,50 @@ namespace WebApplications.Utilities.Formatting
                         sb.Clear();
                     }
 
-                    controller.OnControlChunk(chunk, format, formatProvider);
+                    if (controller != null)
+                        controller.OnControlChunk(chunk, format, formatProvider);
+
+                    if (coloredTextWriter == null)
+                        continue;
+
+                    // Handle colored output.
+                    // ReSharper disable once PossibleNullReferenceException
+                    switch (chunk.Tag.ToLowerInvariant())
+                    {
+                        case ResetColorsTag:
+                            coloredTextWriter.ResetColors();
+                            continue;
+                        case ForegroundColorTag:
+                            if (String.IsNullOrWhiteSpace(chunk.Format))
+                                coloredTextWriter.ResetForegroundColor();
+                            else if (chunk.IsResolved &&
+                                     chunk.Value is Color)
+                                coloredTextWriter.SetForegroundColor((Color) chunk.Value);
+                            else
+                            {
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                Optional<Color> color = ColorHelper.GetColor(chunk.Format);
+                                if (color.IsAssigned)
+                                    coloredTextWriter.SetForegroundColor(color.Value);
+                            }
+                            continue;
+                        case BackgroundColorTag:
+                            if (String.IsNullOrWhiteSpace(chunk.Format))
+                                coloredTextWriter.ResetBackgroundColor();
+                            else if (chunk.IsResolved &&
+                                     chunk.Value is Color)
+                                coloredTextWriter.SetBackgroundColor((Color) chunk.Value);
+                            else
+                            {
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                Optional<Color> color = ColorHelper.GetColor(chunk.Format);
+                                if (color.IsAssigned)
+                                    coloredTextWriter.SetBackgroundColor(color.Value);
+                            }
+                            continue;
+                        default:
+                            continue;
+                    }
                 }
                 else
                     sb.Append(chunk.ToString(format, formatProvider));
@@ -3449,6 +3496,66 @@ namespace WebApplications.Utilities.Formatting
             return format != null
                 ? format.ToString()
                 : null;
+        }
+        #endregion
+
+        #region Equality
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns><see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
+        public override bool Equals([CanBeNull]object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj is FormatBuilder &&
+                Equals((FormatBuilder)obj);
+        }
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        public bool Equals([CanBeNull]FormatBuilder other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return _isReadOnly.Equals(other._isReadOnly) &&
+                   _isLayoutRequired.Equals(other._isLayoutRequired) &&
+                   InitialLayout.Equals(other.InitialLayout) &&
+                   string.Equals(ToString("F"), other.ToString("F"));
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode()
+        {
+            return ToString("F").GetHashCode();
+        }
+
+        /// <summary>
+        /// Implements the ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(FormatBuilder left, FormatBuilder right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <summary>
+        /// Implements the !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(FormatBuilder left, FormatBuilder right)
+        {
+            return !Equals(left, right);
         }
         #endregion
     }

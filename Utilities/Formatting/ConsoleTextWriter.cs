@@ -219,20 +219,5 @@ namespace WebApplications.Utilities.Formatting
             if (ConsoleHelper.IsConsole)
                 Context.Invoke(() => Console.BackgroundColor = color.ToConsoleColor());
         }
-
-        /// <summary>
-        /// Called when a control chunk is encountered.
-        /// </summary>
-        /// <param name="controlChunk">The control chunk.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public void OnControlChunk(FormatChunk controlChunk, string format, IFormatProvider formatProvider)
-        {
-            Contract.Requires(controlChunk != null);
-            Contract.Requires(controlChunk.IsControl);
-            if (ConsoleHelper.IsConsole)
-                this.SetColor(controlChunk);
-        }
     }
 }
