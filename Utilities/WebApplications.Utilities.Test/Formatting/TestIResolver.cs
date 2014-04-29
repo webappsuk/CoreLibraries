@@ -74,5 +74,40 @@ namespace WebApplications.Utilities.Test.Formatting
              * {Context.Resource:\r\n{Key}\t: {Value}
              */
         }
+
+        [TestMethod]
+        public void TestResolvableEnumeration()
+        {
+            DictionaryResolvable resolvable = new DictionaryResolvable
+            {
+                {
+                    "A", new List<IResolvable>
+                    {
+                        new DictionaryResolvable
+                        {
+                            {"A", "A"},
+                            {"B", "B"},
+                            {"C", "C"},
+                        },
+                        new DictionaryResolvable
+                        {
+                            {"A", "D"},
+                            {"B", "E"},
+                            {"C", "F"},
+                        },
+                        new DictionaryResolvable
+                        {
+                            {"A", "G"},
+                            {"B", "H"},
+                            {"C", "J"},
+                            {"<INDEX>", "I"}
+                        }
+                    }
+                }
+            };
+
+            FormatBuilder builder = new FormatBuilder().AppendFormat("{0:{A:{<INDEX>} {A} {B} {C} }}", resolvable);
+            Assert.AreEqual("0 A B C 1 D E F I G H J ", builder.ToString());
+        }
     }
 }

@@ -52,7 +52,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="concurrency">The concurrency level.</param>
         public DictionaryResolvable(
             bool isCaseSensitive = false,
-            bool resolveOuterTags = false,
+            bool resolveOuterTags = true,
             int capacity = -1,
             int concurrency = -1)
             : base(isCaseSensitive, resolveOuterTags)
@@ -207,7 +207,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="concurrency">The concurrency level.</param>
         public DictionaryResolvable(
             bool isCaseSensitive = false,
-            bool resolveOuterTags = false,
+            bool resolveOuterTags = true,
             int capacity = -1,
             int concurrency = -1)
             : base(isCaseSensitive, resolveOuterTags, capacity, concurrency)

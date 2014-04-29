@@ -116,7 +116,7 @@ namespace WebApplications.Utilities.Formatting
         /// <see cref="FormatBuilder.OpenChar" /> and
         /// <see cref="FormatBuilder.CloseChar" /> characters, then it splits out the relevant parts.</remarks>
         [StringFormatMethod("format")]
-        private FormatChunk(
+        internal FormatChunk(
             [CanBeNull] string tag,
             int alignment,
             [CanBeNull] string format,

@@ -40,7 +40,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
-        protected Resolvable(bool isCaseSensitive = false, bool resolveOuterTags = false)
+        protected Resolvable(bool isCaseSensitive = false, bool resolveOuterTags = true)
         {
             _isCaseSensitive = isCaseSensitive;
             _resolveOuterTags = resolveOuterTags;

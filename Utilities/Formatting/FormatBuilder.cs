@@ -1450,6 +1450,13 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
+        /// The layout control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string IndexTag = "<index>";
+
+        /// <summary>
         /// Resolves the specified chunks.
         /// </summary>
         /// <param name="chunks">The chunks.</param>
@@ -1521,16 +1528,43 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
-                // Did we get a builder back?
-                IEnumerable<FormatChunk> cs = resolved.Value as IEnumerable<FormatChunk>;
-                if (cs != null)
+                // Handles getting a builder, or enumeration of chunks back.
+                IEnumerable<FormatChunk> formatChunks = resolved.Value as IEnumerable<FormatChunk>;
+                if (formatChunks != null)
                 {
-                    // Push chunks in reverse order.
-                    foreach (FormatChunk c in cs.Reverse())
-                        stack.Push(c, resolutions);
+                    foreach (FormatChunk fci in formatChunks.Reverse())
+                        stack.Push(fci, resolutions);
                     continue;
                 }
 
+                IEnumerable<IResolvable> resolvables = resolved.Value as IEnumerable<IResolvable>;
+                if (resolvables != null)
+                {
+                    foreach (KeyValuePair<IResolvable, int> kvp in resolvables.Select((r, i) => new KeyValuePair<IResolvable, int>(r, i)).Reverse())
+                    {
+                        // Add a new chunk with the index suffixed on the end of the original tag.
+                        stack.Push(
+                            new FormatChunk(
+                                chunk.Tag + "." + kvp.Value.ToString("D"),
+                                chunk.Alignment,
+                                chunk.Format,
+                                true,
+                                kvp.Key,
+                                chunk.IsControl),
+                            // This will add a fall-through value for the '<index>' tag - a new child Resolutions will be created based on this one
+                            // when the IResolution object is later resolved below, which means that you can still technically override the value of '<index>'.
+                            new Resolutions(
+                                resolutions,
+                                tag => string.Equals(IndexTag, tag, StringComparison.CurrentCultureIgnoreCase)
+                                    ? kvp.Value
+                                    : Optional<object>.Unassigned,
+                                false,
+                                true));
+                    }
+                    continue;
+                }
+
+                // Check if we have an actual FormatChunk as the value.
                 FormatChunk fc = resolved.Value as FormatChunk;
                 if (fc != null)
                 {

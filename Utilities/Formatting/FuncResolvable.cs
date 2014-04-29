@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true"/> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true"/>  outer tags should be resolved automatically in formats.</param>
-        public FuncResolvable([NotNull]Func<string, Optional<TValue>> resolver, bool isCaseSensitive = false, bool resolveOuterTags = false)
+        public FuncResolvable([NotNull]Func<string, Optional<TValue>> resolver, bool isCaseSensitive = false, bool resolveOuterTags = true)
             : base(isCaseSensitive, resolveOuterTags)
         {
             Contract.Requires(resolver != null);
@@ -77,7 +77,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
-        public FuncResolvable([NotNull]Func<string, Optional<object>> resolver, bool isCaseSensitive = false, bool resolveOuterTags = false)
+        public FuncResolvable([NotNull]Func<string, Optional<object>> resolver, bool isCaseSensitive = false, bool resolveOuterTags = true)
             : base(resolver, isCaseSensitive, resolveOuterTags)
         {
             Contract.Requires(resolver != null);
