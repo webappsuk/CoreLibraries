@@ -1405,8 +1405,6 @@ namespace WebApplications.Utilities.Formatting
                     resolved = resolver(chunk.Tag);
                     resolutions[chunk.Tag] = resolved;
                 }
-                else
-                    resolved = Optional<object>.Unassigned;
 
                 // If we haven't resolved the value, get the chunks value.
                 if (!resolved.IsAssigned &&
@@ -1584,15 +1582,13 @@ namespace WebApplications.Utilities.Formatting
                     isLayoutRequired = true;
 
                 // Resolve the tag if it's the first time we've seen it.
-                Optional<object> resolved;
+                Optional<object> resolved = Optional<object>.Unassigned;
                 if (resolver != null &&
                     !resolutions.TryGetValue(chunk.Tag, out resolved))
                 {
                     resolved = resolver(chunk.Tag);
                     resolutions[chunk.Tag] = resolved;
                 }
-                else
-                    resolved = Optional<object>.Unassigned;
 
                 // If we haven't resolved the value, get the chunks value.
                 if (!resolved.IsAssigned &&
@@ -1638,18 +1634,19 @@ namespace WebApplications.Utilities.Formatting
                     !string.IsNullOrWhiteSpace(chunk.Format))
                 {
                     // Get the chunks for the fill point.
-                    List<FormatChunk> subFormatChunks = new List<FormatChunk>();
+                    Stack<FormatChunk> subFormatChunks = new Stack<FormatChunk>();
                     bool hasFillPoint = false;
                     foreach (FormatChunk subFormatChunk in chunk.Format.FormatChunks())
                     {
                         // ReSharper disable once PossibleNullReferenceException
                         if (subFormatChunk.Tag != null) hasFillPoint = true;
-                        subFormatChunks.Add(subFormatChunk);
+                        subFormatChunks.Push(subFormatChunk);
                     }
 
                     if (hasFillPoint)
                     {
-                        results.AddRange(subFormatChunks);
+                        while (subFormatChunks.Count > 0)
+                            stack.Push(subFormatChunks.Pop());
                         continue;
                     }
                 }

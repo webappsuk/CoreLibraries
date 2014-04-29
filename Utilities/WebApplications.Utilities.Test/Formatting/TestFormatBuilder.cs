@@ -215,9 +215,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("G"));
             Assert.AreEqual(string.Empty, builder.ToString("S"));
             Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("F"));
-            Assert.AreEqual(
-                "A nested tag",
-                builder.ToString(tag => string.Equals(tag, "t") ? "tag" : Optional<object>.Unassigned));
+            Assert.AreEqual("A nested tag", builder.ToString(tag => string.Equals(tag, "t") ? "tag" : Optional<object>.Unassigned));
         }
     }
 }
