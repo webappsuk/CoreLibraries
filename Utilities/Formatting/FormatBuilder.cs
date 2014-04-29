@@ -1269,7 +1269,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendControl(
             [CanBeNull] string tag,
-            [CanBeNull] int? alignment = null,
+            int alignment = 0,
             [CanBeNull] string format = null, Optional<object> value = default(Optional<object>))
         {
             Contract.Requires(!IsReadOnly);
@@ -3369,7 +3369,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendForegroundColor(ConsoleColor color)
         {
             Color c = color.ToColor();
-            return AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, c.GetName(), c));
+            return AppendControl(FormatChunk.CreateControl(ForegroundColorTag, 0, c.GetName(), c));
         }
 
         /// <summary>
@@ -3381,7 +3381,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendForegroundColor(Color color)
         {
-            return AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color.GetName(), color));
+            return AppendControl(FormatChunk.CreateControl(ForegroundColorTag, 0, color.GetName(), color));
         }
 
         /// <summary>
@@ -3393,7 +3393,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendForegroundColor([CanBeNull] string color)
         {
-            return string.IsNullOrWhiteSpace(color) ? this : AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color));
+            return string.IsNullOrWhiteSpace(color) ? this : AppendControl(FormatChunk.CreateControl(ForegroundColorTag, 0, color));
         }
 
         /// <summary>
@@ -3406,7 +3406,7 @@ namespace WebApplications.Utilities.Formatting
         public FormatBuilder AppendBackgroundColor(ConsoleColor color)
         {
             Color c = color.ToColor();
-            return AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, c.GetName(), c));
+            return AppendControl(FormatChunk.CreateControl(BackgroundColorTag, 0, c.GetName(), c));
         }
 
         /// <summary>
@@ -3418,7 +3418,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendBackgroundColor(Color color)
         {
-            return AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color.GetName(), color));
+            return AppendControl(FormatChunk.CreateControl(BackgroundColorTag, 0, color.GetName(), color));
         }
 
         /// <summary>
@@ -3430,7 +3430,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendBackgroundColor([CanBeNull] string color)
         {
-            return string.IsNullOrWhiteSpace(color) ? this : AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color));
+            return string.IsNullOrWhiteSpace(color) ? this : AppendControl(FormatChunk.CreateControl(BackgroundColorTag, 0, color));
         }
         #endregion
 
@@ -3473,7 +3473,7 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(!IsReadOnly);
             return layout == null
                 ? this
-                : AppendControl(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
+                : AppendControl(FormatChunk.CreateControl(LayoutTag, 0, layout.ToString("f"), layout));
         }
 
         /// <summary>
@@ -3525,7 +3525,7 @@ namespace WebApplications.Utilities.Formatting
                 hyphenate,
                 hyphenChar,
                 wrapMode);
-            return Append(FormatChunk.CreateControl(LayoutTag, null, layout.ToString("f"), layout));
+            return Append(FormatChunk.CreateControl(LayoutTag, 0, layout.ToString("f"), layout));
         }
         #endregion
 

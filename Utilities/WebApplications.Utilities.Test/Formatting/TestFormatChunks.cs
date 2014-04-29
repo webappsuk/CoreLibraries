@@ -70,7 +70,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.IsNull(chunk.Value);
             Assert.IsNotNull(chunk.Tag);
             Assert.AreEqual("0", chunk.Tag);
-            Assert.IsNull(chunk.Alignment);
+            Assert.AreEqual(0, chunk.Alignment);
             Assert.IsNull(chunk.Format);
         }
 
@@ -122,7 +122,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.IsNull(chunk.Value);
             Assert.IsNotNull(chunk.Tag);
             Assert.AreEqual("0", chunk.Tag);
-            Assert.IsNull(chunk.Alignment);
+            Assert.AreEqual(0, chunk.Alignment);
             Assert.AreEqual("G", chunk.Format);
         }
 
@@ -137,7 +137,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.IsNull(chunk.Value);
             Assert.IsNotNull(chunk.Tag);
             Assert.AreEqual("0", chunk.Tag);
-            Assert.IsNull(chunk.Alignment);
+            Assert.AreEqual(0, chunk.Alignment);
             Assert.AreEqual(",", chunk.Format);
         }
 

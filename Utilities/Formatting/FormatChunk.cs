@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static readonly FormatChunk Unassigned = new FormatChunk(
             null,
-            null,
+            0,
             null,
             false,
             null,
@@ -57,7 +57,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public static readonly FormatChunk Empty = new FormatChunk(
             null,
-            null,
+            0,
             null,
             true,
             string.Empty,
@@ -77,10 +77,10 @@ namespace WebApplications.Utilities.Formatting
         public readonly string Tag;
 
         /// <summary>
-        /// The alignment, if any; otherwise <see langword="null"/>. (e.g. -3 for '{0,-3:G}'
+        /// The alignment, if any; otherwise 0. (e.g. -3 for '{0,-3:G}'
         /// </summary>
         [PublicAPI]
-        public readonly int? Alignment;
+        public readonly int Alignment;
 
         /// <summary>
         /// The format, if this is a formatting chunk and a format was specified, if any; otherwise <see langword="null"/>. (e.g. 'G' for '{0,-3:G}')
@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         private FormatChunk(
             [CanBeNull] string tag,
-            [CanBeNull] int? alignment,
+            int alignment,
             [CanBeNull] string format,
             bool isResolved,
             [CanBeNull] object value,
@@ -148,7 +148,7 @@ namespace WebApplications.Utilities.Formatting
 
             string str = value.Value as string;
             if (str == null)
-                return new FormatChunk(null, null, null, value.IsAssigned, value.Value, false);
+                return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
 
             if (str.Length < 1) return Empty;
 
@@ -157,7 +157,7 @@ namespace WebApplications.Utilities.Formatting
             if (end < 1 ||
                 str[0] != FormatBuilder.OpenChar ||
                 str[end] != FormatBuilder.CloseChar)
-                return new FormatChunk(null, null, null, value.IsAssigned, value.Value, false);
+                return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
 
             // Find alignment splitter and format splitter characters
             int al = str.IndexOf(FormatBuilder.AlignmentChar);
@@ -167,13 +167,13 @@ namespace WebApplications.Utilities.Formatting
 
             // Get the format if any.
             string format = null;
-            int? alignment = null;
+            int alignment = 0;
             if (sp > -1)
             {
                 sp++;
                 int flen = end - sp;
                 if (flen < 1)
-                    return new FormatChunk(null, null, null, value.IsAssigned, value.Value, false);
+                    return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
                 format = str.Substring(sp, end - sp);
                 end = sp - 1;
             }
@@ -184,12 +184,12 @@ namespace WebApplications.Utilities.Formatting
                 al++;
                 int allen = end - al;
                 if (allen < 1)
-                    return new FormatChunk(null, null, null, value.IsAssigned, value.Value, false);
+                    return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
 
-                string alstr = str.Substring(al, allen).Trim();
+                string alStr = str.Substring(al, allen).Trim();
                 int a;
-                if (!int.TryParse(alstr, out a))
-                    return new FormatChunk(null, null, null, value.IsAssigned, value.Value, false);
+                if (!int.TryParse(alStr, out a))
+                    return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
                 alignment = a;
                 end = al - 1;
             }
@@ -199,7 +199,7 @@ namespace WebApplications.Utilities.Formatting
             if (str[1] == FormatBuilder.ControlChar)
             {
                 isControl = true;
-                if (end < 3) return new FormatChunk(null, null, null, value.IsAssigned, value.Value, false);
+                if (end < 3) return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
             }
             else
                 isControl = false;
@@ -240,7 +240,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public static FormatChunk CreateControl(
             [CanBeNull] string tag,
-            [CanBeNull] int? alignment = null,
+            int alignment = 0,
             [CanBeNull] string format = null,
             Optional<object> value = default(Optional<object>))
         {
@@ -353,8 +353,9 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// TODO This is in serious need of a rewrite!
-        /// Writes this instance to the <see paramref="writer" />, using the optional <see paramref="format" />.
+        /// Writes this instance to the
+        /// <see paramref="writer" />, using the optional
+        /// <see paramref="format" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
@@ -365,175 +366,131 @@ namespace WebApplications.Utilities.Formatting
             if (format == null)
                 format = "g";
 
-            bool pad;
-            string value;
+            bool writeTag;
 
             switch (format.ToLowerInvariant())
             {
-                // Always output's the tag if the chunk has one, otherwise output's the value as normal
+                    // Always output's the tag if the chunk has one, otherwise output's the value as normal
                 case "f":
                     // We don't pad format strings
-                    pad = false;
-                    if (Tag != null)
-                        value = string.Format(
-                            "{{{0}{1}{2}}}",
-                            Tag,
-                            Alignment != null
-                                ? FormatBuilder.AlignmentChar + Alignment.Value.ToString("D")
-                                : string.Empty,
-                            !string.IsNullOrEmpty(Format) ? FormatBuilder.FormatChar + Format : string.Empty);
-                    else
-                    {
-                        Contract.Assert(Value != null);
-                        if (IsResolved && Value != null)
-                            // Get the formattable value (if any).
-                            if (!string.IsNullOrEmpty(Format))
-                            {
-                                IFormattable fc = Value as IFormattable;
-                                if (fc != null)
-                                    try
-                                    {
-                                        value = fc.ToString(Format, writer.FormatProvider);
-                                    }
-                                    catch
-                                    {
-                                        // Just use normal ToString() as format was invalid.
-                                        value = Value.ToString();
-                                    }
-                                else
-                                    value = Value.ToString();
-                            }
-                            else
-                                value = Value.ToString();
-                        else
-                            value = string.Empty;
-                    }
+                    writeTag = Tag != null;
                     break;
 
-                // Always output's the control tags, otherwise output the value as normal
+                    // Always output's the control tags, otherwise output the value as normal
                 case "c":
-                    if (Tag != null &&
-                        (IsControl || !IsResolved))
-                    {
-                        pad = false;
-                        value = string.Format(
-                            "{{{0}{1}{2}}}",
-                            Tag,
-                            Alignment != null
-                                ? FormatBuilder.AlignmentChar + Alignment.Value.ToString("D")
-                                : string.Empty,
-                            !string.IsNullOrEmpty(Format) ? FormatBuilder.FormatChar + Format : string.Empty);
-                    }
-                    else
-                    {
-                        Contract.Assert(Value != null);
-                        pad = true;
-                        if (IsResolved && Value != null)
-                            // Get the formattable value (if any).
-                            if (!string.IsNullOrEmpty(Format))
-                            {
-                                IFormattable fc = Value as IFormattable;
-                                if (fc != null)
-                                    try
-                                    {
-                                        value = fc.ToString(Format, writer.FormatProvider);
-                                    }
-                                    catch
-                                    {
-                                        // Just use normal ToString() as format was invalid.
-                                        value = Value.ToString();
-                                    }
-                                else
-                                    value = Value.ToString();
-                            }
-                            else
-                                value = Value.ToString();
-                        else
-                            value = string.Empty;
-                    }
+                    writeTag = Tag != null &&
+                               (IsControl || !IsResolved);
                     break;
 
-                // Should output the value as normal, but treats unresolved tags as an empty string value
+                    // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
                     if (IsControl) return;
 
-                    pad = true;
-                    if (IsResolved && Value != null)
-                        // Get the formattable value (if any).
-                        if (!string.IsNullOrEmpty(Format))
-                        {
-                            IFormattable fc = Value as IFormattable;
-                            if (fc != null)
-                                try
-                                {
-                                    value = fc.ToString(Format, writer.FormatProvider);
-                                }
-                                catch
-                                {
-                                    // Just use normal ToString() as format was invalid.
-                                    value = Value.ToString();
-                                }
-                            else
-                                value = Value.ToString();
-                        }
-                        else
-                            value = Value.ToString();
-                    else
-                        value = string.Empty;
+                    writeTag = false;
                     break;
 
-                // Outputs the value if set, otherwise the format tag. Control tags ignored
+                    // Outputs the value if set, otherwise the format tag. Control tags ignored
                 default:
                     if (IsControl) return;
 
-                    if (!IsResolved &&
-                        Tag != null)
-                    {
-                        Contract.Assert(Tag != null);
-                        pad = false;
-                        value = string.Format(
-                            "{{{0}{1}{2}}}",
-                            Tag,
-                            Alignment != null
-                                ? FormatBuilder.AlignmentChar + Alignment.Value.ToString("D")
-                                : string.Empty,
-                            !string.IsNullOrEmpty(Format) ? FormatBuilder.FormatChar + Format : string.Empty);
-                    }
-                    else
-                    {
-                        pad = true;
-                        if (IsResolved && Value != null)
-                            // Get the formattable value (if any).
-                            if (!string.IsNullOrEmpty(Format))
-                            {
-                                IFormattable fc = Value as IFormattable;
-                                if (fc != null)
-                                    try
-                                    {
-                                        value = fc.ToString(Format, writer.FormatProvider);
-                                    }
-                                    catch
-                                    {
-                                        // Just use normal ToString() as format was invalid.
-                                        value = Value.ToString();
-                                    }
-                                else
-                                    value = Value.ToString();
-                            }
-                            else
-                                value = Value.ToString();
-                        else
-                            value = string.Empty;
-                    }
+                    writeTag = !IsResolved && Tag != null;
                     break;
             }
 
-            if (pad && Alignment != null)
-                value = Alignment.Value > 0
-                    ? value.PadLeft(Alignment.Value)
-                    : value.PadRight(-Alignment.Value);
+            if (writeTag)
+            {
+                writer.Write('{');
+                writer.Write(Tag);
+                if (Alignment != 0)
+                {
+                    writer.Write(FormatBuilder.AlignmentChar);
+                    writer.Write(Alignment.ToString("D"));
+                }
+                if (!string.IsNullOrEmpty(Format))
+                {
+                    writer.Write(FormatBuilder.FormatChar);
+                    writer.Write(Format);
+                }
+                writer.Write('}');
+                return;
+            }
+
+            if (!IsResolved ||
+                Value == null)
+                return;
+
+            if (Alignment == 0)
+            {
+                // We are not aligning so we can output the value directly.
+                if (!string.IsNullOrEmpty(Format))
+                {
+                    IWriteable writeable = Value as IWriteable;
+                    if (writeable != null)
+                    {
+                        writeable.WriteTo(writer, Format);
+                        return;
+                    }
+
+                    IFormattable formattable = Value as IFormattable;
+                    if (formattable != null)
+                        // When using this interface we have to suppress <see cref="FormatException"/>.
+                        try
+                        {
+                            writer.Write(formattable.ToString(Format, writer.FormatProvider));
+                            return;
+                        }
+                            // ReSharper disable once EmptyGeneralCatchClause
+                        catch (FormatException)
+                        {
+                        }
+                }
+                writer.Write(Value.ToString());
+                return;
+            }
+
+            // We have to align the value, so we need it's length.
+            string value;
+            // We are not aligning so we can output the value directly.
+            if (!string.IsNullOrEmpty(Format))
+            {
+                IWriteable writeable = Value as IWriteable;
+                if (writeable != null)
+                    using (StringWriter sw = new StringWriter(writer.FormatProvider))
+                    {
+                        writeable.WriteTo(sw, Format);
+                        value = sw.ToString();
+                    }
+                else
+                {
+                    IFormattable formattable = Value as IFormattable;
+                    if (formattable != null)
+                        // When using this interface we have to suppress <see cref="FormatException"/>.
+                        try
+                        {
+                            value = formattable.ToString(Format, writer.FormatProvider);
+                        }
+                            // ReSharper disable once EmptyGeneralCatchClause
+                        catch (FormatException)
+                        {
+                            value = Value.ToString();
+                        }
+                    else
+                        value = Value.ToString();
+                }
+            }
+            else
+                value = Value.ToString();
+
+            int len = value.Length;
+            // Add any left padding
+            if (len < Alignment)
+                writer.Write(new string(' ', Alignment - len));
 
             writer.Write(value);
+            if (len >= -Alignment) return;
+
+            // Add right padding
+            writer.Write(new string(' ', -Alignment - len));
         }
     }
 }

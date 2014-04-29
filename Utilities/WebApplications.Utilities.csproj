@@ -205,7 +205,7 @@
     <Compile Include="Formatting\FormattedStringWriter.cs" />
     <Compile Include="Formatting\IColoredTextWriter.cs" />
     <Compile Include="Formatting\IControllableTextWriter.cs" />
-    <Compile Include="Formatting\IFormattableWrite.cs" />
+    <Compile Include="Formatting\IResolvable.cs" />
     <Compile Include="Formatting\ILayoutTextWriter.cs" />
     <Compile Include="Formatting\ISerialTextWriter.cs" />
     <Compile Include="Formatting\FormatBuilderLine.cs" />
