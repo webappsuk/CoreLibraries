@@ -3327,8 +3327,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendForegroundColor([CanBeNull] string color)
         {
-            if (string.IsNullOrWhiteSpace(color)) return this;
-            AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color));
+            return string.IsNullOrWhiteSpace(color) ? this : AppendControl(FormatChunk.CreateControl(ForegroundColorTag, null, color));
         }
 
         /// <summary>
@@ -3365,8 +3364,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendBackgroundColor([CanBeNull] string color)
         {
-            if (string.IsNullOrWhiteSpace(color)) return this;
-            AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color));
+            return string.IsNullOrWhiteSpace(color) ? this : AppendControl(FormatChunk.CreateControl(BackgroundColorTag, null, color));
         }
         #endregion
 
