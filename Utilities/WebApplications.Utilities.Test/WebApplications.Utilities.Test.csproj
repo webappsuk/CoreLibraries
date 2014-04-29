@@ -122,6 +122,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>FormatResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Formatting\TestIResolver.cs" />
     <Compile Include="Formatting\TestFormatBuilder.cs" />
     <Compile Include="Formatting\TestFormatBuilderLayout.cs" />
     <Compile Include="Formatting\TestFormatChunks.cs" />
