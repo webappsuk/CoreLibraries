@@ -85,7 +85,8 @@ namespace WebApplications.Utilities
         /// </summary>
         public static readonly DateTime EpochStart = new DateTime(1970, 1, 1);
 
-        private static readonly string[] _onesMapping = new[]
+        [NotNull]
+        private static readonly string[] _onesMapping =
         {
             "Zero",
             "One",
@@ -109,27 +110,29 @@ namespace WebApplications.Utilities
             "Nineteen"
         };
 
-        private static readonly string[] _tensMapping = new[]
+        [NotNull]
+        private static readonly string[] _tensMapping =
         {
             "Twenty",
             "Thirty",
             "Forty",
             "Fifty",
             "Sixty",
-            "Seventy"
-            ,
+            "Seventy",
             "Eighty",
             "Ninety"
         };
 
-        private static readonly string[] _groupMapping = new[]
+        // NOTE: 10^303 is approaching the limits of double, as ~1.7e308 is where we are going
+        // 10^303 is a centillion and a 10^309 is a duocentillion
+        [NotNull]
+        private static readonly string[] _groupMapping =
         {
             "Hundred",
             "Thousand",
             "Million",
             "Billion",
-            "Trillion"
-            ,
+            "Trillion",
             "Quadrillion",
             "Quintillion",
             "Sextillian",
@@ -149,8 +152,7 @@ namespace WebApplications.Utilities
             "Vigintillion",
             "Unvigintillion",
             "Duovigintillion",
-            "Tresvigintillion"
-            ,
+            "Tresvigintillion",
             "Quattuorvigintillion",
             "Quinquavigintillion",
             "Sesvigintillion",
@@ -166,7 +168,7 @@ namespace WebApplications.Utilities
         /// <summary>
         ///   The default split characters for splitting strings.
         /// </summary>
-        public static readonly char[] DefaultSplitChars = new[] {' ', ',', '\t', '\r', '\n', '|'};
+        public static readonly char[] DefaultSplitChars = new[] { ' ', ',', '\t', '\r', '\n', '|' };
 
         private static readonly Regex _htmlRegex = new Regex(
             @"<[^<>]*>",
@@ -224,9 +226,6 @@ namespace WebApplications.Utilities
             return suf;
         }
 
-        // NOTE: 10^303 is approaching the limits of double, as ~1.7e308 is where we are going
-        // 10^303 is a centillion and a 10^309 is a duocentillion
-
         /// <summary>
         ///   Converts a <see cref="int"/> to its English textual equivalent.
         /// </summary>
@@ -234,21 +233,15 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   The textual equivalent of <paramref name="number"/> specified.
         /// </returns>
+        [PublicAPI]
+        [NotNull]
         public static string ToEnglish(this int number)
         {
-            return ToEnglishProcessInteger(number);
-        }
-
-        /// <summary>
-        ///   Converts a <see cref="long"/> to its English textual equivalent.
-        /// </summary>
-        /// <param name="number">The number to convert.</param>
-        /// <returns>
-        ///   The textual equivalent of <paramref name="number"/> specified.
-        /// </returns>
-        public static string ToEnglish(this long number)
-        {
-            return ToEnglishProcessInteger(number);
+            using (StringWriter writer = new StringWriter())
+            {
+                WriteEnglish(writer, number);
+                return writer.ToString();
+            }
         }
 
         /// <summary>
@@ -258,107 +251,205 @@ namespace WebApplications.Utilities
         /// <returns>
         ///   The textual equivalent of <paramref name="number"/> specified.
         /// </returns>
+        [PublicAPI]
+        [NotNull]
         public static string ToEnglish(this double number)
         {
-            string integerString = ToEnglishProcessInteger((long) number);
-            int precision = 0;
-
-            if (number.ToString().Contains('.'))
-                precision = number.ToString().Split('.')[1].Length;
-
-            number = Math.Round(Math.Abs(number), precision) % 1;
-
-            int decimalDigits = 0;
-
-            if (number > 0)
-                while (number < 1 ||
-                       (number - Math.Floor(number) > 1e-10))
-                {
-                    number *= 10;
-                    decimalDigits++;
-                }
-
-            string decimalString = null;
-            while (decimalDigits-- > 0)
+            using (StringWriter writer = new StringWriter())
             {
-                int digit = (int) (number % 10);
-                number /= 10;
-                decimalString = _onesMapping[digit] + " " + decimalString;
+                WriteEnglish(writer, number);
+                return writer.ToString();
             }
-
-            return
-                String.Format(
-                    "{0}{1}{2}",
-                    integerString,
-                    (decimalString != null) ? " Point " : "",
-                    decimalString).Trim();
         }
 
-        private static string ToEnglishProcessInteger(long number)
+        /// <summary>
+        ///   Converts a <see cref="long"/> to its English textual equivalent.
+        /// </summary>
+        /// <param name="number">The number to convert.</param>
+        /// <returns>
+        ///   The textual equivalent of <paramref name="number"/> specified.
+        /// </returns>
+        [PublicAPI]
+        [NotNull]
+        public static string ToEnglish(this long number)
         {
-            string sign = null;
+            using (StringWriter writer = new StringWriter())
+            {
+                WriteEnglish(writer, number);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Appends a <see cref="double" /> to its English textual equivalent.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="number">The number to convert.</param>
+        /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
+        [PublicAPI]
+        public static void AppendEnglish([NotNull] this StringBuilder builder, double number)
+        {
+            Contract.Requires(builder != null);
+            using (StringWriter writer = new StringWriter(builder))
+                WriteEnglish(writer, number);
+        }
+
+        /// <summary>
+        /// Appends an <see cref="int" /> to its English textual equivalent.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="number">The number to convert.</param>
+        /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
+        [PublicAPI]
+        public static void AppendEnglish([NotNull] this StringBuilder builder, int number)
+        {
+            Contract.Requires(builder != null);
+            using (StringWriter writer = new StringWriter(builder))
+                WriteEnglish(writer, number);
+        }
+
+        /// <summary>
+        /// Appends an <see cref="long" /> to its English textual equivalent.
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <param name="number">The number to convert.</param>
+        /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
+        [PublicAPI]
+        public static void AppendEnglish([NotNull] this StringBuilder builder, long number)
+        {
+            Contract.Requires(builder != null);
+            using (StringWriter writer = new StringWriter(builder))
+                WriteEnglish(writer, number);
+        }
+
+        /// <summary>
+        /// Writes a <see cref="double" /> in its English textual equivalent.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="number">The number to convert.</param>
+        /// <returns>The textual equivalent of <paramref name="number" /> specified.</returns>
+        [PublicAPI]
+        public static void WriteEnglish([NotNull] this TextWriter writer, double number)
+        {
+            Contract.Requires(writer != null);
+            WriteEnglish(writer, (long)number);
+
+            if (number < 0)
+                number = Math.Abs(number);
+
+            // Note this isn't very safe, we cast to a decimal due to the lack of precision in double making it near impossible
+            // to accurately tell when we're finished.
+            decimal d;
+            unchecked
+            {
+                d = (decimal)number;   
+            }
+            // Get the approximate number after the point.
+            bool first = true;
+            while ((d = d % 1) > 0)
+            {
+                if (first)
+                {
+                    writer.Write(" Point");
+                    first = false;
+                }
+                d *= 10;
+                writer.Write(' ');
+                writer.Write(_onesMapping[(int)d]);
+            }
+        }
+
+        /// <summary>
+        /// Writes an <see cref="int" /> in its English textual equivalent.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="number">The number.</param>
+        [PublicAPI]
+        public static void WriteEnglish([NotNull] this TextWriter writer, long number)
+        {
+            Contract.Requires(writer != null);
+            bool start = true;
             if (number < 0)
             {
-                sign = "Negative";
+                writer.Write("Negative");
+                start = false;
                 number = Math.Abs(number);
             }
-
-            string retVal = null;
-            int group = 0;
             if (number < 1)
-                retVal = _onesMapping[0];
-            else
-                while (number >= 1)
-                {
-                    int numberToProcess = (number >= 1e16) ? 0 : (int) (number % 1000);
-                    number = number / 1000;
-
-                    string groupDescription = ToEnglishProcessGroup(numberToProcess);
-                    if (groupDescription != null)
-                    {
-                        if (@group > 0)
-                            retVal = _groupMapping[@group] + " " + retVal;
-                        retVal = groupDescription + " " + retVal;
-                    }
-
-                    @group++;
-                }
-
-            return
-                String.Format(
-                    "{0}{2}{1}",
-                    sign,
-                    retVal,
-                    (sign != null) ? " " : "").Trim();
-        }
-
-        private static string ToEnglishProcessGroup(int number)
-        {
-            int tens = number % 100;
-            int hundreds = number / 100;
-
-            string retVal = null;
-            if (hundreds > 0)
-                retVal = _onesMapping[hundreds] + " " + _groupMapping[0];
-            if (tens > 0)
             {
-                if (hundreds > 0)
-                    retVal += " And";
-                if (tens < 20)
-                    retVal += ((retVal != null) ? " " : "") + _onesMapping[tens];
-                else
-                {
-                    int ones = tens % 10;
-                    tens = (tens / 10) - 2; // 20's offset
-
-                    retVal += ((retVal != null) ? " " : "") + _tensMapping[tens];
-
-                    if (ones > 0)
-                        retVal += ((retVal != null) ? " " : "") + _onesMapping[ones];
-                }
+                writer.Write(_onesMapping[0]);
+                return;
             }
 
-            return retVal;
+            Stack<int, byte> groups = new Stack<int, byte>();
+            byte group = 0;
+            while (number >= 1)
+            {
+                groups.Push(
+                    (number < double.Epsilon)
+                        ? 0
+                        : (int)number % 1000,
+                    group++);
+                number = number / 1000;
+            }
+
+            int firstGroup = groups.Count - 1;
+            while (groups.Count > 0)
+            {
+                int numberToProcess;
+                groups.Pop(out numberToProcess, out group);
+
+                if (numberToProcess < 1) continue;
+
+                int tens = numberToProcess % 100;
+                int hundreds = numberToProcess / 100;
+
+                if (hundreds > 0)
+                {
+                    if (!start)
+                        writer.Write(' ');
+                    else
+                        start = false;
+
+                    writer.Write(_onesMapping[hundreds]);
+                    writer.Write(' ');
+                    writer.Write(_groupMapping[0]);
+                }
+
+                if (tens > 0)
+                {
+                    if (hundreds > 0 ||
+                        group < firstGroup)
+                        writer.Write(" And");
+
+                    if (!start)
+                        writer.Write(' ');
+                    else
+                        start = false;
+
+                    if (tens < 20)
+                        writer.Write(_onesMapping[tens]);
+                    else
+                    {
+                        tens = (tens / 10) - 2; // 20's offset
+
+                        writer.Write(_tensMapping[tens]);
+
+                        int ones = tens % 10;
+                        if (ones > 0)
+                        {
+                            writer.Write(' ');
+                            writer.Write(_onesMapping[tens]);
+                        }
+                    }
+                }
+
+                if (group > 0)
+                {
+                    writer.Write(' ');
+                    writer.Write(_groupMapping[group]);
+                }
+            }
         }
 
         /// <summary>
@@ -621,7 +712,7 @@ namespace WebApplications.Utilities
             if (input == null)
                 return "null";
             // TODO establish approx. increase in length of JSON encoding.
-            StringBuilder stringBuilder = new StringBuilder((int) (input.Length * 1.3) + 2);
+            StringBuilder stringBuilder = new StringBuilder((int)(input.Length * 1.3) + 2);
             stringBuilder.AppendJSON(input);
             return stringBuilder.ToString();
         }
@@ -713,11 +804,11 @@ namespace WebApplications.Utilities
                     s =>
                     {
                         int id;
-                        return Int32.TryParse(s, out id) ? (int?) id : null;
+                        return Int32.TryParse(s, out id) ? (int?)id : null;
                     }).Where(id => id.HasValue)
                     .Distinct()
                     .Select(id => getObject(id.Value));
-            if (!typeof (T).IsValueType)
+            if (!typeof(T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -756,11 +847,11 @@ namespace WebApplications.Utilities
                     s =>
                     {
                         Int16 id;
-                        return Int16.TryParse(s, out id) ? (Int16?) id : null;
+                        return Int16.TryParse(s, out id) ? (Int16?)id : null;
                     }).Where(id => id.HasValue)
                     .Distinct()
                     .Select(id => getObject(id.Value));
-            if (!typeof (T).IsValueType)
+            if (!typeof(T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -799,11 +890,11 @@ namespace WebApplications.Utilities
                     s =>
                     {
                         Int64 id;
-                        return Int64.TryParse(s, out id) ? (Int64?) id : null;
+                        return Int64.TryParse(s, out id) ? (Int64?)id : null;
                     }).Where(id => id.HasValue)
                     .Distinct()
                     .Select(id => getObject(id.Value));
-            if (!typeof (T).IsValueType)
+            if (!typeof(T).IsValueType)
                 enumeration = enumeration.Where(o => o != null);
 
             // Only retrieve distinct elements
@@ -1002,7 +1093,7 @@ namespace WebApplications.Utilities
         /// </remarks>
         public static Int64 GetEpochTime(this DateTime dateTime)
         {
-            return (Int64) (dateTime - EpochStart).TotalMilliseconds;
+            return (Int64)(dateTime - EpochStart).TotalMilliseconds;
         }
 
         /// <summary>
@@ -1239,7 +1330,7 @@ namespace WebApplications.Utilities
                             builder.Append(c);
                             continue;
                         }
-                        builder.Append((Char) n4);
+                        builder.Append((Char)n4);
                         i += 4;
                         break;
                     case 'U':
@@ -1280,7 +1371,7 @@ namespace WebApplications.Utilities
                             builder.Append(c);
                             continue;
                         }
-                        builder.Append((Char) nx);
+                        builder.Append((Char)nx);
                         i += j;
                         break;
                     default:
@@ -1445,13 +1536,13 @@ namespace WebApplications.Utilities
             int[] orderedIndices = indices
                 .Where(i => i < length && i > -1)
                 .OrderBy(i => i)
-                .Concat(new[] {length})
+                .Concat(new[] { length })
                 .ToArray();
 
             // If there is only one index we return the original
             // aray in a single element enumeration.
             if (orderedIndices.Length < 2)
-                return new[] {array};
+                return new[] { array };
 
             T[][] arrays = new T[orderedIndices.Length][];
             int start = 0;
@@ -1488,7 +1579,7 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>);
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>);
         }
 
         /// <summary>
@@ -1514,7 +1605,7 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>)
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
                 ? type.GetGenericArguments()[0]
                 : type;
         }
@@ -1530,9 +1621,9 @@ namespace WebApplications.Utilities
         {
             Contract.Requires(type != null);
 
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Optional<>)
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Optional<>)
                 ? type
-                : typeof (Optional<>).MakeGenericType(type);
+                : typeof(Optional<>).MakeGenericType(type);
         }
 
         /// <summary>
@@ -1552,7 +1643,7 @@ namespace WebApplications.Utilities
             Contract.Requires(type != null);
 
             if (!type.IsGenericType ||
-                (type.GetGenericTypeDefinition() != typeof (Optional<>)))
+                (type.GetGenericTypeDefinition() != typeof(Optional<>)))
                 return type.Default();
 
             return _optionalDefaultAssigneds.GetOrAdd(
@@ -1560,7 +1651,7 @@ namespace WebApplications.Utilities
                 t =>
                 {
                     if (!t.IsOptional())
-                        t = typeof (Optional<>).MakeGenericType(t);
+                        t = typeof(Optional<>).MakeGenericType(t);
                     return
                         t.GetField(
                             "DefaultAssigned",
@@ -1635,7 +1726,7 @@ namespace WebApplications.Utilities
             Contract.Requires(type != null);
 
             type = GetNonOptionalType(type);
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>);
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         /// <summary>
@@ -1653,7 +1744,7 @@ namespace WebApplications.Utilities
             if (!type.IsClass &&
                 !type.IsInterface &&
                 !type.IsNullableType())
-                type = typeof (Nullable<>).MakeGenericType(type);
+                type = typeof(Nullable<>).MakeGenericType(type);
             return type;
         }
 
@@ -1851,7 +1942,7 @@ namespace WebApplications.Utilities
 
                 // Note that scope is actually a uint not a long, but uint isn't CLS compliant so the framework
                 // uses a long - we don't need to waste the extra 4 bytes though.
-                uint scope = (uint) ipAddress.ScopeId;
+                uint scope = (uint)ipAddress.ScopeId;
                 byte[] scopeBytes = BitConverter.GetBytes(scope);
                 Array.Copy(scopeBytes, 0, bytes, offset, 4);
             }
@@ -2312,7 +2403,7 @@ namespace WebApplications.Utilities
         };
 
         [NotNull]
-        private static readonly string[] _memoryUnitsShort = {"B", "KB", "MB", "GB", "TB", "PB", "EB"};
+        private static readonly string[] _memoryUnitsShort = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
 
         /// <summary>
         /// Converts a number of bytes to a friendly memory size.
@@ -2328,7 +2419,7 @@ namespace WebApplications.Utilities
             uint decimalPlaces = 1,
             double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2345,7 +2436,7 @@ namespace WebApplications.Utilities
             uint decimalPlaces = 1,
             double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2362,7 +2453,7 @@ namespace WebApplications.Utilities
             uint decimalPlaces = 1,
             double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2379,7 +2470,7 @@ namespace WebApplications.Utilities
             uint decimalPlaces = 1,
             double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2396,7 +2487,7 @@ namespace WebApplications.Utilities
             uint decimalPlaces = 1,
             double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2413,7 +2504,7 @@ namespace WebApplications.Utilities
             uint decimalPlaces = 1,
             double breakPoint = 512D)
         {
-            return ToMemorySize((double) bytes, longUnits, decimalPlaces, breakPoint);
+            return ToMemorySize((double)bytes, longUnits, decimalPlaces, breakPoint);
         }
 
         /// <summary>
@@ -2494,7 +2585,7 @@ namespace WebApplications.Utilities
         {
             int mod = value % modulus;
             if (mod < 0) mod += modulus;
-            return (short) mod;
+            return (short)mod;
         }
 
         /// <summary>
@@ -2506,7 +2597,7 @@ namespace WebApplications.Utilities
         /// <remarks></remarks>
         public static ushort Mod(this ushort value, ushort modulus)
         {
-            return (ushort) (value % modulus);
+            return (ushort)(value % modulus);
         }
 
         /// <summary>
@@ -2748,8 +2839,8 @@ namespace WebApplications.Utilities
                 elementType,
                 t =>
                 {
-                    Type hashCollectionType = typeof (HashCollection<>).MakeGenericType(t);
-                    Type strongEnumerableType = typeof (IEnumerable<>).MakeGenericType(t);
+                    Type hashCollectionType = typeof(HashCollection<>).MakeGenericType(t);
+                    Type strongEnumerableType = typeof(IEnumerable<>).MakeGenericType(t);
 
                     ConstructorInfo constructor = hashCollectionType.GetConstructor(Type.EmptyTypes);
                     MethodInfo addMethod = hashCollectionType.GetMethod(
@@ -2757,7 +2848,7 @@ namespace WebApplications.Utilities
                         BindingFlags.Public | BindingFlags.Instance);
                     Contract.Assert(addMethod != null);
 
-                    ParameterExpression valuesParameter = Expression.Parameter(typeof (IEnumerable), "values");
+                    ParameterExpression valuesParameter = Expression.Parameter(typeof(IEnumerable), "values");
                     ParameterExpression strongEnumerable = Expression.Variable(
                         strongEnumerableType,
                         "strongEnumarble");
@@ -2765,14 +2856,14 @@ namespace WebApplications.Utilities
 
                     return Expression.Lambda<Func<IEnumerable, ISet>>(
                         Expression.Block(
-                            new[] {result},
+                            new[] { result },
                             Expression.Assign(result, Expression.New(constructor)),
                             Expression.IfThen(
                                 Expression.ReferenceNotEqual(
                                     valuesParameter,
-                                    Expression.Constant(null, typeof (IEnumerable))),
+                                    Expression.Constant(null, typeof(IEnumerable))),
                                 Expression.Block(
-                                    new[] {strongEnumerable},
+                                    new[] { strongEnumerable },
                                     Expression.Assign(
                                         strongEnumerable,
                                         Expression.TypeAs(valuesParameter, strongEnumerableType)),
@@ -2791,7 +2882,7 @@ namespace WebApplications.Utilities
                                                 item =>
                                                     Expression.Call(result, addMethod, Expression.Convert(item, t)))
                                             )))),
-                            Expression.Convert(result, typeof (ISet))),
+                            Expression.Convert(result, typeof(ISet))),
                         valuesParameter
                         ).Compile();
                 })(values);
@@ -2801,7 +2892,7 @@ namespace WebApplications.Utilities
         /// The <see cref="IEnumerator.MoveNext" /> method.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _enumeratorMoveNextMethod = typeof (IEnumerator).GetMethod(
+        private static readonly MethodInfo _enumeratorMoveNextMethod = typeof(IEnumerator).GetMethod(
             "MoveNext",
             BindingFlags.Public | BindingFlags.Instance);
 
@@ -2818,7 +2909,7 @@ namespace WebApplications.Utilities
             [NotNull] this Expression sourceEnumerable,
             [NotNull] Func<Expression, Expression> getBody)
         {
-            return ForEach(sourceEnumerable, item => new[] {getBody(item)});
+            return ForEach(sourceEnumerable, item => new[] { getBody(item) });
         }
 
         /// <summary>
@@ -2839,16 +2930,16 @@ namespace WebApplications.Utilities
             Type enumerableType = sourceEnumerable.Type;
             Type elementType;
             Type enumeratorType;
-            if (enumerableType == typeof (IEnumerable))
+            if (enumerableType == typeof(IEnumerable))
             {
-                elementType = typeof (object);
-                enumeratorType = typeof (IEnumerator);
+                elementType = typeof(object);
+                enumeratorType = typeof(IEnumerator);
             }
             else if ((enumerableType.IsGenericType) &&
-                     (enumerableType.GetGenericTypeDefinition() == typeof (IEnumerable<>)))
+                     (enumerableType.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
             {
                 elementType = enumerableType.GetGenericArguments().Single();
-                enumeratorType = typeof (IEnumerator<>).MakeGenericType(elementType);
+                enumeratorType = typeof(IEnumerator<>).MakeGenericType(elementType);
             }
             else
                 throw new ArgumentException("The source enumerable is not of an enumerable type", "sourceEnumerable");
@@ -2866,7 +2957,7 @@ namespace WebApplications.Utilities
             if (expressions.Length < 1) return Expression.Empty();
 
             return Expression.Block(
-                new[] {enumerator},
+                new[] { enumerator },
                 Expression.Assign(enumerator, Expression.Call(sourceEnumerable, getEnumeratorMethod)),
                 Expression.Loop(
                     Expression.IfThenElse(
@@ -2908,7 +2999,7 @@ namespace WebApplications.Utilities
             if ((locals != null) &&
                 (locals.Length > 0))
                 return e.Length > 0
-                    ? (Expression) Expression.Block(locals, e)
+                    ? (Expression)Expression.Block(locals, e)
                     : Expression.Empty();
             return e.Length > 1
                 ? Expression.Block(e)
@@ -2969,7 +3060,7 @@ namespace WebApplications.Utilities
             {
                 // We don't have a block.
                 variables = Enumerable.Empty<ParameterExpression>();
-                return new[] {expression};
+                return new[] { expression };
             }
             Contract.Assert(block.Variables != null);
             Contract.Assert(block.Expressions != null);
@@ -3056,7 +3147,7 @@ namespace WebApplications.Utilities
 
             BlockExpression b = block as BlockExpression;
             return b == null
-                ? Expression.Block(new[] {block}.Concat(expressions))
+                ? Expression.Block(new[] { block }.Concat(expressions))
                 : Expression.Block(b.Variables, b.Expressions.Concat(expressions));
         }
     }

@@ -217,5 +217,24 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("F"));
             Assert.AreEqual("A nested tag", builder.ToString(tag => string.Equals(tag, "t") ? "tag" : Optional<object>.Unassigned));
         }
+
+        [TestMethod]
+        public void TestResolveToBuilder()
+        {
+            FormatBuilder builderA = new FormatBuilder("{A} {B} {C}");
+            FormatBuilder builderB = new FormatBuilder("{Builder}");
+            Assert.AreEqual("a b c", builderB.ToString(
+                tag =>
+                {
+                    tag = tag.ToLowerInvariant();
+                    switch (tag)
+                    {
+                        case "builder":
+                            return builderA;
+                        default:
+                            return tag;
+                    }
+                }));
+        }
     }
 }
