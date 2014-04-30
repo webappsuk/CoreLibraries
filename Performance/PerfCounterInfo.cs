@@ -35,7 +35,7 @@ namespace WebApplications.Utilities.Performance
     /// <summary>
     /// Provides read-only access to a <see cref="PerfCategory">PerfCategory's</see> information.
     /// </summary>
-    public abstract class PerfCounterInfo : IFormattable
+    public abstract class PerfCounterInfo : ResolvableWriteable
     {
         /// <summary>
         /// The value type
@@ -89,67 +89,29 @@ namespace WebApplications.Utilities.Performance
         private static readonly FormatBuilder _defaultBuilder =
             new FormatBuilder("{Name}\t: {Value}", true);
 
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public override string ToString()
+        public override FormatBuilder DefaultFormat
         {
-            return ToString(_defaultBuilder);
+            get { return _defaultBuilder; }
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Resolves the specified tag.
         /// </summary>
-        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
-        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        /// <param name="tag">The tag.</param>
+        /// <returns>Optional&lt;System.Object&gt;.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public override Optional<object> Resolve(string tag)
         {
-            return ToString(
-                string.IsNullOrEmpty(format) ? _defaultBuilder : new FormatBuilder().AppendFormat(format),
-                formatProvider);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        [NotNull]
-        [PublicAPI]
-        public string ToString([CanBeNull] FormatBuilder builder, [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            if (builder == null)
-                builder = _defaultBuilder;
-
-            return builder
-                .ToString(
-                    null,
-                    formatProvider,
-                    chunk =>
-                    {
-                        Contract.Assert(chunk != null);
-                        Contract.Assert(!string.IsNullOrWhiteSpace(chunk.Tag));
-
-                        if (chunk.IsControl)
-                            return Optional<object>.Unassigned;
-                        // ReSharper disable once PossibleNullReferenceException
-                        switch (chunk.Tag.ToLowerInvariant())
-                        {
-                            case "name":
-                                return Name;
-                            case "help":
-                                return Help;
-                            case "value":
-                                return Value;
-                            default:
-                                return Optional<object>.Unassigned;
-                        }
-                    });
+            switch (tag.ToLowerInvariant())
+            {
+                case "name":
+                    return Name;
+                case "value":
+                    return Value;
+                default:
+                    return Optional<object>.Unassigned;
+            }
         }
     }
 
@@ -169,7 +131,7 @@ namespace WebApplications.Utilities.Performance
         /// <param name="help">The help.</param>
         /// <param name="getLatestValueFunc">The function to get the latest value.</param>
         public PerfCounterInfo([NotNull] string name, [NotNull] string help, [NotNull] Func<T> getLatestValueFunc)
-            : base(typeof (T), name, help)
+            : base(typeof(T), name, help)
         {
             Contract.Requires(name != null);
             Contract.Requires(help != null);

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
@@ -43,7 +44,7 @@ namespace WebApplications.Utilities.Performance
     /// <summary>
     ///   Performance category helper.
     /// </summary>
-    public abstract class PerfCategory : IReadOnlyDictionary<string, PerfCounterInfo>, IFormattable
+    public abstract class PerfCategory : ResolvableWriteable, IReadOnlyDictionary<string, PerfCounterInfo>
     {
         /// <summary>
         /// Holds all counters.
@@ -191,7 +192,7 @@ namespace WebApplications.Utilities.Performance
                     {
                         Trace.WriteLine(
                             string.Format(
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                            // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PerformanceCounterHelper_CounterDoesNotExist,
                                 CategoryName,
                                 counter.CounterName));
@@ -268,13 +269,13 @@ namespace WebApplications.Utilities.Performance
             // NOTE: Cant have Requires here as contract re-writing might change the method name and we need the name to be kept
             Contract.Assert(!string.IsNullOrWhiteSpace(categoryName));
             // ReSharper disable once AssignNullToNotNullAttribute
-            PerfCategoryType pct = _counterTypes.GetOrAdd(typeof (T), t => new PerfCategoryType(t));
+            PerfCategoryType pct = _counterTypes.GetOrAdd(typeof(T), t => new PerfCategoryType(t));
             Contract.Assert(pct != null);
             if (pct.Exception != null)
                 throw pct.Exception;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            return (T) _counters.GetOrAdd(categoryName, n => pct.Creator(n));
+            return (T)_counters.GetOrAdd(categoryName, n => pct.Creator(n));
         }
 
         /// <summary>
@@ -302,7 +303,7 @@ namespace WebApplications.Utilities.Performance
             where T : PerfCategory
         {
             Contract.Requires(categoryName != null);
-            return Exists(typeof (T), categoryName);
+            return Exists(typeof(T), categoryName);
         }
 
         /// <summary>
@@ -325,7 +326,7 @@ namespace WebApplications.Utilities.Performance
                 throw pct.Exception;
 
             return PerformanceCounterCategory.Exists(categoryName) &&
-                   // ReSharper disable once PossibleNullReferenceException,  AssignNullToNotNullAttribute
+                // ReSharper disable once PossibleNullReferenceException,  AssignNullToNotNullAttribute
                    pct.CreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, categoryName));
         }
 
@@ -365,13 +366,13 @@ namespace WebApplications.Utilities.Performance
             {
                 Contract.Requires(type != null);
                 Type = type;
-                if ((type == typeof (PerfCategory)) ||
-                    !type.DescendsFrom(typeof (PerfCategory)))
+                if ((type == typeof(PerfCategory)) ||
+                    !type.DescendsFrom(typeof(PerfCategory)))
                 {
                     Exception =
                         new InvalidOperationException(
                             string.Format(
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PerfCategoryType_Must_Descend_From_PerfCategory,
                                 type.FullName));
                     return;
@@ -387,7 +388,7 @@ namespace WebApplications.Utilities.Performance
                     Exception =
                         new InvalidOperationException(
                             string.Format(
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PerfCategoryType_Invalid_Constructor,
                                 type.FullName),
                             e);
@@ -400,11 +401,11 @@ namespace WebApplications.Utilities.Performance
                     CreationData = ExtendedType.Get(type)
                         .Fields
                         .Single(
-                            // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                             f => f.Info.IsStatic &&
                                  f.Info.IsInitOnly &&
                                  f.ReturnType ==
-                                 typeof (CounterCreationData[]))
+                                 typeof(CounterCreationData[]))
                         .Getter<CounterCreationData[]>()();
                 }
                 catch (Exception e)
@@ -413,7 +414,7 @@ namespace WebApplications.Utilities.Performance
                     Exception =
                         new InvalidOperationException(
                             string.Format(
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PerfCategoryType_Missing_Static_Readonly_Field,
                                 type.FullName),
                             e);
@@ -513,78 +514,58 @@ namespace WebApplications.Utilities.Performance
         /// The default builder for writing out a performance category.
         /// </summary>
         [NotNull]
-        private static readonly FormatBuilder _defaultBuilder = new FormatBuilder(int.MaxValue, 22, tabStops: new[] {3, 20, 22})
-            .AppendForegroundColor(Color.Yellow)
-            .AppendFormat("{CategoryName}")
-            .AppendResetForegroundColor()
-            .AppendFormat("{Info:\r\n\t{Name}\t: {Value}}")
-            .MakeReadOnly();
+        public static readonly FormatBuilder VerboseFormat =
+            new FormatBuilder(int.MaxValue, 22, tabStops: new[] { 3, 20, 22 })
+                .AppendForegroundColor(Color.Yellow)
+                .AppendFormat("{CategoryName}")
+                .AppendResetForegroundColor()
+                .AppendFormat("{Info:{<items>:\r\n\t{Name}\t: {Value}}}")
+                .MakeReadOnly();
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Gets the default format.
         /// </summary>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public override string ToString()
+        /// <value>The default format.</value>
+        public override FormatBuilder DefaultFormat
         {
-            return ToString(_defaultBuilder);
+            get { return VerboseFormat; }
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// The short format.
         /// </summary>
-        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
-        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            return ToString(
-                string.IsNullOrEmpty(format) ? _defaultBuilder : new FormatBuilder().AppendFormat(format),
-                formatProvider);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString([CanBeNull] FormatBuilder builder, [CanBeNull] IFormatProvider formatProvider = null)
+        public static readonly FormatBuilder ShortFormat = new FormatBuilder()
+                .AppendForegroundColor(Color.Yellow)
+                .AppendFormat("{CategoryName}")
+                .AppendResetForegroundColor()
+                .AppendFormat("{Info:: {<items>:{Name}={Value}}{<join>:, }}")
+                .MakeReadOnly();
+
+        /// <summary>
+        /// Resolves the specified tag.
+        /// </summary>
+        /// <param name="tag">The tag.</param>
+        /// <returns>Optional&lt;System.Object&gt;.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public override Optional<object> Resolve(string tag)
         {
-            if (builder == null)
-                builder = _defaultBuilder;
-
-            return builder
-                .ToString(
-                    null,
-                    formatProvider,
-                    chunk =>
-                    {
-                        Contract.Assert(chunk != null);
-                        Contract.Assert(!string.IsNullOrWhiteSpace(chunk.Tag));
-
-                        if (chunk.IsControl)
-                            return Optional<object>.Unassigned;
-                        // ReSharper disable once PossibleNullReferenceException
-                        switch (chunk.Tag.ToLowerInvariant())
-                        {
-                            case "categoryname":
-                                return CategoryName;
-                            case "instanceguid":
-                                return InstanceGuid;
-                            case "info":
-                                FormatBuilder infoBuilder = new FormatBuilder();
-                                foreach (PerfCounterInfo info in _infoDictionary.Values)
-                                {
-                                    Contract.Assert(info != null);
-                                    infoBuilder.Append(info.ToString(chunk.Format));
-                                }
-                                return infoBuilder;
-                            default:
-                                return Optional<object>.Unassigned;
-                        }
-                    });
+            switch (tag.ToLowerInvariant())
+            {
+                case "default":
+                    return VerboseFormat;
+                case "short":
+                    return ShortFormat;
+                case "categoryname":
+                    return CategoryName;
+                case "instanceguid":
+                    return InstanceGuid;
+                case "info":
+                    return _infoDictionary.Values.Count > 0 ? _infoDictionary.Values : null;
+                default:
+                    return Optional<object>.Unassigned;
+            }
         }
     }
 }

@@ -58,6 +58,8 @@ namespace WebApplications.Utilities.Performance.Test
             using (t.Region())
                 Thread.Sleep(50);
             Trace.WriteLine(t.ToString());
+            Trace.WriteLine(t.ToString("{short}"));
+            Trace.WriteLine(t.ToString(PerfCategory.ShortFormat));
         }
 
         [TestMethod]
