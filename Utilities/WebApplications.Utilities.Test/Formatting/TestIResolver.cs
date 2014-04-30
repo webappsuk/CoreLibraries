@@ -106,8 +106,15 @@ namespace WebApplications.Utilities.Test.Formatting
                 }
             };
 
-            FormatBuilder builder = new FormatBuilder().AppendFormat("{0:{A:{<INDEX>} {A} {B} {C} }}", resolvable);
-            Assert.AreEqual("0 A B C 1 D E F I G H J ", builder.ToString());
+            FormatBuilder builder = new FormatBuilder().AppendFormat("{0:{A:[{<ITEM>:{<INDEX>} {A} {B} {C}}{<JOIN>:, }]}}", resolvable);
+            Assert.AreEqual("[0 A B C, 1 D E F, I G H J]", builder.ToString());
+        }
+
+        [TestMethod]
+        public void TestEnumerations()
+        {
+            FormatBuilder builder = new FormatBuilder().AppendFormat("{0:[{<ITEM>:#.00}{<JOIN>:, }]}", new[] {1,2,3,4});
+            Assert.AreEqual("[1.00, 2.00, 3.00, 4.00]", builder.ToString());
         }
     }
 }

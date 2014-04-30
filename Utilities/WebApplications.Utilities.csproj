@@ -204,6 +204,7 @@
     <Compile Include="Formatting\FormatBuilderConverter.cs" />
     <Compile Include="Formatting\FormatChunk.cs" />
     <Compile Include="Formatting\FormatExtensions.cs" />
+    <Compile Include="Formatting\FormatOutput.cs" />
     <Compile Include="Formatting\FormattedStringWriter.cs" />
     <Compile Include="Formatting\FuncResolvable.cs" />
     <Compile Include="Formatting\IColoredTextWriter.cs" />

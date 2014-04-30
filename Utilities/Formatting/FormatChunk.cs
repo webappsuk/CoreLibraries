@@ -51,6 +51,19 @@ namespace WebApplications.Utilities.Formatting
             false);
 
         /// <summary>
+        /// The null string format chunk.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly FormatChunk Null = new FormatChunk(
+            null,
+            0,
+            null,
+            true,
+            null,
+            false);
+
+        /// <summary>
         /// The empty string format chunk.
         /// </summary>
         [NotNull]
@@ -146,9 +159,13 @@ namespace WebApplications.Utilities.Formatting
         {
             if (!value.IsAssigned) return Unassigned;
 
-            string str = value.Value as string;
+            object o = value.Value;
+            if (o == null)
+                return Null;
+
+            string str = o as string;
             if (str == null)
-                return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
+                return new FormatChunk(null, 0, null, true, o, false);
 
             if (str.Length < 1) return Empty;
 
@@ -157,7 +174,7 @@ namespace WebApplications.Utilities.Formatting
             if (end < 1 ||
                 str[0] != FormatBuilder.OpenChar ||
                 str[end] != FormatBuilder.CloseChar)
-                return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
+                return new FormatChunk(null, 0, null, true, o, false);
 
             // Find alignment splitter and format splitter characters
             int al = str.IndexOf(FormatBuilder.AlignmentChar);
@@ -173,7 +190,7 @@ namespace WebApplications.Utilities.Formatting
                 sp++;
                 int flen = end - sp;
                 if (flen < 1)
-                    return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
+                    return new FormatChunk(null, 0, null, true, o, false);
                 format = str.Substring(sp, end - sp);
                 end = sp - 1;
             }
@@ -184,12 +201,12 @@ namespace WebApplications.Utilities.Formatting
                 al++;
                 int allen = end - al;
                 if (allen < 1)
-                    return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
+                    return new FormatChunk(null, 0, null, true, o, false);
 
                 string alStr = str.Substring(al, allen).Trim();
                 int a;
                 if (!int.TryParse(alStr, out a))
-                    return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
+                    return new FormatChunk(null, 0, null, true, o, false);
                 alignment = a;
                 end = al - 1;
             }
@@ -199,7 +216,7 @@ namespace WebApplications.Utilities.Formatting
             if (str[1] == FormatBuilder.ControlChar)
             {
                 isControl = true;
-                if (end < 3) return new FormatChunk(null, 0, null, value.IsAssigned, value.Value, false);
+                if (end < 3) return new FormatChunk(null, 0, null, true, o, false);
             }
             else
                 isControl = false;

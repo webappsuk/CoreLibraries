@@ -663,7 +663,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.AddRange(
                     Resolve(
                         new[] { chunk },
-                        null, 
+                        null,
                         false,
                         ref _isLayoutRequired));
             return this;
@@ -958,7 +958,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.AddRange(
                     Resolve(
                         new[] { FormatChunk.Create(value) },
-                        null, 
+                        null,
                         false,
                         ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -1064,7 +1064,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.AddRange(
                     Resolve(
                         new[] { chunk },
-                        null, 
+                        null,
                         false,
                         ref _isLayoutRequired));
             _chunks.Add(FormatChunk.Create(Environment.NewLine));
@@ -1381,7 +1381,7 @@ namespace WebApplications.Utilities.Formatting
 
             _chunks = Resolve(
                 _chunks,
-                resolver, 
+                resolver,
                 isCaseSensitive,
                 ref _isLayoutRequired);
             return this;
@@ -1414,7 +1414,7 @@ namespace WebApplications.Utilities.Formatting
                             ? new Optional<object>(values[index])
                             : Optional<object>.Unassigned;
                     }
-                    : (Func<string, Optional<object>>) null,
+                    : (Func<string, Optional<object>>)null,
                 false,
                 ref isLayoutRequired);
         }
@@ -1444,7 +1444,7 @@ namespace WebApplications.Utilities.Formatting
                             ? new Optional<object>(value)
                             : Optional<object>.Unassigned;
                     }
-                    : (Func<string, Optional<object>>) null,
+                    : (Func<string, Optional<object>>)null,
                 false,
                 ref isLayoutRequired);
         }
@@ -1454,7 +1454,21 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [NotNull]
         [PublicAPI]
+        public const string ItemTag = "<item>";
+
+        /// <summary>
+        /// The layout control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
         public const string IndexTag = "<index>";
+
+        /// <summary>
+        /// The layout control tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string JoinTag = "<join>";
 
         /// <summary>
         /// Resolves the specified chunks.
@@ -1507,19 +1521,26 @@ namespace WebApplications.Utilities.Formatting
                     : Optional<object>.Unassigned;
 
                 // If we haven't resolved the value, get the chunks value.
-                if (!resolved.IsAssigned &&
-                    chunk.IsResolved)
-                    resolved = new Optional<object>(chunk.Value);
-
-                // If we have no resolved value, or the resolved value is null, we're done
-                if (!resolved.IsAssigned)
+                bool isAssigned = resolved.IsAssigned;
+                if (!isAssigned)
                 {
-                    results.Add(chunk);
-                    continue;
+                    if (chunk.IsResolved)
+                    {
+                        // Use the current resolution.
+                        resolved = new Optional<object>(chunk.Value);
+                        isAssigned = true;
+                    }
+                    else
+                    {
+                        // We have no resolution so just add the chunk.
+                        results.Add(chunk);
+                        continue;
+                    }
                 }
 
+                object resolvedValue = resolved.Value;
                 // Check for resolved to null.
-                if (resolved.Value == null)
+                if (resolvedValue == null)
                 {
                     results.Add(
                         chunk.IsResolved && chunk.Value == null
@@ -1529,7 +1550,7 @@ namespace WebApplications.Utilities.Formatting
                 }
 
                 // Handles getting a builder, or enumeration of chunks back.
-                IEnumerable<FormatChunk> formatChunks = resolved.Value as IEnumerable<FormatChunk>;
+                IEnumerable<FormatChunk> formatChunks = resolvedValue as IEnumerable<FormatChunk>;
                 if (formatChunks != null)
                 {
                     foreach (FormatChunk fci in formatChunks.Reverse())
@@ -1537,58 +1558,130 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
-                IEnumerable<IResolvable> resolvables = resolved.Value as IEnumerable<IResolvable>;
-                if (resolvables != null)
-                {
-                    foreach (KeyValuePair<IResolvable, int> kvp in resolvables.Select((r, i) => new KeyValuePair<IResolvable, int>(r, i)).Reverse())
-                    {
-                        // Add a new chunk with the index suffixed on the end of the original tag.
-                        stack.Push(
-                            new FormatChunk(
-                                chunk.Tag + "." + kvp.Value.ToString("D"),
-                                chunk.Alignment,
-                                chunk.Format,
-                                true,
-                                kvp.Key,
-                                chunk.IsControl),
-                            // This will add a fall-through value for the '<index>' tag - a new child Resolutions will be created based on this one
-                            // when the IResolution object is later resolved below, which means that you can still technically override the value of '<index>'.
-                            new Resolutions(
-                                resolutions,
-                                tag => string.Equals(IndexTag, tag, StringComparison.CurrentCultureIgnoreCase)
-                                    ? kvp.Value
-                                    : Optional<object>.Unassigned,
-                                false,
-                                true));
-                    }
-                    continue;
-                }
-
                 // Check if we have an actual FormatChunk as the value.
-                FormatChunk fc = resolved.Value as FormatChunk;
+                FormatChunk fc = resolvedValue as FormatChunk;
                 if (fc != null)
                 {
                     stack.Push(fc, resolutions);
                     continue;
                 }
 
-                // If we have a value, and a format, then we may need to recurse.
-                if (resolved.IsAssigned &&
-                    !string.IsNullOrWhiteSpace(chunk.Format))
+                // Check if we have a format
+                if (!string.IsNullOrEmpty(chunk.Format))
                 {
                     // Get the chunks for the fill point.
                     Stack<FormatChunk> subFormatChunks = new Stack<FormatChunk>();
                     bool hasFillPoint = false;
+                    bool hasItemFillPoint = false;
+                    bool hasIndexFillPoint = false;
+                    FormatChunk joinChunk = null;
                     foreach (FormatChunk subFormatChunk in chunk.Format.FormatChunks())
                     {
                         // ReSharper disable once PossibleNullReferenceException
-                        if (subFormatChunk.Tag != null) hasFillPoint = true;
+                        if (subFormatChunk.Tag != null)
+                        {
+                            hasFillPoint = true;
+                            if (string.Equals(
+                                subFormatChunk.Tag,
+                                ItemTag,
+                                StringComparison.CurrentCultureIgnoreCase))
+                                hasItemFillPoint = true;
+                            else if (string.Equals(
+                                subFormatChunk.Tag,
+                                IndexTag,
+                                StringComparison.CurrentCultureIgnoreCase))
+                                hasIndexFillPoint = true;
+                            else if (string.Equals(
+                                subFormatChunk.Tag,
+                                JoinTag,
+                                StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                // Very special case! 
+                                // We only allow one join chunk, so we take the last one, and we remove it from the outer format.
+                                joinChunk = subFormatChunk;
+                                continue;
+                            }
+                        }
                         subFormatChunks.Push(subFormatChunk);
                     }
 
-                    if (hasFillPoint)
+                    if (hasItemFillPoint)
                     {
-                        IResolvable resolvable = resolved.Value as IResolvable;
+                        // We have an <item> fill point, so check if we have an enumerable.
+                        IEnumerable enumerable = resolvedValue as IEnumerable;
+                        if (enumerable != null)
+                        {
+                            /*
+                             * Special case enumerables, if we have an '<item>' tag, then we will treat each item
+                             * individually, otherwise we'll treat as one item.
+                             */
+
+                            // Set the value of the joinChunk to FormatOutput.Default, which is an object that writes out it's own format!
+                            if (joinChunk != null)
+                                joinChunk = FormatChunk.Create(joinChunk, FormatOutput.Default);
+
+                            // Ensure we only enumerate once, and get the enumeration, bound with it's index, in reverse order.
+                            KeyValuePair<object, int>[] indexedArray = enumerable
+                                .Cast<object>()
+                                .Select((r, i) => new KeyValuePair<object, int>(r, i))
+                                .Reverse()
+                                .ToArray();
+
+                            // We have an enumeration format, so we need to add each item back in individually with new contextual information.
+                            while (subFormatChunks.Count > 0)
+                            {
+                                FormatChunk subFormatChunk = subFormatChunks.Pop();
+                                if (
+                                    !string.Equals(
+                                        subFormatChunk.Tag,
+                                        ItemTag,
+                                        StringComparison.CurrentCultureIgnoreCase))
+                                {
+                                    stack.Push(subFormatChunk, resolutions);
+                                    continue;
+                                }
+
+                                // We have an <item> chunk, which we now expand for each item.
+                                foreach (KeyValuePair<object, int> kvp in indexedArray)
+                                {
+                                    // This will add a fall-through value for the '<index>' tag - a new child Resolutions will be created based on this one
+                                    // when the IResolution object is later resolved below, which means that you can still technically override the value of '<index>'.
+                                    Resolutions inner = hasIndexFillPoint
+                                        ? new Resolutions(
+                                            resolutions,
+                                            tag =>
+                                                string.Equals(IndexTag, tag, StringComparison.CurrentCultureIgnoreCase)
+                                                    ? kvp.Value
+                                                    : Optional<object>.Unassigned,
+                                            false,
+                                            true)
+                                        : resolutions;
+
+                                    // Add a new chunk with a tag like <Item0>
+                                    stack.Push(
+                                        new FormatChunk(
+                                            string.Format("<Item{0:D}>", kvp.Value),
+                                            subFormatChunk.Alignment,
+                                            subFormatChunk.Format,
+                                            true,
+                                            kvp.Key,
+                                            subFormatChunk.IsControl),
+                                        inner);
+
+                                    // If we have join chunk, push it for all but the 'first' element.
+                                    if (kvp.Value > 0 &&
+                                        joinChunk != null)
+                                        stack.Push(joinChunk, inner);
+                                }
+                            }
+                            continue;
+                        }
+                    }
+
+                    // If we have a value, and a format, then we may need to recurse.
+                    if (isAssigned && hasFillPoint)
+                    {
+                        IResolvable resolvable = resolvedValue as IResolvable;
                         if (resolvable != null)
                             resolutions = new Resolutions(
                                 resolutions,
@@ -1602,7 +1695,7 @@ namespace WebApplications.Utilities.Formatting
                     }
                 }
 
-                if (chunk.IsResolved && chunk.Value == resolved.Value)
+                if (chunk.IsResolved && chunk.Value == resolvedValue)
                 {
                     results.Add(chunk);
                     continue;
@@ -1731,7 +1824,7 @@ namespace WebApplications.Utilities.Formatting
         public string ToString(
             [CanBeNull]Layout layout,
             ref int position,
-            [CanBeNull] [InstantHandle] Func<string, Optional<object>> resolver, 
+            [CanBeNull] [InstantHandle] Func<string, Optional<object>> resolver,
             bool isCaseSensitive = false)
         {
             using (StringWriter writer = new StringWriter())

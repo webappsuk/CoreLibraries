@@ -183,34 +183,6 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
-        [Timeout(60000)]
-        public void TestThreadSafetyNestedLayoutLongLine()
-        {
-            using (StringWriter stringWriter = new StringWriter())
-            using (FormatTextWriter formatTextWriter = new FormatTextWriter(stringWriter))
-            {
-                Stopwatch watch = Stopwatch.StartNew();
-                Parallel.For(
-                    0,
-                    1000,
-                    new ParallelOptions() {MaxDegreeOfParallelism = 8},
-                    i => new FormatBuilder()
-                        .Append(FormatResources.ButIMustExplain)
-                        .WriteTo(formatTextWriter));
-                watch.Stop();
-                Trace.WriteLine(watch.Elapsed.TotalMilliseconds);
-                Assert.AreEqual(970000, formatTextWriter.Position);
-                string result = stringWriter.ToString();
-
-                string[] lines = result
-                    .Split(new[] {Environment.NewLine}, StringSplitOptions.None);
-
-                // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
-                Assert.AreEqual(1, lines.Length);
-            }
-        }
-
-        [TestMethod]
         public void TestKeepPunctuationTogether()
         {
             FormatBuilder builder = new FormatBuilder(11, alignment: Alignment.Justify).Append("A test line.");
