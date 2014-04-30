@@ -218,6 +218,7 @@
     <Compile Include="Formatting\LayoutWrapMode.cs" />
     <Compile Include="Formatting\FormatTextWriter.cs" />
     <Compile Include="Formatting\Resolvable.cs" />
+    <Compile Include="Formatting\ResolvableWriteable.cs" />
     <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
     <Compile Include="Queue.cs">

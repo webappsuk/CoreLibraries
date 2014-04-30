@@ -41,6 +41,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
+        [StringFormatMethod("format")]
         void WriteTo([NotNull]TextWriter writer, [CanBeNull]string format);
     }
 }
