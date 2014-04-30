@@ -1450,21 +1450,28 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// The layout control tag.
+        /// The items tag.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public const string ItemsTag = "<items>";
+
+        /// <summary>
+        /// The item tag.
         /// </summary>
         [NotNull]
         [PublicAPI]
         public const string ItemTag = "<item>";
 
         /// <summary>
-        /// The layout control tag.
+        /// The index tag.
         /// </summary>
         [NotNull]
         [PublicAPI]
         public const string IndexTag = "<index>";
 
         /// <summary>
-        /// The layout control tag.
+        /// The join tag.
         /// </summary>
         [NotNull]
         [PublicAPI]
@@ -1572,8 +1579,7 @@ namespace WebApplications.Utilities.Formatting
                     // Get the chunks for the fill point.
                     Stack<FormatChunk> subFormatChunks = new Stack<FormatChunk>();
                     bool hasFillPoint = false;
-                    bool hasItemFillPoint = false;
-                    bool hasIndexFillPoint = false;
+                    bool hasItemsFillPoint = false;
                     FormatChunk joinChunk = null;
                     foreach (FormatChunk subFormatChunk in chunk.Format.FormatChunks())
                     {
@@ -1583,14 +1589,9 @@ namespace WebApplications.Utilities.Formatting
                             hasFillPoint = true;
                             if (string.Equals(
                                 subFormatChunk.Tag,
-                                ItemTag,
+                                ItemsTag,
                                 StringComparison.CurrentCultureIgnoreCase))
-                                hasItemFillPoint = true;
-                            else if (string.Equals(
-                                subFormatChunk.Tag,
-                                IndexTag,
-                                StringComparison.CurrentCultureIgnoreCase))
-                                hasIndexFillPoint = true;
+                                hasItemsFillPoint = true;
                             else if (string.Equals(
                                 subFormatChunk.Tag,
                                 JoinTag,
@@ -1605,14 +1606,14 @@ namespace WebApplications.Utilities.Formatting
                         subFormatChunks.Push(subFormatChunk);
                     }
 
-                    if (hasItemFillPoint)
+                    if (hasItemsFillPoint)
                     {
                         // We have an <item> fill point, so check if we have an enumerable.
                         IEnumerable enumerable = resolvedValue as IEnumerable;
                         if (enumerable != null)
                         {
                             /*
-                             * Special case enumerables, if we have an '<item>' tag, then we will treat each item
+                             * Special case enumerable, if we have an '<items>' tag, then we will treat each item
                              * individually, otherwise we'll treat as one item.
                              */
 
@@ -1634,37 +1635,47 @@ namespace WebApplications.Utilities.Formatting
                                 if (
                                     !string.Equals(
                                         subFormatChunk.Tag,
-                                        ItemTag,
+                                        ItemsTag,
                                         StringComparison.CurrentCultureIgnoreCase))
                                 {
                                     stack.Push(subFormatChunk, resolutions);
                                     continue;
                                 }
 
-                                // We have an <item> chunk, which we now expand for each item.
+                                // We have an <items> chunk, which we now expand for each item.
                                 foreach (KeyValuePair<object, int> kvp in indexedArray)
                                 {
-                                    // This will add a fall-through value for the '<index>' tag - a new child Resolutions will be created based on this one
-                                    // when the IResolution object is later resolved below, which means that you can still technically override the value of '<index>'.
-                                    Resolutions inner = hasIndexFillPoint
-                                        ? new Resolutions(
-                                            resolutions,
-                                            tag =>
-                                                string.Equals(IndexTag, tag, StringComparison.CurrentCultureIgnoreCase)
-                                                    ? kvp.Value
-                                                    : Optional<object>.Unassigned,
-                                            false,
-                                            true)
-                                        : resolutions;
+                                    object key = kvp.Key;
+                                    object value = kvp.Value;
+                                    // This will add a fall-through value for the '<item>' and '<index>' tags - a new child Resolutions will be created based on this one
+                                    // when the IResolution object is later resolved below, which means that you can still technically override the value of these tags in
+                                    // the underlying resolver.
+                                    Resolutions inner = new Resolutions(
+                                        resolutions,
+                                        tag =>
+                                        {
+                                            // ReSharper disable once PossibleNullReferenceException
+                                            switch (tag.ToLowerInvariant())
+                                            {
+                                                case IndexTag:
+                                                    return value;
+                                                case ItemTag:
+                                                    return key;
+                                                default:
+                                                    return Optional<object>.Unassigned;
+                                            }
+                                        },
+                                        false,
+                                        true);
 
-                                    // Add a new chunk with a tag like <Item0>
+                                    // Add a new chunk with, the <Item> tag.
                                     stack.Push(
                                         new FormatChunk(
-                                            string.Format("<Item{0:D}>", kvp.Value),
+                                            ItemTag,
                                             subFormatChunk.Alignment,
                                             subFormatChunk.Format,
                                             true,
-                                            kvp.Key,
+                                            key,
                                             subFormatChunk.IsControl),
                                         inner);
 

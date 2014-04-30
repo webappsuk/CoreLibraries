@@ -246,7 +246,12 @@ namespace WebApplications.Utilities.Test.Extensions
         [TestMethod]
         public void ToEnglish_FractionalValue_ContainsPoint()
         {
-            double value = Random.Next() * Math.Pow(10, -Random.Next(1, 10));
+            double value;
+            do
+            {
+                value = Random.Next() * Math.Pow(10, -Random.Next(1, 10));
+            } while (value - Math.Floor(value) < 0.0001);
+            
             Assert.IsTrue(
                 value.ToEnglish().Contains(" Point "),
                 "Where values contain a fractional component, the result of ToEnglish should contain ' Point '.");

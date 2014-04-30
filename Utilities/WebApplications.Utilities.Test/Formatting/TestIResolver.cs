@@ -25,11 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
 
@@ -106,15 +102,27 @@ namespace WebApplications.Utilities.Test.Formatting
                 }
             };
 
-            FormatBuilder builder = new FormatBuilder().AppendFormat("{0:{A:[{<ITEM>:{<INDEX>} {A} {B} {C}}{<JOIN>:, }]}}", resolvable);
+            FormatBuilder builder =
+                new FormatBuilder().AppendFormat("{0:{A:[{<ITEMS>:{<INDEX>} {A} {B} {C}}{<JOIN>:, }]}}", resolvable);
             Assert.AreEqual("[0 A B C, 1 D E F, I G H J]", builder.ToString());
         }
 
         [TestMethod]
         public void TestEnumerations()
         {
-            FormatBuilder builder = new FormatBuilder().AppendFormat("{0:[{<ITEM>:#.00}{<JOIN>:, }]}", new[] {1,2,3,4});
+            FormatBuilder builder = new FormatBuilder().AppendFormat(
+                "{0:[{<Items>:0.00}{<JOIN>:, }]}",
+                new[] {1, 2, 3, 4});
             Assert.AreEqual("[1.00, 2.00, 3.00, 4.00]", builder.ToString());
+        }
+
+        [TestMethod]
+        public void TestEnumerationsWithItemIndex()
+        {
+            FormatBuilder builder = new FormatBuilder().AppendFormat(
+                "{0:[{<items>:{<Index>}-{<Item>:0.00}}{<JOIN>:, }]}",
+                new[] {1, 2, 3, 4});
+            Assert.AreEqual("[0-1.00, 1-2.00, 2-3.00, 3-4.00]", builder.ToString());
         }
     }
 }
