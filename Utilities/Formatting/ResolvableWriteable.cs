@@ -46,6 +46,16 @@ namespace WebApplications.Utilities.Formatting
         public abstract FormatBuilder DefaultFormat { get; }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Resolvable"/> class.
+        /// </summary>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        protected ResolvableWriteable(bool isCaseSensitive = false, bool resolveOuterTags = true)
+            :base(isCaseSensitive, resolveOuterTags)
+        {
+        }
+
+        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
