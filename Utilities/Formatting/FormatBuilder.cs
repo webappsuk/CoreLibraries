@@ -2755,7 +2755,7 @@ namespace WebApplications.Utilities.Formatting
                         int index = result.LastIndexOfAny(_newLineChars);
                         position = index < 0
                             ? result.Length + position
-                            : result.Length - index;
+                            : result.Length - index - 1;
                     }
 
                 // Get current position from writer.
@@ -3145,16 +3145,16 @@ namespace WebApplications.Utilities.Formatting
 
                 int remaining = line.Remaining;
 
+                if (remaining < 1)
+                {
+                    // Process word on a new line, as we're at the end of this one.
+                    newLine = true;
+                    continue;
+                }
+
                 // Check for tab
                 if (c == '\t')
                 {
-                    if (remaining < 1)
-                    {
-                        // Process tab on a new line, as we're at the end of this one.
-                        newLine = true;
-                        continue;
-                    }
-
                     int tabSize;
                     if (layout.TabStops.IsAssigned &&
                         layout.TabStops.Value != null)
@@ -3271,7 +3271,7 @@ namespace WebApplications.Utilities.Formatting
                 IEnumerator<FormatChunk> controlEnumerator = line.Controls.GetEnumerator();
                 foreach (string chunk in line)
                 {
-                    if (string.IsNullOrEmpty(chunk))
+                    if (chunk == null)
                     {
                         // We got a control chunk, so need to split line
                         if (lb.Length > 0)
@@ -3279,6 +3279,7 @@ namespace WebApplications.Utilities.Formatting
                             chunks.Add(FormatChunk.Create(lb.ToString()));
                             lb.Clear();
                         }
+                        // Recover control chunk
                         controlEnumerator.MoveNext();
                         Contract.Assert(controlEnumerator.Current != null);
                         chunks.Add(controlEnumerator.Current);

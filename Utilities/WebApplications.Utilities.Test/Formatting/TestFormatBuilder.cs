@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
@@ -235,6 +236,47 @@ namespace WebApplications.Utilities.Test.Formatting
                             return tag;
                     }
                 }));
+        }
+
+        [TestMethod]
+        public void TestAutoPositioning()
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                using (FormatTextWriter fw = new FormatTextWriter(writer, 5))
+                {
+                    fw.WriteLine();
+                    Assert.AreEqual(0, fw.Position);
+                    fw.WriteLine("12345");
+                    Assert.AreEqual(0, fw.Position);
+                    fw.Write("12345\r\n");
+                    Assert.AreEqual(0, fw.Position);
+                    fw.Write("1234\r\n");
+                    Assert.AreEqual(0, fw.Position);
+                    fw.Write("1234");
+                    Assert.AreEqual(4, fw.Position);
+                    fw.Write("123456");
+                    Assert.AreEqual(5, fw.Position);
+                    fw.Write("123456");
+                    Assert.AreEqual(1, fw.Position);
+                    fw.Write("12345\r\n1");
+                    Assert.AreEqual(1, fw.Position);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestManualPositioning()
+        {
+            int position = 0;
+            new FormatBuilder("12345\r\n").ToString(null, ref position);
+            Assert.AreEqual(0, position);
+            new FormatBuilder("12345\r\n1").ToString(null, ref position);
+            Assert.AreEqual(1, position);
+            new FormatBuilder().AppendLine("1234").ToString(null, ref position);
+            Assert.AreEqual(0, position);
+            new FormatBuilder().AppendLine("1234").Append("1").ToString(null, ref position);
+            Assert.AreEqual(1, position);
         }
     }
 }
