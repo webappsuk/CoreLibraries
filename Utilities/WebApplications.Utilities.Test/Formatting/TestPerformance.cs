@@ -71,7 +71,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Parallel.For(0, loop, i =>
             {
                 string s = builder.ToString(
-                tag => string.Equals(tag, "list", StringComparison.CurrentCultureIgnoreCase)
+                (w, chunk) => string.Equals(chunk.Tag, "list", StringComparison.CurrentCultureIgnoreCase)
                     ? new Optional<object>(Enumerable.Range(0, items))
                     : Optional<object>.Unassigned);
             });

@@ -30,6 +30,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -91,16 +92,19 @@ namespace WebApplications.Utilities.Formatting
                 : Optional<object>.Unassigned;
         }
 
-        /// <summary>
-        /// Resolves the specified tag.
-        /// </summary>
-        /// <param name="tag">The tag.</param>
-        /// <returns>Optional&lt;System.Object&gt;.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Optional<object> Resolve(string tag)
+        /// <summary>
+        /// Resolves the specified chunk.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>An assigned<see cref="Optional{T}" /> if resolved; otherwise <see cref="Optional{T}.Unassigned" /></returns>
+        public override Optional<object> Resolve(TextWriter writer, FormatChunk chunk)
         {
+            Contract.Assert(chunk.Tag != null);
+
             TValue value;
-            return _values.TryGetValue(tag, out value)
+            return _values.TryGetValue(chunk.Tag, out value)
                 ? new Optional<object>(value)
                 : Optional<object>.Unassigned;
         }

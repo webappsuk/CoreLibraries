@@ -26,8 +26,13 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Xml.Schema;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -35,46 +40,25 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// A format chunk, holds information about a chunk of formatted Value.
     /// </summary>
-    public class FormatChunk : IEquatable<FormatChunk>, IFormattable, IWriteable
+    public class FormatChunk : IFormattable, IWriteable
     {
         /// <summary>
-        /// The unassigned format chunk.
+        /// Used during parsing of chunks, to indicate the current parser state.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public static readonly FormatChunk Unassigned = new FormatChunk(
-            null,
-            0,
-            null,
-            false,
-            null,
-            false);
+        private enum ParserState
+        {
+            Tag,
+            Alignment,
+            Format,
+            Value
+        }
 
         /// <summary>
-        /// The null string format chunk.
+        /// Any resolver that should be used to resolve this chunk (and any nested chunks).
         /// </summary>
-        [NotNull]
+        [CanBeNull]
         [PublicAPI]
-        public static readonly FormatChunk Null = new FormatChunk(
-            null,
-            0,
-            null,
-            true,
-            null,
-            false);
-
-        /// <summary>
-        /// The empty string format chunk.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public static readonly FormatChunk Empty = new FormatChunk(
-            null,
-            0,
-            null,
-            true,
-            string.Empty,
-            false);
+        public readonly IResolvable Resolver;
 
         /// <summary>
         /// Control chunks are never written out when you call <see cref="ToString()"/>, but can be used by consumers of a <see cref="FormatBuilder"/> to
@@ -117,19 +101,112 @@ namespace WebApplications.Utilities.Formatting
         public readonly bool IsResolved;
 
         /// <summary>
+        /// The child chunks.
+        /// </summary>
+        [PublicAPI]
+        [CanBeNull]
+        internal List<FormatChunk> ChildrenInternal;
+
+        /// <summary>
+        /// Gets the children (if any).
+        /// </summary>
+        /// <value>The children.</value>
+        [PublicAPI]
+        [NotNull]
+        public IEnumerable<FormatChunk> Children
+        {
+            get { return ChildrenInternal ?? Enumerable.Empty<FormatChunk>(); }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FormatChunk" /> class.
         /// </summary>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="tag">The tag.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="format">The format.</param>
+        internal FormatChunk(
+            [CanBeNull] IResolvable resolver,
+            [NotNull] string tag,
+            [CanBeNull] string alignment,
+            [CanBeNull] string format)
+        {
+            Contract.Requires(tag != null);
+            Resolver = resolver;
+            Tag = tag;
+            IsControl = tag.Length > 0 && tag[0] == FormatBuilder.ControlChar;
+            if (alignment != null)
+                int.TryParse(alignment, out Alignment);
+            Format = format;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatChunk" /> class.
+        /// </summary>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="tag">The tag.</param>
+        /// <param name="alignment">The alignment.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="value">The value.</param>
+        internal FormatChunk(
+            [CanBeNull] IResolvable resolver,
+            [NotNull] string tag,
+            int alignment,
+            [CanBeNull] string format,
+            Optional<object> value = default(Optional<object>))
+        {
+            Contract.Requires(tag != null);
+            Resolver = resolver;
+            Tag = tag;
+            IsControl = tag.Length > 0 && tag[0] == FormatBuilder.ControlChar;
+            Alignment = alignment;
+            Format = format;
+
+            if (!value.IsAssigned) return;
+
+            IsResolved = true;
+            Value = value.Value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatChunk" /> class.
+        /// </summary>
+        /// <param name="chunk">The chunk.</param>
+        /// <param name="value">The value.</param>
+        internal FormatChunk([NotNull] FormatChunk chunk, [CanBeNull] object value)
+        {
+            Contract.Requires(chunk != null);
+            Resolver = chunk.Resolver;
+            Tag = chunk.Tag;
+            IsControl = chunk.IsControl;
+            Alignment = chunk.Alignment;
+            Format = chunk.Format;
+            IsResolved = true;
+            Value = value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatChunk"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        internal FormatChunk([CanBeNull] object value)
+        {
+            Value = value;
+            IsResolved = value != null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatChunk"/> class.
+        /// </summary>
+        /// <param name="resolver">The resolver.</param>
         /// <param name="tag">The tag.</param>
         /// <param name="alignment">The alignment.</param>
         /// <param name="format">The format.</param>
         /// <param name="isResolved">if set to <see langword="true" /> [is resolved].</param>
         /// <param name="value">The value.</param>
-        /// <param name="isControl">if set to <see langword="true" /> this is a hidden control chunk.</param>
-        /// <remarks>This does not chunk the Value, however if the value is a string that starts and ends with the
-        /// <see cref="FormatBuilder.OpenChar" /> and
-        /// <see cref="FormatBuilder.CloseChar" /> characters, then it splits out the relevant parts.</remarks>
-        [StringFormatMethod("format")]
-        internal FormatChunk(
+        /// <param name="isControl">if set to <see langword="true" /> [is control].</param>
+        private FormatChunk(
+            [CanBeNull] IResolvable resolver,
             [CanBeNull] string tag,
             int alignment,
             [CanBeNull] string format,
@@ -137,207 +214,218 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] object value,
             bool isControl)
         {
+            Resolver = resolver;
             Tag = tag;
             Alignment = alignment;
             Format = format;
             IsResolved = isResolved;
-            Value = isResolved ? value : null;
+            Value = value;
             IsControl = isControl;
         }
 
         /// <summary>
-        /// Creates a <see cref="FormatChunk"/> from the specified value.
+        /// Clones this instance. Children are not cloned.
         /// </summary>
-        /// <param name="value">The Value.</param>
-        /// <returns>A <see cref="FormatChunk"/>.</returns>
-        /// <remarks>
-        /// This does not chunk the Value, however if the Value starts and ends with the <see cref="FormatBuilder.OpenChar"/> and
-        /// <see cref="FormatBuilder.CloseChar"/> characters, then it splits out the relevant parts.</remarks>
+        /// <returns>FormatChunk.</returns>
+        [NotNull]
+        internal FormatChunk Clone()
+        {
+            return new FormatChunk(Resolver, Tag, Alignment, Format, IsResolved, Value, IsControl);
+        }
+
+        /// <summary>
+        /// Appends the specified value, using the supplied resolver (if any).
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>FormatChunk.</returns>
         [NotNull]
         [PublicAPI]
-        public static FormatChunk Create(Optional<object> value)
+        internal FormatChunk Append([NotNull] string value, [CanBeNull] IResolvable resolver = null)
         {
-            if (!value.IsAssigned) return Unassigned;
-
-            object o = value.Value;
-            if (o == null)
-                return Null;
-
-            string str = o as string;
-            if (str == null)
-                return new FormatChunk(null, 0, null, true, o, false);
-
-            if (str.Length < 1) return Empty;
-
-            int end = str.Length - 1;
-            // Is this a fill point?
-            if (end < 1 ||
-                str[0] != FormatBuilder.OpenChar ||
-                str[end] != FormatBuilder.CloseChar)
-                return new FormatChunk(null, 0, null, true, o, false);
-
-            // Find alignment splitter and format splitter characters
-            int al = str.IndexOf(FormatBuilder.AlignmentChar);
-            int sp = str.IndexOf(FormatBuilder.FormatChar);
-            if ((sp > -1) &&
-                (al > sp)) al = -1;
-
-            // Get the format if any.
+            Contract.Requires(value != null);
+            string tag = null;
+            string alignment = null;
             string format = null;
-            int alignment = 0;
-            if (sp > -1)
+
+            Stack<FormatChunk> chunks = new Stack<FormatChunk>();
+            FormatChunk chunk = this;
+            StringBuilder builder = new StringBuilder(value.Length);
+
+            ParserState state = ParserState.Value;
+
+            int i = 0;
+            while (i < value.Length)
             {
-                sp++;
-                int flen = end - sp;
-                if (flen < 1)
-                    return new FormatChunk(null, 0, null, true, o, false);
-                format = str.Substring(sp, end - sp);
-                end = sp - 1;
+                char c = value[i++];
+
+                // Un-escape
+                if (c == '\\' &&
+                    (i < value.Length))
+                {
+                    builder.Append(value[i++]);
+                    continue;
+                }
+
+                bool gotFillPoint = false;
+                switch (state)
+                {
+                    case ParserState.Tag:
+                        switch (c)
+                        {
+                            case FormatBuilder.AlignmentChar:
+                                state = ParserState.Alignment;
+                                break;
+                            case FormatBuilder.FormatChar:
+                                state = ParserState.Format;
+                                break;
+                            case FormatBuilder.CloseChar:
+                                state = ParserState.Value;
+                                gotFillPoint = true;
+                                break;
+                            default:
+                                builder.Append(c);
+                                break;
+                        }
+                        if (state != ParserState.Tag)
+                        {
+                            // We've got a tag
+                            tag = builder.ToString();
+                            builder.Clear();
+                        }
+                        break;
+
+                    case ParserState.Alignment:
+                        switch (c)
+                        {
+                            case FormatBuilder.FormatChar:
+                                state = ParserState.Format;
+                                break;
+                            case FormatBuilder.CloseChar:
+                                state = ParserState.Value;
+                                gotFillPoint = true;
+                                break;
+                            default:
+                                builder.Append(c);
+                                break;
+                        }
+                        if (state != ParserState.Alignment)
+                        {
+                            // We've got an alignment
+                            alignment = builder.ToString();
+                            builder.Clear();
+                        }
+                        break;
+
+                    case ParserState.Format:
+                        switch (c)
+                        {
+                            case FormatBuilder.OpenChar:
+                                // We have a nested format!
+                                Contract.Assert(tag != null);
+                                FormatChunk newChunk = new FormatChunk(resolver, tag, alignment, null);
+                                tag = null;
+                                alignment = null;
+                                if (builder.Length > 0)
+                                {
+                                    Contract.Assert(newChunk.ChildrenInternal == null);
+                                    newChunk.AppendChunk(new FormatChunk(builder.ToString()));
+                                    builder.Clear();
+                                }
+                                chunk.AppendChunk(newChunk);
+                                chunks.Push(chunk);
+                                chunk = newChunk;
+                                state = ParserState.Tag;
+                                break;
+                            case FormatBuilder.CloseChar:
+                                state = ParserState.Value;
+                                gotFillPoint = true;
+                                format = builder.ToString();
+                                builder.Clear();
+                                break;
+                            default:
+                                builder.Append(c);
+                                break;
+                        }
+                        break;
+
+                    default:
+                        switch (c)
+                        {
+                            case FormatBuilder.OpenChar:
+                                state = ParserState.Tag;
+                                // We've got a value
+                                if (builder.Length > 0)
+                                {
+                                    chunk.AppendChunk(new FormatChunk(builder.ToString()));
+                                    builder.Clear();
+                                }
+                                break;
+                            case FormatBuilder.CloseChar:
+                                state = ParserState.Value;
+                                if (chunks.Count > 0)
+                                {
+                                    // Closing a nest fill point.
+                                    if (builder.Length > 0)
+                                    {
+                                        chunk.AppendChunk(new FormatChunk(builder.ToString()));
+                                        builder.Clear();
+                                    }
+                                    chunk = chunks.Pop();
+                                    Contract.Assert(chunk != null);
+                                }
+                                else
+                                    builder.Append(c);
+                                break;
+                            default:
+                                builder.Append(c);
+                                break;
+                        }
+                        break;
+                }
+
+                if (gotFillPoint)
+                {
+                    Contract.Assert(tag != null);
+                    FormatChunk newChunk = new FormatChunk(resolver, tag, alignment, format);
+                    chunk.AppendChunk(newChunk);
+                    tag = null;
+                    alignment = null;
+                    format = null;
+                }
             }
 
-            // Check the alignment is a valid integer.
-            if (al > -1)
-            {
-                al++;
-                int allen = end - al;
-                if (allen < 1)
-                    return new FormatChunk(null, 0, null, true, o, false);
+            if (builder.Length <= 0) return this;
 
-                string alStr = str.Substring(al, allen).Trim();
-                int a;
-                if (!int.TryParse(alStr, out a))
-                    return new FormatChunk(null, 0, null, true, o, false);
-                alignment = a;
-                end = al - 1;
-            }
+            // We have some left overs
+            string v = builder.ToString();
+            builder.Clear();
 
-            // Check if we are a control tag
-            bool isControl;
-            if (str[1] == FormatBuilder.ControlChar)
-            {
-                isControl = true;
-                if (end < 3) return new FormatChunk(null, 0, null, true, o, false);
-            }
+            if (tag != null)
+                builder.Append(FormatBuilder.OpenChar).Append(tag);
+            if (alignment != null)
+                builder.Append(FormatBuilder.AlignmentChar).Append(alignment);
+            if (builder.Length < 1)
+                chunk.AppendChunk(new FormatChunk(v));
             else
-                isControl = false;
-            string tag = str.Substring(1, end - 1);
-
-            return new FormatChunk(tag, alignment, format, false, null, isControl);
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="FormatChunk"/> from an existing chunk, with a new value.
-        /// </summary>
-        /// <param name="chunk">The chunk to copy.</param>
-        /// <param name="value">The value.</param>
-        /// <returns></returns>
-        [NotNull]
-        [PublicAPI]
-        public static FormatChunk Create([NotNull] FormatChunk chunk, Optional<object> value)
-        {
-            Contract.Requires(chunk != null);
-            return new FormatChunk(chunk.Tag, chunk.Alignment, chunk.Format, value.IsAssigned, value.Value, chunk.IsControl);
-        }
-
-        /// <summary>
-        /// Creates a control <see cref="FormatChunk" /> from the specified value.
-        /// </summary>
-        /// <param name="tag">The tag.</param>
-        /// <param name="alignment">The alignment.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        /// A <see cref="FormatChunk" />.
-        /// </returns>
-        /// <remarks>
-        /// Control chunks are not written out, but can be used to extend functionality.
-        /// </remarks>
-        [NotNull]
-        [PublicAPI]
-        [StringFormatMethod("format")]
-        public static FormatChunk CreateControl(
-            [CanBeNull] string tag,
-            int alignment = 0,
-            [CanBeNull] string format = null,
-            Optional<object> value = default(Optional<object>))
-        {
-            return string.IsNullOrEmpty(tag)
-                ? Unassigned
-                : new FormatChunk(
-                    tag[0] == FormatBuilder.ControlChar ? tag : FormatBuilder.ControlChar + tag,
-                    alignment,
-                    format,
-                    value.IsAssigned,
-                    value.Value,
-                    true);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
-        /// </summary>
-        /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns><see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
-        public override bool Equals([CanBeNull] object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((FormatChunk)obj);
-        }
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-        public bool Equals([CanBeNull] FormatChunk other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return IsResolved == other.IsResolved &&
-                   Alignment == other.Alignment &&
-                   string.Equals(Tag, other.Tag) &&
-                   string.Equals(Format, other.Format) &&
-                   Equals(Value, other.Value);
-        }
-
-        /// <summary>
-        /// Gets the hash code.
-        /// </summary>
-        /// <returns>System.Int32.</returns>
-        public override int GetHashCode()
-        {
-            unchecked
             {
-                int hashCode = (Tag != null ? Tag.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ Alignment.GetHashCode();
-                hashCode = (hashCode * 397) ^ (Format != null ? Format.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (IsResolved ? 1 : 0);
-                hashCode = (hashCode * 397) ^ (Value != null ? Value.GetHashCode() : 0);
-                return hashCode;
+                builder.Append(FormatBuilder.FormatChar).Append(v);
+                chunk.AppendChunk(new FormatChunk(builder.ToString()));
             }
+            return this;
         }
 
         /// <summary>
-        /// Implements the ==.
+        /// Appends the specified chunk.
         /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator ==(FormatChunk left, FormatChunk right)
+        /// <param name="chunk">The chunk.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        internal void AppendChunk([NotNull] FormatChunk chunk)
         {
-            return Equals(left, right);
-        }
-
-        /// <summary>
-        /// Implements the !=.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator !=(FormatChunk left, FormatChunk right)
-        {
-            return !Equals(left, right);
+            if (ChildrenInternal == null)
+                ChildrenInternal = new List<FormatChunk>();
+            ChildrenInternal.Add(chunk);
         }
 
         /// <summary>
@@ -387,26 +475,26 @@ namespace WebApplications.Utilities.Formatting
 
             switch (format.ToLowerInvariant())
             {
-                    // Always output's the tag if the chunk has one, otherwise output's the value as normal
+                // Always output's the tag if the chunk has one, otherwise output's the value as normal
                 case "f":
                     // We don't pad format strings
                     writeTag = Tag != null;
                     break;
 
-                    // Always output's the control tags, otherwise output the value as normal
+                // Always output's the control tags, otherwise output the value as normal
                 case "c":
                     writeTag = Tag != null &&
                                (IsControl || !IsResolved);
                     break;
 
-                    // Should output the value as normal, but treats unresolved tags as an empty string value
+                // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
                     if (IsControl) return;
 
                     writeTag = false;
                     break;
 
-                    // Outputs the value if set, otherwise the format tag. Control tags ignored
+                // Outputs the value if set, otherwise the format tag. Control tags ignored
                 default:
                     if (IsControl) return;
 
@@ -416,19 +504,28 @@ namespace WebApplications.Utilities.Formatting
 
             if (writeTag)
             {
-                writer.Write('{');
+                writer.Write(FormatBuilder.OpenChar);
                 writer.Write(Tag);
                 if (Alignment != 0)
                 {
                     writer.Write(FormatBuilder.AlignmentChar);
                     writer.Write(Alignment.ToString("D"));
                 }
-                if (!string.IsNullOrEmpty(Format))
+                if (Format != null)
                 {
                     writer.Write(FormatBuilder.FormatChar);
                     writer.Write(Format);
                 }
-                writer.Write('}');
+                if (ChildrenInternal != null &&
+                    ChildrenInternal.Count > 0)
+                {
+                    Contract.Assert(Format == null);
+
+                    writer.Write(FormatBuilder.FormatChar);
+                    foreach (FormatChunk chunk in ChildrenInternal)
+                        chunk.WriteTo(writer, format);
+                }
+                writer.Write(FormatBuilder.CloseChar);
                 return;
             }
 
@@ -456,7 +553,7 @@ namespace WebApplications.Utilities.Formatting
                             writer.Write(formattable.ToString(Format, writer.FormatProvider));
                             return;
                         }
-                            // ReSharper disable once EmptyGeneralCatchClause
+                        // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                         }
@@ -486,7 +583,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             value = formattable.ToString(Format, writer.FormatProvider);
                         }
-                            // ReSharper disable once EmptyGeneralCatchClause
+                        // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                             value = Value.ToString();

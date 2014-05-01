@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.IO;
 using JetBrains.Annotations;
 
@@ -51,11 +52,12 @@ namespace WebApplications.Utilities.Formatting
         bool ResolveOuterTags { get; }
 
         /// <summary>
-        /// Resolves the specified tag.
+        /// Resolves the specified chunk.
         /// </summary>
-        /// <param name="tag">The tag.</param>
-        /// <returns>Optional&lt;System.Object&gt;.</returns>
+        /// <param name="writer">The writer.</param>
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>An assigned<see cref="Optional{T}" /> if resolved; otherwise <see cref="Optional{T}.Unassigned" /></returns>
         [PublicAPI]
-        Optional<object> Resolve([NotNull] string tag);
+        Optional<object> Resolve([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
     }
 }

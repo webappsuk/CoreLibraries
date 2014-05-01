@@ -116,7 +116,6 @@ namespace WebApplications.Utilities.Test.Formatting
 
             Assert.IsInstanceOfType(clone, typeof (FormatBuilder));
 
-            Assert.IsTrue(builder.SequenceEqual(clone), "Chunks are not equal");
             Assert.AreEqual(builder.ToString(), clone.ToString());
         }
 

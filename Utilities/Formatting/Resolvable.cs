@@ -25,6 +25,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.IO;
+using JetBrains.Annotations;
+
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
@@ -65,10 +69,11 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Resolves the specified tag.
+        /// Resolves the specified chunk.
         /// </summary>
-        /// <param name="tag">The tag.</param>
-        /// <returns>Optional&lt;System.Object&gt;.</returns>
-        public abstract Optional<object> Resolve(string tag);
+        /// <param name="writer">The writer.</param>
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>An assigned<see cref="Optional{T}" /> if resolved; otherwise <see cref="Optional{T}.Unassigned" /></returns>
+        public abstract Optional<object> Resolve(TextWriter writer, FormatChunk chunk);
     }
 }

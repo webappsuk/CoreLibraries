@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -51,7 +52,7 @@ namespace WebApplications.Utilities.Formatting
             /// </summary>
             [NotNull]
             [PublicAPI]
-            private readonly Func<string, Optional<object>> _resolver;
+            private readonly ResolveDelegate _resolver;
 
             /// <summary>
             /// Any resolved values.
@@ -69,7 +70,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
             public Resolutions(
                 [CanBeNull] Resolutions parent,
-                [NotNull] Func<string, Optional<object>> resolver,
+                [NotNull] ResolveDelegate resolver,
                 bool isCaseSensitive,
                 bool resolveOuterTags)
                 : base(isCaseSensitive, resolveOuterTags)
@@ -82,25 +83,28 @@ namespace WebApplications.Utilities.Formatting
                         isCaseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
             }
 
-            /// <summary>
-            /// Resolves the specified tag.
-            /// </summary>
-            /// <param name="tag">The tag.</param>
-            /// <returns>Optional&lt;System.Object&gt;.</returns>
             // ReSharper disable once CodeAnnotationAnalyzer
-            public override Optional<object> Resolve(string tag)
+            /// <summary>
+            /// Resolves the specified chunk.
+            /// </summary>
+            /// <param name="writer">The writer.</param>
+            /// <param name="chunk">The chunk.</param>
+            /// <returns>An assigned<see cref="Optional{T}" /> if resolved; otherwise <see cref="Optional{T}.Unassigned" /></returns>
+            public override Optional<object> Resolve(TextWriter writer, FormatChunk chunk)
             {
+                Contract.Assert(chunk.Tag != null);
+
                 Optional<object> value;
-                if (_values.TryGetValue(tag, out value))
+                if (_values.TryGetValue(chunk.Tag, out value))
                     return value;
 
-                value = _resolver(tag);
+                value = _resolver(writer, chunk);
                 if (!value.IsAssigned &&
                     ResolveOuterTags && 
                     Parent != null)
-                     value = Parent.Resolve(tag);
+                     value = Parent.Resolve(writer, chunk);
 
-                _values[tag] = value;
+                _values[chunk.Tag] = value.Value;
                 return value;
             }
         }

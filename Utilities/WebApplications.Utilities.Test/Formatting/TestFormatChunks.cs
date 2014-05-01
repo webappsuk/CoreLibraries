@@ -34,6 +34,7 @@ namespace WebApplications.Utilities.Test.Formatting
     [TestClass]
     public class TestFormatChunks
     {
+        /* TODO The FormatChunks extension method does no longer exist, its functionality has been replaced by the FormatChunk class itself
         [TestMethod]
         public void TestNull()
         {
@@ -263,6 +264,6 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("escaped", chunks[3].Tag);
             Assert.AreEqual(@"} tags and other \ 'characters}", chunks[4].Value);
             // ReSharper restore PossibleNullReferenceException
-        }
+        } //*/
     }
 }
