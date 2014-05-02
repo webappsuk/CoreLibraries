@@ -545,29 +545,29 @@ namespace WebApplications.Utilities.Performance
         }
 
         /// <summary>
-        /// Resolves the specified chunk.
+        /// Resolves the specified tag.
         /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>An assigned<see cref="T:WebApplications.Utilities.Optional`1" /> if resolved; otherwise <see cref="F:WebApplications.Utilities.Optional`1.Unassigned" /></returns>
+        /// <param name="tag">The tag.</param>
+        /// <returns>A <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
+        /// <requires csharp="tag != null" vb="tag &lt;&gt; Nothing">tag != null</requires>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Optional<object> Resolve(TextWriter writer, FormatChunk chunk)
+        protected override Resolution Resolve(string tag)
         {
             // ReSharper disable once PossibleNullReferenceException
-            switch (chunk.Tag.ToLowerInvariant())
+            switch (tag.ToLowerInvariant())
             {
                 case "default":
-                    return VerboseFormat;
+                    return new Resolution(VerboseFormat);
                 case "short":
-                    return ShortFormat;
+                    return new Resolution(ShortFormat);
                 case "categoryname":
-                    return CategoryName;
+                    return new Resolution(CategoryName);
                 case "instanceguid":
-                    return InstanceGuid;
+                    return new Resolution(InstanceGuid);
                 case "info":
-                    return _infoDictionary.Values.Count > 0 ? _infoDictionary.Values : null;
+                    return new Resolution(_infoDictionary.Values.Count > 0 ? _infoDictionary.Values : null);
                 default:
-                    return Optional<object>.Unassigned;
+                    return Resolution.Unknown;
             }
         }
     }

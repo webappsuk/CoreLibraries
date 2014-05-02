@@ -103,21 +103,21 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         /// Resolves the specified chunk.
         /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="chunk">The chunk.</param>
+        /// <param name="tag">The tag.</param>
         /// <returns>An assigned<see cref="T:WebApplications.Utilities.Optional`1" /> if resolved; otherwise <see cref="F:WebApplications.Utilities.Optional`1.Unassigned" /></returns>
+        /// <requires csharp="tag != null" vb="tag &lt;&gt; Nothing">tag != null</requires>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Optional<object> Resolve(TextWriter writer, FormatChunk chunk)
+        protected override Resolution Resolve(string tag)
         {
             // ReSharper disable once PossibleNullReferenceException
-            switch (chunk.Tag.ToLowerInvariant())
+            switch (tag.ToLowerInvariant())
             {
                 case "name":
-                    return Name;
+                    return new Resolution(Name);
                 case "value":
-                    return Value;
+                    return new Resolution(Value);
                 default:
-                    return Optional<object>.Unassigned;
+                    return Resolution.Unknown;
             }
         }
     }
