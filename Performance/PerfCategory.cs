@@ -547,14 +547,14 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         /// Resolves the specified tag.
         /// </summary>
-        /// <param name="tag">The tag.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="chunk">The chunk.</param>
         /// <returns>A <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
-        /// <requires csharp="tag != null" vb="tag &lt;&gt; Nothing">tag != null</requires>
         // ReSharper disable once CodeAnnotationAnalyzer
-        protected override Resolution Resolve(string tag)
+        public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
         {
             // ReSharper disable once PossibleNullReferenceException
-            switch (tag.ToLowerInvariant())
+            switch (chunk.Tag.ToLowerInvariant())
             {
                 case "default":
                     return new Resolution(VerboseFormat);
