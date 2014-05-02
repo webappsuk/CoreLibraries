@@ -222,6 +222,7 @@
     <Compile Include="Formatting\Resolution.cs" />
     <Compile Include="Formatting\Resolvable.cs" />
     <Compile Include="Formatting\ResolvableWriteable.cs" />
+    <Compile Include="Formatting\ResolveDelegate.cs" />
     <Compile Include="Formatting\ResolveWriterDelegate.cs" />
     <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
