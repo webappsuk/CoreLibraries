@@ -501,18 +501,6 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Writes the specified chunks.
-        /// </summary>
-        /// <param name="chunks">The chunks.</param>
-        [PublicAPI]
-        public void Write([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
-        {
-            if (!_isOpen)
-                throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
-            _builder.Append(chunks);
-        }
-
-        /// <summary>
         /// Writes the specified builder.
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -522,20 +510,6 @@ namespace WebApplications.Utilities.Formatting
             if (!_isOpen)
                 throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
             _builder.Append(builder);
-        }
-
-        /// <summary>
-        /// Writes the specified chunks.
-        /// </summary>
-        /// <param name="chunks">The chunks.</param>
-        [NotNull]
-        [PublicAPI]
-        public Task WriteAsync([CanBeNull] [InstantHandle] IEnumerable<FormatChunk> chunks)
-        {
-            if (!_isOpen)
-                throw new InvalidOperationException(Resources.FormatWriter_IsClosed);
-            _builder.Append(chunks);
-            return TaskResult.Completed;
         }
 
         /// <summary>

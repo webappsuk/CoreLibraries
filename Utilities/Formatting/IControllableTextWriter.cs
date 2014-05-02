@@ -40,14 +40,18 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Called when a control chunk is encountered.
         /// </summary>
-        /// <param name="controlChunk">The control chunk.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="tag">The tag.</param>
+        /// <param name="alignment">The alignment.</param>
         /// <param name="format">The format.</param>
-        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="value">The value.</param>
         [PublicAPI]
         [StringFormatMethod("format")]
         void OnControlChunk(
-            [NotNull] FormatChunk controlChunk,
+            [NotNull] TextWriter writer,
+            [NotNull] string tag,
+            int alignment,
             [CanBeNull] string format,
-            [CanBeNull] IFormatProvider formatProvider);
+            [CanBeNull] object value);
     }
 }
