@@ -149,15 +149,14 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="value">The value.</param>
         public FormatChunk(
             [CanBeNull] IResolvable resolver,
-            [NotNull] string tag,
+            [CanBeNull] string tag,
             int alignment,
             [CanBeNull] string format,
             Optional<object> value = default(Optional<object>))
         {
-            Contract.Requires(tag != null);
             Resolver = resolver;
             Tag = tag;
-            IsControl = tag.Length > 0 && tag[0] == FormatBuilder.ControlChar;
+            IsControl = !string.IsNullOrEmpty(tag) && tag[0] == FormatBuilder.ControlChar;
             Alignment = alignment;
             Format = format;
 

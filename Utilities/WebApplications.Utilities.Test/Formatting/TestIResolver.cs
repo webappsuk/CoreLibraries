@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
 
@@ -152,6 +153,19 @@ namespace WebApplications.Utilities.Test.Formatting
                             ? new Resolution(
                         new FormatChunk(null, FormatBuilder.ForegroundColorTag, 0, "Blue", Color.Blue))
                             : Resolution.UnknownYet));
+        }
+
+        [TestMethod]
+        public void TestReplaceControl()
+        {
+            FormatBuilder builder = new FormatBuilder("{!control:text}");
+            Assert.AreEqual("{!control:text}", builder.ToString("f"));
+            Assert.AreEqual(
+                "text",
+                builder.ToString(
+                    (_, c) => c.IsControl && string.Equals(c.Tag, "!control", StringComparison.CurrentCultureIgnoreCase)
+                        ? new Resolution(new FormatChunk(null, null, 0, null, c.Format))
+                        : Resolution.Unknown));
         }
     }
 }

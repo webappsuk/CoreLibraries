@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Formatting
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
     [TypeConverter(typeof(FormatBuilderConverter))]
-    public sealed partial class FormatBuilder : IFormattable, IWriteable, IEquatable<FormatBuilder>, IEnumerable<string>
+    public sealed partial class FormatBuilder : IFormattable, IWriteable, IEquatable<FormatBuilder>, IEnumerable<FormatChunk>
     {
         /// <summary>
         /// The first character of a fill point.
@@ -3857,7 +3857,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public IEnumerator<string> GetEnumerator()
+        public IEnumerator<FormatChunk> GetEnumerator()
         {
             Stack<FormatChunk> stack = new Stack<FormatChunk>();
             stack.Push(RootChunk);
@@ -3866,7 +3866,7 @@ namespace WebApplications.Utilities.Formatting
                 FormatChunk chunk = stack.Pop();
                 if (!ReferenceEquals(chunk, RootChunk))
                     // ReSharper disable once PossibleNullReferenceException
-                    yield return chunk.ToString("F");
+                    yield return chunk;
 
                 // ReSharper disable once PossibleNullReferenceException
                 if (chunk.ChildrenInternal == null) continue;
