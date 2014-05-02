@@ -323,7 +323,11 @@ namespace WebApplications.Utilities.Formatting
                             case FormatBuilder.OpenChar:
                                 // We have a nested format!
                                 Contract.Assert(tag != null);
-                                FormatChunk newChunk = new FormatChunk(resolver, tag, alignment, null);
+                                FormatChunk newChunk = new FormatChunk(
+                                    chunks.Count < 1 ? resolver : null,
+                                    tag,
+                                    alignment,
+                                    null);
                                 tag = null;
                                 alignment = null;
                                 if (builder.Length > 0)
@@ -387,7 +391,7 @@ namespace WebApplications.Utilities.Formatting
                 if (gotFillPoint)
                 {
                     Contract.Assert(tag != null);
-                    FormatChunk newChunk = new FormatChunk(resolver, tag, alignment, format);
+                    FormatChunk newChunk = new FormatChunk(chunks.Count < 1 ? resolver : null, tag, alignment, format);
                     chunk.AppendChunk(newChunk);
                     tag = null;
                     alignment = null;

@@ -27,10 +27,9 @@
 
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -39,10 +38,27 @@ namespace WebApplications.Utilities.Formatting
     /// A <see cref="Resolvable"/> object that contains a set of dictionary values.
     /// </summary>
     /// <typeparam name="TValue">The type of the t value.</typeparam>
+    [Serializable]
     public class DictionaryResolvable<TValue> : Resolvable, ICollection<KeyValuePair<string, TValue>>
     {
         [NotNull]
-        private readonly ConcurrentDictionary<string, TValue> _values;
+        private readonly Dictionary<string, TValue> _values;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DictionaryResolvable{TValue}" /> class.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        public DictionaryResolvable(
+            [NotNull] IReadOnlyDictionary<string, TValue> dictionary,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+            : base(isCaseSensitive, resolveOuterTags)
+        {
+            Contract.Requires(dictionary != null);
+            _values = dictionary.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DictionaryResolvable{TValue}"/> class.
@@ -50,20 +66,13 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="capacity">The initial capacity.</param>
-        /// <param name="concurrency">The concurrency level.</param>
         public DictionaryResolvable(
             bool isCaseSensitive = false,
             bool resolveOuterTags = true,
-            int capacity = -1,
-            int concurrency = -1)
+            int capacity = 0)
             : base(isCaseSensitive, resolveOuterTags)
         {
-            if (concurrency < 1) concurrency = Environment.ProcessorCount * 4;
-            if (capacity < 0) capacity = 31;
-            _values = new ConcurrentDictionary<string, TValue>(
-                concurrency,
-                capacity,
-                isCaseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
+            _values = new Dictionary<string, TValue>(capacity, isCaseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
         }
 
         /// <summary>
@@ -75,7 +84,7 @@ namespace WebApplications.Utilities.Formatting
         public void Add([NotNull] string tag, [CanBeNull] TValue value)
         {
             Contract.Requires(tag != null);
-            _values.AddOrUpdate(tag, value, (t, e) => value);
+            _values[tag] = value;
         }
 
         /// <summary>
@@ -83,30 +92,24 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="tag">The tag.</param>
         [PublicAPI]
-        public Optional<object> Remove([NotNull] string tag)
+        public bool Remove([NotNull] string tag)
         {
             Contract.Requires(tag != null);
-            TValue value;
-            return _values.TryRemove(tag, out value)
-                ? new Optional<object>(value)
-                : Optional<object>.Unassigned;
+            return _values.Remove(tag);
         }
 
-        // ReSharper disable once CodeAnnotationAnalyzer
         /// <summary>
-        /// Resolves the specified chunk.
+        /// Resolves the specified tag.
         /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>An assigned<see cref="Optional{T}" /> if resolved; otherwise <see cref="Optional{T}.Unassigned" /></returns>
-        public override Optional<object> Resolve(TextWriter writer, FormatChunk chunk)
+        /// <param name="tag">The tag.</param>
+        /// <returns>A <see cref="Resolution" />.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        protected override Resolution Resolve(string tag)
         {
-            Contract.Assert(chunk.Tag != null);
-
             TValue value;
-            return _values.TryGetValue(chunk.Tag, out value)
-                ? new Optional<object>(value)
-                : Optional<object>.Unassigned;
+            return _values.TryGetValue(tag, out value)
+                ? new Resolution(value)
+                : Resolution.Unknown;
         }
 
         /// <summary>
@@ -153,7 +156,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
         bool ICollection<KeyValuePair<string, TValue>>.Contains(KeyValuePair<string, TValue> item)
         {
-            return ((ICollection<KeyValuePair<string, TValue>>) _values).Contains(item);
+            return ((ICollection<KeyValuePair<string, TValue>>)_values).Contains(item);
         }
 
         /// <summary>
@@ -161,9 +164,10 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
+        // ReSharper disable once CodeAnnotationAnalyzer
         void ICollection<KeyValuePair<string, TValue>>.CopyTo(KeyValuePair<string, TValue>[] array, int arrayIndex)
         {
-            ((ICollection<KeyValuePair<string, TValue>>) _values).CopyTo(array, arrayIndex);
+            ((ICollection<KeyValuePair<string, TValue>>)_values).CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -173,7 +177,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
         bool ICollection<KeyValuePair<string, TValue>>.Remove(KeyValuePair<string, TValue> item)
         {
-            return ((ICollection<KeyValuePair<string, TValue>>) _values).Remove(item);
+            return ((ICollection<KeyValuePair<string, TValue>>)_values).Remove(item);
         }
 
         /// <summary>
@@ -200,21 +204,35 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// A <see cref="Resolvable" /> object that contains a set of dictionary values.
     /// </summary>
+    [Serializable]
     public class DictionaryResolvable : DictionaryResolvable<object>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DictionaryResolvable{TValue}" /> class.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        public DictionaryResolvable(
+            [NotNull] IReadOnlyDictionary<string, object> dictionary,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+            : base(dictionary, isCaseSensitive, resolveOuterTags)
+        {
+            Contract.Requires(dictionary != null);
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DictionaryResolvable{TValue}"/> class.
         /// </summary>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="capacity">The initial capacity.</param>
-        /// <param name="concurrency">The concurrency level.</param>
         public DictionaryResolvable(
             bool isCaseSensitive = false,
             bool resolveOuterTags = true,
-            int capacity = -1,
-            int concurrency = -1)
-            : base(isCaseSensitive, resolveOuterTags, capacity, concurrency)
+            int capacity = 0)
+            : base(isCaseSensitive, resolveOuterTags, capacity)
         {
         }
     }

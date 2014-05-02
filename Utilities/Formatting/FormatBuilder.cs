@@ -29,7 +29,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.IO;
@@ -39,14 +38,6 @@ using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
 {
-    /// <summary>
-    /// Delegate definition for a resolver which can be used to resolve the values of tags, whilst writing out a <see cref="FormatBuilder"/>.
-    /// </summary>
-    /// <param name="writer">The writer.</param>
-    /// <param name="chunk">The chunk.</param>
-    /// <returns>An optional value for the resolved tag.</returns>
-    public delegate Optional<object> ResolveDelegate([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
-
     /// <summary>
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
@@ -330,7 +321,7 @@ namespace WebApplications.Utilities.Formatting
                 formatBuilder.MakeReadOnly();
             }
             else if (RootChunk.ChildrenInternal != null &&
-                RootChunk.ChildrenInternal.Count > 0)
+                     RootChunk.ChildrenInternal.Count > 0)
             {
                 Stack<FormatChunk, IEnumerable<FormatChunk>> stack = new Stack<FormatChunk, IEnumerable<FormatChunk>>();
                 stack.Push(formatBuilder.RootChunk, RootChunk.ChildrenInternal.ToArray());
@@ -344,13 +335,17 @@ namespace WebApplications.Utilities.Formatting
                     Contract.Assert(currParent != null);
                     Contract.Assert(chunks != null);
 
+                    // ReSharper disable once PossibleNullReferenceException
                     currParent.ChildrenInternal = new List<FormatChunk>();
 
                     // Adds each chunk to the current parent
+                    // ReSharper disable once PossibleNullReferenceException
                     foreach (FormatChunk chunk in chunks)
                     {
                         Contract.Assert(chunk != null);
+                        // ReSharper disable PossibleNullReferenceException
                         FormatChunk newChunk = chunk.Clone();
+                        // ReSharper restore PossibleNullReferenceException
 
                         currParent.ChildrenInternal.Add(newChunk);
 
@@ -760,10 +755,12 @@ namespace WebApplications.Utilities.Formatting
             Contract.Assert(builder.RootChunk.ChildrenInternal != null);
             Contract.Assert(builder.RootChunk.ChildrenInternal.Count > 0);
 
+            // ReSharper disable AssignNullToNotNullAttribute
             if (RootChunk.ChildrenInternal == null)
                 RootChunk.ChildrenInternal = new List<FormatChunk>(builder.RootChunk.ChildrenInternal);
             else
                 RootChunk.ChildrenInternal.AddRange(builder.RootChunk.ChildrenInternal);
+            // ReSharper restore AssignNullToNotNullAttribute
             return this;
         }
         #endregion
@@ -1177,12 +1174,10 @@ namespace WebApplications.Utilities.Formatting
             {
                 FormatChunk[] cArr = chunks.ToArray();
                 if (cArr.Length > 0)
-                {
                     if (RootChunk.ChildrenInternal == null)
                         RootChunk.ChildrenInternal = new List<FormatChunk>(cArr);
                     else
                         RootChunk.ChildrenInternal.AddRange(cArr);
-                }
             }
             RootChunk.AppendChunk(_newLineChunk);
             return this;
@@ -1206,10 +1201,12 @@ namespace WebApplications.Utilities.Formatting
                 Contract.Assert(builder.RootChunk.ChildrenInternal != null);
                 Contract.Assert(builder.RootChunk.ChildrenInternal.Count > 0);
 
+                // ReSharper disable AssignNullToNotNullAttribute
                 if (RootChunk.ChildrenInternal == null)
                     RootChunk.ChildrenInternal = new List<FormatChunk>(builder.RootChunk.ChildrenInternal);
                 else
                     RootChunk.ChildrenInternal.AddRange(builder.RootChunk.ChildrenInternal);
+                // ReSharper restore AssignNullToNotNullAttribute
             }
             RootChunk.AppendChunk(_newLineChunk);
             return this;
@@ -1232,21 +1229,7 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
-                RootChunk.Append(
-                    format,
-                    args == null
-                        ? null
-                        : new FuncResolvable(
-                        (w, chunk) =>
-                        {
-                            Contract.Assert(chunk != null);
-                            int index;
-                            return int.TryParse(chunk.Tag, out index) &&
-                                   index >= 0 &&
-                                   index < args.Length
-                                ? new Optional<object>(args[index])
-                                : Optional<object>.Unassigned;
-                        }));
+                RootChunk.Append(format, args == null || args.Length < 1 ? null : new ListResolvable(args, false));
             return this;
         }
 
@@ -1255,13 +1238,15 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> the keys are case sensitive.</param>
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormat(
             [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false)
         {
             Contract.Requires(!IsReadOnly);
             if (_isReadOnly)
@@ -1269,17 +1254,7 @@ namespace WebApplications.Utilities.Formatting
             if (!string.IsNullOrEmpty(format))
                 RootChunk.Append(
                     format,
-                    values == null
-                        ? null
-                        : new FuncResolvable(
-                        (w, chunk) =>
-                        {
-                            Contract.Assert(chunk != null);
-                            object value;
-                            return values.TryGetValue(chunk.Tag, out value)
-                                ? new Optional<object>(value)
-                                : Optional<object>.Unassigned;
-                        }));
+                    values == null || values.Count < 1 ? null : new DictionaryResolvable(values, isCaseSensitive, false));
             return this;
         }
 
@@ -1295,7 +1270,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormat(
             [CanBeNull] string format,
-            [CanBeNull] ResolveDelegate resolver,
+            [CanBeNull] ResolveWriterDelegate resolver,
             bool isCaseSensitive = false)
         {
             Contract.Requires(!IsReadOnly);
@@ -1338,21 +1313,7 @@ namespace WebApplications.Utilities.Formatting
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
-                RootChunk.Append(
-                    format,
-                    args == null
-                        ? null
-                        : new FuncResolvable(
-                        (w, chunk) =>
-                        {
-                            Contract.Assert(chunk != null);
-                            int index;
-                            return int.TryParse(chunk.Tag, out index) &&
-                                   index >= 0 &&
-                                   index < args.Length
-                                ? new Optional<object>(args[index])
-                                : Optional<object>.Unassigned;
-                        }));
+                RootChunk.Append(format, args == null || args.Length < 1 ? null : new ListResolvable(args, false));
             RootChunk.AppendChunk(_newLineChunk);
             return this;
         }
@@ -1362,13 +1323,16 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> the keys are case sensitive.</param>
         /// <returns>This instance.</returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
         [PublicAPI]
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine(
             [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive)
         {
             Contract.Requires(!IsReadOnly);
             if (_isReadOnly)
@@ -1376,17 +1340,9 @@ namespace WebApplications.Utilities.Formatting
             if (!string.IsNullOrEmpty(format))
                 RootChunk.Append(
                     format,
-                    values == null
+                    values == null || values.Count < 1
                         ? null
-                        : new FuncResolvable(
-                        (w, chunk) =>
-                        {
-                            Contract.Assert(chunk != null);
-                            object value;
-                            return values.TryGetValue(chunk.Tag, out value)
-                                ? new Optional<object>(value)
-                                : Optional<object>.Unassigned;
-                        }));
+                        : new DictionaryResolvable(values, isCaseSensitive, false));
             RootChunk.AppendChunk(_newLineChunk);
             return this;
         }
@@ -1405,7 +1361,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine(
             [CanBeNull] string format,
-            [CanBeNull] ResolveDelegate resolver,
+            [CanBeNull] ResolveWriterDelegate resolver,
             bool isCaseSensitive = false)
         {
             Contract.Requires(!IsReadOnly);
@@ -1493,20 +1449,7 @@ namespace WebApplications.Utilities.Formatting
                 (values.Length < 1))
                 return this;
 
-            _initialResolutions = new Resolutions(
-                _initialResolutions,
-                (w, chunk) =>
-                {
-                    Contract.Assert(chunk != null);
-                    int index;
-                    return int.TryParse(chunk.Tag, out index) &&
-                           index >= 0 &&
-                           index < values.Length
-                        ? new Optional<object>(values[index])
-                        : Optional<object>.Unassigned;
-                },
-                false,
-                true);
+            _initialResolutions = new Resolutions(_initialResolutions, new ListResolvable(values, false));
             return this;
         }
 
@@ -1514,10 +1457,12 @@ namespace WebApplications.Utilities.Formatting
         /// Resolves any tags.
         /// </summary>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> tag resolution is case sensitive.</param>
         /// <returns>This instance.</returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Resolve([CanBeNull] IReadOnlyDictionary<string, object> values)
+        public FormatBuilder Resolve([CanBeNull] IReadOnlyDictionary<string, object> values, bool isCaseSensitive = false)
         {
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -1528,17 +1473,7 @@ namespace WebApplications.Utilities.Formatting
 
             _initialResolutions = new Resolutions(
                 _initialResolutions,
-                (w, chunk) =>
-                {
-                    Contract.Assert(chunk != null);
-                    object value;
-                    return values.TryGetValue(chunk.Tag, out value)
-                        ? new Optional<object>(value)
-                        : Optional<object>.Unassigned;
-                },
-                true,
-                true);
-
+                new DictionaryResolvable(values, isCaseSensitive, false));
             return this;
         }
 
@@ -1563,79 +1498,23 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Resolves the specified chunks.
+        /// Resolves any tags.
         /// </summary>
-        /// <param name="rootChunk">The root chunk.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="initialResolutions">The initial resolutions.</param>
-        /// <param name="values">The values.</param>
-        /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
-        /// <returns>List&lt;FormatChunk&gt;.</returns>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <returns>This instance.</returns>
         [NotNull]
-        private static List<FormatChunk> Resolve(
-            [NotNull] FormatChunk rootChunk,
-            [NotNull] TextWriter writer,
-            [CanBeNull] Resolutions initialResolutions,
-            [CanBeNull] object[] values,
-            ref bool isLayoutRequired)
+        [PublicAPI]
+        public FormatBuilder Resolve([CanBeNull] ResolveWriterDelegate resolver, bool isCaseSensitive = false)
         {
-            Contract.Requires(rootChunk != null);
-            Contract.Requires(writer != null);
-            return Resolve(
-                rootChunk,
-                writer,
-                initialResolutions,
-                values != null && values.Length >= 1
-                    ? (w, chunk) =>
-                    {
-                        int index;
-                        // ReSharper disable once PossibleNullReferenceException
-                        return int.TryParse(chunk.Tag, out index) &&
-                               (index >= 0) &&
-                               (index < values.Length)
-                            ? new Optional<object>(values[index])
-                            : Optional<object>.Unassigned;
-                    }
-                    : (ResolveDelegate)null,
-                false,
-                ref isLayoutRequired);
-        }
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+            if (IsEmpty ||
+                (resolver == null))
+                return this;
 
-        /// <summary>
-        /// Resolves the specified chunks.
-        /// </summary>
-        /// <param name="rootChunk">The root chunk.</param>
-        /// <param name="writer">The writer.</param>
-        /// <param name="initialResolutions">The initial resolutions.</param>
-        /// <param name="values">The values.</param>
-        /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
-        /// <returns>List&lt;FormatChunk&gt;.</returns>
-        [NotNull]
-        private static List<FormatChunk> Resolve(
-            [NotNull] FormatChunk rootChunk,
-            [NotNull] TextWriter writer,
-            [CanBeNull] Resolutions initialResolutions,
-            [CanBeNull] IReadOnlyDictionary<string, object> values,
-            ref bool isLayoutRequired)
-        {
-            Contract.Requires(rootChunk != null);
-            Contract.Requires(writer != null);
-            return Resolve(
-                rootChunk,
-                writer,
-                initialResolutions,
-                values != null && values.Count >= 1
-                    ? (w, chunk) =>
-                    {
-                        object value;
-                        // ReSharper disable once PossibleNullReferenceException
-                        return values.TryGetValue(chunk.Tag, out value)
-                            ? new Optional<object>(value)
-                            : Optional<object>.Unassigned;
-                    }
-                    : (ResolveDelegate)null,
-                false,
-                ref isLayoutRequired);
+            _initialResolutions = new Resolutions(_initialResolutions, resolver, isCaseSensitive, true);
+            return this;
         }
 
         /// <summary>
@@ -1672,17 +1551,15 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="rootChunk">The root chunk.</param>
         /// <param name="writer">The writer.</param>
         /// <param name="initialResolutions">The initial resolutions.</param>
-        /// <param name="resolver">The resolver.</param>
-        /// <param name="isCaseSensitive">if set to <see langword="true" /> [is case sensitive].</param>
+        /// <param name="resolvable">The resolvable.</param>
         /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
         /// <returns>List&lt;FormatChunk&gt;.</returns>
         [NotNull]
-        private static List<FormatChunk> Resolve(
+        private static IEnumerable<FormatChunk> Resolve(
             [NotNull] FormatChunk rootChunk,
             [NotNull] TextWriter writer,
             [CanBeNull] Resolutions initialResolutions,
-            [CanBeNull] ResolveDelegate resolver,
-            bool isCaseSensitive,
+            [CanBeNull] IResolvable resolvable,
             ref bool isLayoutRequired)
         {
             Contract.Requires(rootChunk != null);
@@ -1691,12 +1568,13 @@ namespace WebApplications.Utilities.Formatting
             Contract.Assert(rootChunk.ChildrenInternal != null);
 
             Stack<FormatChunk, Resolutions> stack = new Stack<FormatChunk, Resolutions>();
+            // ReSharper disable once PossibleNullReferenceException
             IEnumerator<FormatChunk> ce = rootChunk.ChildrenInternal.GetEnumerator();
             List<FormatChunk> results = new List<FormatChunk>();
 
             // Holds any resolutions as we go.
-            initialResolutions = resolver != null
-                ? new Resolutions(initialResolutions, resolver, isCaseSensitive, false)
+            initialResolutions = resolvable != null
+                ? new Resolutions(initialResolutions, resolvable)
                 : initialResolutions;
 
             do
@@ -1722,25 +1600,34 @@ namespace WebApplications.Utilities.Formatting
                 }
 
                 if (chunk.Resolver != null)
-                    resolutions = new Resolutions(resolutions, chunk.Resolver.Resolve, isCaseSensitive, true);
+                    resolutions = new Resolutions(resolutions, chunk.Resolver);
 
                 if (!isLayoutRequired &&
                     string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
                     isLayoutRequired = true;
 
+                bool isResolved;
+                object resolvedValue;
                 // Resolve the tag if it's the first time we've seen it.
-                Optional<object> resolved = resolutions != null
-                    ? resolutions.Resolve(writer, chunk)
-                    : Optional<object>.Unassigned;
+                if (resolutions != null)
+                {
+                    Resolution resolved = resolutions.Resolve(writer, chunk.Tag);
+                    isResolved = resolved.IsResolved;
+                    resolvedValue = resolved.Value;
+                }
+                else
+                {
+                    isResolved = false;
+                    resolvedValue = null;
+                }
 
                 // If we haven't resolved the value, get the chunks value.
-                bool isAssigned = resolved.IsAssigned;
-                if (!isAssigned)
+                if (!isResolved)
                     if (chunk.IsResolved)
                     {
                         // Use the current resolution.
-                        resolved = new Optional<object>(chunk.Value);
-                        isAssigned = true;
+                        isResolved = true;
+                        resolvedValue = new Resolution(chunk.Value);
                     }
                     else
                     {
@@ -1749,7 +1636,6 @@ namespace WebApplications.Utilities.Formatting
                         continue;
                     }
 
-                object resolvedValue = resolved.Value;
                 // Check for resolved to null.
                 if (resolvedValue == null)
                 {
@@ -1869,21 +1755,7 @@ namespace WebApplications.Utilities.Formatting
                                     // the underlying resolver.
                                     Resolutions inner = new Resolutions(
                                         resolutions,
-                                        (w, c) =>
-                                        {
-                                            Contract.Assert(c.Tag != null);
-                                            switch (c.Tag.ToLowerInvariant())
-                                            {
-                                                case IndexTag:
-                                                    return value;
-                                                case ItemTag:
-                                                    return key;
-                                                default:
-                                                    return Optional<object>.Unassigned;
-                                            }
-                                        },
-                                        false,
-                                        true);
+                                        new DictionaryResolvable {{IndexTag, value}, {ItemTag, key}});
 
                                     // Add a new chunk with, the <Item> tag.
                                     FormatChunk innerChunk = new FormatChunk(
@@ -1894,8 +1766,9 @@ namespace WebApplications.Utilities.Formatting
                                         key);
 
                                     if (subFormatChunk.ChildrenInternal != null)
-                                        innerChunk.ChildrenInternal = subFormatChunk.ChildrenInternal.ToList(); // TODO is this necessary? PROBABLY
-                                    
+                                        innerChunk.ChildrenInternal = subFormatChunk.ChildrenInternal.ToList();
+                                    // TODO is this necessary? PROBABLY
+
                                     stack.Push(innerChunk, inner);
 
                                     // If we have join chunk, push it for all but the 'first' element.
@@ -1909,15 +1782,15 @@ namespace WebApplications.Utilities.Formatting
                     }
 
                     // If we have a value, and a format, then we may need to recurse.
-                    if (isAssigned && hasFillPoint)
+                    if (isResolved && hasFillPoint)
                     {
-                        IResolvable resolvable = resolvedValue as IResolvable;
-                        if (resolvable != null)
+                        IResolvable r = resolvedValue as IResolvable;
+                        if (r != null)
                             resolutions = new Resolutions(
                                 resolutions,
-                                resolvable.Resolve,
-                                resolvable.IsCaseSensitive,
-                                resolvable.ResolveOuterTags);
+                                r.Resolve,
+                                r.IsCaseSensitive,
+                                r.ResolveOuterTags);
 
                         while (subFormatChunks.Count > 0)
                             stack.Push(subFormatChunks.Pop(), resolutions);
@@ -1932,7 +1805,7 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
-                results.Add(new FormatChunk(chunk, resolved.Value));
+                results.Add(new FormatChunk(chunk, resolvedValue));
             } while (true);
         }
         #endregion
@@ -1978,7 +1851,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString([CanBeNull]Layout layout, ref int position, [CanBeNull] params object[] values)
+        public string ToString([CanBeNull] Layout layout, ref int position, [CanBeNull] params object[] values)
         {
             using (StringWriter writer = new StringWriter())
             {
@@ -1991,53 +1864,17 @@ namespace WebApplications.Utilities.Formatting
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <param name="values">The values.</param>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString([CanBeNull] IReadOnlyDictionary<string, object> values)
-        {
-            using (StringWriter writer = new StringWriter())
-            {
-                WriteTo(writer, null, values);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
-        /// <param name="position">The position.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString([CanBeNull]Layout layout, ref int position, [CanBeNull] IReadOnlyDictionary<string, object> values)
-        {
-            using (StringWriter writer = new StringWriter())
-            {
-                position = WriteTo(writer, layout, position, null, values);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="resolver">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
         [PublicAPI]
-        public string ToString([CanBeNull] [InstantHandle] ResolveDelegate resolver, bool isCaseSensitive = false)
+        public string ToString([CanBeNull] IReadOnlyDictionary<string, object> values, bool isCaseSensitive = false)
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, null, resolver, isCaseSensitive);
+                WriteTo(writer, null, values, isCaseSensitive);
                 return writer.ToString();
             }
         }
@@ -2047,20 +1884,91 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
-        /// <param name="resolver">The values.</param>
+        /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
         public string ToString(
-            [CanBeNull]Layout layout,
+            [CanBeNull] Layout layout,
             ref int position,
-            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
             bool isCaseSensitive = false)
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, layout, position, null, resolver, isCaseSensitive);
+                position = WriteTo(writer, layout, position, null, values, isCaseSensitive);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="resolver">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                WriteTo(writer, null, resolver, isCaseSensitive, resolveOuterTags);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="resolver">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                WriteTo(writer, null, resolver, isCaseSensitive, resolveOuterTags);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="resolver">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            [CanBeNull] Layout layout,
+            ref int position,
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, layout, position, null, resolver, isCaseSensitive, resolveOuterTags);
                 return writer.ToString();
             }
         }
@@ -2095,7 +2003,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            [CanBeNull]Layout layout,
+            [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] params object[] values)
@@ -2112,6 +2020,7 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -2119,7 +2028,8 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public string ToString(
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
@@ -2135,14 +2045,16 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
         public string ToString(
-            [CanBeNull]Layout layout,
+            [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
@@ -2157,6 +2069,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="resolver">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -2165,11 +2078,12 @@ namespace WebApplications.Utilities.Formatting
         public string ToString(
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, null, resolver, isCaseSensitive);
+                WriteTo(writer, null, resolver, isCaseSensitive, resolveOuterTags);
                 return writer.ToString();
             }
         }
@@ -2182,19 +2096,73 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="resolver">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
         public string ToString(
-            [CanBeNull]Layout layout,
+            [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, layout, position, null, resolver, isCaseSensitive);
+                position = WriteTo(writer, layout, position, null, resolver, isCaseSensitive, resolveOuterTags);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                WriteTo(writer, null, resolver, isCaseSensitive, resolveOuterTags);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            [CanBeNull] Layout layout,
+            ref int position,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                position = WriteTo(writer, layout, position, null, resolver, isCaseSensitive, resolveOuterTags);
                 return writer.ToString();
             }
         }
@@ -2235,7 +2203,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         [StringFormatMethod("format")]
         public string ToString(
-            [CanBeNull]Layout layout,
+            [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider = null)
@@ -2284,7 +2252,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         [StringFormatMethod("format")]
         public string ToString(
-            [CanBeNull]Layout layout,
+            [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
@@ -2309,6 +2277,7 @@ namespace WebApplications.Utilities.Formatting
         /// </list></param>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -2318,7 +2287,8 @@ namespace WebApplications.Utilities.Formatting
         public string ToString(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
@@ -2336,20 +2306,22 @@ namespace WebApplications.Utilities.Formatting
         /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
         [StringFormatMethod("format")]
         public string ToString(
-            [CanBeNull]Layout layout,
+            [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, layout, position, format, values);
+                position = WriteTo(writer, layout, position, format, values, isCaseSensitive);
                 return writer.ToString();
             }
         }
@@ -2367,6 +2339,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -2377,11 +2350,12 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, format, resolver, isCaseSensitive);
+                WriteTo(writer, format, resolver, isCaseSensitive, resolveOuterTags);
                 return writer.ToString();
             }
         }
@@ -2396,21 +2370,88 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
         [StringFormatMethod("format")]
         public string ToString(
-            [CanBeNull]Layout layout,
+            [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, layout, position, format, resolver, isCaseSensitive);
+                position = WriteTo(writer, layout, position, format, resolver, isCaseSensitive, resolveOuterTags);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format.
+        /// <list type="table">
+        /// <listheader> <term>Format string</term> <description>Description</description> </listheader>
+        /// <item> <term>G/g/null</term> <description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description> </item>
+        /// <item> <term>F/f</term> <description>All control and fill point chunks will have their tags output.</description> </item>
+        /// <item> <term>S/s</term> <description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description> </item>
+        /// </list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public string ToString(
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                WriteTo(writer, format, resolver, isCaseSensitive, resolveOuterTags);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="format">The format.
+        /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public string ToString(
+            [CanBeNull] Layout layout,
+            ref int position,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                position = WriteTo(writer, layout, position, format, resolver, isCaseSensitive, resolveOuterTags);
                 return writer.ToString();
             }
         }
@@ -2424,22 +2465,7 @@ namespace WebApplications.Utilities.Formatting
         public void WriteToConsole()
         {
             if (IsEmpty) return;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
-
-            bool isLayoutRequired = _isLayoutRequired;
-            WriteTo(
-                Resolve(
-                        RootChunk,
-                        ConsoleTextWriter.Default,
-                        _initialResolutions,
-                        null,
-                        false,
-                        ref isLayoutRequired),
-                ConsoleTextWriter.Default,
-                InitialLayout,
-                "G",
-                isLayoutRequired,
-                0);
+            WriteTo(ConsoleTextWriter.Default);
         }
 
         /// <summary>
@@ -2454,16 +2480,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] params object[] values)
         {
             if (IsEmpty) return;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
-
-            bool isLayoutRequired = _isLayoutRequired;
-            WriteTo(
-                Resolve(RootChunk, ConsoleTextWriter.Default, _initialResolutions, values, ref isLayoutRequired),
-                ConsoleTextWriter.Default,
-                InitialLayout,
-                format,
-                isLayoutRequired,
-                0);
+            WriteTo(ConsoleTextWriter.Default, format, values);
         }
 
         /// <summary>
@@ -2471,23 +2488,16 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> [is case sensitive].</param>
         [PublicAPI]
         [StringFormatMethod("format")]
         public void WriteToConsole(
             [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false)
         {
             if (IsEmpty) return;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
-
-            bool isLayoutRequired = _isLayoutRequired;
-            WriteTo(
-                Resolve(RootChunk, ConsoleTextWriter.Default, _initialResolutions, values, ref isLayoutRequired),
-                ConsoleTextWriter.Default,
-                InitialLayout,
-                format,
-                isLayoutRequired,
-                0);
+            WriteTo(ConsoleTextWriter.Default, format, values, isCaseSensitive);
         }
 
         /// <summary>
@@ -2496,55 +2506,52 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         [PublicAPI]
         [StringFormatMethod("format")]
         public void WriteToConsole(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
         {
             if (IsEmpty) return;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            WriteTo(ConsoleTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags);
+        }
 
-            bool isLayoutRequired = _isLayoutRequired;
-            WriteTo(
-                Resolve(RootChunk, ConsoleTextWriter.Default, _initialResolutions, resolver, isCaseSensitive, ref isLayoutRequired),
-                ConsoleTextWriter.Default,
-                InitialLayout,
-                format,
-                isLayoutRequired,
-                0);
+        /// <summary>
+        /// Writes the builder to the console.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public void WriteToConsole(
+            [CanBeNull] string format,
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            if (IsEmpty) return;
+            WriteTo(ConsoleTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags);
         }
         #endregion
 
         #region WriteToTrace Overloads
         /// <summary>
-        /// Writes the builder to <see cref="Trace"/>.
+        /// Writes the builder to the trace.
         /// </summary>
         [PublicAPI]
         public void WriteToTrace()
         {
             if (IsEmpty) return;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
-
-            bool isLayoutRequired = _isLayoutRequired;
-            WriteTo(
-                Resolve(
-                        RootChunk,
-                        ConsoleTextWriter.Default,
-                        _initialResolutions,
-                        null,
-                        false,
-                        ref isLayoutRequired),
-                TraceTextWriter.Default,
-                InitialLayout,
-                "G",
-                isLayoutRequired,
-                0);
+            WriteTo(TraceTextWriter.Default);
         }
 
         /// <summary>
-        /// Writes the builder to <see cref="Trace" />.
+        /// Writes the builder to the trace.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
@@ -2555,66 +2562,62 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] params object[] values)
         {
             if (IsEmpty) return;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
-
-            bool isLayoutRequired = _isLayoutRequired;
-            WriteTo(
-                Resolve(RootChunk, TraceTextWriter.Default, _initialResolutions, values, ref isLayoutRequired),
-                TraceTextWriter.Default,
-                InitialLayout,
-                format,
-                isLayoutRequired,
-                0);
+            WriteTo(TraceTextWriter.Default, format, values);
         }
 
         /// <summary>
-        /// Writes the builder to <see cref="Trace" />.
+        /// Writes the builder to the trace.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> [is case sensitive].</param>
         [PublicAPI]
         [StringFormatMethod("format")]
         public void WriteToTrace(
             [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false)
         {
             if (IsEmpty) return;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
-
-            bool isLayoutRequired = _isLayoutRequired;
-            WriteTo(
-                Resolve(RootChunk, TraceTextWriter.Default, _initialResolutions, values, ref isLayoutRequired),
-                TraceTextWriter.Default,
-                InitialLayout,
-                format,
-                isLayoutRequired,
-                0);
+            WriteTo(TraceTextWriter.Default, format, values, isCaseSensitive);
         }
 
         /// <summary>
-        /// Writes the builder to <see cref="Trace" />.
+        /// Writes the builder to the trace.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         [PublicAPI]
         [StringFormatMethod("format")]
         public void WriteToTrace(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
         {
             if (IsEmpty) return;
-            Contract.Assert(RootChunk.ChildrenInternal != null);
+            WriteTo(TraceTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags);
+        }
 
-            bool isLayoutRequired = _isLayoutRequired;
-            WriteTo(
-                Resolve(RootChunk, TraceTextWriter.Default, _initialResolutions, resolver, isCaseSensitive, ref isLayoutRequired),
-                TraceTextWriter.Default,
-                InitialLayout,
-                format,
-                isLayoutRequired,
-                0);
+        /// <summary>
+        /// Writes the builder to the trace.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public void WriteToTrace(
+            [CanBeNull] string format,
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            if (IsEmpty) return;
+            WriteTo(TraceTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags);
         }
         #endregion
 
@@ -2634,7 +2637,7 @@ namespace WebApplications.Utilities.Formatting
 
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, null, false, ref isLayoutRequired),
+                Resolve(RootChunk, writer, _initialResolutions, null, ref isLayoutRequired),
                 writer,
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 "G",
@@ -2657,7 +2660,7 @@ namespace WebApplications.Utilities.Formatting
 
             bool isLayoutRequired = _isLayoutRequired;
             WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, null, false, ref isLayoutRequired),
+                Resolve(RootChunk, writer, _initialResolutions, null, ref isLayoutRequired),
                 writer,
                 InitialLayout,
                 format,
@@ -2684,7 +2687,14 @@ namespace WebApplications.Utilities.Formatting
 
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, values, ref isLayoutRequired),
+                Resolve(
+                    RootChunk,
+                    writer,
+                    _initialResolutions,
+                    values == null || values.Length < 1
+                        ? null
+                        : new ListResolvable(values, false),
+                    ref isLayoutRequired),
                 writer,
                 InitialLayout,
                 format,
@@ -2715,7 +2725,14 @@ namespace WebApplications.Utilities.Formatting
 
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, values, ref isLayoutRequired),
+                Resolve(
+                    RootChunk,
+                    writer,
+                    _initialResolutions,
+                    values == null || values.Length < 1
+                        ? null
+                        : new ListResolvable(values, false),
+                    ref isLayoutRequired),
                 writer,
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
@@ -2729,20 +2746,29 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> tag resolution is case sensitive.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false)
         {
             if (writer == null || IsEmpty) return 0;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, values, ref isLayoutRequired),
+                Resolve(
+                    RootChunk,
+                    writer,
+                    _initialResolutions,
+                    values == null || values.Count < 1
+                        ? null
+                        : new DictionaryResolvable(values, isCaseSensitive, false),
+                    ref isLayoutRequired),
                 writer,
                 InitialLayout,
                 format,
@@ -2754,10 +2780,11 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
         /// <param name="position">The start position.</param>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> tag resolution is case sensitive.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
@@ -2766,14 +2793,22 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout,
             int position,
             [CanBeNull] string format,
-            [CanBeNull] IReadOnlyDictionary<string, object> values)
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false)
         {
             if (writer == null || IsEmpty) return position;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, values, ref isLayoutRequired),
+                Resolve(
+                    RootChunk,
+                    writer,
+                    _initialResolutions,
+                    values == null || values.Count < 1
+                        ? null
+                        : new DictionaryResolvable(values, isCaseSensitive, false),
+                    ref isLayoutRequired),
                 writer,
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
@@ -2788,6 +2823,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
@@ -2795,14 +2831,22 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
         {
             if (writer == null || IsEmpty) return 0;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, resolver, isCaseSensitive, ref isLayoutRequired),
+                Resolve(
+                    RootChunk,
+                    writer,
+                    _initialResolutions,
+                    resolver == null
+                        ? null
+                        : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
+                    ref isLayoutRequired),
                 writer,
                 InitialLayout,
                 format,
@@ -2814,11 +2858,12 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
         /// <param name="position">The start position.</param>
         /// <param name="format">The format.</param>
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
@@ -2828,14 +2873,102 @@ namespace WebApplications.Utilities.Formatting
             int position,
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
         {
             if (writer == null || IsEmpty) return position;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
             bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, resolver, isCaseSensitive, ref isLayoutRequired),
+                Resolve(
+                    RootChunk,
+                    writer,
+                    _initialResolutions,
+                    resolver == null
+                        ? null
+                        : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
+                    ref isLayoutRequired),
+                writer,
+                layout == null ? InitialLayout : InitialLayout.Apply(layout),
+                format,
+                isLayoutRequired,
+                position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <returns>The end position.</returns>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public int WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            if (writer == null || IsEmpty) return 0;
+            Contract.Assert(RootChunk.ChildrenInternal != null);
+
+            bool isLayoutRequired = _isLayoutRequired;
+            return WriteTo(
+                Resolve(
+                    RootChunk,
+                    writer,
+                    _initialResolutions,
+                    resolver == null
+                        ? null
+                        : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
+                    ref isLayoutRequired),
+                writer,
+                InitialLayout,
+                format,
+                isLayoutRequired,
+                0);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
+        /// <param name="position">The start position.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <returns>The end position.</returns>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public int WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] Layout layout,
+            int position,
+            [CanBeNull] string format,
+            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveOuterTags = true)
+        {
+            if (writer == null || IsEmpty) return position;
+            Contract.Assert(RootChunk.ChildrenInternal != null);
+
+            bool isLayoutRequired = _isLayoutRequired;
+            return WriteTo(
+                Resolve(
+                    RootChunk,
+                    writer,
+                    _initialResolutions,
+                    resolver == null
+                        ? null
+                        : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
+                    ref isLayoutRequired),
                 writer,
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
@@ -2926,7 +3059,8 @@ namespace WebApplications.Utilities.Formatting
                 writeTags = false;
 
             // ReSharper disable SuspiciousTypeConversion.Global
-            IControllableTextWriter controller = serialWriter as IControllableTextWriter ?? writer as IControllableTextWriter;
+            IControllableTextWriter controller = serialWriter as IControllableTextWriter ??
+                                                 writer as IControllableTextWriter;
             // ReSharper restore SuspiciousTypeConversion.Global
             ILayoutTextWriter layoutWriter = serialWriter as ILayoutTextWriter ?? writer as ILayoutTextWriter;
             IColoredTextWriter coloredTextWriter = serialWriter as IColoredTextWriter ?? writer as IColoredTextWriter;
@@ -2937,7 +3071,8 @@ namespace WebApplications.Utilities.Formatting
              * If we're not using a layout writer, and we don't require layout, then we need to manually track position.
              * so the code is subtly different.
              */
-            if (layoutWriter == null && !isLayoutRequired)
+            if (layoutWriter == null &&
+                !isLayoutRequired)
             {
                 foreach (FormatChunk chunk in chunks)
                     // ReSharper disable once PossibleNullReferenceException
@@ -3031,7 +3166,7 @@ namespace WebApplications.Utilities.Formatting
 
             // If we require layout, run chunks through layout engine.
             IEnumerable<FormatChunk> enumerable = isLayoutRequired ||
-                                     (writerWidth < int.MaxValue)
+                                                  (writerWidth < int.MaxValue)
                 ? Align(
                     GetLines(
                         GetLineChunks(chunks, format, writer.FormatProvider),
@@ -3496,7 +3631,8 @@ namespace WebApplications.Utilities.Formatting
                     case Alignment.Justify:
                         indent = line.Start;
                         int remaining = line.Remaining;
-                        if (remaining > 0 && line.LastWhiteSpace > 0)
+                        if (remaining > 0 &&
+                            line.LastWhiteSpace > 0)
                         {
                             decimal space = (decimal)(line.LastWhiteSpace - line.Start) / remaining;
                             int o = (int)Math.Round(space / 2);
@@ -3638,14 +3774,22 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly FormatChunk ResetForegroundColorChunk = new FormatChunk(null, ForegroundColorTag, 0, null);
+        public static readonly FormatChunk ResetForegroundColorChunk = new FormatChunk(
+            null,
+            ForegroundColorTag,
+            0,
+            null);
 
         /// <summary>
         /// The reset background color chunk.
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly FormatChunk ResetBackgroundColorChunk = new FormatChunk(null, BackgroundColorTag, 0, null);
+        public static readonly FormatChunk ResetBackgroundColorChunk = new FormatChunk(
+            null,
+            BackgroundColorTag,
+            0,
+            null);
 
         /// <summary>
         /// Adds a control to reset the foreground and background colors
@@ -3714,7 +3858,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendForegroundColor([CanBeNull] string color)
         {
-            return string.IsNullOrWhiteSpace(color) ? this : AppendControl(new FormatChunk(null, ForegroundColorTag, 0, color));
+            return string.IsNullOrWhiteSpace(color)
+                ? this
+                : AppendControl(new FormatChunk(null, ForegroundColorTag, 0, color));
         }
 
         /// <summary>
@@ -3751,7 +3897,9 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public FormatBuilder AppendBackgroundColor([CanBeNull] string color)
         {
-            return string.IsNullOrWhiteSpace(color) ? this : AppendControl(new FormatChunk(null, BackgroundColorTag, 0, color));
+            return string.IsNullOrWhiteSpace(color)
+                ? this
+                : AppendControl(new FormatChunk(null, BackgroundColorTag, 0, color));
         }
         #endregion
 
@@ -3889,19 +4037,20 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
         /// <returns><see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
-        public override bool Equals([CanBeNull]object obj)
+        public override bool Equals([CanBeNull] object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             return obj is FormatBuilder &&
-                Equals((FormatBuilder)obj);
+                   Equals((FormatBuilder)obj);
         }
+
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-        public bool Equals([CanBeNull]FormatBuilder other)
+        public bool Equals([CanBeNull] FormatBuilder other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;

@@ -38,6 +38,7 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Holds resolved values for a given resolver, in a stack.
         /// </summary>
+        [Serializable]
         private class Resolutions : Resolvable
         {
             /// <summary>
@@ -52,14 +53,29 @@ namespace WebApplications.Utilities.Formatting
             /// </summary>
             [NotNull]
             [PublicAPI]
-            private readonly ResolveDelegate _resolver;
+            private readonly ResolveWriterDelegate _resolver;
 
             /// <summary>
             /// Any resolved values.
             /// </summary>
-            [NotNull]
+            [CanBeNull]
             [PublicAPI]
-            private readonly Dictionary<string, Optional<object>> _values;
+            private Dictionary<string, Resolution> _values;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Resolutions" /> class.
+            /// </summary>
+            /// <param name="parent">The parent.</param>
+            /// <param name="resolvable">The resolvable.</param>
+            public Resolutions(
+                [CanBeNull] Resolutions parent,
+                [NotNull] IResolvable resolvable)
+                : base(resolvable.IsCaseSensitive, resolvable.ResolveOuterTags)
+            {
+                Contract.Requires(resolvable != null);
+                Parent = parent;
+                _resolver = resolvable.Resolve;
+            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Resolutions" /> class.
@@ -77,35 +93,65 @@ namespace WebApplications.Utilities.Formatting
             {
                 Contract.Requires(resolver != null);
                 Parent = parent;
-                _resolver = resolver;
-                _values =
-                    new Dictionary<string, Optional<object>>(
-                        isCaseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                _resolver = (writer, tag) => resolver(tag);
             }
 
-            // ReSharper disable once CodeAnnotationAnalyzer
             /// <summary>
-            /// Resolves the specified chunk.
+            /// Initializes a new instance of the <see cref="Resolutions" /> class.
+            /// </summary>
+            /// <param name="parent">The parent.</param>
+            /// <param name="resolver">The resolver.</param>
+            /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+            /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+            public Resolutions(
+                [CanBeNull] Resolutions parent,
+                [NotNull] ResolveWriterDelegate resolver,
+                bool isCaseSensitive,
+                bool resolveOuterTags)
+                : base(isCaseSensitive, resolveOuterTags)
+            {
+                Contract.Requires(resolver != null);
+                Parent = parent;
+                _resolver = resolver;
+            }
+
+            /// <summary>
+            /// Resolves the specified tag.
             /// </summary>
             /// <param name="writer">The writer.</param>
-            /// <param name="chunk">The chunk.</param>
-            /// <returns>An assigned<see cref="Optional{T}" /> if resolved; otherwise <see cref="Optional{T}.Unassigned" /></returns>
-            public override Optional<object> Resolve(TextWriter writer, FormatChunk chunk)
+            /// <param name="tag">The tag.</param>
+            /// <returns>A <see cref="Resolution" />.</returns>
+            // ReSharper disable once CodeAnnotationAnalyzer
+            public override Resolution Resolve(TextWriter writer, string tag)
             {
-                Contract.Assert(chunk.Tag != null);
+                Resolution resolution;
+                if (_values == null ||
+                    !_values.TryGetValue(tag, out resolution))
+                {
+                    // Get the resolution using the resolver.
+                    resolution = _resolver(writer, tag);
 
-                Optional<object> value;
-                if (_values.TryGetValue(chunk.Tag, out value))
-                    return value;
+                    if (!resolution.NoCache)
+                    {
+                        // Cache the resolution.
+                        if (_values == null)
+                            _values =
+                                new Dictionary<string, Resolution>(
+                                    IsCaseSensitive
+                                        ? StringComparer.CurrentCulture
+                                        : StringComparer.CurrentCultureIgnoreCase);
 
-                value = _resolver(writer, chunk);
-                if (!value.IsAssigned &&
-                    ResolveOuterTags && 
+                        _values[tag] = resolution;
+                    }
+                }
+
+                // If we don't have a resolution, ask the parent.
+                if (!resolution.IsResolved &&
+                    ResolveOuterTags &&
                     Parent != null)
-                     value = Parent.Resolve(writer, chunk);
-
-                _values[chunk.Tag] = value.Value;
-                return value;
+                    resolution = Parent.Resolve(writer, tag);
+                return resolution;
             }
         }
     }

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using System.IO;
 using JetBrains.Annotations;
 
@@ -34,6 +35,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Base implementation for a class that implements <see cref="IResolvable"/>.
     /// </summary>
+    [Serializable]
     public abstract class Resolvable : IResolvable
     {
         private readonly bool _resolveOuterTags;
@@ -51,7 +53,7 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Gets a value indicating whether this instance uses case sensitive tag resolution.
+        /// Gets a value indicating whether this instance uses case sensitive tag resolution caching.
         /// </summary>
         /// <value><see langword="true" /> if this instance is case sensitive; otherwise, <see langword="false" />.</value>
         public bool IsCaseSensitive
@@ -69,11 +71,28 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Resolves the specified chunk.
+        /// Resolves the specified tag.
+        /// </summary>
+        /// <param name="tag">The tag.</param>
+        /// <returns>A <see cref="Resolution" />.</returns>
+        [PublicAPI]
+        protected virtual Resolution Resolve([NotNull] string tag)
+        {
+            Contract.Requires(tag != null);
+            return Resolution.Unknown;
+        }
+
+        /// <summary>
+        /// Resolves the specified tag.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>An assigned<see cref="Optional{T}" /> if resolved; otherwise <see cref="Optional{T}.Unassigned" /></returns>
-        public abstract Optional<object> Resolve(TextWriter writer, FormatChunk chunk);
+        /// <param name="tag">The tag.</param>
+        /// <returns>A <see cref="Resolution" />.</returns>
+        [PublicAPI]
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public virtual Resolution Resolve(TextWriter writer, string tag)
+        {
+            return Resolve(tag);
+        }
     }
 }

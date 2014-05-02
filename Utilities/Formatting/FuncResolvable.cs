@@ -25,7 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Diagnostics.Contracts;
 using System.IO;
 using JetBrains.Annotations;
@@ -41,7 +40,7 @@ namespace WebApplications.Utilities.Formatting
         /// The resolver
         /// </summary>
         [NotNull]
-        private readonly ResolveDelegate _resolver;
+        private readonly ResolveWriterDelegate _resolver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Resolvable"/> class.
@@ -53,19 +52,33 @@ namespace WebApplications.Utilities.Formatting
             : base(isCaseSensitive, resolveOuterTags)
         {
             Contract.Requires(resolver != null);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            _resolver = (writer, tag) => resolver(tag);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Resolvable"/> class.
+        /// </summary>
+        /// <param name="resolver">The resolver.</param>
+        /// <param name="isCaseSensitive">if set to <see langword="true"/> then tags are case sensitive.</param>
+        /// <param name="resolveOuterTags">if set to <see langword="true"/>  outer tags should be resolved automatically in formats.</param>
+        public FuncResolvable([NotNull]ResolveWriterDelegate resolver, bool isCaseSensitive = false, bool resolveOuterTags = true)
+            : base(isCaseSensitive, resolveOuterTags)
+        {
+            Contract.Requires(resolver != null);
             _resolver = resolver;
         }
 
         /// <summary>
-        /// Resolves the specified chunk.
+        /// Resolves the specified tag.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>An assigned<see cref="Optional{T}" /> if resolved; otherwise <see cref="Optional{T}.Unassigned" /></returns>
+        /// <param name="tag">The tag.</param>
+        /// <returns>A <see cref="Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Optional<object> Resolve(TextWriter writer, FormatChunk chunk)
+        public override Resolution Resolve(TextWriter writer, string tag)
         {
-            return _resolver(writer, chunk);
+            return _resolver(writer, tag);
         }
     }
 }

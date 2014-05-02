@@ -71,9 +71,9 @@ namespace WebApplications.Utilities.Test.Formatting
             Parallel.For(0, loop, i =>
             {
                 string s = builder.ToString(
-                (w, chunk) => string.Equals(chunk.Tag, "list", StringComparison.CurrentCultureIgnoreCase)
-                    ? new Optional<object>(Enumerable.Range(0, items))
-                    : Optional<object>.Unassigned);
+                    (w, tag) => string.Equals(tag, "list", StringComparison.CurrentCultureIgnoreCase)
+                        ? new Resolution(Enumerable.Range(0, items))
+                        : Resolution.Unknown);
             });
             sw.Stop();
             double builderTime = ((sw.Elapsed - control).TotalMilliseconds / loop);

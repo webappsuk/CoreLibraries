@@ -38,7 +38,7 @@ namespace WebApplications.Utilities.Formatting
     public interface IResolvable
     {
         /// <summary>
-        /// Gets a value indicating whether this instance uses case sensitive tag resolution.
+        /// Gets a value indicating whether this instance uses case sensitive tag resolution caching.
         /// </summary>
         /// <value><see langword="true" /> if this instance is case sensitive; otherwise, <see langword="false" />.</value>
         [PublicAPI]
@@ -52,12 +52,12 @@ namespace WebApplications.Utilities.Formatting
         bool ResolveOuterTags { get; }
 
         /// <summary>
-        /// Resolves the specified chunk.
+        /// Resolves the specified tag.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>An assigned<see cref="Optional{T}" /> if resolved; otherwise <see cref="Optional{T}.Unassigned" /></returns>
+        /// <param name="tag">The tag.</param>
+        /// <returns>A <see cref="Resolution" />.</returns>
         [PublicAPI]
-        Optional<object> Resolve([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
+        Resolution Resolve([NotNull] TextWriter writer, [NotNull] string tag);
     }
 }

@@ -198,6 +198,7 @@
     <Compile Include="Formatting\Alignment.cs" />
     <Compile Include="Formatting\ColorHelper.cs" />
     <Compile Include="Formatting\ConsoleTextWriter.cs" />
+    <Compile Include="Formatting\ListResolvable.cs" />
     <Compile Include="Formatting\DictionaryResolvable.cs" />
     <Compile Include="Formatting\FormatBuilderResolutions.cs" />
     <Compile Include="Formatting\FormatBuilder.cs" />
@@ -218,8 +219,10 @@
     <Compile Include="Formatting\Layout.cs" />
     <Compile Include="Formatting\LayoutWrapMode.cs" />
     <Compile Include="Formatting\FormatTextWriter.cs" />
+    <Compile Include="Formatting\Resolution.cs" />
     <Compile Include="Formatting\Resolvable.cs" />
     <Compile Include="Formatting\ResolvableWriteable.cs" />
+    <Compile Include="Formatting\ResolveWriterDelegate.cs" />
     <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
     <Compile Include="Queue.cs">

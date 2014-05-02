@@ -35,6 +35,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Base class for creating a resolvable writer for use with <see cref="FormatBuilder"/>.
     /// </summary>
+    [Serializable]
     public abstract class ResolvableWriteable : Resolvable, IFormattable, IWriteable
     {
         /// <summary>
@@ -126,7 +127,7 @@ namespace WebApplications.Utilities.Formatting
             if (format == null)
                 format = DefaultFormat;
 
-            format.WriteTo(writer, "G", Resolve, IsCaseSensitive);
+            format.WriteTo(writer, "G", (ResolveWriterDelegate) Resolve, IsCaseSensitive);
         }
     }
 }

@@ -196,7 +196,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestResolver()
         {
             FormatBuilder builder = new FormatBuilder("{A}{B}{C}");
-            builder.Resolve((w, chunk) => chunk.Tag == "B" ? 5 : Optional<object>.Unassigned);
+            builder.Resolve(tag => tag == "B" ? new Resolution(5) : Resolution.Unknown);
             Assert.AreEqual("{A}5{C}", builder.ToString());
         }
 
@@ -204,7 +204,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestNestedResolver()
         {
             FormatBuilder builder = new FormatBuilder("{t:A {t:nested {t}}}");
-            builder.Resolve((w, chunk) => string.Equals(chunk.Tag, "t") ? "tag" : Optional<object>.Unassigned);
+            builder.Resolve(tag => string.Equals(tag, "t") ? new Resolution("tag") : Resolution.Unknown);
             Assert.AreEqual("A nested tag", builder.ToString());
         }
 
@@ -215,7 +215,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("G"));
             Assert.AreEqual(string.Empty, builder.ToString("S"));
             Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("F"));
-            Assert.AreEqual("A nested tag", builder.ToString((w, chunk) => string.Equals(chunk.Tag, "t") ? "tag" : Optional<object>.Unassigned));
+            Assert.AreEqual("A nested tag", builder.ToString(tag => string.Equals(tag, "t") ? new Resolution("tag") : Resolution.Unknown));
         }
 
         [TestMethod]
@@ -224,15 +224,15 @@ namespace WebApplications.Utilities.Test.Formatting
             FormatBuilder builderA = new FormatBuilder("{A} {B} {C}");
             FormatBuilder builderB = new FormatBuilder("{Builder}");
             Assert.AreEqual("a b c", builderB.ToString(
-                (w, chunk) =>
+                tag =>
                 {
-                    string tag = chunk.Tag.ToLowerInvariant();
+                    tag = tag.ToLowerInvariant();
                     switch (tag)
                     {
                         case "builder":
-                            return builderA;
+                            return new Resolution(builderA);
                         default:
-                            return tag;
+                            return new Resolution(tag);
                     }
                 }));
         }
