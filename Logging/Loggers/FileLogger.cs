@@ -37,9 +37,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging.Interfaces;
+using AsyncLock = WebApplications.Utilities.Threading.AsyncLock;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -101,7 +101,9 @@ namespace WebApplications.Utilities.Logging.Loggers
         [NotNull]
         [PublicAPI]
         public static FormatBuilder DefaultFileNameFormat =
-            new FormatBuilder("{ApplicationName}-{DateTime:yyMMddHHmmssffff}", true);
+            new FormatBuilder(
+                "{" + Log.FormatTagApplicationName + "}-{" + Log.FormatTagTimeStamp + ":yyMMddHHmmssffff}",
+                true);
 
         /*
         /// <summary>
@@ -432,17 +434,17 @@ namespace WebApplications.Utilities.Logging.Loggers
 
 
             if (string.IsNullOrWhiteSpace(extension))
-            {
                 if (format == Log.XMLFormat)
                     extension = ".xml";
                 else if (format == Log.JSONFormat)
                     extension = ".json";
                 else
                     extension = ".log";
-            }
             else
             {
                 extension = extension.Trim();
+                if (extension.StartsWith("."))
+                    extension = extension.Substring(1);
                 if (extension.Any(c => !Char.IsLetterOrDigit(c)))
                     throw new LoggingException(
                         LoggingLevel.Critical,
@@ -464,7 +466,25 @@ namespace WebApplications.Utilities.Logging.Loggers
                 .AppendFormat(fileNameFormat);
 
             // Add a dedupe tag if not already present
-            if (!fileNameFormat.Any(c => c.Tag == FormatTagDedupe))
+            // ReSharper disable once PossibleNullReferenceException
+            Stack<FormatChunk> formatStack = new Stack<FormatChunk>();
+            formatStack.Push(fileNameFormat.RootChunk);
+            bool found = false;
+            while (formatStack.Count > 0)
+            {
+                FormatChunk chunk = formatStack.Pop();
+                // ReSharper disable once PossibleNullReferenceException
+                if (string.Equals(chunk.Tag, FormatTagDedupe, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    found = true;
+                    break;
+                }
+
+                foreach (var child in chunk.Children)
+                    formatStack.Push(child);
+            }
+
+            if (!found)
                 pathBuilder.AppendFormat("{dedupe: ({dedupe:D})}");
 
             return pathBuilder
@@ -479,6 +499,12 @@ namespace WebApplications.Utilities.Logging.Loggers
         {
             CloseFile();
         }
+
+        /// <summary>
+        /// The file creation lock prevents multiple threads trying to create the same file.
+        /// </summary>
+        [NotNull]
+        private static readonly AsyncLock _fileCreationLock = new AsyncLock();
 
         /// <summary>
         /// Adds the specified logs to storage in batches.
@@ -512,37 +538,61 @@ namespace WebApplications.Utilities.Logging.Loggers
 #pragma warning restore 4014
 
                     int dedupe = 1;
-                    string fileName;
-                    do
+                    using (await _fileCreationLock.LockAsync(token))
                     {
-                        fileName = _pathFormat.ToString(
-                            chunk =>
-                            {
-
-                                if (chunk == null ||
-                                    !chunk.IsFillPoint ||
-                                    chunk.IsControl) return Optional<object>.Unassigned;
-
-                                // ReSharper disable once PossibleNullReferenceException
-                                switch (chunk.Tag.ToLower())
+                        string fileName;
+                        do
+                        {
+                            fileName = _pathFormat.ToString(
+                                (writer, chunk) =>
                                 {
-                                    case Log.FormatTagApplicationName:
-                                        return Log.ApplicationName;
-                                    case Log.FormatTagApplicationGuid:
-                                        return Log.ApplicationGuid;
-                                    case Log.FormatTagTimeStamp:
-                                        return log.TimeStamp;
-                                    case FormatTagDedupe:
-                                        return dedupe < 1 ? (object) null : dedupe;
-                                    default:
-                                        return Optional<object>.Unassigned;
-                                }
-                            });
-                        dedupe++;
-                    } while (File.Exists(fileName));
+                                    // ReSharper disable PossibleNullReferenceException
+                                    switch (chunk.Tag.ToLower())
+                                    // ReSharper restore PossibleNullReferenceException
+                                    {
+                                        case Log.FormatTagApplicationName:
+                                            return new Resolution(Log.ApplicationName);
+                                        case Log.FormatTagApplicationGuid:
+                                            return new Resolution(Log.ApplicationGuid);
+                                        case Log.FormatTagTimeStamp:
+                                            return new Resolution(log.TimeStamp);
+                                        case FormatTagDedupe:
+                                            return dedupe < 2
+                                                ? Resolution.Null
+                                                : new Resolution(dedupe);
+                                        default:
+                                            return Resolution.Unknown;
+                                    }
+                                });
+                            dedupe++;
+                            if (File.Exists(fileName)) continue;
 
-                    logFile = new LogFile(fileName, Format, Buffer, log.TimeStamp);
-                    Interlocked.CompareExchange(ref _logFile, logFile, null);
+                            try
+                            {
+                                logFile = new LogFile(
+                                    File.Create(
+                                        fileName,
+                                        (int) Buffer,
+                                        FileOptions.Asynchronous | FileOptions.SequentialScan),
+                                    fileName,
+                                    Format,
+                                    log.TimeStamp);
+
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                dedupe = -1;
+                                TraceTextWriter.Default.WriteLine(Resources.FileLogger_Started_File, fileName, Buffer.ToMemorySize());
+                                break;
+                            }
+                            catch (Exception e)
+                            {
+                                throw new LoggingException(e, () => Resources.FileLogger_File_Creation_Failed, fileName);
+                            }
+                        } while (dedupe < 99);
+                        if (dedupe > 0)
+                            throw new LoggingException(()=>Resources.FileLogger_File_Creation_Retry_Failed);
+
+                        Interlocked.CompareExchange(ref _logFile, logFile, null);
+                    }
                 }
                 await logFile.Write(log, token);
             }
@@ -626,17 +676,17 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <summary>
             /// Initializes a new instance of the <see cref="LogFile" /> class.
             /// </summary>
+            /// <param name="fileStream">The file stream.</param>
             /// <param name="fileName">Name of the file.</param>
             /// <param name="format">The format.</param>
             /// <param name="buffer">The buffer.</param>
             /// <param name="start">The start.</param>
-            public LogFile([NotNull] string fileName, [NotNull] FormatBuilder format, uint buffer, DateTime start)
+            public LogFile([NotNull]FileStream fileStream, [NotNull] string fileName, [NotNull] FormatBuilder format, DateTime start)
             {
                 Contract.Requires(fileName != null);
                 Contract.Requires(format != null);
                 Format = format;
                 Start = start;
-                int b = (int)buffer;
 
                 // Calculate style.
                 Style = Format == Log.XMLFormat
@@ -646,7 +696,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                         : LogFileStyle.Text);
 
                 FileName = fileName;
-                _fileStream = File.Create(fileName, b, FileOptions.Asynchronous | FileOptions.SequentialScan);
+                _fileStream = fileStream;
 
                 switch (Style)
                 {
@@ -661,9 +711,6 @@ namespace WebApplications.Utilities.Logging.Loggers
                             .Wait();
                         break;
                 }
-
-                // ReSharper disable once AssignNullToNotNullAttribute
-                Trace.WriteLine(string.Format(Resources.FileLogger_Started_File, FileName, b.ToMemorySize()));
             }
 
             public int Logs { get; private set; }
@@ -679,7 +726,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 fileStream.Flush();
                 fileStream.Dispose();
                 // ReSharper disable once AssignNullToNotNullAttribute
-                Trace.WriteLine(string.Format(Resources.FileLogger_Ended_File, FileName));
+                TraceTextWriter.Default.WriteLine(Resources.FileLogger_Ended_File, FileName);
             }
 
             /// <summary>

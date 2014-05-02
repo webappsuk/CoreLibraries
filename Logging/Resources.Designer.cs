@@ -160,6 +160,24 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred whilst trying to create the &apos;{0}&apos; log file..
+        /// </summary>
+        internal static string FileLogger_File_Creation_Failed {
+            get {
+                return ResourceManager.GetString("FileLogger_File_Creation_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trying to create a log file failed more than 9 times..
+        /// </summary>
+        internal static string FileLogger_File_Creation_Retry_Failed {
+            get {
+                return ResourceManager.GetString("FileLogger_File_Creation_Retry_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create file logger as maximum log file duration &apos;{0}&apos; was less than 10s, which would cause too many log files to be created..
         /// </summary>
         internal static string FileLogger_FileDurationLessThanTenSeconds {

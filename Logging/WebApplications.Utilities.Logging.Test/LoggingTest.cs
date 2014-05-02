@@ -119,6 +119,13 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public void TestPartialLogMinimum()
         {
+            var loggers = Log.Loggers.ToArray();
+            foreach (var logger in loggers)
+                Log.RemoveLogger(logger);
+
+            Log.SetTrace();
+            Log.Flush();
+
             Log partialLog = new Log(new[]
                 {
                     new KeyValuePair<string, string>(Log.GuidKey, CombGuid.NewCombGuid().ToString())

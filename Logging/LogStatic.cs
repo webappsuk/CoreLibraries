@@ -139,11 +139,6 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [NonSerialized]
         private static readonly CombGuid[] _emptyCombGuidArray = new CombGuid[0];
-        
-        /// <summary>
-        /// The log level color name.
-        /// </summary>
-        public const string LogLevelColorName = "LogLevel";
 
         #region Format Tags
         /// <summary>
@@ -1084,7 +1079,7 @@ namespace WebApplications.Utilities.Logging
             _loggers.Clear();
             Parallel.ForEach(loggers, l => l.Dispose());
             Thread.EndCriticalRegion();
-            Trace.WriteLine(Resources.Log_Cleanup_Finished);
+            TraceTextWriter.Default.WriteLine(Resources.Log_Cleanup_Finished);
         }
 
         #region Add Overloads

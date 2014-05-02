@@ -372,4 +372,10 @@
   <data name="LogKeys_TimeStamp" xml:space="preserve">
     <value>Timestamp</value>
   </data>
+  <data name="FileLogger_File_Creation_Failed" xml:space="preserve">
+    <value>An error occurred whilst trying to create the '{0}' log file.</value>
+  </data>
+  <data name="FileLogger_File_Creation_Retry_Failed" xml:space="preserve">
+    <value>Trying to find a unique log file name failed too many times.</value>
+  </data>
 </root>

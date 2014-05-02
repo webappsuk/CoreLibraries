@@ -26,14 +26,12 @@
 #endregion
 
 /* Master List
-         * TODO Add Context formatting
-         * TODO Improve stack trace formatting (with colour!)
-         * TODO Improve sproc format
-         * TODO Add Inner Exception formatting.
-         * TODO Fix file name builder?
-         * TODO Fix '\t' roundtripping in FormatBuilder.AppendFormat()...
-         * TODO Add FormatBuilder equality (chunk equality)?
-         */
+ * TODO Add Context formatting
+ * TODO Improve stack trace formatting (with colour!)
+ * TODO Improve sproc format
+ * TODO Add Inner Exception formatting.
+ * TODO Fix file name builder?
+ */
 
 using System;
 using System.Collections;
@@ -53,9 +51,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Threading;
-using System.Web.UI;
 using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
 using ProtoBuf;
 using ProtoBuf.Meta;
 using WebApplications.Utilities.Formatting;
@@ -69,7 +65,7 @@ namespace WebApplications.Utilities.Logging
     [Serializable]
     [DebuggerDisplay("{Message} @ {TimeStamp}")]
     [PublicAPI]
-    public sealed partial class Log : IEnumerable<KeyValuePair<string, string>>, IFormattable
+    public sealed partial class Log : ResolvableWriteable, IEnumerable<KeyValuePair<string, string>>
     {
         #region Serialized Members
         [CanBeNull]
@@ -171,6 +167,7 @@ namespace WebApplications.Utilities.Logging
         /// Initializes a new instance of the <see cref="Log"/> class.  Used during deserialization.
         /// </summary>
         private Log()
+            : base(false, true)
         {
             OnDeserializing(default(StreamingContext));
         }
@@ -383,6 +380,7 @@ namespace WebApplications.Utilities.Logging
             if (hasMessage &&
                 (parameters != null) &&
                 (parameters.Length >= 1))
+                // ReSharper disable once PossibleNullReferenceException
                 _parameters = parameters.Select(p => p.ToString()).ToArray();
 
             Exception[] innerExceptions = null;
@@ -1528,12 +1526,26 @@ namespace WebApplications.Utilities.Logging
 
         #region Standard Formats
         /// <summary>
+        /// Gets the default format.
+        /// </summary>
+        /// <value>The default format.</value>
+        public override FormatBuilder DefaultFormat
+        {
+            get { return VerboseFormat; }
+        }
+
+        /// <summary>
+        /// The log level color name.
+        /// </summary>
+        public const string LogLevelColorName = "LogLevel";
+
+        /// <summary>
         /// The short format.
         /// </summary>
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder ShortFormat =
-            new FormatBuilder(120, 33, tabStops: new[] {33})
+            new FormatBuilder(120, 33, tabStops: new[] { 33 })
                 .AppendForegroundColor(Color.DarkCyan)
                 .AppendFormat("{" + FormatTagTimeStamp + ":{Value:HH:mm:ss.ffff}} ")
                 .AppendForegroundColor(LogLevelColorName)
@@ -1549,7 +1561,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
-            new FormatBuilder(new Layout(120, 22, tabStops: new[] {20, 22}))
+            new FormatBuilder(new Layout(120, 22, tabStops: new[] { 20, 22 }))
                 .AppendControl(FormatTagHeader)
                 .AppendFormat("{" + FormatTagMessage + "}")
                 .AppendFormat("{" + FormatTagTimeStamp + "}")
@@ -1608,770 +1620,205 @@ namespace WebApplications.Utilities.Logging
             new FormatBuilder();
         #endregion
 
-        #region ToString overloads
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public override string ToString()
-        {
-            using (StringWriter writer = new StringWriter())
-            {
-                WriteTo(writer, VerboseFormat);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>A <see cref="System.String"/> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString([CanBeNull] IFormatProvider formatProvider)
-        {
-            using (StringWriter writer = new StringWriter(formatProvider))
-            {
-                WriteTo(writer, VerboseFormat);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
-        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public string ToString([CanBeNull] string format, [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            using (StringWriter writer = new StringWriter(formatProvider))
-            {
-                WriteTo(writer, (FormatBuilder)format);
-                return writer.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type.</param>
-        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        [NotNull]
-        [PublicAPI]
-        public string ToString(
-            [CanBeNull] FormatBuilder format,
-            [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            using (StringWriter writer = new StringWriter(formatProvider))
-            {
-                WriteTo(writer, format);
-                return writer.ToString();
-            }
-        }
-        #endregion
-
-        #region WriteTo overload
-        /// <summary>
-        /// Writes this instance to the <see paramref="writer"/>.
+        /// Resolves the specified tag.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        [PublicAPI]
-        public void WriteTo([NotNull]TextWriter writer, [CanBeNull] string format)
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>A <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
         {
-            Contract.Requires(writer != null);
-            WriteTo(writer, (FormatBuilder)format);
-        }
-
-        /// <summary>
-        /// Writes this instance to the <see paramref="writer" />.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="format">The format.</param>
-        [PublicAPI]
-        public void WriteTo([NotNull]TextWriter writer, [CanBeNull] FormatBuilder format = null)
-        {
-            Contract.Requires(writer != null);
-
-            if (format == null)
-                format = VerboseFormat;
-
             CultureInfo culture = writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
-
-            // Get the width of the writer, for creating headers.
-            int width = format.InitialLayout.Width.Value;
-            ILayoutTextWriter ltw = writer as ILayoutTextWriter;
-            if (ltw != null &&
-                ltw.Width < width) 
-                width = ltw.Width;
-
-            // If there is no width restriction, limit header width.
-            if (width > 512)
-                width = 120;
-
-            // Set the custom color
-            format.WriteTo(
-                writer,
-                "g",
-                chunk =>
-                {
-                    if (chunk == null ||
-                        !chunk.IsFillPoint)
-                        return Optional<object>.Unassigned;
-
-                    // Handle control chunks first.
-                    if (chunk.IsControl)
-                    {
-                        // ReSharper disable once PossibleNullReferenceException
-                        switch (chunk.Tag.ToLower())
-                        {
-                            case FormatBuilder.ForegroundColorTag:
-                                // Replace the LogLevel colour with this colour.
-                                return string.Equals(
-                                    chunk.Format,
-                                    LogLevelColorName,
-                                    StringComparison.InvariantCultureIgnoreCase)
-                                    ? _level.ToColor()
-                                    : Optional<object>.Unassigned;
-
-                            case FormatTagHeader:
-                                // Create a header based on the format pattern.
-                                string pattern = chunk.Format;
-                                if (string.IsNullOrEmpty(pattern))
-                                    pattern = "=";
-
-                                char[] header = new char[width];
-                                int p = 0;
-                                for (int c = 0; c < width; c++)
-                                    header[c] = pattern[p++ % pattern.Length];
-                                // We need to return a non-control chunk for it to be output.
-                                return FormatChunk.Create(new String(header));
-
-                            default:
-                                return Optional<object>.Unassigned;
-                        }
-                    }
-
-                    FormatBuilder fb;
-                    // ReSharper disable once PossibleNullReferenceException
-                    switch (chunk.Tag.ToLower())
-                    {
-                        /*
-                         * Standard named formats.
-                         */
-                        case "default":
-                        case "verbose":
-                            return VerboseFormat;
-                        case "short":
-                            return ShortFormat;
-                        case "all":
-                            return AllFormat;
-                        case "json":
-                            return JSONFormat;
-                        case "xml":
-                            return XMLFormat;
-
-                        /*
-                         * Log element completion.
-                         */
-                        case FormatTagMessage:
-                            return GetElementBuilder(
-                                chunk.Format,
-                                culture,
-                                () => Resources.LogKeys_Message,
-                                GetMessage(culture));
-
-                        case FormatTagResource:
-                            return string.IsNullOrWhiteSpace(_resourceProperty)
-                                ? (object)string.Empty
-                                : GetElementBuilder(
-                                    chunk.Format,
-                                    culture,
-                                    () => Resources.LogKeys_Resource,
-                                    _resourceProperty);
-
-                        case FormatTagCulture:
-                            return GetElementBuilder(
-                                chunk.Format,
-                                culture,
-                                () => Resources.LogKeys_Culture,
-                                culture);
-
-                        case FormatTagTimeStamp:
-                            return GetElementBuilder(
-                                chunk.Format,
-                                culture,
-                                () => Resources.LogKeys_TimeStamp,
-                                ((CombGuid) _guid).Created);
-
-                        case FormatTagLevel:
-                            return GetElementBuilder(
-                                chunk.Format,
-                                culture,
-                                () => Resources.LogKeys_Level,
-                                _level);
-
-                        case FormatTagGuid:
-                            return GetElementBuilder(
-                                chunk.Format,
-                                culture,
-                                () => Resources.LogKeys_Guid,
-                                _guid);
-
-                        case FormatTagException:
-                            return string.IsNullOrWhiteSpace(_exceptionType)
-                                ? (object)string.Empty
-                                : GetElementBuilder(
-                                    chunk.Format,
-                                    culture,
-                                    () => Resources.LogKeys_Exception,
-                                    _exceptionType);
-
-                        case FormatTagStackTrace:
-                            return GetElementBuilder(
-                                chunk.Format,
-                                culture,
-                                () => Resources.LogKeys_StackTrace,
-                                _stackTrace);
-
-                        case FormatTagThreadID:
-                            return _threadID < 0
-                                ? (object)string.Empty
-                                : GetElementBuilder(
-                                    chunk.Format,
-                                    culture,
-                                    () => Resources.LogKeys_ThreadID,
-                                    _threadID);
-
-                        case FormatTagThreadName:
-                            return string.IsNullOrWhiteSpace(_threadName)
-                                ? (object)string.Empty
-                                : GetElementBuilder(
-                                    chunk.Format,
-                                    culture,
-                                    () => Resources.LogKeys_ThreadName,
-                                    _threadName);
-
-                        case FormatTagApplicationName:
-                            return string.IsNullOrWhiteSpace(ApplicationName)
-                                ? (object)string.Empty
-                                : GetElementBuilder(
-                                    chunk.Format,
-                                    culture,
-                                    () => Resources.LogKeys_ApplicationName,
-                                    ApplicationName);
-
-                        case FormatTagApplicationGuid:
-                            return GetElementBuilder(
-                                chunk.Format,
-                                culture,
-                                () => Resources.LogKeys_ApplicationGuid,
-                                ApplicationGuid);
-
-                        case FormatTagStoredProcedure:
-                            // TODO This can be a specialized LogElement!
-                            return string.IsNullOrWhiteSpace(_storedProcedure)
-                                ? (object)string.Empty
-                                : GetElementBuilder(
-                                    chunk.Format,
-                                    culture,
-                                    () => Resources.LogKeys_StoredProcedure,
-                                    _storedProcedure + " at line " + _storedProcedureLine.ToString("D"));
-
-                        case FormatTagInnerException:
-                            // TODO This can be a specialized LogElement!
-                            return (_innerExceptionGuids == null) ||
-                                   (_innerExceptionGuids.Length < 1)
-                                ? (object)string.Empty
-                                : GetElementBuilder(
-                                    chunk.Format,
-                                    culture,
-                                    () => Resources.LogKeys_InnerException,
-                                    "TODO - Handle Inner Exception GUIDs nicely");
-
-                        case FormatTagContext:
-                            // TODO This can be a specialized LogElement!
-                            return (_innerExceptionGuids == null) ||
-                                   (_innerExceptionGuids.Length < 1)
-                                ? (object)string.Empty
-                                : GetElementBuilder(
-                                    chunk.Format,
-                                    culture,
-                                    () => Resources.LogKeys_Context,
-                                    "TODO - Handle Context nicely!");
-
-                        default:
-                            return Optional<object>.Unassigned;
-                    }
-                });
-            ColorHelper.RemoveName(LogLevelColorName);
-        }
-        #endregion
-
-        #region Element formats
-        /// <summary>
-        /// The default format
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder ElementDefaultFormat = new FormatBuilder()
-            .AppendLine()
-            .AppendForegroundColor(Color.DarkCyan)
-            .AppendFormat("{Key}")
-            .AppendResetForegroundColor()
-            .AppendFormat("\t: {Value}")
-            .MakeReadOnly();
-
-        /// <summary>
-        /// The default format
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder ElementNoLineFormat = new FormatBuilder()
-            .AppendForegroundColor(Color.DarkCyan)
-            .AppendFormat("{Key}")
-            .AppendResetForegroundColor()
-            .AppendFormat("\t: {Value}")
-            .MakeReadOnly();
-
-        /// <summary>
-        /// The default format
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder ElementXMLFormat = new FormatBuilder()
-            .AppendLine()
-            .AppendFormat("<{Key}>{Value}</{Key}>")
-            .MakeReadOnly();
-
-        /// <summary>
-        /// The default format
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly static FormatBuilder ElementJSONFormat = new FormatBuilder()
-            .Append(',')
-            .AppendLine()
-            .AppendFormat("\"{Key}\"=\"{Value}\"")
-            .MakeReadOnly();
-
-        /// <summary>
-        /// Gets the element format.
-        /// </summary>
-        /// <param name="format">The format.</param>
-        /// <returns>A <see cref="FormatBuilder"/>.</returns>
-        [CanBeNull]
-        private FormatBuilder GetElementBuilder(
-            [CanBeNull]string format,
-            [CanBeNull]CultureInfo culture,
-            [NotNull] Expression<Func<string>> resource,
-            object value)
-        {
-            if (value == null) return null;
-
-            FormatBuilder builder;
-            if (string.IsNullOrEmpty(format))
-                builder = ElementDefaultFormat.Clone();
-            else
+            // ReSharper disable once PossibleNullReferenceException
+            switch (chunk.Tag.ToLowerInvariant())
             {
-                switch (format)
-                {
-                    case "default":
-                    case "verbose":
-                        builder = ElementDefaultFormat.Clone();
-                        break;
-                    case "xml":
-                        builder = ElementXMLFormat.Clone();
-                        break;
-                    case "json":
-                        builder = ElementJSONFormat.Clone();
-                        break;
-                    case "noline":
-                        builder = ElementNoLineFormat.Clone();
-                        break;
-                    default:
-                        builder = new FormatBuilder(format);
-                        break;
-                }
-            }
+                /*
+                 * Standard named formats.
+                 */
+                case "default":
+                case "verbose":
+                    return new Resolution(VerboseFormat);
+                case "short":
+                    return new Resolution(ShortFormat);
+                case "all":
+                    return new Resolution(AllFormat);
+                case "json":
+                    return new Resolution(JSONFormat);
+                case "xml":
+                    return new Resolution(XMLFormat);
 
-            Contract.Assert(!builder.IsReadOnly);
-            // Resolve the key and value.
-            return builder
-                .Resolve(
-                    chunk =>
-                    {
-                        if (chunk != null &&
-                            chunk.Tag != null)
-                            switch (chunk.Tag.ToLowerInvariant())
-                            {
-                                case "key":
-                                    return Translation.GetResource(resource, culture) ?? string.Empty;
-                                case "value":
-                                    return value;
-                            }
-                        return Optional<object>.Unassigned;
-                    })
-                .MakeReadOnly();
-        }
-        #endregion
-#if false
-        #region AppendTo
+                /* 
+                 * Control Tags.
+                 */
+                case FormatBuilder.ForegroundColorTag:
+                case FormatBuilder.BackgroundColorTag:
+                    // Replace the LogLevel colour with this colour.
+                    return string.Equals(
+                        chunk.Format,
+                        LogLevelColorName,
+                        StringComparison.InvariantCultureIgnoreCase)
+                        ? new Resolution(_level.ToColor(), true)
+                        : Resolution.UnknownYet;
 
-        /// <summary>
-        /// Appends this log to the <paramref name="builder" /> given.
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="format">The format.</param>
-        /// <param name="culture">The culture.</param>
-        /// <param name="options">The options.</param>
-        /// <exception cref="System.FormatException">
-        /// </exception>
-        private void AppendFormatted(
-            [NotNull] LayoutBuilder builder,
-            LogFormat format,
-            [CanBeNull] CultureInfo culture,
-            [CanBeNull] string options = null)
-        {
-            Contract.Requires(builder != null);
-            if (format == LogFormat.None)
-                return;
+                /*
+                 * Log element completion.
+                 */
+                case FormatTagHeader:
+                    // Create a header based on the format pattern.
+                    // Get the width of the writer, for creating headers.
+                    int width = 120;
+                    ILayoutTextWriter ltw = writer as ILayoutTextWriter;
+                    if (ltw != null &&
+                        ltw.Width < width)
+                        width = ltw.Width;
 
-            // Get option flags
-            bool includeMissing = format.HasFlag(LogFormat.IncludeMissing);
-            bool includeHeader = format.HasFlag(LogFormat.Header);
-            bool asXml = format.HasFlag(LogFormat.Xml);
-            bool asJson = format.HasFlag(LogFormat.Json);
+                    // If there is no width restriction, limit header width.
+                    if (width > 512)
+                        width = 120;
+                    string pattern = chunk.Format;
+                    if (string.IsNullOrEmpty(pattern))
+                        pattern = "=";
 
-            if (culture == null)
-                culture = Translation.DefaultCulture;
+                    char[] header = new char[width];
+                    int p = 0;
+                    for (int c = 0; c < width; c++)
+                        header[c] = pattern[p++ % pattern.Length];
 
-            // Remove option flags
-            format = ((LogFormat)(((int)format) & 0x0FFFFFFF));
+                    // We have to replace the original chunk with a non-control chunk for it to to be output.
+                    // Set NoCache to true to support format changes.
+                    return new Resolution(new FormatChunk(null, null, 0, null, new string(header)), true);
 
-            if (asXml && asJson)
-                throw new FormatException(Resources.Log_Invalid_Format_XML_JSON);
+                case FormatTagMessage:
+                    return new Resolution(
+                        new LogElement(
+                            culture,
+                            () => Resources.LogKeys_Message,
+                            GetMessage(culture)));
 
-            MasterFormat masterFormat;
-            bool includeKey;
+                case FormatTagResource:
+                    return string.IsNullOrWhiteSpace(_resourceProperty)
+                        ? Resolution.Null
+                        : new Resolution(
+                            new LogElement(
+                                culture,
+                                () => Resources.LogKeys_Resource,
+                                _resourceProperty));
 
-            Layout layout = Layout.Default;
+                case FormatTagCulture:
+                    return new Resolution(
+                        new LogElement(
+                            culture,
+                            () => Resources.LogKeys_Culture,
+                            culture));
 
-            if (asXml)
-            {
-                masterFormat = MasterFormat.Xml;
-                includeKey = true;
-                layout = layout.Apply(ushort.MaxValue, indentSize: 8, firstLineIndentSize: 4, alignment: Alignment.None);
-            }
-            else if (asJson)
-            {
-                masterFormat = MasterFormat.JSON;
-                includeKey = true;
-                layout = layout.Apply(ushort.MaxValue, indentSize: 8, firstLineIndentSize: 4, alignment: Alignment.None);
-            }
-            else
-            {
-                masterFormat = MasterFormat.Text;
+                case FormatTagTimeStamp:
+                    return new Resolution(
+                        new LogElement(
+                            culture,
+                            () => Resources.LogKeys_TimeStamp,
+                            ((CombGuid) _guid).Created));
 
-                layout = layout.Apply((ushort)Header.Length, alignment: Alignment.None, firstLineIndentSize: 0, indentSize: 20, tabStops: new Optional<IEnumerable<ushort>>(new ushort[] { 18, 20 }), tabSize: 2);
+                case FormatTagLevel:
+                    return new Resolution(
+                        new LogElement(
+                            culture,
+                            () => Resources.LogKeys_Level,
+                            _level));
 
-                // Only include the key if we're a combination of keys.
-                includeKey = format.IsCombinationFlag(true);
-            }
+                case FormatTagGuid:
+                    return new Resolution(
+                        new LogElement(
+                            culture,
+                            () => Resources.LogKeys_Guid,
+                            _guid));
 
-            // Otherwise always include value.
-            if (!includeKey)
-                includeMissing = true;
+                case FormatTagException:
+                    return string.IsNullOrWhiteSpace(_exceptionType)
+                        ? Resolution.Null
+                        : new Resolution(
+                            new LogElement(
+                                culture,
+                                () => Resources.LogKeys_Exception,
+                                _exceptionType));
 
-            LogFormat[] flags = format.SplitFlags(true).ToArray();
-            if (flags.Length < 1) return;
+                case FormatTagStackTrace:
+                    return new Resolution(
+                        new LogElement(
+                            culture,
+                            () => Resources.LogKeys_StackTrace,
+                            _stackTrace));
 
-            builder.ResetLayout();
+                case FormatTagThreadID:
+                    return _threadID < 0
+                        ? Resolution.Null
+                        : new Resolution(
+                            new LogElement(
+                                culture,
+                                () => Resources.LogKeys_ThreadID,
+                                _threadID));
 
-            if (includeHeader)
-                switch (masterFormat)
-                {
-                    case MasterFormat.Xml:
-                        builder.AppendLine("<Log>");
-                        break;
-                    case MasterFormat.JSON:
-                        builder.AppendLine("{");
-                        break;
-                    default:
-                        builder.AppendLine(Header);
-                        break;
-                }
+                case FormatTagThreadName:
+                    return string.IsNullOrWhiteSpace(_threadName)
+                        ? Resolution.Null
+                        : new Resolution(
+                            new LogElement(
+                                culture,
+                                () => Resources.LogKeys_ThreadName,
+                                _threadName));
 
-            builder.SetLayout(layout);
+                case FormatTagApplicationName:
+                    return string.IsNullOrWhiteSpace(ApplicationName)
+                        ? Resolution.Null
+                        : new Resolution(
+                            new LogElement(
+                                culture,
+                                () => Resources.LogKeys_ApplicationName,
+                                ApplicationName));
 
-            bool first = true;
+                case FormatTagApplicationGuid:
+                    return new Resolution(
+                        new LogElement(
+                            culture,
+                            () => Resources.LogKeys_ApplicationGuid,
+                            ApplicationGuid));
 
-            // Ignore options if we have multiple flags
-            if (flags.Length > 1) options = null;
+                case FormatTagStoredProcedure:
+                    // TODO This can be a specialized LogElement!
+                    return string.IsNullOrWhiteSpace(_storedProcedure)
+                        ? Resolution.Null
+                        : new Resolution(
+                            new LogElement(
+                                culture,
+                                () => Resources.LogKeys_StoredProcedure,
+                                _storedProcedure + " at line " + _storedProcedureLine.ToString("D")));
 
-            string entryFormat;
-            Func<string, string> keyEscaper;
-            Func<string, string> valueEscaper;
-            switch (masterFormat)
-            {
-                case MasterFormat.Xml:
-                    entryFormat = "<{0}>{1}</{0}>";
-                    keyEscaper = s => s.Replace(' ', '_');
-                    valueEscaper = UtilityExtensions.XmlEscape;
-                    break;
-                case MasterFormat.JSON:
-                    entryFormat = "\"{0}\": {1}";
-                    keyEscaper = s => s;
-                    valueEscaper = UtilityExtensions.ToJSON;
-                    break;
+                case FormatTagInnerException:
+                    // TODO This can be a specialized LogElement!
+                    return (_innerExceptionGuids == null) ||
+                           (_innerExceptionGuids.Length < 1)
+                        ? Resolution.Null
+                        : new Resolution(
+                            new LogElement(
+                                culture,
+                                () => Resources.LogKeys_InnerException,
+                                "TODO - Handle Inner Exception GUIDs nicely"));
+
+                case FormatTagContext:
+                    // TODO This can be a specialized LogElement!
+                    return (_innerExceptionGuids == null) ||
+                           (_innerExceptionGuids.Length < 1)
+                        ? Resolution.Null
+                        : new Resolution(
+                            new LogElement(
+                                culture,
+                                () => Resources.LogKeys_Context,
+                                "TODO - Handle Context nicely!"));
+
                 default:
-                    entryFormat = includeKey ? "{0}\t:\t{1}" : "{1}";
-                    keyEscaper = valueEscaper = s => s;
-                    break;
-            }
-
-            foreach (LogFormat flag in flags)
-            {
-                string key;
-                string value;
-
-                // This is a single value format, just output the value directly
-                switch (flag)
-                {
-                    case LogFormat.Message:
-                        key = "Message";
-                        value = GetMessage(culture);
-                        break;
-                    case LogFormat.ResourceProperty:
-                        key = "Resource";
-                        value = ResourceProperty;
-                        break;
-                    case LogFormat.Culture:
-                        key = "Culture";
-                        value = culture.Name;
-                        break;
-                    case LogFormat.TimeStamp:
-                        key = "TimeStamp";
-                        value = TimeStamp.ToString(options ?? "o");
-                        break;
-                    case LogFormat.Level:
-                        key = "Level";
-                        value = Level.ToString();
-                        break;
-                    case LogFormat.Guid:
-                        key = "Guid";
-                        CombGuid guid = Guid;
-                        value = guid == CombGuid.Empty ? null : guid.ToString(options ?? "D");
-                        break;
-                    case LogFormat.Exception:
-                        key = "Exception Type";
-                        value = _exceptionType;
-                        break;
-                    case LogFormat.SQLException:
-                        key = "Stored Procedure";
-                        value = _storedProcedure;
-                        if (value != null)
-                            value += " at line " + _storedProcedureLine.ToString(options ?? "D");
-                        break;
-                    case LogFormat.InnerException:
-                        key = "Inner Exception";
-
-                        if ((_innerExceptionGuids == null) ||
-                            (_innerExceptionGuids.Length < 1))
-                            value = null;
-                        else if (_innerExceptionGuids.Length == 1)
-                            value = _innerExceptionGuids[0].ToString(options ?? "D");
-                        else
-                        {
-                            if (includeKey)
-                            {
-                                key = "Inner Exceptions";
-
-                                if (!first)
-                                    builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
-                                first = false;
-                            }
-
-                            LayoutBuilder cv = new LayoutBuilder();
-                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "[" : String.Empty)
-                                .SetLayout(
-                                    indentSize: (byte)(layout.IndentSize.Value + 2),
-                                    firstLineIndentSize: (ushort)(layout.FirstLineIndentSize.Value + 2));
-
-                            bool cvf = true;
-                            string innerKey = keyEscaper("Inner Exception");
-                            foreach (CombGuid ieg in _innerExceptionGuids)
-                            {
-                                if (!cvf)
-                                    cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
-                                cvf = false;
-
-                                if (masterFormat == MasterFormat.JSON)
-                                    cv.Append('"')
-                                        .Append(ieg.ToString(options ?? "D"))
-                                        .Append('"');
-                                else
-                                    cv.AppendFormat(entryFormat, innerKey, valueEscaper(ieg.ToString(options ?? "D")));
-                            }
-
-                            cv.SetLayout(layout);
-
-                            switch (masterFormat)
-                            {
-                                case MasterFormat.Xml:
-                                    cv.AppendLine();
-                                    break;
-                                case MasterFormat.JSON:
-                                    cv.AppendLine()
-                                        .Append("]");
-                                    break;
-                            }
-
-                            foreach (FormatChunk c in entryFormat.FormatChunks())
-                            {
-                                switch (c.Tag)
-                                {
-                                    case "0":
-                                        builder.Append(FormatChunk.Create(c, keyEscaper(key)));
-                                        break;
-                                    case "1":
-                                        builder.Append(cv);
-                                        break;
-                                    default:
-                                        builder.Append(c);
-                                        break;
-                                }
-                            }
-
-                            continue;
-                        }
-                        break;
-                    case LogFormat.StackTrace:
-                        key = "Stack Trace";
-                        value = StackTrace;
-                        break;
-                    case LogFormat.ThreadID:
-                        key = "Thread ID";
-                        value = _threadID < 0 ? null : _threadID.ToString(options ?? "G");
-                        break;
-                    case LogFormat.ThreadName:
-                        key = "Thread Name";
-                        value = ThreadName;
-                        break;
-                    case LogFormat.ApplicationName:
-                        key = "Application Name";
-                        value = ApplicationName;
-                        break;
-                    case LogFormat.ApplicationGuid:
-                        key = "Application Guid";
-                        value = ApplicationGuid.ToString(options ?? "D");
-                        break;
-                    case LogFormat.Context:
-                        key = "Context";
-
-                        if ((_context == null) ||
-                            (_context.Count < 1))
-                            value = null;
-                        else
-                        {
-                            if (includeKey)
-                            {
-                                if (!first)
-                                    builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
-                                first = false;
-                            }
-
-                            LayoutBuilder cv = new LayoutBuilder();
-                            cv.AppendLine(masterFormat == MasterFormat.JSON ? "{" : String.Empty)
-                                .SetLayout(
-                                    indentSize: (byte)(layout.IndentSize.Value + 2),
-                                    firstLineIndentSize: (ushort)(layout.FirstLineIndentSize.Value + 2));
-
-                            bool cvf = true;
-                            foreach (KeyValuePair<string, string> kvp
-                                in (IEnumerable<KeyValuePair<string, string>>)_context)
-                            {
-                                Contract.Assert(kvp.Key != null);
-                                if (!cvf)
-                                    cv.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
-                                cvf = false;
-
-                                cv.AppendFormat(entryFormat, keyEscaper(kvp.Key), valueEscaper(kvp.Value ?? string.Empty));
-                            }
-
-                            cv.SetLayout(layout);
-
-                            switch (masterFormat)
-                            {
-                                case MasterFormat.Xml:
-                                    cv.AppendLine();
-                                    break;
-                                case MasterFormat.JSON:
-                                    cv.AppendLine()
-                                        .Append("}");
-                                    break;
-                            }
-
-                            foreach (FormatChunk c in entryFormat.FormatChunks())
-                            {
-                                switch (c.Tag)
-                                {
-                                    case "0":
-                                        builder.Append(FormatChunk.Create(c, keyEscaper(key)));
-                                        break;
-                                    case "1":
-                                        builder.Append(cv);
-                                        break;
-                                    default:
-                                        builder.Append(c);
-                                        break;
-                                }
-                            }
-
-                            continue;
-                        }
-                        break;
-
-                    default:
-                        throw new FormatException(String.Format(Resources.Log_Invalid_Format_Singular, flag));
-                }
-
-                if (includeMissing || value != null)
-                {
-                    if (includeKey)
-                    {
-                        if (!first)
-                            builder.AppendLine(masterFormat == MasterFormat.JSON ? "," : String.Empty);
-                        first = false;
-                    }
-                    builder.AppendFormat(entryFormat, keyEscaper(key), valueEscaper(value ?? string.Empty));
-                }
-            }
-
-            builder.ResetLayout();
-
-            if (includeHeader)
-            {
-                builder.AppendLine();
-                switch (masterFormat)
-                {
-                    case MasterFormat.Xml:
-                        builder.AppendLine("</Log>");
-                        break;
-                    case MasterFormat.JSON:
-                        builder.Append("}");
-                        break;
-                    default:
-                        builder.AppendLine(Header);
-                        break;
-                }
+                    return Resolution.Unknown;
             }
         }
-        #endregion
-#endif
 
         /// <summary>
         /// Gets the enumerator.
@@ -2643,17 +2090,8 @@ namespace WebApplications.Utilities.Logging
         public IEnumerable<KeyValuePair<string, string>> GetPrefixed([NotNull] string prefix)
         {
             Contract.Requires(prefix != null);
+            // ReSharper disable once PossibleNullReferenceException
             return this.Where(kvp => kvp.Key.StartsWith(prefix));
-        }
-
-        /// <summary>
-        /// The overall output format.
-        /// </summary>
-        private enum MasterFormat
-        {
-            Text,
-            Xml,
-            JSON
         }
     }
 }
