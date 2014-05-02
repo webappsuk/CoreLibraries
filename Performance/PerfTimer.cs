@@ -81,20 +81,20 @@ namespace WebApplications.Utilities.Performance
             Contract.Requires(categoryName != null);
             if (!IsValid) return;
             // ReSharper disable PossibleNullReferenceException
-            AddInfo("Count", "Total operations executed since the start of the process.", () => Counters[0].RawValue);
-            AddInfo("Rate", "The number of operations per second.", () => Counters[1].NextValue());
+            AddInfo("Count", "Total operations executed since the start of the process.", () => this.OperationCount);
+            AddInfo("Rate", "The number of operations per second.", () => this.Rate);
             AddInfo(
                 "Average Duration",
                 "The average duration of each operation.",
-                () => TimeSpan.FromSeconds(Counters[2].NextValue()));
+                () => this.AverageDuration);
             AddInfo(
                 "Warnings",
                 "Total operations executed since the start of the process that have exceeded the warning duration threshhold.",
-                () => Counters[4].RawValue);
+                () => this.Warnings);
             AddInfo(
                 "Criticals",
                 "Total operations executed since the start of the process that have exceeded the critical duration threshhold.",
-                () => Counters[5].RawValue);
+                () => this.Criticals);
             // ReSharper restore PossibleNullReferenceException
         }
 
@@ -134,7 +134,7 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public float Rate
         {
-            get { return IsValid ? Counters[1].NextValue() : float.NaN; }
+            get { return IsValid ? Counters[1].SafeNextValue() : float.NaN; }
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public TimeSpan AverageDuration
         {
-            get { return IsValid ? TimeSpan.FromSeconds(Counters[2].NextValue()) : TimeSpan.Zero; }
+            get { return IsValid ? TimeSpan.FromSeconds(Counters[2].SafeNextValue()) : TimeSpan.Zero; }
         }
 
         /// <summary>

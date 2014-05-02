@@ -25,6 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
@@ -63,8 +65,8 @@ namespace WebApplications.Utilities.Performance
             Contract.Requires(categoryName != null);
             if (!IsValid) return;
             // ReSharper disable PossibleNullReferenceException
-            AddInfo("Count", "Total operations executed since the start of the process.", () => Counters[0].RawValue);
-            AddInfo("Rate", "The number of operations per second.", () => Counters[1].NextValue());
+            AddInfo("Count", "Total operations executed since the start of the process.", () => this.OperationCount);
+            AddInfo("Rate", "The number of operations per second.", () => this.Rate);
             // ReSharper restore PossibleNullReferenceException
         }
 
@@ -85,7 +87,7 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public float Rate
         {
-            get { return IsValid ? Counters[1].NextValue() : float.NaN; }
+            get { return IsValid ? Counters[1].SafeNextValue() : float.NaN; }
         }
 
         /// <summary>

@@ -210,7 +210,7 @@ namespace WebApplications.Utilities.Performance
                     };
 
                     // Read the first value to 'start' the counters.
-                    Counters[c].NextValue();
+                    Counters[c].SafeNextValue();
                 }
                 IsValid = true;
             }
@@ -514,6 +514,7 @@ namespace WebApplications.Utilities.Performance
         /// The default builder for writing out a performance category.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
             new FormatBuilder(int.MaxValue, 22, tabStops: new[] { 3, 20, 22 })
                 .AppendForegroundColor(Color.Yellow)
@@ -521,15 +522,6 @@ namespace WebApplications.Utilities.Performance
                 .AppendResetForegroundColor()
                 .AppendFormat("{Info:{<items>:\r\n\t{Name}\t: {Value}}}")
                 .MakeReadOnly();
-
-        /// <summary>
-        /// Gets the default format.
-        /// </summary>
-        /// <value>The default format.</value>
-        public override FormatBuilder DefaultFormat
-        {
-            get { return VerboseFormat; }
-        }
 
         /// <summary>
         /// The short format.
@@ -544,14 +536,25 @@ namespace WebApplications.Utilities.Performance
                 .MakeReadOnly();
 
         /// <summary>
-        /// Resolves the specified tag.
+        /// Gets the default format.
         /// </summary>
-        /// <param name="tag">The tag.</param>
-        /// <returns>Optional&lt;System.Object&gt;.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public override Optional<object> Resolve(string tag)
+        /// <value>The default format.</value>
+        public override FormatBuilder DefaultFormat
         {
-            switch (tag.ToLowerInvariant())
+            get { return VerboseFormat; }
+        }
+
+        /// <summary>
+        /// Resolves the specified chunk.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>An assigned<see cref="T:WebApplications.Utilities.Optional`1" /> if resolved; otherwise <see cref="F:WebApplications.Utilities.Optional`1.Unassigned" /></returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public override Optional<object> Resolve(TextWriter writer, FormatChunk chunk)
+        {
+            // ReSharper disable once PossibleNullReferenceException
+            switch (chunk.Tag.ToLowerInvariant())
             {
                 case "default":
                     return VerboseFormat;

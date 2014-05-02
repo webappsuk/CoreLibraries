@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 
@@ -86,24 +87,30 @@ namespace WebApplications.Utilities.Performance
         /// The default builder for writing out information.
         /// </summary>
         [NotNull]
-        private static readonly FormatBuilder _defaultBuilder =
+        [PublicAPI]
+        public static readonly FormatBuilder VerboseFormat =
             new FormatBuilder("{Name}\t: {Value}", true);
 
+        /// <summary>
+        /// Gets the default format.
+        /// </summary>
+        /// <value>The default format.</value>
         public override FormatBuilder DefaultFormat
         {
-            get { return _defaultBuilder; }
+            get { return VerboseFormat; }
         }
 
         /// <summary>
-        /// Resolves the specified tag.
+        /// Resolves the specified chunk.
         /// </summary>
-        /// <param name="tag">The tag.</param>
-        /// <returns>Optional&lt;System.Object&gt;.</returns>
-        /// <exception cref="System.NotImplementedException"></exception>
+        /// <param name="writer">The writer.</param>
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>An assigned<see cref="T:WebApplications.Utilities.Optional`1" /> if resolved; otherwise <see cref="F:WebApplications.Utilities.Optional`1.Unassigned" /></returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Optional<object> Resolve(string tag)
+        public override Optional<object> Resolve(TextWriter writer, FormatChunk chunk)
         {
-            switch (tag.ToLowerInvariant())
+            // ReSharper disable once PossibleNullReferenceException
+            switch (chunk.Tag.ToLowerInvariant())
             {
                 case "name":
                     return Name;
