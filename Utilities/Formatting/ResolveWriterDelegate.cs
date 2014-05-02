@@ -34,7 +34,7 @@ namespace WebApplications.Utilities.Formatting
     /// Delegate definition for a resolver which can be used to resolve the values of tags, whilst writing out a <see cref="FormatBuilder" />.
     /// </summary>
     /// <param name="writer">The writer.</param>
-    /// <param name="tag">The tag.</param>
+    /// <param name="chunk">The chunk.</param>
     /// <returns>An optional value for the resolved tag.</returns>
-    public delegate Resolution ResolveWriterDelegate([NotNull] TextWriter writer, [NotNull] string tag);
+    public delegate Resolution ResolveWriterDelegate([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
 }

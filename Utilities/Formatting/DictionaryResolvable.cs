@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -101,13 +102,14 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Resolves the specified tag.
         /// </summary>
-        /// <param name="tag">The tag.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="chunk">The chunk.</param>
         /// <returns>A <see cref="Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        protected override Resolution Resolve(string tag)
+        public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
         {
             TValue value;
-            return _values.TryGetValue(tag, out value)
+            return _values.TryGetValue(chunk.Tag, out value)
                 ? new Resolution(value)
                 : Resolution.Unknown;
         }

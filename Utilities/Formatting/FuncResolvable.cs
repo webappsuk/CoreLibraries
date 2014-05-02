@@ -48,20 +48,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true"/> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true"/>  outer tags should be resolved automatically in formats.</param>
-        public FuncResolvable([NotNull]ResolveDelegate resolver, bool isCaseSensitive = false, bool resolveOuterTags = true)
-            : base(isCaseSensitive, resolveOuterTags)
-        {
-            Contract.Requires(resolver != null);
-            // ReSharper disable once AssignNullToNotNullAttribute
-            _resolver = (writer, tag) => resolver(tag);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Resolvable"/> class.
-        /// </summary>
-        /// <param name="resolver">The resolver.</param>
-        /// <param name="isCaseSensitive">if set to <see langword="true"/> then tags are case sensitive.</param>
-        /// <param name="resolveOuterTags">if set to <see langword="true"/>  outer tags should be resolved automatically in formats.</param>
         public FuncResolvable([NotNull]ResolveWriterDelegate resolver, bool isCaseSensitive = false, bool resolveOuterTags = true)
             : base(isCaseSensitive, resolveOuterTags)
         {
@@ -73,12 +59,12 @@ namespace WebApplications.Utilities.Formatting
         /// Resolves the specified tag.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="tag">The tag.</param>
+        /// <param name="chunk">The chunk.</param>
         /// <returns>A <see cref="Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Resolution Resolve(TextWriter writer, string tag)
+        public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
         {
-            return _resolver(writer, tag);
+            return _resolver(writer, chunk);
         }
     }
 }

@@ -71,7 +71,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Parallel.For(0, loop, i =>
             {
                 string s = builder.ToString(
-                    (w, tag) => string.Equals(tag, "list", StringComparison.CurrentCultureIgnoreCase)
+                    (w, c) => string.Equals(c.Tag, "list", StringComparison.CurrentCultureIgnoreCase)
                         ? new Resolution(Enumerable.Range(0, items))
                         : Resolution.Unknown);
             });

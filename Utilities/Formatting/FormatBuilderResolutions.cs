@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using JetBrains.Annotations;
+using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -86,26 +87,6 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
             public Resolutions(
                 [CanBeNull] Resolutions parent,
-                [NotNull] ResolveDelegate resolver,
-                bool isCaseSensitive,
-                bool resolveOuterTags)
-                : base(isCaseSensitive, resolveOuterTags)
-            {
-                Contract.Requires(resolver != null);
-                Parent = parent;
-                // ReSharper disable once AssignNullToNotNullAttribute
-                _resolver = (writer, tag) => resolver(tag);
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Resolutions" /> class.
-            /// </summary>
-            /// <param name="parent">The parent.</param>
-            /// <param name="resolver">The resolver.</param>
-            /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
-            /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
-            public Resolutions(
-                [CanBeNull] Resolutions parent,
                 [NotNull] ResolveWriterDelegate resolver,
                 bool isCaseSensitive,
                 bool resolveOuterTags)
@@ -120,17 +101,19 @@ namespace WebApplications.Utilities.Formatting
             /// Resolves the specified tag.
             /// </summary>
             /// <param name="writer">The writer.</param>
-            /// <param name="tag">The tag.</param>
+            /// <param name="chunk">The chunk.</param>
             /// <returns>A <see cref="Resolution" />.</returns>
             // ReSharper disable once CodeAnnotationAnalyzer
-            public override Resolution Resolve(TextWriter writer, string tag)
+            public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
             {
                 Resolution resolution;
+                // ReSharper disable once PossibleNullReferenceException
+                string tag = chunk.Tag;
                 if (_values == null ||
                     !_values.TryGetValue(tag, out resolution))
                 {
                     // Get the resolution using the resolver.
-                    resolution = _resolver(writer, tag);
+                    resolution = _resolver(writer, chunk);
 
                     if (!resolution.NoCache)
                     {
@@ -150,7 +133,7 @@ namespace WebApplications.Utilities.Formatting
                 if (!resolution.IsResolved &&
                     ResolveOuterTags &&
                     Parent != null)
-                    resolution = Parent.Resolve(writer, tag);
+                    resolution = Parent.Resolve(writer, chunk);
                 return resolution;
             }
         }

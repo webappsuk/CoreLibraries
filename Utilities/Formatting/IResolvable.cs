@@ -55,9 +55,9 @@ namespace WebApplications.Utilities.Formatting
         /// Resolves the specified tag.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="tag">The tag.</param>
+        /// <param name="chunk">The chunk.</param>
         /// <returns>A <see cref="Resolution" />.</returns>
         [PublicAPI]
-        Resolution Resolve([NotNull] TextWriter writer, [NotNull] string tag);
+        Resolution Resolve([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
     }
 }

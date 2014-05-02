@@ -29,7 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
 
@@ -196,7 +195,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestResolver()
         {
             FormatBuilder builder = new FormatBuilder("{A}{B}{C}");
-            builder.Resolve(tag => tag == "B" ? new Resolution(5) : Resolution.Unknown);
+            builder.Resolve((_, c) => c.Tag.ToLowerInvariant() == "b" ? new Resolution(5) : Resolution.Unknown);
             Assert.AreEqual("{A}5{C}", builder.ToString());
         }
 
@@ -204,7 +203,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestNestedResolver()
         {
             FormatBuilder builder = new FormatBuilder("{t:A {t:nested {t}}}");
-            builder.Resolve(tag => string.Equals(tag, "t") ? new Resolution("tag") : Resolution.Unknown);
+            builder.Resolve((_, c) => string.Equals(c.Tag, "t", StringComparison.CurrentCultureIgnoreCase) ? new Resolution("tag") : Resolution.Unknown);
             Assert.AreEqual("A nested tag", builder.ToString());
         }
 
@@ -215,7 +214,9 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("G"));
             Assert.AreEqual(string.Empty, builder.ToString("S"));
             Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("F"));
-            Assert.AreEqual("A nested tag", builder.ToString(tag => string.Equals(tag, "t") ? new Resolution("tag") : Resolution.Unknown));
+            Assert.AreEqual(
+                "A nested tag",
+                builder.ToString((_, c) => string.Equals(c.Tag, "t", StringComparison.CurrentCultureIgnoreCase) ? new Resolution("tag") : Resolution.Unknown));
         }
 
         [TestMethod]
@@ -223,44 +224,44 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             FormatBuilder builderA = new FormatBuilder("{A} {B} {C}");
             FormatBuilder builderB = new FormatBuilder("{Builder}");
-            Assert.AreEqual("a b c", builderB.ToString(
-                tag =>
-                {
-                    tag = tag.ToLowerInvariant();
-                    switch (tag)
+            Assert.AreEqual(
+                "a b c",
+                builderB.ToString(
+                    (_, c) =>
                     {
-                        case "builder":
-                            return new Resolution(builderA);
-                        default:
-                            return new Resolution(tag);
-                    }
-                }));
+                        string tag = c.Tag.ToLowerInvariant();
+                        switch (tag)
+                        {
+                            case "builder":
+                                return new Resolution(builderA);
+                            default:
+                                return new Resolution(tag);
+                        }
+                    }));
         }
 
         [TestMethod]
         public void TestAutoPositioning()
         {
             using (StringWriter writer = new StringWriter())
+            using (FormatTextWriter fw = new FormatTextWriter(writer, 5))
             {
-                using (FormatTextWriter fw = new FormatTextWriter(writer, 5))
-                {
-                    fw.WriteLine();
-                    Assert.AreEqual(0, fw.Position);
-                    fw.WriteLine("12345");
-                    Assert.AreEqual(0, fw.Position);
-                    fw.Write("12345\r\n");
-                    Assert.AreEqual(0, fw.Position);
-                    fw.Write("1234\r\n");
-                    Assert.AreEqual(0, fw.Position);
-                    fw.Write("1234");
-                    Assert.AreEqual(4, fw.Position);
-                    fw.Write("123456");
-                    Assert.AreEqual(5, fw.Position);
-                    fw.Write("123456");
-                    Assert.AreEqual(1, fw.Position);
-                    fw.Write("12345\r\n1");
-                    Assert.AreEqual(1, fw.Position);
-                }
+                fw.WriteLine();
+                Assert.AreEqual(0, fw.Position);
+                fw.WriteLine("12345");
+                Assert.AreEqual(0, fw.Position);
+                fw.Write("12345\r\n");
+                Assert.AreEqual(0, fw.Position);
+                fw.Write("1234\r\n");
+                Assert.AreEqual(0, fw.Position);
+                fw.Write("1234");
+                Assert.AreEqual(4, fw.Position);
+                fw.Write("123456");
+                Assert.AreEqual(5, fw.Position);
+                fw.Write("123456");
+                Assert.AreEqual(1, fw.Position);
+                fw.Write("12345\r\n1");
+                Assert.AreEqual(1, fw.Position);
             }
         }
 

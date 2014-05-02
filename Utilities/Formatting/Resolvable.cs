@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using JetBrains.Annotations;
 
@@ -73,26 +72,11 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Resolves the specified tag.
         /// </summary>
-        /// <param name="tag">The tag.</param>
-        /// <returns>A <see cref="Resolution" />.</returns>
-        [PublicAPI]
-        protected virtual Resolution Resolve([NotNull] string tag)
-        {
-            Contract.Requires(tag != null);
-            return Resolution.Unknown;
-        }
-
-        /// <summary>
-        /// Resolves the specified tag.
-        /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="tag">The tag.</param>
+        /// <param name="chunk">The chunk.</param>
         /// <returns>A <see cref="Resolution" />.</returns>
         [PublicAPI]
         // ReSharper disable once CodeAnnotationAnalyzer
-        public virtual Resolution Resolve(TextWriter writer, string tag)
-        {
-            return Resolve(tag);
-        }
+        public abstract Resolution Resolve(TextWriter writer, FormatChunk chunk);
     }
 }
