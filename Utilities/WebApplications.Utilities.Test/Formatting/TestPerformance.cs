@@ -45,7 +45,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [Timeout(60000)]
         public void TestLargeEnumerable()
         {
-            FormatBuilder builder = new FormatBuilder("{List:[{<ITEM>:0.00}{<JOIN>:, }]}");
+            FormatBuilder builder = new FormatBuilder("{List:[{<Items>:0.00}{<JOIN>:, }]}");
             const int loop = 1000;
             const int items = 100;
 

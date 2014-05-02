@@ -1932,7 +1932,7 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
-                results.Add(new FormatChunk(chunk, resolved));
+                results.Add(new FormatChunk(chunk, resolved.Value));
             } while (true);
         }
         #endregion
