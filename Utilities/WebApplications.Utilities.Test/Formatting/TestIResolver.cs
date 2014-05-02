@@ -25,7 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
 
@@ -123,6 +125,33 @@ namespace WebApplications.Utilities.Test.Formatting
                 "{0:[{<items>:{<Index>}-{<Item>:0.00}}{<JOIN>:, }]}",
                 new[] {1, 2, 3, 4});
             Assert.AreEqual("[0-1.00, 1-2.00, 2-3.00, 3-4.00]", builder.ToString());
+        }
+
+        [TestMethod]
+        public void TestReplaceColor()
+        {
+            FormatBuilder builder = new FormatBuilder().AppendForegroundColor(Color.Red).AppendForegroundColor(Color.Green); ;
+            Assert.AreEqual(
+                "{" + FormatBuilder.ForegroundColorTag + ":Red}{" + FormatBuilder.ForegroundColorTag + ":Green}",
+                builder.ToString("F"));
+
+            Assert.AreEqual(
+                "{" + FormatBuilder.ForegroundColorTag + ":Red}{" + FormatBuilder.ForegroundColorTag + ":Blue}",
+                builder.ToString(
+                    "F",
+                    null,
+                    (_, c) =>
+                        string.Equals(
+                            c.Tag,
+                            FormatBuilder.ForegroundColorTag,
+                            StringComparison.CurrentCultureIgnoreCase) &&
+                        string.Equals(
+                            c.Format,
+                            "Green",
+                            StringComparison.CurrentCultureIgnoreCase)
+                            ? new Resolution(
+                        new FormatChunk(null, FormatBuilder.ForegroundColorTag, 0, "Blue", Color.Blue))
+                            : Resolution.UnknownYet));
         }
     }
 }

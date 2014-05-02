@@ -1605,6 +1605,28 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
+                // Check if we have an actual FormatChunk as the value, in which case, unwrap it.
+
+                do
+                {
+                    FormatChunk fc = resolvedValue as FormatChunk;
+                    if (fc == null) break;
+
+                    chunk = fc;
+                    isResolved = chunk.IsResolved;
+                    if (!isResolved)
+                        break;
+
+                    resolvedValue = fc.Value;
+                } while (true);
+
+                if (!isResolved)
+                {
+                    // We have no resolution so just add the new chunk.
+                    results.Add(chunk);
+                    continue;
+                }
+
                 FormatBuilder builder = resolvedValue as FormatBuilder;
                 if (builder != null)
                 {
@@ -1625,16 +1647,7 @@ namespace WebApplications.Utilities.Formatting
                     continue;
                 }
 
-                // Check if we have an actual FormatChunk as the value.
-                FormatChunk fc = resolvedValue as FormatChunk;
-                if (fc != null)
-                {
-                    stack.Push(fc, resolutions);
-                    continue;
-                }
-
                 // Check if we have any child chunks
-                // TODO This needs to change
                 if (chunk.ChildrenInternal != null &&
                     chunk.ChildrenInternal.Count > 0)
                 {

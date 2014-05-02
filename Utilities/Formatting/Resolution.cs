@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Formatting
         /// The tag is not yet known (not cached).
         /// </summary>
         [PublicAPI]
-        public static readonly Resolution UnknownYet = new Resolution();
+        public static readonly Resolution UnknownYet = new Resolution(false, true);
 
         /// <summary>
         /// The tag's value is Null.
@@ -88,6 +88,18 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         [CanBeNull]
         public readonly object Value;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Resolution" /> struct.
+        /// </summary>
+        /// <param name="isResolved">if set to <see langword="true" /> [is resolved].</param>
+        /// <param name="noCache">if set to <see langword="true" /> then this resolution is not cached.</param>
+        private Resolution(bool isResolved, bool noCache)
+            : this()
+        {
+            IsResolved = isResolved;
+            NoCache = noCache;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Resolution" /> struct.

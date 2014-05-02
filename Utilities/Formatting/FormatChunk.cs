@@ -147,7 +147,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="alignment">The alignment.</param>
         /// <param name="format">The format.</param>
         /// <param name="value">The value.</param>
-        internal FormatChunk(
+        public FormatChunk(
             [CanBeNull] IResolvable resolver,
             [NotNull] string tag,
             int alignment,
