@@ -195,7 +195,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestResolver()
         {
             FormatBuilder builder = new FormatBuilder("{A}{B}{C}");
-            builder.Resolve((_, c) => c.Tag.ToLowerInvariant() == "b" ? new Resolution(5) : Resolution.Unknown);
+            builder.Resolve((_, c) => c.Tag.ToLowerInvariant() == "b" ? 5 : Resolution.Unknown);
             Assert.AreEqual("{A}5{C}", builder.ToString());
         }
 
@@ -203,7 +203,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestNestedResolver()
         {
             FormatBuilder builder = new FormatBuilder("{t:A {t:nested {t}}}");
-            builder.Resolve((_, c) => string.Equals(c.Tag, "t", StringComparison.CurrentCultureIgnoreCase) ? new Resolution("tag") : Resolution.Unknown);
+            builder.Resolve((_, c) => string.Equals(c.Tag, "t", StringComparison.CurrentCultureIgnoreCase) ? "tag" : Resolution.Unknown);
             Assert.AreEqual("A nested tag", builder.ToString());
         }
 
@@ -216,7 +216,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("{t:A {t:nested {t}}}", builder.ToString("F"));
             Assert.AreEqual(
                 "A nested tag",
-                builder.ToString((_, c) => string.Equals(c.Tag, "t", StringComparison.CurrentCultureIgnoreCase) ? new Resolution("tag") : Resolution.Unknown));
+                builder.ToString((_, c) => string.Equals(c.Tag, "t", StringComparison.CurrentCultureIgnoreCase) ? "tag" : Resolution.Unknown));
         }
 
         [TestMethod]
@@ -233,9 +233,9 @@ namespace WebApplications.Utilities.Test.Formatting
                         switch (tag)
                         {
                             case "builder":
-                                return new Resolution(builderA);
+                                return builderA;
                             default:
-                                return new Resolution(tag);
+                                return tag;
                         }
                     }));
         }

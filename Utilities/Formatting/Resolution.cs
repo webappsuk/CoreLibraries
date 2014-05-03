@@ -38,37 +38,37 @@ namespace WebApplications.Utilities.Formatting
         /// The tag is unknown (cached).
         /// </summary>
         [PublicAPI]
-        public static readonly Resolution Unknown = default(Resolution);
+        public static readonly object Unknown = default(Resolution);
 
         /// <summary>
         /// The tag is not yet known (not cached).
         /// </summary>
         [PublicAPI]
-        public static readonly Resolution UnknownYet = new Resolution(false, true);
+        public static readonly object UnknownYet = new Resolution(false, true);
 
         /// <summary>
         /// The tag's value is Null.
         /// </summary>
         [PublicAPI]
-        public static readonly Resolution Null = new Resolution(null);
+        public static readonly object Null = new Resolution(null);
 
         /// <summary>
         /// The tag's value is currently null, but may change.
         /// </summary>
         [PublicAPI]
-        public static readonly Resolution CurrentlyNull = new Resolution(null, true);
+        public static readonly object CurrentlyNull = new Resolution(null, true);
 
         /// <summary>
         /// The tag's value is <see cref="string.Empty"/>.
         /// </summary>
         [PublicAPI]
-        public static readonly Resolution Empty = new Resolution(string.Empty);
+        public static readonly object Empty = new Resolution(string.Empty);
 
         /// <summary>
         /// The tag's value is currently <see cref="string.Empty"/>, but may change.
         /// </summary>
         [PublicAPI]
-        public static readonly Resolution CurrentlyEmpty = new Resolution(string.Empty, true);
+        public static readonly object CurrentlyEmpty = new Resolution(string.Empty, true);
 
         /// <summary>
         /// Whether this resolution should be cached.

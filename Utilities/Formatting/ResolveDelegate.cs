@@ -35,6 +35,6 @@ namespace WebApplications.Utilities.Formatting
     /// </summary>
     /// <param name="writer">The writer.</param>
     /// <param name="chunk">The chunk.</param>
-    /// <returns>An optional value for the resolved tag.</returns>
-    public delegate Resolution ResolveWriterDelegate([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
+    /// <returns>An object that will be cached unless it is a <see cref="Resolution" />.</returns>
+    public delegate object ResolveDelegate([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
 }

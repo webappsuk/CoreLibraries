@@ -54,7 +54,7 @@ namespace WebApplications.Utilities.Formatting
             /// </summary>
             [NotNull]
             [PublicAPI]
-            private readonly ResolveWriterDelegate _resolver;
+            private readonly ResolveDelegate _resolver;
 
             /// <summary>
             /// Any resolved values.
@@ -87,7 +87,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
             public Resolutions(
                 [CanBeNull] Resolutions parent,
-                [NotNull] ResolveWriterDelegate resolver,
+                [NotNull] ResolveDelegate resolver,
                 bool isCaseSensitive,
                 bool resolveOuterTags)
                 : base(isCaseSensitive, resolveOuterTags)
@@ -104,7 +104,7 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="chunk">The chunk.</param>
             /// <returns>A <see cref="Resolution" />.</returns>
             // ReSharper disable once CodeAnnotationAnalyzer
-            public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
+            public override object Resolve(TextWriter writer, FormatChunk chunk)
             {
                 Resolution resolution;
                 // ReSharper disable once PossibleNullReferenceException
@@ -113,7 +113,10 @@ namespace WebApplications.Utilities.Formatting
                     !_values.TryGetValue(tag, out resolution))
                 {
                     // Get the resolution using the resolver.
-                    resolution = _resolver(writer, chunk);
+                    object result = _resolver(writer, chunk);
+                    resolution = result is Resolution
+                        ? (Resolution) result
+                        : new Resolution(result);
 
                     if (!resolution.NoCache)
                     {
@@ -133,7 +136,7 @@ namespace WebApplications.Utilities.Formatting
                 if (!resolution.IsResolved &&
                     ResolveOuterTags &&
                     Parent != null)
-                    resolution = Parent.Resolve(writer, chunk);
+                    resolution = (Resolution)Parent.Resolve(writer, chunk);
                 return resolution;
             }
         }

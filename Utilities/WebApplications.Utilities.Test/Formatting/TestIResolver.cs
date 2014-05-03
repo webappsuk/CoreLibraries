@@ -150,8 +150,7 @@ namespace WebApplications.Utilities.Test.Formatting
                             c.Format,
                             "Green",
                             StringComparison.CurrentCultureIgnoreCase)
-                            ? new Resolution(
-                        new FormatChunk(null, FormatBuilder.ForegroundColorTag, 0, "Blue", Color.Blue))
+                            ? new FormatChunk(null, FormatBuilder.ForegroundColorTag, 0, "Blue", Color.Blue)
                             : Resolution.UnknownYet));
         }
 
@@ -164,7 +163,7 @@ namespace WebApplications.Utilities.Test.Formatting
                 "text",
                 builder.ToString(
                     (_, c) => c.IsControl && string.Equals(c.Tag, "!control", StringComparison.CurrentCultureIgnoreCase)
-                        ? new Resolution(new FormatChunk(null, null, 0, null, c.Format))
+                        ? new FormatChunk(null, null, 0, null, c.Format)
                         : Resolution.Unknown));
         }
     }

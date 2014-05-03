@@ -74,9 +74,9 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="chunk">The chunk.</param>
-        /// <returns>A <see cref="Resolution" />.</returns>
+        /// <returns>An object that will be cached unless it is a <see cref="Resolution" />.</returns>
         [PublicAPI]
         // ReSharper disable once CodeAnnotationAnalyzer
-        public abstract Resolution Resolve(TextWriter writer, FormatChunk chunk);
+        public abstract object Resolve(TextWriter writer, FormatChunk chunk);
     }
 }

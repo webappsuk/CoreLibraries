@@ -72,7 +72,7 @@ namespace WebApplications.Utilities.Test.Formatting
             {
                 string s = builder.ToString(
                     (w, c) => string.Equals(c.Tag, "list", StringComparison.CurrentCultureIgnoreCase)
-                        ? new Resolution(Enumerable.Range(0, items))
+                        ? Enumerable.Range(0, items)
                         : Resolution.Unknown);
             });
             sw.Stop();

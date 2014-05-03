@@ -106,11 +106,11 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="chunk">The chunk.</param>
         /// <returns>A <see cref="Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
+        public override object Resolve(TextWriter writer, FormatChunk chunk)
         {
             TValue value;
             return _values.TryGetValue(chunk.Tag, out value)
-                ? new Resolution(value)
+                ? value
                 : Resolution.Unknown;
         }
 

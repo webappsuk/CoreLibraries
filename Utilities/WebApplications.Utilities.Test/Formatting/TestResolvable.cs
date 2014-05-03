@@ -48,19 +48,19 @@ namespace WebApplications.Utilities.Test.Formatting
             /// <param name="writer">The writer.</param>
             /// <param name="chunk">The chunk.</param>
             /// <returns>A <see cref="Resolution" />.</returns>
-            public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
+            public override object Resolve(TextWriter writer, FormatChunk chunk)
             {
                 // ReSharper disable once PossibleNullReferenceException
                 switch (chunk.Tag.ToLowerInvariant())
                 {
                     case "verbose":
-                        return new Resolution(VerboseFormat);
+                        return VerboseFormat;
                     case "reversed":
-                        return new Resolution(ReversedFormat);
+                        return ReversedFormat;
                     case "key":
-                        return new Resolution(Key);
+                        return Key;
                     case "value":
-                        return new Resolution(Value);
+                        return Value;
                     default:
                         return Resolution.Unknown;
                 }

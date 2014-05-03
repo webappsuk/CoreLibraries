@@ -56,8 +56,9 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="chunk">The chunk.</param>
-        /// <returns>A <see cref="Resolution" />.</returns>
+        /// <returns>An object that will be cached unless it is a <see cref="Resolution" />.</returns>
         [PublicAPI]
-        Resolution Resolve([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
+        [CanBeNull]
+        object Resolve([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
     }
 }

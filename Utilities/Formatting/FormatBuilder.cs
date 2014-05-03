@@ -73,6 +73,7 @@ namespace WebApplications.Utilities.Formatting
         /// The root chunk.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly FormatChunk RootChunk = new FormatChunk(null);
 
         /// <summary>
@@ -608,8 +609,6 @@ namespace WebApplications.Utilities.Formatting
                 return this;
             }
 
-            // TODO Check for IEnumerable<object> and use a stack to add them? 
-
             RootChunk.AppendChunk(new FormatChunk(value));
             return this;
         }
@@ -1045,8 +1044,6 @@ namespace WebApplications.Utilities.Formatting
                 return this;
             }
 
-            // TODO Check for IEnumerable<object> and use a stack to add them? 
-
             RootChunk.AppendChunk(new FormatChunk(value));
             RootChunk.AppendChunk(NewLineChunk);
             return this;
@@ -1267,7 +1264,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormat(
             [CanBeNull] string format,
-            [CanBeNull] ResolveWriterDelegate resolver,
+            [CanBeNull] ResolveDelegate resolver,
             bool isCaseSensitive = false)
         {
             Contract.Requires(!IsReadOnly);
@@ -1358,7 +1355,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public FormatBuilder AppendFormatLine(
             [CanBeNull] string format,
-            [CanBeNull] ResolveWriterDelegate resolver,
+            [CanBeNull] ResolveDelegate resolver,
             bool isCaseSensitive = false)
         {
             Contract.Requires(!IsReadOnly);
@@ -1464,7 +1461,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>This instance.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Resolve([CanBeNull] ResolveWriterDelegate resolver, bool isCaseSensitive = false)
+        public FormatBuilder Resolve([CanBeNull] ResolveDelegate resolver, bool isCaseSensitive = false)
         {
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -1570,7 +1567,9 @@ namespace WebApplications.Utilities.Formatting
                 // Resolve the tag if it's the first time we've seen it.
                 if (resolutions != null)
                 {
-                    Resolution resolved = resolutions.Resolve(writer, chunk);
+                    // ReSharper disable PossibleNullReferenceException
+                    Resolution resolved = (Resolution)resolutions.Resolve(writer, chunk);
+                    // ReSharper restore PossibleNullReferenceException
                     isResolved = resolved.IsResolved;
                     resolvedValue = resolved.Value;
                 }
@@ -1586,7 +1585,7 @@ namespace WebApplications.Utilities.Formatting
                     {
                         // Use the current resolution.
                         isResolved = true;
-                        resolvedValue = new Resolution(chunk.Value);
+                        resolvedValue = chunk.Value;
                     }
                     else
                     {
@@ -1729,12 +1728,14 @@ namespace WebApplications.Utilities.Formatting
                                         resolutions,
                                         (_, c) =>
                                         {
+                                            // ReSharper disable PossibleNullReferenceException
                                             switch (c.Tag.ToLowerInvariant())
+                                            // ReSharper restore PossibleNullReferenceException
                                             {
                                                 case IndexTag:
-                                                    return new Resolution(value);
+                                                    return value;
                                                 case ItemTag:
-                                                    return new Resolution(key);
+                                                    return key;
                                                 default:
                                                     return Resolution.Unknown;
                                             }
@@ -1752,7 +1753,6 @@ namespace WebApplications.Utilities.Formatting
 
                                     if (subFormatChunk.ChildrenInternal != null)
                                         innerChunk.ChildrenInternal = subFormatChunk.ChildrenInternal.ToList();
-                                    // TODO is this necessary? PROBABLY
 
                                     stack.Push(innerChunk, inner);
 
@@ -1899,7 +1899,7 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         public string ToString(
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -1924,7 +1924,7 @@ namespace WebApplications.Utilities.Formatting
         public string ToString(
             [CanBeNull] Layout layout,
             ref int position,
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -2039,7 +2039,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public string ToString(
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -2066,7 +2066,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -2259,7 +2259,7 @@ namespace WebApplications.Utilities.Formatting
         public string ToString(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -2290,7 +2290,7 @@ namespace WebApplications.Utilities.Formatting
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -2356,7 +2356,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public void WriteToConsole(
             [CanBeNull] string format,
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -2419,7 +2419,7 @@ namespace WebApplications.Utilities.Formatting
         [StringFormatMethod("format")]
         public void WriteToTrace(
             [CanBeNull] string format,
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -2637,7 +2637,7 @@ namespace WebApplications.Utilities.Formatting
         public int WriteTo(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -2679,7 +2679,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout,
             int position,
             [CanBeNull] string format,
-            [CanBeNull] [InstantHandle] ResolveWriterDelegate resolver,
+            [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
             bool resolveOuterTags = true)
         {
@@ -3500,6 +3500,7 @@ namespace WebApplications.Utilities.Formatting
         /// The reset foreground color chunk.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public static readonly FormatChunk ResetForegroundColorChunk = new FormatChunk(
             null,
             ForegroundColorTag,
@@ -3510,6 +3511,7 @@ namespace WebApplications.Utilities.Formatting
         /// The reset background color chunk.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public static readonly FormatChunk ResetBackgroundColorChunk = new FormatChunk(
             null,
             BackgroundColorTag,
@@ -3681,6 +3683,7 @@ namespace WebApplications.Utilities.Formatting
         /// The new line chunk
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public static readonly FormatChunk NewLineChunk = new FormatChunk(Environment.NewLine);
 
         /// <summary>
