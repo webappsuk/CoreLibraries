@@ -128,31 +128,32 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("[0-1.00, 1-2.00, 2-3.00, 3-4.00]", builder.ToString());
         }
 
+        /* TODO This test is no longer valid as resolution does not occur for ToString("F")
         [TestMethod]
         public void TestReplaceColor()
         {
-            FormatBuilder builder = new FormatBuilder().AppendForegroundColor(Color.Red).AppendForegroundColor(Color.Green); ;
+            FormatBuilder builder = new FormatBuilder().AppendForegroundColor(Color.Red).AppendForegroundColor(Color.Green);
             Assert.AreEqual(
                 "{" + FormatBuilder.ForegroundColorTag + ":Red}{" + FormatBuilder.ForegroundColorTag + ":Green}",
                 builder.ToString("F"));
 
+            builder.Resolve(
+                (_, c) =>
+                    string.Equals(
+                        c.Tag,
+                        FormatBuilder.ForegroundColorTag,
+                        StringComparison.CurrentCultureIgnoreCase) &&
+                    string.Equals(
+                        c.Format,
+                        "Green",
+                        StringComparison.CurrentCultureIgnoreCase)
+                        ? new FormatChunk(null, FormatBuilder.ForegroundColorTag, 0, "Blue", Color.Blue)
+                        : Resolution.UnknownYet);
             Assert.AreEqual(
                 "{" + FormatBuilder.ForegroundColorTag + ":Red}{" + FormatBuilder.ForegroundColorTag + ":Blue}",
-                builder.ToString(
-                    "F",
-                    null,
-                    (_, c) =>
-                        string.Equals(
-                            c.Tag,
-                            FormatBuilder.ForegroundColorTag,
-                            StringComparison.CurrentCultureIgnoreCase) &&
-                        string.Equals(
-                            c.Format,
-                            "Green",
-                            StringComparison.CurrentCultureIgnoreCase)
-                            ? new FormatChunk(null, FormatBuilder.ForegroundColorTag, 0, "Blue", Color.Blue)
-                            : Resolution.UnknownYet));
+                builder.ToString("F"));
         }
+         */
 
         [TestMethod]
         public void TestReplaceControl()

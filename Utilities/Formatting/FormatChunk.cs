@@ -612,5 +612,33 @@ namespace WebApplications.Utilities.Formatting
             // Add right padding
             writer.Write(new string(' ', -Alignment - len));
         }
+
+
+        /// <summary>
+        /// Returns all children of this <see cref="FormatChunk"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<FormatChunk> AllChildren
+        {
+            get
+            {
+                Stack<FormatChunk> stack = new Stack<FormatChunk>();
+                stack.Push(this);
+                while (stack.Count > 0)
+                {
+                    FormatChunk chunk = stack.Pop();
+                    if (!ReferenceEquals(chunk, this))
+                        // ReSharper disable once PossibleNullReferenceException
+                        yield return chunk;
+
+                    // ReSharper disable once PossibleNullReferenceException
+                    if (chunk.ChildrenInternal == null) continue;
+                    foreach (FormatChunk child in chunk.Children.Reverse())
+                        stack.Push(child);
+                }
+            }
+        }
     }
 }
