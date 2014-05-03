@@ -2442,13 +2442,14 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null || IsEmpty) return position;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
-            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, null, ref isLayoutRequired),
+                RootChunk,
                 writer,
+                _initialResolutions,
+                null,
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 "G",
-                isLayoutRequired,
+                _isLayoutRequired,
                 position);
         }
 
@@ -2465,13 +2466,14 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null || IsEmpty) return;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
-            bool isLayoutRequired = _isLayoutRequired;
             WriteTo(
-                Resolve(RootChunk, writer, _initialResolutions, null, ref isLayoutRequired),
+                RootChunk,
                 writer,
+                _initialResolutions,
+                null,
                 InitialLayout,
                 format,
-                isLayoutRequired,
+                _isLayoutRequired,
                 0);
         }
 
@@ -2492,20 +2494,16 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null || IsEmpty) return 0;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
-            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(
-                    RootChunk,
-                    writer,
-                    _initialResolutions,
-                    values == null || values.Length < 1
-                        ? null
-                        : new ListResolvable(values, false),
-                    ref isLayoutRequired),
+                RootChunk,
                 writer,
+                _initialResolutions,
+                values == null || values.Length < 1
+                    ? null
+                    : new ListResolvable(values, false),
                 InitialLayout,
                 format,
-                isLayoutRequired,
+                _isLayoutRequired,
                 0);
         }
 
@@ -2530,20 +2528,16 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null || IsEmpty) return position;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
-            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(
-                    RootChunk,
-                    writer,
-                    _initialResolutions,
-                    values == null || values.Length < 1
-                        ? null
-                        : new ListResolvable(values, false),
-                    ref isLayoutRequired),
+                RootChunk,
                 writer,
+                _initialResolutions,
+                values == null || values.Length < 1
+                    ? null
+                    : new ListResolvable(values, false),
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
-                isLayoutRequired,
+                _isLayoutRequired,
                 position);
         }
 
@@ -2566,20 +2560,16 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null || IsEmpty) return 0;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
-            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(
-                    RootChunk,
-                    writer,
-                    _initialResolutions,
-                    values == null || values.Count < 1
-                        ? null
-                        : new DictionaryResolvable(values, isCaseSensitive, false),
-                    ref isLayoutRequired),
+                RootChunk,
                 writer,
+                _initialResolutions,
+                values == null || values.Count < 1
+                    ? null
+                    : new DictionaryResolvable(values, isCaseSensitive, false),
                 InitialLayout,
                 format,
-                isLayoutRequired,
+                _isLayoutRequired,
                 0);
         }
 
@@ -2606,20 +2596,16 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null || IsEmpty) return position;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
-            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(
-                    RootChunk,
-                    writer,
-                    _initialResolutions,
-                    values == null || values.Count < 1
-                        ? null
-                        : new DictionaryResolvable(values, isCaseSensitive, false),
-                    ref isLayoutRequired),
+                RootChunk,
                 writer,
+                _initialResolutions,
+                values == null || values.Count < 1
+                    ? null
+                    : new DictionaryResolvable(values, isCaseSensitive, false),
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
-                isLayoutRequired,
+                _isLayoutRequired,
                 position);
         }
 
@@ -2644,20 +2630,16 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null || IsEmpty) return 0;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
-            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(
-                    RootChunk,
-                    writer,
-                    _initialResolutions,
-                    resolver == null
-                        ? null
-                        : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
-                    ref isLayoutRequired),
+                RootChunk,
                 writer,
+                _initialResolutions,
+                resolver == null
+                    ? null
+                    : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
                 InitialLayout,
                 format,
-                isLayoutRequired,
+                _isLayoutRequired,
                 0);
         }
 
@@ -2686,20 +2668,16 @@ namespace WebApplications.Utilities.Formatting
             if (writer == null || IsEmpty) return position;
             Contract.Assert(RootChunk.ChildrenInternal != null);
 
-            bool isLayoutRequired = _isLayoutRequired;
             return WriteTo(
-                Resolve(
-                    RootChunk,
-                    writer,
-                    _initialResolutions,
-                    resolver == null
-                        ? null
-                        : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
-                    ref isLayoutRequired),
+                RootChunk,
                 writer,
+                _initialResolutions,
+                resolver == null
+                    ? null
+                    : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
-                isLayoutRequired,
+                _isLayoutRequired,
                 position);
         }
         #endregion
@@ -2707,8 +2685,10 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
-        /// <param name="chunks">The chunks.</param>
+        /// <param name="rootChunk"></param>
         /// <param name="writer">The writer.</param>
+        /// <param name="initialResolutions"></param>
+        /// <param name="resolver"></param>
         /// <param name="initialLayout">The initial layout.</param>
         /// <param name="format">The format.</param>
         /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
@@ -2717,25 +2697,38 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         [StringFormatMethod("format")]
         private static int WriteTo(
-            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
+            [NotNull] FormatChunk rootChunk,
             [NotNull] TextWriter writer,
+            [CanBeNull] Resolutions initialResolutions,
+            [CanBeNull] IResolvable resolver,
             [NotNull] Layout initialLayout,
             [CanBeNull] string format,
             bool isLayoutRequired,
             int position)
         {
-            Contract.Requires(chunks != null);
+            Contract.Requires(rootChunk != null);
             Contract.Requires(writer != null);
             Contract.Requires(initialLayout != null);
             ISerialTextWriter serialTextWriter = writer as ISerialTextWriter;
             return serialTextWriter == null
-                ? DoWrite(chunks, writer, null, initialLayout, format, isLayoutRequired, position)
+                ? DoWrite(
+                    rootChunk,
+                    writer,
+                    null,
+                    initialResolutions,
+                    resolver,
+                    initialLayout,
+                    format,
+                    isLayoutRequired,
+                    position)
                 : serialTextWriter.Context.Invoke(
                     () =>
                         DoWrite(
-                            chunks,
+                            rootChunk,
                             writer,
                             serialTextWriter.Writer,
+                            initialResolutions,
+                            resolver,
                             initialLayout,
                             format,
                             isLayoutRequired,
@@ -2751,9 +2744,11 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
-        /// <param name="chunks">The chunks.</param>
+        /// <param name="rootChunk">The root chunk.</param>
         /// <param name="writer">The writer.</param>
         /// <param name="serialWriter">The serial writer.</param>
+        /// <param name="initialResolutions">The initial resolutions.</param>
+        /// <param name="resolver">The resolver.</param>
         /// <param name="initialLayout">The initial layout.</param>
         /// <param name="format">The format.</param>
         /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
@@ -2762,15 +2757,17 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         [StringFormatMethod("format")]
         private static int DoWrite(
-            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
+            [NotNull] FormatChunk rootChunk,
             [NotNull] TextWriter writer,
             [CanBeNull] TextWriter serialWriter,
+            [CanBeNull] Resolutions initialResolutions,
+            [CanBeNull] IResolvable resolver,
             [NotNull] Layout initialLayout,
             [CanBeNull] string format,
             bool isLayoutRequired,
             int position)
         {
-            Contract.Requires(chunks != null);
+            Contract.Requires(rootChunk != null);
             Contract.Requires(writer != null);
             Contract.Requires(initialLayout != null);
             if (format == null)
@@ -2792,6 +2789,13 @@ namespace WebApplications.Utilities.Formatting
             ILayoutTextWriter layoutWriter = serialWriter as ILayoutTextWriter ?? writer as ILayoutTextWriter;
             IColoredTextWriter coloredTextWriter = serialWriter as IColoredTextWriter ?? writer as IColoredTextWriter;
             if (serialWriter != null) writer = serialWriter;
+
+            IEnumerable<FormatChunk> chunks = Resolve(
+                rootChunk,
+                writer,
+                initialResolutions,
+                resolver,
+                ref isLayoutRequired);
 
             /*
              * If we're not using a layout writer, and we don't require layout, then we need to manually track position.
@@ -2892,9 +2896,9 @@ namespace WebApplications.Utilities.Formatting
             }
 
             // If we require layout, run chunks through layout engine.
-            IEnumerable<FormatChunk> enumerable = isLayoutRequired ||
-                                                  (writerWidth < int.MaxValue)
-                ? Align(
+            if (isLayoutRequired ||
+                (writerWidth < int.MaxValue))
+                chunks = Align(
                     GetLines(
                         GetLineChunks(chunks, format, writer.FormatProvider),
                         initialLayout,
@@ -2903,11 +2907,10 @@ namespace WebApplications.Utilities.Formatting
                     initialLayout,
                     writerWidth,
                     autoWraps,
-                    ref position)
-                : chunks;
+                    ref position);
 
             // We try to output the builder in one go to prevent interleaving, however we split on control codes.
-            foreach (FormatChunk chunk in enumerable)
+            foreach (FormatChunk chunk in chunks)
                 // ReSharper disable once PossibleNullReferenceException
                 if (chunk.IsControl &&
                     !writeTags)
