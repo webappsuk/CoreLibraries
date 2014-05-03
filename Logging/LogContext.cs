@@ -30,12 +30,16 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using JetBrains.Annotations;
 using ProtoBuf;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging
 {
@@ -46,8 +50,54 @@ namespace WebApplications.Utilities.Logging
     /// implicit casts, or the static <see cref="Empty">new LogContext()</see>.</remarks>
     [ProtoContract(SkipConstructor = true, UseProtoMembersOnly = true, IgnoreListHandling = true)]
     [Serializable]
-    public class LogContext : IEnumerable<KeyValuePair<string, string>>
+    public class LogContext : ResolvableWriteable, IEnumerable<KeyValuePair<string, string>>
     {
+        /// <summary>
+        /// The default format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly static FormatBuilder VerboseFormat = new FormatBuilder()
+            .AppendLine()
+            .AppendForegroundColor(Color.DarkCyan)
+            .AppendFormat("{Key}")
+            .AppendResetForegroundColor()
+            .AppendFormat("\t: {Value}")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// The default format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly static FormatBuilder NoLineFormat = new FormatBuilder()
+            .AppendForegroundColor(Color.DarkCyan)
+            .AppendFormat("{Key}")
+            .AppendResetForegroundColor()
+            .AppendFormat("\t: {Value}")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// The default format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly static FormatBuilder XMLFormat = new FormatBuilder()
+            .AppendLine()
+            .AppendFormat("<{Key}>{Value}</{Key}>")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// The default format
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly static FormatBuilder JSONFormat = new FormatBuilder()
+            .Append(',')
+            .AppendLine()
+            .AppendFormat("\"{Key}\"=\"{Value}\"")
+            .MakeReadOnly();
+
         /// <summary>
         /// The minimum key length (note also minimum prefix length).
         /// </summary>
@@ -310,7 +360,7 @@ namespace WebApplications.Utilities.Logging
                 if (r != reservation)
                     throw new LoggingException(() => Resources.LogContext_Reserved_Key, key);
             }
-                // Remaining checks are for un-reserved keys.
+            // Remaining checks are for un-reserved keys.
             else if (key.Length < MinimumKeyLength)
                 throw new LoggingException(() => Resources.LogContext_Key_Too_Short, key, MinimumKeyLength);
             else if (key.Length > MaximumKeyLength)
@@ -380,7 +430,7 @@ namespace WebApplications.Utilities.Logging
         public LogContext SetPrefixed([NotNull] string prefix, [CanBeNull] params object[] values)
         {
             Contract.Requires(prefix != null);
-            return SetPrefixed(Guid.Empty, prefix, (IEnumerable<object>) values);
+            return SetPrefixed(Guid.Empty, prefix, (IEnumerable<object>)values);
         }
 
         /// <summary>
@@ -411,7 +461,7 @@ namespace WebApplications.Utilities.Logging
         public LogContext SetPrefixed(Guid reservation, [NotNull] string prefix, [CanBeNull] params object[] values)
         {
             Contract.Requires(prefix != null);
-            return SetPrefixed(reservation, prefix, (IEnumerable<object>) values);
+            return SetPrefixed(reservation, prefix, (IEnumerable<object>)values);
         }
 
         /// <summary>
@@ -550,6 +600,47 @@ namespace WebApplications.Utilities.Logging
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the default format.
+        /// </summary>
+        /// <value>The default format.</value>
+        public override FormatBuilder DefaultFormat
+        {
+            get { return VerboseFormat; }
+        }
+
+        /// <summary>
+        /// Resolves the specified writer.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="chunk">The chunk.</param>
+        /// <returns>WebApplications.Utilities.Formatting.Resolution.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
+        {
+            CultureInfo culture = writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
+            // ReSharper disable once PossibleNullReferenceException
+            switch (chunk.Tag.ToLowerInvariant())
+            {
+                case "default":
+                case "verbose":
+                    return new Resolution(VerboseFormat);
+                case "xml":
+                    return new Resolution(XMLFormat);
+                case "json":
+                    return new Resolution(JSONFormat);
+                case "noline":
+                    return new Resolution(NoLineFormat);
+                case "key":
+                    string key = Translation.GetResource(() => Resources.LogKeys_Context, culture);
+                    return string.IsNullOrEmpty(key) ? Resolution.Null : new Resolution(key);
+                case "value":
+                    return new Resolution("TODO");
+                default:
+                    return Resolution.Unknown;
+            }
         }
     }
 }

@@ -117,6 +117,186 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Contract_Failed" xml:space="preserve">
+    <value>Contract failed. {0}</value>
+  </data>
+  <data name="Contract_Failed_Message" xml:space="preserve">
+    <value>{1}. {0}</value>
+  </data>
+  <data name="EventLogger_EventLogCannotBeNull" xml:space="preserve">
+    <value>The event logger event log name cannot be empty.</value>
+  </data>
+  <data name="EventLogger_MachineNameCannotBeNull" xml:space="preserve">
+    <value>The machine name can not be null</value>
+  </data>
+  <data name="EventLogger_NameCannotBeNull" xml:space="preserve">
+    <value>The event logger name cannot be empty.</value>
+  </data>
+  <data name="FileLogger_BufferSize_Too_Big" xml:space="preserve">
+    <value>The file buffer size '{0}' cannot exceed the maximum value of an int.</value>
+  </data>
+  <data name="FileLogger_BufferSize_Too_Small" xml:space="preserve">
+    <value>The file  buffer size '{0}' cannot be less than 128 bytes.</value>
+  </data>
+  <data name="FileLogger_DirectoryAccessOrCreationError" xml:space="preserve">
+    <value>Could not create file logger as error occurred when trying to create/access directory '{0}'.</value>
+  </data>
+  <data name="FileLogger_Ended_File" xml:space="preserve">
+    <value>Finished writing logs to '{0}'</value>
+  </data>
+  <data name="FileLogger_ExtensionLongerThanFiveCharacters" xml:space="preserve">
+    <value>Cannot create file logger as extension '{0}' has more than five characters.</value>
+  </data>
+  <data name="FileLogger_Extension_Invalid_Char" xml:space="preserve">
+    <value>Cannot create file logger as extension '{0}' has invalid characters (only letters and digits allowed).</value>
+  </data>
+  <data name="FileLogger_FileDurationLessThanTenSeconds" xml:space="preserve">
+    <value>Cannot create file logger as maximum log file duration '{0}' was less than 10s, which would cause too many log files to be created.</value>
+  </data>
+  <data name="FileLogger_FileNameFormatInvalid" xml:space="preserve">
+    <value>Cannot create file logger as file name format '{0}' contains invalid characters.</value>
+  </data>
+  <data name="FileLogger_FileNameFormatNotSpecified" xml:space="preserve">
+    <value>Cannot create file logger as file name format not specified.</value>
+  </data>
+  <data name="FileLogger_File_Creation_Failed" xml:space="preserve">
+    <value>An error occurred whilst trying to create the '{0}' log file.</value>
+  </data>
+  <data name="FileLogger_File_Creation_Retry_Failed" xml:space="preserve">
+    <value>Trying to find a unique log file name failed too many times.</value>
+  </data>
+  <data name="FileLogger_InvalidPathCreation" xml:space="preserve">
+    <value>Cannot create file logger as file name format '{0}' led to invalid path creation.</value>
+  </data>
+  <data name="FileLogger_MaximumLogsLessThanTen" xml:space="preserve">
+    <value>Cannot create file logger as maximum logs per file '{0}' was less than 10, which would cause too many log files to be created.</value>
+  </data>
+  <data name="FileLogger_PathCreatedOutsideDirectory" xml:space="preserve">
+    <value>Cannot create file logger as file name format '{0}' led to invalid path creation. The file cannot be created outside the specified directory.</value>
+  </data>
+  <data name="FileLogger_Started_File" xml:space="preserve">
+    <value>Began writing logs to '{0}' with '{1}' buffer.</value>
+  </data>
+  <data name="LogContext_Empty_Reservation" xml:space="preserve">
+    <value>The reservation cannot be Guid.Empty.</value>
+  </data>
+  <data name="LogContext_Invalid_Reservation" xml:space="preserve">
+    <value>The LogContext reservation cannot be Guid.Empty.</value>
+  </data>
+  <data name="LogContext_Key_Already_Reserved" xml:space="preserve">
+    <value>The '{0}' key has already been reserved with a different reservation.</value>
+  </data>
+  <data name="LogContext_Key_Invalid_Char" xml:space="preserve">
+    <value>Keys can only contain letters, digits or spaces.</value>
+  </data>
+  <data name="LogContext_Key_Invalid_First_Char" xml:space="preserve">
+    <value>Key must start with a letter.</value>
+  </data>
+  <data name="LogContext_Key_Reservation_Failed_Prefix_Match" xml:space="preserve">
+    <value>The '{0}' key matches the '{1}' prefix - which has already been reserved.</value>
+  </data>
+  <data name="LogContext_Key_Too_Long" xml:space="preserve">
+    <value>The log context key '{0}' is longer than {1} characters (too long).</value>
+  </data>
+  <data name="LogContext_Key_Too_Short" xml:space="preserve">
+    <value>The log context key '{0}' is less than {1} characters (too short).</value>
+  </data>
+  <data name="LogContext_Locked" xml:space="preserve">
+    <value>Cannot change the values in a locked LogContext.</value>
+  </data>
+  <data name="LogContext_Null_Key" xml:space="preserve">
+    <value>The log context key cannot be null.</value>
+  </data>
+  <data name="LogContext_Null_Prefix" xml:space="preserve">
+    <value>The log context key prefix cannot be null.</value>
+  </data>
+  <data name="LogContext_Prefix_Already_Reserved" xml:space="preserve">
+    <value>The '{0}' key prefix has already been reserved with a different reservation.</value>
+  </data>
+  <data name="LogContext_Prefix_Reservation_Failed_Key_Match" xml:space="preserve">
+    <value>The '{0}' key prefix collides with the '{1}' key reservation.</value>
+  </data>
+  <data name="LogContext_Prefix_Reservation_Failed_Prefix_Match" xml:space="preserve">
+    <value>The '{0}' key prefix matches the '{1}' prefix - which has already been reserved.</value>
+  </data>
+  <data name="LogContext_Prefix_Too_Long" xml:space="preserve">
+    <value>The log context key prefix '{0}' is longer than {1} characters (too long).</value>
+  </data>
+  <data name="LogContext_Prefix_Too_Short" xml:space="preserve">
+    <value>The log context key prefix '{0}' is less than {1} characters (too short).</value>
+  </data>
+  <data name="LogContext_Reserved_Key" xml:space="preserve">
+    <value>The '{0}' key is reserved and cannot be added to a log context explicitly.</value>
+  </data>
+  <data name="LoggerBase_DoesNotSupportRetrieval" xml:space="preserve">
+    <value>The {0} logger does not support log retrieval.</value>
+  </data>
+  <data name="LoggerBase_GetEndDateLimit_NotImplemented" xml:space="preserve">
+    <value>The {0} logger has not yet implemented the Get(endDate, limit) method.</value>
+  </data>
+  <data name="LoggerBase_GetEndDateStartDate_NotImplemented" xml:space="preserve">
+    <value>The {0} logger has not yet implemented the Get(endDate, startDate) method.</value>
+  </data>
+  <data name="LoggerBase_GetForwardStartDateLimit_NotImplemented" xml:space="preserve">
+    <value>The {0} logger has not yet implemented the Get(startDate, limit) method.</value>
+  </data>
+  <data name="LoggingException_InnerExceptionCannotBeNull" xml:space="preserve">
+    <value>Parameter 'innerException' can not be null</value>
+  </data>
+  <data name="LoggingException_MessageCannotBeNull" xml:space="preserve">
+    <value>Parameter 'message' can not be null</value>
+  </data>
+  <data name="LoggingException_ParametersCannotBeNull" xml:space="preserve">
+    <value>Parameter 'parameters' can not be null</value>
+  </data>
+  <data name="LogKeys_ApplicationGuid" xml:space="preserve">
+    <value>Application GUID</value>
+  </data>
+  <data name="LogKeys_ApplicationName" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="LogKeys_Context" xml:space="preserve">
+    <value>Context</value>
+  </data>
+  <data name="LogKeys_Culture" xml:space="preserve">
+    <value>Culture</value>
+  </data>
+  <data name="LogKeys_Exception" xml:space="preserve">
+    <value>Exception type</value>
+  </data>
+  <data name="LogKeys_Guid" xml:space="preserve">
+    <value>GUID</value>
+  </data>
+  <data name="LogKeys_InnerException" xml:space="preserve">
+    <value>Inner Exception</value>
+  </data>
+  <data name="LogKeys_InnerExceptions" xml:space="preserve">
+    <value>Inner Exceptions</value>
+  </data>
+  <data name="LogKeys_Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="LogKeys_Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="LogKeys_Resource" xml:space="preserve">
+    <value>Resource</value>
+  </data>
+  <data name="LogKeys_StackTrace" xml:space="preserve">
+    <value>Stack trace</value>
+  </data>
+  <data name="LogKeys_StoredProcedure" xml:space="preserve">
+    <value>Stored Procedure</value>
+  </data>
+  <data name="LogKeys_ThreadID" xml:space="preserve">
+    <value>Thread ID</value>
+  </data>
+  <data name="LogKeys_ThreadName" xml:space="preserve">
+    <value>Thread Name</value>
+  </data>
+  <data name="LogKeys_TimeStamp" xml:space="preserve">
+    <value>Timestamp</value>
+  </data>
   <data name="LogStatic_AddOrUpdateLogger_RetrievalNotSupported" xml:space="preserve">
     <value>Can not copy logs over from {0} logger as log retrieval is not supported!</value>
   </data>
@@ -147,47 +327,41 @@
   <data name="Log_Application_Exiting" xml:space="preserve">
     <value>Application '{0}' [{1}] exiting.</value>
   </data>
-  <data name="EventLogger_EventLogCannotBeNull" xml:space="preserve">
-    <value>The event logger event log name cannot be empty.</value>
+  <data name="Log_Cleanup_Finished" xml:space="preserve">
+    <value>Finished logging clean up.</value>
   </data>
-  <data name="EventLogger_NameCannotBeNull" xml:space="preserve">
-    <value>The event logger name cannot be empty.</value>
+  <data name="Log_Configured" xml:space="preserve">
+    <value>Application '{0}' [{1}] configured.</value>
   </data>
-  <data name="FileLogger_DirectoryAccessOrCreationError" xml:space="preserve">
-    <value>Could not create file logger as error occurred when trying to create/access directory '{0}'.</value>
+  <data name="Log_GetResourceManager_FatalError" xml:space="preserve">
+    <value>Fatal error trying to retrieve resource manager for the '{0}' type</value>
   </data>
-  <data name="FileLogger_ExtensionLongerThanFiveCharacters" xml:space="preserve">
-    <value>Cannot create file logger as extension '{0}' has more than five characters.</value>
+  <data name="Log_Invalid_Format_Singular" xml:space="preserve">
+    <value>Unexpected singular format '{0}'.</value>
   </data>
-  <data name="FileLogger_FileDurationLessThanTenSeconds" xml:space="preserve">
-    <value>Cannot create file logger as maximum log file duration '{0}' was less than 10s, which would cause too many log files to be created.</value>
+  <data name="Log_Invalid_Format_XML_JSON" xml:space="preserve">
+    <value>Invalid log format - cannot output as both XML &amp; JSON.</value>
   </data>
-  <data name="FileLogger_FileNameFormatInvalid" xml:space="preserve">
-    <value>Cannot create file logger as file name format '{0}' contains invalid characters.</value>
+  <data name="Log_Logger_Multiple_Instances" xml:space="preserve">
+    <value>The '{0}' logger cannot be added as there is a logger present of the same type that does not support multiple instances.</value>
   </data>
-  <data name="FileLogger_FileNameFormatNotSpecified" xml:space="preserve">
-    <value>Cannot create file logger as file name format not specified.</value>
+  <data name="Log_OnUnhandledException" xml:space="preserve">
+    <value>An unhandled exception has occured. See inner exception for details.</value>
   </data>
-  <data name="FileLogger_InvalidPathCreation" xml:space="preserve">
-    <value>Cannot create file logger as file name format '{0}' led to invalid path creation.</value>
+  <data name="Log_PerfCategory_Access_Denied" xml:space="preserve">
+    <value>Performance counters cannot be accessed.</value>
   </data>
-  <data name="FileLogger_MaximumLogsLessThanTen" xml:space="preserve">
-    <value>Cannot create file logger as maximum logs per file '{0}' was less than 10, which would cause too many log files to be created.</value>
+  <data name="Log_PerfCategory_Enabled" xml:space="preserve">
+    <value>Performance counters are enabled and can be found with instance GUID '{0}'.</value>
   </data>
-  <data name="FileLogger_PathCreatedOutsideDirectory" xml:space="preserve">
-    <value>Cannot create file logger as file name format '{0}' led to invalid path creation. The file cannot be created outside the specified directory.</value>
+  <data name="Log_PerfCategory_Initialized" xml:space="preserve">
+    <value>Performance category '{0}' initialized.</value>
   </data>
-  <data name="LoggerBase_DoesNotSupportRetrieval" xml:space="preserve">
-    <value>The {0} logger does not support log retrieval.</value>
+  <data name="Log_PerfCategory_Missing" xml:space="preserve">
+    <value>Performance category '{0}' is missing.</value>
   </data>
-  <data name="LoggerBase_GetEndDateLimit_NotImplemented" xml:space="preserve">
-    <value>The {0} logger has not yet implemented the Get(endDate, limit) method.</value>
-  </data>
-  <data name="LoggerBase_GetEndDateStartDate_NotImplemented" xml:space="preserve">
-    <value>The {0} logger has not yet implemented the Get(endDate, startDate) method.</value>
-  </data>
-  <data name="LoggerBase_GetForwardStartDateLimit_NotImplemented" xml:space="preserve">
-    <value>The {0} logger has not yet implemented the Get(startDate, limit) method.</value>
+  <data name="Log_ToString_Invalid_Format" xml:space="preserve">
+    <value>The '{0}' format is not valid for a log.  See the LogFormat enumeration for valid values.</value>
   </data>
   <data name="MemoryLogger_CacheExpiryLessThanTenSeconds" xml:space="preserve">
     <value>Could not create memory logger as cache expiry '{0}' was less than 10s.</value>
@@ -206,176 +380,5 @@
   </data>
   <data name="Sqllogger_TimeoutLessThanOneSecond" xml:space="preserve">
     <value>The specified SQL timeout ({0}) was less than 1s.</value>
-  </data>
-  <data name="LogContext_Empty_Reservation" xml:space="preserve">
-    <value>The reservation cannot be Guid.Empty.</value>
-  </data>
-  <data name="LogContext_Key_Already_Reserved" xml:space="preserve">
-    <value>The '{0}' key has already been reserved with a different reservation.</value>
-  </data>
-  <data name="LogContext_Key_Reservation_Failed_Prefix_Match" xml:space="preserve">
-    <value>The '{0}' key matches the '{1}' prefix - which has already been reserved.</value>
-  </data>
-  <data name="LogContext_Null_Key" xml:space="preserve">
-    <value>The log context key cannot be null.</value>
-  </data>
-  <data name="LogContext_Null_Prefix" xml:space="preserve">
-    <value>The log context key prefix cannot be null.</value>
-  </data>
-  <data name="LogContext_Prefix_Already_Reserved" xml:space="preserve">
-    <value>The '{0}' key prefix has already been reserved with a different reservation.</value>
-  </data>
-  <data name="LogContext_Prefix_Reservation_Failed_Key_Match" xml:space="preserve">
-    <value>The '{0}' key prefix collides with the '{1}' key reservation.</value>
-  </data>
-  <data name="LogContext_Prefix_Reservation_Failed_Prefix_Match" xml:space="preserve">
-    <value>The '{0}' key prefix matches the '{1}' prefix - which has already been reserved.</value>
-  </data>
-  <data name="LogContext_Prefix_Too_Short" xml:space="preserve">
-    <value>The log context key prefix '{0}' is less than {1} characters (too short).</value>
-  </data>
-  <data name="LogContext_Reserved_Key" xml:space="preserve">
-    <value>The '{0}' key is reserved and cannot be added to a log context explicitly.</value>
-  </data>
-  <data name="Log_Cleanup_Finished" xml:space="preserve">
-    <value>Finished logging clean up.</value>
-  </data>
-  <data name="Log_Configured" xml:space="preserve">
-    <value>Application '{0}' [{1}] configured.</value>
-  </data>
-  <data name="Log_Logger_Multiple_Instances" xml:space="preserve">
-    <value>The '{0}' logger cannot be added as there is a logger present of the same type that does not support multiple instances.</value>
-  </data>
-  <data name="Log_PerfCategory_Access_Denied" xml:space="preserve">
-    <value>Performance counters cannot be accessed.</value>
-  </data>
-  <data name="Log_PerfCategory_Enabled" xml:space="preserve">
-    <value>Performance counters are enabled and can be found with instance GUID '{0}'.</value>
-  </data>
-  <data name="Log_PerfCategory_Initialized" xml:space="preserve">
-    <value>Performance category '{0}' initialized.</value>
-  </data>
-  <data name="Log_PerfCategory_Missing" xml:space="preserve">
-    <value>Performance category '{0}' is missing.</value>
-  </data>
-  <data name="Log_ToString_Invalid_Format" xml:space="preserve">
-    <value>The '{0}' format is not valid for a log.  See the LogFormat enumeration for valid values.</value>
-  </data>
-  <data name="LogContext_Key_Too_Long" xml:space="preserve">
-    <value>The log context key '{0}' is longer than {1} characters (too long).</value>
-  </data>
-  <data name="LogContext_Key_Too_Short" xml:space="preserve">
-    <value>The log context key '{0}' is less than {1} characters (too short).</value>
-  </data>
-  <data name="LogContext_Prefix_Too_Long" xml:space="preserve">
-    <value>The log context key prefix '{0}' is longer than {1} characters (too long).</value>
-  </data>
-  <data name="FileLogger_BufferSize_Too_Big" xml:space="preserve">
-    <value>The file buffer size '{0}' cannot exceed the maximum value of an int.</value>
-  </data>
-  <data name="FileLogger_BufferSize_Too_Small" xml:space="preserve">
-    <value>The file  buffer size '{0}' cannot be less than 128 bytes.</value>
-  </data>
-  <data name="FileLogger_Ended_File" xml:space="preserve">
-    <value>Finished writing logs to '{0}'</value>
-  </data>
-  <data name="FileLogger_Extension_Invalid_Char" xml:space="preserve">
-    <value>Cannot create file logger as extension '{0}' has invalid characters (only letters and digits allowed).</value>
-  </data>
-  <data name="FileLogger_Started_File" xml:space="preserve">
-    <value>Began writing logs to '{0}' with '{1}' buffer.</value>
-  </data>
-  <data name="LogContext_Key_Invalid_Char" xml:space="preserve">
-    <value>Keys can only contain letters, digits or spaces.</value>
-  </data>
-  <data name="LogContext_Key_Invalid_First_Char" xml:space="preserve">
-    <value>Key must start with a letter.</value>
-  </data>
-  <data name="Log_Invalid_Format_Singular" xml:space="preserve">
-    <value>Unexpected singular format '{0}'.</value>
-  </data>
-  <data name="Log_Invalid_Format_XML_JSON" xml:space="preserve">
-    <value>Invalid log format - cannot output as both XML &amp; JSON.</value>
-  </data>
-  <data name="EventLogger_MachineNameCannotBeNull" xml:space="preserve">
-    <value>The machine name can not be null</value>
-  </data>
-  <data name="LogContext_Invalid_Reservation" xml:space="preserve">
-    <value>The LogContext reservation cannot be Guid.Empty.</value>
-  </data>
-  <data name="LogContext_Locked" xml:space="preserve">
-    <value>Cannot change the values in a locked LogContext.</value>
-  </data>
-  <data name="LoggingException_InnerExceptionCannotBeNull" xml:space="preserve">
-    <value>Parameter 'innerException' can not be null</value>
-  </data>
-  <data name="LoggingException_MessageCannotBeNull" xml:space="preserve">
-    <value>Parameter 'message' can not be null</value>
-  </data>
-  <data name="LoggingException_ParametersCannotBeNull" xml:space="preserve">
-    <value>Parameter 'parameters' can not be null</value>
-  </data>
-  <data name="Log_GetResourceManager_FatalError" xml:space="preserve">
-    <value>Fatal error trying to retrieve resource manager for the '{0}' type</value>
-  </data>
-  <data name="Log_OnUnhandledException" xml:space="preserve">
-    <value>An unhandled exception has occured. See inner exception for details.</value>
-  </data>
-  <data name="Contract_Failed" xml:space="preserve">
-    <value>Contract failed. {0}</value>
-  </data>
-  <data name="Contract_Failed_Message" xml:space="preserve">
-    <value>{1}. {0}</value>
-  </data>
-  <data name="LogKeys_ApplicationGuid" xml:space="preserve">
-    <value>Application GUID</value>
-  </data>
-  <data name="LogKeys_ApplicationName" xml:space="preserve">
-    <value>Application</value>
-  </data>
-  <data name="LogKeys_Context" xml:space="preserve">
-    <value>Context</value>
-  </data>
-  <data name="LogKeys_Culture" xml:space="preserve">
-    <value>Culture</value>
-  </data>
-  <data name="LogKeys_Exception" xml:space="preserve">
-    <value>Exception type</value>
-  </data>
-  <data name="LogKeys_Guid" xml:space="preserve">
-    <value>GUID</value>
-  </data>
-  <data name="LogKeys_InnerException" xml:space="preserve">
-    <value>Inner Exception</value>
-  </data>
-  <data name="LogKeys_Level" xml:space="preserve">
-    <value>Level</value>
-  </data>
-  <data name="LogKeys_Message" xml:space="preserve">
-    <value>Message</value>
-  </data>
-  <data name="LogKeys_Resource" xml:space="preserve">
-    <value>Resource</value>
-  </data>
-  <data name="LogKeys_StackTrace" xml:space="preserve">
-    <value>Stack trace</value>
-  </data>
-  <data name="LogKeys_StoredProcedure" xml:space="preserve">
-    <value>Stored Procedure</value>
-  </data>
-  <data name="LogKeys_ThreadID" xml:space="preserve">
-    <value>Thread ID</value>
-  </data>
-  <data name="LogKeys_ThreadName" xml:space="preserve">
-    <value>Thread Name</value>
-  </data>
-  <data name="LogKeys_TimeStamp" xml:space="preserve">
-    <value>Timestamp</value>
-  </data>
-  <data name="FileLogger_File_Creation_Failed" xml:space="preserve">
-    <value>An error occurred whilst trying to create the '{0}' log file.</value>
-  </data>
-  <data name="FileLogger_File_Creation_Retry_Failed" xml:space="preserve">
-    <value>Trying to find a unique log file name failed too many times.</value>
   </data>
 </root>

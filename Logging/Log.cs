@@ -1691,96 +1691,72 @@ namespace WebApplications.Utilities.Logging
 
                 case FormatTagMessage:
                     return new Resolution(
-                        new LogElement(
-                            culture,
-                            () => Resources.LogKeys_Message,
+                        new LogElement(() => Resources.LogKeys_Message,
                             GetMessage(culture)));
 
                 case FormatTagResource:
                     return string.IsNullOrWhiteSpace(_resourceProperty)
                         ? Resolution.Null
                         : new Resolution(
-                            new LogElement(
-                                culture,
-                                () => Resources.LogKeys_Resource,
+                            new LogElement(() => Resources.LogKeys_Resource,
                                 _resourceProperty));
 
                 case FormatTagCulture:
                     return new Resolution(
-                        new LogElement(
-                            culture,
-                            () => Resources.LogKeys_Culture,
+                        new LogElement(() => Resources.LogKeys_Culture,
                             culture));
 
                 case FormatTagTimeStamp:
                     return new Resolution(
-                        new LogElement(
-                            culture,
-                            () => Resources.LogKeys_TimeStamp,
-                            ((CombGuid) _guid).Created));
+                        new LogElement(() => Resources.LogKeys_TimeStamp,
+                            ((CombGuid)_guid).Created));
 
                 case FormatTagLevel:
                     return new Resolution(
-                        new LogElement(
-                            culture,
-                            () => Resources.LogKeys_Level,
+                        new LogElement(() => Resources.LogKeys_Level,
                             _level));
 
                 case FormatTagGuid:
                     return new Resolution(
-                        new LogElement(
-                            culture,
-                            () => Resources.LogKeys_Guid,
+                        new LogElement(() => Resources.LogKeys_Guid,
                             _guid));
 
                 case FormatTagException:
                     return string.IsNullOrWhiteSpace(_exceptionType)
                         ? Resolution.Null
                         : new Resolution(
-                            new LogElement(
-                                culture,
-                                () => Resources.LogKeys_Exception,
+                            new LogElement(() => Resources.LogKeys_Exception,
                                 _exceptionType));
 
                 case FormatTagStackTrace:
                     return new Resolution(
-                        new LogElement(
-                            culture,
-                            () => Resources.LogKeys_StackTrace,
+                        new LogElement(() => Resources.LogKeys_StackTrace,
                             _stackTrace));
 
                 case FormatTagThreadID:
                     return _threadID < 0
                         ? Resolution.Null
                         : new Resolution(
-                            new LogElement(
-                                culture,
-                                () => Resources.LogKeys_ThreadID,
+                            new LogElement(() => Resources.LogKeys_ThreadID,
                                 _threadID));
 
                 case FormatTagThreadName:
                     return string.IsNullOrWhiteSpace(_threadName)
                         ? Resolution.Null
                         : new Resolution(
-                            new LogElement(
-                                culture,
-                                () => Resources.LogKeys_ThreadName,
+                            new LogElement(() => Resources.LogKeys_ThreadName,
                                 _threadName));
 
                 case FormatTagApplicationName:
                     return string.IsNullOrWhiteSpace(ApplicationName)
                         ? Resolution.Null
                         : new Resolution(
-                            new LogElement(
-                                culture,
-                                () => Resources.LogKeys_ApplicationName,
+                            new LogElement(() => Resources.LogKeys_ApplicationName,
                                 ApplicationName));
 
                 case FormatTagApplicationGuid:
                     return new Resolution(
-                        new LogElement(
-                            culture,
-                            () => Resources.LogKeys_ApplicationGuid,
+                        new LogElement(() => Resources.LogKeys_ApplicationGuid,
                             ApplicationGuid));
 
                 case FormatTagStoredProcedure:
@@ -1788,32 +1764,20 @@ namespace WebApplications.Utilities.Logging
                     return string.IsNullOrWhiteSpace(_storedProcedure)
                         ? Resolution.Null
                         : new Resolution(
-                            new LogElement(
-                                culture,
-                                () => Resources.LogKeys_StoredProcedure,
+                            new LogElement(() => Resources.LogKeys_StoredProcedure,
                                 _storedProcedure + " at line " + _storedProcedureLine.ToString("D")));
 
                 case FormatTagInnerException:
-                    // TODO This can be a specialized LogElement!
-                    return (_innerExceptionGuids == null) ||
-                           (_innerExceptionGuids.Length < 1)
-                        ? Resolution.Null
-                        : new Resolution(
-                            new LogElement(
-                                culture,
-                                () => Resources.LogKeys_InnerException,
-                                "TODO - Handle Inner Exception GUIDs nicely"));
+                    if ((_innerExceptionGuids == null) ||
+                        (_innerExceptionGuids.Length < 1)) return Resolution.Null;
+                    return new Resolution(
+                        new LogEnumerableElement(() => Resources.LogKeys_InnerException, _innerExceptionGuids.Cast<object>()));
 
                 case FormatTagContext:
-                    // TODO This can be a specialized LogElement!
-                    return (_innerExceptionGuids == null) ||
-                           (_innerExceptionGuids.Length < 1)
+                    return (_context==null) ||
+                           (_context.Count < 1)
                         ? Resolution.Null
-                        : new Resolution(
-                            new LogElement(
-                                culture,
-                                () => Resources.LogKeys_Context,
-                                "TODO - Handle Context nicely!"));
+                        : new Resolution(_context);
 
                 default:
                     return Resolution.Unknown;

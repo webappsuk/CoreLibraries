@@ -165,6 +165,7 @@
     <Compile Include="Configuration\LoggersCollection.cs" />
     <Compile Include="Configuration\LoggingConfiguration.cs" />
     <Compile Include="ContractException.cs" />
+    <Compile Include="LogEnumerableElement.cs" />
     <Compile Include="LogElement.cs" />
     <Compile Include="Loggers\ConsoleLogger.cs" />
     <Compile Include="Loggers\GlobalLogger.cs" />
@@ -190,11 +191,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Resources1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Translation.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -211,8 +207,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -169,7 +169,7 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trying to create a log file failed more than 9 times..
+        ///   Looks up a localized string similar to Trying to find a unique log file name failed too many times..
         /// </summary>
         internal static string FileLogger_File_Creation_Retry_Failed {
             get {
@@ -633,6 +633,15 @@ namespace WebApplications.Utilities.Logging {
         internal static string LogKeys_InnerException {
             get {
                 return ResourceManager.GetString("LogKeys_InnerException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inner Exceptions.
+        /// </summary>
+        internal static string LogKeys_InnerExceptions {
+            get {
+                return ResourceManager.GetString("LogKeys_InnerExceptions", resourceCulture);
             }
         }
         
