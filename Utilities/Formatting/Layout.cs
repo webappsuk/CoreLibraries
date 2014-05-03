@@ -254,17 +254,33 @@ namespace WebApplications.Utilities.Formatting
                     else if (tabSize.Value > width.Value) tabSize = (byte) width.Value;
 
                 // Only support tabstop on left/non alignments
-                if (alignment.IsAssigned &&
-                    tabStops.IsAssigned)
-                    tabStops = (tabStops.Value != null) &&
-                               ((alignment.Value == Formatting.Alignment.Left) ||
-                                (alignment.Value == Formatting.Alignment.None))
-                        ? tabStops.Value
-                            .Where(t => t > 0 && t < width.Value)
-                            .OrderBy(t => t)
-                            .Distinct()
-                            .ToArray()
-                        : null;
+                if (alignment.IsAssigned)
+                {
+                    switch (alignment.Value)
+                    {
+                        case Formatting.Alignment.Centre:
+                        case Formatting.Alignment.Right:
+                        case Formatting.Alignment.Justify:
+                            // If there is effectively no width we only support left/none alignment.
+                            if (width.Value > 8192)
+                                alignment = new Optional<Alignment>(Formatting.Alignment.Left);
+
+                            // Tabstops are only supported on left/none alignment.
+                            if (tabStops.IsAssigned)
+                                tabStops = null;
+                            break;
+                        default:
+                            // Normalize tabstops if suppllied.
+                            if (tabStops.IsAssigned &&
+                                tabStops.Value != null)
+                                tabStops = tabStops.Value
+                                    .Where(t => t > 0 && t < width.Value)
+                                    .OrderBy(t => t)
+                                    .Distinct()
+                                    .ToArray();
+                            break;
+                    }
+                }
             }
 
             Width = width;

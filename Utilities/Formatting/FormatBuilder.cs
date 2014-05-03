@@ -1767,7 +1767,7 @@ namespace WebApplications.Utilities.Formatting
                     }
 
                     // If we have a value, and a format, then we may need to recurse.
-                    if (isResolved && hasFillPoint)
+                    if (hasFillPoint)
                     {
                         IResolvable r = resolvedValue as IResolvable;
                         if (r != null)
