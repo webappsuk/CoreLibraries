@@ -119,8 +119,8 @@ namespace WebApplications.Utilities.Formatting
                     case Alignment.Right:
                         break;
                     case Alignment.Justify:
-                        if (!endOfParagraph)
-                        _alignment = Alignment.Left;
+                        if (endOfParagraph)
+                            _alignment = Alignment.Left;
                         break;
                     default:
                         return;

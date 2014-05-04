@@ -3095,7 +3095,7 @@ namespace WebApplications.Utilities.Formatting
                                 line = position > 0
                                     ? new Line(
                                         layout,
-                                        // We can't start a layout in the middle of a line.
+                                    // We can't start a layout in the middle of a line.
                                         Alignment.None,
                                         position,
                                         layout.Width.Value - layout.RightMarginSize.Value,
@@ -3217,7 +3217,6 @@ namespace WebApplications.Utilities.Formatting
                          * Alignment
                          */
                         char indentChar = line.Layout.IndentChar.Value;
-                        int indent;
 
                         // If we finished mid line then we can only left align/none
                         if (!line.IsEmpty)
@@ -3228,6 +3227,7 @@ namespace WebApplications.Utilities.Formatting
 
                             Queue<int> spacers = null;
                             // Calculate indentation
+                            int indent;
                             switch (alignment)
                             {
                                 case Alignment.Centre:
@@ -3243,11 +3243,11 @@ namespace WebApplications.Utilities.Formatting
                                         line.LastWhiteSpace > 0)
                                     {
                                         // We need to calculate spacers.
-                                        decimal space = (decimal) (line.LastWhiteSpace - line.Start) / remaining;
-                                        int o = (int) Math.Round(space / 2);
+                                        decimal space = (decimal)(line.LastWhiteSpace - line.Start) / remaining;
+                                        int o = (int)Math.Round(space / 2);
                                         spacers =
                                             new Queue<int>(
-                                                Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
+                                                Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
                                     }
                                     break;
                                 default:
@@ -3267,28 +3267,24 @@ namespace WebApplications.Utilities.Formatting
                             foreach (string chunk in line)
                             {
                                 p += chunk.Length;
-                                if (!string.IsNullOrWhiteSpace(chunk))
+                                if (spacers == null || !string.IsNullOrWhiteSpace(chunk))
                                 {
                                     writer.Write(chunk);
                                     continue;
                                 }
 
                                 // We have a white-space chunk, check if we have to add justification spaces
-                                if (spacers != null)
+                                while ((spacers.Count > 0) &&
+                                       (spacers.Peek() <= p))
                                 {
-                                    while ((spacers.Count > 0) &&
-                                           (spacers.Peek() <= p))
-                                    {
-                                        writer.Write(chunk);
-                                        spacers.Dequeue();
-                                        p++;
-                                        position++;
-                                    }
-
-                                    // Check if justification is finished
-                                    if (spacers.Count < 1)
-                                        spacers = null;
+                                    writer.Write(indentChar);
+                                    spacers.Dequeue();
+                                    p++;
                                 }
+
+                                // Check if justification is finished
+                                if (spacers.Count < 1)
+                                    spacers = null;
 
                                 writer.Write(chunk);
                             }
@@ -3298,7 +3294,6 @@ namespace WebApplications.Utilities.Formatting
                                 (spacers.Count > 0))
                             {
                                 writer.Write(new string(indentChar, spacers.Count));
-                                position += indent;
                                 p += spacers.Count;
                             }
 
@@ -3328,9 +3323,10 @@ namespace WebApplications.Utilities.Formatting
                                         writer.WriteLine();
                                     break;
                             }
+
+                            position = 0;
                         }
-                        
-                        position = 0;
+
                         line = null;
                         #endregion
                     } while (!string.IsNullOrEmpty(word));
@@ -3339,624 +3335,6 @@ namespace WebApplications.Utilities.Formatting
             }
             return position;
         }
-
-        #region Remainder
-#if OLDCODE
-            IEnumerable<FormatChunk> chunks;
-
-            // Check which format we have 'f' will just write out tags, and ignore Layout.
-            if (string.Equals(format, "f", StringComparison.InvariantCultureIgnoreCase))
-            {
-                writeTags = true;
-                chunks = rootChunk.Children;
-                isLayoutRequired = false;
-            }
-            else
-            {
-                writeTags = false;
-                isLayoutRequired = initialLayout != Layout.Default;
-                
-                /*
-                 * Resolve values TODO Should only need to do this when not format 'F'.?
-                 */
-                initialResolutions = resolver != null
-                    ? new Resolutions(initialResolutions, resolver)
-                    : initialResolutions;
-                chunks = Resolve(
-                    rootChunk,
-                    writer,
-                    initialResolutions,
-                    ref isLayoutRequired);
-            }
-
-            /*
-             * If we're not using a layout writer, and we don't require layout, then we need to manually track position.
-             * so the code is subtly different.
-             */
-            if (layoutWriter == null &&
-                !isLayoutRequired)
-            {
-                foreach (FormatChunk chunk in chunks)
-                    // ReSharper disable once PossibleNullReferenceException
-                    if (chunk.IsControl &&
-                        !writeTags)
-                    {
-                        if (controller != null)
-                            // ReSharper disable once AssignNullToNotNullAttribute
-                            controller.OnControlChunk(writer, chunk.Tag, chunk.Alignment, chunk.Format, chunk.Value);
-
-                        if (coloredTextWriter == null)
-                            continue;
-
-                        // Handle colored output.
-                        // ReSharper disable PossibleNullReferenceException
-                        switch (chunk.Tag.ToLowerInvariant())
-                            // ReSharper restore PossibleNullReferenceException
-                        {
-                            case ResetColorsTag:
-                                coloredTextWriter.ResetColors();
-                                continue;
-                            case ForegroundColorTag:
-                                if (String.IsNullOrWhiteSpace(chunk.Format))
-                                    coloredTextWriter.ResetForegroundColor();
-                                else if (chunk.IsResolved &&
-                                         chunk.Value is Color)
-                                    coloredTextWriter.SetForegroundColor((Color) chunk.Value);
-                                else
-                                {
-                                    // ReSharper disable once AssignNullToNotNullAttribute
-                                    Optional<Color> color = ColorHelper.GetColor(chunk.Format);
-                                    if (color.IsAssigned)
-                                        coloredTextWriter.SetForegroundColor(color.Value);
-                                }
-                                continue;
-                            case BackgroundColorTag:
-                                if (String.IsNullOrWhiteSpace(chunk.Format))
-                                    coloredTextWriter.ResetBackgroundColor();
-                                else if (chunk.IsResolved &&
-                                         chunk.Value is Color)
-                                    coloredTextWriter.SetBackgroundColor((Color) chunk.Value);
-                                else
-                                {
-                                    // ReSharper disable once AssignNullToNotNullAttribute
-                                    Optional<Color> color = ColorHelper.GetColor(chunk.Format);
-                                    if (color.IsAssigned)
-                                        coloredTextWriter.SetBackgroundColor(color.Value);
-                                }
-                                continue;
-                            default:
-                                continue;
-                        }
-                    }
-                    else
-                    {
-                        // Get the chunk as a string
-                        string result = chunk.ToString(format, writer.FormatProvider);
-                        if (result.Length < 1) continue;
-                        writer.Write(result);
-
-                        // The result is a chunk, so we need to find the distance since the last newline.
-                        int index = result.LastIndexOfAny(_newLineChars);
-                        position = index < 0
-                            ? result.Length + position
-                            : result.Length - index - 1;
-                    }
-
-                // Get current position from writer.
-                return position;
-            }
-
-            /*
-             * We don't have a layout writer so we have to track horizontal position ourselves.
-             */
-
-            // If we require layout, run chunks through layout engine.
-            // Get current state from the writer.
-
-            int writerWidth;
-            bool autoWraps;
-            if (layoutWriter != null)
-            {
-                position = layoutWriter.Position;
-                writerWidth = layoutWriter.Width;
-                autoWraps = layoutWriter.AutoWraps;
-            }
-            else
-            {
-                writerWidth = int.MaxValue;
-                autoWraps = false;
-            }
-
-            // If we require layout, run chunks through layout engine.
-            if (isLayoutRequired ||
-                (writerWidth < int.MaxValue))
-                chunks = Align(
-                    GetLines(
-                        GetLineChunks(chunks, format, writer.FormatProvider),
-                        initialLayout,
-                        position,
-                        writerWidth),
-                    initialLayout,
-                    writerWidth,
-                    autoWraps,
-                    ref position);
-
-            // We try to output the builder in one go to prevent interleaving, however we split on control codes.
-            foreach (FormatChunk chunk in chunks)
-                // ReSharper disable once PossibleNullReferenceException
-                if (chunk.IsControl &&
-                    !writeTags)
-                {
-                    if (controller != null)
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        controller.OnControlChunk(writer, chunk.Tag, chunk.Alignment, chunk.Format, chunk.Value);
-
-                    if (coloredTextWriter == null)
-                        continue;
-
-                    // Handle colored output.
-                    // ReSharper disable once PossibleNullReferenceException
-                    switch (chunk.Tag.ToLowerInvariant())
-                    {
-                        case ResetColorsTag:
-                            coloredTextWriter.ResetColors();
-                            continue;
-                        case ForegroundColorTag:
-                            if (String.IsNullOrWhiteSpace(chunk.Format))
-                                coloredTextWriter.ResetForegroundColor();
-                            else if (chunk.IsResolved &&
-                                     chunk.Value is Color)
-                                coloredTextWriter.SetForegroundColor((Color) chunk.Value);
-                            else
-                            {
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                Optional<Color> color = ColorHelper.GetColor(chunk.Format);
-                                if (color.IsAssigned)
-                                    coloredTextWriter.SetForegroundColor(color.Value);
-                            }
-                            continue;
-                        case BackgroundColorTag:
-                            if (String.IsNullOrWhiteSpace(chunk.Format))
-                                coloredTextWriter.ResetBackgroundColor();
-                            else if (chunk.IsResolved &&
-                                     chunk.Value is Color)
-                                coloredTextWriter.SetBackgroundColor((Color) chunk.Value);
-                            else
-                            {
-                                // ReSharper disable once AssignNullToNotNullAttribute
-                                Optional<Color> color = ColorHelper.GetColor(chunk.Format);
-                                if (color.IsAssigned)
-                                    coloredTextWriter.SetBackgroundColor(color.Value);
-                            }
-                            continue;
-                        default:
-                            continue;
-                    }
-                }
-                else
-                    chunk.WriteTo(writer, format);
-
-            // Get current position from writer if we have one, otherwise our current position should be accurate anyway.
-            return layoutWriter == null
-                ? position
-                : layoutWriter.Position;
-        }
-#endif
-        #endregion
-
-        #region GetLines
-#if OLDCODE
-    /// <summary>
-    /// Gets the lines from an enumeration of chunks.
-    /// </summary>
-    /// <param name="chunks">The chunks.</param>
-    /// <param name="initialLayout">The initial layout.</param>
-    /// <param name="position">The position.</param>
-    /// <param name="writerWidth">The writer's width.</param>
-    /// <returns>IEnumerable&lt;System.String&gt;.</returns>
-        [NotNull]
-        private static IEnumerable<Line> GetLines(
-            [NotNull] Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> chunks,
-            [NotNull] Layout initialLayout,
-            int position,
-            int writerWidth)
-        {
-            Contract.Requires(chunks != null);
-            Contract.Requires(initialLayout != null);
-            Contract.Requires(chunks.Item1 != null);
-            Contract.Requires(chunks.Item2 != null);
-
-            // Only grab the layout at the start of each line.
-            Layout nextLayout = initialLayout;
-            if (nextLayout.Width.Value >= writerWidth)
-                nextLayout = nextLayout.Apply(writerWidth);
-
-            Layout layout = nextLayout;
-
-            // Create the first line, if we're part way through a line then we cannot align the remainder of the line.
-            Line line = position > 0
-                ? new Line(
-                    layout,
-                    Alignment.None,
-                    position,
-                    layout.Width.Value - layout.RightMarginSize.Value,
-                    false)
-                : new Line(
-                    layout,
-                    layout.Alignment.Value,
-                    layout.FirstLineIndentSize.Value,
-                    layout.Width.Value - layout.RightMarginSize.Value,
-                    true);
-            bool firstLine = false;
-
-            byte splitLength = layout.SplitLength.Value;
-            int hyphenate = layout.Hyphenate.Value ? 1 : 0;
-
-            // ReSharper disable PossibleNullReferenceException
-            IEnumerator<string> chunkEnumerator = chunks.Item1.GetEnumerator();
-            IEnumerator<FormatChunk> controlEnumerator = chunks.Item2.GetEnumerator();
-            // ReSharper restore PossibleNullReferenceException
-
-            string word = null;
-            bool newLine = false;
-
-            do
-            {
-                // Check if we need to start a new line.
-                if (newLine)
-                {
-                    // Close out existing line.
-                    line.Finish(true, firstLine);
-                    yield return line;
-
-                    // Start a new line
-                    if (nextLayout.Width.Value > writerWidth)
-                        nextLayout = nextLayout.Apply(writerWidth);
-
-                    layout = nextLayout;
-                    line = new Line(
-                        layout,
-                        layout.Alignment.Value,
-                        firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
-                        layout.Width.Value - layout.RightMarginSize.Value,
-                        firstLine);
-                    firstLine = false;
-                    splitLength = layout.SplitLength.Value;
-                    hyphenate = layout.Hyphenate.Value ? 1 : 0;
-                    newLine = false;
-                    position = 0;
-                }
-
-                // If we don't have a word, get one.
-                if (string.IsNullOrEmpty(word))
-                    do
-                    {
-                        if (!chunkEnumerator.MoveNext())
-                        {
-                            if (line.ChunkCount > 0)
-                            {
-                                line.Finish(false, false);
-                                yield return line;
-                            }
-
-                            // No more words, so finish.
-                            yield break;
-                        }
-                        word = chunkEnumerator.Current;
-
-                        // Check if we have a control marker
-                        if (!string.IsNullOrEmpty(word)) break;
-
-                        controlEnumerator.MoveNext();
-
-                        FormatChunk controlChunk = controlEnumerator.Current;
-                        Contract.Assert(controlChunk != null);
-
-                        // If the control chunk is a layout chunk, we need to get the layout
-                        // ReSharper disable once PossibleNullReferenceException
-                        if (string.Equals(controlChunk.Tag, "!layout", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            Layout newLayout;
-                            if ((controlChunk.IsResolved) &&
-                                ((newLayout = controlChunk.Value as Layout) != null))
-                                nextLayout = ReferenceEquals(newLayout, Layout.Default)
-                                    ? initialLayout
-                                    : nextLayout.Apply(newLayout);
-                            else if (string.IsNullOrEmpty(controlChunk.Format))
-                                nextLayout = initialLayout;
-                            else if (Layout.TryParse(controlChunk.Format, out newLayout))
-                                nextLayout = nextLayout.Apply(newLayout);
-
-                            // If the line is empty, we can recreate the line using the new layout,
-                            // otherwise the new layout only applies on the next line.
-                            if (!line.IsEmpty) continue;
-
-                            // Check if the current position is past the new layout's width
-                            int start = position > 0 ? position : line.Position;
-                            if (start >= nextLayout.Width.Value)
-                            {
-                                // Start a new line, as we are past the current lines width.
-                                newLine = true;
-                                // ReSharper disable once RedundantAssignment
-                                firstLine = false;
-                                continue;
-                            }
-
-                            // Re-create current line now.
-                            if (nextLayout.Width.Value >= writerWidth)
-                                nextLayout = nextLayout.Apply(writerWidth);
-
-                            layout = nextLayout;
-                            firstLine = line.IsFirstLine;
-
-                            if (position < 1)
-                            {
-                                // Move start if we're not already 
-                                int newStart = firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value;
-                                if (newStart > start) start = newStart;
-                            }
-
-                            line = new Line(
-                                layout,
-                                layout.Alignment.Value,
-                                start,
-                                line.End,
-                                firstLine);
-                            splitLength = layout.SplitLength.Value;
-                            hyphenate = layout.Hyphenate.Value ? 1 : 0;
-                        }
-                        else
-                            line.AddControl(controlChunk);
-                    } while (true);
-
-                char c = word[0];
-
-                // Check if we're at the start of a line.
-                byte split = splitLength;
-                if (line.IsEmpty)
-                {
-                    // Skip spaces at the start of a line, if we have an alignment
-                    if ((c == ' ') &&
-                        (line.Alignment != Alignment.None))
-                    {
-                        word = null;
-                        continue;
-                    }
-
-                    // We split this word if it's too long, as we're going from the start of a line.
-                    split = 1;
-                }
-
-                // Check for newline
-                if (c == '\r')
-                {
-                    newLine = true;
-                    firstLine = true;
-                    word = null;
-                    continue;
-                }
-
-                int remaining = line.Remaining;
-
-                if (remaining < 1)
-                {
-                    // Process word on a new line, as we're at the end of this one.
-                    newLine = true;
-                    continue;
-                }
-
-                // Check for tab
-                if (c == '\t')
-                {
-                    int tabSize;
-                    if (layout.TabStops.IsAssigned &&
-                        layout.TabStops.Value != null)
-                    {
-                        // ReSharper disable once PossibleNullReferenceException
-                        int nextTab = layout.TabStops.Value.FirstOrDefault(t => t > line.Position);
-                        tabSize = nextTab > line.Position
-                            ? nextTab - line.Position
-                            : layout.TabSize.Value;
-                    }
-                    else
-                        tabSize = layout.TabSize.Value;
-
-                    // Change word to spacer
-                    word = new string(layout.TabChar.Value, tabSize);
-                }
-
-                // Append word if short enough.
-                if (word.Length <= remaining)
-                {
-                    line.Add(word);
-                    word = null;
-                    continue;
-                }
-
-                // The word is too long to fit on the current line.
-                int maxSplit = word.Length - split;
-                if ((split > 0) &&
-                    (remaining >= (hyphenate + splitLength)) &&
-                    (maxSplit >= split))
-                {
-                    // Split the current word to fill remaining space
-                    int splitPoint = remaining - hyphenate;
-
-                    // Can only split if enough characters are left on line.
-                    if (splitPoint > maxSplit)
-                        splitPoint = maxSplit;
-
-                    string part = word.Substring(0, splitPoint);
-                    if (hyphenate > 0) part += layout.HyphenChar;
-                    line.Add(part);
-                    word = word.Substring(splitPoint);
-                }
-
-                // Start a new line
-                newLine = true;
-            } while (true);
-        }
-#endif
-        #endregion
-
-        #region Align
-#if OLDCODE
-    /// <summary>
-    /// Aligns the specified lines.
-    /// </summary>
-    /// <param name="lines">The lines.</param>
-    /// <param name="initialLayout">The initial layout.</param>
-    /// <param name="writerWidth">Width of the writer.</param>
-    /// <param name="autoWraps">if set to <see langword="true" /> then the writer automatically wraps on reaching width.</param>
-    /// <param name="position">The position.</param>
-    /// <returns>An enumeration of terminated lines, laid out for writing.</returns>
-        [NotNull]
-        private static IEnumerable<FormatChunk> Align(
-            [NotNull] [InstantHandle] IEnumerable<Line> lines,
-            [NotNull] Layout initialLayout,
-            int writerWidth,
-            bool autoWraps,
-            ref int position)
-        {
-            Contract.Requires(lines != null);
-            Contract.Requires(initialLayout != null);
-            StringBuilder lb = new StringBuilder(initialLayout.Width.Value < 1024 ? initialLayout.Width.Value : 1024);
-            bool dontIndentFirstLine = position > 0;
-
-            List<FormatChunk> chunks = new List<FormatChunk>();
-
-            foreach (Line line in lines)
-            {
-                // ReSharper disable once PossibleNullReferenceException
-                char indentChar = line.Layout.IndentChar.Value;
-                int indent;
-                Queue<int> spacers = null;
-                // Calculate indentation
-                switch (line.Alignment)
-                {
-                    case Alignment.None:
-                    case Alignment.Left:
-                        indent = line.Start;
-                        break;
-                    case Alignment.Centre:
-                        indent = (line.Start + line.End - line.Length) / 2;
-                        break;
-                    case Alignment.Right:
-                        indent = line.End - line.Length;
-                        break;
-                    case Alignment.Justify:
-                        indent = line.Start;
-                        int remaining = line.Remaining;
-                        if (remaining > 0 &&
-                            line.LastWhiteSpace > 0)
-                        {
-                            decimal space = (decimal)(line.LastWhiteSpace - line.Start) / remaining;
-                            int o = (int)Math.Round(space / 2);
-                            spacers = new Queue<int>(Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
-                        }
-                        break;
-                    default:
-                        indent = 0;
-                        break;
-                }
-
-                if (dontIndentFirstLine)
-                    dontIndentFirstLine = false;
-                else if (indent > 0)
-                    lb.Append(indentChar, indent);
-
-                int p = 0;
-                IEnumerator<FormatChunk> controlEnumerator = line.Controls.GetEnumerator();
-                foreach (string chunk in line)
-                {
-                    if (chunk == null)
-                    {
-                        // We got a control chunk, so need to split line
-                        if (lb.Length > 0)
-                        {
-                            chunks.Add(new FormatChunk(lb.ToString()));
-                            lb.Clear();
-                        }
-                        // Recover control chunk
-                        controlEnumerator.MoveNext();
-                        Contract.Assert(controlEnumerator.Current != null);
-                        chunks.Add(controlEnumerator.Current);
-                        continue;
-                    }
-
-                    p += chunk.Length;
-                    if (!string.IsNullOrWhiteSpace(chunk))
-                    {
-                        lb.Append(chunk);
-                        continue;
-                    }
-
-                    // We have a white-space chunk, check if we have to add justification spaces
-                    if (spacers != null)
-                    {
-                        while ((spacers.Count > 0) &&
-                               (spacers.Peek() <= p))
-                        {
-                            lb.Append(indentChar);
-                            spacers.Dequeue();
-                            p++;
-                        }
-
-                        // Check if justification is finished
-                        if (spacers.Count < 1)
-                            spacers = null;
-                    }
-
-                    lb.Append(chunk);
-                }
-
-                // Add any remaining spacers
-                if ((spacers != null) &&
-                    (spacers.Count > 0))
-                {
-                    lb.Append(indentChar, spacers.Count);
-                    p += spacers.Count;
-                }
-
-                // Calculate our finish position
-                position = p + indent;
-
-                if (line.Terminated)
-                {
-                    // Wrap the line according to our mode.
-                    switch (line.Layout.WrapMode.Value)
-                    {
-                        case LayoutWrapMode.NewLineOnShort:
-                            if (position < line.Layout.Width.Value)
-                                lb.AppendLine();
-                            break;
-                        case LayoutWrapMode.PadToWrap:
-                            lb.Append(
-                                line.Layout.IndentChar.Value,
-                                (writerWidth < int.MaxValue ? writerWidth : line.Layout.Width.Value) - position);
-                            break;
-                        default:
-                            if (!autoWraps ||
-                                (position < writerWidth))
-                                lb.AppendLine();
-                            break;
-                    }
-
-                    // Set position to start of line.
-                    position = 0;
-                }
-
-                if (lb.Length > 0)
-                {
-                    chunks.Add(new FormatChunk(lb.ToString()));
-                    lb.Clear();
-                }
-                lb.Clear();
-            }
-            return chunks;
-        }
-#endif
-        #endregion
 
         #region Color Control
         /// <summary>
