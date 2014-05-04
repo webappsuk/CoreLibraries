@@ -165,7 +165,8 @@ namespace WebApplications.Utilities.Test.Formatting
                 builder.ToString(
                     (_, c) => c.IsControl && string.Equals(c.Tag, "!control", StringComparison.CurrentCultureIgnoreCase)
                         ? new FormatChunk(null, null, 0, null, c.Format)
-                        : Resolution.Unknown));
+                        : Resolution.Unknown,
+                    resolveControls: true));
         }
     }
 }

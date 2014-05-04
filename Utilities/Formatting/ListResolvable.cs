@@ -29,7 +29,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -53,7 +52,7 @@ namespace WebApplications.Utilities.Formatting
         public ListResolvable(
             [NotNull] IEnumerable<TValue> values,
             bool resolveOuterTags = true)
-            : base(false, resolveOuterTags)
+            : base(false, resolveOuterTags, false)
         {
             Contract.Requires(values != null);
             _values = new List<TValue>(values);
@@ -67,7 +66,7 @@ namespace WebApplications.Utilities.Formatting
         public ListResolvable(
             bool resolveOuterTags = true,
             int capacity = 0)
-            : base(false, resolveOuterTags)
+            : base(false, resolveOuterTags, false)
         {
             _values = new List<TValue>(capacity);
         }
@@ -75,11 +74,11 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Resolves the specified tag.
         /// </summary>
-        /// <param name="writer">The writer.</param>
+        /// <param name="context">The context.</param>
         /// <param name="chunk">The chunk.</param>
         /// <returns>A <see cref="Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override object Resolve(TextWriter writer, FormatChunk chunk)
+        public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
             int index;
             return int.TryParse(chunk.Tag, out index) &&

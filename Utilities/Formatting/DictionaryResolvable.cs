@@ -29,7 +29,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 
@@ -51,11 +50,13 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         public DictionaryResolvable(
             [NotNull] IReadOnlyDictionary<string, TValue> dictionary,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
-            : base(isCaseSensitive, resolveOuterTags)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
+            : base(isCaseSensitive, resolveOuterTags, resolveControls)
         {
             Contract.Requires(dictionary != null);
             _values = dictionary.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -66,14 +67,18 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <param name="capacity">The initial capacity.</param>
         public DictionaryResolvable(
             bool isCaseSensitive = false,
             bool resolveOuterTags = true,
+            bool resolveControls = false,
             int capacity = 0)
-            : base(isCaseSensitive, resolveOuterTags)
+            : base(isCaseSensitive, resolveOuterTags, resolveControls)
         {
-            _values = new Dictionary<string, TValue>(capacity, isCaseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
+            _values = new Dictionary<string, TValue>(
+                capacity,
+                isCaseSensitive ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase);
         }
 
         /// <summary>
@@ -102,13 +107,14 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Resolves the specified tag.
         /// </summary>
-        /// <param name="writer">The writer.</param>
+        /// <param name="context">The context.</param>
         /// <param name="chunk">The chunk.</param>
         /// <returns>A <see cref="Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override object Resolve(TextWriter writer, FormatChunk chunk)
+        public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
             TValue value;
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _values.TryGetValue(chunk.Tag, out value)
                 ? value
                 : Resolution.Unknown;
@@ -158,7 +164,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
         bool ICollection<KeyValuePair<string, TValue>>.Contains(KeyValuePair<string, TValue> item)
         {
-            return ((ICollection<KeyValuePair<string, TValue>>)_values).Contains(item);
+            return ((ICollection<KeyValuePair<string, TValue>>) _values).Contains(item);
         }
 
         /// <summary>
@@ -169,7 +175,7 @@ namespace WebApplications.Utilities.Formatting
         // ReSharper disable once CodeAnnotationAnalyzer
         void ICollection<KeyValuePair<string, TValue>>.CopyTo(KeyValuePair<string, TValue>[] array, int arrayIndex)
         {
-            ((ICollection<KeyValuePair<string, TValue>>)_values).CopyTo(array, arrayIndex);
+            ((ICollection<KeyValuePair<string, TValue>>) _values).CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -179,7 +185,7 @@ namespace WebApplications.Utilities.Formatting
         /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
         bool ICollection<KeyValuePair<string, TValue>>.Remove(KeyValuePair<string, TValue> item)
         {
-            return ((ICollection<KeyValuePair<string, TValue>>)_values).Remove(item);
+            return ((ICollection<KeyValuePair<string, TValue>>) _values).Remove(item);
         }
 
         /// <summary>
@@ -215,11 +221,13 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         public DictionaryResolvable(
             [NotNull] IReadOnlyDictionary<string, object> dictionary,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
-            : base(dictionary, isCaseSensitive, resolveOuterTags)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
+            : base(dictionary, isCaseSensitive, resolveOuterTags, resolveControls)
         {
             Contract.Requires(dictionary != null);
         }
@@ -229,12 +237,14 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <param name="capacity">The initial capacity.</param>
         public DictionaryResolvable(
             bool isCaseSensitive = false,
             bool resolveOuterTags = true,
+            bool resolveControls = false,
             int capacity = 0)
-            : base(isCaseSensitive, resolveOuterTags, capacity)
+            : base(isCaseSensitive, resolveOuterTags, resolveControls, capacity)
         {
         }
     }

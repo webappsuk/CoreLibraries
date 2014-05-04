@@ -28,9 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
 using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Utilities.Formatting
 {
@@ -71,7 +69,7 @@ namespace WebApplications.Utilities.Formatting
             public Resolutions(
                 [CanBeNull] Resolutions parent,
                 [NotNull] IResolvable resolvable)
-                : base(resolvable.IsCaseSensitive, resolvable.ResolveOuterTags)
+                : base(resolvable.IsCaseSensitive, resolvable.ResolveOuterTags, resolvable.ResolveControls)
             {
                 Contract.Requires(resolvable != null);
                 Parent = parent;
@@ -85,12 +83,14 @@ namespace WebApplications.Utilities.Formatting
             /// <param name="resolver">The resolver.</param>
             /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
             /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+            /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
             public Resolutions(
                 [CanBeNull] Resolutions parent,
                 [NotNull] ResolveDelegate resolver,
                 bool isCaseSensitive,
-                bool resolveOuterTags)
-                : base(isCaseSensitive, resolveOuterTags)
+                bool resolveOuterTags,
+                bool resolveControls)
+                : base(isCaseSensitive, resolveOuterTags, resolveControls)
             {
                 Contract.Requires(resolver != null);
                 Parent = parent;
@@ -100,20 +100,21 @@ namespace WebApplications.Utilities.Formatting
             /// <summary>
             /// Resolves the specified tag.
             /// </summary>
-            /// <param name="writer">The writer.</param>
+            /// <param name="context">The context.</param>
             /// <param name="chunk">The chunk.</param>
             /// <returns>A <see cref="Resolution" />.</returns>
             // ReSharper disable once CodeAnnotationAnalyzer
-            public override object Resolve(TextWriter writer, FormatChunk chunk)
+            public override object Resolve(FormatWriteContext context, FormatChunk chunk)
             {
                 Resolution resolution;
                 // ReSharper disable once PossibleNullReferenceException
                 string tag = chunk.Tag;
                 if (_values == null ||
+                    // ReSharper disable once AssignNullToNotNullAttribute
                     !_values.TryGetValue(tag, out resolution))
                 {
                     // Get the resolution using the resolver.
-                    object result = _resolver(writer, chunk);
+                    object result = _resolver(context, chunk);
                     resolution = result is Resolution
                         ? (Resolution) result
                         : new Resolution(result);
@@ -128,6 +129,7 @@ namespace WebApplications.Utilities.Formatting
                                         ? StringComparer.CurrentCulture
                                         : StringComparer.CurrentCultureIgnoreCase);
 
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         _values[tag] = resolution;
                     }
                 }
@@ -136,7 +138,8 @@ namespace WebApplications.Utilities.Formatting
                 if (!resolution.IsResolved &&
                     ResolveOuterTags &&
                     Parent != null)
-                    resolution = (Resolution)Parent.Resolve(writer, chunk);
+                    // ReSharper disable once PossibleNullReferenceException
+                    resolution = (Resolution) Parent.Resolve(context, chunk);
                 return resolution;
             }
         }

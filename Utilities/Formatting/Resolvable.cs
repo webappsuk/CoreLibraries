@@ -39,16 +39,19 @@ namespace WebApplications.Utilities.Formatting
     {
         private readonly bool _resolveOuterTags;
         private readonly bool _isCaseSensitive;
+        private readonly bool _resolveControls;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Resolvable"/> class.
+        /// Initializes a new instance of the <see cref="Resolvable" /> class.
         /// </summary>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
-        /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
-        protected Resolvable(bool isCaseSensitive = false, bool resolveOuterTags = true)
+        /// <param name="resolveOuterTags">if set to <see langword="true" /> outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
+        protected Resolvable(bool isCaseSensitive = false, bool resolveOuterTags = true, bool resolveControls = false)
         {
             _isCaseSensitive = isCaseSensitive;
             _resolveOuterTags = resolveOuterTags;
+            _resolveControls = resolveControls;
         }
 
         /// <summary>
@@ -70,13 +73,20 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
+        /// Gets a value indicating whether control tags should be based to the resolver.
+        /// </summary>
+        /// <value><see langword="true" /> if the <see cref="FormatBuilder" /> should allow outer tags when resolving formats for this instance; otherwise, <see langword="false" />.</value>
+        public bool ResolveControls
+        {
+            get { return _resolveControls; }
+        }
+
+        /// <summary>
         /// Resolves the specified tag.
         /// </summary>
-        /// <param name="writer">The writer.</param>
+        /// <param name="context">The context.</param>
         /// <param name="chunk">The chunk.</param>
         /// <returns>An object that will be cached unless it is a <see cref="Resolution" />.</returns>
-        [PublicAPI]
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public abstract object Resolve(TextWriter writer, FormatChunk chunk);
+        public abstract object Resolve(FormatWriteContext context, FormatChunk chunk);
     }
 }

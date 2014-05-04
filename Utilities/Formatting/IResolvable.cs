@@ -52,13 +52,20 @@ namespace WebApplications.Utilities.Formatting
         bool ResolveOuterTags { get; }
 
         /// <summary>
+        /// Gets a value indicating whether control tags should be based to the resolver.
+        /// </summary>
+        /// <value><see langword="true" /> if the <see cref="FormatBuilder"/> should allow outer tags when resolving formats for this instance; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
+        bool ResolveControls { get; }
+
+        /// <summary>
         /// Resolves the specified tag.
         /// </summary>
-        /// <param name="writer">The writer.</param>
+        /// <param name="context">The context.</param>
         /// <param name="chunk">The chunk.</param>
         /// <returns>An object that will be cached unless it is a <see cref="Resolution" />.</returns>
         [PublicAPI]
         [CanBeNull]
-        object Resolve([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
+        object Resolve([NotNull] FormatWriteContext context, [NotNull] FormatChunk chunk);
     }
 }

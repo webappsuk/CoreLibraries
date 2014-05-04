@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -32,40 +32,43 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
-    /// Wraps a lambda expression in a concrete <see cref="IResolvable" /> object.
+    /// Holds current context of the format writer during resolution.
     /// </summary>
-    public class FuncResolvable : Resolvable
+    public class FormatWriteContext
     {
         /// <summary>
-        /// The resolver
+        /// The writer.
         /// </summary>
         [NotNull]
-        private readonly ResolveDelegate _resolver;
+        [PublicAPI]
+        public readonly TextWriter Writer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Resolvable"/> class.
+        /// The layout.
         /// </summary>
-        /// <param name="resolver">The resolver.</param>
-        /// <param name="isCaseSensitive">if set to <see langword="true"/> then tags are case sensitive.</param>
-        /// <param name="resolveOuterTags">if set to <see langword="true"/>  outer tags should be resolved automatically in formats.</param>
-        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
-        public FuncResolvable([NotNull]ResolveDelegate resolver, bool isCaseSensitive = false, bool resolveOuterTags = true, bool resolveControls = false)
-            : base(isCaseSensitive, resolveOuterTags, resolveControls)
-        {
-            Contract.Requires(resolver != null);
-            _resolver = resolver;
-        }
+        [NotNull]
+        [PublicAPI]
+        public Layout Layout { get; internal set; }
 
         /// <summary>
-        /// Resolves the specified tag.
+        /// The horizontal position, before any alignment has taken place.
         /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="chunk">The chunk.</param>
-        /// <returns>A <see cref="Resolution" />.</returns>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        public override object Resolve(FormatWriteContext context, FormatChunk chunk)
+        [PublicAPI]
+        public int Position { get; internal set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormatWriteContext"/> class.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="layout">The layout.</param>
+        /// <param name="position">The position.</param>
+        internal FormatWriteContext([NotNull] TextWriter writer, [NotNull] Layout layout, int position)
         {
-            return _resolver(context, chunk);
+            Contract.Requires(writer != null);
+            Contract.Requires(layout != null);
+            Writer = writer;
+            Layout = layout;
+            Position = position;
         }
     }
 }

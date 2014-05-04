@@ -25,7 +25,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.IO;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -33,8 +32,8 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Delegate definition for a resolver which can be used to resolve the values of tags, whilst writing out a <see cref="FormatBuilder" />.
     /// </summary>
-    /// <param name="writer">The writer.</param>
+    /// <param name="context">The context.</param>
     /// <param name="chunk">The chunk.</param>
     /// <returns>An object that will be cached unless it is a <see cref="Resolution" />.</returns>
-    public delegate object ResolveDelegate([NotNull] TextWriter writer, [NotNull] FormatChunk chunk);
+    public delegate object ResolveDelegate([NotNull] FormatWriteContext context, [NotNull] FormatChunk chunk);
 }

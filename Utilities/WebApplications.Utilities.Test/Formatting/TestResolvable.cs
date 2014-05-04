@@ -45,10 +45,10 @@ namespace WebApplications.Utilities.Test.Formatting
             /// <summary>
             /// Resolves the specified tag.
             /// </summary>
-            /// <param name="writer">The writer.</param>
+            /// <param name="context">The context.</param>
             /// <param name="chunk">The chunk.</param>
             /// <returns>A <see cref="Resolution" />.</returns>
-            public override object Resolve(TextWriter writer, FormatChunk chunk)
+            public override object Resolve(FormatWriteContext context, FormatChunk chunk)
             {
                 // ReSharper disable once PossibleNullReferenceException
                 switch (chunk.Tag.ToLowerInvariant())

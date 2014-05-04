@@ -51,8 +51,9 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
-        protected ResolvableWriteable(bool isCaseSensitive = false, bool resolveOuterTags = true)
-            :base(isCaseSensitive, resolveOuterTags)
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
+        protected ResolvableWriteable(bool isCaseSensitive = false, bool resolveOuterTags = true, bool resolveControls = false)
+            : base(isCaseSensitive, resolveOuterTags)
         {
         }
 
@@ -127,7 +128,7 @@ namespace WebApplications.Utilities.Formatting
             if (format == null)
                 format = DefaultFormat;
 
-            format.WriteTo(writer, "G", (ResolveDelegate) Resolve, IsCaseSensitive);
+            format.WriteTo(writer, "G", Resolve, IsCaseSensitive, ResolveControls);
         }
     }
 }

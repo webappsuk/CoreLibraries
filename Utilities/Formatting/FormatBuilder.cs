@@ -29,7 +29,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.IO;
@@ -42,7 +41,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
-    [TypeConverter(typeof(FormatBuilderConverter))]
+    [TypeConverter(typeof (FormatBuilderConverter))]
     public sealed partial class FormatBuilder : IFormattable, IWriteable, IEquatable<FormatBuilder>,
         IEnumerable<FormatChunk>
     {
@@ -1453,9 +1452,13 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <returns>This instance.</returns>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Resolve([CanBeNull] ResolveDelegate resolver, bool isCaseSensitive = false)
+        public FormatBuilder Resolve(
+            [CanBeNull] ResolveDelegate resolver,
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
@@ -1463,7 +1466,7 @@ namespace WebApplications.Utilities.Formatting
                 (resolver == null))
                 return this;
 
-            _initialResolutions = new Resolutions(_initialResolutions, resolver, isCaseSensitive, true);
+            _initialResolutions = new Resolutions(_initialResolutions, resolver, isCaseSensitive, true, resolveControls);
             return this;
         }
         #endregion
@@ -1523,16 +1526,20 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
         [PublicAPI]
-        public string ToString([CanBeNull] IReadOnlyDictionary<string, object> values, bool isCaseSensitive = false)
+        public string ToString(
+            [CanBeNull] IReadOnlyDictionary<string, object> values,
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, null, values, isCaseSensitive);
+                WriteTo(writer, null, values, isCaseSensitive, resolveControls);
                 return writer.ToString();
             }
         }
@@ -1544,6 +1551,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="position">The position.</param>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
@@ -1551,11 +1559,12 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, layout, position, null, values, isCaseSensitive);
+                position = WriteTo(writer, layout, position, null, values, isCaseSensitive, resolveControls);
                 return writer.ToString();
             }
         }
@@ -1566,6 +1575,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -1574,11 +1584,12 @@ namespace WebApplications.Utilities.Formatting
         public string ToString(
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, null, resolver, isCaseSensitive, resolveOuterTags);
+                WriteTo(writer, null, resolver, isCaseSensitive, resolveOuterTags, resolveControls);
                 return writer.ToString();
             }
         }
@@ -1591,6 +1602,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
@@ -1599,11 +1611,20 @@ namespace WebApplications.Utilities.Formatting
             ref int position,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, layout, position, null, resolver, isCaseSensitive, resolveOuterTags);
+                position = WriteTo(
+                    writer,
+                    layout,
+                    position,
+                    null,
+                    resolver,
+                    isCaseSensitive,
+                    resolveOuterTags,
+                    resolveControls);
                 return writer.ToString();
             }
         }
@@ -1656,6 +1677,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -1664,11 +1686,12 @@ namespace WebApplications.Utilities.Formatting
         public string ToString(
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, null, values);
+                WriteTo(writer, null, values, isCaseSensitive, resolveControls);
                 return writer.ToString();
             }
         }
@@ -1681,6 +1704,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
@@ -1689,11 +1713,12 @@ namespace WebApplications.Utilities.Formatting
             ref int position,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, layout, position, null, values);
+                position = WriteTo(writer, layout, position, null, values, isCaseSensitive, resolveControls);
                 return writer.ToString();
             }
         }
@@ -1705,6 +1730,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -1714,11 +1740,12 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, null, resolver, isCaseSensitive, resolveOuterTags);
+                WriteTo(writer, null, resolver, isCaseSensitive, resolveOuterTags, resolveControls);
                 return writer.ToString();
             }
         }
@@ -1732,6 +1759,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
@@ -1741,11 +1769,20 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, layout, position, null, resolver, isCaseSensitive, resolveOuterTags);
+                position = WriteTo(
+                    writer,
+                    layout,
+                    position,
+                    null,
+                    resolver,
+                    isCaseSensitive,
+                    resolveOuterTags,
+                    resolveControls);
                 return writer.ToString();
             }
         }
@@ -1861,6 +1898,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -1871,11 +1909,12 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, format, values);
+                WriteTo(writer, format, values, isCaseSensitive, resolveControls);
                 return writer.ToString();
             }
         }
@@ -1890,6 +1929,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="formatProvider">The format provider.</param>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
@@ -1900,11 +1940,12 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, layout, position, format, values, isCaseSensitive);
+                position = WriteTo(writer, layout, position, format, values, isCaseSensitive, resolveControls);
                 return writer.ToString();
             }
         }
@@ -1923,6 +1964,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
@@ -1934,11 +1976,12 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, format, resolver, isCaseSensitive, resolveOuterTags);
+                WriteTo(writer, format, resolver, isCaseSensitive, resolveOuterTags, resolveControls);
                 return writer.ToString();
             }
         }
@@ -1954,6 +1997,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
@@ -1965,11 +2009,20 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] IFormatProvider formatProvider,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, layout, position, format, resolver, isCaseSensitive, resolveOuterTags);
+                position = WriteTo(
+                    writer,
+                    layout,
+                    position,
+                    format,
+                    resolver,
+                    isCaseSensitive,
+                    resolveOuterTags,
+                    resolveControls);
                 return writer.ToString();
             }
         }
@@ -2007,15 +2060,17 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> [is case sensitive].</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         [PublicAPI]
         [StringFormatMethod("format")]
         public void WriteToConsole(
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             if (IsEmpty) return;
-            WriteTo(ConsoleTextWriter.Default, format, values, isCaseSensitive);
+            WriteTo(ConsoleTextWriter.Default, format, values, isCaseSensitive, resolveControls);
         }
 
         /// <summary>
@@ -2025,16 +2080,18 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         [PublicAPI]
         [StringFormatMethod("format")]
         public void WriteToConsole(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             if (IsEmpty) return;
-            WriteTo(ConsoleTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags);
+            WriteTo(ConsoleTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags, resolveControls);
         }
         #endregion
 
@@ -2070,15 +2127,17 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> [is case sensitive].</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         [PublicAPI]
         [StringFormatMethod("format")]
         public void WriteToTrace(
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             if (IsEmpty) return;
-            WriteTo(TraceTextWriter.Default, format, values, isCaseSensitive);
+            WriteTo(TraceTextWriter.Default, format, values, isCaseSensitive, resolveControls);
         }
 
         /// <summary>
@@ -2088,16 +2147,18 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         [PublicAPI]
         [StringFormatMethod("format")]
         public void WriteToTrace(
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             if (IsEmpty) return;
-            WriteTo(TraceTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags);
+            WriteTo(TraceTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags, resolveControls);
         }
         #endregion
 
@@ -2217,6 +2278,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> tag resolution is case sensitive.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
@@ -2224,7 +2286,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return 0;
             Contract.Assert(RootChunk.ChildrenInternal != null);
@@ -2235,7 +2298,7 @@ namespace WebApplications.Utilities.Formatting
                 _initialResolutions,
                 values == null || values.Count < 1
                     ? null
-                    : new DictionaryResolvable(values, isCaseSensitive, false),
+                    : new DictionaryResolvable(values, isCaseSensitive, false, resolveControls),
                 InitialLayout,
                 format,
                 0);
@@ -2250,6 +2313,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> tag resolution is case sensitive.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
@@ -2259,7 +2323,8 @@ namespace WebApplications.Utilities.Formatting
             int position,
             [CanBeNull] string format,
             [CanBeNull] IReadOnlyDictionary<string, object> values,
-            bool isCaseSensitive = false)
+            bool isCaseSensitive = false,
+            bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return position;
             Contract.Assert(RootChunk.ChildrenInternal != null);
@@ -2270,7 +2335,7 @@ namespace WebApplications.Utilities.Formatting
                 _initialResolutions,
                 values == null || values.Count < 1
                     ? null
-                    : new DictionaryResolvable(values, isCaseSensitive, false),
+                    : new DictionaryResolvable(values, isCaseSensitive, false, resolveControls),
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
                 position);
@@ -2284,6 +2349,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
@@ -2292,7 +2358,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return 0;
             Contract.Assert(RootChunk.ChildrenInternal != null);
@@ -2303,7 +2370,7 @@ namespace WebApplications.Utilities.Formatting
                 _initialResolutions,
                 resolver == null
                     ? null
-                    : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
+                    : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags, resolveControls),
                 InitialLayout,
                 format,
                 0);
@@ -2319,6 +2386,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolver">The resolver.</param>
         /// <param name="isCaseSensitive">if set to <see langword="true" /> then tags are case sensitive.</param>
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
+        /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
@@ -2329,7 +2397,8 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] string format,
             [CanBeNull] [InstantHandle] ResolveDelegate resolver,
             bool isCaseSensitive = false,
-            bool resolveOuterTags = true)
+            bool resolveOuterTags = true,
+            bool resolveControls = false)
         {
             if (writer == null || IsEmpty) return position;
             Contract.Assert(RootChunk.ChildrenInternal != null);
@@ -2340,7 +2409,7 @@ namespace WebApplications.Utilities.Formatting
                 _initialResolutions,
                 resolver == null
                     ? null
-                    : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags),
+                    : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags, resolveControls),
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
                 position);
@@ -2428,7 +2497,7 @@ namespace WebApplications.Utilities.Formatting
         /// The new line characters.
         /// </summary>
         [NotNull]
-        private static readonly char[] _newLineChars = { '\r', '\n' };
+        private static readonly char[] _newLineChars = {'\r', '\n'};
 
         /// <summary>
         /// Gets the chunk as a string.
@@ -2466,7 +2535,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             vStr = formattable.ToString(format, formatProvider);
                         }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                            // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                             vStr = value.ToString();
@@ -2598,31 +2667,27 @@ namespace WebApplications.Utilities.Formatting
             // Check which format we have 'f' will just write out tags, and ignore Layout.
             switch (format.ToLowerInvariant())
             {
-                // Always output's the tag if the chunk has one, otherwise output's the value as normal
+                    // Always output's the tag if the chunk has one, otherwise output's the value as normal
                 case "f":
                     writeTags = true;
                     skipUnresolvedTags = false;
                     isLayoutRequired = false;
                     break;
 
-                // Should output the value as normal, but treats unresolved tags as an empty string value
+                    // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
                     writeTags = false;
                     skipUnresolvedTags = true;
                     isLayoutRequired = initialLayout != Layout.Default;
                     break;
 
-                // Outputs the value if set, otherwise the format tag. Control tags ignored
+                    // Outputs the value if set, otherwise the format tag. Control tags ignored
                 default:
                     writeTags = false;
                     skipUnresolvedTags = false;
                     isLayoutRequired = initialLayout != Layout.Default;
                     break;
             }
-
-            initialResolutions = resolver != null
-                ? new Resolutions(initialResolutions, resolver)
-                : initialResolutions;
 
             // The layout stack is used to hold the current layout
             Stack<Layout> layoutStack = new Stack<Layout>();
@@ -2633,6 +2698,14 @@ namespace WebApplications.Utilities.Formatting
             StringBuilder wordBuilder = null;
             CharType lastCharType = CharType.None;
             int startPosition = position;
+
+            // Set up resolutions
+            initialResolutions = resolver != null
+                ? new Resolutions(initialResolutions, resolver)
+                : initialResolutions;
+
+            // Create out context object (we only need one as we run serially).
+            FormatWriteContext context = new FormatWriteContext(writer, initialLayout, position);
 
             // The stack holds any chunks that we need to process, so start by pushing the root chunks children onto it
             // in reverse, so that they are taken off in order.
@@ -2669,10 +2742,14 @@ namespace WebApplications.Utilities.Formatting
                             bool isResolved;
                             object resolvedValue;
                             // Resolve the tag if it's the first time we've seen it.
-                            if (resolutions != null)
+                            if (resolutions != null &&
+                                (resolutions.ResolveControls || !chunk.IsControl))
                             {
+                                // Update context
+                                context.Layout = layoutStack.Peek();
+                                context.Position = position;
                                 // ReSharper disable PossibleNullReferenceException
-                                Resolution resolved = (Resolution)resolutions.Resolve(writer, chunk);
+                                Resolution resolved = (Resolution) resolutions.Resolve(context, chunk);
                                 // ReSharper restore PossibleNullReferenceException
                                 isResolved = resolved.IsResolved;
                                 resolvedValue = resolved.Value;
@@ -2811,7 +2888,7 @@ namespace WebApplications.Utilities.Formatting
                                                                 {
                                                                     // ReSharper disable PossibleNullReferenceException
                                                                     switch (c.Tag.ToLowerInvariant())
-                                                                    // ReSharper restore PossibleNullReferenceException
+                                                                        // ReSharper restore PossibleNullReferenceException
                                                                     {
                                                                         case IndexTag:
                                                                             return value;
@@ -2822,7 +2899,8 @@ namespace WebApplications.Utilities.Formatting
                                                                     }
                                                                 },
                                                                 false,
-                                                                true);
+                                                                true,
+                                                                false);
 
                                                             // Add a new chunk with, the <Item> tag.
                                                             FormatChunk innerChunk = new FormatChunk(
@@ -2857,7 +2935,8 @@ namespace WebApplications.Utilities.Formatting
                                                         resolutions,
                                                         r.Resolve,
                                                         r.IsCaseSensitive,
-                                                        r.ResolveOuterTags);
+                                                        r.ResolveOuterTags,
+                                                        r.ResolveControls);
 
                                                 while (subFormatChunks.Count > 0)
                                                     stack.Push(subFormatChunks.Pop(), resolutions);
@@ -2923,7 +3002,7 @@ namespace WebApplications.Utilities.Formatting
                                             coloredTextWriter.ResetForegroundColor();
                                         else if (chunk.IsResolved &&
                                                  chunk.Value is Color)
-                                            coloredTextWriter.SetForegroundColor((Color)chunk.Value);
+                                            coloredTextWriter.SetForegroundColor((Color) chunk.Value);
                                         else
                                         {
                                             // ReSharper disable once AssignNullToNotNullAttribute
@@ -2937,7 +3016,7 @@ namespace WebApplications.Utilities.Formatting
                                             coloredTextWriter.ResetBackgroundColor();
                                         else if (chunk.IsResolved &&
                                                  chunk.Value is Color)
-                                            coloredTextWriter.SetBackgroundColor((Color)chunk.Value);
+                                            coloredTextWriter.SetBackgroundColor((Color) chunk.Value);
                                         else
                                         {
                                             // ReSharper disable once AssignNullToNotNullAttribute
@@ -3116,7 +3195,8 @@ namespace WebApplications.Utilities.Formatting
                                         layout.Width.Value - layout.RightMarginSize.Value,
                                         true);
                             }
-                            else if (startPosition < 1 && line.Layout != layoutStack.Peek())
+                            else if (startPosition < 1 &&
+                                     line.Layout != layoutStack.Peek())
                             {
                                 // We have a new layout at the start of a line, so recreate the line.
                                 Contract.Assert(line.IsEmpty);
@@ -3251,11 +3331,11 @@ namespace WebApplications.Utilities.Formatting
                                         line.LastWhiteSpace > 0)
                                     {
                                         // We need to calculate spacers.
-                                        decimal space = (decimal)(line.LastWhiteSpace - line.Start) / remaining;
-                                        int o = (int)Math.Round(space / 2);
+                                        decimal space = (decimal) (line.LastWhiteSpace - line.Start) / remaining;
+                                        int o = (int) Math.Round(space / 2);
                                         spacers =
                                             new Queue<int>(
-                                                Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
+                                                Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
                                     }
                                     break;
                                 default:
@@ -3271,7 +3351,8 @@ namespace WebApplications.Utilities.Formatting
                             foreach (string chunk in line)
                             {
                                 p += chunk.Length;
-                                if (spacers == null || !string.IsNullOrWhiteSpace(chunk))
+                                if (spacers == null ||
+                                    !string.IsNullOrWhiteSpace(chunk))
                                 {
                                     writer.Write(chunk);
                                     continue;
@@ -3681,7 +3762,7 @@ namespace WebApplications.Utilities.Formatting
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             return obj is FormatBuilder &&
-                   Equals((FormatBuilder)obj);
+                   Equals((FormatBuilder) obj);
         }
 
         /// <summary>
