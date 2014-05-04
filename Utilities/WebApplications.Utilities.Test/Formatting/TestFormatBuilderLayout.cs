@@ -244,5 +244,30 @@ namespace WebApplications.Utilities.Test.Formatting
                 "A *\r\n'!\r\n",
                 new FormatBuilder(3).AppendLine("A *'!").ToString());
         }
+
+        [TestMethod]
+        public void TestPushPopLayout()
+        {
+            FormatBuilder builder = new FormatBuilder(5)
+                // Change layout to 6 immediately, should work as at start of line.
+                .AppendLayout(6)
+                .Append("1 3 5 7")
+                // This layout will not apply immediately as part way through line.
+                .AppendLayout(7)
+                .AppendLine("1 3 56")
+                // Layout should now apply
+                .AppendLine("1 3 5 7")
+                // Width back to 6
+                .AppendPopLayout()
+                .AppendLine("1 3 567")
+                // Width back to 5
+                .AppendPopLayout()
+                .AppendLine("1 3 567")
+                // Width stays at 5 as no more layouts on stack to pop.
+                .AppendPopLayout()
+                .AppendLine("1 3 567");
+
+            Trace.WriteLine(builder.ToString());
+        }
     }
 }

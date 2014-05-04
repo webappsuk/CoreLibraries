@@ -3082,8 +3082,7 @@ namespace WebApplications.Utilities.Formatting
                 // Take one character at a time.
                 int cPos = 0;
                 while (cPos < chunkStr.Length ||
-                       (wordBuilder.Length > 0) ||
-                       (stack.Count < 1 && line != null && !line.IsEmpty))
+                    (stack.Count < 1 && (wordBuilder.Length > 0 || line != null && !line.IsEmpty)))
                 {
                     string word;
 
@@ -3196,7 +3195,8 @@ namespace WebApplications.Utilities.Formatting
                                         true);
                             }
                             else if (startPosition < 1 &&
-                                     line.Layout != layoutStack.Peek())
+                                line.IsEmpty && 
+                                line.Layout != layoutStack.Peek())
                             {
                                 // We have a new layout at the start of a line, so recreate the line.
                                 Contract.Assert(line.IsEmpty);
@@ -3385,6 +3385,8 @@ namespace WebApplications.Utilities.Formatting
                             // Calculate our finish position
                             position = p + indent;
                         }
+                        else
+                            position = startPosition;
 
                         if (line.Terminated)
                         {
@@ -3411,8 +3413,8 @@ namespace WebApplications.Utilities.Formatting
 
                             position = 0;
                         }
-                        startPosition = 0;
                         line = null;
+                        startPosition = 0;
                         #endregion
                     } while (!string.IsNullOrEmpty(word));
 
@@ -3630,11 +3632,11 @@ namespace WebApplications.Utilities.Formatting
         public const string LayoutTag = "!layout";
 
         /// <summary>
-        /// The reset layout chunk.
+        /// The pop layout chunk.
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly FormatChunk ResetLayoutChunk = new FormatChunk(null, LayoutTag, 0, null);
+        public static readonly FormatChunk PopLayoutChunk = new FormatChunk(null, LayoutTag, 0, null);
 
         /// <summary>
         /// The new line chunk
@@ -3644,15 +3646,15 @@ namespace WebApplications.Utilities.Formatting
         public static readonly FormatChunk NewLineChunk = new FormatChunk(Environment.NewLine);
 
         /// <summary>
-        /// Resets the layout.
+        /// Pops the layout off the stack.
         /// </summary>
         /// <returns>FormatBuilder.</returns>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder AppendResetLayout()
+        public FormatBuilder AppendPopLayout()
         {
             Contract.Requires(!IsReadOnly);
-            RootChunk.AppendChunk(ResetLayoutChunk);
+            RootChunk.AppendChunk(PopLayoutChunk);
             return this;
         }
 
