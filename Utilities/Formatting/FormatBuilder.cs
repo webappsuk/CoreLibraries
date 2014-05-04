@@ -29,20 +29,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
-using Microsoft.SqlServer.Server;
 
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
-    [TypeConverter(typeof(FormatBuilderConverter))]
+    [TypeConverter(typeof (FormatBuilderConverter))]
     public sealed partial class FormatBuilder : IFormattable, IWriteable, IEquatable<FormatBuilder>,
         IEnumerable<FormatChunk>
     {
@@ -2428,7 +2428,7 @@ namespace WebApplications.Utilities.Formatting
         /// The new line characters.
         /// </summary>
         [NotNull]
-        private static readonly char[] _newLineChars = { '\r', '\n' };
+        private static readonly char[] _newLineChars = {'\r', '\n'};
 
         /// <summary>
         /// Gets the chunk as a string.
@@ -2466,7 +2466,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             vStr = formattable.ToString(format, formatProvider);
                         }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                            // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                             vStr = value.ToString();
@@ -2490,6 +2490,37 @@ namespace WebApplications.Utilities.Formatting
                 return new string(' ', alignment - len) + vStr;
             if (len >= -alignment) return vStr;
             return vStr + new string(' ', -alignment - len);
+        }
+
+        /// <summary>
+        /// Character types.
+        /// </summary>
+        private enum CharType
+        {
+            /// <summary>
+            /// No character.
+            /// </summary>
+            None,
+
+            /// <summary>
+            /// A white space character
+            /// </summary>
+            WhiteSpace,
+
+            /// <summary>
+            /// Symbol character.
+            /// </summary>
+            Apostrophe,
+
+            /// <summary>
+            /// Symbol character.
+            /// </summary>
+            Symbol,
+
+            /// <summary>
+            /// Alphanumeric character
+            /// </summary>
+            Alphanumeric
         }
 
         /// <summary>
@@ -2544,21 +2575,21 @@ namespace WebApplications.Utilities.Formatting
             // Check which format we have 'f' will just write out tags, and ignore Layout.
             switch (format.ToLowerInvariant())
             {
-                // Always output's the tag if the chunk has one, otherwise output's the value as normal
+                    // Always output's the tag if the chunk has one, otherwise output's the value as normal
                 case "f":
                     writeTags = true;
                     skipUnresolvedTags = false;
                     isLayoutRequired = false;
                     break;
 
-                // Should output the value as normal, but treats unresolved tags as an empty string value
+                    // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
                     writeTags = false;
                     skipUnresolvedTags = true;
                     isLayoutRequired = initialLayout != Layout.Default;
                     break;
 
-                // Outputs the value if set, otherwise the format tag. Control tags ignored
+                    // Outputs the value if set, otherwise the format tag. Control tags ignored
                 default:
                     writeTags = false;
                     skipUnresolvedTags = false;
@@ -2574,11 +2605,10 @@ namespace WebApplications.Utilities.Formatting
             Stack<Layout> layoutStack = new Stack<Layout>();
             layoutStack.Push(initialLayout);
 
-            // The following are only used during layout.
+            // The current word and line (if laying out).
             Line line = null;
-            Layout layout = initialLayout;
-            bool lastCharR = false;
-            char lastCharSymb = '\0';
+            StringBuilder wordBuilder = null;
+            CharType lastCharType = CharType.None;
 
             // The stack holds any chunks that we need to process, so start by pushing the root chunks children onto it
             // in reverse, so that they are taken off in order.
@@ -2590,345 +2620,472 @@ namespace WebApplications.Utilities.Formatting
             /*
              * Process chunks
              */
-            while (stack.Count > 0)
+            while (stack.Count > 0 ||
+                   (wordBuilder != null && wordBuilder.Length > 0))
             {
-                FormatChunk chunk;
-                Resolutions resolutions;
-                stack.Pop(out chunk, out resolutions);
                 string chunkStr;
-
-                #region Resolution - will flatten chunks and resolve to a series of strings.
-                if (chunk.Tag != null)
+                if (stack.Count > 0)
                 {
-                    /*
-                     * Process fill point
-                     */
-                    if (writeTags)
-                        chunkStr = chunk.ToString("F");
-                    else
-                    {
-                        if (chunk.Resolver != null)
-                            resolutions = new Resolutions(resolutions, chunk.Resolver);
+                    FormatChunk chunk;
+                    Resolutions resolutions;
+                    stack.Pop(out chunk, out resolutions);
 
-                        bool isResolved;
-                        object resolvedValue;
-                        // Resolve the tag if it's the first time we've seen it.
-                        if (resolutions != null)
-                        {
-                            // ReSharper disable PossibleNullReferenceException
-                            Resolution resolved = (Resolution)resolutions.Resolve(writer, chunk);
-                            // ReSharper restore PossibleNullReferenceException
-                            isResolved = resolved.IsResolved;
-                            resolvedValue = resolved.Value;
-                        }
+                    #region Resolution - will flatten chunks and resolve to a series of strings.
+                    if (chunk.Tag != null)
+                        /*
+                         * Process fill point
+                         */
+                        if (writeTags)
+                            chunkStr = chunk.ToString("F");
                         else
                         {
-                            isResolved = false;
-                            resolvedValue = null;
-                        }
+                            if (chunk.Resolver != null)
+                                resolutions = new Resolutions(resolutions, chunk.Resolver);
 
-                        if (isResolved || chunk.IsResolved)
-                        {
-                            // If we haven't resolved the value, get the chunks value.
-                            if (!isResolved)
+                            bool isResolved;
+                            object resolvedValue;
+                            // Resolve the tag if it's the first time we've seen it.
+                            if (resolutions != null)
                             {
-                                // Use the current resolution.
-                                isResolved = true;
-                                resolvedValue = chunk.Value;
+                                // ReSharper disable PossibleNullReferenceException
+                                Resolution resolved = (Resolution) resolutions.Resolve(writer, chunk);
+                                // ReSharper restore PossibleNullReferenceException
+                                isResolved = resolved.IsResolved;
+                                resolvedValue = resolved.Value;
+                            }
+                            else
+                            {
+                                isResolved = false;
+                                resolvedValue = null;
                             }
 
-                            // Check for resolved to null.
-                            if (resolvedValue != null)
+                            if (isResolved || chunk.IsResolved)
                             {
-                                /*
-                                 * Check if we have an actual FormatChunk as the value, in which case, unwrap it.
-                                 */
-                                do
+                                // If we haven't resolved the value, get the chunks value.
+                                if (!isResolved)
                                 {
-                                    FormatChunk fc = resolvedValue as FormatChunk;
-                                    if (fc == null) break;
+                                    // Use the current resolution.
+                                    isResolved = true;
+                                    resolvedValue = chunk.Value;
+                                }
 
-                                    chunk = fc;
-                                    isResolved = chunk.IsResolved;
-                                    if (!isResolved)
-                                        break;
-
-                                    resolvedValue = fc.Value;
-                                } while (true);
-
-                                if (isResolved)
+                                // Check for resolved to null.
+                                if (resolvedValue != null)
                                 {
                                     /*
-                                     * Unwrap format builders, or enumerations of chunks
+                                     * Check if we have an actual FormatChunk as the value, in which case, unwrap it.
                                      */
-                                    IEnumerable<FormatChunk> formatChunks =
-                                        resolvedValue as IEnumerable<FormatChunk>;
-                                    if (formatChunks != null)
+                                    do
                                     {
-                                        foreach (FormatChunk fci in formatChunks.Reverse())
-                                            stack.Push(fci, resolutions);
-                                        continue;
-                                    }
+                                        FormatChunk fc = resolvedValue as FormatChunk;
+                                        if (fc == null) break;
 
-                                    /*
-                                     * Check if we have any child chunks, and flatten
-                                     */
-                                    if (chunk.ChildrenInternal != null &&
-                                        chunk.ChildrenInternal.Count > 0)
+                                        chunk = fc;
+                                        isResolved = chunk.IsResolved;
+                                        if (!isResolved)
+                                            break;
+
+                                        resolvedValue = fc.Value;
+                                    } while (true);
+
+                                    if (isResolved)
                                     {
-                                        // Get the chunks for the fill point.
-                                        Stack<FormatChunk> subFormatChunks = new Stack<FormatChunk>();
-                                        bool hasFillPoint = false;
-                                        bool hasItemsFillPoint = false;
-                                        FormatChunk joinChunk = null;
-                                        foreach (FormatChunk subFormatChunk in chunk.ChildrenInternal)
+                                        /*
+                                         * Unwrap format builders, or enumerations of chunks
+                                         */
+                                        IEnumerable<FormatChunk> formatChunks =
+                                            resolvedValue as IEnumerable<FormatChunk>;
+                                        if (formatChunks != null)
                                         {
-                                            // ReSharper disable once PossibleNullReferenceException
-                                            if (subFormatChunk.Tag != null)
-                                            {
-                                                hasFillPoint = true;
-                                                if (string.Equals(
-                                                    subFormatChunk.Tag,
-                                                    ItemsTag,
-                                                    StringComparison.CurrentCultureIgnoreCase))
-                                                    hasItemsFillPoint = true;
-                                                else if (string.Equals(
-                                                    subFormatChunk.Tag,
-                                                    JoinTag,
-                                                    StringComparison.CurrentCultureIgnoreCase))
-                                                {
-                                                    // Very special case! 
-                                                    // We only allow one join chunk, so we take the last one, and we remove it from the outer format.
-                                                    joinChunk = subFormatChunk;
-                                                    continue;
-                                                }
-                                            }
-                                            subFormatChunks.Push(subFormatChunk);
+                                            foreach (FormatChunk fci in formatChunks.Reverse())
+                                                stack.Push(fci, resolutions);
+                                            continue;
                                         }
 
                                         /*
-                                         * Special case enumerable, if we have an '<items>' tag, then we will treat each item in the enumeration
-                                         * individually, otherwise we'll treat the enumeration as one value.
+                                         * Check if we have any child chunks, and flatten
                                          */
-                                        if (hasItemsFillPoint)
+                                        if (chunk.ChildrenInternal != null &&
+                                            chunk.ChildrenInternal.Count > 0)
                                         {
-                                            // We have an <item> fill point, so check if we have an enumerable.
-                                            IEnumerable enumerable = resolvedValue as IEnumerable;
-                                            if (enumerable != null)
+                                            // Get the chunks for the fill point.
+                                            Stack<FormatChunk> subFormatChunks = new Stack<FormatChunk>();
+                                            bool hasFillPoint = false;
+                                            bool hasItemsFillPoint = false;
+                                            FormatChunk joinChunk = null;
+                                            foreach (FormatChunk subFormatChunk in chunk.ChildrenInternal)
                                             {
-                                                // Set the value of the joinChunk to FormatOutput.Default, which is an object that writes out it's own format!
-                                                if (joinChunk != null)
-                                                    joinChunk = new FormatChunk(joinChunk.Format);
-
-                                                // Ensure we only enumerate once, and get the enumeration, bound with it's index, in reverse order.
-                                                KeyValuePair<object, int>[] indexedArray = enumerable
-                                                    .Cast<object>()
-                                                    .Select((r, i) => new KeyValuePair<object, int>(r, i))
-                                                    .Reverse()
-                                                    .ToArray();
-
-                                                // We have an enumeration format, so we need to add each item back in individually with new contextual information.
-                                                while (subFormatChunks.Count > 0)
+                                                // ReSharper disable once PossibleNullReferenceException
+                                                if (subFormatChunk.Tag != null)
                                                 {
-                                                    FormatChunk subFormatChunk = subFormatChunks.Pop();
-                                                    if (!string.Equals(
+                                                    hasFillPoint = true;
+                                                    if (string.Equals(
                                                         subFormatChunk.Tag,
                                                         ItemsTag,
                                                         StringComparison.CurrentCultureIgnoreCase))
+                                                        hasItemsFillPoint = true;
+                                                    else if (string.Equals(
+                                                        subFormatChunk.Tag,
+                                                        JoinTag,
+                                                        StringComparison.CurrentCultureIgnoreCase))
                                                     {
-                                                        stack.Push(subFormatChunk, resolutions);
+                                                        // Very special case! 
+                                                        // We only allow one join chunk, so we take the last one, and we remove it from the outer format.
+                                                        joinChunk = subFormatChunk;
                                                         continue;
                                                     }
-
-                                                    // We have an <items> chunk, which we now expand for each item.
-                                                    foreach (KeyValuePair<object, int> kvp in indexedArray)
-                                                    {
-                                                        object key = kvp.Key;
-                                                        int value = kvp.Value;
-
-                                                        // This will add a fall-through value for the '<item>' and '<index>' tags - a new child Resolutions will be created based on this one
-                                                        // when the IResolution object is later resolved below, which means that you can still technically override the value of these tags in
-                                                        // the underlying resolver.
-                                                        Resolutions inner = new Resolutions(
-                                                            resolutions,
-                                                            (_, c) =>
-                                                            {
-                                                                // ReSharper disable PossibleNullReferenceException
-                                                                switch (c.Tag.ToLowerInvariant())
-                                                                // ReSharper restore PossibleNullReferenceException
-                                                                {
-                                                                    case IndexTag:
-                                                                        return value;
-                                                                    case ItemTag:
-                                                                        return key;
-                                                                    default:
-                                                                        return Resolution.Unknown;
-                                                                }
-                                                            },
-                                                            false,
-                                                            true);
-
-                                                        // Add a new chunk with, the <Item> tag.
-                                                        FormatChunk innerChunk = new FormatChunk(
-                                                            null,
-                                                            ItemTag,
-                                                            subFormatChunk.Alignment,
-                                                            subFormatChunk.Format,
-                                                            key);
-
-                                                        if (subFormatChunk.ChildrenInternal != null)
-                                                            innerChunk.ChildrenInternal =
-                                                                subFormatChunk.ChildrenInternal.ToList();
-
-                                                        stack.Push(innerChunk, inner);
-
-                                                        // If we have join chunk, push it for all but the 'first' element.
-                                                        if (value > 0 &&
-                                                            joinChunk != null)
-                                                            stack.Push(joinChunk, inner);
-                                                    }
                                                 }
-                                                continue;
+                                                subFormatChunks.Push(subFormatChunk);
                                             }
-                                        }
 
-                                        // If we have a value, and a format, then we may need to recurse.
-                                        if (hasFillPoint)
+                                            /*
+                                             * Special case enumerable, if we have an '<items>' tag, then we will treat each item in the enumeration
+                                             * individually, otherwise we'll treat the enumeration as one value.
+                                             */
+                                            if (hasItemsFillPoint)
+                                            {
+                                                // We have an <item> fill point, so check if we have an enumerable.
+                                                IEnumerable enumerable = resolvedValue as IEnumerable;
+                                                if (enumerable != null)
+                                                {
+                                                    // Set the value of the joinChunk to FormatOutput.Default, which is an object that writes out it's own format!
+                                                    if (joinChunk != null)
+                                                        joinChunk = new FormatChunk(joinChunk.Format);
+
+                                                    // Ensure we only enumerate once, and get the enumeration, bound with it's index, in reverse order.
+                                                    KeyValuePair<object, int>[] indexedArray = enumerable
+                                                        .Cast<object>()
+                                                        .Select((r, i) => new KeyValuePair<object, int>(r, i))
+                                                        .Reverse()
+                                                        .ToArray();
+
+                                                    // We have an enumeration format, so we need to add each item back in individually with new contextual information.
+                                                    while (subFormatChunks.Count > 0)
+                                                    {
+                                                        FormatChunk subFormatChunk = subFormatChunks.Pop();
+                                                        if (!string.Equals(
+                                                            subFormatChunk.Tag,
+                                                            ItemsTag,
+                                                            StringComparison.CurrentCultureIgnoreCase))
+                                                        {
+                                                            stack.Push(subFormatChunk, resolutions);
+                                                            continue;
+                                                        }
+
+                                                        // We have an <items> chunk, which we now expand for each item.
+                                                        foreach (KeyValuePair<object, int> kvp in indexedArray)
+                                                        {
+                                                            object key = kvp.Key;
+                                                            int value = kvp.Value;
+
+                                                            // This will add a fall-through value for the '<item>' and '<index>' tags - a new child Resolutions will be created based on this one
+                                                            // when the IResolution object is later resolved below, which means that you can still technically override the value of these tags in
+                                                            // the underlying resolver.
+                                                            Resolutions inner = new Resolutions(
+                                                                resolutions,
+                                                                (_, c) =>
+                                                                {
+                                                                    // ReSharper disable PossibleNullReferenceException
+                                                                    switch (c.Tag.ToLowerInvariant())
+                                                                        // ReSharper restore PossibleNullReferenceException
+                                                                    {
+                                                                        case IndexTag:
+                                                                            return value;
+                                                                        case ItemTag:
+                                                                            return key;
+                                                                        default:
+                                                                            return Resolution.Unknown;
+                                                                    }
+                                                                },
+                                                                false,
+                                                                true);
+
+                                                            // Add a new chunk with, the <Item> tag.
+                                                            FormatChunk innerChunk = new FormatChunk(
+                                                                null,
+                                                                ItemTag,
+                                                                subFormatChunk.Alignment,
+                                                                subFormatChunk.Format,
+                                                                key);
+
+                                                            if (subFormatChunk.ChildrenInternal != null)
+                                                                innerChunk.ChildrenInternal =
+                                                                    subFormatChunk.ChildrenInternal.ToList();
+
+                                                            stack.Push(innerChunk, inner);
+
+                                                            // If we have join chunk, push it for all but the 'first' element.
+                                                            if (value > 0 &&
+                                                                joinChunk != null)
+                                                                stack.Push(joinChunk, inner);
+                                                        }
+                                                    }
+                                                    continue;
+                                                }
+                                            }
+
+                                            // If we have a value, and a format, then we may need to recurse.
+                                            if (hasFillPoint)
+                                            {
+                                                IResolvable r = resolvedValue as IResolvable;
+                                                if (r != null)
+                                                    resolutions = new Resolutions(
+                                                        resolutions,
+                                                        r.Resolve,
+                                                        r.IsCaseSensitive,
+                                                        r.ResolveOuterTags);
+
+                                                while (subFormatChunks.Count > 0)
+                                                    stack.Push(subFormatChunks.Pop(), resolutions);
+                                                continue;
+                                            } // No fill points in format.
+                                        } // No children
+                                    } // No resolution after unwrapping
+                                } // Null resolution
+                            } // No resolution.
+
+                            /*
+                             * Check for layout chunks
+                             */
+                            if (string.Equals(
+                                chunk.Tag,
+                                LayoutTag,
+                                StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                isLayoutRequired = true;
+                                Layout newLayout;
+                                bool hasFormat = string.IsNullOrEmpty(chunk.Format);
+                                if ((isResolved &&
+                                     ((newLayout = chunk.Value as Layout) != null)) ||
+                                    (!hasFormat &&
+                                     Layout.TryParse(chunk.Format, out newLayout)))
+                                {
+                                    if (!newLayout.IsEmpty)
+                                        layoutStack.Push(layoutStack.Peek().Apply(newLayout));
+                                }
+                                else if (hasFormat)
+                                    layoutStack.Pop();
+                            }
+
+                            if (chunk.IsControl)
+                            {
+                                if (controller != null)
+                                    controller.OnControlChunk(
+                                        writer,
+                                        chunk.Tag,
+                                        chunk.Alignment,
+                                        chunk.Format,
+                                        chunk.Value);
+
+                                #region Color support
+                                if (coloredTextWriter == null)
+                                    continue;
+
+                                // Handle colored output.
+                                switch (chunk.Tag.ToLowerInvariant())
+                                {
+                                    case ResetColorsTag:
+                                        coloredTextWriter.ResetColors();
+                                        continue;
+                                    case ForegroundColorTag:
+                                        if (String.IsNullOrWhiteSpace(chunk.Format))
+                                            coloredTextWriter.ResetForegroundColor();
+                                        else if (chunk.IsResolved &&
+                                                 chunk.Value is Color)
+                                            coloredTextWriter.SetForegroundColor((Color) chunk.Value);
+                                        else
                                         {
-                                            IResolvable r = resolvedValue as IResolvable;
-                                            if (r != null)
-                                                resolutions = new Resolutions(
-                                                    resolutions,
-                                                    r.Resolve,
-                                                    r.IsCaseSensitive,
-                                                    r.ResolveOuterTags);
-
-                                            while (subFormatChunks.Count > 0)
-                                                stack.Push(subFormatChunks.Pop(), resolutions);
-                                            continue;
-                                        } // No fill points in format.
-                                    } // No children
-                                } // No resolution after unwrapping
-                            } // Null resolution
-                        } // No resolution.
-
-                        /*
-                         * Check for layout chunks
-                         */
-                        if (string.Equals(
-                            chunk.Tag,
-                            LayoutTag,
-                            StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            isLayoutRequired = true;
-                            Layout newLayout;
-                            bool hasFormat = string.IsNullOrEmpty(chunk.Format);
-                            if ((isResolved &&
-                                 ((newLayout = chunk.Value as Layout) != null)) ||
-                                (!hasFormat &&
-                                 Layout.TryParse(chunk.Format, out newLayout)))
-                            {
-                                if (!newLayout.IsEmpty)
-                                    layoutStack.Push(layoutStack.Peek().Apply(newLayout));
+                                            // ReSharper disable once AssignNullToNotNullAttribute
+                                            Optional<Color> color = ColorHelper.GetColor(chunk.Format);
+                                            if (color.IsAssigned)
+                                                coloredTextWriter.SetForegroundColor(color.Value);
+                                        }
+                                        continue;
+                                    case BackgroundColorTag:
+                                        if (String.IsNullOrWhiteSpace(chunk.Format))
+                                            coloredTextWriter.ResetBackgroundColor();
+                                        else if (chunk.IsResolved &&
+                                                 chunk.Value is Color)
+                                            coloredTextWriter.SetBackgroundColor((Color) chunk.Value);
+                                        else
+                                        {
+                                            // ReSharper disable once AssignNullToNotNullAttribute
+                                            Optional<Color> color = ColorHelper.GetColor(chunk.Format);
+                                            if (color.IsAssigned)
+                                                coloredTextWriter.SetBackgroundColor(color.Value);
+                                        }
+                                        continue;
+                                    default:
+                                        continue;
+                                }
+                                #endregion
                             }
-                            else if (hasFormat)
-                                layoutStack.Pop();
-                        }
 
-                        if (chunk.IsControl)
-                        {
-                            if (controller != null)
-                                controller.OnControlChunk(writer, chunk.Tag, chunk.Alignment, chunk.Format, chunk.Value);
-
-                            #region Color support
-                            if (coloredTextWriter == null)
-                                continue;
-
-                            // Handle colored output.
-                            switch (chunk.Tag.ToLowerInvariant())
+                            if (!isResolved)
                             {
-                                case ResetColorsTag:
-                                    coloredTextWriter.ResetColors();
+                                if (skipUnresolvedTags)
                                     continue;
-                                case ForegroundColorTag:
-                                    if (String.IsNullOrWhiteSpace(chunk.Format))
-                                        coloredTextWriter.ResetForegroundColor();
-                                    else if (chunk.IsResolved &&
-                                             chunk.Value is Color)
-                                        coloredTextWriter.SetForegroundColor((Color)chunk.Value);
-                                    else
-                                    {
-                                        // ReSharper disable once AssignNullToNotNullAttribute
-                                        Optional<Color> color = ColorHelper.GetColor(chunk.Format);
-                                        if (color.IsAssigned)
-                                            coloredTextWriter.SetForegroundColor(color.Value);
-                                    }
-                                    continue;
-                                case BackgroundColorTag:
-                                    if (String.IsNullOrWhiteSpace(chunk.Format))
-                                        coloredTextWriter.ResetBackgroundColor();
-                                    else if (chunk.IsResolved &&
-                                             chunk.Value is Color)
-                                        coloredTextWriter.SetBackgroundColor((Color)chunk.Value);
-                                    else
-                                    {
-                                        // ReSharper disable once AssignNullToNotNullAttribute
-                                        Optional<Color> color = ColorHelper.GetColor(chunk.Format);
-                                        if (color.IsAssigned)
-                                            coloredTextWriter.SetBackgroundColor(color.Value);
-                                    }
-                                    continue;
-                                default:
-                                    continue;
+                                chunkStr = chunk.ToString("F");
                             }
-                            #endregion
+                            else
+                                chunkStr = GetChunkString(
+                                    resolvedValue,
+                                    chunk.Alignment,
+                                    chunk.Format,
+                                    writer.FormatProvider);
                         }
+                    else
+                        // We have a value chunk.
+                        chunkStr = GetChunkString(
+                            chunk.Value,
+                            chunk.Alignment,
+                            chunk.Format,
+                            writer.FormatProvider);
+                    #endregion
 
-                        if (!isResolved)
-                        {
-                            if (skipUnresolvedTags)
-                                continue;
-                            chunkStr = chunk.ToString("F");
-                        }
-                        else
-                            chunkStr = GetChunkString(
-                                resolvedValue,
-                                chunk.Alignment,
-                                chunk.Format,
-                                writer.FormatProvider);
+                    if (!isLayoutRequired)
+                    {
+                        // We're done as no layout is required.
+                        position += chunkStr.Length;
+                        writer.Write(chunkStr);
+                        continue;
                     }
                 }
                 else
-                {
-                    // We have a value chunk.
-                    chunkStr = GetChunkString(
-                        chunk.Value,
-                        chunk.Alignment,
-                        chunk.Format,
-                        writer.FormatProvider);
-                }
-                #endregion
+                    chunkStr = string.Empty;
 
-                Contract.Assert(chunk.ChildrenInternal.Count < 1);
-                /*
-                 * Process text
-                 */
-
-                if (!isLayoutRequired)
-                {
-                    // We're done as no layout is required.
-                    position += chunkStr.Length;
-                    writer.Write(chunkStr);
-                    continue;
-                }
-
+                #region Layout
                 /*
                  * Layout chunks
                  */
-                // TODO
-                position += chunkStr.Length;
-                writer.Write(chunkStr);
+
+                // Create word builder if we're just starting.
+                if (wordBuilder == null)
+                    wordBuilder = new StringBuilder();
+
+                // Take one character at a time.
+                int cPos = 0;
+                while (cPos < chunkStr.Length ||
+                       (wordBuilder.Length > 0))
+                {
+                    bool newLine;
+                    string word;
+
+                    #region Process characters into 'words'.
+                    if (cPos < chunkStr.Length)
+                    {
+                        /*
+                         * Process characters into 'words'.
+                         */
+                        char ch = chunkStr[cPos++];
+
+                        if (ch == '\r')
+                        {
+                            // Skip next '\n' if any.
+                            if ((cPos < chunkStr.Length) &&
+                                (chunkStr[cPos] == '\n'))
+                                cPos++;
+                            newLine = true;
+                            word = wordBuilder.ToString();
+                            wordBuilder.Clear();
+                            lastCharType = CharType.WhiteSpace;
+                        }
+                        else if (ch == '\n')
+                        {
+                            newLine = true;
+                            word = wordBuilder.ToString();
+                            wordBuilder.Clear();
+                            lastCharType = CharType.WhiteSpace;
+                        }
+                        else if (char.IsLetterOrDigit(ch))
+                        {
+                            if ((lastCharType == CharType.Apostrophe) ||
+                                (wordBuilder.Length < 2 && lastCharType != CharType.WhiteSpace) ||
+                                (lastCharType == CharType.Alphanumeric))
+                            {
+                                lastCharType = CharType.Alphanumeric;
+                                wordBuilder.Append(ch);
+                                continue;
+                            }
+                            // This letter follows a non alpha numeric, so split the word, unless the character was an
+                            // apostrophe, i.e. keep "Craig's" and "I'm" as one word, or the symbol started a word,
+                            // e.g. "'quoted'".
+                            lastCharType = CharType.Alphanumeric;
+                            newLine = false;
+                            word = wordBuilder.ToString();
+                            wordBuilder.Clear();
+                            wordBuilder.Append(ch);
+                        }
+                        else if (!char.IsWhiteSpace(ch))
+                        {
+                            if (lastCharType == CharType.Alphanumeric)
+                            {
+                                lastCharType = ch == '\'' ? CharType.Apostrophe : CharType.Symbol;
+                                wordBuilder.Append(ch);
+                                continue;
+                            }
+                            lastCharType = ch == '\'' ? CharType.Apostrophe : CharType.Symbol;
+                            newLine = false;
+                            word = wordBuilder.ToString();
+                            wordBuilder.Clear();
+                            wordBuilder.Append(ch);
+                        }
+                        else
+                        {
+                            lastCharType = CharType.WhiteSpace;
+                            newLine = false;
+                            word = wordBuilder.ToString();
+                            wordBuilder.Clear();
+                            wordBuilder.Append(ch);
+                        }
+                    }
+                    else
+                    {
+                        word = wordBuilder.ToString();
+                        newLine = false;
+                        wordBuilder.Clear();
+                    }
+                    #endregion
+
+                    // TODO Layout word!
+                    position += word.Length;
+                    writer.Write(word);
+                    Trace.WriteLine(word.Escape());
+                    if (newLine)
+                    {
+                        position += 2;
+                        writer.WriteLine();
+                    }
+                }
+
+                /*
+                Layout layout;
+                // If we haven't got a line, create one.
+                if (line == null)
+                {
+                    // Starting a new line, so grab the current layout at the top of the stack.
+                    layout = layoutStack.Peek();
+                    line = position > 0
+                        ? new Line(
+                            layout,
+                            // We can't start a layout in the middle of a line.
+                            Alignment.None,
+                            position,
+                            layout.Width.Value - layout.RightMarginSize.Value,
+                            false)
+                        : new Line(
+                            layout,
+                            layout.Alignment.Value,
+                            layout.FirstLineIndentSize.Value,
+                            layout.Width.Value - layout.RightMarginSize.Value,
+                            true);
+                }
+                else
+                    layout = line.Layout;
+                 */
             }
+            #endregion
+
             return position;
         }
 
@@ -3132,296 +3289,6 @@ namespace WebApplications.Utilities.Formatting
             return layoutWriter == null
                 ? position
                 : layoutWriter.Position;
-        }
-#endif
-        #endregion
-
-        #region Resolve
-#if OLDCODE
-    /// <summary>
-    /// Resolves the specified chunks.
-    /// </summary>
-    /// <param name="rootChunk">The root chunk.</param>
-    /// <param name="writer">The writer.</param>
-    /// <param name="initialResolutions">The initial resolutions.</param>
-    /// <param name="isLayoutRequired">if set to <see langword="true" /> then layout is required.</param>
-    /// <returns>List&lt;FormatChunk&gt;.</returns>
-        [NotNull]
-        private static IEnumerable<FormatChunk> Resolve(
-            [NotNull] FormatChunk rootChunk,
-            [NotNull] TextWriter writer,
-            [CanBeNull] Resolutions initialResolutions,
-            ref bool isLayoutRequired)
-        {
-            Contract.Requires(rootChunk != null);
-            Contract.Requires(writer != null);
-
-            Contract.Assert(rootChunk.ChildrenInternal != null);
-
-            Stack<FormatChunk, Resolutions> stack = new Stack<FormatChunk, Resolutions>();
-            // ReSharper disable once PossibleNullReferenceException
-            IEnumerator<FormatChunk> ce = rootChunk.ChildrenInternal.GetEnumerator();
-            List<FormatChunk> results = new List<FormatChunk>();
-            
-            do
-            {
-                FormatChunk chunk;
-                Resolutions resolutions;
-                if (stack.Count > 0)
-                    stack.Pop(out chunk, out resolutions);
-                else if (!ce.MoveNext())
-                    return results;
-                else
-                {
-                    chunk = ce.Current;
-                    resolutions = initialResolutions;
-                }
-
-                if (chunk == null) continue;
-
-                if (chunk.Tag == null)
-                {
-                    results.Add(chunk);
-                    continue;
-                }
-
-                if (chunk.Resolver != null)
-                    resolutions = new Resolutions(resolutions, chunk.Resolver);
-
-                if (!isLayoutRequired &&
-                    string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
-                    isLayoutRequired = true;
-
-                bool isResolved;
-                object resolvedValue;
-                // Resolve the tag if it's the first time we've seen it.
-                if (resolutions != null)
-                {
-                    // ReSharper disable PossibleNullReferenceException
-                    Resolution resolved = (Resolution)resolutions.Resolve(writer, chunk);
-                    // ReSharper restore PossibleNullReferenceException
-                    isResolved = resolved.IsResolved;
-                    resolvedValue = resolved.Value;
-                }
-                else
-                {
-                    isResolved = false;
-                    resolvedValue = null;
-                }
-
-                // If we haven't resolved the value, get the chunks value.
-                if (!isResolved)
-                    if (chunk.IsResolved)
-                    {
-                        // Use the current resolution.
-                        isResolved = true;
-                        resolvedValue = chunk.Value;
-                    }
-                    else
-                    {
-                        // We have no resolution so just add the chunk.
-                        results.Add(chunk);
-                        continue;
-                    }
-
-                // Check for resolved to null.
-                if (resolvedValue == null)
-                {
-                    results.Add(
-                        chunk.IsResolved && chunk.Value == null
-                            ? chunk
-                            : new FormatChunk(chunk, resolvedValue));
-                    continue;
-                }
-
-                // Check if we have an actual FormatChunk as the value, in which case, unwrap it.
-
-                do
-                {
-                    FormatChunk fc = resolvedValue as FormatChunk;
-                    if (fc == null) break;
-
-                    chunk = fc;
-                    isResolved = chunk.IsResolved;
-                    if (!isResolved)
-                        break;
-
-                    resolvedValue = fc.Value;
-                } while (true);
-
-                if (!isResolved)
-                {
-                    // We have no resolution so just add the new chunk.
-                    results.Add(chunk);
-                    continue;
-                }
-
-                FormatBuilder builder = resolvedValue as FormatBuilder;
-                if (builder != null)
-                {
-                    if (builder.IsEmpty)
-                        continue;
-
-                    foreach (FormatChunk fci in builder.RootChunk.Children.Reverse())
-                        stack.Push(fci, resolutions);
-                    continue;
-                }
-
-                // Handles getting an enumeration of chunks back.
-                IEnumerable<FormatChunk> formatChunks = resolvedValue as IEnumerable<FormatChunk>;
-                if (formatChunks != null)
-                {
-                    foreach (FormatChunk fci in formatChunks.Reverse())
-                        stack.Push(fci, resolutions);
-                    continue;
-                }
-
-                // Check if we have any child chunks
-                if (chunk.ChildrenInternal != null &&
-                    chunk.ChildrenInternal.Count > 0)
-                {
-                    // Get the chunks for the fill point.
-                    Stack<FormatChunk> subFormatChunks = new Stack<FormatChunk>();
-                    bool hasFillPoint = false;
-                    bool hasItemsFillPoint = false;
-                    FormatChunk joinChunk = null;
-                    foreach (FormatChunk subFormatChunk in chunk.ChildrenInternal)
-                    {
-                        // ReSharper disable once PossibleNullReferenceException
-                        if (subFormatChunk.Tag != null)
-                        {
-                            hasFillPoint = true;
-                            if (string.Equals(
-                                subFormatChunk.Tag,
-                                ItemsTag,
-                                StringComparison.CurrentCultureIgnoreCase))
-                                hasItemsFillPoint = true;
-                            else if (string.Equals(
-                                subFormatChunk.Tag,
-                                JoinTag,
-                                StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                // Very special case! 
-                                // We only allow one join chunk, so we take the last one, and we remove it from the outer format.
-                                joinChunk = subFormatChunk;
-                                continue;
-                            }
-                        }
-                        subFormatChunks.Push(subFormatChunk);
-                    }
-
-                    if (hasItemsFillPoint)
-                    {
-                        // We have an <item> fill point, so check if we have an enumerable.
-                        IEnumerable enumerable = resolvedValue as IEnumerable;
-                        if (enumerable != null)
-                        {
-                            /*
-                             * Special case enumerable, if we have an '<items>' tag, then we will treat each item
-                             * individually, otherwise we'll treat as one item.
-                             */
-
-                            // Set the value of the joinChunk to FormatOutput.Default, which is an object that writes out it's own format!
-                            if (joinChunk != null)
-                                joinChunk = new FormatChunk(joinChunk.Format);
-
-                            // Ensure we only enumerate once, and get the enumeration, bound with it's index, in reverse order.
-                            KeyValuePair<object, int>[] indexedArray = enumerable
-                                .Cast<object>()
-                                .Select((r, i) => new KeyValuePair<object, int>(r, i))
-                                .Reverse()
-                                .ToArray();
-
-                            // We have an enumeration format, so we need to add each item back in individually with new contextual information.
-                            while (subFormatChunks.Count > 0)
-                            {
-                                FormatChunk subFormatChunk = subFormatChunks.Pop();
-                                if (!string.Equals(
-                                    subFormatChunk.Tag,
-                                    ItemsTag,
-                                    StringComparison.CurrentCultureIgnoreCase))
-                                {
-                                    stack.Push(subFormatChunk, resolutions);
-                                    continue;
-                                }
-
-                                // We have an <items> chunk, which we now expand for each item.
-                                foreach (KeyValuePair<object, int> kvp in indexedArray)
-                                {
-                                    object key = kvp.Key;
-                                    int value = kvp.Value;
-
-                                    // This will add a fall-through value for the '<item>' and '<index>' tags - a new child Resolutions will be created based on this one
-                                    // when the IResolution object is later resolved below, which means that you can still technically override the value of these tags in
-                                    // the underlying resolver.
-                                    Resolutions inner = new Resolutions(
-                                        resolutions,
-                                        (_, c) =>
-                                        {
-                                            // ReSharper disable PossibleNullReferenceException
-                                            switch (c.Tag.ToLowerInvariant())
-                                            // ReSharper restore PossibleNullReferenceException
-                                            {
-                                                case IndexTag:
-                                                    return value;
-                                                case ItemTag:
-                                                    return key;
-                                                default:
-                                                    return Resolution.Unknown;
-                                            }
-                                        },
-                                        false,
-                                        true);
-
-                                    // Add a new chunk with, the <Item> tag.
-                                    FormatChunk innerChunk = new FormatChunk(
-                                        null,
-                                        ItemTag,
-                                        subFormatChunk.Alignment,
-                                        subFormatChunk.Format,
-                                        key);
-
-                                    if (subFormatChunk.ChildrenInternal != null)
-                                        innerChunk.ChildrenInternal = subFormatChunk.ChildrenInternal.ToList();
-
-                                    stack.Push(innerChunk, inner);
-
-                                    // If we have join chunk, push it for all but the 'first' element.
-                                    if (value > 0 &&
-                                        joinChunk != null)
-                                        stack.Push(joinChunk, inner);
-                                }
-                            }
-                            continue;
-                        }
-                    }
-
-                    // If we have a value, and a format, then we may need to recurse.
-                    if (hasFillPoint)
-                    {
-                        IResolvable r = resolvedValue as IResolvable;
-                        if (r != null)
-                            resolutions = new Resolutions(
-                                resolutions,
-                                r.Resolve,
-                                r.IsCaseSensitive,
-                                r.ResolveOuterTags);
-
-                        while (subFormatChunks.Count > 0)
-                            stack.Push(subFormatChunks.Pop(), resolutions);
-                        continue;
-                    }
-                }
-
-                if (chunk.IsResolved &&
-                    chunk.Value == resolvedValue)
-                {
-                    results.Add(chunk);
-                    continue;
-                }
-
-                results.Add(new FormatChunk(chunk, resolvedValue));
-            } while (true);
         }
 #endif
         #endregion
@@ -4277,7 +4144,7 @@ namespace WebApplications.Utilities.Formatting
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             return obj is FormatBuilder &&
-                   Equals((FormatBuilder)obj);
+                   Equals((FormatBuilder) obj);
         }
 
         /// <summary>

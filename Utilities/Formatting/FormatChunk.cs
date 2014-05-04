@@ -487,12 +487,6 @@ namespace WebApplications.Utilities.Formatting
                     writeTag = Tag != null;
                     break;
 
-                // Always output's the control tags, otherwise output the value as normal
-                case "c":
-                    writeTag = Tag != null &&
-                               (IsControl || !IsResolved);
-                    break;
-
                 // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
                     if (IsControl) return;

@@ -208,5 +208,39 @@ namespace WebApplications.Utilities.Test.Formatting
                 "Test\r\n",
                 new FormatBuilder(int.MaxValue, alignment: Alignment.Centre).AppendLine("Test").ToString());
         }
+
+        [TestMethod]
+        public void TestWordBoundaries()
+        {
+            /*
+            Assert.AreEqual(
+                "A\r\n(b\r\n",
+                new FormatBuilder(3).AppendLine("A (b").ToString());
+            Assert.AreEqual(
+                "A\r\na'b\r\n",
+                new FormatBuilder(4).AppendLine("A a'b").ToString());
+            Assert.AreEqual(
+                "A\r\nb\r\n",
+                new FormatBuilder(3).AppendLine("A b)").ToString());
+            Assert.AreEqual(
+                "A *\r\n'!\r\n",
+                new FormatBuilder(3).AppendLine("A *'!").ToString());
+             */
+            Assert.AreEqual(
+                "A (bracket\r\n",
+                new FormatBuilder(100).AppendLine("A (bracket").ToString());
+            Assert.AreEqual(
+                "A word's\r\n",
+                new FormatBuilder(100).AppendLine("A word's").ToString());
+            Assert.AreEqual(
+                "A bracket)\r\n",
+                new FormatBuilder(100).AppendLine("A bracket)").ToString());
+            Assert.AreEqual(
+                "A bracket)stuff\r\n",
+                new FormatBuilder(100).AppendLine("A bracket)stuff").ToString());
+            Assert.AreEqual(
+                "A *'!\r\n",
+                new FormatBuilder(100).AppendLine("A *'!").ToString());
+        }
     }
 }
