@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
@@ -46,9 +45,6 @@ namespace WebApplications.Utilities.Formatting
         {
             [NotNull]
             private readonly List<string> _chunks = new List<string>();
-
-            [NotNull]
-            private readonly List<FormatChunk> _controls = new List<FormatChunk>();
 
             /// <summary>
             /// The layout for the line.
@@ -165,20 +161,7 @@ namespace WebApplications.Utilities.Formatting
                 _chunks.Add(chunk);
                 _length += chunk.Length;
             }
-
-            /// <summary>
-            /// Adds the specified chunk to this line.
-            /// </summary>
-            /// <param name="chunk">The chunk.</param>
-            [PublicAPI]
-            public void AddControl([NotNull] FormatChunk chunk)
-            {
-                Contract.Requires(chunk != null);
-                Contract.Requires(chunk.IsControl);
-                _chunks.Add(null);
-                _controls.Add(chunk);
-            }
-
+            
             /// <summary>
             /// Gets the last white space location.
             /// </summary>
@@ -206,18 +189,7 @@ namespace WebApplications.Utilities.Formatting
                     return -1;
                 }
             }
-
-            /// <summary>
-            /// Gets the controls.
-            /// </summary>
-            /// <value>The controls.</value>
-            [NotNull]
-            [PublicAPI]
-            public IEnumerable<FormatChunk> Controls
-            {
-                get { return _controls; }
-            }
-
+            
             /// <summary>
             /// Gets the chunk count.
             /// </summary>
