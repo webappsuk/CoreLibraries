@@ -110,33 +110,32 @@ namespace WebApplications.Utilities.Formatting
             /// Finishes a line.
             /// </summary>
             [PublicAPI]
-            public void Finish(bool terminated)
+            public void Finish(bool endOfParagraph)
             {
-                _terminated = terminated;
-                if (_alignment == Alignment.None) return;
-                // If the line finished mid-line, we can't align fully,
-                // we downgrade to Left alignment, unless we have no alignment already.
-                if (!terminated &&
-                    _chunks.LastOrDefault() != "\r")
-                    _alignment = Alignment.Left;
-                else if (_alignment != Alignment.Centre)
+                _terminated = true;
+                switch (_alignment)
                 {
-                    // If this is the last line in a paragraph we don't justify.
-                    if (terminated &&
-                        _alignment == Alignment.Justify)
+                    case Alignment.Left:
+                    case Alignment.Right:
+                        break;
+                    case Alignment.Justify:
+                        if (!endOfParagraph)
                         _alignment = Alignment.Left;
+                        break;
+                    default:
+                        return;
+                }
 
-                    // We strip trailing white space.
-                    for (int c = _chunks.Count - 1; c > -1; c--)
-                    {
-                        string chunk = _chunks[c];
-                        if (chunk == null)
-                            continue;
-                        if (!Char.IsWhiteSpace(chunk[0]))
-                            break;
-                        _chunks.RemoveAt(c);
-                        _length -= chunk.Length;
-                    }
+                // We strip trailing white space.
+                for (int c = _chunks.Count - 1; c > -1; c--)
+                {
+                    string chunk = _chunks[c];
+                    if (chunk == null)
+                        continue;
+                    if (!Char.IsWhiteSpace(chunk[0]))
+                        break;
+                    _chunks.RemoveAt(c);
+                    _length -= chunk.Length;
                 }
             }
 
@@ -174,7 +173,7 @@ namespace WebApplications.Utilities.Formatting
                     bool seenWord = false;
                     int pos = Position;
                     int c = _chunks.Count;
-                    do
+                    while (c > 0)
                     {
                         string chunk = _chunks[--c];
                         if (chunk == null) continue;
@@ -185,7 +184,7 @@ namespace WebApplications.Utilities.Formatting
                             continue;
                         }
                         if (seenWord) return pos;
-                    } while (c > 0);
+                    }
                     return -1;
                 }
             }

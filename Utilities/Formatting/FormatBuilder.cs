@@ -2628,10 +2628,11 @@ namespace WebApplications.Utilities.Formatting
             Stack<Layout> layoutStack = new Stack<Layout>();
             layoutStack.Push(initialLayout);
 
-            // The current word and line (if laying out).
+            // The following are only used if we're laying out.
             Line line = null;
             StringBuilder wordBuilder = null;
             CharType lastCharType = CharType.None;
+            bool dontIndentFirstLine = position > 0;
 
             // The stack holds any chunks that we need to process, so start by pushing the root chunks children onto it
             // in reverse, so that they are taken off in order.
@@ -3200,8 +3201,8 @@ namespace WebApplications.Utilities.Formatting
                                         word = word.Substring(splitPoint);
                                     }
                                 }
-                                // No space left on the line, but not terminated.
-                                line.Finish(true);
+                                // No space left on the line, but not end of paragraph.
+                                line.Finish(false);
                             }
                             else
                             {
@@ -3212,14 +3213,123 @@ namespace WebApplications.Utilities.Formatting
                         }
 
                         #region Alignment
-                        // TODO Write out line and create new one!
-                        foreach (var chunk in line)
-                        {
-                            writer.Write(chunk);
-                        }
-                        if (line.Terminated)
-                            writer.WriteLine();
+                        /*
+                         * Alignment
+                         */
+                        char indentChar = line.Layout.IndentChar.Value;
+                        int indent;
 
+                        // If we finished mid line then we can only left align/none
+                        if (!line.IsEmpty)
+                        {
+                            Alignment alignment = line.Terminated || line.Alignment == Alignment.None
+                                ? line.Alignment
+                                : Alignment.Left;
+
+                            Queue<int> spacers = null;
+                            // Calculate indentation
+                            switch (alignment)
+                            {
+                                case Alignment.Centre:
+                                    indent = (line.Start + line.End - line.Length) / 2;
+                                    break;
+                                case Alignment.Right:
+                                    indent = line.End - line.Length;
+                                    break;
+                                case Alignment.Justify:
+                                    indent = line.Start;
+                                    int remaining = line.Remaining;
+                                    if (remaining > 0 &&
+                                        line.LastWhiteSpace > 0)
+                                    {
+                                        // We need to calculate spacers.
+                                        decimal space = (decimal) (line.LastWhiteSpace - line.Start) / remaining;
+                                        int o = (int) Math.Round(space / 2);
+                                        spacers =
+                                            new Queue<int>(
+                                                Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
+                                    }
+                                    break;
+                                default:
+                                    indent = line.Start;
+                                    break;
+                            }
+
+                            if (dontIndentFirstLine)
+                                dontIndentFirstLine = false;
+                            else if (indent > 0)
+                            {
+                                writer.Write(new string(indentChar, indent));
+                                position += indent;
+                            }
+
+                            int p = 0;
+                            foreach (string chunk in line)
+                            {
+                                p += chunk.Length;
+                                if (!string.IsNullOrWhiteSpace(chunk))
+                                {
+                                    writer.Write(chunk);
+                                    continue;
+                                }
+
+                                // We have a white-space chunk, check if we have to add justification spaces
+                                if (spacers != null)
+                                {
+                                    while ((spacers.Count > 0) &&
+                                           (spacers.Peek() <= p))
+                                    {
+                                        writer.Write(chunk);
+                                        spacers.Dequeue();
+                                        p++;
+                                        position++;
+                                    }
+
+                                    // Check if justification is finished
+                                    if (spacers.Count < 1)
+                                        spacers = null;
+                                }
+
+                                writer.Write(chunk);
+                            }
+
+                            // Add any remaining spacers
+                            if ((spacers != null) &&
+                                (spacers.Count > 0))
+                            {
+                                writer.Write(new string(indentChar, spacers.Count));
+                                position += indent;
+                                p += spacers.Count;
+                            }
+
+                            // Calculate our finish position
+                            position = p + indent;
+                        }
+
+                        if (line.Terminated)
+                        {
+                            // Wrap the line according to our mode.
+                            switch (line.Layout.WrapMode.Value)
+                            {
+                                case LayoutWrapMode.NewLineOnShort:
+                                    if (position < line.Layout.Width.Value)
+                                        writer.WriteLine();
+                                    break;
+                                case LayoutWrapMode.PadToWrap:
+                                    writer.Write(
+                                        new string(
+                                            indentChar,
+                                            (writerWidth < int.MaxValue ? writerWidth : line.Layout.Width.Value) -
+                                            position));
+                                    break;
+                                default:
+                                    if (!autoWraps ||
+                                        (position < writerWidth))
+                                        writer.WriteLine();
+                                    break;
+                            }
+                        }
+                        
                         position = 0;
                         line = null;
                         #endregion
