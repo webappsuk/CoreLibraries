@@ -110,7 +110,7 @@ namespace WebApplications.Utilities.Formatting
             /// Finishes a line.
             /// </summary>
             [PublicAPI]
-            public void Finish(bool terminated, bool isEndOfParagraph)
+            public void Finish(bool terminated)
             {
                 _terminated = terminated;
                 if (_alignment == Alignment.None) return;
@@ -122,7 +122,7 @@ namespace WebApplications.Utilities.Formatting
                 else if (_alignment != Alignment.Centre)
                 {
                     // If this is the last line in a paragraph we don't justify.
-                    if (isEndOfParagraph &&
+                    if (terminated &&
                         _alignment == Alignment.Justify)
                         _alignment = Alignment.Left;
 

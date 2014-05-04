@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
-    [TypeConverter(typeof (FormatBuilderConverter))]
+    [TypeConverter(typeof(FormatBuilderConverter))]
     public sealed partial class FormatBuilder : IFormattable, IWriteable, IEquatable<FormatBuilder>,
         IEnumerable<FormatChunk>
     {
@@ -2428,7 +2428,7 @@ namespace WebApplications.Utilities.Formatting
         /// The new line characters.
         /// </summary>
         [NotNull]
-        private static readonly char[] _newLineChars = {'\r', '\n'};
+        private static readonly char[] _newLineChars = { '\r', '\n' };
 
         /// <summary>
         /// Gets the chunk as a string.
@@ -2466,7 +2466,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             vStr = formattable.ToString(format, formatProvider);
                         }
-                            // ReSharper disable once EmptyGeneralCatchClause
+                        // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                             vStr = value.ToString();
@@ -2553,7 +2553,9 @@ namespace WebApplications.Utilities.Formatting
             Contract.Requires(initialLayout != null);
 
             #region Setup
-
+            /*
+             * Setup writers
+             */
             // ReSharper disable SuspiciousTypeConversion.Global
             IControllableTextWriter controller = serialWriter as IControllableTextWriter ??
                                                  writer as IControllableTextWriter;
@@ -2562,6 +2564,27 @@ namespace WebApplications.Utilities.Formatting
             IColoredTextWriter coloredTextWriter = serialWriter as IColoredTextWriter ?? writer as IColoredTextWriter;
             if (serialWriter != null) writer = serialWriter;
 
+            int writerWidth;
+            bool autoWraps;
+            if (layoutWriter != null)
+            {
+                position = layoutWriter.Position;
+                writerWidth = layoutWriter.Width;
+                autoWraps = layoutWriter.AutoWraps;
+
+                // Ensure layout doesn't exceed writer width.
+                if (initialLayout.Width.Value >= writerWidth)
+                    initialLayout = initialLayout.Apply(writerWidth);
+            }
+            else
+            {
+                writerWidth = int.MaxValue;
+                autoWraps = false;
+            }
+
+            /*
+             * Setup format
+             */
             if (format == null)
                 format = "g";
 
@@ -2575,21 +2598,21 @@ namespace WebApplications.Utilities.Formatting
             // Check which format we have 'f' will just write out tags, and ignore Layout.
             switch (format.ToLowerInvariant())
             {
-                    // Always output's the tag if the chunk has one, otherwise output's the value as normal
+                // Always output's the tag if the chunk has one, otherwise output's the value as normal
                 case "f":
                     writeTags = true;
                     skipUnresolvedTags = false;
                     isLayoutRequired = false;
                     break;
 
-                    // Should output the value as normal, but treats unresolved tags as an empty string value
+                // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
                     writeTags = false;
                     skipUnresolvedTags = true;
                     isLayoutRequired = initialLayout != Layout.Default;
                     break;
 
-                    // Outputs the value if set, otherwise the format tag. Control tags ignored
+                // Outputs the value if set, otherwise the format tag. Control tags ignored
                 default:
                     writeTags = false;
                     skipUnresolvedTags = false;
@@ -2648,7 +2671,7 @@ namespace WebApplications.Utilities.Formatting
                             if (resolutions != null)
                             {
                                 // ReSharper disable PossibleNullReferenceException
-                                Resolution resolved = (Resolution) resolutions.Resolve(writer, chunk);
+                                Resolution resolved = (Resolution)resolutions.Resolve(writer, chunk);
                                 // ReSharper restore PossibleNullReferenceException
                                 isResolved = resolved.IsResolved;
                                 resolvedValue = resolved.Value;
@@ -2787,7 +2810,7 @@ namespace WebApplications.Utilities.Formatting
                                                                 {
                                                                     // ReSharper disable PossibleNullReferenceException
                                                                     switch (c.Tag.ToLowerInvariant())
-                                                                        // ReSharper restore PossibleNullReferenceException
+                                                                    // ReSharper restore PossibleNullReferenceException
                                                                     {
                                                                         case IndexTag:
                                                                             return value;
@@ -2854,16 +2877,23 @@ namespace WebApplications.Utilities.Formatting
                             {
                                 isLayoutRequired = true;
                                 Layout newLayout;
-                                bool hasFormat = string.IsNullOrEmpty(chunk.Format);
+                                bool hasFormat = !string.IsNullOrEmpty(chunk.Format);
                                 if ((isResolved &&
                                      ((newLayout = chunk.Value as Layout) != null)) ||
-                                    (!hasFormat &&
+                                    (hasFormat &&
                                      Layout.TryParse(chunk.Format, out newLayout)))
                                 {
                                     if (!newLayout.IsEmpty)
-                                        layoutStack.Push(layoutStack.Peek().Apply(newLayout));
+                                    {
+                                        newLayout = layoutStack.Peek().Apply(newLayout);
+                                        // Ensure layout doesn't exceed writer width.
+                                        if (newLayout.Width.Value >= writerWidth)
+                                            newLayout = newLayout.Apply(writerWidth);
+                                        layoutStack.Push(newLayout);
+                                    }
                                 }
-                                else if (hasFormat)
+                                else if ((!hasFormat) &&
+                                         (layoutStack.Count > 1))
                                     layoutStack.Pop();
                             }
 
@@ -2892,7 +2922,7 @@ namespace WebApplications.Utilities.Formatting
                                             coloredTextWriter.ResetForegroundColor();
                                         else if (chunk.IsResolved &&
                                                  chunk.Value is Color)
-                                            coloredTextWriter.SetForegroundColor((Color) chunk.Value);
+                                            coloredTextWriter.SetForegroundColor((Color)chunk.Value);
                                         else
                                         {
                                             // ReSharper disable once AssignNullToNotNullAttribute
@@ -2906,7 +2936,7 @@ namespace WebApplications.Utilities.Formatting
                                             coloredTextWriter.ResetBackgroundColor();
                                         else if (chunk.IsResolved &&
                                                  chunk.Value is Color)
-                                            coloredTextWriter.SetBackgroundColor((Color) chunk.Value);
+                                            coloredTextWriter.SetBackgroundColor((Color)chunk.Value);
                                         else
                                         {
                                             // ReSharper disable once AssignNullToNotNullAttribute
@@ -2968,7 +2998,6 @@ namespace WebApplications.Utilities.Formatting
                 while (cPos < chunkStr.Length ||
                        (wordBuilder.Length > 0))
                 {
-                    bool newLine;
                     string word;
 
                     #region Process characters into 'words'.
@@ -2985,16 +3014,18 @@ namespace WebApplications.Utilities.Formatting
                             if ((cPos < chunkStr.Length) &&
                                 (chunkStr[cPos] == '\n'))
                                 cPos++;
-                            newLine = true;
                             word = wordBuilder.ToString();
                             wordBuilder.Clear();
+                            // we normalize all newline styles to '\r'.
+                            wordBuilder.Append('\r');
                             lastCharType = CharType.WhiteSpace;
                         }
                         else if (ch == '\n')
                         {
-                            newLine = true;
                             word = wordBuilder.ToString();
                             wordBuilder.Clear();
+                            // we normalize all newline styles to '\r'.
+                            wordBuilder.Append('\r');
                             lastCharType = CharType.WhiteSpace;
                         }
                         else if (char.IsLetterOrDigit(ch))
@@ -3011,7 +3042,6 @@ namespace WebApplications.Utilities.Formatting
                             // apostrophe, i.e. keep "Craig's" and "I'm" as one word, or the symbol started a word,
                             // e.g. "'quoted'".
                             lastCharType = CharType.Alphanumeric;
-                            newLine = false;
                             word = wordBuilder.ToString();
                             wordBuilder.Clear();
                             wordBuilder.Append(ch);
@@ -3025,7 +3055,6 @@ namespace WebApplications.Utilities.Formatting
                                 continue;
                             }
                             lastCharType = ch == '\'' ? CharType.Apostrophe : CharType.Symbol;
-                            newLine = false;
                             word = wordBuilder.ToString();
                             wordBuilder.Clear();
                             wordBuilder.Append(ch);
@@ -3033,7 +3062,6 @@ namespace WebApplications.Utilities.Formatting
                         else
                         {
                             lastCharType = CharType.WhiteSpace;
-                            newLine = false;
                             word = wordBuilder.ToString();
                             wordBuilder.Clear();
                             wordBuilder.Append(ch);
@@ -3042,50 +3070,146 @@ namespace WebApplications.Utilities.Formatting
                     else
                     {
                         word = wordBuilder.ToString();
-                        newLine = false;
                         wordBuilder.Clear();
                     }
+
+                    if (string.IsNullOrEmpty(word)) continue;
                     #endregion
 
-                    // TODO Layout word!
-                    position += word.Length;
-                    writer.Write(word);
-                    Trace.WriteLine(word.Escape());
-                    if (newLine)
+                    #region Get or create line
+                    /*
+                     * Get or create line
+                     */
+                    Layout layout;
+                    // If we haven't got a line, create one.
+                    if (line == null)
                     {
-                        position += 2;
-                        writer.WriteLine();
-                    }
-                }
-
-                /*
-                Layout layout;
-                // If we haven't got a line, create one.
-                if (line == null)
-                {
-                    // Starting a new line, so grab the current layout at the top of the stack.
-                    layout = layoutStack.Peek();
-                    line = position > 0
-                        ? new Line(
-                            layout,
+                        // Starting a new line, so grab the current layout at the top of the stack.
+                        layout = layoutStack.Peek();
+                        line = position > 0
+                            ? new Line(
+                                layout,
                             // We can't start a layout in the middle of a line.
-                            Alignment.None,
-                            position,
-                            layout.Width.Value - layout.RightMarginSize.Value,
-                            false)
-                        : new Line(
+                                Alignment.None,
+                                position,
+                                layout.Width.Value - layout.RightMarginSize.Value,
+                                false)
+                            : new Line(
+                                layout,
+                                layout.Alignment.Value,
+                                layout.FirstLineIndentSize.Value,
+                                layout.Width.Value - layout.RightMarginSize.Value,
+                                true);
+                    }
+                    else if (position < 1 &&
+                             line.Layout != layoutStack.Peek())
+                    {
+                        // We have a new layout at the start of a line, so recreate the line.
+                        Contract.Assert(line.IsEmpty);
+                        layout = layoutStack.Peek();
+
+                        // Re-create line with new layout.
+                        line = new Line(
                             layout,
                             layout.Alignment.Value,
-                            layout.FirstLineIndentSize.Value,
+                            line.IsFirstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
                             layout.Width.Value - layout.RightMarginSize.Value,
-                            true);
-                }
-                else
-                    layout = line.Layout;
-                 */
-            }
-            #endregion
+                            line.IsFirstLine);
+                    }
+                    else
+                        // We use the current line's layout until we get a new line.
+                        layout = line.Layout;
+                    #endregion
 
+                    char c = word[0];
+                    // Check if we're at the start of a line.
+                    byte split = layout.SplitLength.Value;
+                    if (line.IsEmpty)
+                    {
+                        // Skip spaces at the start of a line, if we have an alignment
+                        if ((c == ' ') &&
+                            (line.Alignment != Alignment.None))
+                            continue;
+
+                        // We always split this word if it's too long, as we're going from the start of a line.
+                        split = 1;
+                    }
+
+                    // Check for newline
+                    if (c != '\r')
+                    {
+                        // Check remaining space.
+                        int remaining = line.Remaining;
+                        if (remaining > 0)
+                        {
+                            if (c == '\t')
+                            {
+                                int tabSize;
+                                if (layout.TabStops.IsAssigned &&
+                                    layout.TabStops.Value != null)
+                                {
+                                    // ReSharper disable once PossibleNullReferenceException
+                                    int nextTab = layout.TabStops.Value.FirstOrDefault(t => t > line.Position);
+                                    tabSize = nextTab > line.Position
+                                        ? nextTab - line.Position
+                                        : layout.TabSize.Value;
+                                }
+                                else
+                                    tabSize = layout.TabSize.Value;
+
+                                if (tabSize > remaining)
+                                    tabSize = remaining;
+
+                                // Change word to spacer
+                                word = new string(layout.TabChar.Value, tabSize);
+                            }
+
+                            // Append word if short enough.
+                            if (word.Length <= remaining)
+                            {
+                                line.Add(word);
+                                continue;
+                            }
+
+                            // The word is too long to fit on the current line.
+                            int maxSplit = word.Length - split;
+                            int hyphenate = layout.Hyphenate.Value ? 1 : 0;
+                            if ((split > 0) &&
+                                (remaining >= (hyphenate + layout.SplitLength.Value)) &&
+                                (maxSplit >= split))
+                            {
+                                // Split the current word to fill remaining space
+                                int splitPoint = remaining - hyphenate;
+
+                                // Can only split if enough characters are left on line.
+                                if (splitPoint > maxSplit)
+                                    splitPoint = maxSplit;
+
+                                string part = word.Substring(0, splitPoint);
+                                if (hyphenate > 0) part += layout.HyphenChar;
+                                line.Add(part);
+                                word = word.Substring(splitPoint);
+                            }
+                        }
+                        line.Finish(false);
+                    }
+                    else
+                        line.Finish(true);
+
+                    #region Alignment
+                    // TODO Write out line and create new one!
+                    foreach (var chunk in line)
+                    {
+                        writer.Write(chunk);
+                    }
+                    writer.WriteLine();
+
+                    position = 0;
+                    line = null;
+                    #endregion
+                }
+                #endregion
+            }
             return position;
         }
 
@@ -3289,105 +3413,6 @@ namespace WebApplications.Utilities.Formatting
             return layoutWriter == null
                 ? position
                 : layoutWriter.Position;
-        }
-#endif
-        #endregion
-
-        #region GetLineChunk
-#if OLDCODE
-    /// <summary>
-    /// Gets the line chunks from a set of chunks.
-    /// </summary>
-    /// <param name="chunks">The chunks.</param>
-    /// <param name="format">The format.</param>
-    /// <param name="provider">The format provider.</param>
-    /// <returns>An enumeration of chunks.</returns>
-        [NotNull]
-        [StringFormatMethod("format")]
-        private static Tuple<IEnumerable<string>, IEnumerable<FormatChunk>> GetLineChunks(
-            [NotNull] [InstantHandle] IEnumerable<FormatChunk> chunks,
-            [CanBeNull] string format,
-            [CanBeNull] IFormatProvider provider)
-        {
-            Contract.Requires(chunks != null);
-            List<string> words = new List<string>();
-            List<FormatChunk> controlChunks = new List<FormatChunk>();
-
-            StringBuilder word = new StringBuilder();
-            bool lastCharR = false;
-            char lastCharSymb = '\0';
-            foreach (FormatChunk chunk in chunks)
-            {
-                // ReSharper disable once PossibleNullReferenceException
-                if (chunk.IsControl)
-                {
-                    if (word.Length > 0)
-                    {
-                        words.Add(word.ToString());
-                        word.Clear();
-                    }
-
-                    // Use null to indicate location of a control chunks
-                    words.Add(null);
-                    controlChunks.Add(chunk);
-                    continue;
-                }
-
-                string chunk1 = chunk.ToString(format, provider);
-                if (string.IsNullOrEmpty(chunk1)) continue;
-
-                foreach (char ch in chunk1)
-                {
-                    if (char.IsLetterOrDigit(ch))
-                    {
-                        if (lastCharSymb != '\0')
-                        {
-                            // This letter follows a non alpha numeric, so split the word, unless the character was an
-                            // apostrophe, i.e. keep "Craig's" and "I'm" as one word.
-                            if (lastCharSymb != '\'' &&
-                                word.Length > 0)
-                            {
-                                words.Add(word.ToString());
-                                word.Clear();
-                            }
-                            lastCharSymb = '\0';
-                        }
-                        word.Append(ch);
-                        continue;
-                    }
-                    if (word.Length > 0)
-                    {
-                        if (lastCharSymb == '\0' &&
-                            !char.IsWhiteSpace(ch))
-                        {
-                            lastCharSymb = ch;
-                            word.Append(ch);
-                            continue;
-                        }
-                        words.Add(word.ToString());
-                        word.Clear();
-                    }
-
-                    lastCharSymb = '\0';
-                    if (ch == '\n')
-                    {
-                        // Skip '\n' after '\r'
-                        if (!lastCharR)
-                            words.Add("\r");
-
-                        lastCharR = false;
-                        continue;
-                    }
-
-                    lastCharR = ch == '\r';
-
-                    words.Add(ch.ToString(provider));
-                }
-            }
-            if (word.Length > 0)
-                words.Add(word.ToString());
-
-            return new Tuple<IEnumerable<string>, IEnumerable<FormatChunk>>(words, controlChunks);
         }
 #endif
         #endregion
@@ -4144,7 +4169,7 @@ namespace WebApplications.Utilities.Formatting
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             return obj is FormatBuilder &&
-                   Equals((FormatBuilder) obj);
+                   Equals((FormatBuilder)obj);
         }
 
         /// <summary>
