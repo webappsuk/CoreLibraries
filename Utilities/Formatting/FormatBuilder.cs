@@ -2632,7 +2632,7 @@ namespace WebApplications.Utilities.Formatting
             Line line = null;
             StringBuilder wordBuilder = null;
             CharType lastCharType = CharType.None;
-            bool dontIndentFirstLine = position > 0;
+            int startPosition = position;
 
             // The stack holds any chunks that we need to process, so start by pushing the root chunks children onto it
             // in reverse, so that they are taken off in order.
@@ -2976,8 +2976,14 @@ namespace WebApplications.Utilities.Formatting
 
                     if (!isLayoutRequired)
                     {
-                        // We're done as no layout is required.
-                        position += chunkStr.Length;
+                        if (chunkStr.Length < 1)
+                            continue;
+
+                        // We need to find the distance since the last newline so we can report an accurate position.
+                        int index = chunkStr.LastIndexOfAny(_newLineChars);
+                        position = index < 0
+                            ? chunkStr.Length + position
+                            : chunkStr.Length - index - 1;
                         writer.Write(chunkStr);
                         continue;
                     }
@@ -3009,6 +3015,7 @@ namespace WebApplications.Utilities.Formatting
                          * Process characters into 'words'.
                          */
                         char ch = chunkStr[cPos++];
+                        position++;
 
                         if (ch == '\r')
                         {
@@ -3021,6 +3028,7 @@ namespace WebApplications.Utilities.Formatting
                             // we normalize all newline styles to '\r'.
                             wordBuilder.Append('\r');
                             lastCharType = CharType.WhiteSpace;
+                            position = 0;
                         }
                         else if (ch == '\n')
                         {
@@ -3029,6 +3037,7 @@ namespace WebApplications.Utilities.Formatting
                             // we normalize all newline styles to '\r'.
                             wordBuilder.Append('\r');
                             lastCharType = CharType.WhiteSpace;
+                            position = 0;
                         }
                         else if (char.IsLetterOrDigit(ch))
                         {
@@ -3092,12 +3101,12 @@ namespace WebApplications.Utilities.Formatting
                             {
                                 // Starting a new line, so grab the current layout at the top of the stack.
                                 layout = layoutStack.Peek();
-                                line = position > 0
+                                line = startPosition > 0
                                     ? new Line(
                                         layout,
-                                    // We can't start a layout in the middle of a line.
+                                        // We can't start a layout in the middle of a line.
                                         Alignment.None,
-                                        position,
+                                        startPosition,
                                         layout.Width.Value - layout.RightMarginSize.Value,
                                         false)
                                     : new Line(
@@ -3107,8 +3116,7 @@ namespace WebApplications.Utilities.Formatting
                                         layout.Width.Value - layout.RightMarginSize.Value,
                                         true);
                             }
-                            else if (position < 1 &&
-                                     line.Layout != layoutStack.Peek())
+                            else if (startPosition < 1 && line.Layout != layoutStack.Peek())
                             {
                                 // We have a new layout at the start of a line, so recreate the line.
                                 Contract.Assert(line.IsEmpty);
@@ -3255,13 +3263,9 @@ namespace WebApplications.Utilities.Formatting
                                     break;
                             }
 
-                            if (dontIndentFirstLine)
-                                dontIndentFirstLine = false;
-                            else if (indent > 0)
-                            {
+                            if (startPosition < 1 &&
+                                indent > 0)
                                 writer.Write(new string(indentChar, indent));
-                                position += indent;
-                            }
 
                             int p = 0;
                             foreach (string chunk in line)
@@ -3326,10 +3330,13 @@ namespace WebApplications.Utilities.Formatting
 
                             position = 0;
                         }
-
+                        startPosition = 0;
                         line = null;
                         #endregion
                     } while (!string.IsNullOrEmpty(word));
+
+                    if (line != null)
+                        position = line.Position;
                 }
                 #endregion
             }
