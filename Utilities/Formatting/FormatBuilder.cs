@@ -2996,7 +2996,8 @@ namespace WebApplications.Utilities.Formatting
                 // Take one character at a time.
                 int cPos = 0;
                 while (cPos < chunkStr.Length ||
-                       (wordBuilder.Length > 0))
+                       (wordBuilder.Length > 0) ||
+                       (stack.Count < 1 && line != null && !line.IsEmpty))
                 {
                     string word;
 
@@ -3066,147 +3067,163 @@ namespace WebApplications.Utilities.Formatting
                             wordBuilder.Clear();
                             wordBuilder.Append(ch);
                         }
+                        if (string.IsNullOrEmpty(word))
+                            continue;
                     }
                     else
                     {
                         word = wordBuilder.ToString();
                         wordBuilder.Clear();
                     }
-
-                    if (string.IsNullOrEmpty(word)) continue;
                     #endregion
 
-                    #region Get or create line
-                    /*
-                     * Get or create line
-                     */
-                    Layout layout;
-                    // If we haven't got a line, create one.
-                    if (line == null)
+                    do
                     {
-                        // Starting a new line, so grab the current layout at the top of the stack.
-                        layout = layoutStack.Peek();
-                        line = position > 0
-                            ? new Line(
-                                layout,
-                            // We can't start a layout in the middle of a line.
-                                Alignment.None,
-                                position,
-                                layout.Width.Value - layout.RightMarginSize.Value,
-                                false)
-                            : new Line(
-                                layout,
-                                layout.Alignment.Value,
-                                layout.FirstLineIndentSize.Value,
-                                layout.Width.Value - layout.RightMarginSize.Value,
-                                true);
-                    }
-                    else if (position < 1 &&
-                             line.Layout != layoutStack.Peek())
-                    {
-                        // We have a new layout at the start of a line, so recreate the line.
-                        Contract.Assert(line.IsEmpty);
-                        layout = layoutStack.Peek();
-
-                        // Re-create line with new layout.
-                        line = new Line(
-                            layout,
-                            layout.Alignment.Value,
-                            line.IsFirstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
-                            layout.Width.Value - layout.RightMarginSize.Value,
-                            line.IsFirstLine);
-                    }
-                    else
-                        // We use the current line's layout until we get a new line.
-                        layout = line.Layout;
-                    #endregion
-
-                    char c = word[0];
-                    // Check if we're at the start of a line.
-                    byte split = layout.SplitLength.Value;
-                    if (line.IsEmpty)
-                    {
-                        // Skip spaces at the start of a line, if we have an alignment
-                        if ((c == ' ') &&
-                            (line.Alignment != Alignment.None))
-                            continue;
-
-                        // We always split this word if it's too long, as we're going from the start of a line.
-                        split = 1;
-                    }
-
-                    // Check for newline
-                    if (c != '\r')
-                    {
-                        // Check remaining space.
-                        int remaining = line.Remaining;
-                        if (remaining > 0)
+                        if (!string.IsNullOrEmpty(word))
                         {
-                            if (c == '\t')
+                            #region Get or create line
+                            /*
+                             * Get or create line
+                             */
+                            Layout layout;
+                            // If we haven't got a line, create one.
+                            if (line == null)
                             {
-                                int tabSize;
-                                if (layout.TabStops.IsAssigned &&
-                                    layout.TabStops.Value != null)
+                                // Starting a new line, so grab the current layout at the top of the stack.
+                                layout = layoutStack.Peek();
+                                line = position > 0
+                                    ? new Line(
+                                        layout,
+                                        // We can't start a layout in the middle of a line.
+                                        Alignment.None,
+                                        position,
+                                        layout.Width.Value - layout.RightMarginSize.Value,
+                                        false)
+                                    : new Line(
+                                        layout,
+                                        layout.Alignment.Value,
+                                        layout.FirstLineIndentSize.Value,
+                                        layout.Width.Value - layout.RightMarginSize.Value,
+                                        true);
+                            }
+                            else if (position < 1 &&
+                                     line.Layout != layoutStack.Peek())
+                            {
+                                // We have a new layout at the start of a line, so recreate the line.
+                                Contract.Assert(line.IsEmpty);
+                                layout = layoutStack.Peek();
+
+                                // Re-create line with new layout.
+                                line = new Line(
+                                    layout,
+                                    layout.Alignment.Value,
+                                    line.IsFirstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
+                                    layout.Width.Value - layout.RightMarginSize.Value,
+                                    line.IsFirstLine);
+                            }
+                            else
+                                // We use the current line's layout until we get a new line.
+                                layout = line.Layout;
+                            #endregion
+
+                            char c = word[0];
+                            // Check if we're at the start of a line.
+                            byte split = layout.SplitLength.Value;
+                            if (line.IsEmpty)
+                            {
+                                // Skip spaces at the start of a line, if we have an alignment
+                                if ((c == ' ') &&
+                                    (line.Alignment != Alignment.None))
                                 {
-                                    // ReSharper disable once PossibleNullReferenceException
-                                    int nextTab = layout.TabStops.Value.FirstOrDefault(t => t > line.Position);
-                                    tabSize = nextTab > line.Position
-                                        ? nextTab - line.Position
-                                        : layout.TabSize.Value;
+                                    word = null;
+                                    continue;
                                 }
-                                else
-                                    tabSize = layout.TabSize.Value;
 
-                                if (tabSize > remaining)
-                                    tabSize = remaining;
-
-                                // Change word to spacer
-                                word = new string(layout.TabChar.Value, tabSize);
+                                // We always split this word if it's too long, as we're going from the start of a line.
+                                split = 1;
                             }
 
-                            // Append word if short enough.
-                            if (word.Length <= remaining)
+                            // Check for newline
+                            if (c != '\r')
                             {
-                                line.Add(word);
-                                continue;
+                                // Check remaining space.
+                                int remaining = line.Remaining;
+                                if (remaining > 0)
+                                {
+                                    if (c == '\t')
+                                    {
+                                        int tabSize;
+                                        if (layout.TabStops.IsAssigned &&
+                                            layout.TabStops.Value != null)
+                                        {
+                                            // ReSharper disable once PossibleNullReferenceException
+                                            int nextTab = layout.TabStops.Value.FirstOrDefault(t => t > line.Position);
+                                            tabSize = nextTab > line.Position
+                                                ? nextTab - line.Position
+                                                : layout.TabSize.Value;
+                                        }
+                                        else
+                                            tabSize = layout.TabSize.Value;
+
+                                        if (tabSize > remaining)
+                                            tabSize = remaining;
+
+                                        // Change word to spacer
+                                        word = new string(layout.TabChar.Value, tabSize);
+                                    }
+
+                                    // Append word if short enough.
+                                    if (word.Length <= remaining)
+                                    {
+                                        line.Add(word);
+                                        word = null;
+                                        continue;
+                                    }
+
+                                    // The word is too long to fit on the current line.
+                                    int maxSplit = word.Length - split;
+                                    int hyphenate = layout.Hyphenate.Value ? 1 : 0;
+                                    if ((split > 0) &&
+                                        (remaining >= (hyphenate + layout.SplitLength.Value)) &&
+                                        (maxSplit >= split))
+                                    {
+                                        // Split the current word to fill remaining space
+                                        int splitPoint = remaining - hyphenate;
+
+                                        // Can only split if enough characters are left on line.
+                                        if (splitPoint > maxSplit)
+                                            splitPoint = maxSplit;
+
+                                        string part = word.Substring(0, splitPoint);
+                                        if (hyphenate > 0) part += layout.HyphenChar;
+                                        line.Add(part);
+                                        word = word.Substring(splitPoint);
+                                    }
+                                }
+                                // No space left on the line, but not terminated.
+                                line.Finish(true);
                             }
-
-                            // The word is too long to fit on the current line.
-                            int maxSplit = word.Length - split;
-                            int hyphenate = layout.Hyphenate.Value ? 1 : 0;
-                            if ((split > 0) &&
-                                (remaining >= (hyphenate + layout.SplitLength.Value)) &&
-                                (maxSplit >= split))
+                            else
                             {
-                                // Split the current word to fill remaining space
-                                int splitPoint = remaining - hyphenate;
-
-                                // Can only split if enough characters are left on line.
-                                if (splitPoint > maxSplit)
-                                    splitPoint = maxSplit;
-
-                                string part = word.Substring(0, splitPoint);
-                                if (hyphenate > 0) part += layout.HyphenChar;
-                                line.Add(part);
-                                word = word.Substring(splitPoint);
+                                // Finished an input line.
+                                line.Finish(true);
+                                word = null;
                             }
                         }
-                        line.Finish(false);
-                    }
-                    else
-                        line.Finish(true);
 
-                    #region Alignment
-                    // TODO Write out line and create new one!
-                    foreach (var chunk in line)
-                    {
-                        writer.Write(chunk);
-                    }
-                    writer.WriteLine();
+                        #region Alignment
+                        // TODO Write out line and create new one!
+                        foreach (var chunk in line)
+                        {
+                            writer.Write(chunk);
+                        }
+                        if (line.Terminated)
+                            writer.WriteLine();
 
-                    position = 0;
-                    line = null;
-                    #endregion
+                        position = 0;
+                        line = null;
+                        #endregion
+                    } while (!string.IsNullOrEmpty(word));
                 }
                 #endregion
             }

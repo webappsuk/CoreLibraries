@@ -212,23 +212,9 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestWordBoundaries()
         {
-            /*
             Assert.AreEqual(
-                "A\r\n(b\r\n",
-                new FormatBuilder(3).AppendLine("A (b").ToString());
-            Assert.AreEqual(
-                "A\r\na'b\r\n",
-                new FormatBuilder(4).AppendLine("A a'b").ToString());
-            Assert.AreEqual(
-                "A\r\nb\r\n",
-                new FormatBuilder(3).AppendLine("A b)").ToString());
-            Assert.AreEqual(
-                "A *\r\n'!\r\n",
-                new FormatBuilder(3).AppendLine("A *'!").ToString());
-             */
-            Assert.AreEqual(
-                "A (bracket\r\n",
-                new FormatBuilder(100).AppendLine("A (bracket").ToString());
+                "\r\n\r\nA (bracket\r\n1",
+                new FormatBuilder(100).AppendLine().AppendLine("\rA (bracket").Append(1).ToString());
             Assert.AreEqual(
                 "A word's\r\n",
                 new FormatBuilder(100).AppendLine("A word's").ToString());
@@ -241,6 +227,22 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(
                 "A *'!\r\n",
                 new FormatBuilder(100).AppendLine("A *'!").ToString());
+            Assert.AreEqual(
+                "A *'!\r\n*",
+                new FormatBuilder(100).AppendLine("A *'!").Append("*").ToString());
+
+            Assert.AreEqual(
+                "A\r\n(b\r\n",
+                new FormatBuilder(3).AppendLine("A (b").ToString());
+            Assert.AreEqual(
+                "A\r\na'b\r\n",
+                new FormatBuilder(4).AppendLine("A a'b").ToString());
+            Assert.AreEqual(
+                "A\r\nb)\r\n",
+                new FormatBuilder(3).AppendLine("A b)").ToString());
+            Assert.AreEqual(
+                "A *\r\n'!\r\n",
+                new FormatBuilder(3).AppendLine("A *'!").ToString());
         }
     }
 }
