@@ -4050,7 +4050,8 @@ namespace WebApplications.Utilities.Formatting
         /// <exception cref="System.NotImplementedException"></exception>
         public IEnumerator<FormatChunk> GetEnumerator()
         {
-            return RootChunk.AllChildren.GetEnumerator();
+            return (RootChunk.ChildrenInternal ?? Enumerable.Empty<FormatChunk>())
+                .GetEnumerator();
         }
 
         /// <summary>

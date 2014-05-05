@@ -222,7 +222,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestResolveToBuilder()
         {
-            FormatBuilder builderA = new FormatBuilder("{A} {B} {C}");
+            FormatBuilder builderA = new FormatBuilder("{A:{A}} {B} {C}");
             FormatBuilder builderB = new FormatBuilder("{Builder}");
             Assert.AreEqual(
                 "a b c",
