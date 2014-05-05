@@ -147,7 +147,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="alignment">The alignment.</param>
         /// <param name="format">The format.</param>
         /// <param name="value">The value.</param>
-        public FormatChunk(
+        internal FormatChunk(
             [CanBeNull] IResolvable resolver,
             [CanBeNull] string tag,
             int alignment,
@@ -167,11 +167,23 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FormatChunk" /> class.
+        /// Creates a non-fill point chunk.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public FormatChunk(Optional<object> value = default(Optional<object>))
+        {
+            if (!value.IsAssigned) return;
+
+            IsResolved = true;
+            Value = value.Value;
+        }
+
+        /// <summary>
+        /// Creates a clone of the <see cref="FormatChunk"/>, changing the resolved value.
         /// </summary>
         /// <param name="chunk">The chunk.</param>
         /// <param name="value">The value.</param>
-        internal FormatChunk([NotNull] FormatChunk chunk, [CanBeNull] object value)
+        public FormatChunk([NotNull] FormatChunk chunk, Optional<object> value)
         {
             Contract.Requires(chunk != null);
             Resolver = chunk.Resolver;
@@ -179,18 +191,11 @@ namespace WebApplications.Utilities.Formatting
             IsControl = chunk.IsControl;
             Alignment = chunk.Alignment;
             Format = chunk.Format;
-            IsResolved = true;
-            Value = value;
-        }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FormatChunk"/> class.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        internal FormatChunk([CanBeNull] object value)
-        {
-            Value = value;
-            IsResolved = value != null;
+            if (!value.IsAssigned) return;
+
+            IsResolved = true;
+            Value = value.Value;
         }
 
         /// <summary>
@@ -229,6 +234,23 @@ namespace WebApplications.Utilities.Formatting
         internal FormatChunk Clone()
         {
             return new FormatChunk(Resolver, Tag, Alignment, Format, IsResolved, Value, IsControl);
+        }
+
+        /// <summary>
+        /// Parses a string into an enumeartion of <see cref="FormatChunk"/>.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>An enumeration of <see cref="FormatChunk"/>.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static IEnumerable<FormatChunk> Parse([NotNull] string value, [CanBeNull] IResolvable resolver = null)
+        {
+            var fc = new FormatChunk();
+            fc.Append(
+                value,
+                resolver);
+            return fc.Children;
         }
 
         /// <summary>

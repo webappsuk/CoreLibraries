@@ -28,8 +28,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Net.Mime;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Test.Formatting
@@ -128,15 +131,40 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("[0-1.00, 1-2.00, 2-3.00, 3-4.00]", builder.ToString());
         }
 
-        /* TODO This test is no longer valid as resolution does not occur for ToString("F")
+        [TestMethod]
+        public void TestColoredWriter()
+        {
+            Mock<TextWriter> mockWriter = new Mock<TextWriter>();
+            mockWriter.As<IColoredTextWriter>().Setup(w => w.SetForegroundColor(It.IsAny<Color>()));
+            mockWriter.As<IColoredTextWriter>().Setup(w => w.ResetForegroundColor());
+            mockWriter.As<IColoredTextWriter>().Setup(w => w.SetBackgroundColor(It.IsAny<Color>()));
+            mockWriter.As<IColoredTextWriter>().Setup(w => w.ResetBackgroundColor());
+            FormatBuilder builder = new FormatBuilder()
+                .AppendForegroundColor(Color.Red)
+                .AppendResetForegroundColor()
+                .AppendForegroundColor(Color.Green)
+                .AppendBackgroundColor(Color.Blue)
+                .AppendResetBackgroundColor();
+            builder.WriteTo(mockWriter.Object);
+            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Red), Times.Once());
+            mockWriter.As<IColoredTextWriter>().Verify(w => w.ResetForegroundColor(), Times.Once());
+            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Green), Times.Once());
+            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetBackgroundColor(Color.Blue), Times.Once());
+            mockWriter.As<IColoredTextWriter>().Verify(w => w.ResetBackgroundColor(), Times.Once());
+        }
+
         [TestMethod]
         public void TestReplaceColor()
         {
-            FormatBuilder builder = new FormatBuilder().AppendForegroundColor(Color.Red).AppendForegroundColor(Color.Green);
-            Assert.AreEqual(
-                "{" + FormatBuilder.ForegroundColorTag + ":Red}{" + FormatBuilder.ForegroundColorTag + ":Green}",
-                builder.ToString("F"));
-
+            Mock<TextWriter> mockWriter = new Mock<TextWriter>();
+            mockWriter.As<IColoredTextWriter>().Setup(w => w.SetForegroundColor(It.IsAny<Color>()));
+            FormatBuilder builder = new FormatBuilder()
+                .AppendForegroundColor(Color.Red)
+                .AppendForegroundColor(Color.Green);
+            builder.WriteTo(mockWriter.Object);
+            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Red), Times.Once());
+            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Green), Times.Once());
+            
             builder.Resolve(
                 (_, c) =>
                     string.Equals(
@@ -147,13 +175,13 @@ namespace WebApplications.Utilities.Test.Formatting
                         c.Format,
                         "Green",
                         StringComparison.CurrentCultureIgnoreCase)
-                        ? new FormatChunk(null, FormatBuilder.ForegroundColorTag, 0, "Blue", Color.Blue)
-                        : Resolution.UnknownYet);
-            Assert.AreEqual(
-                "{" + FormatBuilder.ForegroundColorTag + ":Red}{" + FormatBuilder.ForegroundColorTag + ":Blue}",
-                builder.ToString("F"));
+                        ? new FormatChunk(c, Color.Blue)
+                        : Resolution.UnknownYet,
+                resolveControls: true);
+            builder.WriteTo(mockWriter.Object);
+            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Red), Times.Exactly(2));
+            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Blue), Times.Once());
         }
-         */
 
         [TestMethod]
         public void TestReplaceControl()
@@ -164,7 +192,7 @@ namespace WebApplications.Utilities.Test.Formatting
                 "text",
                 builder.ToString(
                     (_, c) => c.IsControl && string.Equals(c.Tag, "!control", StringComparison.CurrentCultureIgnoreCase)
-                        ? new FormatChunk(null, null, 0, null, c.Format)
+                        ? new FormatChunk(c.Format)
                         : Resolution.Unknown,
                     resolveControls: true));
         }
