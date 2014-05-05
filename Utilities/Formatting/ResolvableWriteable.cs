@@ -53,7 +53,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="resolveOuterTags">if set to <see langword="true" />  outer tags should be resolved automatically in formats.</param>
         /// <param name="resolveControls">if set to <see langword="true" /> then controls will passed to the resolvable.</param>
         protected ResolvableWriteable(bool isCaseSensitive = false, bool resolveOuterTags = true, bool resolveControls = false)
-            : base(isCaseSensitive, resolveOuterTags)
+            : base(isCaseSensitive, resolveOuterTags, resolveControls)
         {
         }
 
