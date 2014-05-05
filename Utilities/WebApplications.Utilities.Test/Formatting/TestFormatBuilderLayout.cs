@@ -277,5 +277,18 @@ namespace WebApplications.Utilities.Test.Formatting
 
             Trace.WriteLine(builder.ToString());
         }
+
+        [TestMethod]
+        public void TestLayoutMidLine()
+        {
+            FormatBuilder builder = new FormatBuilder(14, alignment: Alignment.Left)
+                .AppendLayout(alignment: Alignment.Centre)
+                .Append("Centered")
+                .AppendPopLayout()
+                .AppendLine()
+                .Append("Left");
+
+            Assert.AreEqual("   Centered\r\nLeft", builder.ToString());
+        }
     }
 }

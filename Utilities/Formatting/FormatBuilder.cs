@@ -3272,11 +3272,22 @@ namespace WebApplications.Utilities.Formatting
                             else if (resolvedValue == null)
                                 continue;
                             else
+                            {
+                                ResolvableWriteable rw = resolvedValue as ResolvableWriteable;
+                                if (rw != null)
+                                {
+                                    // We can use the default format.
+                                    resolutions = new Resolutions(resolutions, rw);
+                                    foreach (FormatChunk fci in rw.DefaultFormat.Reverse())
+                                        stack.Push(fci, resolutions);
+                                    continue;
+                                }
                                 chunkStr = GetChunkString(
                                     resolvedValue,
                                     chunk.Alignment,
                                     chunk.Format,
                                     writer.FormatProvider);
+                            }
                         }
                     else
                         // We have a value chunk.
@@ -3316,7 +3327,8 @@ namespace WebApplications.Utilities.Formatting
                 // Take one character at a time.
                 int cPos = 0;
                 while (cPos < chunkStr.Length ||
-                    (stack.Count < 1 && (wordBuilder.Length > 0 || line != null && !line.IsEmpty)))
+                    wordBuilder.Length > 0 ||
+                    (stack.Count < 1 && line != null && !line.IsEmpty))
                 {
                     string word;
 
@@ -3428,7 +3440,7 @@ namespace WebApplications.Utilities.Formatting
                                         layout.Width.Value - layout.RightMarginSize.Value,
                                         true);
                             }
-                            else if (startPosition < 1 &&
+                            else if (position < 1 &&
                                 line.IsEmpty && 
                                 line.Layout != layoutStack.Peek())
                             {

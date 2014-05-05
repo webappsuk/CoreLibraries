@@ -37,7 +37,7 @@ namespace WebApplications.Utilities.Test.Formatting
             /// <param name="key">The key.</param>
             /// <param name="value">The value.</param>
             public RWTest(string key, string value)
-                :base(false, false, true)
+                : base(false, false, true)
             {
                 Key = key;
                 Value = value;
@@ -74,6 +74,34 @@ namespace WebApplications.Utilities.Test.Formatting
                         fill.AppendLine(new string(c, length));
                         // Note we have to replace control chunk with value chunk to write it out.
                         return new Resolution(new FormatChunk(fill.ToString()), true);
+                    case "nest":
+                        string k;
+                        string v;
+                        if (string.IsNullOrWhiteSpace(chunk.Format))
+                        {
+                            k = "UnspecKey";
+                            v = "UnspecValue";
+                        }
+                        else
+                        {
+                            string[] split = chunk.Format.Split(new[] { ',' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                            if (split.Length < 1)
+                            {
+                                k = "UnspecKey";
+                                v = "UnspecValue";
+                            }
+                            else if (split.Length < 2)
+                            {
+                                k = split[0];
+                                v = "UnspecValue";
+                            }
+                            else
+                            {
+                                k = split[0];
+                                v = split[1];
+                            }
+                        }
+                        return new RWTest(k, v);
                     default:
                         return Resolution.Unknown;
                 }
@@ -149,7 +177,7 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestDynamicFill()
         {
             var rwt = new RWTest("key", "value");
-            FormatBuilder builder = new FormatBuilder(10, firstLineIndentSize:2, indentSize:4, alignment: Alignment.Left)
+            FormatBuilder builder = new FormatBuilder(10, firstLineIndentSize: 2, indentSize: 4, alignment: Alignment.Left)
                 .AppendFormatLine("{!fill}a{!fill}{!fill}");
             // Position is always pre-alignment...
             Assert.AreEqual("  --------\r\n  a\r\n  --------\r\n  --------\r\n\r\n", builder.ToString(rwt));
@@ -163,6 +191,16 @@ namespace WebApplications.Utilities.Test.Formatting
                 .AppendFormatLine("{key:-{position:-{value}}}");
             // Position is always pre-alignment...
             Assert.AreEqual("  --value\r\n", builder.ToString(rwt));
+        }
+
+        [TestMethod]
+        public void TestNestedResolvable()
+        {
+            var rwt = new RWTest("key", "value");
+            FormatBuilder builder = new FormatBuilder(50)
+                .AppendFormatLine("{nest}");
+            // Position is always pre-alignment...
+            Assert.AreEqual("UnspecKeyUnspecValue\r\n", builder.ToString(rwt));
         }
     }
 }
