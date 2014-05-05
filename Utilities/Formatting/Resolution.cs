@@ -25,6 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -32,7 +34,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// A resolution, is used to resolve tags in a <see cref="FormatBuilder"/>.
     /// </summary>
-    public struct Resolution
+    public struct Resolution : IFormattable
     {
         /// <summary>
         /// The tag is unknown (cached).
@@ -112,6 +114,43 @@ namespace WebApplications.Utilities.Formatting
             NoCache = noCache;
             IsResolved = true;
             Value = value;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return ToString(null, null);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="format">The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <see cref="T:System.IFormattable" /> implementation.</param>
+        /// <param name="formatProvider">The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public string ToString([CanBeNull]string format, [CanBeNull]IFormatProvider formatProvider = null)
+        {
+            StringBuilder builder = new StringBuilder();
+            if (!IsResolved)
+                builder.Append("<unresolved>");
+            else if (Value == null)
+                builder.Append("<null>");
+            else
+            {
+                IFormattable f = Value as IFormattable;
+                if (f != null)
+                    builder.Append(f.ToString(format, formatProvider));
+                else
+                    builder.Append(Value);
+            }
+
+            if (NoCache)
+                builder.Append(" [DON'T CACHE]");
+            return builder.ToString();
         }
     }
 }

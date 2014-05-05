@@ -109,37 +109,41 @@ namespace WebApplications.Utilities.Formatting
                 Resolution resolution;
                 // ReSharper disable once PossibleNullReferenceException
                 string tag = chunk.Tag;
-                if (_values == null ||
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    !_values.TryGetValue(tag, out resolution))
+
+                if (ResolveControls || !chunk.IsControl)
                 {
-                    // Get the resolution using the resolver.
-                    object result = _resolver(context, chunk);
-                    resolution = result is Resolution
-                        ? (Resolution) result
-                        : new Resolution(result);
-
-                    if (!resolution.NoCache)
+                    if ((_values == null || !_values.TryGetValue(tag, out resolution)))
                     {
-                        // Cache the resolution.
-                        if (_values == null)
-                            _values =
-                                new Dictionary<string, Resolution>(
-                                    IsCaseSensitive
-                                        ? StringComparer.CurrentCulture
-                                        : StringComparer.CurrentCultureIgnoreCase);
+                        // Get the resolution using the resolver.
+                        object result = _resolver(context, chunk);
+                        resolution = result is Resolution
+                            ? (Resolution) result
+                            : new Resolution(result);
 
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        _values[tag] = resolution;
+                        if (!resolution.NoCache)
+                        {
+                            // Cache the resolution.
+                            if (_values == null)
+                                _values =
+                                    new Dictionary<string, Resolution>(
+                                        IsCaseSensitive
+                                            ? StringComparer.CurrentCulture
+                                            : StringComparer.CurrentCultureIgnoreCase);
+
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            _values[tag] = resolution;
+                        }
                     }
                 }
+                else 
+                    resolution = (Resolution)Resolution.Unknown;
 
                 // If we don't have a resolution, ask the parent.
                 if (!resolution.IsResolved &&
                     ResolveOuterTags &&
                     Parent != null)
                     // ReSharper disable once PossibleNullReferenceException
-                    resolution = (Resolution) Parent.Resolve(context, chunk);
+                    resolution = (Resolution)Parent.Resolve(context, chunk);
                 return resolution;
             }
         }

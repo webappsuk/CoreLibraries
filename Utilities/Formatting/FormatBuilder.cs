@@ -2975,8 +2975,7 @@ namespace WebApplications.Utilities.Formatting
                             bool isResolved;
                             object resolvedValue;
                             // Resolve the tag if it's the first time we've seen it.
-                            if (resolutions != null &&
-                                (resolutions.ResolveControls || !chunk.IsControl))
+                            if (resolutions != null)
                             {
                                 // Update context
                                 context.Layout = layoutStack.Peek();
