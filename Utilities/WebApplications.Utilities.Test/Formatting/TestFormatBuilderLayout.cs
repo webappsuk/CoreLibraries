@@ -246,6 +246,14 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
+        public void TestIndents()
+        {
+            FormatBuilder builder = new FormatBuilder(20, 3, firstLineIndentSize: 1, alignment: Alignment.Left)
+                .Append("Some really long string that should be laid out properly");
+            Assert.AreEqual(" Some really long\r\n   string that\r\n   should be laid\r\n   out properly", builder.ToString());
+        }
+
+        [TestMethod]
         public void TestPushPopLayout()
         {
             FormatBuilder builder = new FormatBuilder(5)

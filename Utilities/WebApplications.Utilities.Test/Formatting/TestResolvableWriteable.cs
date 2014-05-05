@@ -154,5 +154,15 @@ namespace WebApplications.Utilities.Test.Formatting
             // Position is always pre-alignment...
             Assert.AreEqual("  --------\r\n  a\r\n  --------\r\n  --------\r\n\r\n", builder.ToString(rwt));
         }
+
+        [TestMethod]
+        public void TestNestedFormat()
+        {
+            var rwt = new RWTest("key", "value");
+            FormatBuilder builder = new FormatBuilder(10, firstLineIndentSize: 2, indentSize: 4, alignment: Alignment.Left)
+                .AppendFormatLine("{key:-{position:-{value}}}");
+            // Position is always pre-alignment...
+            Assert.AreEqual("  --value\r\n", builder.ToString(rwt));
+        }
     }
 }

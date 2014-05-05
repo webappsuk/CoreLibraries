@@ -2930,6 +2930,7 @@ namespace WebApplications.Utilities.Formatting
             StringBuilder wordBuilder = null;
             CharType lastCharType = CharType.None;
             int startPosition = position;
+            bool firstLine = position < 1;
 
             // Set up resolutions
             initialResolutions = resolver != null
@@ -3424,7 +3425,7 @@ namespace WebApplications.Utilities.Formatting
                                     : new Line(
                                         layout,
                                         layout.Alignment.Value,
-                                        layout.FirstLineIndentSize.Value,
+                                        firstLine ? layout.FirstLineIndentSize.Value : layout.IndentSize.Value,
                                         layout.Width.Value - layout.RightMarginSize.Value,
                                         true);
                             }
@@ -3525,11 +3526,13 @@ namespace WebApplications.Utilities.Formatting
                                 }
                                 // No space left on the line, but not end of paragraph.
                                 line.Finish(false);
+                                firstLine = false;
                             }
                             else
                             {
                                 // Finished an input line.
                                 line.Finish(true);
+                                firstLine = true;
                                 word = null;
                             }
                         }

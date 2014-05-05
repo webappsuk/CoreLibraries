@@ -55,7 +55,6 @@ namespace WebApplications.Utilities.Formatting
             /// <summary>
             /// The alignment.
             /// </summary>
-            [PublicAPI]
             public Alignment Alignment
             {
                 get { return _alignment; }
@@ -64,19 +63,16 @@ namespace WebApplications.Utilities.Formatting
             /// <summary>
             /// The line start.
             /// </summary>
-            [PublicAPI]
             public readonly int Start;
 
             /// <summary>
             /// The line end.
             /// </summary>
-            [PublicAPI]
             public readonly int End;
 
             /// <summary>
             /// Indicates if this line is the first line of a paragraph.
             /// </summary>
-            [PublicAPI]
             public readonly bool IsFirstLine;
 
             /// <summary>
@@ -109,7 +105,6 @@ namespace WebApplications.Utilities.Formatting
             /// <summary>
             /// Finishes a line.
             /// </summary>
-            [PublicAPI]
             public void Finish(bool endOfParagraph)
             {
                 _terminated = true;
@@ -152,7 +147,6 @@ namespace WebApplications.Utilities.Formatting
             /// Adds the specified chunk to this line.
             /// </summary>
             /// <param name="chunk">The chunk.</param>
-            [PublicAPI]
             public void Add([NotNull] string chunk)
             {
                 Contract.Requires(chunk != null);
@@ -165,7 +159,6 @@ namespace WebApplications.Utilities.Formatting
             /// Gets the last white space location.
             /// </summary>
             /// <value>The last white space.</value>
-            [PublicAPI]
             public int LastWhiteSpace
             {
                 get
@@ -188,32 +181,11 @@ namespace WebApplications.Utilities.Formatting
                     return -1;
                 }
             }
-            
-            /// <summary>
-            /// Gets the chunk count.
-            /// </summary>
-            /// <value>The chunk count.</value>
-            [PublicAPI]
-            public int ChunkCount
-            {
-                get { return _chunks.Count; }
-            }
-
-            /// <summary>
-            /// Gets the maximum length of the line.
-            /// </summary>
-            /// <value>The maximum length of the line.</value>
-            [PublicAPI]
-            public int MaximumLength
-            {
-                get { return End - Start; }
-            }
 
             /// <summary>
             /// Gets a value indicating whether this instance is empty.
             /// </summary>
             /// <value><see langword="true" /> if this instance is empty; otherwise, <see langword="false" />.</value>
-            [PublicAPI]
             public bool IsEmpty
             {
                 get { return _length < 1; }
@@ -223,7 +195,6 @@ namespace WebApplications.Utilities.Formatting
             /// Gets the length of the line.
             /// </summary>
             /// <value>The length of the line.</value>
-            [PublicAPI]
             public int Length
             {
                 get { return _length; }
@@ -233,7 +204,6 @@ namespace WebApplications.Utilities.Formatting
             /// Gets the current horizontal position.
             /// </summary>
             /// <value>The remaining space.</value>
-            [PublicAPI]
             public int Position
             {
                 get { return Start + _length; }
@@ -243,7 +213,6 @@ namespace WebApplications.Utilities.Formatting
             /// Gets the remaining space on the line.
             /// </summary>
             /// <value>The remaining space.</value>
-            [PublicAPI]
             public int Remaining
             {
                 get { return End - Start - _length; }
