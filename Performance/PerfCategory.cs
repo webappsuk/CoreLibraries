@@ -547,25 +547,25 @@ namespace WebApplications.Utilities.Performance
         /// <summary>
         /// Resolves the specified tag.
         /// </summary>
-        /// <param name="writer">The writer.</param>
+        /// <param name="context">The context.</param>
         /// <param name="chunk">The chunk.</param>
-        /// <returns>A <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
+        /// <returns>An object that will be cached unless it is a <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
+        public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
             // ReSharper disable once PossibleNullReferenceException
             switch (chunk.Tag.ToLowerInvariant())
             {
                 case "default":
-                    return new Resolution(VerboseFormat);
+                    return VerboseFormat;
                 case "short":
-                    return new Resolution(ShortFormat);
+                    return ShortFormat;
                 case "categoryname":
-                    return new Resolution(CategoryName);
+                    return CategoryName;
                 case "instanceguid":
-                    return new Resolution(InstanceGuid);
+                    return InstanceGuid;
                 case "info":
-                    return new Resolution(_infoDictionary.Values.Count > 0 ? _infoDictionary.Values : null);
+                    return _infoDictionary.Values.Count > 0 ? _infoDictionary.Values : Resolution.Empty;
                 default:
                     return Resolution.Unknown;
             }

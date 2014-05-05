@@ -59,6 +59,7 @@ namespace WebApplications.Utilities.Performance.Test
                 Thread.Sleep(50);
             Trace.WriteLine(t.ToString());
             Trace.WriteLine(t.ToString());
+
             Trace.WriteLine(t.ToString("{short}"));
             Trace.WriteLine(t.ToString(PerfCategory.ShortFormat));
             Trace.WriteLine(t.Rate);
