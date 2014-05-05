@@ -61,6 +61,17 @@ namespace WebApplications.Utilities.Test.Formatting
                         return Key;
                     case "value":
                         return Value;
+                    case "position":
+                        return new Resolution(context.Position, true);
+                    case "fill":
+                        int length = Math.Min(
+                            120,
+                            context.Layout.Width.Value - context.Layout.FirstLineIndentSize.Value);
+                        char c = !string.IsNullOrEmpty(chunk.Format) ? chunk.Format[0] : '-';
+                        StringBuilder fill = new StringBuilder(length + context.Position < 1 ? 2 : 4);
+                        if (context.Position > 0) fill.AppendLine();
+                        fill.AppendLine(new string(c, length));
+                        return new Resolution(fill.ToString(), true);
                     default:
                         return Resolution.Unknown;
                 }
@@ -105,6 +116,41 @@ namespace WebApplications.Utilities.Test.Formatting
             FormatBuilder builder2 = new FormatBuilder(12, alignment: Alignment.Centre).AppendFormatLine("{0:{Verbose}}", rwt);
             Assert.AreEqual("  keyvalue\r\n", builder.ToString());
             Assert.AreEqual("  keyvalue\r\n", builder2.ToString());
+        }
+
+        [TestMethod]
+        public void TestResolableGetsCorrectPosition()
+        {
+            var rwt = new RWTest("key", "value");
+            FormatBuilder builder = new FormatBuilder().AppendFormatLine(" {position} {position}\r\n{position}");
+            Assert.AreEqual(" 1 3\r\n0\r\n", builder.ToString(rwt));
+        }
+
+        [TestMethod]
+        public void TestResolableGetsCorrectPositionWithLayoutNone()
+        {
+            var rwt = new RWTest("key", "value");
+            FormatBuilder builder = new FormatBuilder(20).AppendFormatLine(" {position} {position}\r\n{position}");
+            Assert.AreEqual(" 1 3\r\n0\r\n", builder.ToString(rwt));
+        }
+
+        [TestMethod]
+        public void TestResolableGetsCorrectPositionWithLayoutLeft()
+        {
+            var rwt = new RWTest("key", "value");
+            FormatBuilder builder = new FormatBuilder(20, alignment: Alignment.Left).AppendFormatLine(" {position} {position}\r\n{position}");
+            // Position is always pre-alignment...
+            Assert.AreEqual("1 3\r\n0\r\n", builder.ToString(rwt));
+        }
+
+        [TestMethod]
+        public void TestDynamicFill()
+        {
+            var rwt = new RWTest("key", "value");
+            FormatBuilder builder = new FormatBuilder(10, firstLineIndentSize:2, indentSize:4, alignment: Alignment.Left)
+                .AppendFormatLine("{fill}a{fill}{fill}");
+            // Position is always pre-alignment...
+            Assert.AreEqual("  --------\r\n  a\r\n  --------\r\n  --------\r\n\r\n", builder.ToString(rwt));
         }
     }
 }

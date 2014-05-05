@@ -3539,6 +3539,7 @@ namespace WebApplications.Utilities.Formatting
                         char indentChar = line.Layout.IndentChar.Value;
 
                         // If we finished mid line then we can only left align/none
+                        int p = 0;
                         if (!line.IsEmpty)
                         {
                             Alignment alignment = line.Terminated || line.Alignment == Alignment.None
@@ -3579,7 +3580,6 @@ namespace WebApplications.Utilities.Formatting
                                 indent > 0)
                                 writer.Write(new string(indentChar, indent));
 
-                            int p = 0;
                             foreach (string chunk in line)
                             {
                                 p += chunk.Length;
@@ -3615,10 +3615,10 @@ namespace WebApplications.Utilities.Formatting
                             }
 
                             // Calculate our finish position
-                            position = p + indent;
+                            p += indent;
                         }
                         else
-                            position = startPosition;
+                            p += startPosition;
 
                         if (line.Terminated)
                         {
@@ -3626,32 +3626,29 @@ namespace WebApplications.Utilities.Formatting
                             switch (line.Layout.WrapMode.Value)
                             {
                                 case LayoutWrapMode.NewLineOnShort:
-                                    if (position < line.Layout.Width.Value)
+                                    if (p < line.Layout.Width.Value)
                                         writer.WriteLine();
                                     break;
                                 case LayoutWrapMode.PadToWrap:
                                     writer.Write(
                                         new string(
                                             indentChar,
-                                            (writerWidth < int.MaxValue ? writerWidth : line.Layout.Width.Value) -
-                                            position));
+                                            (writerWidth < int.MaxValue ? writerWidth : line.Layout.Width.Value) - p));
                                     break;
                                 default:
                                     if (!autoWraps ||
-                                        (position < writerWidth))
+                                        (p < writerWidth))
                                         writer.WriteLine();
                                     break;
                             }
-
-                            position = 0;
+                            position = wordBuilder.Length;
                         }
+                        else 
+                            position = p + wordBuilder.Length;
                         line = null;
                         startPosition = 0;
                         #endregion
                     } while (!string.IsNullOrEmpty(word));
-
-                    if (line != null)
-                        position = line.Position;
                 }
                 #endregion
             }

@@ -70,5 +70,14 @@ namespace WebApplications.Utilities.Formatting
             Layout = layout;
             Position = position;
         }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return string.Format("X:{0}; L:{1:F}", Position, Layout);
+        }
     }
 }

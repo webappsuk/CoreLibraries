@@ -127,7 +127,7 @@
     <Compile Include="Formatting\TestFormatBuilderLayout.cs" />
     <Compile Include="Formatting\TestFormatChunks.cs" />
     <Compile Include="Formatting\TestPerformance.cs" />
-    <Compile Include="Formatting\TestResolvable.cs" />
+    <Compile Include="Formatting\TestResolvableWriteable.cs" />
     <Compile Include="Location\LatLngTests.cs" />
     <Compile Include="Ranges\DateRangeTests.cs" />
     <Compile Include="Ranges\DateTimeTests.cs" />

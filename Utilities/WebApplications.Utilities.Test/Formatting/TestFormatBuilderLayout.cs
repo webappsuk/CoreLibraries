@@ -232,13 +232,13 @@ namespace WebApplications.Utilities.Test.Formatting
                 new FormatBuilder(100).AppendLine("A *'!").Append("*").ToString());
 
             Assert.AreEqual(
-                "A\r\n(b\r\n",
+                "A \r\n(b\r\n",
                 new FormatBuilder(3).AppendLine("A (b").ToString());
             Assert.AreEqual(
-                "A\r\na'b\r\n",
+                "A \r\na'b\r\n",
                 new FormatBuilder(4).AppendLine("A a'b").ToString());
             Assert.AreEqual(
-                "A\r\nb)\r\n",
+                "A \r\nb)\r\n",
                 new FormatBuilder(3).AppendLine("A b)").ToString());
             Assert.AreEqual(
                 "A *\r\n'!\r\n",

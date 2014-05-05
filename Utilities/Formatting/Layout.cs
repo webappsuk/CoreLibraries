@@ -51,7 +51,7 @@ namespace WebApplications.Utilities.Formatting
             null,
             4,
             ' ',
-            Formatting.Alignment.Left,
+            Formatting.Alignment.None,
             0,
             false,
             '-',
