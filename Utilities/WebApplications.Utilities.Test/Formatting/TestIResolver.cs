@@ -130,7 +130,7 @@ namespace WebApplications.Utilities.Test.Formatting
                 new[] {1, 2, 3, 4});
             Assert.AreEqual("[0-1.00, 1-2.00, 2-3.00, 3-4.00]", builder.ToString());
         }
-
+        
         [TestMethod]
         public void TestColoredWriter()
         {

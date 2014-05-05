@@ -1597,6 +1597,22 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="resolver">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] IResolvable resolver)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                WriteTo(writer, null, resolver);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
         /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="resolver">The values.</param>
@@ -1625,6 +1641,32 @@ namespace WebApplications.Utilities.Formatting
                     isCaseSensitive,
                     resolveOuterTags,
                     resolveControls);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="resolver">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            [CanBeNull] Layout layout,
+            ref int position,
+            [CanBeNull]IResolvable resolver)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(
+                    writer,
+                    layout,
+                    position,
+                    null,
+                    resolver);
                 return writer.ToString();
             }
         }
@@ -1753,6 +1795,25 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] IResolvable resolver)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                WriteTo(writer, null, resolver);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
         /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="formatProvider">The format provider.</param>
@@ -1783,6 +1844,34 @@ namespace WebApplications.Utilities.Formatting
                     isCaseSensitive,
                     resolveOuterTags,
                     resolveControls);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The values.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString(
+            [CanBeNull] Layout layout,
+            ref int position,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] IResolvable resolver)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                position = WriteTo(
+                    writer,
+                    layout,
+                    position,
+                    null,
+                    resolver);
                 return writer.ToString();
             }
         }
@@ -1989,6 +2078,29 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
+        /// <param name="format">The format.
+        /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public string ToString(
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] [InstantHandle] IResolvable resolver)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                WriteTo(writer, format, resolver);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
         /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="format">The format.
@@ -2023,6 +2135,38 @@ namespace WebApplications.Utilities.Formatting
                     isCaseSensitive,
                     resolveOuterTags,
                     resolveControls);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
+        /// <param name="position">The position.</param>
+        /// <param name="format">The format.
+        /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public string ToString(
+            [CanBeNull] Layout layout,
+            ref int position,
+            [CanBeNull] string format,
+            [CanBeNull] IFormatProvider formatProvider,
+            [CanBeNull] IResolvable resolver)
+        {
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                position = WriteTo(
+                    writer,
+                    layout,
+                    position,
+                    format,
+                    resolver);
                 return writer.ToString();
             }
         }
@@ -2093,6 +2237,21 @@ namespace WebApplications.Utilities.Formatting
             if (IsEmpty) return;
             WriteTo(ConsoleTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags, resolveControls);
         }
+
+        /// <summary>
+        /// Writes the builder to the console.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public void WriteToConsole(
+            [CanBeNull] string format,
+            [CanBeNull] [InstantHandle] IResolvable resolver)
+        {
+            if (IsEmpty) return;
+            WriteTo(ConsoleTextWriter.Default, format, resolver);
+        }
         #endregion
 
         #region WriteToTrace Overloads
@@ -2159,6 +2318,21 @@ namespace WebApplications.Utilities.Formatting
         {
             if (IsEmpty) return;
             WriteTo(TraceTextWriter.Default, format, resolver, isCaseSensitive, resolveOuterTags, resolveControls);
+        }
+
+        /// <summary>
+        /// Writes the builder to the trace.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public void WriteToTrace(
+            [CanBeNull] string format,
+            [CanBeNull] IResolvable resolver)
+        {
+            if (IsEmpty) return;
+            WriteTo(TraceTextWriter.Default, format, resolver);
         }
         #endregion
 
@@ -2380,6 +2554,33 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>The end position.</returns>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public int WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] string format,
+            [CanBeNull] IResolvable resolver)
+        {
+            if (writer == null || IsEmpty) return 0;
+            Contract.Assert(RootChunk.ChildrenInternal != null);
+
+            return WriteTo(
+                RootChunk,
+                writer,
+                _initialResolutions,
+                resolver,
+                InitialLayout,
+                format,
+                0);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
         /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
         /// <param name="position">The start position.</param>
         /// <param name="format">The format.</param>
@@ -2410,6 +2611,37 @@ namespace WebApplications.Utilities.Formatting
                 resolver == null
                     ? null
                     : new FuncResolvable(resolver, isCaseSensitive, resolveOuterTags, resolveControls),
+                layout == null ? InitialLayout : InitialLayout.Apply(layout),
+                format,
+                position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
+        /// <param name="position">The start position.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>The end position.</returns>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public int WriteTo(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] Layout layout,
+            int position,
+            [CanBeNull] string format,
+            [CanBeNull] IResolvable resolver)
+        {
+            if (writer == null || IsEmpty) return position;
+            Contract.Assert(RootChunk.ChildrenInternal != null);
+
+            return WriteTo(
+                RootChunk,
+                writer,
+                _initialResolutions,
+                resolver,
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
                 position);
