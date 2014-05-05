@@ -220,6 +220,26 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
+        public void TestResolveToNull()
+        {
+            FormatBuilder builder = new FormatBuilder("{A}-{B}");
+            Assert.AreEqual("-", builder.ToString(
+                    (_, c) =>
+                    {
+                        string tag = c.Tag.ToLowerInvariant();
+                        switch (tag)
+                        {
+                            case "a":
+                                return Resolution.Null;
+                            case "b":
+                                return null;
+                            default:
+                                return tag;
+                        }
+                    }));
+        }
+
+        [TestMethod]
         public void TestResolveToBuilder()
         {
             FormatBuilder builderA = new FormatBuilder("{A:{A}} {B} {C}");

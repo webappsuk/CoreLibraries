@@ -3269,6 +3269,8 @@ namespace WebApplications.Utilities.Formatting
                                     continue;
                                 chunkStr = chunk.ToString("F");
                             }
+                            else if (resolvedValue == null)
+                                continue;
                             else
                                 chunkStr = GetChunkString(
                                     resolvedValue,
