@@ -128,7 +128,7 @@ namespace WebApplications.Utilities.Formatting
             if (format == null)
                 format = DefaultFormat;
 
-            format.WriteTo(writer, "G", Resolve, IsCaseSensitive, ResolveControls);
+            format.WriteTo(writer, "G", Resolve, IsCaseSensitive, ResolveOuterTags, ResolveControls);
         }
     }
 }

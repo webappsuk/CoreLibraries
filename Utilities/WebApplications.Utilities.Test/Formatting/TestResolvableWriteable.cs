@@ -37,6 +37,7 @@ namespace WebApplications.Utilities.Test.Formatting
             /// <param name="key">The key.</param>
             /// <param name="value">The value.</param>
             public RWTest(string key, string value)
+                :base(false, false, true)
             {
                 Key = key;
                 Value = value;
@@ -63,7 +64,7 @@ namespace WebApplications.Utilities.Test.Formatting
                         return Value;
                     case "position":
                         return new Resolution(context.Position, true);
-                    case "fill":
+                    case "!fill":
                         int length = Math.Min(
                             120,
                             context.Layout.Width.Value - context.Layout.FirstLineIndentSize.Value);
@@ -71,7 +72,8 @@ namespace WebApplications.Utilities.Test.Formatting
                         StringBuilder fill = new StringBuilder(length + context.Position < 1 ? 2 : 4);
                         if (context.Position > 0) fill.AppendLine();
                         fill.AppendLine(new string(c, length));
-                        return new Resolution(fill.ToString(), true);
+                        // Note we have to replace control chunk with value chunk to write it out.
+                        return new Resolution(new FormatChunk(fill.ToString()), true);
                     default:
                         return Resolution.Unknown;
                 }
@@ -148,7 +150,7 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             var rwt = new RWTest("key", "value");
             FormatBuilder builder = new FormatBuilder(10, firstLineIndentSize:2, indentSize:4, alignment: Alignment.Left)
-                .AppendFormatLine("{fill}a{fill}{fill}");
+                .AppendFormatLine("{!fill}a{!fill}{!fill}");
             // Position is always pre-alignment...
             Assert.AreEqual("  --------\r\n  a\r\n  --------\r\n  --------\r\n\r\n", builder.ToString(rwt));
         }
