@@ -295,7 +295,7 @@ namespace WebApplications.Utilities.Test.Formatting
                 fw.Write("1234");
                 Assert.AreEqual(4, fw.Position);
                 fw.Write("123456");
-                Assert.AreEqual(5, fw.Position);
+                Assert.AreEqual(1, fw.Position);
                 fw.Write("123456");
                 Assert.AreEqual(1, fw.Position);
                 fw.Write("12345\r\n1");

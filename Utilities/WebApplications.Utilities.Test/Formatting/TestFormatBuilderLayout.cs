@@ -125,8 +125,7 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             const ushort width = 80;
             using (StringWriter stringWriter = new StringWriter())
-            using (
-                FormatTextWriter formatTextWriter = new FormatTextWriter(
+            using (FormatTextWriter formatTextWriter = new FormatTextWriter(
                     stringWriter,
                     width,
                     alignment: Alignment.Justify))
@@ -289,6 +288,32 @@ namespace WebApplications.Utilities.Test.Formatting
                 .Append("Left");
 
             Assert.AreEqual("   Centered\r\nLeft", builder.ToString());
+        }
+
+        [TestMethod]
+        public void TestLayoutWriter()
+        {
+            const ushort width = 15;
+            using (StringWriter stringWriter = new StringWriter())
+            using (FormatTextWriter formatTextWriter = new FormatTextWriter(
+                    stringWriter,
+                    width,
+                    alignment: Alignment.Justify))
+            {
+                formatTextWriter.Write("A short string that requires justification ");
+                formatTextWriter.Write("but is written in multiple steps ");
+                formatTextWriter.Write("whicher prevents any kind of justification on the resultant join points.");
+
+                string result = stringWriter.ToString();
+                Trace.WriteLine(result);
+
+                string[] lines = result
+                    .Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                // Check number of lines and maximum line length, if we have any race conditions we expect these to change.
+                Assert.AreEqual(12, lines.Length);
+                Assert.AreEqual(width, lines.Select(l => l.Length).Max());
+            }
         }
     }
 }

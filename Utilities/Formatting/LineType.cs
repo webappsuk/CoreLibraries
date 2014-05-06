@@ -25,23 +25,31 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using System.IO;
-using JetBrains.Annotations;
-
 namespace WebApplications.Utilities.Formatting
 {
     /// <summary>
-    /// Indicates a <see cref="TextWriter"/> that supports control codes.
+    /// Enumerates different types of line, used during layout.
     /// </summary>
-    [PublicAPI]
-    public interface IControllableTextWriter : ITextWriter
+    public enum LineType
     {
         /// <summary>
-        /// Called when a control chunk is encountered.
+        /// A line started part way through, or not currently being laid out.
         /// </summary>
-        /// <param name="chunk">The chunk.</param>
-        [PublicAPI]
-        void OnControlChunk([NotNull] FormatChunk chunk);
+        None,
+
+        /// <summary>
+        /// The middle line of a paragraph.
+        /// </summary>
+        First,
+
+        /// <summary>
+        /// The middle line of a paragraph.
+        /// </summary>
+        Middle,
+
+        /// <summary>
+        /// The last line of a paragraph.
+        /// </summary>
+        Last
     }
 }
