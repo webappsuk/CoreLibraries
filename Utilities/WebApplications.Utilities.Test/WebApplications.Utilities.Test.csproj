@@ -141,6 +141,7 @@
     <Compile Include="Reflect\ExtendedTypeTests.cs" />
     <Compile Include="SemanticVersions\SemanticVersionTests.cs" />
     <Compile Include="SingletonTests.cs" />
+    <Compile Include="TestAccessor.cs" />
     <Compile Include="TestCacheQueue.cs" />
     <Compile Include="TestCombGuid.cs" />
     <Compile Include="TestComparer.cs" />
