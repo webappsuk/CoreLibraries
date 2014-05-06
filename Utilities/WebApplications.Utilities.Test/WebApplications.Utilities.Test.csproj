@@ -153,7 +153,6 @@
     <Compile Include="TestHashing.cs" />
     <Compile Include="TestLookup.cs" />
     <Compile Include="TestOptional.cs" />
-    <Compile Include="TestPowerShell.cs" />
     <Compile Include="TestRange.cs" />
     <Compile Include="Reflect\ReflectionTests.cs" />
     <Compile Include="TestTaskExtensions.cs" />
@@ -166,10 +165,6 @@
     <ProjectReference Include="..\WebApplications.Utilities.csproj">
       <Project>{2931C698-6123-49BC-81FD-F72A4C1415EA}</Project>
       <Name>WebApplications.Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebApplications.Utilities.PowerShell\WebApplications.Utilities.PowerShell.csproj">
-      <Project>{FDF4F262-B182-49DB-9A39-6D487EA058FD}</Project>
-      <Name>WebApplications.Utilities.PowerShell</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

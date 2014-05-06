@@ -84,8 +84,13 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NuSpecEditorTest.cs" />
+    <Compile Include="TestPowerShell.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\WebApplications.Utilities.csproj">
+      <Project>{2931c698-6123-49bc-81fd-f72a4c1415ea}</Project>
+      <Name>WebApplications.Utilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebApplications.Utilities.PowerShell.csproj">
       <Project>{FDF4F262-B182-49DB-9A39-6D487EA058FD}</Project>
       <Name>WebApplications.Utilities.PowerShell</Name>

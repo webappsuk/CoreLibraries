@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Test.Formatting
             Trace.WriteLine(
                 new FormatBuilder(new Layout(60, alignment: Alignment.Justify, firstLineIndentSize: 5))
                     .AppendLine(FormatResources.LoremIpsum)
-                    .Append("{!layout:w50}")
+                    .AppendFormat("{!layout:w50}")
                     .AppendLine(FormatResources.SedUtPerspiciatis)
                     .AppendLayout(40)
                     .AppendLine(FormatResources.AtVeroEos).ToString());

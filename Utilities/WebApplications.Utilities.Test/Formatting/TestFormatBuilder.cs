@@ -145,11 +145,20 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
-        [ExpectedException(typeof (InvalidOperationException))]
         public void TestReadOnly()
         {
             FormatBuilder builder = new FormatBuilder("Test", true);
-            builder.AppendLine();
+            bool thrown;
+            try
+            {
+                builder.AppendLine();
+                thrown = false;
+            }
+            catch
+            {
+                thrown = true;
+            }
+            Assert.IsTrue(thrown);
         }
 
         [TestMethod]
@@ -161,12 +170,21 @@ namespace WebApplications.Utilities.Test.Formatting
         }
 
         [TestMethod]
-        [ExpectedException(typeof (InvalidOperationException))]
         public void TestCloneAddsReadonly()
         {
             FormatBuilder builder = new FormatBuilder("Test");
             FormatBuilder builder2 = builder.Clone(true);
-            builder2.AppendLine();
+            bool thrown;
+            try
+            {
+                builder2.AppendLine();
+                thrown = false;
+            }
+            catch (Exception)
+            {
+                thrown = true;
+            }
+            Assert.IsTrue(thrown);
         }
 
         [TestMethod]

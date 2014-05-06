@@ -81,10 +81,9 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="callback">The <see cref="T:System.Threading.SendOrPostCallback" /> delegate to call.</param>
         /// <param name="state">The object passed to the delegate.</param>
-        public override void Send(SendOrPostCallback callback, [NotNull] object state)
+        public override void Send(SendOrPostCallback callback, [CanBeNull] object state)
         {
             Contract.Requires(callback != null);
-            Contract.Requires(state != null);
             lock (_lock)
             {
                 SynchronizationContext outer = Current;
