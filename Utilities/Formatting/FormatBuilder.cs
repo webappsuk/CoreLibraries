@@ -41,7 +41,7 @@ namespace WebApplications.Utilities.Formatting
     /// <summary>
     /// Build a formatted string, which can be used to enumerate FormatChunks
     /// </summary>
-    [TypeConverter(typeof (FormatBuilderConverter))]
+    [TypeConverter(typeof(FormatBuilderConverter))]
     public sealed partial class FormatBuilder : IFormattable, IWriteable, IEquatable<FormatBuilder>,
         IEnumerable<FormatChunk>
     {
@@ -1201,7 +1201,7 @@ namespace WebApplications.Utilities.Formatting
 
         #region AppendFormat overloads
         /// <summary>
-        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
+        /// Appends the specified format string, replacing any integer tags with the matching arguments.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="args">The arguments.</param>
@@ -1220,7 +1220,40 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Appends the specified format string, replacing any integer tags with the matching arguments (overriding pre-specified replacements).
+        /// Appends the specified format string, replacing any tags with the matching properties or fields from the instance.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="format">The format.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns>This instance.</returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
+        [NotNull]
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public FormatBuilder AppendFormatInstance<T>([CanBeNull] string format, [CanBeNull] T instance)
+        {
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+
+            if (string.IsNullOrEmpty(format)) return this;
+
+            IResolvable resolvable;
+            if (!ReferenceEquals(instance, null))
+            {
+                IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
+                resolvable = dictionary.Count > 0
+                    ? new DictionaryResolvable(dictionary)
+                    : null;
+            }
+            else
+                resolvable = null;
+            RootChunk.Append(format, resolvable);
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the specified format string, replacing any integer tags with the matching arguments.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="values">The values.</param>
@@ -1300,6 +1333,41 @@ namespace WebApplications.Utilities.Formatting
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
             if (!string.IsNullOrEmpty(format))
                 RootChunk.Append(format, args == null || args.Length < 1 ? null : new ListResolvable(args, false));
+            RootChunk.AppendChunk(NewLineChunk);
+            return this;
+        }
+
+        /// <summary>
+        /// Appends the specified format string, replacing any tags with the matching properties or fields from the instance.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="format">The format.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns>This instance.</returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
+        [NotNull]
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public FormatBuilder AppendFormatLineInstance<T>([CanBeNull] string format, [CanBeNull] T instance)
+        {
+            Contract.Requires(!IsReadOnly);
+            if (_isReadOnly)
+                throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
+
+            if (!string.IsNullOrEmpty(format))
+            {
+                IResolvable resolvable;
+                if (!ReferenceEquals(instance, null))
+                {
+                    IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>) instance).Snapshot();
+                    resolvable = dictionary.Count > 0
+                        ? new DictionaryResolvable(dictionary)
+                        : null;
+                }
+                else
+                    resolvable = null;
+                RootChunk.Append(format, resolvable);
+            }
             RootChunk.AppendChunk(NewLineChunk);
             return this;
         }
@@ -1404,20 +1472,24 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Resolves any tags.
         /// </summary>
-        /// <param name="values">The values.</param>
+        /// <typeparam name="T">The instance type</typeparam>
+        /// <param name="instance">The instance.</param>
         /// <returns>This instance.</returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
         [NotNull]
         [PublicAPI]
-        public FormatBuilder Resolve([CanBeNull] params object[] values)
+        public FormatBuilder ResolveInstance<T>([CanBeNull] T instance)
         {
             if (_isReadOnly)
                 throw new InvalidOperationException(Resources.FormatBuilder_ReadOnly);
-            if (IsEmpty ||
-                (values == null) ||
-                (values.Length < 1))
+            if ((IsEmpty) ||
+                ReferenceEquals(instance, null))
                 return this;
 
-            _initialResolutions = new Resolutions(_initialResolutions, new ListResolvable(values, false));
+            IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
+            if (dictionary.Count < 1)
+                return this;
+            _initialResolutions = new Resolutions(_initialResolutions, new DictionaryResolvable(dictionary, false, false));
             return this;
         }
 
@@ -1489,17 +1561,34 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <param name="values">The values.</param>
+        /// <param name="instance">The istance.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
         [PublicAPI]
-        public string ToString([CanBeNull] params object[] values)
+        public string ToStringInstance<T>([CanBeNull] T instance)
         {
             using (StringWriter writer = new StringWriter())
             {
-                WriteTo(writer, null, values);
+                WriteToInstance(writer, null, instance);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
+        /// <param name="position">The position.</param>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        [NotNull]
+        [PublicAPI]
+        public string ToString([CanBeNull] Layout layout, ref int position)
+        {
+            using (StringWriter writer = new StringWriter())
+            {
+                position = WriteTo(writer, layout, position, null);
                 return writer.ToString();
             }
         }
@@ -1509,15 +1598,15 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
-        /// <param name="values">The values.</param>
+        /// <param name="instance">The istance.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString([CanBeNull] Layout layout, ref int position, [CanBeNull] params object[] values)
+        public string ToStringInstance<T>([CanBeNull] Layout layout, ref int position, [CanBeNull] T instance)
         {
             using (StringWriter writer = new StringWriter())
             {
-                position = WriteTo(writer, layout, position, null, values);
+                position = WriteToInstance(writer, layout, position, null, instance);
                 return writer.ToString();
             }
         }
@@ -1676,17 +1765,17 @@ namespace WebApplications.Utilities.Formatting
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
+        /// <param name="instance">The istance.</param>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         [NotNull]
         [PublicAPI]
-        public string ToString([CanBeNull] IFormatProvider formatProvider, [CanBeNull] params object[] values)
+        public string ToStringInstance<T>([CanBeNull] IFormatProvider formatProvider, [CanBeNull] T instance)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, null, values);
+                WriteToInstance(writer, null, instance);
                 return writer.ToString();
             }
         }
@@ -1697,19 +1786,19 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
         /// <param name="position">The position.</param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
+        /// <param name="instance">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
-        public string ToString(
+        public string ToStringInstance<T>(
             [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] params object[] values)
+            [CanBeNull] T instance)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, layout, position, null, values);
+                position = WriteToInstance(writer, layout, position, null, instance);
                 return writer.ToString();
             }
         }
@@ -1936,14 +2025,14 @@ namespace WebApplications.Utilities.Formatting
         [NotNull]
         [PublicAPI]
         [StringFormatMethod("format")]
-        public string ToString(
+        public string ToStringInstance<T>(
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] params object[] values)
+            [CanBeNull] T values)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                WriteTo(writer, format, values);
+                WriteToInstance(writer, format, values);
                 return writer.ToString();
             }
         }
@@ -1956,21 +2045,21 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">The format.
         /// <list type="table"><listheader><term>Format string</term><description>Description</description></listheader><item><term>G/g/null</term><description>Any unresolved fill points will have their tags output. Control chunks are ignored.</description></item><item><term>F/f</term><description>All control and fill point chunks will have their tags output.</description></item><item><term>S/s</term><description>Any unresolved fill points will be treated as an empty string. Control chunks are ignored.</description></item></list></param>
         /// <param name="formatProvider">The format provider.</param>
-        /// <param name="values">The values.</param>
+        /// <param name="instance">The values.</param>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         [NotNull]
         [PublicAPI]
         [StringFormatMethod("format")]
-        public string ToString(
+        public string ToStringInstance<T>(
             [CanBeNull] Layout layout,
             ref int position,
             [CanBeNull] string format,
             [CanBeNull] IFormatProvider formatProvider,
-            [CanBeNull] params object[] values)
+            [CanBeNull] T instance)
         {
             using (StringWriter writer = new StringWriter(formatProvider))
             {
-                position = WriteTo(writer, layout, position, format, values);
+                position = WriteToInstance(writer, layout, position, format, instance);
                 return writer.ToString();
             }
         }
@@ -2191,12 +2280,12 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         [PublicAPI]
         [StringFormatMethod("format")]
-        public void WriteToConsole(
+        public void WriteToConsoleInstance<T>(
             [CanBeNull] string format,
-            [CanBeNull] params object[] values)
+            [CanBeNull] T values)
         {
             if (IsEmpty) return;
-            WriteTo(ConsoleTextWriter.Default, format, values);
+            WriteToInstance(ConsoleTextWriter.Default, format, values);
         }
 
         /// <summary>
@@ -2273,12 +2362,12 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="values">The values.</param>
         [PublicAPI]
         [StringFormatMethod("format")]
-        public void WriteToTrace(
+        public void WriteToTraceInstance<T>(
             [CanBeNull] string format,
-            [CanBeNull] params object[] values)
+            [CanBeNull] T values)
         {
             if (IsEmpty) return;
-            WriteTo(TraceTextWriter.Default, format, values);
+            WriteToInstance(TraceTextWriter.Default, format, values);
         }
 
         /// <summary>
@@ -2387,27 +2476,37 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="writer">The writer.</param>
         /// <param name="format">The format.</param>
-        /// <param name="values">The values.</param>
+        /// <param name="instance">The instance.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
-        public int WriteTo(
+        public int WriteToInstance<T>(
             [CanBeNull] TextWriter writer,
             [CanBeNull] string format,
-            [CanBeNull] params object[] values)
+            [CanBeNull] T instance)
         {
             if (writer == null || IsEmpty) return 0;
             Contract.Assert(RootChunk.ChildrenInternal != null);
+
+            IResolvable resolvable;
+            if (!ReferenceEquals(instance, null))
+            {
+                IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
+                resolvable = dictionary.Count > 0
+                    ? new DictionaryResolvable(dictionary)
+                    : null;
+            }
+            else
+                resolvable = null;
 
             return WriteTo(
                 RootChunk,
                 writer,
                 _initialResolutions,
-                values == null || values.Length < 1
-                    ? null
-                    : new ListResolvable(values, false),
+                resolvable,
                 InitialLayout,
                 format,
                 0);
@@ -2417,10 +2516,9 @@ namespace WebApplications.Utilities.Formatting
         /// Writes the builder to the specified <see cref="TextWriter" />.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout" />.</param>
         /// <param name="position">The start position.</param>
         /// <param name="format">The format.</param>
-        /// <param name="values">The values.</param>
         /// <returns>The end position.</returns>
         [PublicAPI]
         [StringFormatMethod("format")]
@@ -2428,8 +2526,7 @@ namespace WebApplications.Utilities.Formatting
             [CanBeNull] TextWriter writer,
             [CanBeNull] Layout layout,
             int position,
-            [CanBeNull] string format,
-            [CanBeNull] params object[] values)
+            [CanBeNull] string format)
         {
             if (writer == null || IsEmpty) return position;
             Contract.Assert(RootChunk.ChildrenInternal != null);
@@ -2438,9 +2535,49 @@ namespace WebApplications.Utilities.Formatting
                 RootChunk,
                 writer,
                 _initialResolutions,
-                values == null || values.Length < 1
-                    ? null
-                    : new ListResolvable(values, false),
+                null,
+                layout == null ? InitialLayout : InitialLayout.Apply(layout),
+                format,
+                position);
+        }
+
+        /// <summary>
+        /// Writes the builder to the specified <see cref="TextWriter" />.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="layout">The layout is applied to the original <see cref="InitialLayout"/>.</param>
+        /// <param name="position">The start position.</param>
+        /// <param name="format">The format.</param>
+        /// <param name="instance">The values.</param>
+        /// <returns>The end position.</returns>
+        [PublicAPI]
+        [StringFormatMethod("format")]
+        public int WriteToInstance<T>(
+            [CanBeNull] TextWriter writer,
+            [CanBeNull] Layout layout,
+            int position,
+            [CanBeNull] string format,
+            [CanBeNull] T instance)
+        {
+            if (writer == null || IsEmpty) return position;
+            Contract.Assert(RootChunk.ChildrenInternal != null);
+
+            IResolvable resolvable;
+            if (!ReferenceEquals(instance, null))
+            {
+                IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
+                resolvable = dictionary.Count > 0
+                    ? new DictionaryResolvable(dictionary)
+                    : null;
+            }
+            else
+                resolvable = null;
+
+            return WriteTo(
+                RootChunk,
+                writer,
+                _initialResolutions,
+                resolvable,
                 layout == null ? InitialLayout : InitialLayout.Apply(layout),
                 format,
                 position);
@@ -2730,7 +2867,7 @@ namespace WebApplications.Utilities.Formatting
         /// The new line characters.
         /// </summary>
         [NotNull]
-        private static readonly char[] _newLineChars = {'\r', '\n'};
+        private static readonly char[] _newLineChars = { '\r', '\n' };
 
         /// <summary>
         /// Gets the chunk as a string.
@@ -2768,7 +2905,7 @@ namespace WebApplications.Utilities.Formatting
                         {
                             vStr = formattable.ToString(format, formatProvider);
                         }
-                            // ReSharper disable once EmptyGeneralCatchClause
+                        // ReSharper disable once EmptyGeneralCatchClause
                         catch (FormatException)
                         {
                             vStr = value.ToString();
@@ -2862,7 +2999,7 @@ namespace WebApplications.Utilities.Formatting
                         coloredTextWriter.ResetForegroundColor();
                     else if (chunk.IsResolved &&
                              chunk.Value is Color)
-                        coloredTextWriter.SetForegroundColor((Color) chunk.Value);
+                        coloredTextWriter.SetForegroundColor((Color)chunk.Value);
                     else
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
@@ -2876,7 +3013,7 @@ namespace WebApplications.Utilities.Formatting
                         coloredTextWriter.ResetBackgroundColor();
                     else if (chunk.IsResolved &&
                              chunk.Value is Color)
-                        coloredTextWriter.SetBackgroundColor((Color) chunk.Value);
+                        coloredTextWriter.SetBackgroundColor((Color)chunk.Value);
                     else
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
@@ -2997,21 +3134,21 @@ namespace WebApplications.Utilities.Formatting
             // Check which format we have 'f' will just write out tags, and ignore Layout.
             switch (format.ToLowerInvariant())
             {
-                    // Always output's the tag if the chunk has one, otherwise output's the value as normal
+                // Always output's the tag if the chunk has one, otherwise output's the value as normal
                 case "f":
                     writeTags = true;
                     skipUnresolvedTags = false;
                     isLayoutRequired = false;
                     break;
 
-                    // Should output the value as normal, but treats unresolved tags as an empty string value
+                // Should output the value as normal, but treats unresolved tags as an empty string value
                 case "s":
                     writeTags = false;
                     skipUnresolvedTags = true;
                     isLayoutRequired = initialLayout != Layout.Default;
                     break;
 
-                    // Outputs the value if set, otherwise the format tag. Control tags ignored
+                // Outputs the value if set, otherwise the format tag. Control tags ignored
                 default:
                     writeTags = false;
                     skipUnresolvedTags = false;
@@ -3087,7 +3224,7 @@ namespace WebApplications.Utilities.Formatting
                                 context.Layout = layout;
                                 context.Position = position;
                                 // ReSharper disable PossibleNullReferenceException
-                                Resolution resolved = (Resolution) resolutions.Resolve(context, chunk);
+                                Resolution resolved = (Resolution)resolutions.Resolve(context, chunk);
                                 // ReSharper restore PossibleNullReferenceException
                                 isResolved = resolved.IsResolved;
                                 resolvedValue = resolved.Value;
@@ -3226,7 +3363,7 @@ namespace WebApplications.Utilities.Formatting
                                                                 {
                                                                     // ReSharper disable PossibleNullReferenceException
                                                                     switch (c.Tag.ToLowerInvariant())
-                                                                        // ReSharper restore PossibleNullReferenceException
+                                                                    // ReSharper restore PossibleNullReferenceException
                                                                     {
                                                                         case IndexTag:
                                                                             return value;
@@ -3663,11 +3800,11 @@ namespace WebApplications.Utilities.Formatting
                                         lws > 0)
                                     {
                                         // We need to calculate spacers.
-                                        decimal space = ((decimal) lws) / remaining;
-                                        int o = (int) Math.Round(space / 2);
+                                        decimal space = ((decimal)lws) / remaining;
+                                        int o = (int)Math.Round(space / 2);
                                         spacers =
                                             new Queue<int>(
-                                                Enumerable.Range(0, remaining).Select(r => o + (int) (space * r)));
+                                                Enumerable.Range(0, remaining).Select(r => o + (int)(space * r)));
                                     }
                                     break;
                                 default:
@@ -4131,7 +4268,7 @@ namespace WebApplications.Utilities.Formatting
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             return obj is FormatBuilder &&
-                   Equals((FormatBuilder) obj);
+                   Equals((FormatBuilder)obj);
         }
 
         /// <summary>

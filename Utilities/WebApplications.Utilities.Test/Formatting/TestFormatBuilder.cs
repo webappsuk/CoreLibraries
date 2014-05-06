@@ -186,15 +186,7 @@ namespace WebApplications.Utilities.Test.Formatting
             }
             Assert.IsTrue(thrown);
         }
-
-        [TestMethod]
-        public void TestResolveArray()
-        {
-            FormatBuilder builder = new FormatBuilder("{0}{1}{2}");
-            builder.Resolve(3, 4, 5);
-            Assert.AreEqual("345", builder.ToString());
-        }
-
+        
         [TestMethod]
         public void TestResolveDictionary()
         {

@@ -556,7 +556,7 @@ namespace WebApplications.Utilities.Formatting
         [PublicAPI]
         public string ToString([CanBeNull] IFormatProvider formatProvider)
         {
-            return _builder.ToString(null, formatProvider);
+            return _builder.ToString((string)null, formatProvider);
         }
 
         /// <summary>
