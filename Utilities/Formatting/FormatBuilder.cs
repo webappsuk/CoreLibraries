@@ -3043,7 +3043,7 @@ namespace WebApplications.Utilities.Formatting
                 : initialResolutions;
 
             // Create out context object (we only need one as we run serially).
-            FormatWriteContext context = new FormatWriteContext(writer, initialLayout, position);
+            FormatWriteContext context = new FormatWriteContext(writerWidth, coloredTextWriter != null, controller != null, autoWraps);
 
             // The stack holds any chunks that we need to process, so start by pushing the root chunks children onto it
             // in reverse, so that they are taken off in order.
@@ -3083,7 +3083,8 @@ namespace WebApplications.Utilities.Formatting
                             if (resolutions != null)
                             {
                                 // Update context
-                                context.Layout = layoutStack.Peek();
+                                context.LineType = lineType;
+                                context.Layout = layout;
                                 context.Position = position;
                                 // ReSharper disable PossibleNullReferenceException
                                 Resolution resolved = (Resolution) resolutions.Resolve(context, chunk);

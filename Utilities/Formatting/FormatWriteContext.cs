@@ -37,11 +37,30 @@ namespace WebApplications.Utilities.Formatting
     public class FormatWriteContext
     {
         /// <summary>
-        /// The writer.
+        /// The writer width (if any); otherwise <see cref="int.MaxValue"/>.
         /// </summary>
-        [NotNull]
+        public readonly int WriterWidth;
+
+        /// <summary>
+        /// Whether the underlying writer supports color.
+        /// </summary>
+        public readonly bool IsColorSupported;
+
+        /// <summary>
+        /// Whether the underlying writer supports custom control characters.
+        /// </summary>
+        public readonly bool IsControllableWriter;
+
+        /// <summary>
+        /// Whether the underlying writer auto wraps.
+        /// </summary>
+        public readonly bool IsAutoWrapping;
+
+        /// <summary>
+        /// The current <see cref="LineType"/>.
+        /// </summary>
         [PublicAPI]
-        public readonly TextWriter Writer;
+        public LineType LineType { get; internal set; }
 
         /// <summary>
         /// The layout.
@@ -57,18 +76,18 @@ namespace WebApplications.Utilities.Formatting
         public int Position { get; internal set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FormatWriteContext"/> class.
+        /// Initializes a new instance of the <see cref="FormatWriteContext" /> class.
         /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="layout">The layout.</param>
-        /// <param name="position">The position.</param>
-        internal FormatWriteContext([NotNull] TextWriter writer, [NotNull] Layout layout, int position)
+        /// <param name="writerWidth">if set to <see langword="true" /> [writer width].</param>
+        /// <param name="isColorSupported">if set to <see langword="true" /> [is color supported].</param>
+        /// <param name="isControllableWriter">if set to <see langword="true" /> [is controllable writer].</param>
+        /// <param name="isAutoWrapping">if set to <see langword="true" /> [is automatic wrapping].</param>
+        internal FormatWriteContext(int writerWidth, bool isColorSupported, bool isControllableWriter, bool isAutoWrapping)
         {
-            Contract.Requires(writer != null);
-            Contract.Requires(layout != null);
-            Writer = writer;
-            Layout = layout;
-            Position = position;
+            WriterWidth = writerWidth;
+            IsColorSupported = isColorSupported;
+            IsControllableWriter = isControllableWriter;
+            IsAutoWrapping = isAutoWrapping;
         }
 
         /// <summary>
