@@ -40,6 +40,7 @@ namespace WebApplications.Utilities.Test
     public class TestWeak
     {
         [TestMethod]
+        [Timeout(5000)]
         public void TestWeakConcurrentDictionaryReferences()
         {
             const int elements = 100000;

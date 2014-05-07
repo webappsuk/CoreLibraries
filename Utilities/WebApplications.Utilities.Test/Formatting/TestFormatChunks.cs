@@ -34,25 +34,17 @@ namespace WebApplications.Utilities.Test.Formatting
     [TestClass]
     public class TestFormatChunks
     {
-        /* TODO The FormatChunks extension method does no longer exist, its functionality has been replaced by the FormatChunk class itself
-        [TestMethod]
-        public void TestNull()
-        {
-            FormatChunk[] chunks = ((string) null).FormatChunks().ToArray();
-            Assert.AreEqual(0, chunks.Length);
-        }
-
         [TestMethod]
         public void TestEmpty()
         {
-            FormatChunk[] chunks = "".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse(string.Empty).ToArray();
             Assert.AreEqual(0, chunks.Length);
         }
 
         [TestMethod]
         public void TestNoFillPoint()
         {
-            FormatChunk[] chunks = " ".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse(" ").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
@@ -63,7 +55,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestSimpleFillPoint()
         {
-            FormatChunk[] chunks = "{0}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
@@ -78,7 +70,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestAlignedFillPoint()
         {
-            FormatChunk[] chunks = "{0,-1}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0,-1}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
@@ -93,29 +85,29 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestInvalidAlignedFillPoint()
         {
-            FormatChunk[] chunks = "{0,}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0,}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,}", chunk.Value);
-            Assert.IsNull(chunk.Tag);
+            Assert.AreEqual("0", chunk.Tag);
+            Assert.IsNull(chunk.Value);
         }
 
         [TestMethod]
         public void TestInvalidIntAlignedFillPoint()
         {
-            FormatChunk[] chunks = "{0,a}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0,a}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,a}", chunk.Value);
-            Assert.IsNull(chunk.Tag);
+            Assert.AreEqual("0", chunk.Tag);
+            Assert.IsNull(chunk.Value);
         }
 
         [TestMethod]
         public void TestFormatFillPoint()
         {
-            FormatChunk[] chunks = "{0:G}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0:G}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
@@ -130,7 +122,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestCommaFormatFillPoint()
         {
-            FormatChunk[] chunks = "{0:,}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0:,}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
@@ -145,19 +137,18 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestInvalidFormatFillPoint()
         {
-            FormatChunk[] chunks = "{0:}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0:}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0:}", chunk.Value);
-            Assert.IsNull(chunk.Tag);
+            Assert.AreEqual("0", chunk.Tag);
+            Assert.IsNull(chunk.Value);
         }
 
         [TestMethod]
         public void TestFullFillPoint()
         {
-            FormatChunk[] chunks = "{0,-1:G}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0,-1:G}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
@@ -172,29 +163,30 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestInvalidFullFillPoint()
         {
-            FormatChunk[] chunks = "{0,:}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0,:}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,:}", chunk.Value);
-            Assert.IsNull(chunk.Tag);
+            Assert.AreEqual("0", chunk.Tag);
+            Assert.IsNull(chunk.Value);
         }
 
         [TestMethod]
         public void TestInvalidIntFullFillPoint()
         {
-            FormatChunk[] chunks = "{0,a:G}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0,a:G}").ToArray();
             Assert.AreEqual(1, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
-            Assert.AreEqual("{0,a:G}", chunk.Value);
-            Assert.IsNull(chunk.Tag);
+            Assert.AreEqual("0", chunk.Tag);
+            Assert.AreEqual("G", chunk.Format);
+            Assert.IsNull(chunk.Value);
         }
 
         [TestMethod]
         public void TestLeadingSpace()
         {
-            FormatChunk[] chunks = " {0,-1:G}".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse(" {0,-1:G}").ToArray();
             Assert.AreEqual(2, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
@@ -214,7 +206,7 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestTrailingSpace()
         {
-            FormatChunk[] chunks = "{0,-1:G} ".FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse("{0,-1:G} ").ToArray();
             Assert.AreEqual(2, chunks.Length);
             FormatChunk chunk = chunks[0];
             Assert.IsNotNull(chunk);
@@ -235,28 +227,20 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestNestedChunks()
         {
             // Any character that appears after a '\' will always be added. This only has an effect for the '{', '}' and '\' characters, all others do not need to be escaped
-            FormatChunk[] chunks =
-                @"This: {Tag:Is a very {complicated: {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}}} and some trailing text"
-                    .FormatChunks().ToArray();
+            FormatChunk[] chunks = FormatChunk.Parse(@"This: {Tag:Is a very {complicated: {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}}} and some trailing text").ToArray();
 
             // ReSharper disable PossibleNullReferenceException
             Assert.AreEqual(3, chunks.Length);
             Assert.AreEqual("This: ", chunks[0].Value);
             Assert.AreEqual("Tag", chunks[1].Tag);
-            Assert.AreEqual(
-                @"Is a very {complicated: {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}}",
-                chunks[1].Format);
             Assert.AreEqual(" and some trailing text", chunks[2].Value);
 
-            chunks = chunks[1].Format.FormatChunks().ToArray();
+            chunks = chunks[1].Children.ToArray();
             Assert.AreEqual(2, chunks.Length);
             Assert.AreEqual("Is a very ", chunks[0].Value);
             Assert.AreEqual("complicated", chunks[1].Tag);
-            Assert.AreEqual(
-                @" {nested} format string with \{{escaped}\} tags and other \\ \'\characters\}",
-                chunks[1].Format);
 
-            chunks = chunks[1].Format.FormatChunks().ToArray();
+            chunks = chunks[1].Children.ToArray();
             Assert.AreEqual(5, chunks.Length);
             Assert.AreEqual(" ", chunks[0].Value);
             Assert.AreEqual("nested", chunks[1].Tag);
@@ -264,6 +248,6 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual("escaped", chunks[3].Tag);
             Assert.AreEqual(@"} tags and other \ 'characters}", chunks[4].Value);
             // ReSharper restore PossibleNullReferenceException
-        } //*/
+        }
     }
 }

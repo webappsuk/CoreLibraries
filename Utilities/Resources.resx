@@ -411,4 +411,7 @@
   <data name="FormatBuilder_ReadOnly" xml:space="preserve">
     <value>Cannot modify a read only FormatBuilder.</value>
   </data>
+  <data name="TimeSpanRange_AutoStep_DeltaNegative" xml:space="preserve">
+    <value>The delta must be greater than or equal to zero.</value>
+  </data>
 </root>

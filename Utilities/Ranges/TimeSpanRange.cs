@@ -63,7 +63,9 @@ namespace WebApplications.Utilities.Ranges
         /// <returns>TimeSpan.</returns>
         public static TimeSpan AutoStep(TimeSpan delta)
         {
-            Contract.Requires(delta >= TimeSpan.Zero);
+            if (delta < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException("delta", delta, Resources.TimeSpanRange_AutoStep_DeltaNegative);
+
             if (delta < TimeSpan.FromMilliseconds(1))
                 return TimeSpan.FromTicks(1);
             if (delta < TimeSpan.FromSeconds(1))
