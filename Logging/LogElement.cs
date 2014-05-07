@@ -129,29 +129,31 @@ namespace WebApplications.Utilities.Logging
             /// <summary>
             /// Resolves the specified tag.
             /// </summary>
-            /// <param name="writer">The writer.</param>
+            /// <param name="context">The context.</param>
             /// <param name="chunk">The chunk.</param>
-            /// <returns>A <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
+            /// <returns>An object that will be cached unless it is a <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
             // ReSharper disable once CodeAnnotationAnalyzer
-            public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
+            public override object Resolve(FormatWriteContext context, FormatChunk chunk)
             {
                 // ReSharper disable once PossibleNullReferenceException
                 switch (chunk.Tag.ToLowerInvariant())
                 {
                     case "default":
                     case "verbose":
-                        return new Resolution(ElementVerboseFormat);
+                        return ElementVerboseFormat;
                     case "xml":
-                        return new Resolution(ElementXMLFormat);
+                        return ElementXMLFormat;
                     case "json":
-                        return new Resolution(ElementJSONFormat);
+                        return ElementJSONFormat;
                     case "noline":
-                        return new Resolution(ElementNoLineFormat);
+                        return ElementNoLineFormat;
                     case "key":
-                        string key = Translation.GetResource(Resource, writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
-                        return string.IsNullOrEmpty(key) ? Resolution.Null : new Resolution(key);
+                        string key = Translation.GetResource(Resource, context.Writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        return string.IsNullOrEmpty(key)
+                            ? Resolution.Null
+                            : key;
                     case "value":
-                        return new Resolution(Value);
+                        return Value;
                     default:
                         return Resolution.Unknown;
                 }

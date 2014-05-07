@@ -26,11 +26,8 @@
 #endregion
 
 /* Master List
- * TODO Add Context formatting
  * TODO Improve stack trace formatting (with colour!)
  * TODO Improve sproc format
- * TODO Add Inner Exception formatting.
- * TODO Fix file name builder?
  */
 
 using System;
@@ -167,7 +164,7 @@ namespace WebApplications.Utilities.Logging
         /// Initializes a new instance of the <see cref="Log"/> class.  Used during deserialization.
         /// </summary>
         private Log()
-            : base(false, true)
+            : base(false, true, true)
         {
             OnDeserializing(default(StreamingContext));
         }
@@ -1545,7 +1542,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder ShortFormat =
-            new FormatBuilder(120, 33, tabStops: new[] { 33 })
+            new FormatBuilder(120, 33, alignment: Alignment.Left, tabStops: new[] { 33 })
                 .AppendForegroundColor(Color.DarkCyan)
                 .AppendFormat("{" + FormatTagTimeStamp + ":{Value:HH:mm:ss.ffff}} ")
                 .AppendForegroundColor(LogLevelColorName)
@@ -1561,35 +1558,40 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
-            new FormatBuilder(new Layout(120, 22, tabStops: new[] { 20, 22 }))
+            new FormatBuilder(120, 22, alignment: Alignment.Left, tabStops: new[] { 20, 22 })
+                .AppendForegroundColor(Color.DarkGray)
                 .AppendControl(FormatTagHeader)
+                .AppendResetForegroundColor()
+                .AppendLayout(alignment: Alignment.Centre)
+                .AppendForegroundColor(LogLevelColorName)
+                .AppendFormat("{" + FormatTagLevel + ":{Value}}")
+                .AppendResetForegroundColor()
+                .AppendPopLayout()
                 .AppendFormat("{" + FormatTagMessage + "}")
                 .AppendFormat("{" + FormatTagTimeStamp + "}")
-                .AppendFormat(
-                    "{" + FormatTagLevel + ":\r\n{" + FormatBuilder.ForegroundColorTag +
-                    ":DarkCyan}{Key}{" + FormatBuilder.ForegroundColorTag +
-                    "}\t: {" + FormatBuilder.ForegroundColorTag +
-                    ":" + LogLevelColorName + "}{Value}{" + FormatBuilder.ForegroundColorTag + "}}")
                 .AppendFormat("{" + FormatTagGuid + "}")
                 .AppendFormat(
                     "{" + FormatTagThreadName + ":\r\n{" + FormatBuilder.ForegroundColorTag +
                     ":DarkCyan}{Key}{" + FormatBuilder.ForegroundColorTag +
                     "}\t: {Value}{" + FormatTagThreadID + ": ({Value})}}")
-                .AppendFormat("{" + FormatTagContext + "}")
                 .AppendFormat("{" + FormatTagException + "}")
                 .AppendFormat("{" + FormatTagInnerException + "}")
+                .AppendFormat("{" + FormatTagStoredProcedure + "}")
+                .AppendFormat("{" + FormatTagContext + "}")
                 .AppendFormat(
-                    "{" + FormatTagStackTrace + ":\r\n{" + FormatTagHeader + ":-}\r\n{" +
+                    "{" + FormatTagStackTrace + ":\r\n{" + FormatBuilder.ForegroundColorTag +
+                    ":DarkGray}{" + FormatTagHeader + ":-}{" + FormatBuilder.LayoutTag + ":aCentre}{" +
                     FormatBuilder.ForegroundColorTag +
                     ":DarkCyan}{Key}{" + FormatBuilder.ForegroundColorTag +
-                    "}{!layout:i6;f3}\r\n{" +
+                    "}{" + FormatBuilder.LayoutTag + ":i6;f3;aLeft}\r\n{" +
                     FormatBuilder.ForegroundColorTag +
-                    ":DarkCyan}{Value}{" +
+                    ":DarkGray}{Value}{" +
                     FormatBuilder.ForegroundColorTag +
-                    "}{!layout}}")
+                    "}{" + FormatBuilder.LayoutTag + "}}")
                 .AppendLine()
+                .AppendForegroundColor(Color.DarkGray)
                 .AppendControl(FormatTagHeader)
-                .AppendLine()
+                .AppendResetForegroundColor()
                 .MakeReadOnly();
 
         /// <summary>
@@ -1623,13 +1625,13 @@ namespace WebApplications.Utilities.Logging
         /// <summary>
         /// Resolves the specified tag.
         /// </summary>
-        /// <param name="writer">The writer.</param>
+        /// <param name="context">The context.</param>
         /// <param name="chunk">The chunk.</param>
-        /// <returns>A <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
+        /// <returns>An object that will be cached unless it is a <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
+        public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
-            CultureInfo culture = writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
+            CultureInfo culture = context.Writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
             // ReSharper disable once PossibleNullReferenceException
             switch (chunk.Tag.ToLowerInvariant())
             {
@@ -1638,15 +1640,15 @@ namespace WebApplications.Utilities.Logging
                  */
                 case "default":
                 case "verbose":
-                    return new Resolution(VerboseFormat);
+                    return VerboseFormat;
                 case "short":
-                    return new Resolution(ShortFormat);
+                    return ShortFormat;
                 case "all":
-                    return new Resolution(AllFormat);
+                    return AllFormat;
                 case "json":
-                    return new Resolution(JSONFormat);
+                    return JSONFormat;
                 case "xml":
-                    return new Resolution(XMLFormat);
+                    return XMLFormat;
 
                 /* 
                  * Control Tags.
@@ -1658,6 +1660,7 @@ namespace WebApplications.Utilities.Logging
                         chunk.Format,
                         LogLevelColorName,
                         StringComparison.InvariantCultureIgnoreCase)
+                        // Don't cache the response as it is format dependant.
                         ? new Resolution(_level.ToColor(), true)
                         : Resolution.UnknownYet;
 
@@ -1667,117 +1670,114 @@ namespace WebApplications.Utilities.Logging
                 case FormatTagHeader:
                     // Create a header based on the format pattern.
                     // Get the width of the writer, for creating headers.
-                    int width = 120;
-                    ILayoutTextWriter ltw = writer as ILayoutTextWriter;
-                    if (ltw != null &&
-                        ltw.Width < width)
-                        width = ltw.Width;
+                    int width = Math.Min(256, context.Layout.Width.Value - context.Layout.FirstLineIndentSize.Value);
 
-                    // If there is no width restriction, limit header width.
-                    if (width > 512)
-                        width = 120;
                     string pattern = chunk.Format;
                     if (string.IsNullOrEmpty(pattern))
                         pattern = "=";
 
-                    char[] header = new char[width];
-                    int p = 0;
-                    for (int c = 0; c < width; c++)
-                        header[c] = pattern[p++ % pattern.Length];
+                    bool startNewLine = context.Position > 0;
+                    char[] header = new char[width + (startNewLine ? 2 : 1)];
+                    int c = 0;
+                    if (startNewLine)
+                        header[c++] = '\r'; // Formatter normalizes '\r' to newline automatically.
+                    for (int p = 0; p < width; p++)
+                        header[c++] = pattern[p % pattern.Length];
+                    header[c++] = '\r';
 
                     // We have to replace the original chunk with a non-control chunk for it to to be output.
                     // Set NoCache to true to support format changes.
-                    return new Resolution(new FormatChunk(null, null, 0, null, new string(header)), true);
+                    return new Resolution(new FormatChunk(new string(header)), true);
 
                 case FormatTagMessage:
-                    return new Resolution(
-                        new LogElement(() => Resources.LogKeys_Message,
-                            GetMessage(culture)));
+                    return new LogElement(
+                        () => Resources.LogKeys_Message,
+                        GetMessage(culture));
 
                 case FormatTagResource:
                     return string.IsNullOrWhiteSpace(_resourceProperty)
                         ? Resolution.Null
-                        : new Resolution(
-                            new LogElement(() => Resources.LogKeys_Resource,
-                                _resourceProperty));
+                        : new LogElement(
+                            () => Resources.LogKeys_Resource,
+                            _resourceProperty);
 
                 case FormatTagCulture:
-                    return new Resolution(
-                        new LogElement(() => Resources.LogKeys_Culture,
-                            culture));
+                    return new LogElement(() => Resources.LogKeys_Culture,
+                            culture);
 
                 case FormatTagTimeStamp:
-                    return new Resolution(
-                        new LogElement(() => Resources.LogKeys_TimeStamp,
-                            ((CombGuid)_guid).Created));
+                    return new LogElement(() => Resources.LogKeys_TimeStamp,
+                            ((CombGuid)_guid).Created);
 
                 case FormatTagLevel:
-                    return new Resolution(
-                        new LogElement(() => Resources.LogKeys_Level,
-                            _level));
+                    return new LogElement(() => Resources.LogKeys_Level,
+                            _level);
 
                 case FormatTagGuid:
-                    return new Resolution(
-                        new LogElement(() => Resources.LogKeys_Guid,
-                            _guid));
+                    return new LogElement(
+                        () => Resources.LogKeys_Guid,
+                        _guid);
 
                 case FormatTagException:
                     return string.IsNullOrWhiteSpace(_exceptionType)
                         ? Resolution.Null
-                        : new Resolution(
-                            new LogElement(() => Resources.LogKeys_Exception,
-                                _exceptionType));
-
-                case FormatTagStackTrace:
-                    return new Resolution(
-                        new LogElement(() => Resources.LogKeys_StackTrace,
-                            _stackTrace));
+                        : new LogElement(
+                            () => Resources.LogKeys_Exception,
+                            _exceptionType);
 
                 case FormatTagThreadID:
                     return _threadID < 0
                         ? Resolution.Null
-                        : new Resolution(
-                            new LogElement(() => Resources.LogKeys_ThreadID,
-                                _threadID));
+                        : new LogElement(
+                            () => Resources.LogKeys_ThreadID,
+                            _threadID);
 
                 case FormatTagThreadName:
                     return string.IsNullOrWhiteSpace(_threadName)
                         ? Resolution.Null
-                        : new Resolution(
-                            new LogElement(() => Resources.LogKeys_ThreadName,
-                                _threadName));
+                        : new LogElement(
+                            () => Resources.LogKeys_ThreadName,
+                            _threadName);
 
                 case FormatTagApplicationName:
                     return string.IsNullOrWhiteSpace(ApplicationName)
                         ? Resolution.Null
-                        : new Resolution(
-                            new LogElement(() => Resources.LogKeys_ApplicationName,
-                                ApplicationName));
+                        : new LogElement(
+                            () => Resources.LogKeys_ApplicationName,
+                            ApplicationName);
 
                 case FormatTagApplicationGuid:
-                    return new Resolution(
-                        new LogElement(() => Resources.LogKeys_ApplicationGuid,
-                            ApplicationGuid));
+                    return new LogElement(
+                        () => Resources.LogKeys_ApplicationGuid,
+                        ApplicationGuid);
+
+                case FormatTagInnerException:
+                    if ((_innerExceptionGuids == null) ||
+                        (_innerExceptionGuids.Length < 1)) return Resolution.Null;
+                    return new LogEnumerableElement(
+                        () => Resources.LogKeys_InnerException,
+                        _innerExceptionGuids.Cast<object>());
 
                 case FormatTagStoredProcedure:
                     // TODO This can be a specialized LogElement!
                     return string.IsNullOrWhiteSpace(_storedProcedure)
                         ? Resolution.Null
-                        : new Resolution(
-                            new LogElement(() => Resources.LogKeys_StoredProcedure,
-                                _storedProcedure + " at line " + _storedProcedureLine.ToString("D")));
-
-                case FormatTagInnerException:
-                    if ((_innerExceptionGuids == null) ||
-                        (_innerExceptionGuids.Length < 1)) return Resolution.Null;
-                    return new Resolution(
-                        new LogEnumerableElement(() => Resources.LogKeys_InnerException, _innerExceptionGuids.Cast<object>()));
+                        : new LogElement(
+                            () => Resources.LogKeys_StoredProcedure,
+                            _storedProcedure + " at line " + _storedProcedureLine.ToString("D"));
 
                 case FormatTagContext:
-                    return (_context==null) ||
+                    return (_context == null) ||
                            (_context.Count < 1)
                         ? Resolution.Null
-                        : new Resolution(_context);
+                        : _context;
+
+                case FormatTagStackTrace:
+                    return string.IsNullOrWhiteSpace(_stackTrace)
+                        ? Resolution.Null
+                        : new LogElement(
+                            () => Resources.LogKeys_StackTrace,
+                            _stackTrace);
 
                 default:
                     return Resolution.Unknown;

@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Globalization;
@@ -37,19 +36,19 @@ using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging
 {
-    public sealed partial class Log
+    public partial class LogContext
     {
         /// <summary>
         /// The default format
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly FormatBuilder EnumerableElementVerboseFormat = new FormatBuilder()
+        public static readonly FormatBuilder ElementVerboseFormat = new FormatBuilder()
             .AppendLine()
             .AppendForegroundColor(Color.DarkCyan)
             .AppendFormat("{Key}")
             .AppendResetForegroundColor()
-            .AppendFormat("\t: {Value:{<items>:{<item>}}{<join>:, }}")
+            .AppendFormat("\t: {Value}")
             .MakeReadOnly();
 
         /// <summary>
@@ -57,11 +56,11 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly FormatBuilder EnumerableElementNoLineFormat = new FormatBuilder()
+        public static readonly FormatBuilder ElementNoLineFormat = new FormatBuilder()
             .AppendForegroundColor(Color.DarkCyan)
             .AppendFormat("{Key}")
             .AppendResetForegroundColor()
-            .AppendFormat("\t: {Value:{<items>:{<item>}}{<join>:, }}")
+            .AppendFormat("\t: {Value}")
             .MakeReadOnly();
 
         /// <summary>
@@ -69,9 +68,9 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly FormatBuilder EnumerableElementXMLFormat = new FormatBuilder()
+        public static readonly FormatBuilder ElementXMLFormat = new FormatBuilder()
             .AppendLine()
-            .AppendFormat("<{Key}>{Value:{<items>:<item>{<item}</item>}}</{Key}>")
+            .AppendFormat("<{Key}>{Value}</{Key}>")
             .MakeReadOnly();
 
         /// <summary>
@@ -79,40 +78,38 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public static readonly FormatBuilder EnumerableElementJSONFormat = new FormatBuilder()
+        public static readonly FormatBuilder ElementJSONFormat = new FormatBuilder()
             .Append(',')
             .AppendLine()
-            .AppendFormat("\"{Key}\"={Value:{<items>:\"{<item>}\"}{<join>:, }}")
+            .AppendFormat("\"{Key}\"=\"{Value}\"")
             .MakeReadOnly();
 
-        private class LogEnumerableElement : ResolvableWriteable
+        private class ContextElement : ResolvableWriteable
         {
             /// <summary>
             /// The resource.
             /// </summary>
             [NotNull]
             [PublicAPI]
-            public readonly Expression<Func<string>> Resource;
+            public readonly string Key;
 
             /// <summary>
             /// The value.
             /// </summary>
             [CanBeNull]
             [PublicAPI]
-            public readonly IEnumerable<object> Values;
+            public readonly string Value;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="LogElement" /> class.
+            /// Initializes a new instance of the <see cref="ContextElement" /> class.
             /// </summary>
-            /// <param name="resource">The resource.</param>
-            /// <param name="values">The values.</param>
-            public LogEnumerableElement(
-                [NotNull] Expression<Func<string>> resource,
-                [CanBeNull] IEnumerable<object> values)
+            /// <param name="key">The key.</param>
+            /// <param name="value">The value.</param>
+            public ContextElement([NotNull] string key, [CanBeNull] string value)
             {
-                Contract.Requires(resource != null);
-                Resource = resource;
-                Values = values;
+                Contract.Requires(key != null);
+                Key = key;
+                Value = value;
             }
 
             /// <summary>
@@ -129,20 +126,17 @@ namespace WebApplications.Utilities.Logging
                 {
                     case "default":
                     case "verbose":
-                        return EnumerableElementVerboseFormat;
+                        return ElementVerboseFormat;
                     case "xml":
-                        return EnumerableElementXMLFormat;
+                        return ElementXMLFormat;
                     case "json":
-                        return EnumerableElementJSONFormat;
+                        return ElementJSONFormat;
                     case "noline":
-                        return EnumerableElementNoLineFormat;
+                        return ElementNoLineFormat;
                     case "key":
-                        string key = Translation.GetResource(Resource, context.Writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
-                        return string.IsNullOrEmpty(key)
-                            ? Resolution.Null
-                            : key;
+                        return Key;
                     case "value":
-                        return Values;
+                        return Value;
                     default:
                         return Resolution.Unknown;
                 }
@@ -155,7 +149,7 @@ namespace WebApplications.Utilities.Logging
             /// <exception cref="System.NotImplementedException"></exception>
             public override FormatBuilder DefaultFormat
             {
-                get { return EnumerableElementVerboseFormat; }
+                get { return ElementVerboseFormat; }
             }
         }
     }

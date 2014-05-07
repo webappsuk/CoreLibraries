@@ -48,54 +48,51 @@ namespace WebApplications.Utilities.Logging
     /// </summary>
     /// <remarks>As well as constructing a <see cref="LogContext" /> directly, it is equally valid to use one of the
     /// implicit casts, or the static <see cref="Empty">new LogContext()</see>.</remarks>
-    [ProtoContract(SkipConstructor = true, UseProtoMembersOnly = true, IgnoreListHandling = true)]
+    [ProtoContract(UseProtoMembersOnly = true, IgnoreListHandling = true)]
     [Serializable]
-    public class LogContext : ResolvableWriteable, IEnumerable<KeyValuePair<string, string>>
+    public partial class LogContext : ResolvableWriteable, IEnumerable<KeyValuePair<string, string>>
     {
         /// <summary>
         /// The default format
         /// </summary>
         [NotNull]
         [PublicAPI]
-        public readonly static FormatBuilder VerboseFormat = new FormatBuilder()
+        public static readonly FormatBuilder VerboseFormat = new FormatBuilder()
             .AppendLine()
-            .AppendForegroundColor(Color.DarkCyan)
+            .AppendForegroundColor(Color.DarkGray)
+            .AppendFormat("{" + Log.FormatTagHeader + ":-}")
+            .AppendLayout(alignment: Alignment.Centre)
             .AppendFormat("{Key}")
-            .AppendResetForegroundColor()
-            .AppendFormat("\t: {Value}")
-            .MakeReadOnly();
+            .AppendPopLayout()
+            .AppendLayout(firstLineIndentSize: 3)
+            .AppendFormat("{value:{<items>:{<item>:\r\n{key}\t: {value}}{<join>:\r\n}}}")
+            .AppendPopLayout();
 
         /// <summary>
         /// The default format
         /// </summary>
+        // TODO Create Context NoLine format
         [NotNull]
         [PublicAPI]
         public readonly static FormatBuilder NoLineFormat = new FormatBuilder()
-            .AppendForegroundColor(Color.DarkCyan)
-            .AppendFormat("{Key}")
-            .AppendResetForegroundColor()
-            .AppendFormat("\t: {Value}")
             .MakeReadOnly();
 
         /// <summary>
         /// The default format
         /// </summary>
+        // TODO Create Context XMLFormat format
         [NotNull]
         [PublicAPI]
         public readonly static FormatBuilder XMLFormat = new FormatBuilder()
-            .AppendLine()
-            .AppendFormat("<{Key}>{Value}</{Key}>")
             .MakeReadOnly();
 
         /// <summary>
         /// The default format
         /// </summary>
+        // TODO Create Context JSONFormat format
         [NotNull]
         [PublicAPI]
         public readonly static FormatBuilder JSONFormat = new FormatBuilder()
-            .Append(',')
-            .AppendLine()
-            .AppendFormat("\"{Key}\"=\"{Value}\"")
             .MakeReadOnly();
 
         /// <summary>
@@ -161,6 +158,7 @@ namespace WebApplications.Utilities.Logging
         /// Initializes a new instance of the <see cref="LogContext"/> class.
         /// </summary>
         public LogContext()
+            : base(false, true, false)
         {
             _context = new ConcurrentDictionary<string, string>();
         }
@@ -170,6 +168,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         /// <param name="dictionary">The dictionary.</param>
         internal LogContext([NotNull] IEnumerable<KeyValuePair<string, string>> dictionary)
+            : base(false, true, false)
         {
             Contract.Requires(dictionary != null);
             _context = new ConcurrentDictionary<string, string>(dictionary);
@@ -562,38 +561,6 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Returns a <see cref="string" /> that represents this instance.
-        /// </summary>
-        /// <returns>A <see cref="string" /> representation of this instance.</returns>
-        public override string ToString()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            foreach (KeyValuePair<string, string> kvp in _context)
-            {
-                stringBuilder.AppendLine();
-                stringBuilder.Append("   ");
-                if (kvp.Key == null)
-                    stringBuilder.Append("null");
-                else
-                {
-                    stringBuilder.Append("'");
-                    stringBuilder.Append(kvp.Key);
-                    stringBuilder.Append("'");
-                }
-                stringBuilder.Append(" = ");
-                if (kvp.Value == null)
-                    stringBuilder.Append("null");
-                else
-                {
-                    stringBuilder.Append("'");
-                    stringBuilder.Append(kvp.Value);
-                    stringBuilder.Append("'");
-                }
-            }
-            return stringBuilder.ToString();
-        }
-
-        /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
@@ -612,32 +579,34 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Resolves the specified writer.
+        /// Resolves the specified tag.
         /// </summary>
-        /// <param name="writer">The writer.</param>
+        /// <param name="context">The context.</param>
         /// <param name="chunk">The chunk.</param>
-        /// <returns>WebApplications.Utilities.Formatting.Resolution.</returns>
+        /// <returns>An object that will be cached unless it is a <see cref="T:WebApplications.Utilities.Formatting.Resolution" />.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Resolution Resolve(TextWriter writer, FormatChunk chunk)
+        public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
-            CultureInfo culture = writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
+            CultureInfo culture = context.Writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
             // ReSharper disable once PossibleNullReferenceException
             switch (chunk.Tag.ToLowerInvariant())
             {
                 case "default":
                 case "verbose":
-                    return new Resolution(VerboseFormat);
+                    return VerboseFormat;
                 case "xml":
-                    return new Resolution(XMLFormat);
+                    return XMLFormat;
                 case "json":
-                    return new Resolution(JSONFormat);
+                    return JSONFormat;
                 case "noline":
-                    return new Resolution(NoLineFormat);
+                    return NoLineFormat;
                 case "key":
                     string key = Translation.GetResource(() => Resources.LogKeys_Context, culture);
-                    return string.IsNullOrEmpty(key) ? Resolution.Null : new Resolution(key);
+                    return string.IsNullOrEmpty(key)
+                        ? Resolution.Null
+                        : key;
                 case "value":
-                    return new Resolution("TODO");
+                    return _context.Select(kvp => new ContextElement(kvp.Key, kvp.Value)).ToArray();
                 default:
                     return Resolution.Unknown;
             }
