@@ -49,7 +49,6 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Enumerations;
-using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities
@@ -3149,6 +3148,18 @@ namespace WebApplications.Utilities
             return b == null
                 ? Expression.Block(new[] { block }.Concat(expressions))
                 : Expression.Block(b.Variables, b.Expressions.Concat(expressions));
+        }
+
+        /// <summary>
+        /// Determines whether the given <paramref name="member" /> is compiler generated.
+        /// </summary>
+        /// <param name="member">The member.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        public static bool IsCompilerGenerated(
+            [NotNull] this MemberInfo member)
+        {
+            return member.GetCustomAttributes(typeof(CompilerGeneratedAttribute)).Any();
         }
     }
 }

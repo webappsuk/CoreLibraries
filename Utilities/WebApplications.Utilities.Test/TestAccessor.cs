@@ -26,6 +26,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebApplications.Utilities.Test
@@ -40,6 +43,40 @@ namespace WebApplications.Utilities.Test
             private int _privateField = 3;
             public string PublicAutoProperty { get; set; }
             private string _privateAutoProperty { get; set; }
+
+            public int PublicSetterProperty
+            {
+                set { _privateField = value; }
+            }
+            public int PublicGetterProperty
+            {
+                get { return _privateField; }
+            }
+        }
+
+        public class TestReadonlyClass
+        {
+            public readonly bool ReadonlyField = true;
+            public bool ReadonlyProperty { get { return true; } }
+            public bool PrivateSetter { get; private set; }
+        }
+
+        public class TestStaticsClass
+        {
+            public bool NonStaticField = false;
+            public static bool StaticField = true;
+            public bool NonStaticProperty { get; set; }
+            public static bool StaticProperty { get; set; }
+
+            static TestStaticsClass()
+            {
+                StaticProperty = true;
+            }
+
+            public TestStaticsClass()
+            {
+                NonStaticProperty = false;
+            }
         }
 
         [TestMethod]
@@ -47,6 +84,9 @@ namespace WebApplications.Utilities.Test
         {
             TestClass tc = new TestClass();
             Accessor<TestClass> tca = tc;
+            Assert.IsTrue(tca.ContainsKey("PublicReadonlyField"));
+            Assert.IsTrue(tca.Contains(new KeyValuePair<string, object>("PublicField", tc.PublicField)));
+            Assert.IsTrue(tca.ContainsKey("PublicAutoProperty"));
             Assert.AreEqual(tc.PublicReadonlyField, tca["PublicReadonlyField"]);
             Assert.AreEqual(tc.PublicField, tca["PublicField"]);
             Assert.AreEqual(tc.PublicAutoProperty, tca["PublicAutoProperty"]);
@@ -56,10 +96,31 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual(tc.PublicAutoProperty, tca["PublicAutoProperty"]);
             tca["PublicField"] = 4;
             tca["PublicAutoProperty"] = "test2";
-            Assert.AreEqual(tc.PublicField, 4);
-            Assert.AreEqual(tc.PublicAutoProperty, "test2");
+            Assert.AreEqual(4, tc.PublicField);
+            Assert.AreEqual("test2", tc.PublicAutoProperty);
             Assert.AreEqual(tc.PublicField, tca["PublicField"]);
             Assert.AreEqual(tc.PublicAutoProperty, tca["PublicAutoProperty"]);
+        }
+
+        [TestMethod]
+        public void TestGetterSetterOnly()
+        {
+            TestClass tc = new TestClass();
+            Accessor<TestClass> tca = tc;
+            object value;
+            Assert.IsFalse(tca.TryGetValue("PublicSetterProperty", out value));
+            tca["PublicSetterProperty"] = 10;
+            Assert.AreEqual(10, tc.PublicGetterProperty);
+            Assert.AreEqual(tc.PublicGetterProperty, tca["PublicGetterProperty"]);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void TestSetonly()
+        {
+            TestClass tc = new TestClass();
+            Accessor<TestClass> tca = tc;
+            object value = tca["PublicSetterProperty"];
         }
 
         [TestMethod]
@@ -88,6 +149,148 @@ namespace WebApplications.Utilities.Test
             object i;
             Assert.IsTrue(tca.TryGetValue("_privateField", out i));
             Assert.AreEqual(3, (int)i);
+
+            Assert.AreEqual(6, tca.Count);
+        }
+
+        [TestMethod]
+        public void TestEnumerator()
+        {
+            TestClass tc = new TestClass();
+            Accessor<TestClass> tca = tc;
+            Assert.AreEqual(4, tca.Count);
+
+            KeyValuePair<string, object>[] kvps = tca.OrderBy(kvp => kvp.Key).ToArray();
+
+            List<string> keys = new List<string>();
+            List<object> values = new List<object>();
+            foreach (KeyValuePair<string, object> kvp in kvps)
+            {
+                Trace.WriteLine(string.Format("{0}: {1}", kvp.Key, kvp.Value));
+                keys.Add(kvp.Key);
+                values.Add(kvp.Value);
+            }
+
+            Assert.AreEqual(tca.Count, kvps.Length);
+
+            CollectionAssert.IsSubsetOf(keys, tca.Keys.ToList());
+            CollectionAssert.IsSubsetOf(values, tca.Values.ToList());
+        }
+
+        [TestMethod]
+        public void TestDictionary()
+        {
+            TestClass tc = new TestClass();
+            Accessor<TestClass> tca = new Accessor<TestClass>(tc, supportsNew: true);
+            KeyValuePair<string, object> kvp1 = new KeyValuePair<string, object>("Key1", 123);
+            KeyValuePair<string, object> kvp2 = new KeyValuePair<string, object>("Key2", 456);
+            KeyValuePair<string, object> kvp3 = new KeyValuePair<string, object>("Key3", 789);
+
+            Assert.AreEqual(4, tca.Count);
+            tca.Add("PublicAutoProperty", "Value");
+
+            Assert.AreEqual(4, tca.Count);
+            Assert.AreEqual("Value", tc.PublicAutoProperty);
+
+            tca.Add(new KeyValuePair<string, object>("PublicAutoProperty", "Value 2"));
+
+            Assert.AreEqual(4, tca.Count);
+            Assert.AreEqual("Value 2", tc.PublicAutoProperty);
+
+            tca.Add(kvp1.Key, kvp1.Value);
+            tca.Add(kvp2);
+            tca.Add(kvp3);
+
+            Assert.AreEqual(7, tca.Count);
+            Assert.AreEqual(kvp1.Value, tca[kvp1.Key]);
+            Assert.AreEqual(kvp2.Value, tca[kvp2.Key]);
+            Assert.AreEqual(kvp3.Value, tca[kvp3.Key]);
+            Assert.IsTrue(tca.ContainsKey(kvp1.Key));
+            Assert.IsTrue(tca.Contains(kvp2));
+            Assert.IsTrue(tca.ContainsKey(kvp3.Key));
+
+            tca.Remove(kvp1.Key);
+
+            Assert.AreEqual(6, tca.Count);
+            Assert.IsFalse(tca.ContainsKey(kvp1.Key));
+
+            tca.Remove(kvp2);
+
+            Assert.AreEqual(5, tca.Count);
+            Assert.IsFalse(tca.ContainsKey(kvp2.Key));
+
+            tca.Clear();
+
+            Assert.AreEqual(4, tca.Count);
+            Assert.IsFalse(tca.ContainsKey(kvp3.Key));
+        }
+
+        [TestMethod]
+        public void TestIsReadonly()
+        {
+            Assert.IsFalse(new Accessor<TestClass>(new TestClass()).IsReadOnly);
+            Assert.IsTrue(new Accessor<TestReadonlyClass>(new TestReadonlyClass()).IsReadOnly);
+        }
+
+        [TestMethod]
+        public void TestSnapshot()
+        {
+            TestClass tc = new TestClass();
+            Accessor<TestClass> tca = tc;
+
+            tc.PublicField = 123;
+
+            Assert.AreEqual(tc.PublicField, tca["PublicField"]);
+
+            IReadOnlyDictionary<string, object> snapshot = tca.Snapshot();
+
+            tc.PublicField = 456;
+
+            Assert.AreEqual(tc.PublicField, tca["PublicField"]);
+            Assert.AreNotEqual(tc.PublicField, snapshot["PublicField"]);
+            Assert.AreEqual(123, snapshot["PublicField"]);
+
+            tca.Apply(snapshot);
+
+            Assert.AreEqual(snapshot["PublicField"], tc.PublicField);
+            Assert.AreEqual(tc.PublicField, tca["PublicField"]);
+        }
+
+        [TestMethod]
+        public void TestNotIncludingInstance()
+        {
+            Accessor<TestClass> tca = new Accessor<TestClass>(null);
+            Assert.AreEqual(0, tca.Count);
+
+            tca = new Accessor<TestClass>(new TestClass(), includeInstance: false);
+            Assert.AreEqual(0, tca.Count);
+        }
+
+        [TestMethod]
+        public void TestStatics()
+        {
+            TestStaticsClass.StaticField = true;
+            TestStaticsClass.StaticProperty = true;
+
+            Accessor<TestStaticsClass> tca = new Accessor<TestStaticsClass>(new TestStaticsClass());
+            Assert.AreEqual(4, tca.Count);
+
+            Assert.AreEqual(false, tca["NonStaticField"]);
+            Assert.AreEqual(false, tca["NonStaticProperty"]);
+            Assert.AreEqual(true, tca["StaticField"]);
+            Assert.AreEqual(true, tca["StaticProperty"]);
+
+            tca = new Accessor<TestStaticsClass>(null);
+            Assert.AreEqual(2, tca.Count);
+
+            Assert.AreEqual(true, tca["StaticField"]);
+            Assert.AreEqual(true, tca["StaticProperty"]);
+
+            tca["StaticField"] = false;
+            tca["StaticProperty"] = false;
+
+            Assert.AreEqual(false, tca["StaticField"]);
+            Assert.AreEqual(false, tca["StaticProperty"]);
         }
     }
 }

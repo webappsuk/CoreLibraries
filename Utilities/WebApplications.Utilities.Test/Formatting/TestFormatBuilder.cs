@@ -148,6 +148,30 @@ namespace WebApplications.Utilities.Test.Formatting
         public void TestReadOnly()
         {
             FormatBuilder builder = new FormatBuilder("Test", true);
+            Assert.IsTrue(builder.IsReadOnly);
+            bool thrown;
+            try
+            {
+                builder.AppendLine();
+                thrown = false;
+            }
+            catch
+            {
+                thrown = true;
+            }
+            Assert.IsTrue(thrown);
+        }
+
+        [TestMethod]
+        public void TestMakeReadOnly()
+        {
+            FormatBuilder builder = new FormatBuilder("Test");
+            Assert.IsFalse(builder.IsReadOnly);
+            builder.AppendLine();
+
+            builder.MakeReadOnly();
+            Assert.IsTrue(builder.IsReadOnly);
+
             bool thrown;
             try
             {
@@ -166,6 +190,8 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             FormatBuilder builder = new FormatBuilder("Test", true);
             FormatBuilder builder2 = builder.Clone();
+            Assert.IsTrue(builder.IsReadOnly);
+            Assert.IsFalse(builder2.IsReadOnly);
             builder2.AppendLine();
         }
 
@@ -174,6 +200,29 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             FormatBuilder builder = new FormatBuilder("Test");
             FormatBuilder builder2 = builder.Clone(true);
+            Assert.IsFalse(builder.IsReadOnly);
+            Assert.IsTrue(builder2.IsReadOnly);
+            bool thrown;
+            try
+            {
+                builder2.AppendLine();
+                thrown = false;
+            }
+            catch (Exception)
+            {
+                thrown = true;
+            }
+            Assert.IsTrue(thrown);
+        }
+
+        [TestMethod]
+        public void TestCloneKeepsReadonly()
+        {
+            FormatBuilder builder = new FormatBuilder("Test", true);
+            FormatBuilder builder2 = builder.Clone(true);
+            Assert.IsTrue(builder.IsReadOnly);
+            Assert.IsTrue(builder2.IsReadOnly);
+
             bool thrown;
             try
             {

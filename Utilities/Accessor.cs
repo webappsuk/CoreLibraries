@@ -91,8 +91,20 @@ namespace WebApplications.Utilities
                 Name = field.Info.Name;
                 IsStatic = field.Info.IsStatic;
                 IsPublic = field.Info.IsPublic;
-                Get = field.Getter<T, object>();
-                Set = field.Setter<T, object>();
+
+                if (IsStatic)
+                {
+                    Func<object> get = field.Getter<object>();
+                    Action<object> set = field.Setter<object>();
+
+                    Get = get == null ? null : new Func<T, object>(i => get());
+                    Set = set == null ? null : new Action<T, object>((i, v) => set(v));
+                }
+                else
+                {
+                    Get = field.Getter<T, object>();
+                    Set = field.Setter<T, object>();
+                }
             }
 
             /// <summary>
@@ -121,8 +133,20 @@ namespace WebApplications.Utilities
                     IsStatic = true;
                     IsPublic = false;
                 }
-                Get = property.Getter<T, object>();
-                Set = property.Setter<T, object>();
+
+                if (IsStatic)
+                {
+                    Func<object> get = property.Getter<object>();
+                    Action<object> set = property.Setter<object>();
+
+                    Get = get == null ? null : new Func<T, object>(i => get());
+                    Set = set == null ? null : new Action<T, object>((i, v) => set(v));
+                }
+                else
+                {
+                    Get = property.Getter<T, object>();
+                    Set = property.Setter<T, object>();
+                }
             }
         }
 
@@ -140,8 +164,9 @@ namespace WebApplications.Utilities
             ExtendedType et = ExtendedType.Get(typeof(T));
 
             // Combine field and properties into access dictionary.
-            _accessors = et.Fields.Select(f => new Access(f))
-                .Union(et.Properties.Select(p => new Access(p)))
+            // TODO Should compiler generated members be hidden? Eg, backing fields for auto properties
+            _accessors = et.Fields.Where(f => !f.Info.IsCompilerGenerated()).Select(f => new Access(f))
+                .Union(et.Properties.Where(p => !p.Info.IsCompilerGenerated()).Select(p => new Access(p)))
                 .ToArray();
         }
 
@@ -162,6 +187,9 @@ namespace WebApplications.Utilities
         /// </summary>
         private readonly bool _supportsNew;
 
+        /// <summary>
+        /// Whether key checking is case sensitive.
+        /// </summary>
         private readonly bool _isCaseSensitive;
 
         /// <summary>
@@ -189,7 +217,6 @@ namespace WebApplications.Utilities
             bool supportsNew = false,
             bool isCaseSensitive = true)
         {
-            Contract.Requires(instance != null);
             _instance = instance;
             _supportsNew = supportsNew;
             _isCaseSensitive = isCaseSensitive;
@@ -281,7 +308,8 @@ namespace WebApplications.Utilities
                 return;
             foreach (string key in _dictionary
                 .Where(kvp => !(kvp.Value is Access))
-                .Select(kvp => kvp.Key))
+                .Select(kvp => kvp.Key)
+                .ToArray())
                 _dictionary.Remove(key);
         }
 
@@ -293,7 +321,8 @@ namespace WebApplications.Utilities
         public bool Contains(KeyValuePair<string, object> item)
         {
             object value;
-            if (!_dictionary.TryGetValue(item.Key, out value))
+            if (item.Key == null || 
+                !_dictionary.TryGetValue(item.Key, out value))
                 return false;
 
             Access access = value as Access;
@@ -322,7 +351,8 @@ namespace WebApplications.Utilities
         {
             if (!_supportsNew) return false;
             object value;
-            if (!_dictionary.TryGetValue(item.Key, out value))
+            if (item.Key == null ||
+                !_dictionary.TryGetValue(item.Key, out value))
                 return false;
             if (value is Access)
                 return false;
@@ -330,11 +360,22 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" /> that the value can be retrieved for.
         /// </summary>
         /// <value>The count.</value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-        public int Count { get { return _dictionary.Count; } }
+        public int Count
+        {
+            get
+            {
+                return _dictionary.Count(
+                    kvp =>
+                    {
+                        Access access = kvp.Value as Access;
+                        return access == null || access.Get != null;
+                    });
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
@@ -430,7 +471,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Object.</returns>
         /// <exception cref="System.IndexOutOfRangeException">
         /// </exception>
-        public object this[string key]
+        public object this[[NotNull]string key]
         {
             get
             {
@@ -496,9 +537,9 @@ namespace WebApplications.Utilities
         /// <returns>ReadOnlyDictionary&lt;System.String, System.Object&gt;.</returns>
         [NotNull]
         [PublicAPI]
-        public ReadOnlyDictionary<string, object> Snapshot()
+        public IReadOnlyDictionary<string, object> Snapshot()
         {
-            return new ReadOnlyDictionary<string, object>(this);
+            return new Dictionary<string, object>(this);
         }
 
         /// <summary>
@@ -528,7 +569,7 @@ namespace WebApplications.Utilities
         /// <returns>The result of the conversion.</returns>
         public static implicit operator ReadOnlyDictionary<string, object>(Accessor<T> accessor)
         {
-            return new ReadOnlyDictionary<string, object>(accessor);
+            return new ReadOnlyDictionary<string, object>(accessor); // TODO Should this be taking a snapshot?
         }
     }
 }
