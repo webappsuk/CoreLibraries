@@ -234,6 +234,12 @@ namespace WebApplications.Utilities.Test.Formatting
                     {"Test", 789}
                 });
             Assert.AreEqual("Count: 3 { {Foo: 123}, {Bar: 456}, {Test: 789} }", builder.ToString());
+
+            builder.Clear();
+            builder.AppendFormat(
+                "Length: {0:{Length}} \"{0}\"",
+                FormatResources.LoremIpsum);
+            Assert.AreEqual(string.Format("Length: {0} \"{1}\"", FormatResources.LoremIpsum.Length, FormatResources.LoremIpsum), builder.ToString());
         }
 
         public class TestClass

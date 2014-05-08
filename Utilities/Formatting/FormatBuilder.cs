@@ -3282,11 +3282,6 @@ namespace WebApplications.Utilities.Formatting
 
                                     if (isResolved)
                                     {
-                                        Accessor acc = resolvedValue as Accessor ?? Accessor.Create(resolvedValue);
-                                        resolutions = new Resolutions(
-                                            resolutions,
-                                            new DictionaryResolvable(acc, acc.IsCaseSensitive));
-
                                         /*
                                          * Unwrap format builders, or enumerations of chunks
                                          */
@@ -3333,6 +3328,26 @@ namespace WebApplications.Utilities.Formatting
                                                     }
                                                 }
                                                 subFormatChunks.Push(subFormatChunk);
+                                            }
+
+                                            // If there are any fill points, then the value might be needed to resolve them
+                                            if (hasFillPoint)
+                                            {
+                                                IResolvable r = resolvedValue as IResolvable;
+                                                if (r != null)
+                                                    resolutions = new Resolutions(
+                                                        resolutions,
+                                                        r.Resolve,
+                                                        r.IsCaseSensitive,
+                                                        r.ResolveOuterTags,
+                                                        r.ResolveControls);
+                                                else
+                                                {
+                                                    Accessor acc = resolvedValue as Accessor ?? Accessor.Create(resolvedValue);
+                                                    resolutions = new Resolutions(
+                                                        resolutions,
+                                                        new DictionaryResolvable(acc, acc.IsCaseSensitive));
+                                                }
                                             }
 
                                             /*
@@ -3425,15 +3440,6 @@ namespace WebApplications.Utilities.Formatting
                                             // If we have a value, and a format, then we may need to recurse.
                                             if (hasFillPoint)
                                             {
-                                                IResolvable r = resolvedValue as IResolvable;
-                                                if (r != null)
-                                                    resolutions = new Resolutions(
-                                                        resolutions,
-                                                        r.Resolve,
-                                                        r.IsCaseSensitive,
-                                                        r.ResolveOuterTags,
-                                                        r.ResolveControls);
-
                                                 while (subFormatChunks.Count > 0)
                                                     stack.Push(subFormatChunks.Pop(), resolutions);
                                                 continue;
