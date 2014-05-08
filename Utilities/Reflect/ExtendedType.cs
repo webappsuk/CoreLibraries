@@ -537,7 +537,7 @@ namespace WebApplications.Utilities.Reflect
                     if (p != null)
                     {
                         // Seperate out indexers (which can not be disambiguated by name).
-                        if (p.Name == DefaultMember)
+                        if (p.Name == DefaultMember || p.GetIndexParameters().Length > 0)
                         {
                             if (indexers == null) indexers = new List<Indexer>();
                             indexers.Add(new Indexer(this, p));

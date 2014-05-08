@@ -193,8 +193,9 @@ namespace WebApplications.Utilities.Reflect
         public Action<TValue> Setter<TValue>()
         {
             // Only valid for static fields.
-            if ((!Info.IsStatic) ||
-                (Info.IsInitOnly))
+            if (!Info.IsStatic ||
+                Info.IsInitOnly ||
+                Info.IsLiteral)
                 return null;
 
             Type fieldType = Info.FieldType;
@@ -238,8 +239,9 @@ namespace WebApplications.Utilities.Reflect
         public Action<T, TValue> Setter<T, TValue>()
         {
             // Only valid for instance fields.
-            if ((Info.IsStatic) ||
-                (Info.IsInitOnly))
+            if (Info.IsStatic ||
+                Info.IsInitOnly ||
+                Info.IsLiteral)
                 return null;
 
             Type declaringType = ExtendedType.Type;

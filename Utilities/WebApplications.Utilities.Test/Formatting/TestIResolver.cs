@@ -214,75 +214,111 @@ namespace WebApplications.Utilities.Test.Formatting
                     resolveControls: true));
         }
 
-        /// <summary>
-        /// Colored text writer that appends special tags to the output when the color is changed.
-        /// </summary>
-        public class TestColoredTextWriter : TextWriter, IColoredTextWriter
+        [TestMethod]
+        public void TestResolveObjects()
         {
-            private readonly bool _writeToTrace;
+            TestClass tc = new TestClass(123, true, new List<int>{1, 1, 2, 3, 5, 8});
+            FormatBuilder builder = new FormatBuilder();
+            builder.AppendFormat(
+                "{0:({Number:N2}, {Boolean}) [{List:{<items>:{<item>}}{<join>:,}}]}",
+                tc);
+            Assert.AreEqual("(123.00, True) [1,1,2,3,5,8]", builder.ToString());
 
-            [NotNull]
-            private readonly StringBuilder _builder = new StringBuilder();
+            builder.Clear();
+            builder.AppendFormat(
+                "{0:Count: {Count} \\{ {<items>:\\{{Key}: {Value}\\}}{<join>:, } \\}}",
+                new Dictionary<string, int>
+                {
+                    {"Foo", 123},
+                    {"Bar", 456},
+                    {"Test", 789}
+                });
+            Assert.AreEqual("Count: 3 { {Foo: 123}, {Bar: 456}, {Test: 789} }", builder.ToString());
+        }
 
-            public TestColoredTextWriter(bool writeToTrace = false)
+        public class TestClass
+        {
+            public readonly int Number;
+            public readonly bool Boolean;
+            public readonly List<int> List;
+
+            public TestClass(int number, bool boolean, List<int> list)
             {
-                _writeToTrace = writeToTrace;
+                Number = number;
+                Boolean = boolean;
+                List = list;
             }
+        }
+    }
 
-            public override void Write(char value)
-            {
-                _builder.Append(value);
-                Trace.Write(value);
-            }
+    /// <summary>
+    /// Colored text writer that appends special tags to the output when the color is changed.
+    /// </summary>
+    public class TestColoredTextWriter : TextWriter, IColoredTextWriter
+    {
+        private readonly bool _writeToTrace;
 
-            public override Encoding Encoding
-            {
-                get { return Encoding.UTF8; }
-            }
+        [NotNull]
+        private readonly StringBuilder _builder = new StringBuilder();
 
-            public void ResetColors()
-            {
-                _builder.Append("{reset}");
-                if (_writeToTrace)
-                    Trace.Write("{reset}");
-            }
+        public TestColoredTextWriter(bool writeToTrace = false)
+        {
+            _writeToTrace = writeToTrace;
+        }
 
-            public void ResetForegroundColor()
-            {
-                _builder.Append("{/fg}");
-                if (_writeToTrace)
-                    Trace.Write("{/fg}");
-            }
+        public override void Write(char value)
+        {
+            _builder.Append(value);
+            Trace.Write(value);
+        }
 
-            public void SetForegroundColor(Color color)
-            {
-                string c = color.IsNamedColor ? color.Name : string.Format("#{0:X8}", color.ToArgb());
+        public override Encoding Encoding
+        {
+            get { return Encoding.UTF8; }
+        }
 
-                _builder.AppendFormat("{{fg:{0}}}", c);
-                if (_writeToTrace)
-                    Trace.Write(string.Format("{{fg:{0}}}", c));
-            }
+        public void ResetColors()
+        {
+            _builder.Append("{reset}");
+            if (_writeToTrace)
+                Trace.Write("{reset}");
+        }
 
-            public void ResetBackgroundColor()
-            {
-                _builder.Append("{/bg}");
-                if (_writeToTrace)
-                    Trace.Write("{/bg}");
-            }
+        public void ResetForegroundColor()
+        {
+            _builder.Append("{/fg}");
+            if (_writeToTrace)
+                Trace.Write("{/fg}");
+        }
 
-            public void SetBackgroundColor(Color color)
-            {
-                string c = color.IsNamedColor ? color.Name : string.Format("#{0:X8}", color.ToArgb());
+        public void SetForegroundColor(Color color)
+        {
+            string c = color.IsNamedColor ? color.Name : string.Format("#{0:X8}", color.ToArgb());
 
-                _builder.AppendFormat("{{bg:{0}}}", c);
-                if (_writeToTrace)
-                    Trace.Write(string.Format("{{bg:{0}}}", c));
-            }
+            _builder.AppendFormat("{{fg:{0}}}", c);
+            if (_writeToTrace)
+                Trace.Write(string.Format("{{fg:{0}}}", c));
+        }
 
-            public override string ToString()
-            {
-                return _builder.ToString();
-            }
+        public void ResetBackgroundColor()
+        {
+            _builder.Append("{/bg}");
+            if (_writeToTrace)
+                Trace.Write("{/bg}");
+        }
+
+        public void SetBackgroundColor(Color color)
+        {
+            string c = color.IsNamedColor ? color.Name : string.Format("#{0:X8}", color.ToArgb());
+
+            _builder.AppendFormat("{{bg:{0}}}", c);
+            if (_writeToTrace)
+                Trace.Write(string.Format("{{bg:{0}}}", c));
+        }
+
+        public override string ToString()
+        {
+            return _builder.ToString();
         }
     }
 }

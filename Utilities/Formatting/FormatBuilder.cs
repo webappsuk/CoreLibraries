@@ -1359,7 +1359,7 @@ namespace WebApplications.Utilities.Formatting
                 IResolvable resolvable;
                 if (!ReferenceEquals(instance, null))
                 {
-                    IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>) instance).Snapshot();
+                    IReadOnlyDictionary<string, object> dictionary = ((Accessor<T>)instance).Snapshot();
                     resolvable = dictionary.Count > 0
                         ? new DictionaryResolvable(dictionary)
                         : null;
@@ -3266,6 +3266,11 @@ namespace WebApplications.Utilities.Formatting
 
                                     if (isResolved)
                                     {
+                                        Accessor acc = resolvedValue as Accessor ?? Accessor.Create(resolvedValue);
+                                        resolutions = new Resolutions(
+                                            resolutions,
+                                            new DictionaryResolvable(acc, acc.IsCaseSensitive));
+
                                         /*
                                          * Unwrap format builders, or enumerations of chunks
                                          */
@@ -3412,7 +3417,7 @@ namespace WebApplications.Utilities.Formatting
                                                         r.IsCaseSensitive,
                                                         r.ResolveOuterTags,
                                                         r.ResolveControls);
-                                                
+
                                                 while (subFormatChunks.Count > 0)
                                                     stack.Push(subFormatChunks.Pop(), resolutions);
                                                 continue;

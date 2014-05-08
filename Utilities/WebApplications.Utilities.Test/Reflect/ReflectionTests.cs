@@ -295,6 +295,13 @@ namespace WebApplications.Utilities.Test.Reflect
         }
 
         [TestMethod]
+        public void GetSetter_ConstantField_ReturnsNull()
+        {
+            Action<int> setConst = typeof(ReflectionTestClass<Guid>).GetSetter<int>("Constant");
+            Assert.IsNull(setConst);
+        }
+
+        [TestMethod]
         public void TestConversions()
         {
             Random r = new Random();
@@ -444,6 +451,8 @@ namespace WebApplications.Utilities.Test.Reflect
         #region Nested type: ReflectionTestClass
         public class ReflectionTestClass<T>
         {
+            public const int Constant = 1;
+
             private static ReflectionTestClass<T> _last;
             public static int? StaticFunctionInputA = null;
             public static int? StaticFunctionInputB = null;

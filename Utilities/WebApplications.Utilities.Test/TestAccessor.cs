@@ -59,6 +59,7 @@ namespace WebApplications.Utilities.Test
             public readonly bool ReadonlyField = true;
             public bool ReadonlyProperty { get { return true; } }
             public bool PrivateSetter { get; private set; }
+            public const bool Constant = true;
         }
 
         public class TestStaticsClass
@@ -130,6 +131,16 @@ namespace WebApplications.Utilities.Test
             TestClass tc = new TestClass();
             Accessor<TestClass> tca = tc;
             tca["PublicReadonlyField"] = false;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void TestConstant()
+        {
+            TestReadonlyClass tc = new TestReadonlyClass();
+            Accessor<TestReadonlyClass> tca = tc;
+            Assert.AreEqual(TestReadonlyClass.Constant, tca["Constant"]);
+            tca["Constant"] = false;
         }
 
         [TestMethod]
@@ -291,6 +302,26 @@ namespace WebApplications.Utilities.Test
 
             Assert.AreEqual(false, tca["StaticField"]);
             Assert.AreEqual(false, tca["StaticProperty"]);
+        }
+
+        [TestMethod]
+        public void TestCreate()
+        {
+            Accessor accessor = Accessor.Create(new TestClass());
+            Assert.IsNotNull(accessor);
+            Assert.IsInstanceOfType(accessor, typeof(Accessor<TestClass>));
+            Assert.AreEqual(4, accessor.Count);
+            Assert.IsTrue(accessor.ContainsKey("PublicReadonlyField"));
+            Assert.IsTrue(accessor.ContainsKey("PublicField"));
+            Assert.IsTrue(accessor.ContainsKey("PublicAutoProperty"));
+            Assert.IsTrue(accessor.ContainsKey("PublicGetterProperty"));
+
+            accessor = Accessor.Create(new KeyValuePair<string, int>("Test", 123));
+            Assert.IsNotNull(accessor);
+            Assert.IsInstanceOfType(accessor, typeof(Accessor<KeyValuePair<string, int>>));
+            Assert.AreEqual(2, accessor.Count);
+            Assert.IsTrue(accessor.ContainsKey("Key"));
+            Assert.IsTrue(accessor.ContainsKey("Value"));
         }
     }
 }

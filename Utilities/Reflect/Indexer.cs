@@ -58,7 +58,7 @@ namespace WebApplications.Utilities.Reflect
         internal Indexer([NotNull] ExtendedType extendedType, [NotNull] PropertyInfo info)
             : base(extendedType, info)
         {
-            Contract.Assert(extendedType.DefaultMember == info.Name);
+            Contract.Assert(extendedType.DefaultMember == info.Name || info.GetIndexParameters().Length > 0);
             _indexParameters = new Lazy<ParameterInfo[]>(info.GetIndexParameters, LazyThreadSafetyMode.PublicationOnly);
         }
 
