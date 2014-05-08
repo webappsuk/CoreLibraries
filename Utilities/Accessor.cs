@@ -166,6 +166,7 @@ namespace WebApplications.Utilities
             // Combine field and properties into access dictionary.
             _accessors = et.Fields.Where(f => !f.Info.IsCompilerGenerated()).Select(f => new Access(f))
                 .Union(et.Properties.Where(p => !p.Info.IsCompilerGenerated()).Select(p => new Access(p)))
+                .Where(a => a.Get != null)
                 .ToArray();
         }
 

@@ -103,24 +103,24 @@ namespace WebApplications.Utilities.Test
         }
 
         [TestMethod]
-        public void TestGetterSetterOnly()
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void TestSetSetterOnly()
+        {
+            TestClass tc = new TestClass();
+            Accessor<TestClass> tca = tc;
+            tca["PublicSetterProperty"] = 10;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void TestGetSetterOnly()
         {
             TestClass tc = new TestClass();
             Accessor<TestClass> tca = tc;
             object value;
             Assert.IsFalse(tca.TryGetValue("PublicSetterProperty", out value));
-            tca["PublicSetterProperty"] = 10;
-            Assert.AreEqual(10, tc.PublicGetterProperty);
-            Assert.AreEqual(tc.PublicGetterProperty, tca["PublicGetterProperty"]);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(IndexOutOfRangeException))]
-        public void TestSetonly()
-        {
-            TestClass tc = new TestClass();
-            Accessor<TestClass> tca = tc;
-            object value = tca["PublicSetterProperty"];
+            Assert.IsFalse(tca.ContainsKey("PublicSetterProperty"));
+            value = tca["PublicSetterProperty"];
         }
 
         [TestMethod]
