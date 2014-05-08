@@ -587,7 +587,7 @@ namespace WebApplications.Utilities.Logging
         // ReSharper disable once CodeAnnotationAnalyzer
         public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
-            CultureInfo culture = context.Writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
+            CultureInfo culture = context.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
             // ReSharper disable once PossibleNullReferenceException
             switch (chunk.Tag.ToLowerInvariant())
             {

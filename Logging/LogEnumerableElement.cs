@@ -137,7 +137,7 @@ namespace WebApplications.Utilities.Logging
                     case "noline":
                         return EnumerableElementNoLineFormat;
                     case "key":
-                        string key = Translation.GetResource(Resource, context.Writer.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        string key = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
                         return string.IsNullOrEmpty(key)
                             ? Resolution.Null
                             : key;
