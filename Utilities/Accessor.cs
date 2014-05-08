@@ -161,10 +161,9 @@ namespace WebApplications.Utilities
         /// </summary>
         static Accessor()
         {
-            ExtendedType et = ExtendedType.Get(typeof(T));
+            ExtendedType et = ExtendedType.Get(typeof (T));
 
             // Combine field and properties into access dictionary.
-            // TODO Should compiler generated members be hidden? Eg, backing fields for auto properties
             _accessors = et.Fields.Where(f => !f.Info.IsCompilerGenerated()).Select(f => new Access(f))
                 .Union(et.Properties.Where(p => !p.Info.IsCompilerGenerated()).Select(p => new Access(p)))
                 .ToArray();
@@ -321,7 +320,7 @@ namespace WebApplications.Utilities
         public bool Contains(KeyValuePair<string, object> item)
         {
             object value;
-            if (item.Key == null || 
+            if (item.Key == null ||
                 !_dictionary.TryGetValue(item.Key, out value))
                 return false;
 
@@ -384,10 +383,7 @@ namespace WebApplications.Utilities
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
         public bool IsReadOnly
         {
-            get
-            {
-                return !_supportsNew && _dictionary.Values.OfType<Access>().All(a => a.Set == null);
-            }
+            get { return !_supportsNew && _dictionary.Values.OfType<Access>().All(a => a.Set == null); }
         }
 
         /// <summary>
@@ -395,6 +391,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</param>
         /// <returns>true if the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the key; otherwise, false.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
         public bool ContainsKey(string key)
         {
             return _dictionary.ContainsKey(key);
@@ -405,6 +402,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The object to use as the key of the element to add.</param>
         /// <param name="value">The object to use as the value of the element to add.</param>
+        // ReSharper disable once CodeAnnotationAnalyzer
         public void Add(string key, object value)
         {
             object v;
@@ -429,6 +427,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns>System.Boolean.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
         public bool Remove(string key)
         {
             if (!_supportsNew) return false;
@@ -449,10 +448,8 @@ namespace WebApplications.Utilities
         public bool TryGetValue(string key, out object value)
         {
             if (!_dictionary.TryGetValue(key, out value))
-            {
-                value = null;
                 return false;
-            }
+
             Access access = value as Access;
             if (access == null)
                 return true;
@@ -471,7 +468,7 @@ namespace WebApplications.Utilities
         /// <returns>System.Object.</returns>
         /// <exception cref="System.IndexOutOfRangeException">
         /// </exception>
-        public object this[[NotNull]string key]
+        public object this[[NotNull] string key]
         {
             get
             {
@@ -502,7 +499,10 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <value>The keys.</value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
-        public ICollection<string> Keys { get { return _dictionary.Keys; } }
+        public ICollection<string> Keys
+        {
+            get { return _dictionary.Keys; }
+        }
 
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
@@ -513,8 +513,7 @@ namespace WebApplications.Utilities
         {
             get
             {
-                return
-                    new Dictionary<string, object>.ValueCollection(this.ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
+                return new Dictionary<string, object>.ValueCollection(new Dictionary<string, object>(this));
             }
         }
         #endregion
@@ -563,13 +562,15 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Accessor{T}"/> to <see cref="ReadOnlyDictionary{TKey, TValue}"/>.
+        /// Performs an implicit conversion from <see cref="Accessor{T}"/> to <see cref="ReadOnlyDictionary{TKey,TValue}"/>.
         /// </summary>
         /// <param name="accessor">The accessor.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator ReadOnlyDictionary<string, object>(Accessor<T> accessor)
         {
-            return new ReadOnlyDictionary<string, object>(accessor); // TODO Should this be taking a snapshot?
+            return accessor == null
+                ? null
+                : new ReadOnlyDictionary<string, object>(new Dictionary<string, object>(accessor));
         }
     }
 }

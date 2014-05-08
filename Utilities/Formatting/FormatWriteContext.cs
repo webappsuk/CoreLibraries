@@ -25,8 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Diagnostics.Contracts;
-using System.IO;
+using System;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Formatting
@@ -39,22 +39,47 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// The writer width (if any); otherwise <see cref="int.MaxValue"/>.
         /// </summary>
+        [PublicAPI]
         public readonly int WriterWidth;
 
         /// <summary>
         /// Whether the underlying writer supports color.
         /// </summary>
+        [PublicAPI]
         public readonly bool IsColorSupported;
 
         /// <summary>
         /// Whether the underlying writer supports custom control characters.
         /// </summary>
+        [PublicAPI]
         public readonly bool IsControllableWriter;
 
         /// <summary>
         /// Whether the underlying writer auto wraps.
         /// </summary>
+        [PublicAPI]
         public readonly bool IsAutoWrapping;
+
+        /// <summary>
+        /// An object that controls formatting.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly IFormatProvider FormatProvider;
+
+        /// <summary>
+        /// The character encoding in which the output is written.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly Encoding Encoding;
+
+        /// <summary>
+        /// The line terminator string.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly string NewLine;
 
         /// <summary>
         /// The current <see cref="LineType"/>.
@@ -78,16 +103,29 @@ namespace WebApplications.Utilities.Formatting
         /// <summary>
         /// Initializes a new instance of the <see cref="FormatWriteContext" /> class.
         /// </summary>
-        /// <param name="writerWidth">if set to <see langword="true" /> [writer width].</param>
-        /// <param name="isColorSupported">if set to <see langword="true" /> [is color supported].</param>
-        /// <param name="isControllableWriter">if set to <see langword="true" /> [is controllable writer].</param>
-        /// <param name="isAutoWrapping">if set to <see langword="true" /> [is automatic wrapping].</param>
-        internal FormatWriteContext(int writerWidth, bool isColorSupported, bool isControllableWriter, bool isAutoWrapping)
+        /// <param name="writerWidth">Width of the writer (if any); otherwise <see cref="int.MaxValue"/>.</param>
+        /// <param name="isColorSupported">if set to <see langword="true" /> the underlying writer supports color.</param>
+        /// <param name="isControllableWriter">if set to <see langword="true" /> the underlying writer supports custom control characters.</param>
+        /// <param name="isAutoWrapping">if set to <see langword="true" /> the underlying writer auto wraps.</param>
+        /// <param name="formatProvider">An object that controls formatting.</param>
+        /// <param name="encoding">The character encoding in which the output is written.</param>
+        /// <param name="newLine">The line terminator string.</param>
+        internal FormatWriteContext(
+            int writerWidth,
+            bool isColorSupported,
+            bool isControllableWriter,
+            bool isAutoWrapping,
+            [NotNull] IFormatProvider formatProvider,
+            [NotNull] Encoding encoding,
+            [NotNull] string newLine)
         {
             WriterWidth = writerWidth;
             IsColorSupported = isColorSupported;
             IsControllableWriter = isControllableWriter;
             IsAutoWrapping = isAutoWrapping;
+            FormatProvider = formatProvider;
+            Encoding = encoding;
+            NewLine = newLine;
         }
 
         /// <summary>

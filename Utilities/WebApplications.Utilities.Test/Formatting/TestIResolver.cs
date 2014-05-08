@@ -27,12 +27,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Net.Mime;
-using System.Windows.Controls;
+using System.Text;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Test.Formatting
@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             FormatBuilder builder = new FormatBuilder().AppendFormat(
                 "{0:[{<Items>:0.00}{<JOIN>:, }]}",
-                new[] {1, 2, 3, 4});
+                new[] { 1, 2, 3, 4 });
             Assert.AreEqual("[1.00, 2.00, 3.00, 4.00]", builder.ToString());
         }
 
@@ -127,44 +127,55 @@ namespace WebApplications.Utilities.Test.Formatting
         {
             FormatBuilder builder = new FormatBuilder().AppendFormat(
                 "{0:[{<items>:{<Index>}-{<Item>:0.00}}{<JOIN>:, }]}",
-                new[] {1, 2, 3, 4});
+                new[] { 1, 2, 3, 4 });
             Assert.AreEqual("[0-1.00, 1-2.00, 2-3.00, 3-4.00]", builder.ToString());
         }
-        
+
         [TestMethod]
         public void TestColoredWriter()
         {
-            Mock<TextWriter> mockWriter = new Mock<TextWriter>();
-            mockWriter.As<IColoredTextWriter>().Setup(w => w.SetForegroundColor(It.IsAny<Color>()));
-            mockWriter.As<IColoredTextWriter>().Setup(w => w.ResetForegroundColor());
-            mockWriter.As<IColoredTextWriter>().Setup(w => w.SetBackgroundColor(It.IsAny<Color>()));
-            mockWriter.As<IColoredTextWriter>().Setup(w => w.ResetBackgroundColor());
             FormatBuilder builder = new FormatBuilder()
+                .Append("Some normal text, ")
                 .AppendForegroundColor(Color.Red)
+                .Append("some red text, ")
                 .AppendResetForegroundColor()
+                .Append("some more normal text, ")
                 .AppendForegroundColor(Color.Green)
+                .Append("some green ")
                 .AppendBackgroundColor(Color.Blue)
-                .AppendResetBackgroundColor();
-            builder.WriteTo(mockWriter.Object);
-            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Red), Times.Once());
-            mockWriter.As<IColoredTextWriter>().Verify(w => w.ResetForegroundColor(), Times.Once());
-            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Green), Times.Once());
-            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetBackgroundColor(Color.Blue), Times.Once());
-            mockWriter.As<IColoredTextWriter>().Verify(w => w.ResetBackgroundColor(), Times.Once());
+                .Append("and some blue ")
+                .AppendResetBackgroundColor()
+                .AppendLine("and back to green.");
+
+            using (TestColoredTextWriter writer = new TestColoredTextWriter(true))
+            {
+                builder.WriteTo(writer);
+
+                Assert.AreEqual(
+                    "Some normal text, {fg:Red}some red text, {/fg}some more normal text, {fg:Green}some green {bg:Blue}and some blue {/bg}and back to green.\r\n",
+                    writer.ToString());
+            }
         }
 
         [TestMethod]
         public void TestReplaceColor()
         {
-            Mock<TextWriter> mockWriter = new Mock<TextWriter>();
-            mockWriter.As<IColoredTextWriter>().Setup(w => w.SetForegroundColor(It.IsAny<Color>()));
             FormatBuilder builder = new FormatBuilder()
+                .Append("Some text. ")
                 .AppendForegroundColor(Color.Red)
-                .AppendForegroundColor(Color.Green);
-            builder.WriteTo(mockWriter.Object);
-            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Red), Times.Once());
-            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Green), Times.Once());
-            
+                .Append("Some red text. ")
+                .AppendForegroundColor(Color.Green)
+                .AppendLine("Some green text.");
+
+            using (TestColoredTextWriter writer = new TestColoredTextWriter(true))
+            {
+                builder.WriteTo(writer);
+
+                Assert.AreEqual(
+                    "Some text. {fg:Red}Some red text. {fg:Green}Some green text.\r\n",
+                    writer.ToString());
+            }
+
             builder.Resolve(
                 (_, c) =>
                     string.Equals(
@@ -178,9 +189,15 @@ namespace WebApplications.Utilities.Test.Formatting
                         ? new FormatChunk(c, Color.Blue)
                         : Resolution.UnknownYet,
                 resolveControls: true);
-            builder.WriteTo(mockWriter.Object);
-            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Red), Times.Exactly(2));
-            mockWriter.As<IColoredTextWriter>().Verify(w => w.SetForegroundColor(Color.Blue), Times.Once());
+
+            using (TestColoredTextWriter writer = new TestColoredTextWriter(true))
+            {
+                builder.WriteTo(writer);
+
+                Assert.AreEqual(
+                    "Some text. {fg:Red}Some red text. {fg:Blue}Some green text.\r\n",
+                    writer.ToString());
+            }
         }
 
         [TestMethod]
@@ -195,6 +212,77 @@ namespace WebApplications.Utilities.Test.Formatting
                         ? new FormatChunk(c.Format)
                         : Resolution.Unknown,
                     resolveControls: true));
+        }
+
+        /// <summary>
+        /// Colored text writer that appends special tags to the output when the color is changed.
+        /// </summary>
+        public class TestColoredTextWriter : TextWriter, IColoredTextWriter
+        {
+            private readonly bool _writeToTrace;
+
+            [NotNull]
+            private readonly StringBuilder _builder = new StringBuilder();
+
+            public TestColoredTextWriter(bool writeToTrace = false)
+            {
+                _writeToTrace = writeToTrace;
+            }
+
+            public override void Write(char value)
+            {
+                _builder.Append(value);
+                Trace.Write(value);
+            }
+
+            public override Encoding Encoding
+            {
+                get { return Encoding.UTF8; }
+            }
+
+            public void ResetColors()
+            {
+                _builder.Append("{reset}");
+                if (_writeToTrace)
+                    Trace.Write("{reset}");
+            }
+
+            public void ResetForegroundColor()
+            {
+                _builder.Append("{/fg}");
+                if (_writeToTrace)
+                    Trace.Write("{/fg}");
+            }
+
+            public void SetForegroundColor(Color color)
+            {
+                string c = color.IsNamedColor ? color.Name : string.Format("#{0:X8}", color.ToArgb());
+
+                _builder.AppendFormat("{{fg:{0}}}", c);
+                if (_writeToTrace)
+                    Trace.Write(string.Format("{{fg:{0}}}", c));
+            }
+
+            public void ResetBackgroundColor()
+            {
+                _builder.Append("{/bg}");
+                if (_writeToTrace)
+                    Trace.Write("{/bg}");
+            }
+
+            public void SetBackgroundColor(Color color)
+            {
+                string c = color.IsNamedColor ? color.Name : string.Format("#{0:X8}", color.ToArgb());
+
+                _builder.AppendFormat("{{bg:{0}}}", c);
+                if (_writeToTrace)
+                    Trace.Write(string.Format("{{bg:{0}}}", c));
+            }
+
+            public override string ToString()
+            {
+                return _builder.ToString();
+            }
         }
     }
 }
