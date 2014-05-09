@@ -3188,7 +3188,7 @@ namespace WebApplications.Utilities.Formatting
             LineType lineType = position < 1 ? LineType.First : LineType.None;
 
             // Controls are queued until being written, they are trigged by a null string.
-            Queue<FormatChunk> controls = new Queue<FormatChunk>();
+            LinkedList<FormatChunk> controls = new LinkedList<FormatChunk>();
 
             // Set up resolutions
             initialResolutions = resolver != null
@@ -3453,7 +3453,7 @@ namespace WebApplications.Utilities.Formatting
                             {
                                 // We need to queue this chunk for when the writer reaches it.
                                 chunkStr = null;
-                                controls.Enqueue(chunk);
+                                controls.AddLast(chunk);
                             }
                             else if (!isResolved)
                             {
@@ -3498,7 +3498,8 @@ namespace WebApplications.Utilities.Formatting
                         if (chunkStr == null)
                         {
                             Contract.Assert(controls.Count > 0, "No controls left in queue, unhandled null.");
-                            chunk = controls.Dequeue();
+                            chunk = controls.First.Value;
+                            controls.RemoveFirst();
                             if (string.Equals(chunk.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 isLayoutRequired = HandleLayoutChunk(chunk, layoutStack, writerWidth);
@@ -3633,13 +3634,14 @@ namespace WebApplications.Utilities.Formatting
                     #endregion
 
                     if ((word == null) &&
-                        (string.Equals(controls.Peek().Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase)))
+                        (string.Equals(controls.Last.Value.Tag, LayoutTag, StringComparison.InvariantCultureIgnoreCase)))
                     {
-                        HandleLayoutChunk(controls.Dequeue(), layoutStack, writerWidth);
+                        HandleLayoutChunk(controls.Last.Value, layoutStack, writerWidth);
+                        controls.RemoveLast();
                         continue;
                     }
 
-                    if (words.Count < 1)
+                    if (words.All(w => w == null))
                     {
                         // The layout has changed before we've added any non-control chunks to the line,
                         // so we can update the layout.
@@ -3854,7 +3856,8 @@ namespace WebApplications.Utilities.Formatting
                                             controls.Count > 0,
                                             "No controls left in queue, unhandled null.");
 
-                                        FormatChunk chunk = controls.Dequeue();
+                                        FormatChunk chunk = controls.First.Value;
+                                        controls.RemoveFirst();
                                         if (coloredTextWriter != null &&
                                             HandleColor(chunk, coloredTextWriter))
                                             continue;

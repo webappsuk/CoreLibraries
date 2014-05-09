@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -314,6 +315,17 @@ namespace WebApplications.Utilities.Test.Formatting
                 Assert.AreEqual(12, lines.Length);
                 Assert.AreEqual(width, lines.Select(l => l.Length).Max());
             }
+        }
+
+        [TestMethod]
+        public void TestLayoutAfterControl()
+        {
+            FormatBuilder builder = new FormatBuilder(7, alignment: Alignment.Left)
+                .AppendForegroundColor(Color.Red)
+                .AppendLayout(alignment: Alignment.Right)
+                .AppendLine("Right");
+
+            Assert.AreEqual("  Right\r\n", builder.ToString());
         }
     }
 }
