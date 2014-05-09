@@ -316,38 +316,7 @@ namespace WebApplications.Utilities.Formatting
             else if (RootChunk.ChildrenInternal != null &&
                      RootChunk.ChildrenInternal.Count > 0)
             {
-                Stack<FormatChunk, IEnumerable<FormatChunk>> stack = new Stack<FormatChunk, IEnumerable<FormatChunk>>();
-                stack.Push(formatBuilder.RootChunk, RootChunk.ChildrenInternal.ToArray());
-
-                while (stack.Count > 0)
-                {
-                    FormatChunk currParent;
-                    IEnumerable<FormatChunk> chunks;
-                    stack.Pop(out currParent, out chunks);
-
-                    Contract.Assert(currParent != null);
-                    Contract.Assert(chunks != null);
-
-                    // ReSharper disable once PossibleNullReferenceException
-                    currParent.ChildrenInternal = new List<FormatChunk>();
-
-                    // Adds each chunk to the current parent
-                    // ReSharper disable once PossibleNullReferenceException
-                    foreach (FormatChunk chunk in chunks)
-                    {
-                        Contract.Assert(chunk != null);
-                        // ReSharper disable PossibleNullReferenceException
-                        FormatChunk newChunk = chunk.Clone();
-                        // ReSharper restore PossibleNullReferenceException
-
-                        currParent.ChildrenInternal.Add(newChunk);
-
-                        // If the chunk has any children they need to be added to the new chunk
-                        if (chunk.ChildrenInternal != null &&
-                            chunk.ChildrenInternal.Count >= 1)
-                            stack.Push(newChunk, chunk.ChildrenInternal);
-                    }
-                }
+                FormatChunk.DeepCopyChunks(RootChunk, formatBuilder.RootChunk);
             }
 
             return formatBuilder;
@@ -3278,7 +3247,14 @@ namespace WebApplications.Utilities.Formatting
                                                   Equals(resolvedValue, chunk.Value)))
                                             {
                                                 List<FormatChunk> children = chunk.ChildrenInternal;
-                                                chunk = new FormatChunk(chunk, resolvedValue)
+                                                chunk = new FormatChunk(
+                                                    chunk.Resolver,
+                                                    chunk.Tag,
+                                                    chunk.Alignment,
+                                                    chunk.Format,
+                                                    true,
+                                                    resolvedValue,
+                                                    chunk.IsControl)
                                                 {
                                                     ChildrenInternal = children
                                                 };

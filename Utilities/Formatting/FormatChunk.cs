@@ -179,7 +179,7 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Creates a clone of the <see cref="FormatChunk"/>, changing the resolved value.
+        /// Creates a clone of the <see cref="FormatChunk" />, changing the resolved value.
         /// </summary>
         /// <param name="chunk">The chunk.</param>
         /// <param name="value">The value.</param>
@@ -191,6 +191,8 @@ namespace WebApplications.Utilities.Formatting
             IsControl = chunk.IsControl;
             Alignment = chunk.Alignment;
             Format = chunk.Format;
+
+            DeepCopyChunks(chunk, this);
 
             if (!value.IsAssigned) return;
 
@@ -208,7 +210,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="isResolved">if set to <see langword="true" /> [is resolved].</param>
         /// <param name="value">The value.</param>
         /// <param name="isControl">if set to <see langword="true" /> [is control].</param>
-        private FormatChunk(
+        internal FormatChunk(
             [CanBeNull] IResolvable resolver,
             [CanBeNull] string tag,
             int alignment,
@@ -227,13 +229,55 @@ namespace WebApplications.Utilities.Formatting
         }
 
         /// <summary>
-        /// Clones this instance. Children are not cloned.
+        /// Performs a deep copy of the child chunks from <paramref name="source"/> to <see cref="destination"/>.
         /// </summary>
-        /// <returns>FormatChunk.</returns>
-        [NotNull]
-        internal FormatChunk Clone()
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        internal static void DeepCopyChunks([NotNull] FormatChunk source, [NotNull] FormatChunk destination)
         {
-            return new FormatChunk(Resolver, Tag, Alignment, Format, IsResolved, Value, IsControl);
+            Contract.Requires(source != null);
+            Contract.Requires(destination != null);
+            if (source.ChildrenInternal != null &&
+                source.ChildrenInternal.Count > 0)
+            {
+                Stack<FormatChunk, IEnumerable<FormatChunk>> stack = new Stack<FormatChunk, IEnumerable<FormatChunk>>();
+                stack.Push(destination, source.ChildrenInternal.ToArray());
+
+                while (stack.Count > 0)
+                {
+                    FormatChunk currParent;
+                    IEnumerable<FormatChunk> chunks;
+                    stack.Pop(out currParent, out chunks);
+
+                    Contract.Assert(currParent != null);
+                    Contract.Assert(chunks != null);
+
+                    // ReSharper disable once PossibleNullReferenceException
+                    currParent.ChildrenInternal = new List<FormatChunk>();
+
+                    // Adds each chunk to the current parent
+                    // ReSharper disable once PossibleNullReferenceException
+                    foreach (FormatChunk child in chunks)
+                    {
+                        Contract.Assert(child != null);
+                        FormatChunk newChunk = new FormatChunk(
+                            child.Resolver,
+                            child.Tag,
+                            child.Alignment,
+                            child.Format,
+                            child.IsResolved,
+                            child.Value,
+                            child.IsControl);
+
+                        currParent.ChildrenInternal.Add(newChunk);
+
+                        // If the chunk has any children they need to be added to the new chunk
+                        if (child.ChildrenInternal != null &&
+                            child.ChildrenInternal.Count >= 1)
+                            stack.Push(newChunk, child.ChildrenInternal);
+                    }
+                }
+            }
         }
 
         /// <summary>
