@@ -3661,10 +3661,10 @@ namespace WebApplications.Utilities.Formatting
                         {
                             // Add null to words list - list is a control chunk and will be dequeued when writing the line out.
                             words.Add(word);
-                            continue;
+                            if (stack.Count > 0)
+                                continue;
                         }
-
-                        if (word.Length > 0)
+                        else if (word.Length > 0)
                         {
                             char c = word[0];
                             // Check if we're at the start of a line.

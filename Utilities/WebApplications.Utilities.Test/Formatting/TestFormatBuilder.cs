@@ -384,5 +384,30 @@ namespace WebApplications.Utilities.Test.Formatting
                 Assert.AreEqual("{fg:Green}", writer.ToString());
             }
         }
+
+        [TestMethod]
+        [Timeout(1000)]
+        public void TestTrailingControlChunks()
+        {
+            FormatBuilder builder = new FormatBuilder(100)
+                .Append("Text")
+                .AppendFormat("{" + FormatBuilder.ForegroundColorTag + "}");
+
+            using (TestColoredTextWriter writer = new TestColoredTextWriter())
+            {
+                builder.WriteTo(writer);
+                Assert.AreEqual("Text{/fg}", writer.ToString());
+            }
+
+            builder.Clear();
+            builder.AppendLine("Text")
+                .AppendFormat("{" + FormatBuilder.ForegroundColorTag + "}");
+
+            using (TestColoredTextWriter writer = new TestColoredTextWriter())
+            {
+                builder.WriteTo(writer);
+                Assert.AreEqual("Text\r\n{/fg}", writer.ToString());
+            }
+        }
     }
 }
