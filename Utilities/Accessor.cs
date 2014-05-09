@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
@@ -44,7 +45,16 @@ namespace WebApplications.Utilities
     public abstract class Accessor : IDictionary<string, object>, IReadOnlyDictionary<string, object>
     {
         /// <summary>
-        /// Creates a new <see cref="Accessor{T}"/> for the <paramref name="instance"/> given.
+        /// The constructor functions.
+        /// </summary>
+        [NotNull]
+        private static readonly
+            ConcurrentDictionary<Type, Func<object, bool, bool, bool, bool, bool, bool, bool, bool, Accessor>>
+            _constructorFuncs =
+                new ConcurrentDictionary<Type, Func<object, bool, bool, bool, bool, bool, bool, bool, bool, Accessor>>();
+
+        /// <summary>
+        /// Creates a new <see cref="Accessor{T}" /> for the <paramref name="instance" /> given.
         /// </summary>
         /// <param name="instance">The instance.</param>
         /// <param name="includeFields">if set to <see langword="true" /> includes fields.</param>
@@ -54,10 +64,10 @@ namespace WebApplications.Utilities
         /// <param name="includePublic">if set to <see langword="true" /> includes public members.</param>
         /// <param name="includeNonPublic">if set to <see langword="true" /> includes non-public members.</param>
         /// <param name="supportsNew">if set to <see langword="true" /> unknown keys are supported and stored.</param>
-        /// <param name="isCaseSensitive">if set to 
+        /// <param name="isCaseSensitive">if set to
         /// <see langword="true" /> then keys are case sensitive; otherwise matching keys (due to case insensitivity) will result
         /// in missing accessors so this setting should be used with caution.</param>
-        /// <returns>A new <see cref="Accessor{T}"/> of the </returns>
+        /// <returns>A new <see cref="Accessor{T}" /> of the</returns>
         [NotNull]
         [PublicAPI]
         public static Accessor Create(
@@ -83,23 +93,37 @@ namespace WebApplications.Utilities
                     supportsNew,
                     isCaseSensitive);
 
-            Type genericAccessorType = typeof(Accessor<>).MakeGenericType(new[] { instance.GetType() });
-
-            // ReSharper disable once AssignNullToNotNullAttribute
-            return (Accessor)Activator.CreateInstance(
-                genericAccessorType,
-                new[]
-                {
-                    instance,
-                    includeFields,
-                    includeProperties,
-                    includeInstance,
-                    includeStatic,
-                    includePublic,
-                    includeNonPublic,
-                    supportsNew,
-                    isCaseSensitive
-                });
+            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return _constructorFuncs.GetOrAdd(
+                instance.GetType(),
+                type => typeof(Accessor<>).MakeGenericType(type)
+                    .GetConstructor(
+                        BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public,
+                        null,
+                        new[]
+                        {
+                            type,
+                            typeof (bool),
+                            typeof (bool),
+                            typeof (bool),
+                            typeof (bool),
+                            typeof (bool),
+                            typeof (bool),
+                            typeof (bool),
+                            typeof (bool)
+                        },
+                        null)
+                    .Func<object, bool, bool, bool, bool, bool, bool, bool, bool, Accessor>(false))(
+                        instance,
+                        includeFields,
+                        includeProperties,
+                        includeInstance,
+                        includeStatic,
+                        includePublic,
+                        includeNonPublic,
+                        supportsNew,
+                        isCaseSensitive);
+            // ReSharper restore AssignNullToNotNullAttribute, restore PossibleNullReferenceException
         }
 
         /// <summary>
@@ -109,44 +133,136 @@ namespace WebApplications.Utilities
         public readonly bool IsCaseSensitive;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Accessor"/> class.
+        /// Initializes a new instance of the <see cref="Accessor" /> class.
         /// </summary>
-        /// <param name="isCaseSensitive">if set to <see langword="true" /> then keys are case sensitive; 
+        /// <param name="isCaseSensitive">if set to 
+        /// <see langword="true" /> then keys are case sensitive;
         /// otherwise matching keys (due to case insensitivity) will resultin missing accessors so this setting should be used with caution.</param>
         protected Accessor(bool isCaseSensitive)
         {
             IsCaseSensitive = isCaseSensitive;
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
         public abstract IEnumerator<KeyValuePair<string, object>> GetEnumerator();
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
+        /// <summary>
+        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         public abstract void Add(KeyValuePair<string, object> item);
+        /// <summary>
+        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
         public abstract void Clear();
+        /// <summary>
+        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
         public abstract bool Contains(KeyValuePair<string, object> item);
+        /// <summary>
+        /// Copies to.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="arrayIndex">Index of the array.</param>
         public abstract void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex);
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+        /// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
         public abstract bool Remove(KeyValuePair<string, object> item);
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+        /// </summary>
+        /// <value>The count.</value>
+        /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
         public abstract int Count { get; }
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is read only; otherwise, <see langword="false" />.</value>
+        /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
         public abstract bool IsReadOnly { get; }
+        /// <summary>
+        /// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key.
+        /// </summary>
+        /// <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</param>
+        /// <returns>true if the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the key; otherwise, false.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
         public abstract bool ContainsKey(string key);
+        /// <summary>
+        /// Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        /// </summary>
+        /// <param name="key">The object to use as the key of the element to add.</param>
+        /// <param name="value">The object to use as the value of the element to add.</param>
+        // ReSharper disable once CodeAnnotationAnalyzer
         public abstract void Add(string key, object value);
+        /// <summary>
+        /// Removes the element with the specified key from the <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        /// </summary>
+        /// <param name="key">The key of the element to remove.</param>
+        /// <returns>true if the element is successfully removed; otherwise, false.  This method also returns false if <paramref name="key" /> was not found in the original <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
         public abstract bool Remove(string key);
+        /// <summary>
+        /// Gets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key whose value to get.</param>
+        /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value" /> parameter. This parameter is passed uninitialized.</param>
+        /// <returns>true if the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key; otherwise, false.</returns>
         public abstract bool TryGetValue(string key, out object value);
+        /// <summary>
+        /// Gets or sets the element with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>System.Object.</returns>
         public abstract object this[string key] { get; set; }
+        /// <summary>
+        /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        /// </summary>
+        /// <value>The keys.</value>
+        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
         IEnumerable<string> IReadOnlyDictionary<string, object>.Keys
         {
             get { return Keys; }
         }
 
+        /// <summary>
+        /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        /// </summary>
+        /// <value>The values.</value>
+        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
+        // ReSharper disable once CodeAnnotationAnalyzer
         IEnumerable<object> IReadOnlyDictionary<string, object>.Values
         {
             get { return Values; }
         }
 
+        /// <summary>
+        /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        /// </summary>
+        /// <value>The keys.</value>
+        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
         public abstract ICollection<string> Keys { get; }
+        /// <summary>
+        /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
+        /// </summary>
+        /// <value>The values.</value>
+        /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
         public abstract ICollection<object> Values { get; }
 
         /// <summary>
@@ -219,7 +335,7 @@ namespace WebApplications.Utilities
             public readonly Action<T, object> Set;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="Access"/> class.
+            /// Initializes a new instance of the <see cref="Access" /> class.
             /// </summary>
             /// <param name="field">The field.</param>
             public Access([NotNull] Field field)
@@ -294,7 +410,7 @@ namespace WebApplications.Utilities
         private static readonly Access[] _accessors;
 
         /// <summary>
-        /// Initializes static members of the <see cref="Accessor{T}"/> class.
+        /// Initializes static members of the <see cref="Accessor{T}" /> class.
         /// </summary>
         static Accessor()
         {
@@ -335,7 +451,8 @@ namespace WebApplications.Utilities
         /// <param name="includePublic">if set to <see langword="true" /> includes public members.</param>
         /// <param name="includeNonPublic">if set to <see langword="true" /> includes non-public members.</param>
         /// <param name="supportsNew">if set to <see langword="true" /> unknown keys are supported and stored.</param>
-        /// <param name="isCaseSensitive">if set to <see langword="true" /> then keys are case sensitive; 
+        /// <param name="isCaseSensitive">if set to 
+        /// <see langword="true" /> then keys are case sensitive;
         /// otherwise matching keys (due to case insensitivity) will resultin missing accessors so this setting should be used with caution.</param>
         public Accessor(
             [CanBeNull] T instance,
@@ -642,7 +759,7 @@ namespace WebApplications.Utilities
         #endregion
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="T"/> to <see cref="Accessor{T}"/>.
+        /// Performs an implicit conversion from <see cref="T" /> to <see cref="Accessor{T}" />.
         /// </summary>
         /// <param name="instance">The instance.</param>
         /// <returns>The result of the conversion.</returns>
@@ -652,7 +769,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Accessor{T}"/> to <see cref="T"/>.
+        /// Performs an explicit conversion from <see cref="Accessor{T}" /> to <see cref="T" />.
         /// </summary>
         /// <param name="accessor">The accessor.</param>
         /// <returns>The result of the conversion.</returns>
@@ -662,7 +779,7 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Accessor{T}"/> to <see cref="ReadOnlyDictionary{TKey,TValue}"/>.
+        /// Performs an implicit conversion from <see cref="Accessor{T}" /> to <see cref="ReadOnlyDictionary{TKey,TValue}" />.
         /// </summary>
         /// <param name="accessor">The accessor.</param>
         /// <returns>The result of the conversion.</returns>
