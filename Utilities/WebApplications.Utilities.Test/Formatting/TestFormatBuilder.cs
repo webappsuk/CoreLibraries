@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
@@ -356,6 +357,32 @@ namespace WebApplications.Utilities.Test.Formatting
             Assert.AreEqual(0, position);
             new FormatBuilder().AppendLine("1234").Append("1").ToString(null, ref position);
             Assert.AreEqual(1, position);
+        }
+
+        [TestMethod]
+        public void TestResolveControlChunk()
+        {
+            FormatBuilder builder = new FormatBuilder()
+                .AppendFormat("{" + FormatBuilder.ForegroundColorTag + ":Custom}")
+                .Resolve(
+                    (_, c) =>
+                    {
+                        if (string.Equals(
+                            c.Tag,
+                            FormatBuilder.ForegroundColorTag,
+                            StringComparison.CurrentCultureIgnoreCase) &&
+                            string.Equals(c.Format, "Custom"))
+                            return Color.Green;
+                        return Resolution.Unknown;
+                    },
+                    false,
+                    true);
+
+            using (TestColoredTextWriter writer = new TestColoredTextWriter(true))
+            {
+                builder.WriteTo(writer);
+                Assert.AreEqual("{fg:Green}", writer.ToString());
+            }
         }
     }
 }

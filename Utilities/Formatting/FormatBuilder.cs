@@ -3267,10 +3267,24 @@ namespace WebApplications.Utilities.Formatting
                                     /*
                                      * Check if we have an actual FormatChunk as the value, in which case, unwrap it.
                                      */
+                                    bool unwrapped = false;
                                     do
                                     {
                                         FormatChunk fc = resolvedValue as FormatChunk;
-                                        if (fc == null) break;
+                                        if (fc == null)
+                                        {
+                                            if (!unwrapped &&
+                                                !(chunk.IsResolved &&
+                                                  Equals(resolvedValue, chunk.Value)))
+                                            {
+                                                List<FormatChunk> children = chunk.ChildrenInternal;
+                                                chunk = new FormatChunk(chunk, resolvedValue)
+                                                {
+                                                    ChildrenInternal = children
+                                                };
+                                            }
+                                            break;
+                                        }
 
                                         chunk = fc;
                                         isResolved = chunk.IsResolved;
@@ -3278,6 +3292,7 @@ namespace WebApplications.Utilities.Formatting
                                             break;
 
                                         resolvedValue = fc.Value;
+                                        unwrapped = true;
                                     } while (true);
 
                                     if (isResolved)
