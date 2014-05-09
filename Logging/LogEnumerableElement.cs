@@ -31,6 +31,7 @@ using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
@@ -70,8 +71,11 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder EnumerableElementXMLFormat = new FormatBuilder()
-            .AppendLine()
-            .AppendFormat("<{Key}>{Value:{<items>:<item>{<item}</item>}}</{Key}>")
+            .AppendFormatLine("<{KeyXmlTag}>")
+            .AppendLayout(firstLineIndentSize: 8)
+            .AppendFormatLine("{Value:{<items>:<item>{<item>}</item>}{<join>:\r\n}}")
+            .AppendPopLayout()
+            .AppendFormatLine("</{KeyXmlTag}>")
             .MakeReadOnly();
 
         /// <summary>
@@ -124,6 +128,7 @@ namespace WebApplications.Utilities.Logging
             // ReSharper disable once CodeAnnotationAnalyzer
             public override object Resolve(FormatWriteContext context, FormatChunk chunk)
             {
+                string key;
                 // ReSharper disable once PossibleNullReferenceException
                 switch (chunk.Tag.ToLowerInvariant())
                 {
@@ -137,10 +142,20 @@ namespace WebApplications.Utilities.Logging
                     case "noline":
                         return EnumerableElementNoLineFormat;
                     case "key":
-                        string key = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        key = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
                         return string.IsNullOrEmpty(key)
                             ? Resolution.Null
                             : key;
+                    case "keyxml":
+                        key = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        return string.IsNullOrEmpty(key)
+                            ? Resolution.Null
+                            : key.XmlEscape();
+                    case "keyxmltag":
+                        key = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        return string.IsNullOrEmpty(key)
+                            ? Resolution.Null
+                            : key.Replace(' ', '_');
                     case "value":
                         return Values;
                     default:

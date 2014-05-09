@@ -83,8 +83,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public readonly static FormatBuilder ElementXMLFormat = new FormatBuilder()
-            .AppendLine()
-            .AppendFormat("<{Key}>{Value}</{Key}>")
+            .AppendFormatLine("<{KeyXmlTag}>{ValueXml}</{KeyXmlTag}>")
             .MakeReadOnly();
 
         /// <summary>
@@ -152,8 +151,20 @@ namespace WebApplications.Utilities.Logging
                         return string.IsNullOrEmpty(key)
                             ? Resolution.Null
                             : key;
+                    case "keyxml":
+                        string keyXml = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        return string.IsNullOrEmpty(keyXml)
+                            ? Resolution.Null
+                            : keyXml.XmlEscape();
+                    case "keyxmltag":
+                        string keyXmlTag = Translation.GetResource(Resource, context.FormatProvider as CultureInfo ?? Translation.DefaultCulture);
+                        return string.IsNullOrEmpty(keyXmlTag)
+                            ? Resolution.Null
+                            : keyXmlTag.Replace(' ', '_');
                     case "value":
                         return Value;
+                    case "valuexml":
+                        return Value.XmlEscape();
                     default:
                         return Resolution.Unknown;
                 }

@@ -1622,7 +1622,8 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder AllFormat =
-            new FormatBuilder();
+            new FormatBuilder()
+                .MakeReadOnly();
 
         /// <summary>
         /// The JSON object format.
@@ -1631,16 +1632,32 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder JSONFormat =
-            new FormatBuilder();
+            new FormatBuilder(int.MaxValue, alignment: Alignment.Left)
+                .MakeReadOnly();
 
         /// <summary>
         /// The XML Node format.
         /// </summary>
-        // TODO Create XMLFormat
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder XMLFormat =
-            new FormatBuilder();
+            new FormatBuilder(int.MaxValue, alignment: Alignment.Left)
+                .AppendLine("<Log>")
+                .AppendLayout(firstLineIndentSize: 4)
+                .AppendFormat("{" + FormatTagMessage + ":{xml}}")
+                .AppendFormat("{" + FormatTagLevel + ":{xml}}")
+                .AppendFormat("{" + FormatTagTimeStamp + ":{xml}}")
+                .AppendFormat("{" + FormatTagGuid + ":{xml}}")
+                .AppendFormat("{" + FormatTagThreadName + ":{xml}}")
+                .AppendFormat("{" + FormatTagThreadID + ":{xml}}")
+                .AppendFormat("{" + FormatTagException + ":{xml}}")
+                .AppendFormat("{" + FormatTagInnerException + ":{xml}}")
+                .AppendFormat("{" + FormatTagStoredProcedure + ":{xml}}")
+                .AppendFormat("{" + FormatTagContext + ":{xml}}")
+                .AppendFormat("{" + FormatTagStackTrace + ":{xml}}")
+                .AppendPopLayout()
+                .AppendLine("</Log>")
+                .MakeReadOnly();
         #endregion
 
         /// <summary>

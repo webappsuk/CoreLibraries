@@ -84,6 +84,11 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public readonly static FormatBuilder XMLFormat = new FormatBuilder()
+            .AppendFormatLine("<{KeyXmlTag}>")
+            .AppendLayout(firstLineIndentSize: 8)
+            .AppendFormat("{Value:{<items>:{<item>:{xml}}}}")
+            .AppendPopLayout()
+            .AppendFormatLine("</{KeyXmlTag}>")
             .MakeReadOnly();
 
         /// <summary>
@@ -588,6 +593,7 @@ namespace WebApplications.Utilities.Logging
         public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
             CultureInfo culture = context.FormatProvider as CultureInfo ?? Translation.DefaultCulture;
+            string key;
             // ReSharper disable once PossibleNullReferenceException
             switch (chunk.Tag.ToLowerInvariant())
             {
@@ -601,10 +607,20 @@ namespace WebApplications.Utilities.Logging
                 case "noline":
                     return NoLineFormat;
                 case "key":
-                    string key = Translation.GetResource(() => Resources.LogKeys_Context, culture);
+                    key = Translation.GetResource(() => Resources.LogKeys_Context, culture);
                     return string.IsNullOrEmpty(key)
                         ? Resolution.Null
                         : key;
+                case "keyxml":
+                    key = Translation.GetResource(() => Resources.LogKeys_Context, culture);
+                    return string.IsNullOrEmpty(key)
+                        ? Resolution.Null
+                        : key.XmlEscape();
+                case "keyxmltag":
+                    key = Translation.GetResource(() => Resources.LogKeys_Context, culture);
+                    return string.IsNullOrEmpty(key)
+                        ? Resolution.Null
+                        : key.Replace(' ', '_');
                 case "value":
                     return _context.Select(kvp => new ContextElement(kvp.Key, kvp.Value)).ToArray();
                 default:

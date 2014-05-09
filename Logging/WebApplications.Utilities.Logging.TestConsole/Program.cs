@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using WebApplications.Utilities.Formatting;
+using WebApplications.Utilities.Logging.Loggers;
 
 namespace WebApplications.Utilities.Logging.TestConsole
 {
@@ -11,7 +12,7 @@ namespace WebApplications.Utilities.Logging.TestConsole
         static void Main(string[] args)
         {
             Log.SetTrace(validLevels: LoggingLevels.None);
-            Log.SetConsole();
+            Log.SetConsole(Log.XMLFormat);
             FormatBuilder prompt = new FormatBuilder()
                 .AppendForegroundColor(Color.Chartreuse)
                 .Append('[')
@@ -19,10 +20,14 @@ namespace WebApplications.Utilities.Logging.TestConsole
                 .AppendResetForegroundColor()
                 .Append("] >");
 
-            Log.Add(new InvalidOperationException("An invalid operation example."));
+            Log.Add(new LogContext().Set("Test key", "Test value"), "Test Message");
 
-            foreach (LoggingLevel level in Enum.GetValues(typeof(LoggingLevel)))
-                Log.Add(level, level.ToString());
+            //Log.Add(new InvalidOperationException("An invalid operation example."));
+
+            //foreach (LoggingLevel level in Enum.GetValues(typeof(LoggingLevel)))
+            //    Log.Add(level, level.ToString());
+
+
 
             string line;
             do

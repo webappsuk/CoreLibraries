@@ -69,8 +69,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder ElementXMLFormat = new FormatBuilder()
-            .AppendLine()
-            .AppendFormat("<{Key}>{Value}</{Key}>")
+            .AppendFormatLine("<{KeyXmlTag}>{Value}</{KeyXmlTag}>")
             .MakeReadOnly();
 
         /// <summary>
@@ -135,8 +134,14 @@ namespace WebApplications.Utilities.Logging
                         return ElementNoLineFormat;
                     case "key":
                         return Key;
+                    case "keyxml":
+                        return Key.XmlEscape();
+                    case "keyxmltag":
+                        return Key.Replace(' ', '_');
                     case "value":
                         return Value;
+                    case "valuexml":
+                        return Value.XmlEscape();
                     default:
                         return Resolution.Unknown;
                 }
