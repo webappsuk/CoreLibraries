@@ -31,6 +31,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.SqlServer.Server;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Utilities.Formatting;
 
@@ -326,6 +327,17 @@ namespace WebApplications.Utilities.Test.Formatting
                 .AppendLine("Right");
 
             Assert.AreEqual("  Right\r\n", builder.ToString());
+        }
+
+        [TestMethod]
+        public void TestNewLineFromMiddle()
+        {
+            FormatBuilder builder = new FormatBuilder(20, 10)
+                .Append("Mid line\rFirst Line");
+
+            int position = 5;
+            Assert.AreEqual("Mid line\r\nFirst Line", builder.ToString(null, ref position));
+            Assert.AreEqual(10, position);
         }
     }
 }

@@ -3940,15 +3940,17 @@ namespace WebApplications.Utilities.Formatting
                         lineTerminated = false;
                         alignment = layout.Alignment.Value;
                         layout = layoutStack.Peek();
-                        if (lineType == LineType.Last)
+                        switch (lineType)
                         {
-                            lineType = LineType.First;
-                            lineStart = layout.FirstLineIndentSize.Value;
-                        }
-                        else
-                        {
-                            lineType = LineType.Middle;
-                            lineStart = layout.IndentSize.Value;
+                            case LineType.None:
+                            case LineType.Last:
+                                lineType = LineType.First;
+                                lineStart = layout.FirstLineIndentSize.Value;
+                                break;
+                            default:
+                                lineType = LineType.Middle;
+                                lineStart = layout.IndentSize.Value;
+                                break;
                         }
                         #endregion
                     } while (!string.IsNullOrEmpty(word));
