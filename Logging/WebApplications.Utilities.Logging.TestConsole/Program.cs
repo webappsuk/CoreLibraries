@@ -21,7 +21,7 @@ namespace WebApplications.Utilities.Logging.TestConsole
 
             Log.Add(new InvalidOperationException("An invalid operation example."));
 
-            foreach (LoggingLevel level in Enum.GetValues(typeof (LoggingLevel)))
+            foreach (LoggingLevel level in Enum.GetValues(typeof(LoggingLevel)))
                 Log.Add(level, level.ToString());
 
             string line;

@@ -1579,11 +1579,9 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
             new FormatBuilder(120, 22, alignment: Alignment.Left, tabStops: new[] { 20, 22 })
-                .AppendForegroundColor(Color.Gray)
-                .AppendControl(FormatTagHeader)
-                .AppendResetForegroundColor()
-                .AppendLayout(alignment: Alignment.Centre)
                 .AppendForegroundColor(LogLevelColorName)
+                .AppendControl(FormatTagHeader)
+                .AppendLayout(alignment: Alignment.Centre)
                 .AppendFormat("{" + FormatTagLevel + ":{Value}}")
                 .AppendResetForegroundColor()
                 .AppendPopLayout()
@@ -1685,7 +1683,7 @@ namespace WebApplications.Utilities.Logging
                         LogLevelColorName,
                         StringComparison.InvariantCultureIgnoreCase)
                         // Don't cache the response as it is format dependant.
-                        ? new Resolution(new FormatChunk(chunk, _level.ToColor()), true)
+                        ? new Resolution(_level.ToColor(), true)
                         : Resolution.UnknownYet;
 
                 /*
