@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public static readonly FormatBuilder VerboseFormat = new FormatBuilder()
             .AppendLine()
-            .AppendForegroundColor(Color.DarkGray)
+            .AppendForegroundColor(Color.Gray)
             .AppendFormat("{" + Log.FormatTagHeader + ":-}")
             .AppendLayout(alignment: Alignment.Centre)
             .AppendFormat("{Key}")

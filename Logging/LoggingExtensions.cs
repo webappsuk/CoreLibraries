@@ -79,6 +79,26 @@ namespace WebApplications.Utilities.Logging
             return l == (l & Log.ValidLevels);
         }
 
+        /* 
+         * Console 'safe' colors (actually depends on the configuration of the console)
+         * Gray = ffc0c0c0 [Silver]
+         * Black = ff000000 [Black]
+         * White = ffffffff [White]
+         * DarkGray = ff808080 [Gray]
+         * Cyan = ff00ffff [Aqua]
+         * DarkCyan = ff008080 [Teal]
+         * Blue = ff0000ff [Blue]
+         * DarkMagenta = ff800080 [Purple]
+         * DarkRed = ff800000 [Maroon]
+         * Green = ff00ff00 [Lime]
+         * DarkYellow = ff808000 [Olive]
+         * Red = ffff0000 [Red]
+         * DarkBlue = ff000080 [Navy]
+         * DarkGreen = ff008000 [Green]
+         * Yellow = ffffff00 [Yellow]
+         * Magenta = ffff00ff [Fuchsia]
+         */
+
         /// <summary>
         /// The level colors
         /// </summary>
@@ -87,14 +107,14 @@ namespace WebApplications.Utilities.Logging
             new ConcurrentDictionary<LoggingLevel, Color>(
                 new Dictionary<LoggingLevel, Color>
                 {
-                    {LoggingLevel.Debugging, Color.DimGray},
-                    {LoggingLevel.Information, Color.Gray},
-                    {LoggingLevel.Notification, Color.LightGray},
-                    {LoggingLevel.SystemNotification, Color.White},
+                    {LoggingLevel.Debugging, Color.Gray},
+                    {LoggingLevel.Information, Color.Silver},
+                    {LoggingLevel.Notification, Color.White},
+                    {LoggingLevel.SystemNotification, Color.Olive},
                     {LoggingLevel.Warning, Color.Yellow},
-                    {LoggingLevel.Error, Color.Tomato},
-                    {LoggingLevel.Critical, Color.Red},
-                    {LoggingLevel.Emergency, Color.Magenta}
+                    {LoggingLevel.Error, Color.Red},
+                    {LoggingLevel.Critical, Color.Purple},
+                    {LoggingLevel.Emergency, Color.Fuchsia}
                 });
 
         /// <summary>

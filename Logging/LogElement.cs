@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public readonly static FormatBuilder ElementVerboseFormat = new FormatBuilder()
             .AppendLine()
-            .AppendForegroundColor(Color.DarkCyan)
+            .AppendForegroundColor(Color.Teal)
             .AppendFormat("{Key}")
             .AppendResetForegroundColor()
             .AppendFormat("\t: {Value}")
@@ -71,7 +71,7 @@ namespace WebApplications.Utilities.Logging
         [NotNull]
         [PublicAPI]
         public readonly static FormatBuilder ElementNoLineFormat = new FormatBuilder()
-            .AppendForegroundColor(Color.DarkCyan)
+            .AppendForegroundColor(Color.Teal)
             .AppendFormat("{Key}")
             .AppendResetForegroundColor()
             .AppendFormat("\t: {Value}")

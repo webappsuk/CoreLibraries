@@ -1536,6 +1536,26 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         public const string LogLevelColorName = "LogLevel";
 
+        /* 
+         * Console safe colors
+         * Gray = ffc0c0c0 [Silver]
+         * Black = ff000000 [Black]
+         * White = ffffffff [White]
+         * DarkGray = ff808080 [Gray]
+         * Cyan = ff00ffff [Aqua]
+         * DarkCyan = ff008080 [Teal]
+         * Blue = ff0000ff [Blue]
+         * DarkMagenta = ff800080 [Purple]
+         * DarkRed = ff800000 [Maroon]
+         * Green = ff00ff00 [Lime]
+         * DarkYellow = ff808000 [Olive]
+         * Red = ffff0000 [Red]
+         * DarkBlue = ff000080 [Navy]
+         * DarkGreen = ff008000 [Green]
+         * Yellow = ffffff00 [Yellow]
+         * Magenta = ffff00ff [Fuchsia]
+         */
+
         /// <summary>
         /// The short format.
         /// </summary>
@@ -1543,7 +1563,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public static readonly FormatBuilder ShortFormat =
             new FormatBuilder(120, 33, alignment: Alignment.Left, tabStops: new[] { 33 })
-                .AppendForegroundColor(Color.DarkCyan)
+                .AppendForegroundColor(Color.Teal)
                 .AppendFormat("{" + FormatTagTimeStamp + ":{Value:HH:mm:ss.ffff}} ")
                 .AppendForegroundColor(LogLevelColorName)
                 .AppendFormat(
@@ -1559,7 +1579,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
             new FormatBuilder(120, 22, alignment: Alignment.Left, tabStops: new[] { 20, 22 })
-                .AppendForegroundColor(Color.DarkGray)
+                .AppendForegroundColor(Color.Gray)
                 .AppendControl(FormatTagHeader)
                 .AppendResetForegroundColor()
                 .AppendLayout(alignment: Alignment.Centre)
@@ -1567,12 +1587,16 @@ namespace WebApplications.Utilities.Logging
                 .AppendFormat("{" + FormatTagLevel + ":{Value}}")
                 .AppendResetForegroundColor()
                 .AppendPopLayout()
-                .AppendFormat("{" + FormatTagMessage + "}")
+                .AppendFormat("{" + FormatTagMessage + ":\r\n{" + FormatBuilder.ForegroundColorTag +
+                    ":Teal}{Key}{" + FormatBuilder.ForegroundColorTag +
+                    "}\t: {" + FormatBuilder.ForegroundColorTag +
+                    ":White}{Value}{" + FormatBuilder.ForegroundColorTag +
+                    "}}")
                 .AppendFormat("{" + FormatTagTimeStamp + "}")
                 .AppendFormat("{" + FormatTagGuid + "}")
                 .AppendFormat(
                     "{" + FormatTagThreadName + ":\r\n{" + FormatBuilder.ForegroundColorTag +
-                    ":DarkCyan}{Key}{" + FormatBuilder.ForegroundColorTag +
+                    ":Teal}{Key}{" + FormatBuilder.ForegroundColorTag +
                     "}\t: {Value}{" + FormatTagThreadID + ": ({Value})}}")
                 .AppendFormat("{" + FormatTagException + "}")
                 .AppendFormat("{" + FormatTagInnerException + "}")
@@ -1580,16 +1604,16 @@ namespace WebApplications.Utilities.Logging
                 .AppendFormat("{" + FormatTagContext + "}")
                 .AppendFormat(
                     "{" + FormatTagStackTrace + ":\r\n{" + FormatBuilder.ForegroundColorTag +
-                    ":DarkGray}{" + FormatTagHeader + ":-}{" + FormatBuilder.LayoutTag + ":aCentre}{" +
+                    ":Gray}{" + FormatTagHeader + ":-}{" + FormatBuilder.LayoutTag + ":aCentre}{" +
                     FormatBuilder.ForegroundColorTag +
-                    ":DarkCyan}{Key}{" + FormatBuilder.ForegroundColorTag +
+                    ":Teal}{Key}{" + FormatBuilder.ForegroundColorTag +
                     "}{" + FormatBuilder.LayoutTag + ":i6;f3;aLeft}\r\n{" +
                     FormatBuilder.ForegroundColorTag +
-                    ":DarkGray}{Value}{" +
+                    ":Gray}{Value}{" +
                     FormatBuilder.ForegroundColorTag +
                     "}{" + FormatBuilder.LayoutTag + "}}")
                 .AppendLine()
-                .AppendForegroundColor(Color.DarkGray)
+                .AppendForegroundColor(Color.Gray)
                 .AppendControl(FormatTagHeader)
                 .AppendResetForegroundColor()
                 .MakeReadOnly();
@@ -1661,7 +1685,7 @@ namespace WebApplications.Utilities.Logging
                         LogLevelColorName,
                         StringComparison.InvariantCultureIgnoreCase)
                         // Don't cache the response as it is format dependant.
-                        ? new Resolution(_level.ToColor(), true)
+                        ? new Resolution(new FormatChunk(chunk, _level.ToColor()), true)
                         : Resolution.UnknownYet;
 
                 /*
