@@ -1,0 +1,15 @@
+﻿<Application x:Class="WebApplications.Utilities.Service.Client.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+
+        <Style x:Key="LogRichTextBoxStyle" TargetType="RichTextBox">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="Foreground" Value="#FFFFFFFF" />
+        </Style>
+        <!-- Dark Theme -->
+        <SolidColorBrush x:Key="BackgroundKey" Color="#FF181818" />
+    </Application.Resources>
+</Application>

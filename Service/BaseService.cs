@@ -97,7 +97,6 @@ namespace WebApplications.Utilities.Service
         [CanBeNull]
         protected readonly ServiceController ServiceController;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseService"/> class.
         /// </summary>

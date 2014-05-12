@@ -172,6 +172,7 @@
       <DependentUpon>ContractResources.resx</DependentUpon>
     </Compile>
     <Compile Include="IServiceUserInterface.cs" />
+    <Compile Include="NamedPipe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiredContractException.cs" />
     <Compile Include="ServiceException.cs" />
