@@ -29,6 +29,7 @@ using System;
 using System.IO;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
+using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Service
 {
@@ -55,5 +56,18 @@ namespace WebApplications.Utilities.Service
         /// Called when the server disconnects the UI.
         /// </summary>
         void OnDisconnect();
+
+        /// <summary>
+        /// Gets the default log format, this can be changed by commands.
+        /// </summary>
+        /// <value>The default log format.</value>
+        [CanBeNull]
+        FormatBuilder DefaultLogFormat { get; }
+
+        /// <summary>
+        /// Gets the default logging levels, this can be changed by commands.
+        /// </summary>
+        /// <value>The default logging levels.</value>
+        LoggingLevels DefaultLoggingLevels { get; }
     }
 }

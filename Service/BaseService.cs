@@ -32,14 +32,10 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.ServiceProcess;
 using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Logging.Interfaces;
-using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
 using WebApplications.Utilities.Threading;
 
@@ -51,18 +47,76 @@ namespace WebApplications.Utilities.Service
     public abstract class BaseService : ServiceBase
     {
         /// <summary>
+        /// Gets the current state of the service.
+        /// </summary>
+        /// <value>The state.</value>
+        [PublicAPI]
+        public abstract ServiceState State { get; }
+
+        /// <summary>
+        /// The current instance is running as a service.
+        /// </summary>
+        public static readonly bool IsService;
+
+        /// <summary>
         /// Initializes static members of the <see cref="BaseService"/> class.
         /// </summary>
         static BaseService()
         {
+            IsService = !Environment.UserInteractive;
+            if (IsService)
+            {
+                IsService = false;
+                try
+                {
+                    Type entryType = Assembly.GetEntryAssembly().EntryPoint.ReflectedType;
+                    while (entryType != typeof (object))
+                    {
+                        if (entryType == typeof (ServiceBase))
+                        {
+                            IsService = true;
+                            break;
+                        }
+                        entryType = entryType.BaseType;
+                    }
+                }
+                catch
+                {
+                }
+            }
+
             // TODO Move to Utilities
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
             Cancelled = cts.Token;
         }
 
+        /// <summary>
+        /// The service controller for this service (if running as a service).
+        /// </summary>
+        [CanBeNull]
+        protected readonly ServiceController ServiceController;
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseService"/> class.
+        /// </summary>
+        protected BaseService([NotNull] string description)
+        {
+            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
+            ServiceName = description;
+            AutoLog = false;
+            CanStop = true;
+            CanHandlePowerEvent = true;
+            CanHandleSessionChangeEvent = true;
+            CanPauseAndContinue = true;
+            CanShutdown = true;
+            if (IsService)
+                ServiceController = new ServiceController(ServiceName);
+        }
+
         // TODO Move to Utilities
-        protected static readonly PauseToken Paused = new PauseTokenSource { IsPaused = true }.Token;
+        protected static readonly PauseToken Paused = new PauseTokenSource {IsPaused = true}.Token;
         protected static readonly CancellationToken Cancelled;
 
         /// <summary>
@@ -96,10 +150,35 @@ namespace WebApplications.Utilities.Service
         }
 
         /// <summary>
+        /// When implemented in a derived class, executes when the system is shutting down. Specifies what should occur immediately prior to the system shutting down.
+        /// </summary>
+        protected virtual void DoShutdown()
+        {
+        }
+
+        /// <summary>
         /// When implemented in a derived class, <see cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" /> executes when the Service Control Manager (SCM) passes a custom command to the service. Specifies actions to take when a command with the specified parameter value occurs.
         /// </summary>
         /// <param name="command">The command message sent to the service.</param>
         protected virtual void DoCustomCommand(int command)
+        {
+        }
+
+        /// <summary>
+        /// When implemented in a derived class, executes when the computer's power status has changed. This applies to laptop computers when they go into suspended mode, which is not the same as a system shutdown.
+        /// </summary>
+        /// <param name="powerStatus">A <see cref="T:System.ServiceProcess.PowerBroadcastStatus" /> that indicates a notification from the system about its power status.</param>
+        /// <returns>When implemented in a derived class, the needs of your application determine what value to return. For example, if a QuerySuspend broadcast status is passed, you could cause your application to reject the query by returning false.</returns>
+        protected virtual bool DoPowerEvent(PowerBroadcastStatus powerStatus)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Executes when a change event is received from a Terminal Server session.
+        /// </summary>
+        /// <param name="changeDescription">A <see cref="T:System.ServiceProcess.SessionChangeDescription" /> structure that identifies the change type.</param>
+        protected virtual void DoSessionChange(SessionChangeDescription changeDescription)
         {
         }
 
@@ -124,13 +203,17 @@ namespace WebApplications.Utilities.Service
         /// <param name="commandName">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         [PublicAPI]
-        [ServiceRunnerCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
-        protected abstract void Help([NotNull]TextWriter writer, [CanBeNull] string commandName = null, [CanBeNull] string parameter = null);
+        [ServiceRunnerCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description",
+            writerParameter: "writer")]
+        protected abstract void Help(
+            [NotNull] TextWriter writer,
+            [CanBeNull] string commandName = null,
+            [CanBeNull] string parameter = null);
 
         /// <summary>
         /// Runs this instance.
         /// </summary>
-        /// TODO Does this cause a problem, if we run multiple services one a time?? Why is the base implementation not done this way??
+        /// TODO Does this cause a problem, if we run multiple services one a time?? Why is the base implementation not done this way??  Also, we need to detect interactive/etc.
         public void Run()
         {
             Run(this);
@@ -140,114 +223,9 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Base implementation of a service.
     /// </summary>
-    public abstract class BaseService<TService> : BaseService
+    public abstract partial class BaseService<TService> : BaseService
         where TService : BaseService<TService>
     {
-        private class Connection : IDisposable
-        {
-            /// <summary>
-            /// The identifier.
-            /// </summary>
-            [PublicAPI]
-            public readonly Guid ID;
-
-            /// <summary>
-            /// The user interface
-            /// </summary>
-            [NotNull]
-            [PublicAPI]
-            public readonly IServiceUserInterface UserInterface;
-
-            /// <summary>
-            /// The subscription to the user interface commands.
-            /// </summary>
-            private CancellationTokenSource _cancellationTokenSource;
-
-            /// <summary>
-            /// The _logger
-            /// </summary>
-            private TextWriterLogger _logger;
-
-            /// <summary>
-            /// Gets the logger.
-            /// </summary>
-            /// <value>The logger.</value>
-            [NotNull]
-            [PublicAPI]
-            public TextWriterLogger Logger
-            {
-                get
-                {
-                    if (_logger == null)
-                        throw new ObjectDisposedException("Connection");
-                    return _logger;
-                }
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Connection" /> class.
-            /// </summary>
-            /// <param name="service">The service.</param>
-            /// <param name="id">The identifier.</param>
-            /// <param name="userInterface">The user interface.</param>
-            public Connection([NotNull] BaseService<TService> service, Guid id, [NotNull] IServiceUserInterface userInterface)
-            {
-                Contract.Requires<RequiredContractException>(userInterface != null, "Parameter_Null");
-                Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
-                ID = id;
-                UserInterface = userInterface;
-
-                // Send logs to writer.
-                _logger = new TextWriterLogger(string.Format("Log writer for '{0}' service connection.", id), userInterface.Writer);
-                Log.AddLogger(_logger);
-
-                // Create task to read lines async.
-                _cancellationTokenSource = new CancellationTokenSource();
-                CancellationToken token = _cancellationTokenSource.Token;
-                TextReader reader = userInterface.Reader;
-
-                Task.Run(
-                    async () =>
-                    {
-                        try
-                        {
-                            do
-                            {
-                                string line = await reader.ReadLineAsync();
-                                token.ThrowIfCancellationRequested();
-
-                                if (line == null)
-                                    break;
-
-                                service.OnCommand(this, line);
-                            } while (true);
-                            service.Disconnect(ID);
-                        }
-                        catch (Exception exception)
-                        {
-                            service.OnCommandError(this, exception);
-                        }
-                    }, token);
-            }
-
-            /// <summary>
-            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            /// </summary>
-            public void Dispose()
-            {
-                CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
-                if ((cts != null) &&
-                    (!cts.IsCancellationRequested))
-                    cts.Cancel();
-
-                TextWriterLogger logger = Interlocked.Exchange(ref _logger, null);
-                if (logger == null) return;
-                Log.Flush().Wait();
-                Log.RemoveLogger(logger);
-                logger.Dispose();
-            }
-        }
-
         #region Performance Counters
         // ReSharper disable MemberCanBePrivate.Global
         [NotNull]
@@ -275,6 +253,16 @@ namespace WebApplications.Utilities.Service
             "Service Continue",
             "Service continued.");
 
+        [NotNull]
+        internal static readonly PerfCounter PerfCounterPowerEvent = PerfCategory.GetOrAdd<PerfCounter>(
+            "Service Power Event",
+            "Service power event occured.");
+
+        [NotNull]
+        internal static readonly PerfCounter PerfCounterSessionChange = PerfCategory.GetOrAdd<PerfCounter>(
+            "Service Session Change",
+            "Service session changed.");
+
         // ReSharper restore MemberCanBePrivate.Global
         #endregion
 
@@ -298,6 +286,17 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         private readonly object _lock = new object();
 
+        private ServiceState _state;
+
+        /// <summary>
+        /// Gets the current state of the service.
+        /// </summary>
+        /// <value>The state.</value>
+        public override ServiceState State
+        {
+            get { return _state; }
+        }
+
         /// <summary>
         /// Any connected user interfaces.
         /// </summary>
@@ -307,7 +306,8 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// The <see cref="PauseTokenSource"/>.
         /// </summary>
-        private PauseTokenSource _pauseTokenSource = new PauseTokenSource();
+        [NotNull]
+        private readonly PauseTokenSource _pauseTokenSource = new PauseTokenSource();
 
         /// <summary>
         /// The <see cref="CancellationTokenSource"/>.
@@ -321,14 +321,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         public PauseToken PauseToken
         {
-            get
-            {
-                lock (_lock)
-                {
-                    PauseTokenSource ts = _pauseTokenSource;
-                    return ts == null ? Paused : ts.Token;
-                }
-            }
+            get { return _pauseTokenSource.Token; }
         }
 
         /// <summary>
@@ -353,7 +346,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         static BaseService()
         {
-            MethodInfo[] allMethods = typeof(TService)
+            MethodInfo[] allMethods = typeof (TService)
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .ToArray();
             Dictionary<string, ServiceRunnerCommand> commands =
@@ -367,7 +360,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     ServiceRunnerCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof(ServiceRunnerCommandAttribute), true)
+                        .GetCustomAttributes(typeof (ServiceRunnerCommandAttribute), true)
                         .OfType<ServiceRunnerCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
@@ -412,11 +405,11 @@ namespace WebApplications.Utilities.Service
             }
             Commands = new ReadOnlyDictionary<string, ServiceRunnerCommand>(commands);
 
-            Assembly assembly = typeof(TService).Assembly;
-            if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
+            Assembly assembly = typeof (TService).Assembly;
+            if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
                         AssemblyDescriptionAttribute;
                 if (a != null)
                 {
@@ -427,23 +420,16 @@ namespace WebApplications.Utilities.Service
 
             if (string.IsNullOrWhiteSpace(Description))
                 Description = "A windows service.";
-
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseService"/> class.
         /// </summary>
         protected BaseService([CanBeNull] string description = null)
+            :
+                base((string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
         {
-            if (string.IsNullOrWhiteSpace(description) || description.Length > 80)
-                description = Description;
-            ServiceName = description;
-            AutoLog = false;
-            CanStop = true;
-            CanHandlePowerEvent = true;
-            CanHandleSessionChangeEvent = true;
-            CanPauseAndContinue = true;
-            CanShutdown = true;
+            _state = ServiceState.Stopped;
         }
 
         /// <summary>
@@ -454,14 +440,21 @@ namespace WebApplications.Utilities.Service
         protected override sealed void OnStart([NotNull] string[] args)
         {
             using (PerfTimerStart.Region())
-            {
                 lock (_lock)
                 {
+                    if (_state != ServiceState.Stopped)
+                    {
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning,
+                            ServiceName);
+                        return;
+                    }
                     _cancellationTokenSource = new CancellationTokenSource();
-                    _pauseTokenSource = new PauseTokenSource();
+                    _pauseTokenSource.IsPaused = false;
+                    _state = ServiceState.Running;
+                    DoStart(args);
                 }
-                DoStart(args);
-            }
         }
 
         /// <summary>
@@ -470,18 +463,23 @@ namespace WebApplications.Utilities.Service
         protected override sealed void OnStop()
         {
             using (PerfTimerStop.Region())
-            {
-                DoStop();
                 lock (_lock)
                 {
+                    if (State != ServiceState.Running)
+                    {
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning,
+                            ServiceName);
+                        return;
+                    }
+                    DoStop();
                     Contract.Assert(_cancellationTokenSource != null);
-                    Contract.Assert(_pauseTokenSource != null);
+                    _state = ServiceState.Stopped;
                     _cancellationTokenSource.Cancel();
                     _cancellationTokenSource = null;
                     _pauseTokenSource.IsPaused = true;
-                    _pauseTokenSource = null;
                 }
-            }
         }
 
         /// <summary>
@@ -489,10 +487,21 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnPause()
         {
-            Contract.Assert(_pauseTokenSource != null);
-            _pauseTokenSource.IsPaused = true;
-            PerfCounterPause.Increment();
-            DoPause();
+            lock (_lock)
+            {
+                if (State != ServiceState.Running)
+                {
+                    Log.Add(
+                        LoggingLevel.Error,
+                        () => ServiceResources.Err_ServiceRunner_Pause_ServiceNotRunning,
+                        ServiceName);
+                    return;
+                }
+                DoPause();
+                _state = ServiceState.Paused;
+                _pauseTokenSource.IsPaused = true;
+                PerfCounterPause.Increment();
+            }
         }
 
         /// <summary>
@@ -500,10 +509,37 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnContinue()
         {
-            Contract.Assert(_pauseTokenSource != null);
-            _pauseTokenSource.IsPaused = false;
-            PerfCounterContinue.Increment();
-            DoContinue();
+            lock (_lock)
+            {
+                if (State != ServiceState.Paused)
+                {
+                    Log.Add(
+                        LoggingLevel.Error,
+                        () => ServiceResources.Err_ServiceRunner_Continue_ServiceNotPaused,
+                        ServiceName);
+                    return;
+                }
+                _pauseTokenSource.IsPaused = false;
+                _state = ServiceState.Running;
+                DoContinue();
+                PerfCounterContinue.Increment();
+            }
+        }
+
+        /// <summary>
+        /// When implemented in a derived class, executes when the system is shutting down. Specifies what should occur immediately prior to the system shutting down.
+        /// </summary>
+        protected override sealed void OnShutdown()
+        {
+            lock (_lock)
+            {
+                DoShutdown();
+                _state = ServiceState.Shutdown;
+                CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+                if (cts != null)
+                    cts.Cancel();
+                _pauseTokenSource.IsPaused = true;
+            }
         }
 
         /// <summary>
@@ -517,13 +553,41 @@ namespace WebApplications.Utilities.Service
         }
 
         /// <summary>
+        /// When implemented in a derived class, executes when the computer's power status has changed. This applies to laptop computers when they go into suspended mode, which is not the same as a system shutdown.
+        /// </summary>
+        /// <param name="powerStatus">A <see cref="T:System.ServiceProcess.PowerBroadcastStatus" /> that indicates a notification from the system about its power status.</param>
+        /// <returns>When implemented in a derived class, the needs of your application determine what value to return. For example, if a QuerySuspend broadcast status is passed, you could cause your application to reject the query by returning false.</returns>
+        protected override sealed bool OnPowerEvent(PowerBroadcastStatus powerStatus)
+        {
+            lock (_lock)
+            {
+                bool result = DoPowerEvent(powerStatus);
+                PerfCounterPowerEvent.Increment();
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Executes when a change event is received from a Terminal Server session.
+        /// </summary>
+        /// <param name="changeDescription">A <see cref="T:System.ServiceProcess.SessionChangeDescription" /> structure that identifies the change type.</param>
+        protected override sealed void OnSessionChange(SessionChangeDescription changeDescription)
+        {
+            lock (_lock)
+            {
+                DoSessionChange(changeDescription);
+                PerfCounterSessionChange.Increment();
+            }
+        }
+
+        /// <summary>
         /// Connects the specified user interface.
         /// </summary>
         /// <param name="userInterface">The user interface.</param>
         /// <returns>A connection GUID.</returns>
-        public override Guid Connect([NotNull] IServiceUserInterface userInterface)
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public override Guid Connect(IServiceUserInterface userInterface)
         {
-            Contract.Requires<RequiredContractException>(userInterface != null, "Parameter_Null");
             lock (_lock)
             {
                 Guid connectionGuid;
@@ -544,7 +608,6 @@ namespace WebApplications.Utilities.Service
         /// <returns><see langword="true" /> if disconnected, <see langword="false" /> otherwise.</returns>
         public override bool Disconnect(Guid id)
         {
-            Contract.Requires<RequiredContractException>(id != Guid.Empty, "Parameter_Guid_Empty");
             lock (_lock)
             {
                 Connection connection;
@@ -564,7 +627,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="connection">The connection.</param>
         /// <param name="line">The command.</param>
         // ReSharper disable once CodeAnnotationAnalyzer
-        private void OnCommand([NotNull]Connection connection, [CanBeNull]string line)
+        private void OnCommand([NotNull] Connection connection, [CanBeNull] string line)
         {
             if (string.IsNullOrWhiteSpace(line))
                 return;
@@ -611,22 +674,14 @@ namespace WebApplications.Utilities.Service
         /// <param name="connection">The connection.</param>
         /// <param name="exception">The exception.</param>
         // ReSharper disable once CodeAnnotationAnalyzer
-        private void OnCommandError([NotNull]Connection connection, [CanBeNull]Exception exception)
+        private void OnCommandError([NotNull] Connection connection, [CanBeNull] Exception exception)
         {
-            Log.Add(exception, LoggingLevel.Critical, () => ServiceResources.Cri_Base_Service_Command_Error, connection.ID);
+            Log.Add(
+                exception,
+                LoggingLevel.Critical,
+                () => ServiceResources.Cri_Base_Service_Command_Error,
+                connection.ID);
             Disconnect(connection.ID);
-        }
-
-        /// <summary>
-        /// Provides command help.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="commandName">Name of the command.</param>
-        /// <param name="parameter">The parameter.</param>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        protected override void Help(TextWriter writer, string commandName = null, string parameter = null)
-        {
-            Contract.Requires<RequiredContractException>(writer != null, "Parameter_Null");
         }
 
         /// <summary>
@@ -642,11 +697,7 @@ namespace WebApplications.Utilities.Service
                     _cancellationTokenSource.Cancel();
                     _cancellationTokenSource = null;
                 }
-                if (_pauseTokenSource != null)
-                {
-                    _pauseTokenSource.IsPaused = true;
-                    _pauseTokenSource = null;
-                }
+                _pauseTokenSource.IsPaused = true;
             }
             base.Dispose(disposing);
         }

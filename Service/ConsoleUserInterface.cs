@@ -32,6 +32,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
+using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Service
 {
@@ -47,13 +48,26 @@ namespace WebApplications.Utilities.Service
         private readonly TaskCompletionSource<bool> _taskCompletionSource;
 
         /// <summary>
+        /// The default log format.
+        /// </summary>
+        [CanBeNull]
+        private readonly FormatBuilder _defaultLogFormat;
+
+        /// <summary>
+        /// The _default logging levels
+        /// </summary>
+        private readonly LoggingLevels _defaultLoggingLevels;
+
+        /// <summary>
         /// Prevents a default instance of the <see cref="ConsoleUserInterface"/> class from being created.
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
         // ReSharper disable once CodeAnnotationAnalyzer
-        private ConsoleUserInterface(CancellationToken token)
+        private ConsoleUserInterface(FormatBuilder defaultLogFormat, LoggingLevels defaultLoggingLevels, CancellationToken token)
         {
             Contract.Requires<RequiredContractException>(ConsoleHelper.IsConsole, "Not_In_Console");
+            _defaultLogFormat = defaultLogFormat;
+            _defaultLoggingLevels = defaultLoggingLevels;
             _taskCompletionSource = new TaskCompletionSource<bool>();
             token.Register(() => _taskCompletionSource.TrySetCanceled());
         }
@@ -62,16 +76,18 @@ namespace WebApplications.Utilities.Service
         /// Runs the specified service using the command console as a user interface.
         /// </summary>
         /// <param name="service">The service.</param>
+        /// <param name="defaultLogFormat">The default log format.</param>
+        /// <param name="defaultLoggingLevels">The default logging levels.</param>
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static Task Run([NotNull] BaseService service, CancellationToken token = default(CancellationToken))
+        public static Task Run([NotNull] BaseService service, FormatBuilder defaultLogFormat = null, LoggingLevels defaultLoggingLevels = LoggingLevels.All, CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
             if (!ConsoleHelper.IsConsole)
                 return TaskResult.Completed;
 
-            ConsoleUserInterface ui = new ConsoleUserInterface(token);
+            ConsoleUserInterface ui = new ConsoleUserInterface(defaultLogFormat, defaultLoggingLevels, token);
             service.Connect(ui);
             return ui._taskCompletionSource.Task;
         }
@@ -101,5 +117,17 @@ namespace WebApplications.Utilities.Service
         {
             _taskCompletionSource.TrySetResult(true);
         }
+
+        /// <summary>
+        /// Gets the default log format, this can be changed by commands.
+        /// </summary>
+        /// <value>The default log format.</value>
+        public FormatBuilder DefaultLogFormat { get { return _defaultLogFormat; } }
+
+        /// <summary>
+        /// Gets the default logging levels, this can be changed by commands.
+        /// </summary>
+        /// <value>The default logging levels.</value>
+        public LoggingLevels DefaultLoggingLevels { get { return _defaultLoggingLevels; } }
     }
 }
