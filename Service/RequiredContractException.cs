@@ -33,13 +33,13 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Exception thrown by requires contracts.
     /// </summary>
-    internal class RequiredContractException : ContractException<ContractResources>
+    public class RequiredContractException : ContractException<ContractResources>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="RequiredContractException"/> class.
         /// </summary>
         /// <param name="conditions">The conditions.</param>
-        public RequiredContractException([CanBeNull] string conditions)
+        internal RequiredContractException([CanBeNull] string conditions)
             : base(conditions)
         {
         }
@@ -50,7 +50,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="conditions">The conditions.</param>
         /// <param name="resourceProperty">The resource property.</param>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public RequiredContractException([CanBeNull] string conditions, [NotNull] string resourceProperty)
+        internal RequiredContractException([CanBeNull] string conditions, [NotNull] string resourceProperty)
             : base(conditions, resourceProperty)
         {
         }

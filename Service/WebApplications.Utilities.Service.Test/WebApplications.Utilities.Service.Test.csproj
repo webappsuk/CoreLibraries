@@ -143,9 +143,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WebApplications.Utilities.5.0.5242.28909\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5217.23627, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5245.14254\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+    <Reference Include="WebApplications.Utilities.Logging">
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5245.21889\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Performance, Version=5.0.5214.25891, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -170,6 +169,11 @@
     <Compile Include="TestService.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="TestServiceResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TestServiceResources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -180,6 +184,12 @@
       <Project>{b580a145-6de0-45d4-b4b6-924a52bf10b7}</Project>
       <Name>WebApplications.Utilities.Service</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TestServiceResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TestServiceResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -27,7 +27,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -98,7 +100,7 @@ namespace WebApplications.Utilities.Service
         private readonly string[] _names;
 
         [NotNull]
-        private readonly Func<object, string, bool> _execute;
+        private readonly Func<object, TextWriter, Guid, string, bool> _execute;
 
         /// <summary>
         /// Gets the primary name.
@@ -188,6 +190,8 @@ namespace WebApplications.Utilities.Service
 
             ParameterExpression instanceParameterExpression = Expression.Parameter(typeof(object), "instance");
             ParameterExpression argsParameterExpression = Expression.Parameter(typeof(string), "arguments");
+            ParameterExpression writerParameterExpression = Expression.Parameter(typeof(TextWriter), "writer");
+            ParameterExpression connectionParameterExpression = Expression.Parameter(typeof(Guid), "connection");
 
             Expression instance = InstanceType == typeof(object)
                 ? (Expression)instanceParameterExpression
@@ -260,16 +264,40 @@ namespace WebApplications.Utilities.Service
                             Expression.Constant(StringSplitOptions.RemoveEmptyEntries))));
 
                 // Map args to inputs
-                for (int p = 0; p < parameters.Length; p++)
+                for (int p = 0, a = 0; p < parameters.Length; p++)
                 {
                     ParameterInfo parameter = parameters[p];
                     Contract.Assert(parameter != null);
 
-                    Expression argExpression = Expression.ArrayIndex(splitArgs, Expression.Constant(p));
                     Type parameterType = parameter.ParameterType;
+                    Expression argExpression = Expression.ArrayIndex(splitArgs, Expression.Constant(a));
                     Expression input;
 
                     // We can pass strings straight through
+
+                    if (parameter.Name == attribute.WriterParameter)
+                    {
+                        if (!parameterType.DescendsFrom(typeof (TextWriter)))
+                            throw new ServiceException(
+                                LoggingLevel.Error,
+                                () => "TODO Writer parameter should be of type TextWriter, but was actually of type '{0}'",
+                                parameterType);
+                        inputs[p] = writerParameterExpression;
+                        continue;
+                    }
+                    if (parameter.Name == attribute.IDParameter)
+                    {
+                        if (parameterType != typeof(Guid))
+                            throw new ServiceException(
+                                LoggingLevel.Error,
+                                () => "TODO ID parameter should be of type Guid, but was actually of type '{0}'",
+                                parameterType);
+                        inputs[p] = connectionParameterExpression;
+                        continue;
+                    }
+
+                    a++;
+                    
                     if (parameterType == typeof(string))
                         input = argExpression;
                     else if (hasParams &&
@@ -278,8 +306,8 @@ namespace WebApplications.Utilities.Service
                     {
                         // This is the final parameters argument
                         input = splitArgs;
-                        if (p > 0)
-                            input = Expression.Call(_rebase, input, Expression.Constant(p));
+                        if (a > 0)
+                            input = Expression.Call(_rebase, input, Expression.Constant(a));
                     }
                     else
                     {
@@ -309,7 +337,7 @@ namespace WebApplications.Utilities.Service
                             input = Expression.Call(parseMethod, argExpression);
                         }
                         else if (!argExpression.TryConvert(parameterType, out input))
-                            throw new LoggingException(
+                            throw new ServiceException(
                                 () => ServiceResources.Err_ServiceCommand_Parameter_Conversion_Unsupported,
                                 parameterType,
                                 parameter.Name,
@@ -327,7 +355,7 @@ namespace WebApplications.Utilities.Service
                         input = Expression.Condition(
                             Expression.LessThan(
                                 Expression.ArrayLength(splitArgs),
-                                Expression.Constant(p + 1)),
+                                Expression.Constant(a + 1)),
                             Expression.Constant(parameter.DefaultValue, parameter.ParameterType),
                             input);
                     }
@@ -376,9 +404,11 @@ namespace WebApplications.Utilities.Service
             body.Add(methodCall);
 
             // Build 
-            Expression<Func<object, string, bool>> lambda = Expression.Lambda<Func<object, string, bool>>(
+            Expression<Func<object, TextWriter, Guid, string, bool>> lambda = Expression.Lambda<Func<object, TextWriter, Guid, string, bool>>(
                 body.Blockify(locals),
                 instanceParameterExpression,
+                writerParameterExpression,
+                connectionParameterExpression,
                 argsParameterExpression);
 
 #if DEBUG
@@ -425,15 +455,17 @@ namespace WebApplications.Utilities.Service
         /// Runs the command on the specified instance.
         /// </summary>
         /// <param name="instance">The instance.</param>
+        /// <param name="writer">The writer.</param>
+        /// <param name="connectionId">The connection identifier.</param>
         /// <param name="arguments">The arguments.</param>
         /// <returns><see langword="true" /> if succeeded, <see langword="false" /> otherwise.</returns>
-        public bool Run([NotNull] object instance, [NotNull] string arguments)
+        public bool Run([NotNull] object instance, [NotNull] TextWriter writer, Guid connectionId, [NotNull] string arguments)
         {
             Contract.Requires<RequiredContractException>(instance != null, "Parameter_Null");
             Contract.Requires<RequiredContractException>(arguments != null, "Parameter_Null");
             Contract.Requires<RequiredContractException>(InstanceType.IsInstanceOfType(instance), "Bad_Instance");
 
-            return _execute(instance, arguments);
+            return _execute(instance, writer, connectionId, arguments);
         }
 
         /// <summary>

@@ -268,6 +268,15 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error was received from the command observable of the &apos;{0}&apos; connection, disconnecting..
+        /// </summary>
+        internal static string Cri_Base_Service_Command_Error {
+            get {
+                return ResourceManager.GetString("Cri_Base_Service_Command_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fatal error executing the &apos;{0}&apos; command..
         /// </summary>
         internal static string Err_Comman_Exception {

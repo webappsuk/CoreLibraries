@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -26,29 +26,34 @@
 #endregion
 
 using System;
-using System.Reactive.Linq;
-using System.ServiceProcess;
-using System.Threading.Tasks;
+using System.IO;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
-using WebApplications.Utilities.Logging;
 
-namespace WebApplications.Utilities.Service.Test
+namespace WebApplications.Utilities.Service
 {
     /// <summary>
-    /// Main entry point of the application.
+    /// Interface IServiceUI defines an interface for a user interface that a service can interact with.
     /// </summary>
-    [UsedImplicitly]
-    internal class Program
+    public interface IServiceUserInterface
     {
         /// <summary>
-        /// Defines the entry point of the application.
+        /// Gets the writer for outputting information from the service.
         /// </summary>
-        /// <param name="args">The arguments.</param>
-        private static void Main([CanBeNull] string[] args)
-        {
-            TestService testService = new TestService();
-            ConsoleUserInterface.Run(testService).Wait();
-        }
+        /// <value>The writer.</value>
+        [NotNull]
+        TextWriter Writer { get; }
+
+        /// <summary>
+        /// Gets the reader for reading input commands.
+        /// </summary>
+        /// <value>The reader.</value>
+        [NotNull]
+        TextReader Reader { get; }
+
+        /// <summary>
+        /// Called when the server disconnects the UI.
+        /// </summary>
+        void OnDisconnect();
     }
 }

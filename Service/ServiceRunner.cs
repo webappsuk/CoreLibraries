@@ -218,7 +218,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="args">The arguments.</param>
         /// <param name="commandObjects">The command objects, are objects containing commands that can be understood in interactive mode.</param>
         [PublicAPI]
-        public void RunInteractive([NotNull]IServiceUI serviceUI, [CanBeNull] string[] args, [NotNull] params object[] commandObjects)
+        public void RunInteractive([NotNull]IServiceUserInterface serviceUserInterface, [CanBeNull] string[] args, [NotNull] params object[] commandObjects)
         {
             Contract.Requires<RequiredContractException>(commandObjects != null, "Parameter_Null");
             if (!ConsoleHelper.IsConsole)

@@ -32,18 +32,40 @@ using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Service
 {
+    /// <summary>
+    /// All exceptions thrown by the Service runner.
+    /// </summary>
     public class ServiceException : LoggingException
     {
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="T:WebApplications.Utilities.Logging.LoggingException" /> class.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <param name="level">The log level.</param>
         internal ServiceException([CanBeNull] Exception exception, LoggingLevel level = LoggingLevel.Error)
             : base(exception, level)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="T:WebApplications.Utilities.Logging.LoggingException" /> class.
+        /// </summary>
+        /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
         internal ServiceException([CanBeNull] Expression<Func<string>> resource, [CanBeNull] params object[] parameters)
             : base(resource, parameters)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="T:WebApplications.Utilities.Logging.LoggingException" /> class.
+        /// </summary>
+        /// <param name="level">The log level.</param>
+        /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
         internal ServiceException(
             LoggingLevel level,
             [CanBeNull] Expression<Func<string>> resource,
@@ -52,6 +74,13 @@ namespace WebApplications.Utilities.Service
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="T:WebApplications.Utilities.Logging.LoggingException" /> class.
+        /// </summary>
+        /// <param name="exception">The inner exception.</param>
+        /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
         internal ServiceException(
             [CanBeNull] Exception exception,
             [CanBeNull] Expression<Func<string>> resource,
@@ -60,6 +89,14 @@ namespace WebApplications.Utilities.Service
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the 
+        /// <see cref="T:WebApplications.Utilities.Logging.LoggingException" /> class.
+        /// </summary>
+        /// <param name="exception">The inner exception.</param>
+        /// <param name="level">The log level.</param>
+        /// <param name="resource">The resource expression, e.g. ()=&gt; Resources.Log_Message.</param>
+        /// <param name="parameters">The parameters.</param>
         internal ServiceException(
             [CanBeNull] Exception exception,
             LoggingLevel level,

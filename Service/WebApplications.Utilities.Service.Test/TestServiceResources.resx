@@ -117,25 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Bad_Instance" xml:space="preserve">
-    <value>The service runner command was based an instance of the wrong type.</value>
+  <data name="Cmd_TestCommand_Description" xml:space="preserve">
+    <value>Test command description.</value>
   </data>
-  <data name="Contract_Failed" xml:space="preserve">
-    <value>Contract failed. {0}</value>
-  </data>
-  <data name="Method_Generic" xml:space="preserve">
-    <value>The service runner does not accept generic methods.</value>
-  </data>
-  <data name="Not_In_Console" xml:space="preserve">
-    <value>This class can only be created when running in a console.</value>
-  </data>
-  <data name="Parameter_Guid_Empty" xml:space="preserve">
-    <value>A required GUID paramter cannot be empty.</value>
-  </data>
-  <data name="Parameter_Null" xml:space="preserve">
-    <value>A required parameter was set to null.</value>
-  </data>
-  <data name="Service_DescriptionLength" xml:space="preserve">
-    <value>The service description must be between 1 and 80 characters long.</value>
+  <data name="Cmd_TestCommand_Names" xml:space="preserve">
+    <value>Test</value>
   </data>
 </root>

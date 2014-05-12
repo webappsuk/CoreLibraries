@@ -22,7 +22,7 @@ namespace WebApplications.Utilities.Service {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ContractResources {
+    public class ContractResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace WebApplications.Utilities.Service {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WebApplications.Utilities.Service.ContractResources", typeof(ContractResources).Assembly);
@@ -51,7 +51,7 @@ namespace WebApplications.Utilities.Service {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace WebApplications.Utilities.Service {
         /// <summary>
         ///   Looks up a localized string similar to The service runner command was based an instance of the wrong type..
         /// </summary>
-        internal static string Bad_Instance {
+        public static string Bad_Instance {
             get {
                 return ResourceManager.GetString("Bad_Instance", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace WebApplications.Utilities.Service {
         /// <summary>
         ///   Looks up a localized string similar to Contract failed. {0}.
         /// </summary>
-        internal static string Contract_Failed {
+        public static string Contract_Failed {
             get {
                 return ResourceManager.GetString("Contract_Failed", resourceCulture);
             }
@@ -81,16 +81,34 @@ namespace WebApplications.Utilities.Service {
         /// <summary>
         ///   Looks up a localized string similar to The service runner does not accept generic methods..
         /// </summary>
-        internal static string Method_Generic {
+        public static string Method_Generic {
             get {
                 return ResourceManager.GetString("Method_Generic", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This class can only be created when running in a console..
+        /// </summary>
+        public static string Not_In_Console {
+            get {
+                return ResourceManager.GetString("Not_In_Console", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A required GUID paramter cannot be empty..
+        /// </summary>
+        public static string Parameter_Guid_Empty {
+            get {
+                return ResourceManager.GetString("Parameter_Guid_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A required parameter was set to null..
         /// </summary>
-        internal static string Parameter_Null {
+        public static string Parameter_Null {
             get {
                 return ResourceManager.GetString("Parameter_Null", resourceCulture);
             }
@@ -99,7 +117,7 @@ namespace WebApplications.Utilities.Service {
         /// <summary>
         ///   Looks up a localized string similar to The service description must be between 1 and 80 characters long..
         /// </summary>
-        internal static string Service_DescriptionLength {
+        public static string Service_DescriptionLength {
             get {
                 return ResourceManager.GetString("Service_DescriptionLength", resourceCulture);
             }

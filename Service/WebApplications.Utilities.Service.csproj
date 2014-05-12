@@ -11,7 +11,7 @@
     <AssemblyName>WebApplications.Utilities.Service</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -146,9 +146,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\WebApplications.Utilities.5.0.5242.28909\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5245.14254, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5245.21889, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.Logging.5.1.5245.14254\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.Logging.5.1.5245.21889\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Performance, Version=5.0.5242.28982, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -159,12 +159,13 @@
     <Compile Include="BaseService.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ConsoleUserInterface.cs" />
     <Compile Include="ContractResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ContractResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="IServiceUI.cs" />
+    <Compile Include="IServiceUserInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiredContractException.cs" />
     <Compile Include="ServiceException.cs" />
@@ -173,10 +174,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ServiceResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ServiceRunner.cs" />
+    <None Include="ServiceRunner.cs" />
     <Compile Include="ServiceRunnerCommand.cs" />
     <Compile Include="ServiceRunnerCommandAttribute.cs" />
-    <Compile Include="ServiceRunnerCommands.cs" />
     <Compile Include="ServiceState.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -186,7 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ContractResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ContractResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="ServiceResources.resx">

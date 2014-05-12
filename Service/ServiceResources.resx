@@ -351,6 +351,9 @@
   <data name="Wrn_ServiceCommand_Creation_Failed" xml:space="preserve">
     <value>Failed to create a service runner command for the '{0}' method</value>
   </data>
+  <data name="Cri_Base_Service_Command_Error" xml:space="preserve">
+    <value>An error was received from the command observable of the '{0}' connection, disconnecting.</value>
+  </data>
   <data name="Err_ServiceCommand_Invalid_Command_Method" xml:space="preserve">
     <value>Invalid command method '{0}'. A service runner command with ConsumeLine set must declare exactly one string parameter.</value>
   </data>
