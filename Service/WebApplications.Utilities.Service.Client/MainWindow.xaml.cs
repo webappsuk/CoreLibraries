@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service.Client
 {
@@ -20,7 +23,15 @@ namespace WebApplications.Utilities.Service.Client
     /// </summary>
     public partial class MainWindow : Window
     {
-        public LinkedList<string> Commands = new LinkedList<string>();
+        [NotNull]
+        private readonly ObservableCollection<string> _history = new ObservableCollection<string>();
+
+        /// <summary>
+        /// Gets the command history.
+        /// </summary>
+        /// <value>The history.</value>
+        [NotNull]
+        public ObservableCollection<string> History { get { return _history; } }
 
         public const int BufferSize = 500;
         public const int HistorySize = 50;
@@ -58,14 +69,43 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void Execute_Click(object sender, RoutedEventArgs e)
         {
+            DoExecute();
+        }
+
+        /// <summary>
+        /// Handles the KeyUp event of the CommandLine control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void CommandLine_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return || e.Key == Key.Enter)
+                DoExecute();
+        }
+
+        /// <summary>
+        /// Executes the current command.
+        /// </summary>
+        private void DoExecute()
+        {
             string command = CommandLine.Text;
             CommandLine.Text = string.Empty;
             if (string.IsNullOrWhiteSpace(command))
                 return;
-            Commands.AddLast(command);
-
-            while (Commands.Count > HistorySize)
-                Commands.RemoveFirst();
+            int c = 0;
+            // Remove duplicate
+            while (c < _history.Count)
+            {
+                if (string.Equals(_history[c], command))
+                {
+                    _history.RemoveAt(c);
+                    break;
+                }
+                c++;
+            }
+            _history.Add(command);
+            while (_history.Count > HistorySize)
+                _history.RemoveAt(0);
 
             AppendCommand(command);
             // TODO Execute the command
