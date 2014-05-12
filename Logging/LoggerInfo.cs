@@ -25,6 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Threading;
 
@@ -40,6 +42,8 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         public readonly bool IsFromConfiguration;
 
+        public readonly Type Type;
+
         /// <summary>
         /// The asynchronous lock controls access to the logger.
         /// </summary>
@@ -50,9 +54,12 @@ namespace WebApplications.Utilities.Logging
         /// Initializes a new instance of the <see cref="LoggerInfo" /> class.
         /// </summary>
         /// <param name="isFromConfiguration">if set to <see langword="true" /> [is from configuration].</param>
-        internal LoggerInfo(bool isFromConfiguration)
+        /// <param name="type">The type of the logger.</param>
+        internal LoggerInfo(bool isFromConfiguration, [NotNull] Type type)
         {
+            Contract.Requires(type != null);
             IsFromConfiguration = isFromConfiguration;
+            Type = type;
         }
     }
 }

@@ -464,7 +464,7 @@ namespace WebApplications.Utilities.Logging
             // Create loggers and add default memory logger.
             _loggers = new Dictionary<ILogger, LoggerInfo>();
             _defaultMemoryLogger = new MemoryLogger("Default memory logger", TimeSpan.FromMinutes(1));
-            _loggers[_defaultMemoryLogger] = new LoggerInfo(false);
+            _loggers[_defaultMemoryLogger] = new LoggerInfo(false, typeof(MemoryLogger));
 
             // Flush on tick. 
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -771,18 +771,18 @@ namespace WebApplications.Utilities.Logging
             {
                 lock (_loggers)
                 {
+                    Type loggerType = logger.GetType();
                     if (!logger.AllowMultiple)
                     {
-                        Type loggerType = logger.GetType();
                         // Check for existing logger of same type.
                         KeyValuePair<ILogger, LoggerInfo> existing =
-                            _loggers.FirstOrDefault(i => loggerType.IsInstanceOfType(i.Key));
+                            _loggers.FirstOrDefault(i => loggerType == i.Value.Type);
                         if (existing.Key != null)
                             return existing.Key;
                     }
 
                     // Create the logger info
-                    LoggerInfo info = new LoggerInfo(false);
+                    LoggerInfo info = new LoggerInfo(false, loggerType);
 
                     // Grab the logger lock, this ensures we get to add log entries first!
                     loggerLock = info.Lock.LockAsync().Result;
@@ -884,7 +884,7 @@ namespace WebApplications.Utilities.Logging
                 {
                     // Check for existing logger of same type.
                     KeyValuePair<ILogger, LoggerInfo> existing =
-                        _loggers.FirstOrDefault(i => i.Key is T);
+                        _loggers.FirstOrDefault(i => i.Value.Type == typeof(T));
                     if ((existing.Key != null) &&
                         !existing.Key.AllowMultiple)
                         return (T)existing.Key;
@@ -895,7 +895,7 @@ namespace WebApplications.Utilities.Logging
                         return default(T);
 
                     // Create the logger info
-                    LoggerInfo info = new LoggerInfo(false);
+                    LoggerInfo info = new LoggerInfo(false, typeof(T));
 
                     // Grab the logger lock, this ensures we get to add log entries first!
                     loggerLock = info.Lock.LockAsync().Result;
