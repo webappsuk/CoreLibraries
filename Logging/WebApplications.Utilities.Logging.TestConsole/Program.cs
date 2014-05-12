@@ -12,7 +12,7 @@ namespace WebApplications.Utilities.Logging.TestConsole
         static void Main(string[] args)
         {
             Log.SetTrace(validLevels: LoggingLevels.None);
-            Log.SetConsole(Log.XMLFormat);
+            Log.SetConsole(Log.VerboseFormat);
             FormatBuilder prompt = new FormatBuilder()
                 .AppendForegroundColor(Color.Chartreuse)
                 .Append('[')
