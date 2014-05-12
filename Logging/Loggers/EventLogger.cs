@@ -32,6 +32,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 
 namespace WebApplications.Utilities.Logging.Loggers
 {
@@ -41,13 +42,6 @@ namespace WebApplications.Utilities.Logging.Loggers
     [PublicAPI]
     public class EventLogger : LoggerBase
     {
-        /// <summary>
-        /// The default format.
-        /// </summary>
-        [PublicAPI]
-        [NotNull]
-        public const string DefaultFormat = "Verbose";
-
         [NotNull]
         private string _eventLog;
 
@@ -72,19 +66,18 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] string name,
             [NotNull] string eventLog = "Application",
             LoggingLevels validLevels = LoggingLevels.AtLeastInformation,
-            [NotNull] string format = DefaultFormat,
+            [CanBeNull] FormatBuilder format = null,
             [NotNull] string machineName = "."
             )
             : base(name, false, false, validLevels)
         {
             Contract.Requires(name != null);
             Contract.Requires(eventLog != null);
-            Contract.Requires(format != null);
             Contract.Requires(machineName != null);
             Contract.Requires(name != null, Resources.EventLogger_NameCannotBeNull);
             EventLog = eventLog;
             MachineName = machineName;
-            Format = format;
+            Format = format ?? Log.VerboseFormat;
         }
 
         /// <summary>
@@ -112,7 +105,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// <value>The format.</value>
         [NotNull]
         [PublicAPI]
-        public string Format { get; set; }
+        public FormatBuilder Format { get; set; }
 
         /// <summary>
         /// Gets or sets the format for trace messages.
@@ -150,7 +143,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                 source = source.Substring(0, 254);
 
             EventLog eventLog = new EventLog {Source = source, MachineName = MachineName, Log = EventLog};
-            string format = Format;
+            FormatBuilder format = Format;
             foreach (Log log in logs)
             {
                 Contract.Assert(log != null);

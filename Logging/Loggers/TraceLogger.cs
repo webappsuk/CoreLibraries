@@ -25,12 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 
@@ -40,26 +35,8 @@ namespace WebApplications.Utilities.Logging.Loggers
     ///   Allows logging to the debug window.
     /// </summary>
     [PublicAPI]
-    public sealed class TraceLogger : LoggerBase
+    public sealed class TraceLogger : TextWriterLogger
     {
-        /*
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TraceLogger" /> class.
-        /// </summary>
-        /// <param name="name">The logger name.</param>
-        /// <param name="validLevels">The valid log levels.</param>
-        /// <param name="format">The format.</param>
-        public TraceLogger(
-            [NotNull] string name,
-            [CanBeNull] string format = null,
-            LoggingLevels validLevels = LoggingLevels.All)
-            : this(name, (FormatBuilder) format, validLevels)
-        {
-            Contract.Requires(name != null);
-            Format = format;
-        }
-         */
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TraceLogger" /> class.
         /// </summary>
@@ -70,39 +47,9 @@ namespace WebApplications.Utilities.Logging.Loggers
             [NotNull] string name,
             [CanBeNull] FormatBuilder format = null,
             LoggingLevels validLevels = LoggingLevels.All)
-            : base(name, false, false, validLevels)
+            : base(name, TraceTextWriter.Default, format, false, false, validLevels)
         {
             Contract.Requires(name != null);
-            Format = format;
-        }
-
-        /// <summary>
-        /// Gets or sets the format for trace messages.
-        /// </summary>
-        /// <value>The format.</value>
-        [PublicAPI]
-        [CanBeNull]
-        public FormatBuilder Format { get; set; }
-
-        /// <summary>
-        /// Adds the specified logs to storage in batches.
-        /// </summary>
-        /// <param name="logs">The logs to add to storage.</param>
-        /// <param name="token">The token.</param>
-        /// <returns>Task.</returns>
-        public override Task Add([InstantHandle]IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
-        {
-            Contract.Requires(logs != null);
-            FormatBuilder format = Format ?? Log.VerboseFormat;
-            // ReSharper disable once PossibleNullReferenceException
-            foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
-            {
-                token.ThrowIfCancellationRequested();
-                // ReSharper disable PossibleNullReferenceException
-                log.WriteTo(TraceTextWriter.Default, format);
-                // ReSharper restore PossibleNullReferenceException
-            }
-            return TaskResult.Completed;
         }
     }
 }

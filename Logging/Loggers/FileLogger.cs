@@ -214,6 +214,43 @@ namespace WebApplications.Utilities.Logging.Loggers
             _directory = directory ?? DefaultDirectory;
             _fileNameFormat = fileNameFormat ?? DefaultFileNameFormat;
             _extension = extension ?? string.Empty;
+            if (format != null)
+            {
+                // If there is a single chunk with no format, children or alignment,
+                // Check if it is one of the built in formats.
+                FormatChunk[] formatChunks = format.RootChunk.Children.Take(2).ToArray();
+
+                FormatChunk chunk = formatChunks.Length == 1
+                    ? formatChunks[0]
+                    : null;
+                if ((chunk != null) &&
+                    !chunk.IsResolved &&
+                    !chunk.IsControl &&
+                    (chunk.Tag != null) &&
+                    (chunk.Alignment == 0) &&
+                    (chunk.Format == null) &&
+                    (!chunk.Children.Any()))
+                {
+                    switch (chunk.Tag.ToLowerInvariant())
+                    {
+                        case "all":
+                            format = Log.AllFormat;
+                            break;
+                        case "verbose":
+                            format = Log.VerboseFormat;
+                            break;
+                        case "xml":
+                            format = Log.XMLFormat;
+                            break;
+                        case "json":
+                            format = Log.JSONFormat;
+                            break;
+                        case "short":
+                            format = Log.ShortFormat;
+                            break;
+                    }
+                }
+            }
             _format = format ?? Log.VerboseFormat;
             _pathFormat = ValidatePathFormat(_directory, _fileNameFormat, ref _extension, _format);
             Buffer = buffer;
@@ -679,7 +716,6 @@ namespace WebApplications.Utilities.Logging.Loggers
             /// <param name="fileStream">The file stream.</param>
             /// <param name="fileName">Name of the file.</param>
             /// <param name="format">The format.</param>
-            /// <param name="buffer">The buffer.</param>
             /// <param name="start">The start.</param>
             public LogFile([NotNull]FileStream fileStream, [NotNull] string fileName, [NotNull] FormatBuilder format, DateTime start)
             {
@@ -707,7 +743,7 @@ namespace WebApplications.Utilities.Logging.Loggers
                         WriteLine("[" + Environment.NewLine + "]").Wait();
                         break;
                     default:
-                        Write(Format.ToString() + Environment.NewLine + Environment.NewLine)
+                        Write(Format.ToString("F") + Environment.NewLine + Environment.NewLine)
                             .Wait();
                         break;
                 }

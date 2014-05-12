@@ -73,7 +73,7 @@ namespace WebApplications.Utilities.Logging
         public static readonly FormatBuilder EnumerableElementXMLFormat = new FormatBuilder()
             .AppendFormatLine("<{KeyXmlTag}>")
             .AppendLayout(firstLineIndentSize: 8)
-            .AppendFormatLine("{Value:{<items>:<item>{<item>}</item>}{<join>:\r\n}}")
+            .AppendFormatLine("{valuexml:{<items>:<item>{<item>}</item>}{<join>:\r\n}}")
             .AppendPopLayout()
             .AppendFormatLine("</{KeyXmlTag}>")
             .MakeReadOnly();
@@ -158,6 +158,8 @@ namespace WebApplications.Utilities.Logging
                             : key.Replace(' ', '_');
                     case "value":
                         return Values;
+                    case "valuexml":
+                        return Values.Select(v => v != null ? v.XmlEscape() : null);
                     default:
                         return Resolution.Unknown;
                 }

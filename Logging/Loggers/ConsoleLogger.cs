@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -37,47 +36,17 @@ using WebApplications.Utilities.Formatting;
 namespace WebApplications.Utilities.Logging.Loggers
 {
     /// <summary>
-    ///   Allows coloured logging to the console window, using an extended <see cref="Format"/> syntax.
+    ///   Allows coloured logging to the console window, using an extended <see cref="TextWriterLogger.Format"/> syntax.
     /// </summary>
     [PublicAPI]
-    public sealed class ConsoleLogger : LoggerBase
-    {/*
+    public sealed class ConsoleLogger : TextWriterLogger
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConsoleLogger"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="format">The format (see <see cref="Format"/> for more information on usage).</param>
+        /// <param name="format">The format.</param>
         /// <param name="validLevels">The valid levels.</param>
-        public ConsoleLogger(
-            [NotNull] string name,
-            [CanBeNull] string format = null,
-            LoggingLevels validLevels = LoggingLevels.All)
-            : this(name, (FormatBuilder)format, validLevels)
-        {
-            Contract.Requires(name != null);
-        }
-      */
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConsoleLogger"/> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="format">The format (see <see cref="Format"/> for more information on usage).</param>
-        /// <param name="validLevels">The valid levels.</param>
-        public ConsoleLogger(
-            [NotNull] string name,
-            [CanBeNull] FormatBuilder format = null,
-            LoggingLevels validLevels = LoggingLevels.All)
-            : base(name, false, false, validLevels)
-        {
-            Contract.Requires(name != null);
-            Format = format ?? Log.VerboseFormat;
-        }
-
-        /// <summary>
-        /// Gets or sets the format for trace messages.
-        /// </summary>
-        /// <value>The format.</value>
         /// <remarks>
         /// <para>Along with the <see cref="Log.ToString(string, IFormatProvider)">standard formats supported by the logger</see>, also supports colouration using colour formats.</para>
         /// <para>To change colour use a '+' or '-' followed by a <see cref="ConsoleColor"/> e.g. <code>{+White}</code>. '+' indicates a foreground colour change, whilst
@@ -86,32 +55,15 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// change the foreground colour to red.</para>
         /// <para>The '_' colour will use the current consoles default foreground or background colour (depending on whether it is preceeded with '+' or '-').</para>
         /// </remarks>
-        [PublicAPI]
-        [CanBeNull]
-        public FormatBuilder Format { get; set; }
-
-        /// <summary>
-        /// Adds the specified logs to storage in batches.
-        /// </summary>
-        /// <param name="logs">The logs to add to storage.</param>
-        /// <param name="token">The token.</param>
-        /// <returns>Task.</returns>
-        public override Task Add([InstantHandle] IEnumerable<Log> logs, CancellationToken token = default(CancellationToken))
+        public ConsoleLogger(
+            [NotNull] string name,
+            [CanBeNull] FormatBuilder format = null,
+            LoggingLevels validLevels = LoggingLevels.All)
+            : base(name, ConsoleTextWriter.Default, format, false, false, validLevels)
         {
-            Contract.Requires(logs != null);
-            // Check we're actually in a console!
-            if (!ConsoleHelper.IsConsole) return TaskResult.Completed;
-
-            FormatBuilder format = Format ?? Log.VerboseFormat;
-            // ReSharper disable once PossibleNullReferenceException
-            foreach (Log log in logs.Where(log => log.Level.IsValid(ValidLevels)))
-            {
-                token.ThrowIfCancellationRequested();
-                // ReSharper disable PossibleNullReferenceException
-                log.WriteTo(ConsoleTextWriter.Default, format);
-                // ReSharper restore PossibleNullReferenceException
-            }
-            return TaskResult.Completed;
+            Contract.Requires(name != null);
+            Contract.Requires(ConsoleHelper.IsConsole);
+            Format = format ?? Log.VerboseFormat;
         }
     }
 }

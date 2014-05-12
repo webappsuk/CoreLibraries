@@ -689,6 +689,9 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public static void SetConsole([CanBeNull] string format, LoggingLevels validLevels = LoggingLevels.All)
         {
+            if (!ConsoleHelper.IsConsole)
+                return;
+
             SetConsole(format != null ? new FormatBuilder().Append(format) : null, validLevels);
         }
 
@@ -700,6 +703,9 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public static void SetConsole([CanBeNull] FormatBuilder format = null, LoggingLevels validLevels = LoggingLevels.All)
         {
+            if (!ConsoleHelper.IsConsole)
+                return;
+
             ConsoleLogger consoleLogger;
             lock (_loggers)
                 consoleLogger = _loggers.OfType<ConsoleLogger>().FirstOrDefault();

@@ -52,8 +52,8 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Initializes a new instance of the <see cref="LoggerBase" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="queryable">if set to <see langword="true" /> [queryable].</param>
-        /// <param name="allowMultiple">if set to <see langword="true" /> [allow multiple].</param>
+        /// <param name="queryable">if set to <see langword="true" /> the logger is queryable.</param>
+        /// <param name="allowMultiple">if set to <see langword="true" /> the logger supports multiple instances.</param>
         /// <param name="validLevels">The valid levels.</param>
         protected LoggerBase(
             [NotNull] string name,
