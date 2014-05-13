@@ -10,10 +10,18 @@
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"
+        DataContext="{StaticResource MainViewModel}"
         Background="{StaticResource BackgroundBrush}" WindowStartupLocation="CenterScreen"
         Margin="10" 
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        MouseDoubleClick="Window_MouseDoubleClick" MouseLeftButtonUp="Window_MouseLeftButtonUp" MouseMove="Window_MouseMove" Icon="babel.ico">
+        MouseLeftButtonUp="Window_MouseLeftButtonUp"
+        MouseMove="Window_MouseMove" 
+        Icon="babel.ico">
+    <Window.CommandBindings>
+        <CommandBinding Command="Close"
+                        CanExecute="OnCloseCanExecute"
+                        Executed="OnCloseExecuted"/>
+    </Window.CommandBindings>
     <Border BorderBrush="{StaticResource TransparentBrush}">
         <Border.Style>
             <Style TargetType="{x:Type Border}">
@@ -38,44 +46,48 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="68*" MinHeight="91"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="28*" MinHeight="91"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="4*" MinHeight="38"/>
+                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=Auto, Mode=TwoWay}" />
+                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=28*, Mode=TwoWay}"
+                               MinHeight="{Binding ShowConmmands, Converter={StaticResource BooleanToDoubleConverter}, ConverterParameter=91}"/>
+                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=Auto, Mode=TwoWay}"/>
+                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=4*, Mode=TwoWay}" 
+                               MinHeight="{Binding ShowConmmands, Converter={StaticResource BooleanToDoubleConverter}, ConverterParameter=38}"/>
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0">
-                <Grid DockPanel.Dock="Left">
-                    <Label Style="{StaticResource LogoLabelStyle}" Foreground="Red">&#xe100;</Label>
-                    <Label Style="{StaticResource LogoLabelStyle}" Foreground="White">&#xe101;</Label>
-                    <Label Style="{StaticResource LogoLabelStyle}" Foreground="Red">&#xe102;</Label>
-                </Grid>
-                <Label Name="TitleLabel" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" FontSize="20">Service Client for Babel API</Label>
-                <Grid DockPanel.Dock="Right" Width="Auto" HorizontalAlignment="Right">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Button Name="MinimizeButton" Grid.Column="0" ToolTip="Minimize" DockPanel.Dock="Right" Margin="0" Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right" BorderThickness="0" Click="MinimizeButton_Click" FontSize="10">&#xe605;</Button>
-                    <Button Name="RestoreButton" Grid.Column="1" DockPanel.Dock="Right" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="RestoreButton_Click" FontSize="10">
-                        <Button.Style>
-                            <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="{x:Type Button}">
-                                <Setter Property="Content" Value="&#xe604;"/>
-                                <Setter Property="ToolTip" Value="Maximize"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
-                                        <Setter Property="Content" Value="&#xe604;"/>
-                                        <!-- Todo don't have a glyph for restore in font! -->
-                                        <Setter Property="ToolTip" Value="Restore Down"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                    <Button Name="CloseButton" Grid.Column="2" ToolTip="Close" DockPanel.Dock="Right" Margin="0" Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right" BorderThickness="0" Click="Close_Click" FontSize="10">&#xe647;</Button>
-                </Grid>
-            </DockPanel>
+            <ContentControl Grid.Row="0" MouseDoubleClick="Window_MouseDoubleClick">
+                <DockPanel >
+                    <Grid DockPanel.Dock="Left">
+                        <Label Style="{StaticResource LogoLabelStyle}" Foreground="Red">&#xe100;</Label>
+                        <Label Style="{StaticResource LogoLabelStyle}" Foreground="White">&#xe101;</Label>
+                        <Label Style="{StaticResource LogoLabelStyle}" Foreground="Red">&#xe102;</Label>
+                    </Grid>
+                    <Grid DockPanel.Dock="Right" Width="Auto" HorizontalAlignment="Right">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Name="MinimizeButton" Grid.Column="0" ToolTip="Minimize" DockPanel.Dock="Right" Margin="0" Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right" BorderThickness="0" Click="MinimizeButton_Click" FontSize="10">&#xe605;</Button>
+                        <Button Name="RestoreButton" Grid.Column="1" DockPanel.Dock="Right" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="RestoreButton_Click" FontSize="10">
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="{x:Type Button}">
+                                    <Setter Property="Content" Value="&#xe604;"/>
+                                    <Setter Property="ToolTip" Value="Maximize"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                                            <Setter Property="Content" Value="&#xe604;"/>
+                                            <!-- Todo don't have a glyph for restore in font! -->
+                                            <Setter Property="ToolTip" Value="Restore Down"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Name="CloseButton" Grid.Column="2" ToolTip="Close" DockPanel.Dock="Right" Margin="0" Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right" BorderThickness="0" Command="ApplicationCommands.Close" FontSize="10">&#xe647;</Button>
+                    </Grid>
+                    <Label Name="TitleLabel" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="20">Service Client for Babel API</Label>
+                </DockPanel>
+            </ContentControl>
             <StackPanel Grid.Row="1" Background="Transparent" Orientation="Horizontal">
                 <Button Name="SaveButton" Style="{StaticResource IconButtonStyle}" ToolTip="Save">
                     <Grid>
@@ -83,19 +95,19 @@
                         <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource HighlightBrush}">&#xe677;</Label>
                     </Grid>
                 </Button>
-                <Button Name="CopyButton" Style="{StaticResource IconButtonStyle}" ToolTip="Copy">
+                <Button Name="CopyButton" Style="{StaticResource IconButtonStyle}" ToolTip="Copy" Command="ApplicationCommands.Copy">
                     <Grid>
                         <Label Style="{StaticResource IconLabelStyle}">&#xe632;</Label>
                         <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource HighlightBrush}">&#xe631;</Label>
                     </Grid>
                 </Button>
-                <Button Name="ShowCommandsButton" Click="ShowCommandsButton_Click">
+                <Button Name="ShowCommandsButton" Command="{Binding ToggleShowCommands}">
                     <Button.Style>
                         <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="{x:Type Button}">
                             <Setter Property="Content" Value="&#xe663;"/>
                             <Setter Property="ToolTip" Value="Show Commands"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=ShowConmmands}" Value="True">
+                                <DataTrigger Binding="{Binding ShowConmmands}" Value="True">
                                     <Setter Property="Content" Value="&#xe666;"/>
                                     <Setter Property="ToolTip" Value="Hide Commands"/>
                                 </DataTrigger>
@@ -130,12 +142,14 @@
               HorizontalAlignment="Stretch"
               VerticalAlignment="Center" 
               MaxHeight="4"
-              ShowsPreview="true"/>
+              ShowsPreview="true"
+              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}" />
             <DockPanel                     
             Grid.Row="4"
             Height="Auto"
             HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
+            VerticalAlignment="Stretch"
+              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}">
                 <Label DockPanel.Dock="Top">Commands</Label>
                 <RichTextBox Name="CommandView" 
                      Margin="0"
@@ -159,12 +173,14 @@
               HorizontalAlignment="Stretch"
               VerticalAlignment="Center" 
               MaxHeight="4"
-              ShowsPreview="true"/>
+              ShowsPreview="true"
+              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}"/>
             <DockPanel                     
             Grid.Row="6"
             Height="Auto"
             HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch">
+            VerticalAlignment="Stretch"
+              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}">
                 <Button Name="Execute"
                 DockPanel.Dock="Right"
                 Margin="4,4,20,4" 
@@ -180,7 +196,7 @@
                 IsTextCompletionEnabled="True"
                 ItemContainerStyle="{StaticResource HistoryStyle}"
                 VerticalAlignment="Stretch"
-                ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=History}"
+                ItemsSource="{Binding History}"
                 MaxDropDownHeight="200" MinimumPrefixLength="0" KeyUp="CommandLine_KeyUp"/>
             </DockPanel>
         </Grid>

@@ -28,33 +28,7 @@ namespace WebApplications.Utilities.Service.Client
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        [NotNull]
-        private readonly ObservableCollection<string> _history = new ObservableCollection<string>();
-
         private Point _startPoint = default(Point);
-        private bool _showConmmands;
-
-        /// <summary>
-        /// Gets the command history.
-        /// </summary>
-        /// <value>The history.</value>
-        [NotNull]
-        public ObservableCollection<string> History { get { return _history; } }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to show commands.
-        /// </summary>
-        /// <value><see langword="true" /> to show commands; otherwise, <see langword="false" />.</value>
-        public bool ShowConmmands
-        {
-            get { return _showConmmands; }
-            set
-            {
-                if (value.Equals(_showConmmands)) return;
-                _showConmmands = value;
-                OnPropertyChanged();
-            }
-        }
 
         public const int BufferSize = 500;
         public const int HistorySize = 50;
@@ -62,16 +36,6 @@ namespace WebApplications.Utilities.Service.Client
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        /// <summary>
-        /// Handles the Click event of the Close control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void Close_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
         }
 
         #region PInvoke GetCursorPos
@@ -224,6 +188,7 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         private void DoExecute()
         {
+            /*
             string command = CommandLine.Text;
             CommandLine.Text = string.Empty;
             if (string.IsNullOrWhiteSpace(command))
@@ -245,6 +210,7 @@ namespace WebApplications.Utilities.Service.Client
 
             AppendCommand(command);
             // TODO Execute the command
+             */
         }
 
         /// <summary>
@@ -368,13 +334,24 @@ namespace WebApplications.Utilities.Service.Client
         }
 
         /// <summary>
-        /// Handles the Click event of the ShowCommandsButton control.
+        /// Handles the <see cref="E:CloseCanExecute" /> event.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void ShowCommandsButton_Click(object sender, RoutedEventArgs e)
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="CanExecuteRoutedEventArgs"/> instance containing the event data.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        private void OnCloseCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            ShowConmmands = !_showConmmands;
+            e.CanExecute = true;
+        }
+
+        /// <summary>
+        /// Handles the <see cref="E:CloseExecuted" /> event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="ExecutedRoutedEventArgs"/> instance containing the event data.</param>
+        private void OnCloseExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
