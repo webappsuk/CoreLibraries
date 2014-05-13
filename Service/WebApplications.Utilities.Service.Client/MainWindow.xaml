@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Title="MainWindow" 
         Height="900" 
         Width="1024"
@@ -23,7 +24,18 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid>
+    <Border BorderBrush="Transparent">
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                        <Setter Property="BorderThickness" Value="{Binding Source={x:Static SystemParameters.WindowResizeBorderThickness}}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <Grid>
         <Grid.Resources>
             <Style  x:Key="HistoryStyle" TargetType="ListBoxItem">
                 <Setter Property="Margin" Value="0" />
@@ -113,15 +125,16 @@
                 HorizontalAlignment="Right"
                 IsDefault="{Binding ElementName=CommandLine, Path=IsKeyboardFocused}">Execute</Button>
             <controls:AutoCompleteBox
-            Name="CommandLine"
-            Margin="4"
-            Height="Auto" 
-            FilterMode="Contains"
-            IsTextCompletionEnabled="True"
-            ItemContainerStyle="{StaticResource HistoryStyle}"
-            VerticalAlignment="Stretch"
-            ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=History}"
-            MaxDropDownHeight="200" MinimumPrefixLength="0" KeyUp="CommandLine_KeyUp"/>
+                Name="CommandLine"
+                Margin="4"
+                Height="Auto" 
+                FilterMode="Contains"
+                IsTextCompletionEnabled="True"
+                ItemContainerStyle="{StaticResource HistoryStyle}"
+                VerticalAlignment="Stretch"
+                ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=History}"
+                MaxDropDownHeight="200" MinimumPrefixLength="0" KeyUp="CommandLine_KeyUp"/>
         </DockPanel>
-    </Grid>
+        </Grid>
+    </Border>
 </Window>

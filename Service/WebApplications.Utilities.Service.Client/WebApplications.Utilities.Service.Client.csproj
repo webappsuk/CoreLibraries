@@ -75,6 +75,7 @@
     <Reference Include="System.Windows.Controls.Layout.Toolkit">
       <HintPath>..\packages\WPFToolkit.3.5.50211.1\lib\System.Windows.Controls.Layout.Toolkit.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Controls.Ribbon" />
     <Reference Include="System.Windows.Presentation">
       <HintPath>..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Windows.Presentation.dll</HintPath>
     </Reference>
