@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Shell;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -23,19 +26,9 @@ namespace WebApplications.Utilities.Service.Client
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        [NotNull]
-        private readonly ObservableCollection<string> _history = new ObservableCollection<string>();
-
         private Point _startPoint = default(Point);
-
-        /// <summary>
-        /// Gets the command history.
-        /// </summary>
-        /// <value>The history.</value>
-        [NotNull]
-        public ObservableCollection<string> History { get { return _history; } }
 
         public const int BufferSize = 500;
         public const int HistorySize = 50;
@@ -43,16 +36,6 @@ namespace WebApplications.Utilities.Service.Client
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        /// <summary>
-        /// Handles the Click event of the Close control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void Close_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
         }
 
         #region PInvoke GetCursorPos
@@ -158,6 +141,28 @@ namespace WebApplications.Utilities.Service.Client
         }
 
         /// <summary>
+        /// Handles the Click event of the MinimizeButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        /// <summary>
+        /// Handles the Click event of the RestoreButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void RestoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Normal
+                ? WindowState.Maximized
+                : WindowState.Normal;
+        }
+
+        /// <summary>
         /// Handles the Click event of the Execute control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -183,6 +188,7 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         private void DoExecute()
         {
+            /*
             string command = CommandLine.Text;
             CommandLine.Text = string.Empty;
             if (string.IsNullOrWhiteSpace(command))
@@ -204,6 +210,7 @@ namespace WebApplications.Utilities.Service.Client
 
             AppendCommand(command);
             // TODO Execute the command
+             */
         }
 
         /// <summary>
@@ -311,6 +318,40 @@ namespace WebApplications.Utilities.Service.Client
             BlockCollection blocks = LogView.Document.Blocks;
             while (blocks.Count > BufferSize)
                 blocks.Remove(blocks.FirstBlock);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Handles the <see cref="E:CloseCanExecute" /> event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="CanExecuteRoutedEventArgs"/> instance containing the event data.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        private void OnCloseCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        /// <summary>
+        /// Handles the <see cref="E:CloseExecuted" /> event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="ExecutedRoutedEventArgs"/> instance containing the event data.</param>
+        private void OnCloseExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

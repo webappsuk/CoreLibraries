@@ -8,84 +8,197 @@
         MinHeight="260"
         MinWidth="580"
         WindowStyle="None"
-        AllowsTransparency="True"
         ResizeMode="CanResizeWithGrip"
-        Background="#AA000000" WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        DataContext="{StaticResource MainViewModel}"
+        Background="{StaticResource BackgroundBrush}" WindowStartupLocation="CenterScreen"
         Margin="10" 
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        MouseDoubleClick="Window_MouseDoubleClick" MouseLeftButtonUp="Window_MouseLeftButtonUp" MouseMove="Window_MouseMove">
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <!-- Dark Theme -->
-                <ResourceDictionary Source="Themes/Metro/Dark/MetroDark.MSControls.Core.Implicit.xaml" />
-                <ResourceDictionary Source="Themes/Metro/Dark/MetroDark.MSControls.Toolkit.Implicit.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-    <Grid>
-        <Grid.Resources>
-            <Style  x:Key="HistoryStyle" TargetType="ListBoxItem">
-                <Setter Property="Margin" Value="0" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="FontFamily" Value="Consolas" />
-                <Setter Property="FontSize" Value="12" />
+        MouseLeftButtonUp="Window_MouseLeftButtonUp"
+        MouseMove="Window_MouseMove" 
+        Icon="babel.ico">
+    <Window.CommandBindings>
+        <CommandBinding Command="Close"
+                        CanExecute="OnCloseCanExecute"
+                        Executed="OnCloseExecuted"/>
+    </Window.CommandBindings>
+    <Border BorderBrush="{StaticResource TransparentBrush}">
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                        <Setter Property="BorderThickness" Value="{Binding Source={x:Static SystemParameters.WindowResizeBorderThickness}}"/>
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
-        </Grid.Resources>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="96*" MinHeight="188"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition  Height="4*" MinHeight="38"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width ="100"/>
-        </Grid.ColumnDefinitions>
-        <Label Name="TitleLabel" Foreground="White" FontWeight="Bold">Service Client for Babel API</Label>
-        <Button Name="CloseButton" Grid.Column="1" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="Close_Click">X</Button>
-        <RichTextBox Name="LogView" 
-                     Grid.Row="1" 
-                     Grid.Column="0" 
+        </Border.Style>
+        <Grid>
+            <Grid.Resources>
+                <Style  x:Key="HistoryStyle" TargetType="ListBoxItem">
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="FontFamily" Value="Consolas" />
+                    <Setter Property="FontSize" Value="12" />
+                </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="68*" MinHeight="91"/>
+                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=Auto, Mode=TwoWay}" />
+                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=28*, Mode=TwoWay}"
+                               MinHeight="{Binding ShowConmmands, Converter={StaticResource BooleanToDoubleConverter}, ConverterParameter=91}"/>
+                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=Auto, Mode=TwoWay}"/>
+                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=4*, Mode=TwoWay}" 
+                               MinHeight="{Binding ShowConmmands, Converter={StaticResource BooleanToDoubleConverter}, ConverterParameter=38}"/>
+            </Grid.RowDefinitions>
+
+            <ContentControl Grid.Row="0" MouseDoubleClick="Window_MouseDoubleClick">
+                <DockPanel >
+                    <Grid DockPanel.Dock="Left">
+                        <Label Style="{StaticResource LogoLabelStyle}" Foreground="Red">&#xe100;</Label>
+                        <Label Style="{StaticResource LogoLabelStyle}" Foreground="White">&#xe101;</Label>
+                        <Label Style="{StaticResource LogoLabelStyle}" Foreground="Red">&#xe102;</Label>
+                    </Grid>
+                    <Grid DockPanel.Dock="Right" Width="Auto" HorizontalAlignment="Right">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Name="MinimizeButton" Grid.Column="0" ToolTip="Minimize" DockPanel.Dock="Right" Margin="0" Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right" BorderThickness="0" Click="MinimizeButton_Click" FontSize="10">&#xe605;</Button>
+                        <Button Name="RestoreButton" Grid.Column="1" DockPanel.Dock="Right" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="RestoreButton_Click" FontSize="10">
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="{x:Type Button}">
+                                    <Setter Property="Content" Value="&#xe604;"/>
+                                    <Setter Property="ToolTip" Value="Maximize"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                                            <Setter Property="Content" Value="&#xe604;"/>
+                                            <!-- Todo don't have a glyph for restore in font! -->
+                                            <Setter Property="ToolTip" Value="Restore Down"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Name="CloseButton" Grid.Column="2" ToolTip="Close" DockPanel.Dock="Right" Margin="0" Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right" BorderThickness="0" Command="ApplicationCommands.Close" FontSize="10">&#xe647;</Button>
+                    </Grid>
+                    <Label Name="TitleLabel" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="20">Service Client for Babel API</Label>
+                </DockPanel>
+            </ContentControl>
+            <StackPanel Grid.Row="1" Background="Transparent" Orientation="Horizontal">
+                <Button Name="SaveButton" Style="{StaticResource IconButtonStyle}" ToolTip="Save">
+                    <Grid>
+                        <Label Style="{StaticResource IconLabelStyle}">&#xe678;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource HighlightBrush}">&#xe677;</Label>
+                    </Grid>
+                </Button>
+                <Button Name="CopyButton" Style="{StaticResource IconButtonStyle}" ToolTip="Copy" Command="ApplicationCommands.Copy">
+                    <Grid>
+                        <Label Style="{StaticResource IconLabelStyle}">&#xe632;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource HighlightBrush}">&#xe631;</Label>
+                    </Grid>
+                </Button>
+                <Button Name="ShowCommandsButton" Command="{Binding ToggleShowCommands}">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="{x:Type Button}">
+                            <Setter Property="Content" Value="&#xe663;"/>
+                            <Setter Property="ToolTip" Value="Show Commands"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowConmmands}" Value="True">
+                                    <Setter Property="Content" Value="&#xe666;"/>
+                                    <Setter Property="ToolTip" Value="Hide Commands"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+            <DockPanel                     
+            Grid.Row="2"
+            Height="Auto"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+                <Label DockPanel.Dock="Top">Logs</Label>
+                <RichTextBox Name="LogView" 
                      Margin="0"
                      HorizontalAlignment="Stretch"
                      ScrollViewer.VerticalScrollBarVisibility="Visible"
                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
                      Style="{StaticResource LogRichTextBoxStyle}"
-                     Grid.ColumnSpan="2" 
-                     Background="{StaticResource BackgroundKey}" 
+                     Background="{StaticResource BackgroundBrush}" 
                      IsReadOnly="True">
-            <RichTextBox.Resources>
-                <Style TargetType="{x:Type Paragraph}">
-                    <Setter Property="Margin" Value="0"/>
-                    <Setter Property="FontFamily" Value="Consolas"/>
-                </Style>
-            </RichTextBox.Resources>
-        </RichTextBox>
-        <GridSplitter Grid.Row="2" Grid.Column="0"  Grid.ColumnSpan="2" Height="4"
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="FontFamily" Value="Consolas"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </DockPanel>
+            <GridSplitter Grid.Row="3" Grid.Column="0" Height="4"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Center" 
               MaxHeight="4"
-              ShowsPreview="true"/>
-        <controls:AutoCompleteBox
-            Name="CommandLine"
-            Margin="4" 
-            Grid.Row="3"
-            Grid.Column="0" 
-            Height="Auto" 
-            FilterMode="Contains"
-            IsTextCompletionEnabled="True"
-            ItemContainerStyle="{StaticResource HistoryStyle}"
+              ShowsPreview="true"
+              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}" />
+            <DockPanel                     
+            Grid.Row="4"
+            Height="Auto"
+            HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=History}"
-            MaxDropDownHeight="200" MinimumPrefixLength="0" KeyUp="CommandLine_KeyUp"/>
-        
-        <Button Name="Execute"
-                Grid.Row="3"
-                Grid.Column="1"
+              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}">
+                <Label DockPanel.Dock="Top">Commands</Label>
+                <RichTextBox Name="CommandView" 
+                     Margin="0"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     ScrollViewer.VerticalScrollBarVisibility="Visible"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     Style="{StaticResource LogRichTextBoxStyle}"
+                     Background="{StaticResource BackgroundBrush}" 
+                     IsReadOnly="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="FontFamily" Value="Consolas"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </DockPanel>
+            <GridSplitter Grid.Row="5"
+                      Height="4"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Center" 
+              MaxHeight="4"
+              ShowsPreview="true"
+              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}"/>
+            <DockPanel                     
+            Grid.Row="6"
+            Height="Auto"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}">
+                <Button Name="Execute"
+                DockPanel.Dock="Right"
                 Margin="4,4,20,4" 
                 Click="Execute_Click" 
                 VerticalAlignment="Stretch"
+                HorizontalAlignment="Right"
                 IsDefault="{Binding ElementName=CommandLine, Path=IsKeyboardFocused}">Execute</Button>
-    </Grid>
+                <controls:AutoCompleteBox
+                Name="CommandLine"
+                Margin="4"
+                Height="Auto" 
+                FilterMode="Contains"
+                IsTextCompletionEnabled="True"
+                ItemContainerStyle="{StaticResource HistoryStyle}"
+                VerticalAlignment="Stretch"
+                ItemsSource="{Binding History}"
+                MaxDropDownHeight="200" MinimumPrefixLength="0" KeyUp="CommandLine_KeyUp"/>
+            </DockPanel>
+        </Grid>
+    </Border>
 </Window>
