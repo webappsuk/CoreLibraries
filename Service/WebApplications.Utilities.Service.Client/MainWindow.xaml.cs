@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,12 +26,13 @@ namespace WebApplications.Utilities.Service.Client
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         [NotNull]
         private readonly ObservableCollection<string> _history = new ObservableCollection<string>();
 
         private Point _startPoint = default(Point);
+        private bool _showConmmands;
 
         /// <summary>
         /// Gets the command history.
@@ -37,6 +40,21 @@ namespace WebApplications.Utilities.Service.Client
         /// <value>The history.</value>
         [NotNull]
         public ObservableCollection<string> History { get { return _history; } }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show commands.
+        /// </summary>
+        /// <value><see langword="true" /> to show commands; otherwise, <see langword="false" />.</value>
+        public bool ShowConmmands
+        {
+            get { return _showConmmands; }
+            set
+            {
+                if (value.Equals(_showConmmands)) return;
+                _showConmmands = value;
+                OnPropertyChanged();
+            }
+        }
 
         public const int BufferSize = 500;
         public const int HistorySize = 50;
@@ -334,6 +352,29 @@ namespace WebApplications.Utilities.Service.Client
             BlockCollection blocks = LogView.Document.Blocks;
             while (blocks.Count > BufferSize)
                 blocks.Remove(blocks.FirstBlock);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Handles the Click event of the ShowCommandsButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void ShowCommandsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ShowConmmands = !_showConmmands;
         }
     }
 }

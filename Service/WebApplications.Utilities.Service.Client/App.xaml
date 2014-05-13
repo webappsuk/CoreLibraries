@@ -13,6 +13,7 @@
             </ResourceDictionary.MergedDictionaries>
             <!-- Dark Theme -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#FF292929" />
+            <SolidColorBrush x:Key="HighlightBrush" Color="DodgerBlue" />
             
             <Style x:Key="LogRichTextBoxStyle" TargetType="RichTextBox">
                 <Setter Property="FontSize" Value="12" />
@@ -92,15 +93,27 @@
                     </Setter.Value>
                 </Setter>
             </Style>
-            
-            <Style x:Key="LogoStyle">
-                <Setter Property="TextElement.FontFamily" Value="pack://application:,,,/Fonts/#Logos-12-02-14" />
-                <Setter Property="TextElement.FontSize" Value="32" />
+
+            <Style x:Key="LogoLabelStyle" TargetType="Label">
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Top"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="FontFamily" Value="pack://application:,,,/Fonts/#Logos-12-02-14" />
+                <Setter Property="FontSize" Value="32" />
+            </Style>
+
+            <Style x:Key="IconLabelStyle" TargetType="Label">
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Top"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Foreground" Value="{Binding Path=(TextElement.Foreground), RelativeSource={RelativeSource AncestorType=ContentPresenter}}"/>
+                <Setter Property="FontFamily" Value="pack://application:,,,/Fonts/#TR5-Icons-19-03-14" />
+                <Setter Property="FontSize" Value="16" />
             </Style>
             
             <Style x:Key="IconButtonStyle" BasedOn="{StaticResource MinimalButtonStyle}" TargetType="{x:Type Button}">
                 <Setter Property="FontFamily" Value="pack://application:,,,/Fonts/#TR5-Icons-19-03-14" />
-                <Setter Property="FontSize" Value="10" />
+                <Setter Property="FontSize" Value="16" />
             </Style>
 
             <system:Double x:Key="{x:Static SystemParameters.VerticalScrollBarWidthKey}">10</system:Double>
