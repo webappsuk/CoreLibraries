@@ -39,13 +39,13 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Implements a console-based service user interface, if running in a console.
     /// </summary>
-    public class ConsoleUserInterface : IServiceUserInterface
+    public class ConsoleUserInterface : IDisposable, IServiceUserInterface
     {
         /// <summary>
         /// The task completion source
         /// </summary>
         [NotNull]
-        private readonly TaskCompletionSource<bool> _taskCompletionSource;
+        private CancellationTokenSource _cancellationTokenSource;
 
         /// <summary>
         /// The default log format.
@@ -68,8 +68,7 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(ConsoleHelper.IsConsole, "Not_In_Console");
             _defaultLogFormat = defaultLogFormat;
             _defaultLoggingLevels = defaultLoggingLevels;
-            _taskCompletionSource = new TaskCompletionSource<bool>();
-            token.Register(() => _taskCompletionSource.TrySetCanceled());
+            _cancellationTokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource();
         }
 
         /// <summary>
@@ -88,34 +87,32 @@ namespace WebApplications.Utilities.Service
                 return TaskResult.Completed;
 
             ConsoleUserInterface ui = new ConsoleUserInterface(defaultLogFormat, defaultLoggingLevels, token);
-            service.Connect(ui);
-            return ui._taskCompletionSource.Task;
+            Guid id = service.Connect(ui);
+            CancellationToken t = ui._cancellationTokenSource.Token;
+            return Task.Run(
+                async () =>
+                {
+                    do
+                    {
+                        service.Execute(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default);
+                    } while (!t.IsCancellationRequested);
+                    service.Disconnect(id);
+                },
+                t);
         }
 
         /// <summary>
-        /// Gets the writer for outputting information from the service.
+        /// Gets the writer for outputting logs from the service.
         /// </summary>
         /// <value>The writer.</value>
-        public TextWriter Writer
-        {
-            get { return ConsoleTextWriter.Default; }
-        }
-
-        /// <summary>
-        /// Gets the reader for reading input commands.
-        /// </summary>
-        /// <value>The reader.</value>
-        public TextReader Reader
-        {
-            get { return Console.In; }
-        }
+        public TextWriter LogWriter { get { return ConsoleTextWriter.Default; } }
 
         /// <summary>
         /// Called when the server disconnects the UI.
         /// </summary>
         public void OnDisconnect()
         {
-            _taskCompletionSource.TrySetResult(true);
+            _cancellationTokenSource.Cancel();
         }
 
         /// <summary>
@@ -129,5 +126,15 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <value>The default logging levels.</value>
         public LoggingLevels DefaultLoggingLevels { get { return _defaultLoggingLevels; } }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            var cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+            if (cts != null)
+                cts.Dispose();
+        }
     }
 }

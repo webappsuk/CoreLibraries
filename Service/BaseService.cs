@@ -35,6 +35,7 @@ using System.Reflection;
 using System.ServiceProcess;
 using System.Threading;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Performance;
 using WebApplications.Utilities.Threading;
@@ -111,9 +112,9 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     Type entryType = Assembly.GetEntryAssembly().EntryPoint.ReflectedType;
-                    while (entryType != typeof (object))
+                    while (entryType != typeof(object))
                     {
-                        if (entryType == typeof (ServiceBase))
+                        if (entryType == typeof(ServiceBase))
                         {
                             IsService = true;
                             break;
@@ -156,7 +157,7 @@ namespace WebApplications.Utilities.Service
         }
 
         // TODO Move to Utilities
-        protected static readonly PauseToken Paused = new PauseTokenSource {IsPaused = true}.Token;
+        protected static readonly PauseToken Paused = new PauseTokenSource { IsPaused = true }.Token;
         protected static readonly CancellationToken Cancelled;
 
         /// <summary>
@@ -230,6 +231,33 @@ namespace WebApplications.Utilities.Service
         public abstract Guid Connect([NotNull] IServiceUserInterface userInterface);
 
         /// <summary>
+        /// Executes the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="commandLine">The command line.</param>
+        /// <param name="formatProvider">The format provider.</param>
+        /// <returns>The result.</returns>
+        [NotNull]
+        private string Execute(Guid id, [CanBeNull] string commandLine, [CanBeNull] IFormatProvider formatProvider = null)
+        {
+            if (string.IsNullOrWhiteSpace(commandLine))
+                return string.Empty;
+            using (StringWriter writer = new StringWriter(formatProvider))
+            {
+                Execute(id, commandLine, writer);
+                return writer.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Executes the command line, and writes the result to the specified writer.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="commandLine">The command line.</param>
+        /// <param name="writer">The result writer.</param>
+        public abstract void Execute(Guid id, [CanBeNull] string commandLine, [NotNull] TextWriter writer);
+
+        /// <summary>
         /// Disconnects the specified user interface.
         /// </summary>
         /// <param name="id">The connection.</param>
@@ -243,11 +271,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         [PublicAPI]
-        [ServiceCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
         protected abstract void Help(
             [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Command_Description")] string command = null,
-            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
+            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Command_Description")] string command = null,
+            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
 
         /// <summary>
         /// Runs this instance.
@@ -347,7 +375,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         static BaseService()
         {
-            MethodInfo[] allMethods = typeof (TService)
+            MethodInfo[] allMethods = typeof(TService)
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .ToArray();
             Dictionary<string, ServiceRunnerCommand> commands =
@@ -361,7 +389,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     ServiceCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof (ServiceCommandAttribute), true)
+                        .GetCustomAttributes(typeof(ServiceCommandAttribute), true)
                         .OfType<ServiceCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
@@ -406,11 +434,11 @@ namespace WebApplications.Utilities.Service
             }
             Commands = new ReadOnlyDictionary<string, ServiceRunnerCommand>(commands);
 
-            Assembly assembly = typeof (TService).Assembly;
-            if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
+            Assembly assembly = typeof(TService).Assembly;
+            if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
                         AssemblyDescriptionAttribute;
                 if (a != null)
                 {
@@ -610,12 +638,59 @@ namespace WebApplications.Utilities.Service
         }
 
         /// <summary>
+        /// Executes the command line, and writes the result to the specified writer.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="commandLine">The command line.</param>
+        /// <param name="writer">The result writer.</param>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        public override void Execute(Guid id, string commandLine, TextWriter writer)
+        {
+            Connection connection;
+            if (!_connections.TryGetValue(id, out connection) ||
+                string.IsNullOrWhiteSpace(commandLine))
+                return;
+
+            // Find the first split point, and grab the command
+            commandLine = commandLine.TrimStart();
+            int firstSpace = 0;
+            do
+            {
+                if (Char.IsWhiteSpace(commandLine[firstSpace]))
+                    break;
+                firstSpace++;
+            } while (firstSpace < commandLine.Length);
+            string commandName = commandLine.Substring(0, firstSpace);
+            commandLine = firstSpace < commandLine.Length ? commandLine.Substring(firstSpace + 1) : string.Empty;
+
+            ServiceRunnerCommand src;
+            if (!Commands.TryGetValue(commandName, out src))
+            {
+                Log.Add(() => ServiceResources.Err_Unknown_Command, commandName);
+                Help(writer);
+                return;
+            }
+
+            Contract.Assert(src != null);
+            try
+            {
+                if (src.Run(this, writer, id, commandLine)) return;
+                Log.Add(() => ServiceResources.Err_Command_Failed, commandName);
+                Help(writer, commandName);}
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, () => ServiceResources.Err_Command_Exception, commandName);
+                Help(writer, commandName);
+            }
+        }
+
+        /// <summary>
         /// Disconnects the specified user interface.
         /// </summary>
         /// <param name="id">The connection.</param>
         /// <returns><see langword="true" /> if disconnected, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        [ServiceCommand(typeof (ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
             idParameter: "id")]
         public override bool Disconnect(Guid id)
         {
@@ -630,69 +705,6 @@ namespace WebApplications.Utilities.Service
                 connection.Dispose();
                 return true;
             }
-        }
-
-        /// <summary>
-        /// Called when a command is received from a connection.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="line">The command.</param>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        private void OnCommand([NotNull] Connection connection, [CanBeNull] string line)
-        {
-            if (string.IsNullOrWhiteSpace(line))
-                return;
-
-            // Find the first split point, and grab the command
-            line = line.TrimStart();
-            int firstSpace = 0;
-            do
-            {
-                if (Char.IsWhiteSpace(line[firstSpace]))
-                    break;
-                firstSpace++;
-            } while (firstSpace < line.Length);
-            string commandName = line.Substring(0, firstSpace);
-            line = firstSpace < line.Length ? line.Substring(firstSpace + 1) : string.Empty;
-
-            TextWriter writer = connection.UserInterface.Writer;
-            Contract.Assert(writer != null);
-
-            ServiceRunnerCommand src;
-            if (!Commands.TryGetValue(commandName, out src))
-            {
-                Help(writer);
-                return;
-            }
-
-            Contract.Assert(src != null);
-            try
-            {
-                if (src.Run(this, writer, connection.ID, line)) return;
-                // TODO write failed message first.
-                Help(writer, commandName);
-            }
-            catch (Exception e)
-            {
-                Log.Add(e, LoggingLevel.Error, () => ServiceResources.Err_Comman_Exception, commandName);
-                Help(writer, commandName);
-            }
-        }
-
-        /// <summary>
-        /// Called when an error is received on a command observable.
-        /// </summary>
-        /// <param name="connection">The connection.</param>
-        /// <param name="exception">The exception.</param>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        private void OnCommandError([NotNull] Connection connection, [CanBeNull] Exception exception)
-        {
-            Log.Add(
-                exception,
-                LoggingLevel.Critical,
-                () => ServiceResources.Cri_Base_Service_Command_Error,
-                connection.ID);
-            Disconnect(connection.ID);
         }
 
         /// <summary>

@@ -255,9 +255,7 @@
                     Margin="4,4,20,4" 
                     Click="Execute_Click" 
                     VerticalAlignment="Stretch"
-                    HorizontalAlignment="Right"
-                    Command=""
-                        >Execute</Button>
+                    HorizontalAlignment="Right">Execute</Button>
                 <controls:AutoCompleteBox
                     Name="CommandLine"
                     Margin="4"

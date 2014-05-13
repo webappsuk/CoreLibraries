@@ -63,13 +63,7 @@ namespace WebApplications.Utilities.Service
             /// The user interface
             /// </summary>
             [NotNull]
-            [PublicAPI]
-            public readonly IServiceUserInterface UserInterface;
-
-            /// <summary>
-            /// The subscription to the user interface commands.
-            /// </summary>
-            private CancellationTokenSource _cancellationTokenSource;
+            private IServiceUserInterface _userInterface;
 
             /// <summary>
             /// The _logger
@@ -114,7 +108,7 @@ namespace WebApplications.Utilities.Service
                 Contract.Requires<RequiredContractException>(userInterface != null, "Parameter_Null");
                 Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
                 ID = id;
-                UserInterface = userInterface;
+                _userInterface = userInterface;
 
                 DefaultFormat = userInterface.DefaultLogFormat ?? Log.ShortFormat;
                 DefaultLoggingLevels = userInterface.DefaultLoggingLevels;
@@ -122,39 +116,10 @@ namespace WebApplications.Utilities.Service
                 // Send logs to writer.
                 _logger = new TextWriterLogger(
                     string.Format("Log writer for '{0}' service connection.", id),
-                    userInterface.Writer,
+                    userInterface.LogWriter,
                     DefaultFormat,
                     DefaultLoggingLevels);
                 Log.AddLogger(_logger);
-
-                // Create task to read lines async.
-                _cancellationTokenSource = new CancellationTokenSource();
-                CancellationToken token = _cancellationTokenSource.Token;
-                TextReader reader = userInterface.Reader;
-
-                Task.Run(
-                    async () =>
-                    {
-                        try
-                        {
-                            do
-                            {
-                                string line = await reader.ReadLineAsync();
-                                token.ThrowIfCancellationRequested();
-
-                                if (line == null)
-                                    break;
-
-                                service.OnCommand(this, line);
-                                token.ThrowIfCancellationRequested();
-                            } while (true);
-                            service.Disconnect(ID);
-                        }
-                        catch (Exception exception)
-                        {
-                            service.OnCommandError(this, exception);
-                        }
-                    }, token);
             }
 
             /// <summary>
@@ -162,24 +127,25 @@ namespace WebApplications.Utilities.Service
             /// </summary>
             public void Dispose()
             {
+                TextWriterLogger logger = Interlocked.Exchange(ref _logger, null);
+                if (logger != null)
+                {
+                    Log.Flush().Wait();
+                    Log.RemoveLogger(logger);
+                    logger.Dispose();
+                }
+
+                IServiceUserInterface ui = Interlocked.Exchange(ref _userInterface, null);
+                if (ui == null) return;
+
                 try
                 {
-                    UserInterface.OnDisconnect();
+                    ui.OnDisconnect();
                 }
-                finally
+                // ReSharper disable once EmptyGeneralCatchClause
+                catch
                 {
-                    CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
-                    if ((cts != null) &&
-                        (!cts.IsCancellationRequested))
-                        cts.Cancel();
-
-                    TextWriterLogger logger = Interlocked.Exchange(ref _logger, null);
-                    if (logger != null)
-                    {
-                        Log.Flush().Wait();
-                        Log.RemoveLogger(logger);
-                        logger.Dispose();
-                    }
+                    // Surpress any more errors.
                 }
             }
         }

@@ -39,18 +39,11 @@ namespace WebApplications.Utilities.Service
     public interface IServiceUserInterface
     {
         /// <summary>
-        /// Gets the writer for outputting information from the service.
+        /// Gets the writer for outputting logs from the service.
         /// </summary>
         /// <value>The writer.</value>
         [NotNull]
-        TextWriter Writer { get; }
-
-        /// <summary>
-        /// Gets the reader for reading input commands.
-        /// </summary>
-        /// <value>The reader.</value>
-        [NotNull]
-        TextReader Reader { get; }
+        TextWriter LogWriter { get; }
 
         /// <summary>
         /// Called when the server disconnects the UI.

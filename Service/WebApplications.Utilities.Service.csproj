@@ -178,12 +178,12 @@
     <Compile Include="RequiredContractException.cs" />
     <Compile Include="ServiceCommandParameterAttribute.cs" />
     <Compile Include="ServiceException.cs" />
+    <None Include="ServiceRunner.cs" />
     <Compile Include="ServiceResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ServiceResources.resx</DependentUpon>
     </Compile>
-    <None Include="ServiceRunner.cs" />
     <Compile Include="ServiceRunnerCommand.cs" />
     <Compile Include="ServiceCommandAttribute.cs" />
     <Compile Include="ServiceState.cs" />
