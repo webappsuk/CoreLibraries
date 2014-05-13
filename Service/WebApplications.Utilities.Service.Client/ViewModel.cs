@@ -32,7 +32,7 @@ namespace WebApplications.Utilities.Service.Client
             get
             {
                 return _toggleShowCommands ??
-                       (_toggleShowCommands = new CommandHandler<object>(_ => this.ShowConmmands = !_showConmmands, true));
+                       (_toggleShowCommands = new CommandHandler<object>(_ => this.ShowCommands = !_showCommands, true));
             }
         }
 
@@ -52,6 +52,21 @@ namespace WebApplications.Utilities.Service.Client
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this instance is connected.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance is connected; otherwise, <see langword="false" />.</value>
+        public bool IsConnected
+        {
+            get { return _isConnected; }
+            set
+            {
+                if (value.Equals(_isConnected)) return;
+                _isConnected = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Called when [property changed].
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
@@ -62,7 +77,7 @@ namespace WebApplications.Utilities.Service.Client
             if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private bool _showConmmands = true;
+        private bool _showCommands = true;
 
         [NotNull]
         private readonly ObservableCollection<string> _commandHistory = new ObservableCollection<string>();
@@ -73,6 +88,7 @@ namespace WebApplications.Utilities.Service.Client
         public readonly SolidColorBrush LogsHighlight;
         public readonly SolidColorBrush CommandsHighlight;
         private SolidColorBrush _highlightColor;
+        private bool _isConnected;
 
 
         public ViewModel()
@@ -108,13 +124,13 @@ namespace WebApplications.Utilities.Service.Client
         /// Gets or sets a value indicating whether to show commands.
         /// </summary>
         /// <value><see langword="true" /> to show commands; otherwise, <see langword="false" />.</value>
-        public bool ShowConmmands
+        public bool ShowCommands
         {
-            get { return _showConmmands; }
+            get { return _showCommands; }
             set
             {
-                if (value.Equals(_showConmmands)) return;
-                _showConmmands = value;
+                if (value.Equals(_showCommands)) return;
+                _showCommands = value;
                 OnPropertyChanged();
             }
         }

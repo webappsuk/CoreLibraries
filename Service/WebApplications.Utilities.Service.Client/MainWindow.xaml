@@ -56,12 +56,12 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="68*" MinHeight="54"/>
-                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=Auto, Mode=TwoWay}" />
-                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=28*, Mode=TwoWay}"
-                               MinHeight="{Binding ShowConmmands, Converter={StaticResource BooleanToDoubleConverter}, ConverterParameter=54}"/>
-                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=Auto, Mode=TwoWay}"/>
-                <RowDefinition Height="{Binding ShowConmmands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=4*, Mode=TwoWay}" 
-                               MinHeight="{Binding ShowConmmands, Converter={StaticResource BooleanToDoubleConverter}, ConverterParameter=38}"/>
+                <RowDefinition Height="{Binding ShowCommands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=Auto, Mode=TwoWay}" />
+                <RowDefinition Height="{Binding ShowCommands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=28*, Mode=TwoWay}"
+                               MinHeight="{Binding ShowCommands, Converter={StaticResource BooleanToDoubleConverter}, ConverterParameter=54}"/>
+                <RowDefinition Height="{Binding ShowCommands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=Auto, Mode=TwoWay}"/>
+                <RowDefinition Height="{Binding ShowCommands, Converter={StaticResource BooleanToRowHeightConverter}, ConverterParameter=4*, Mode=TwoWay}" 
+                               MinHeight="{Binding ShowCommands, Converter={StaticResource BooleanToDoubleConverter}, ConverterParameter=38}"/>
             </Grid.RowDefinitions>
 
             <ContentControl Grid.Row="0" MouseDoubleClick="Window_MouseDoubleClick">
@@ -98,9 +98,27 @@
                     <Label Name="TitleLabel" Foreground="White" FontWeight="Bold" HorizontalAlignment="Stretch" VerticalAlignment="Center" FontSize="20">Service Client for Babel API</Label>
                 </DockPanel>
             </ContentControl>
-            <ToolBar Name="MainToolBar" Grid.Row="1" Background="Transparent" BorderThickness="0" ToolBarTray.IsLocked="True" OverflowMode="Never" Template="{DynamicResource ToolBarControlTemplate}">
-                <Button Name="LoadeButton"
-                        Style="{StaticResource IconButtonStyle}" 
+            <ToolBar Grid.Row="1" Background="Transparent" BorderThickness="0" ToolBarTray.IsLocked="True" OverflowMode="Never" Template="{DynamicResource ToolBarControlTemplate}">
+                <Button Style="{StaticResource IconButtonStyle}"
+                        ToolTip="Connect"
+                        ToolBar.OverflowMode="Never"
+                        Visibility="{Binding IsConnected, Converter={StaticResource BooleanToInvisibilityConverter}}">
+                    <Grid>
+                        <Label Style="{StaticResource IconLabelStyle}">&#xe65b;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource DefaultHighlight}">&#xe65a;</Label>
+                    </Grid>
+                </Button>
+                <Button Style="{StaticResource IconButtonStyle}"
+                        ToolTip="Disconnect"
+                        ToolBar.OverflowMode="Never"
+                        Visibility="{Binding IsConnected, Converter={StaticResource BooleanToVisibilityConverter}}" >
+                    <Grid>
+                        <Label Style="{StaticResource IconLabelStyle}">&#xe659;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource DefaultHighlight}">&#xe658;</Label>
+                    </Grid>
+                </Button>
+                <Separator/>
+                <Button Style="{StaticResource IconButtonStyle}" 
                         ToolTip="Import Logs"
                         ToolBar.OverflowMode="Never"
                         Command="ApplicationCommands.Open">
@@ -109,8 +127,7 @@
                         <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource DefaultHighlight}">&#xe63e;</Label>
                     </Grid>
                 </Button>
-                <Button Name="SaveButton"
-                        Style="{StaticResource IconButtonStyle}" 
+                <Button Style="{StaticResource IconButtonStyle}" 
                         ToolTip="Save"
                         ToolBar.OverflowMode="Never"
                         Command="ApplicationCommands.Save">
@@ -119,8 +136,8 @@
                         <Label Style="{StaticResource IconLabelStyle}" Foreground="{Binding HighlightColor}">&#xe677;</Label>
                     </Grid>
                 </Button>
-                <Button Name="CopyButton"
-                        Style="{StaticResource IconButtonStyle}" 
+                <Separator/>
+                <Button Style="{StaticResource IconButtonStyle}" 
                         ToolTip="Copy" 
                         ToolBar.OverflowMode="Never"
                         Command="ApplicationCommands.Copy">
@@ -129,8 +146,7 @@
                         <Label Style="{StaticResource IconLabelStyle}" Foreground="{Binding HighlightColor}">&#xe631;</Label>
                     </Grid>
                 </Button>
-                <Button Name="ClearButton" 
-                        Style="{StaticResource IconButtonStyle}"
+                <Button Style="{StaticResource IconButtonStyle}"
                         ToolTip="Clear"
                         ToolBar.OverflowMode="Never"
                         Command="{x:Static client:MainWindow.ClearRoutedCommand}">
@@ -139,21 +155,29 @@
                         <Label Style="{StaticResource IconLabelStyle}" Foreground="{Binding HighlightColor}">&#xe624;</Label>
                     </Grid>
                 </Button>
-                <Button Name="ShowCommandsButton" 
-                        ToolBar.OverflowMode="Never"
+                <Separator/>
+                <Button ToolBar.OverflowMode="Never"
                         Command="{Binding ToggleShowCommands}">
                     <Button.Style>
                         <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="{x:Type Button}">
                             <Setter Property="Content" Value="&#xe663;"/>
                             <Setter Property="ToolTip" Value="Show Commands"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ShowConmmands}" Value="True">
+                                <DataTrigger Binding="{Binding ShowCommands}" Value="True">
                                     <Setter Property="Content" Value="&#xe666;"/>
                                     <Setter Property="ToolTip" Value="Hide Commands"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
+                </Button>
+                <Button Style="{StaticResource IconButtonStyle}"
+                        ToolTip="Settings"
+                        ToolBar.OverflowMode="Never">
+                    <Grid>
+                        <Label Style="{StaticResource IconLabelStyle}">&#xe66c;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource DefaultHighlight}">&#xe66b;</Label>
+                    </Grid>
                 </Button>
             </ToolBar>
             <DockPanel                     
@@ -162,7 +186,8 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
                 <Label DockPanel.Dock="Top">Logs</Label>
-                <RichTextBox Name="LogView" 
+                <RichTextBox
+                     Name="LogView" 
                      Margin="0"
                      HorizontalAlignment="Stretch"
                      ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -183,23 +208,27 @@
               VerticalAlignment="Center" 
               MaxHeight="4"
               ShowsPreview="true"
-              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}" />
+              Visibility="{Binding ShowCommands, Converter={StaticResource BooleanToVisibilityConverter}}" />
             <DockPanel                     
             Grid.Row="4"
             Height="Auto"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}">
+              Visibility="{Binding ShowCommands, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Label DockPanel.Dock="Top">Commands</Label>
-                <RichTextBox Name="CommandsView" 
-                     Margin="0"
-                     HorizontalAlignment="Stretch"
-                     VerticalAlignment="Stretch"
-                     ScrollViewer.VerticalScrollBarVisibility="Visible"
-                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                     Style="{StaticResource LogRichTextBoxStyle}"
-                     Background="{StaticResource BackgroundBrush}" 
-                     IsReadOnly="True" GotFocus="CommandsView_GotFocus" LostFocus="CommandsView_LostFocus">
+                <RichTextBox 
+                    Name="CommandsView" 
+                    Margin="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    ScrollViewer.VerticalScrollBarVisibility="Visible"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    Style="{StaticResource LogRichTextBoxStyle}"
+                    Background="{StaticResource BackgroundBrush}" 
+                    IsReadOnly="True" 
+                    Visibility="{Binding ShowCommands, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    GotFocus="CommandsView_GotFocus" 
+                    LostFocus="CommandsView_LostFocus">
                     <RichTextBox.Resources>
                         <Style TargetType="{x:Type Paragraph}">
                             <Setter Property="Margin" Value="0"/>
@@ -214,13 +243,13 @@
               VerticalAlignment="Center" 
               MaxHeight="4"
               ShowsPreview="true"
-              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}"/>
+              Visibility="{Binding ShowCommands, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <DockPanel                     
             Grid.Row="6"
             Height="Auto"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-              Visibility="{Binding ShowConmmands, Converter={StaticResource BoolVisibilityConverter}}">
+              Visibility="{Binding ShowCommands, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Button Name="Execute"
                     DockPanel.Dock="Right"
                     Margin="4,4,20,4" 
@@ -240,6 +269,7 @@
                     ItemsSource="{Binding CommandHistory}"
                     MaxDropDownHeight="200" 
                     MinimumPrefixLength="0"
+                    Visibility="{Binding ShowCommands, Converter={StaticResource BooleanToVisibilityConverter}}"
                     KeyUp="CommandLine_KeyUp"
                     GotFocus="CommandLine_GotFocus"/>
             </DockPanel>

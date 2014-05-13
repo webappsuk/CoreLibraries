@@ -117,6 +117,7 @@
     </ApplicationDefinition>
     <Compile Include="BooleanToDoubleConverter.cs" />
     <Compile Include="BooleanToGridLengthConverter.cs" />
+    <Compile Include="BooleanToInvisibilityConverter.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">

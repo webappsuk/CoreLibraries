@@ -55,12 +55,28 @@ namespace WebApplications.Utilities.Service.Client
             _viewModel.LogView = LogView;
             _viewModel.CommandsView = CommandsView;
 
+
             // Workaround for fixing inability to focus the AutoCompletBox directly (WPF has so many bugs)
+            TextBox acTextBox = null;
+
+            _viewModel.PropertyChanged += (s2, e2) =>
+            {
+                if (!string.Equals(e2.PropertyName, "ShowCommands")) return;
+                if (!_viewModel.ShowCommands)
+                {
+                    FocusManager.SetFocusedElement(this, LogView);
+                    return;
+                }
+                if (acTextBox == null)
+                    acTextBox = CommandLine.Template.FindName("Text", CommandLine) as TextBox;
+                FocusManager.SetFocusedElement(this, acTextBox);
+            };
+
             CommandLine.Loaded += (s, e) =>
             {
-                AutoCompleteBox a = s as AutoCompleteBox;
-                TextBox textbox = a.Template.FindName("Text", a) as TextBox;
-                textbox.Focus();
+                if (acTextBox == null)
+                    acTextBox = CommandLine.Template.FindName("Text", CommandLine) as TextBox;
+                FocusManager.SetFocusedElement(this, acTextBox);
             };
         }
 

@@ -16,9 +16,10 @@
             </ResourceDictionary.MergedDictionaries>
 
             <client:ViewModel x:Key="MainViewModel" />
-            <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <client:BooleanToGridLengthConverter x:Key="BooleanToRowHeightConverter"/>
             <client:BooleanToDoubleConverter x:Key="BooleanToDoubleConverter"/>
+            <client:BooleanToInvisibilityConverter x:Key="BooleanToInvisibilityConverter"/>
 
             <Color x:Key="BabelRed">#ED2726</Color>
             <SolidColorBrush x:Key="BackgroundBrush" Color="#FF292929" />
