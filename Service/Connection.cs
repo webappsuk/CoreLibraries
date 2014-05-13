@@ -95,6 +95,7 @@ namespace WebApplications.Utilities.Service
             /// <summary>
             /// The default format.
             /// </summary>
+            [NotNull]
             public readonly FormatBuilder DefaultFormat;
 
             /// <summary>
@@ -145,6 +146,7 @@ namespace WebApplications.Utilities.Service
                                     break;
 
                                 service.OnCommand(this, line);
+                                token.ThrowIfCancellationRequested();
                             } while (true);
                             service.Disconnect(ID);
                         }
@@ -160,16 +162,25 @@ namespace WebApplications.Utilities.Service
             /// </summary>
             public void Dispose()
             {
-                CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
-                if ((cts != null) &&
-                    (!cts.IsCancellationRequested))
-                    cts.Cancel();
+                try
+                {
+                    UserInterface.OnDisconnect();
+                }
+                finally
+                {
+                    CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+                    if ((cts != null) &&
+                        (!cts.IsCancellationRequested))
+                        cts.Cancel();
 
-                TextWriterLogger logger = Interlocked.Exchange(ref _logger, null);
-                if (logger == null) return;
-                Log.Flush().Wait();
-                Log.RemoveLogger(logger);
-                logger.Dispose();
+                    TextWriterLogger logger = Interlocked.Exchange(ref _logger, null);
+                    if (logger != null)
+                    {
+                        Log.Flush().Wait();
+                        Log.RemoveLogger(logger);
+                        logger.Dispose();
+                    }
+                }
             }
         }
     }

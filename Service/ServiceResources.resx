@@ -124,7 +124,7 @@
     <value>Continue,Cont,C</value>
   </data>
   <data name="Cmd_CustomCommand_Description" xml:space="preserve">
-    <value>Executes the custom command number, e.g. command 54.</value>
+    <value>Executes the custom command number, e.g. command 135.</value>
   </data>
   <data name="Cmd_CustomCommand_Names" xml:space="preserve">
     <value>Command,Execute,Exec,.</value>
@@ -139,13 +139,13 @@
     <value>Help,?</value>
   </data>
   <data name="Cmd_LogFormat_Description" xml:space="preserve">
-    <value>Gets or sets the logformat.</value>
+    <value>Gets or sets the current log format.</value>
   </data>
   <data name="Cmd_LogFormat_Names" xml:space="preserve">
     <value>LogFormat,lf</value>
   </data>
   <data name="Cmd_LogLevels_Description" xml:space="preserve">
-    <value>Gets or sets the logging levels.</value>
+    <value>Gets or sets the valid logging levels.</value>
   </data>
   <data name="Cmd_LogLevels_Names" xml:space="preserve">
     <value>LogLevels,ll</value>
@@ -172,7 +172,7 @@
     <value>Shuts down the service and quits.</value>
   </data>
   <data name="Cmd_Shutdown_Names" xml:space="preserve">
-    <value>Shutdown,Quit,Exit,X</value>
+    <value>Shutdown</value>
   </data>
   <data name="Cmd_Start_Description" xml:space="preserve">
     <value>Starts the service, passing in the specified arguments, e.g. start arg1 arg2 arg3.</value>
@@ -359,5 +359,44 @@
   </data>
   <data name="Err_ServiceCommand_Parameter_Conversion_Unsupported" xml:space="preserve">
     <value>Cannot convert string to '{0}' for parameter '{1}' on method '{2}'.</value>
+  </data>
+  <data name="Cmd_Disconnect_Description" xml:space="preserve">
+    <value>Disconnect from the service without shutting it down.</value>
+  </data>
+  <data name="Cmd_Disconnect_Names" xml:space="preserve">
+    <value>Quit,Exit,X,Disconnect</value>
+  </data>
+  <data name="Cmd_Param_Description" xml:space="preserve">
+    <value>No description is available for the parameter in the current language.</value>
+  </data>
+  <data name="Wrn_No_Description_For_Parameter" xml:space="preserve">
+    <value>No description was specified for the '{0}' parameter in the '{1}' command.</value>
+  </data>
+  <data name="Cmd_CustomCommand_Command_Description" xml:space="preserve">
+    <value>An application-defined command flag that indicates which custom command to execute. The value must be between 128 and 256, inclusive.</value>
+  </data>
+  <data name="Cmd_Help_Command_Description" xml:space="preserve">
+    <value>The name of the command to get help for. If omitted, all commands will be listed.</value>
+  </data>
+  <data name="Cmd_Help_Parameter_Description" xml:space="preserve">
+    <value>The name of the parameter to get help for. If omitted, all parameters of the command will be listed.</value>
+  </data>
+  <data name="Cmd_LogFormat_Format_Description" xml:space="preserve">
+    <value>The new log format to use. If omitted, the current log format will be returned.</value>
+  </data>
+  <data name="Cmd_LogLevels_Levels_Description" xml:space="preserve">
+    <value>The valid logging levels. If ommited, the current valid logging levels will be returned.</value>
+  </data>
+  <data name="Cmd_PowerEvent_PowerStatus_Description" xml:space="preserve">
+    <value>The power status to send to the service.</value>
+  </data>
+  <data name="Cmd_SessionChange_ChangeReason_Description" xml:space="preserve">
+    <value>The reason for the change notice.</value>
+  </data>
+  <data name="Cmd_SessionChange_SessionID_Description" xml:space="preserve">
+    <value>The ID of the session.</value>
+  </data>
+  <data name="Cmd_Start_Args_Description" xml:space="preserve">
+    <value>The service start arguments.</value>
   </data>
 </root>

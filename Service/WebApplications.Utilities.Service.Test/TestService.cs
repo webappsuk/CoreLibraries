@@ -39,12 +39,12 @@ namespace WebApplications.Utilities.Service.Test
         }
 
         [PublicAPI]
-        [ServiceRunnerCommand(typeof (TestServiceResources), "Cmd_TestCommand_Names", "Cmd_TestCommand_Description",
+        [ServiceCommand(typeof (TestServiceResources), "Cmd_TestCommand_Names", "Cmd_TestCommand_Description",
             writerParameter: "writer", idParameter: "id")]
         public void TestCommand(
             [NotNull] TextWriter writer,
-            Guid id,
             [NotNull] string parameter,
+            Guid id = default(Guid),
             [NotNull] string optional = null)
         {
             writer.WriteLine("Connection: {0}", id);

@@ -33,54 +33,62 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities.Service
 {
     /// <summary>
-    /// Add to an instance method to indicate it implements a <see cref="ServiceRunner"/> command.
+    /// Add to an instance method to indicate it implements a <see cref="BaseService">service</see> command.
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     [Serializable]
-    public class ServiceRunnerCommandAttribute : Attribute
+    [PublicAPI]
+    public class ServiceCommandAttribute : Attribute
     {
         /// <summary>
         /// The resource type.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly Type ResourceType;
 
         /// <summary>
         /// The resource property for a comma-seperated list of names.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly string NamesProperty;
 
         /// <summary>
         /// The resource property for the description.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly string DescriptionProperty;
 
         /// <summary>
         /// If <see langword="true"/> then the last parameter should accept the entire line; otherwise <see langword="false"/>.
         /// </summary>
+        [PublicAPI]
         public readonly bool ConsumeLine;
 
         /// <summary>
         /// The minimum arguments.
         /// </summary>
+        [PublicAPI]
         public readonly int MinimumArguments;
 
         /// <summary>
         /// The writer parameter, if specified, this parameter must be of type <see cref="TextWriter"/>, and it will be passed a writer for outputting any results to.
         /// </summary>
         [CanBeNull]
+        [PublicAPI]
         public readonly string WriterParameter;
 
         /// <summary>
         /// The writer parameter, if specified, this parameter must be of type <see cref="Guid"/>, and it will be passed the current connection ID.
         /// </summary>
         [CanBeNull]
+        [PublicAPI]
         public readonly string IDParameter;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceRunnerCommandAttribute" /> class.
+        /// Initializes a new instance of the <see cref="ServiceCommandAttribute" /> class.
         /// </summary>
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="namesProperty">The names property.</param>
@@ -89,7 +97,14 @@ namespace WebApplications.Utilities.Service
         /// <param name="minimumArguments">The minimum arguments.</param>
         /// <param name="writerParameter">The writer parameter, if specified, this parameter must be of type <see cref="TextWriter"/>, and it will be passed a writer for outputting any results to.</param>
         /// <param name="idParameter">The identifier parameter, if specified, this parameter must be of type <see cref="Guid"/>, and it will be passed the current connection ID.</param>
-        public ServiceRunnerCommandAttribute([NotNull] Type resourceType, [NotNull] string namesProperty, [NotNull] string descriptionProperty, bool consumeLine = false, int minimumArguments = 0, string writerParameter = null, string idParameter = null)
+        public ServiceCommandAttribute(
+            [NotNull] Type resourceType,
+            [NotNull] string namesProperty,
+            [NotNull] string descriptionProperty,
+            bool consumeLine = false,
+            int minimumArguments = 0,
+            [CanBeNull] string writerParameter = null,
+            [CanBeNull] string idParameter = null)
         {
             Contract.Requires<RequiredContractException>(resourceType != null, "Parameter_Null");
             Contract.Requires<RequiredContractException>(namesProperty != null, "Parameter_Null");
