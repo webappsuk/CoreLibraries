@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -20,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using JetBrains.Annotations;
+using Microsoft.Win32;
 
 namespace WebApplications.Utilities.Service.Client
 {
@@ -29,18 +31,23 @@ namespace WebApplications.Utilities.Service.Client
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private Point _startPoint = default(Point);
-        
+
         [NotNull]
         private readonly ViewModel _viewModel;
+
+        public static RoutedCommand ClearRoutedCommand = new RoutedCommand();
 
         public MainWindow()
         {
             InitializeComponent();
 
+            LogView.Document.Blocks.Clear();
+            CommandsView.Document.Blocks.Clear();
+
             // This technically breaks encapsulation, but there's too many useful methods on the textboxes directly.
             _viewModel = (ViewModel)DataContext;
             _viewModel.LogView = LogView;
-            _viewModel.CommandsView = CommandView;
+            _viewModel.CommandsView = CommandsView;
         }
 
         #region PInvoke GetCursorPos
@@ -113,9 +120,9 @@ namespace WebApplications.Utilities.Service.Client
             Vector diff = _startPoint - mousePos;
 
             if ((Math.Abs(diff.X) < SystemParameters.MinimumHorizontalDragDistance) &&
-                (Math.Abs(diff.Y) < SystemParameters.MinimumVerticalDragDistance)) 
+                (Math.Abs(diff.Y) < SystemParameters.MinimumVerticalDragDistance))
                 return;
-            
+
             using (Dispatcher.DisableProcessing())
             {
                 WindowState = WindowState.Normal;
@@ -233,6 +240,98 @@ namespace WebApplications.Utilities.Service.Client
         private void OnCloseExecuted(object sender, ExecutedRoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        /// <summary>
+        /// Handles the <see cref="E:ClearCanExecute" /> event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="CanExecuteRoutedEventArgs"/> instance containing the event data.</param>
+        private void OnClearCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            RichTextBox richTextBox = e.Source as RichTextBox;
+            if (richTextBox != null)
+            {
+                e.CanExecute = richTextBox.Document.Blocks.Count > 0;
+                return;
+            }
+            AutoCompleteBox autoCompleteBox = e.Source as AutoCompleteBox;
+            if (autoCompleteBox != null)
+            {
+                e.CanExecute = !string.IsNullOrEmpty(autoCompleteBox.Text);
+                return;
+            }
+            e.CanExecute = false;
+        }
+
+        /// <summary>
+        /// Handles the <see cref="E:ClearExecuted" /> event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="ExecutedRoutedEventArgs"/> instance containing the event data.</param>
+        private void OnClearExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            RichTextBox richTextBox = e.Source as RichTextBox;
+            if (richTextBox != null)
+            {
+                richTextBox.Document.Blocks.Clear();
+                return;
+            }
+            AutoCompleteBox autoCompleteBox = e.Source as AutoCompleteBox;
+            if (autoCompleteBox == null) return;
+            autoCompleteBox.Text = string.Empty;
+        }
+
+        /// <summary>
+        /// Handles the <see cref="E:SaveCanExecute"/> event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="System.Windows.Input.CanExecuteRoutedEventArgs"/> instance containing the event data.</param>
+        private void OnSaveCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            RichTextBox richTextBox = e.Source as RichTextBox;
+            if (richTextBox == null)
+            {
+                e.CanExecute = false;
+                return;
+            }
+
+            e.CanExecute = richTextBox.Document.Blocks.Count > 0;
+        }
+
+        /// <summary>
+        /// Handles the <see cref="E:SaveExecuted" /> event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="ExecutedRoutedEventArgs"/> instance containing the event data.</param>
+        private void OnSaveExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            RichTextBox richTextBox = e.Source as RichTextBox;
+            if (richTextBox == null)
+                return;
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Rich Text file (*.rtf)|*.rtf|Text file (*.txt)|*.txt",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (saveFileDialog.ShowDialog() != true)
+                return;
+
+            TextRange t = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
+            using (FileStream file = new FileStream(saveFileDialog.FileName, FileMode.Create))
+            {
+                t.Save(
+                    file,
+                    string.Equals(
+                        System.IO.Path.GetExtension(saveFileDialog.FileName),
+                        ".rtf",
+                        StringComparison.CurrentCultureIgnoreCase)
+                        ? DataFormats.Rtf
+                        : DataFormats.Text);
+                file.Close();
+            }
         }
     }
 }
