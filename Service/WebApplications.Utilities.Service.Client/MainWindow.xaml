@@ -34,44 +34,87 @@
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="96*" MinHeight="188"/>
+            <RowDefinition Height="68*" MinHeight="91"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="28*" MinHeight="91"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition  Height="4*" MinHeight="38"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width ="100"/>
-        </Grid.ColumnDefinitions>
-        <Label Name="TitleLabel" Foreground="White" FontWeight="Bold">Service Client for Babel API</Label>
-        <Button Name="CloseButton" Grid.Column="1" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="Close_Click">X</Button>
-        <RichTextBox Name="LogView" 
-                     Grid.Row="1" 
-                     Grid.Column="0" 
+        <DockPanel Grid.Row="0">
+            <Label Name="TitleLabel" Foreground="White" FontWeight="Bold">Service Client for Babel API</Label>
+            <Button Name="CloseButton" DockPanel.Dock="Right" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="Close_Click">X</Button>
+        </DockPanel>
+        <DockPanel                     
+            Grid.Row="1"
+            Height="Auto"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+            <Label DockPanel.Dock="Top">Logs</Label>
+            <RichTextBox Name="LogView" 
                      Margin="0"
                      HorizontalAlignment="Stretch"
                      ScrollViewer.VerticalScrollBarVisibility="Visible"
                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
                      Style="{StaticResource LogRichTextBoxStyle}"
-                     Grid.ColumnSpan="2" 
                      Background="{StaticResource BackgroundKey}" 
                      IsReadOnly="True">
-            <RichTextBox.Resources>
-                <Style TargetType="{x:Type Paragraph}">
-                    <Setter Property="Margin" Value="0"/>
-                    <Setter Property="FontFamily" Value="Consolas"/>
-                </Style>
-            </RichTextBox.Resources>
-        </RichTextBox>
-        <GridSplitter Grid.Row="2" Grid.Column="0"  Grid.ColumnSpan="2" Height="4"
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="FontFamily" Value="Consolas"/>
+                    </Style>
+                </RichTextBox.Resources>
+            </RichTextBox>
+        </DockPanel>
+        <GridSplitter Grid.Row="2" Grid.Column="0" Height="4"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Center" 
               MaxHeight="4"
               ShowsPreview="true"/>
-        <controls:AutoCompleteBox
-            Name="CommandLine"
-            Margin="4" 
+        <DockPanel                     
             Grid.Row="3"
-            Grid.Column="0" 
+            Height="Auto"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+            <Label DockPanel.Dock="Top">Commands</Label>
+            <RichTextBox Name="CommandView" 
+                     Margin="0"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     ScrollViewer.VerticalScrollBarVisibility="Visible"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     Style="{StaticResource LogRichTextBoxStyle}"
+                     Background="{StaticResource BackgroundKey}" 
+                     IsReadOnly="True">
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="FontFamily" Value="Consolas"/>
+                    </Style>
+                </RichTextBox.Resources>
+            </RichTextBox>
+        </DockPanel>
+        <GridSplitter Grid.Row="4"
+                      Height="4"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Center" 
+              MaxHeight="4"
+              ShowsPreview="true"/>
+        <DockPanel                     
+            Grid.Row="5"
+            Height="Auto"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+            <Button Name="Execute"
+                DockPanel.Dock="Right"
+                Margin="4,4,20,4" 
+                Click="Execute_Click" 
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Right"
+                IsDefault="{Binding ElementName=CommandLine, Path=IsKeyboardFocused}">Execute</Button>
+            <controls:AutoCompleteBox
+            Name="CommandLine"
+            Margin="4"
             Height="Auto" 
             FilterMode="Contains"
             IsTextCompletionEnabled="True"
@@ -79,13 +122,6 @@
             VerticalAlignment="Stretch"
             ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=History}"
             MaxDropDownHeight="200" MinimumPrefixLength="0" KeyUp="CommandLine_KeyUp"/>
-        
-        <Button Name="Execute"
-                Grid.Row="3"
-                Grid.Column="1"
-                Margin="4,4,20,4" 
-                Click="Execute_Click" 
-                VerticalAlignment="Stretch"
-                IsDefault="{Binding ElementName=CommandLine, Path=IsKeyboardFocused}">Execute</Button>
+        </DockPanel>
     </Grid>
 </Window>
