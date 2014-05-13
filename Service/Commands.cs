@@ -26,26 +26,132 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.ServiceProcess;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
-using WebApplications.Utilities.Performance;
-using WebApplications.Utilities.Threading;
+using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
 namespace WebApplications.Utilities.Service
 {
+    /// <summary>
+    /// Base implementation of a service, you should always extends the generic version of this class.
+    /// </summary>
+    public abstract partial class BaseService
+    {
+        /// <summary>
+        /// Function for creating a <see cref="SessionChangeDescription"/>.
+        /// </summary>
+        [NotNull]
+        protected static readonly Func<SessionChangeReason, int, SessionChangeDescription>
+            CreateSessionChangeDescription =
+                typeof(SessionChangeDescription).ConstructorFunc<SessionChangeReason, int, SessionChangeDescription>();
+
+        #region Formats
+        // ReSharper disable FormatStringProblem
+        /// <summary>
+        /// The format to use for outputting the current log format.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder CurrentLogFormatFormat =
+            new FormatBuilder()
+                .AppendLine("Current format:")
+                .AppendForegroundColor(ConsoleColor.White)
+                .AppendFormatLine("{format}")
+                .AppendResetForegroundColor()
+                .MakeReadOnly();
+
+        /// <summary>
+        /// The format to use for outputting the current logging levels.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder CurrentLogLevelsFormat =
+            new FormatBuilder()
+                .AppendLine("Current logging levels:")
+                .AppendForegroundColor(ConsoleColor.White)
+                .AppendFormatLine("{levels}")
+                .AppendResetForegroundColor()
+                .MakeReadOnly();
+
+        /// <summary>
+        /// The format to use for outputting help for all commands.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder AllCommandsHelpFormat =
+            new FormatBuilder()
+                .AppendForegroundColor(Color.White)
+                .AppendLine("The following commands are available:")
+                .AppendResetForegroundColor()
+                .AppendLine()
+                .AppendFormatLine(
+                    "{commands:{<items>:{<item>:" +
+                    "{!fgcolor:Lime}{Name}{AltNames:{!fgcolor:Green} [{<items>:{<item>}}{<join>:|}]}{!fgcolor}\r\n" +
+                    "{Parameters:{<items>:{<item>:" +
+                    "\t{!fgcolor:White}{Name}{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}{Params:{Params}...}\r\n" +
+                    "}}}\t\t{Description}}}{<join>:\r\n}}")
+                .AppendLine()
+                .AppendFormatLine("Type 'help {!fgcolor:Lime}<command>{!fgcolor}' for more information on a specific command.")
+                .AppendLine()
+                .MakeReadOnly();
+
+        /// <summary>
+        /// The format to use for outputting help for a single command.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder CommandHelpFormat =
+            new FormatBuilder(Optional<int>.Unassigned, firstLineIndentSize: 4, indentSize: 6)
+                .AppendFormatLine(
+                    "{!layout:f0}{!fgcolor:White}Help for the {!fgcolor:Lime}'{Command:{Name}}'{!fgcolor:White} command.{!fgcolor}{!layout}")
+                .AppendFormat(
+                    "{Command:{AltNames:{!layout:f0}Alternate names:\r\n{!layout}{!fgcolor:White}{<items>:{<item>}}{<join>:, }{!fgcolor}\r\n}}")
+                .AppendLine()
+                .AppendLayout(firstLineIndentSize: 0)
+                .AppendLine("Description: ")
+                .AppendPopLayout()
+                .AppendFormatLine("{Command:{Description}}")
+                .AppendLine()
+                .AppendFormat(
+                    "{Command:{!layout:f0}Parameters:{!layout}\r\n{Parameters:{<items>:" +
+                    "{<item>:{!fgcolor:White}" +
+                    "{Name}" +
+                    "{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}" +
+                    "{Params:{Params}...}" +
+                    "{Description:\r\n{!layout:f8;i10}{Description}{!layout}}\r\n" +
+                    "}}}}")
+                .AppendLine()
+                .AppendLayout(firstLineIndentSize: 0)
+                .AppendFormatLine("Type 'help {!fgcolor:Lime}{Command:{Name}} {!fgcolor:White}<parameter>{!fgcolor}' for more information on a specific parameter of the command.")
+                .AppendLine()
+                .MakeReadOnly();
+
+        /// <summary>
+        /// The format to use for outputting help for a single command.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder ParameterHelpFormat =
+            new FormatBuilder(Optional<int>.Unassigned, firstLineIndentSize: 4, indentSize: 6)
+                .AppendFormatLine(
+                    "{!layout:f0}{!fgcolor:White}Help for the {!fgcolor:Lime}'{Parameter:{Name}}'{!fgcolor:White} parameter for the {!fgcolor:Lime}'{Command:{Name}}'{!fgcolor:White} command.{!fgcolor}{!layout}")
+                .AppendFormat(
+                    "{Parameter:{DefaultValue:{!layout:f0}Default value:{!layout}{!fgcolor:White}{DefaultValue}{!fgcolor}\r\n}}")
+                .AppendLine()
+                .AppendLayout(firstLineIndentSize: 0)
+                .AppendLine("Description:")
+                .AppendPopLayout()
+                .AppendFormatLine("{Parameter:{Description}}")
+                .AppendLine()
+                .MakeReadOnly();
+        // ReSharper restore FormatStringProblem, FormatStringProblem
+        #endregion
+    }
+
     /// <summary>
     /// Base implementation of a service.
     /// </summary>
@@ -55,11 +161,66 @@ namespace WebApplications.Utilities.Service
         /// Provides command help.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="commandName">Name of the command.</param>
+        /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         // ReSharper disable once CodeAnnotationAnalyzer
-        protected override void Help(TextWriter writer, string commandName = null, string parameter = null)
+        protected override void Help(TextWriter writer, string command = null, string parameter = null)
         {
+            if (Commands.Count < 1)
+            {
+                writer.WriteLine("There are no commands registered");
+                writer.WriteLine();
+                return;
+            }
+
+            ServiceRunnerCommand cmd;
+            if (command == null ||
+                !Commands.TryGetValue(command, out cmd))
+            {
+                AllCommandsHelpFormat.WriteTo(
+                    writer,
+                    null,
+                    (_, c) =>
+                        string.Equals(c.Tag, "commands", StringComparison.CurrentCultureIgnoreCase)
+                            ? Commands.Values.Distinct()
+                            : Resolution.Unknown);
+                return;
+            }
+            Contract.Assert(cmd != null);
+
+            ParameterInfo parameterInfo =
+                parameter == null
+                    ? null
+                    : cmd.ArgumentParameters.FirstOrDefault(
+                        p => string.Equals(p.Name, parameter, StringComparison.CurrentCultureIgnoreCase));
+
+            if (parameterInfo == null)
+            {
+                CommandHelpFormat.WriteTo(
+                    writer,
+                    null,
+                    (_, c) =>
+                        string.Equals(c.Tag, "command", StringComparison.CurrentCultureIgnoreCase)
+                            ? cmd
+                            : Resolution.Unknown);
+                return;
+            }
+
+            ParameterHelpFormat.WriteTo(
+                writer,
+                null,
+                (_, c) =>
+                {
+                    switch (c.Tag.ToLowerInvariant())
+                    {
+                        case "command":
+                            return cmd;
+                        case "parameter":
+                            return cmd.ResolveParameter(parameterInfo);
+                        default:
+                            return Resolution.Unknown;
+                    }
+                });
         }
 
         /// <summary>
@@ -67,14 +228,17 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="args">The arguments.</param>
         [PublicAPI]
-        [ServiceRunnerCommand(typeof(ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description")]
-        public void Start([CanBeNull] string[] args)
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description")]
+        public void Start([CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Start_Args_Description")] string[] args)
         {
             lock (_lock)
             {
                 if (State != ServiceState.Stopped)
                 {
-                    Log.Add(LoggingLevel.Error, () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning, ServiceName);
+                    Log.Add(
+                        LoggingLevel.Error,
+                        () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning,
+                        ServiceName);
                     return;
                 }
 
@@ -91,9 +255,7 @@ namespace WebApplications.Utilities.Service
                         ServiceController.Start(args);
                     }
                     else
-                    {
                         OnStart(args);
-                    }
                     Log.Add(
                         LoggingLevel.Information,
                         () => ServiceResources.Inf_ServiceRunner_Start_Started,
@@ -106,6 +268,384 @@ namespace WebApplications.Utilities.Service
                     Log.Add(exception.InnerException);
                 }
             }
+        }
+
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description")]
+        public void StopService()
+        {
+            lock (_lock)
+            {
+                if (State != ServiceState.Running)
+                {
+                    Log.Add(
+                        LoggingLevel.Error,
+                        () => ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning,
+                        ServiceName);
+                    return;
+                }
+
+                Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Stop_Stopping, ServiceName);
+                Stopwatch s = Stopwatch.StartNew();
+                try
+                {
+                    if (IsService)
+                    {
+                        Contract.Assert(ServiceController != null);
+                        ServiceController.Stop();
+                    }
+                    else
+                        OnStop();
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Stop_Stopped,
+                        ServiceName,
+                        s.Elapsed.TotalMilliseconds);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    Contract.Assert(exception.InnerException != null);
+                    Log.Add(exception.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Pauses this instance.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description")]
+        public void Pause()
+        {
+            lock (_lock)
+            {
+                if (State != ServiceState.Running)
+                {
+                    Log.Add(
+                        LoggingLevel.Error,
+                        () => ServiceResources.Err_ServiceRunner_Pause_ServiceNotRunning,
+                        ServiceName);
+                    return;
+                }
+
+                Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Pause_Pausing, ServiceName);
+                Stopwatch s = Stopwatch.StartNew();
+                try
+                {
+                    if (IsService)
+                    {
+                        Contract.Assert(ServiceController != null);
+                        ServiceController.Pause();
+                    }
+                    else
+                        OnPause();
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Pause_Paused,
+                        ServiceName,
+                        s.Elapsed.TotalMilliseconds);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    Contract.Assert(exception.InnerException != null);
+                    Log.Add(exception.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Continues this instance.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description")]
+        public void Continue()
+        {
+            lock (_lock)
+            {
+                if (State != ServiceState.Paused)
+                {
+                    Log.Add(
+                        LoggingLevel.Error,
+                        () => ServiceResources.Err_ServiceRunner_Continue_ServiceNotPaused,
+                        ServiceName);
+                    return;
+                }
+
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_Continue_Continuing,
+                    ServiceName);
+                Stopwatch s = Stopwatch.StartNew();
+                try
+                {
+                    if (IsService)
+                    {
+                        Contract.Assert(ServiceController != null);
+                        ServiceController.Continue();
+                    }
+                    else
+                        OnContinue();
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Continue_Continued,
+                        ServiceName,
+                        s.Elapsed.TotalMilliseconds);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    Contract.Assert(exception.InnerException != null);
+                    Log.Add(exception.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Shuts down this instance.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description")]
+        public void Shutdown()
+        {
+            lock (_lock)
+            {
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_Shutdown_ShuttingDown,
+                    ServiceName);
+                Stopwatch s = Stopwatch.StartNew();
+                try
+                {
+                    if (IsService)
+                    {
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                            ServiceName);
+                        return;
+                    }
+
+                    OnShutdown();
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Shutdown_ShutDown,
+                        ServiceName,
+                        s.Elapsed.TotalMilliseconds);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    Contract.Assert(exception.InnerException != null);
+                    Log.Add(exception.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Runs the custom command on this instance.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description")]
+        public void CustomCommand([SCP(typeof(ServiceResources), "Cmd_CustomCommand_Command_Description")] int command)
+        {
+            lock (_lock)
+            {
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_CustomCommand_Running,
+                    command,
+                    ServiceName);
+                Stopwatch s = Stopwatch.StartNew();
+                try
+                {
+                    if (IsService)
+                    {
+                        Contract.Assert(ServiceController != null);
+                        ServiceController.ExecuteCommand(command);
+                    }
+                    else
+                        OnCustomCommand(command);
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_CustomCommand_Complete,
+                        command,
+                        ServiceName,
+                        s.Elapsed.TotalMilliseconds);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    Contract.Assert(exception.InnerException != null);
+                    Log.Add(exception.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends the <see cref="PowerBroadcastStatus"/> to the service.
+        /// </summary>
+        /// <param name="powerStatus">The power status.</param>
+        /// <returns><see langword="true" /> if failed, or the result of the call was <see langword="true"/>; <see langword="false" /> otherwise.</returns>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description")]
+        public bool PowerEvent(
+            [SCP(typeof(ServiceResources), "Cmd_PowerEvent_PowerStatus_Description")] PowerBroadcastStatus powerStatus)
+        {
+            lock (_lock)
+            {
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_PowerEvent_Sending,
+                    powerStatus,
+                    ServiceName);
+                Stopwatch s = Stopwatch.StartNew();
+                try
+                {
+                    if (IsService)
+                    {
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                            ServiceName);
+                        return true;
+                    }
+                    bool result = OnPowerEvent(powerStatus);
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_PowerEvent_Sent,
+                        powerStatus,
+                        ServiceName,
+                        s.Elapsed.TotalMilliseconds,
+                        result);
+                    return result;
+                }
+                catch (TargetInvocationException exception)
+                {
+                    Contract.Assert(exception.InnerException != null);
+                    Log.Add(exception.InnerException);
+                    return true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends the <see cref="SessionChangeDescription" /> to the service.
+        /// </summary>
+        /// <param name="changeReason">The change reason.</param>
+        /// <param name="sessionId">The session identifier.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description")]
+        public void SessionChange(
+            [SCP(typeof(ServiceResources), "Cmd_SessionChange_ChangeReason_Description")] SessionChangeReason
+                changeReason,
+            [SCP(typeof(ServiceResources), "Cmd_SessionChange_SessionID_Description")] int sessionId)
+        {
+            lock (_lock)
+            {
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_SessionChange_Sending,
+                    changeReason,
+                    sessionId,
+                    ServiceName);
+                Stopwatch s = Stopwatch.StartNew();
+                try
+                {
+                    if (IsService)
+                    {
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                            ServiceName);
+                        return;
+                    }
+
+                    OnSessionChange(CreateSessionChangeDescription(changeReason, sessionId));
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_SessionChange_Sent,
+                        changeReason,
+                        sessionId,
+                        ServiceName,
+                        s.Elapsed.TotalMilliseconds);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    Contract.Assert(exception.InnerException != null);
+                    Log.Add(exception.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the log format for the current connection.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="id">The connection ID.</param>
+        /// <param name="format">The format.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_LogFormat_Names", "Cmd_LogFormat_Description", true, 0, "writer",
+            "id")]
+        protected void LogFormat(
+            [NotNull] TextWriter writer,
+            Guid id,
+            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_LogFormat_Format_Description")] string format = null)
+        {
+            Connection connection;
+            bool result = _connections.TryGetValue(id, out connection);
+            Contract.Assert(result);
+            Contract.Assert(connection != null);
+
+            TextWriterLogger logger = connection.Logger;
+
+            if (!string.IsNullOrEmpty(format))
+                if (string.Equals(format, "default", StringComparison.InvariantCultureIgnoreCase))
+                    logger.Format = connection.DefaultFormat;
+                else
+                    logger.Format = format;
+            else
+                CurrentLogFormatFormat.WriteTo(
+                    writer,
+                    null,
+                    (_, c) =>
+                        string.Equals(c.Tag, "format", StringComparison.CurrentCultureIgnoreCase)
+                            ? (logger.Format ?? connection.DefaultFormat).ToString("F")
+                            : Resolution.Unknown);
+        }
+
+        /// <summary>
+        /// Gets or sets the current valid logging levels.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="id">The identifier.</param>
+        /// <param name="levels">The new <see cref="LoggingLevels" />, if any; otherwise <see langword="null" /> to output current levels.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_LogLevels_Names", "Cmd_LogLevels_Description", false, 0,
+            "writer", "id")]
+        protected void LogLevels(
+            [NotNull] TextWriter writer,
+            Guid id,
+            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_LogLevels_Levels_Description")] LoggingLevels? levels =
+                null)
+        {
+            Connection connection;
+            bool result = _connections.TryGetValue(id, out connection);
+            Contract.Assert(result);
+            Contract.Assert(connection != null);
+
+            TextWriterLogger logger = connection.Logger;
+
+            if (levels != null)
+                logger.ValidLevels = levels.Value;
+            else
+                CurrentLogLevelsFormat.WriteTo(
+                    writer,
+                    null,
+                    (_, c) =>
+                        string.Equals(c.Tag, "levels", StringComparison.CurrentCultureIgnoreCase)
+                            ? Log.ValidLevels & logger.ValidLevels
+                            : Resolution.Unknown);
         }
     }
 }

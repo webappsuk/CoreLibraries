@@ -38,14 +38,55 @@ using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Performance;
 using WebApplications.Utilities.Threading;
+using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
 namespace WebApplications.Utilities.Service
 {
     /// <summary>
     /// Base implementation of a service, you should always extends the generic version of this class.
     /// </summary>
-    public abstract class BaseService : ServiceBase
+    public abstract partial class BaseService : ServiceBase
     {
+        #region Performance Counters
+        // ReSharper disable MemberCanBePrivate.Global
+        [NotNull]
+        internal static readonly PerfTimer PerfTimerStart = PerfCategory.GetOrAdd<PerfTimer>(
+            "Service Start",
+            "Service starting up.");
+
+        [NotNull]
+        internal static readonly PerfTimer PerfTimerStop = PerfCategory.GetOrAdd<PerfTimer>(
+            "Service Stop",
+            "Service stopping.");
+
+        [NotNull]
+        internal static readonly PerfTimer PerfTimerCustomCommand = PerfCategory.GetOrAdd<PerfTimer>(
+            "Service Command",
+            "Service running custom command.");
+
+        [NotNull]
+        internal static readonly PerfCounter PerfCounterPause = PerfCategory.GetOrAdd<PerfCounter>(
+            "Service Pause",
+            "Service paused.");
+
+        [NotNull]
+        internal static readonly PerfCounter PerfCounterContinue = PerfCategory.GetOrAdd<PerfCounter>(
+            "Service Continue",
+            "Service continued.");
+
+        [NotNull]
+        internal static readonly PerfCounter PerfCounterPowerEvent = PerfCategory.GetOrAdd<PerfCounter>(
+            "Service Power Event",
+            "Service power event occured.");
+
+        [NotNull]
+        internal static readonly PerfCounter PerfCounterSessionChange = PerfCategory.GetOrAdd<PerfCounter>(
+            "Service Session Change",
+            "Service session changed.");
+
+        // ReSharper restore MemberCanBePrivate.Global
+        #endregion
+
         /// <summary>
         /// Gets the current state of the service.
         /// </summary>
@@ -199,15 +240,14 @@ namespace WebApplications.Utilities.Service
         /// Provides command help.
         /// </summary>
         /// <param name="writer">The writer.</param>
-        /// <param name="commandName">Name of the command.</param>
+        /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         [PublicAPI]
-        [ServiceRunnerCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description",
-            writerParameter: "writer")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
         protected abstract void Help(
             [NotNull] TextWriter writer,
-            [CanBeNull] string commandName = null,
-            [CanBeNull] string parameter = null);
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Command_Description")] string command = null,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
 
         /// <summary>
         /// Runs this instance.
@@ -225,51 +265,12 @@ namespace WebApplications.Utilities.Service
     public abstract partial class BaseService<TService> : BaseService
         where TService : BaseService<TService>
     {
-        #region Performance Counters
-        // ReSharper disable MemberCanBePrivate.Global
-        [NotNull]
-        internal static readonly PerfTimer PerfTimerStart = PerfCategory.GetOrAdd<PerfTimer>(
-            "Service Start",
-            "Service starting up.");
-
-        [NotNull]
-        internal static readonly PerfTimer PerfTimerStop = PerfCategory.GetOrAdd<PerfTimer>(
-            "Service Stop",
-            "Service stopping.");
-
-        [NotNull]
-        internal static readonly PerfTimer PerfTimerCustomCommand = PerfCategory.GetOrAdd<PerfTimer>(
-            "Service Command",
-            "Service running custom command.");
-
-        [NotNull]
-        internal static readonly PerfCounter PerfCounterPause = PerfCategory.GetOrAdd<PerfCounter>(
-            "Service Pause",
-            "Service paused.");
-
-        [NotNull]
-        internal static readonly PerfCounter PerfCounterContinue = PerfCategory.GetOrAdd<PerfCounter>(
-            "Service Continue",
-            "Service continued.");
-
-        [NotNull]
-        internal static readonly PerfCounter PerfCounterPowerEvent = PerfCategory.GetOrAdd<PerfCounter>(
-            "Service Power Event",
-            "Service power event occured.");
-
-        [NotNull]
-        internal static readonly PerfCounter PerfCounterSessionChange = PerfCategory.GetOrAdd<PerfCounter>(
-            "Service Session Change",
-            "Service session changed.");
-
-        // ReSharper restore MemberCanBePrivate.Global
-        #endregion
-
         /// <summary>
         /// The commands supported by this service.
         /// </summary>
         [PublicAPI]
         [NotNull]
+        // ReSharper disable once StaticFieldInGenericType
         public static readonly IReadOnlyDictionary<string, ServiceRunnerCommand> Commands;
 
         /// <summary>
@@ -277,6 +278,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         [PublicAPI]
         [NotNull]
+        // ReSharper disable once StaticFieldInGenericType
         public static readonly string Description;
 
         /// <summary>
@@ -358,9 +360,9 @@ namespace WebApplications.Utilities.Service
                 ServiceRunnerCommand src;
                 try
                 {
-                    ServiceRunnerCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof (ServiceRunnerCommandAttribute), true)
-                        .OfType<ServiceRunnerCommandAttribute>()
+                    ServiceCommandAttribute attribute = method
+                        .GetCustomAttributes(typeof (ServiceCommandAttribute), true)
+                        .OfType<ServiceCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
                     if (method.IsGenericMethod)
@@ -538,6 +540,13 @@ namespace WebApplications.Utilities.Service
                 if (cts != null)
                     cts.Cancel();
                 _pauseTokenSource.IsPaused = true;
+
+                // Disconnect all connected user interfaces
+                foreach (Connection connection in _connections.Values.ToArray())
+                {
+                    Contract.Assert(connection != null);
+                    Disconnect(connection.ID);
+                }
             }
         }
 
@@ -605,6 +614,9 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="id">The connection.</param>
         /// <returns><see langword="true" /> if disconnected, <see langword="false" /> otherwise.</returns>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
+            idParameter: "id")]
         public override bool Disconnect(Guid id)
         {
             lock (_lock)
