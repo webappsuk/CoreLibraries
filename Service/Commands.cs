@@ -93,9 +93,9 @@ namespace WebApplications.Utilities.Service
                 .AppendFormatLine(
                     "{commands:{<items>:{<item>:" +
                     "{!fgcolor:Lime}{Name}{AltNames:{!fgcolor:Green} [{<items>:{<item>}}{<join>:|}]}{!fgcolor}\r\n" +
-                    "{Parameters:{<items>:{<item>:" +
-                    "\t{!fgcolor:White}{Name}{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}{Params:{Params}...}\r\n" +
-                    "}}}\t\t{Description}}}{<join>:\r\n}}")
+                    "{!layout:f4;i4}{Parameters:{<items>:{<item>:" +
+                    "{!fgcolor:White}{Name}{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}{Params:{Params}...}\r\n" +
+                    "}}}{!layout}{!layout:f8;i8}{Description}{!layout}}}{<join>:\r\n}}")
                 .AppendLine()
                 .AppendFormatLine("Type 'help {!fgcolor:Lime}<command>{!fgcolor}' for more information on a specific command.")
                 .AppendLine()
@@ -106,7 +106,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         [NotNull]
         protected static readonly FormatBuilder CommandHelpFormat =
-            new FormatBuilder(Optional<int>.Unassigned, firstLineIndentSize: 4, indentSize: 6)
+            new FormatBuilder(Optional<int>.Unassigned, firstLineIndentSize: 4, indentSize: 4)
                 .AppendFormatLine(
                     "{!layout:f0}{!fgcolor:White}Help for the {!fgcolor:Lime}'{Command:{Name}}'{!fgcolor:White} command.{!fgcolor}{!layout}")
                 .AppendFormat(
@@ -118,17 +118,15 @@ namespace WebApplications.Utilities.Service
                 .AppendFormatLine("{Command:{Description}}")
                 .AppendLine()
                 .AppendFormat(
-                    "{Command:{!layout:f0}Parameters:{!layout}\r\n{Parameters:{<items>:" +
+                    "{Command:{Parameters:{!layout:f0}Parameters:{!layout}\r\n{<items>:" +
                     "{<item>:{!fgcolor:White}" +
                     "{Name}" +
                     "{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}" +
                     "{Params:{Params}...}" +
                     "{Description:\r\n{!layout:f8;i10}{Description}{!layout}}\r\n" +
-                    "}}}}")
-                .AppendLine()
-                .AppendLayout(firstLineIndentSize: 0)
-                .AppendFormatLine("Type 'help {!fgcolor:Lime}{Command:{Name}} {!fgcolor:White}<parameter>{!fgcolor}' for more information on a specific parameter of the command.")
-                .AppendLine()
+                    "}}" +
+                    "\r\n{!layout:f0}Type 'help {!fgcolor:Lime}{Command:{Name}} {!fgcolor:White}<parameter>{!fgcolor}' for more information on a specific parameter of the command.\r\n" +
+                    "}}")
                 .MakeReadOnly();
 
         /// <summary>
@@ -136,7 +134,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         [NotNull]
         protected static readonly FormatBuilder ParameterHelpFormat =
-            new FormatBuilder(Optional<int>.Unassigned, firstLineIndentSize: 4, indentSize: 6)
+            new FormatBuilder(Optional<int>.Unassigned, firstLineIndentSize: 4, indentSize: 4)
                 .AppendFormatLine(
                     "{!layout:f0}{!fgcolor:White}Help for the {!fgcolor:Lime}'{Parameter:{Name}}'{!fgcolor:White} parameter for the {!fgcolor:Lime}'{Command:{Name}}'{!fgcolor:White} command.{!fgcolor}{!layout}")
                 .AppendFormat(

@@ -645,7 +645,8 @@ namespace WebApplications.Utilities.Service
                 case "description":
                     return Description;
                 case "parameters":
-                    return ArgumentParameters.Select(ResolveParameter);
+                    object[] parameters = ArgumentParameters.Select(ResolveParameter).ToArray();
+                    return parameters.Length > 0 ? parameters : Resolution.Null;
                 default:
                     return Resolution.Unknown;
             }
