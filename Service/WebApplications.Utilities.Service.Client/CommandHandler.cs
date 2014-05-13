@@ -6,19 +6,37 @@ namespace WebApplications.Utilities.Service.Client
     /// <summary>
     /// Class CommandHandler.
     /// </summary>
-    public class CommandHandler : ICommand
+    public class CommandHandler<T> : ICommand
     {
-        private Action _action;
+        private readonly Action<T> _action;
         private bool _canExecute;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandHandler"/> class.
+        /// Gets a value indicating whether this instance can execute.
+        /// </summary>
+        /// <value><see langword="true" /> if this instance can execute; otherwise, <see langword="false" />.</value>
+        public bool CanExecuteProperty
+        {
+            get { return _canExecute; }
+            private set
+            {
+                if (_canExecute == value)
+                    return;
+                _canExecute = value;
+                if (CanExecuteChanged != null)
+                    CanExecuteChanged(this, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandHandler{T}"/> class.
         /// </summary>
         /// <param name="action">The action.</param>
-        /// <param name="canExecute">if set to <see langword="true" /> [can execute].</param>
-        public CommandHandler(Action action, bool canExecute)
+        /// <param name="canExecute">if set to <see langword="true" /> the command can execute.</param>
+        public CommandHandler(Action<T> action, bool canExecute = true)
         {
             _action = action;
-            _canExecute = canExecute;
+            CanExecuteProperty = canExecute;
         }
 
         /// <summary>
@@ -28,7 +46,7 @@ namespace WebApplications.Utilities.Service.Client
         /// <returns>true if this command can be executed; otherwise, false.</returns>
         public bool CanExecute(object parameter)
         {
-            return _canExecute;
+            return CanExecuteProperty;
         }
 
         /// <summary>
@@ -42,7 +60,8 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="parameter">Data used by the command.  If the command does not require data to be passed, this object can be set to null.</param>
         public void Execute(object parameter)
         {
-            _action();
+            T p = parameter is T ? (T) parameter : default(T);
+            _action(p);
         }
     }
 }

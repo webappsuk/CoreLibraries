@@ -29,13 +29,18 @@ namespace WebApplications.Utilities.Service.Client
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private Point _startPoint = default(Point);
-
-        public const int BufferSize = 500;
-        public const int HistorySize = 50;
+        
+        [NotNull]
+        private readonly ViewModel _viewModel;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            // This technically breaks encapsulation, but there's too many useful methods on the textboxes directly.
+            _viewModel = (ViewModel)DataContext;
+            _viewModel.LogView = LogView;
+            _viewModel.CommandsView = CommandView;
         }
 
         #region PInvoke GetCursorPos
@@ -188,136 +193,12 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         private void DoExecute()
         {
-            /*
             string command = CommandLine.Text;
             CommandLine.Text = string.Empty;
             if (string.IsNullOrWhiteSpace(command))
                 return;
-            int c = 0;
-            // Remove duplicate
-            while (c < _history.Count)
-            {
-                if (string.Equals(_history[c], command))
-                {
-                    _history.RemoveAt(c);
-                    break;
-                }
-                c++;
-            }
-            _history.Insert(0, command);
-            while (_history.Count > HistorySize)
-                _history.RemoveAt(_history.Count - 1);
 
-            AppendCommand(command);
-            // TODO Execute the command
-             */
-        }
-
-        /// <summary>
-        /// Adds the paragraph.
-        /// </summary>
-        /// <param name="paragraph">The paragraph.</param>
-        public void AppendCommand(string command)
-        {
-            AppendLine();
-            AppendText("Executed: ", Colors.Yellow, FontStyles.Italic);
-            AppendText(command, Colors.White, FontStyles.Italic);
-            AppendLine();
-        }
-
-        /// <summary>
-        /// Appends the text.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="color">The color.</param>
-        public void AppendText(string text)
-        {
-            LogView.AppendText(text);
-        }
-
-        /// <summary>
-        /// Appends the text.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="color">The color.</param>
-        public void AppendText(string text, Color color)
-        {
-            TextRange range = new TextRange(LogView.Document.ContentEnd, LogView.Document.ContentEnd) { Text = text };
-            range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(color));
-        }
-
-        /// <summary>
-        /// Appends the text.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="fontStyle">The font style.</param>
-        public void AppendText(string text, Color color, FontStyle fontStyle)
-        {
-            TextRange range = new TextRange(LogView.Document.ContentEnd, LogView.Document.ContentEnd) { Text = text };
-            range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(color));
-            range.ApplyPropertyValue(TextElement.FontStyleProperty, fontStyle);
-        }
-
-        /// <summary>
-        /// Appends the text.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="fontStyle">The font style.</param>
-        public void AppendText(string text, FontStyle fontStyle)
-        {
-            TextRange range = new TextRange(LogView.Document.ContentEnd, LogView.Document.ContentEnd) { Text = text };
-            range.ApplyPropertyValue(TextElement.FontStyleProperty, fontStyle);
-        }
-
-        /// <summary>
-        /// Appends the text.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="fontWeight">The font weight.</param>
-        public void AppendText(string text, Color color, FontWeight fontWeight)
-        {
-            TextRange range = new TextRange(LogView.Document.ContentEnd, LogView.Document.ContentEnd) { Text = text };
-            range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(color));
-            range.ApplyPropertyValue(TextElement.FontWeightProperty, fontWeight);
-        }
-
-        /// <summary>
-        /// Appends the text.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="fontWeight">The font weight.</param>
-        public void AppendText(string text, FontWeight fontWeight)
-        {
-            TextRange range = new TextRange(LogView.Document.ContentEnd, LogView.Document.ContentEnd) { Text = text };
-            range.ApplyPropertyValue(TextElement.FontWeightProperty, fontWeight);
-        }
-
-        /// <summary>
-        /// Appends the text.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="fontStyle">The font style.</param>
-        /// <param name="fontWeight">The font weight.</param>
-        public void AppendText(string text, Color color, FontStyle fontStyle, FontWeight fontWeight)
-        {
-            TextRange range = new TextRange(LogView.Document.ContentEnd, LogView.Document.ContentEnd) {Text = text};
-            range.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush(color));
-            range.ApplyPropertyValue(TextElement.FontStyleProperty, fontStyle);
-            range.ApplyPropertyValue(TextElement.FontWeightProperty, fontWeight);
-        }
-
-        /// <summary>
-        /// Appends the line.
-        /// </summary>
-        public void AppendLine()
-        {
-            LogView.AppendText(Environment.NewLine);
-            BlockCollection blocks = LogView.Document.Blocks;
-            while (blocks.Count > BufferSize)
-                blocks.Remove(blocks.FirstBlock);
+            _viewModel.Execute(command);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -12,20 +12,24 @@
                 <ResourceDictionary Source="Themes/Metro/Dark/MetroDark.MSControls.Core.Implicit.xaml" />
                 <ResourceDictionary Source="Themes/Metro/Dark/MetroDark.MSControls.Toolkit.Implicit.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
+
             <client:ViewModel x:Key="MainViewModel" />
             <BooleanToVisibilityConverter x:Key="BoolVisibilityConverter" />
             <client:BooleanToGridLengthConverter x:Key="BooleanToRowHeightConverter"/>
             <client:BooleanToDoubleConverter x:Key="BooleanToDoubleConverter"/>
-            
+
             <!-- Dark Theme -->
             <SolidColorBrush x:Key="BackgroundBrush" Color="#FF292929" />
             <SolidColorBrush x:Key="HighlightBrush" Color="DodgerBlue" />
-            
+
             <Style x:Key="LogRichTextBoxStyle" TargetType="RichTextBox">
                 <Setter Property="FontSize" Value="12" />
                 <Setter Property="FontFamily" Value="Segoe UI" />
                 <Setter Property="Foreground" Value="#FFFFFFFF" />
+            </Style>
+
+            <Style BasedOn="{StaticResource GridSplitterStyle}" TargetType="{x:Type GridSplitter}">
+                <Setter Property="Background" Value="{StaticResource ExpanderBackgroundBrush}" />
             </Style>
 
             <Style x:Key="MinimalButtonStyle" BasedOn="{StaticResource ButtonStyle}"  TargetType="{x:Type Button}">
@@ -117,7 +121,7 @@
                 <Setter Property="FontFamily" Value="pack://application:,,,/Fonts/#TR5-Icons-19-03-14" />
                 <Setter Property="FontSize" Value="16" />
             </Style>
-            
+
             <Style x:Key="IconButtonStyle" BasedOn="{StaticResource MinimalButtonStyle}" TargetType="{x:Type Button}">
                 <Setter Property="FontFamily" Value="pack://application:,,,/Fonts/#TR5-Icons-19-03-14" />
                 <Setter Property="FontSize" Value="16" />

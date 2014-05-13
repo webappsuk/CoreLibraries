@@ -101,6 +101,12 @@
                         <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource HighlightBrush}">&#xe631;</Label>
                     </Grid>
                 </Button>
+                <Button Name="ClearButton" Style="{StaticResource IconButtonStyle}" ToolTip="Clear" Command="ApplicationCommands.Copy">
+                    <Grid>
+                        <Label Style="{StaticResource IconLabelStyle}">&#xe625;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource HighlightBrush}">&#xe624;</Label>
+                    </Grid>
+                </Button>
                 <Button Name="ShowCommandsButton" Command="{Binding ToggleShowCommands}">
                     <Button.Style>
                         <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="{x:Type Button}">
@@ -196,7 +202,7 @@
                 IsTextCompletionEnabled="True"
                 ItemContainerStyle="{StaticResource HistoryStyle}"
                 VerticalAlignment="Stretch"
-                ItemsSource="{Binding History}"
+                ItemsSource="{Binding CommandHistory}"
                 MaxDropDownHeight="200" MinimumPrefixLength="0" KeyUp="CommandLine_KeyUp"/>
             </DockPanel>
         </Grid>
