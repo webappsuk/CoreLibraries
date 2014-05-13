@@ -9,22 +9,13 @@
         MinHeight="260"
         MinWidth="580"
         WindowStyle="None"
-        AllowsTransparency="True"
         ResizeMode="CanResizeWithGrip"
-        Background="#AA000000" WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True"
+        Background="{StaticResource BackgroundBrush}" WindowStartupLocation="CenterScreen"
         Margin="10" 
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        MouseDoubleClick="Window_MouseDoubleClick" MouseLeftButtonUp="Window_MouseLeftButtonUp" MouseMove="Window_MouseMove">
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <!-- Dark Theme -->
-                <ResourceDictionary Source="Themes/Metro/Dark/MetroDark.MSControls.Core.Implicit.xaml" />
-                <ResourceDictionary Source="Themes/Metro/Dark/MetroDark.MSControls.Toolkit.Implicit.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-    <Border BorderBrush="Transparent">
+        MouseDoubleClick="Window_MouseDoubleClick" MouseLeftButtonUp="Window_MouseLeftButtonUp" MouseMove="Window_MouseMove" Icon="babel.ico">
+    <Border BorderBrush="{StaticResource TransparentBrush}">
         <Border.Style>
             <Style TargetType="{x:Type Border}">
                 <Setter Property="BorderThickness" Value="0"/>
@@ -45,24 +36,49 @@
                 </Style>
             </Grid.Resources>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="68*" MinHeight="91"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="28*" MinHeight="91"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition  Height="4*" MinHeight="38"/>
+                <RowDefinition Height="4*" MinHeight="38"/>
             </Grid.RowDefinitions>
 
             <DockPanel Grid.Row="0">
-                <Label Name="TitleLabel" Foreground="White" FontWeight="Bold">Service Client for Babel API</Label>
-                <Button Name="CloseButton" DockPanel.Dock="Right" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="Close_Click">X</Button>
+                <Grid DockPanel.Dock="Left">
+                    <Label Style="{StaticResource LogoStyle}" Foreground="Red" Padding="0">&#xe100;</Label>
+                    <Label Style="{StaticResource LogoStyle}" Foreground="White" Padding="0">&#xe101;</Label>
+                    <Label Style="{StaticResource LogoStyle}" Foreground="Red" Padding="0">&#xe102;</Label>
+                </Grid>
+                <Label Name="TitleLabel" Foreground="White" FontWeight="Bold" VerticalAlignment="Center" FontSize="20">Service Client for Babel API</Label>
+                <Grid DockPanel.Dock="Right" Width="Auto" HorizontalAlignment="Right">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Name="MinimizeButton" Grid.Column="0" ToolTip="Minimize" DockPanel.Dock="Right" Margin="0" Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right" BorderThickness="0" Click="MinimizeButton_Click">&#xe605;</Button>
+                    <Button Name="RestoreButton" Grid.Column="1" DockPanel.Dock="Right" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="RestoreButton_Click">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="{x:Type Button}">
+                                <Setter Property="Content" Value="&#xe604;"/>
+                                <Setter Property="ToolTip" Value="Maximize"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                                        <Setter Property="Content" Value="&#xe604;"/> <!-- Todo don't have a glyph for restore in font! -->
+                                        <Setter Property="ToolTip" Value="Restore Down"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Name="CloseButton" Grid.Column="2" ToolTip="Close" DockPanel.Dock="Right" Margin="0" Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right" BorderThickness="0" Click="Close_Click">&#xe647;</Button>
+                </Grid>
             </DockPanel>
-            <ToolBarTray Grid.Row="1" Background="Transparent">
-                <ToolBar Band="1" BandIndex="1">
-                    <Button>Connect</Button>
-                </ToolBar>
-            </ToolBarTray>
+            <StackPanel Grid.Row="1" Background="Transparent" Orientation="Horizontal">
+                <Button Style="{StaticResource MinimalButtonStyle}" ToolTip="Connect">Connect</Button>
+            </StackPanel>
             <DockPanel                     
             Grid.Row="2"
             Height="Auto"
@@ -75,7 +91,7 @@
                      ScrollViewer.VerticalScrollBarVisibility="Visible"
                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
                      Style="{StaticResource LogRichTextBoxStyle}"
-                     Background="{StaticResource BackgroundKey}" 
+                     Background="{StaticResource BackgroundBrush}" 
                      IsReadOnly="True">
                     <RichTextBox.Resources>
                         <Style TargetType="{x:Type Paragraph}">
@@ -103,7 +119,7 @@
                      ScrollViewer.VerticalScrollBarVisibility="Visible"
                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
                      Style="{StaticResource LogRichTextBoxStyle}"
-                     Background="{StaticResource BackgroundKey}" 
+                     Background="{StaticResource BackgroundBrush}" 
                      IsReadOnly="True">
                     <RichTextBox.Resources>
                         <Style TargetType="{x:Type Paragraph}">

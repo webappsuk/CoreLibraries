@@ -159,6 +159,28 @@ namespace WebApplications.Utilities.Service.Client
         }
 
         /// <summary>
+        /// Handles the Click event of the MinimizeButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        /// <summary>
+        /// Handles the Click event of the RestoreButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void RestoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Normal
+                ? WindowState.Maximized
+                : WindowState.Normal;
+        }
+
+        /// <summary>
         /// Handles the Click event of the Execute control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
