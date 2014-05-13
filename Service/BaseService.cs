@@ -34,6 +34,7 @@ using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
 using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
@@ -160,6 +161,27 @@ namespace WebApplications.Utilities.Service
         protected static readonly PauseToken Paused = new PauseTokenSource { IsPaused = true }.Token;
         protected static readonly CancellationToken Cancelled;
 
+
+        /// <summary>
+        /// Runs the service, either as a service or as a console application.
+        /// </summary>
+        /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="namedPipeConfig">The named pipe configuration, if named pipes are supported.</param>
+        /// <returns>An awaitable task.</returns>
+        public void Run(bool allowConsole = true, [CanBeNull] NamedPipeConfig namedPipeConfig = null)
+        {
+            RunAsync(allowConsole, namedPipeConfig).Wait();
+        }
+
+        /// <summary>
+        /// Runs the service, either as a service or as a console application.
+        /// </summary>
+        /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="namedPipeConfig">The named pipe configuration, if named pipes are supported.</param>
+        /// <returns>An awaitable task.</returns>
+        [NotNull]
+        public abstract Task RunAsync(bool allowConsole = true, [CanBeNull] NamedPipeConfig namedPipeConfig = null);
+
         /// <summary>
         /// When implemented in a derived class, executes when a Start command is sent to the service by the Service Control Manager (SCM) or when the operating system starts (for a service that starts automatically). Specifies actions to take when the service starts.
         /// </summary>
@@ -276,15 +298,6 @@ namespace WebApplications.Utilities.Service
             [NotNull] TextWriter writer,
             [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Command_Description")] string command = null,
             [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
-
-        /// <summary>
-        /// Runs this instance.
-        /// </summary>
-        /// TODO Does this cause a problem, if we run multiple services one a time?? Why is the base implementation not done this way??  Also, we need to detect interactive/etc.
-        public void Run()
-        {
-            Run(this);
-        }
     }
 
     /// <summary>
@@ -341,7 +354,12 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// The <see cref="CancellationTokenSource"/>.
         /// </summary>
-        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource _cancellationTokenSource;
+
+        /// <summary>
+        /// The <see cref="CancellationTokenSource"/>.
+        /// </summary>
+        private TaskCompletionSource<bool> _lifeTimeTask;
 
         /// <summary>
         /// Gets a <see cref="Utilities.Threading.PauseToken"/> that is paused when the service is not running, or paused.
@@ -455,10 +473,39 @@ namespace WebApplications.Utilities.Service
         /// Initializes a new instance of the <see cref="BaseService"/> class.
         /// </summary>
         protected BaseService([CanBeNull] string description = null)
-            :
-                base((string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
+            : base((string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
         {
             _state = ServiceState.Stopped;
+        }
+
+        /// <summary>
+        /// Runs the service, either as a service or as a console application.
+        /// </summary>
+        /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="namedPipeConfig">The named pipe configuration, if named pipes are supported.</param>
+        /// <returns>An awaitable task.</returns>
+        public override Task RunAsync(bool allowConsole = true, NamedPipeConfig namedPipeConfig = null)
+        {
+            if (namedPipeConfig != null)
+            {
+                // TODO
+            }
+
+            if (IsService)
+            {
+                Run(this);
+                return TaskResult.Completed;
+            }
+            lock (_lock)
+            {
+                // Create a task that completes when this service finally shutsdown.
+                _lifeTimeTask = new TaskCompletionSource<bool>();
+
+                // If we allow the console, connect the console UI, and wait until both tasks complete
+                return allowConsole
+                    ? Task.WhenAll(_lifeTimeTask.Task, ConsoleUserInterface.Run(this))
+                    : _lifeTimeTask.Task;
+            }
         }
 
         /// <summary>
@@ -575,6 +622,10 @@ namespace WebApplications.Utilities.Service
                     Contract.Assert(connection != null);
                     Disconnect(connection.ID);
                 }
+
+                TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTask, null);
+                if (ltt != null)
+                    ltt.TrySetResult(true);
             }
         }
 
@@ -721,6 +772,10 @@ namespace WebApplications.Utilities.Service
                     _cancellationTokenSource = null;
                 }
                 _pauseTokenSource.IsPaused = true;
+
+                TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTask, null);
+                if (ltt != null)
+                    ltt.TrySetResult(true);
             }
             base.Dispose(disposing);
         }

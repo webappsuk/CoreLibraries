@@ -115,7 +115,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Disconnect from the service without shutting it down..
+        ///   Looks up a localized string similar to Disconnect from the service without shutting it down.  If running in interactive console mode, consider using the Shutdown if you wish the service to cleanly exit..
         /// </summary>
         internal static string Cmd_Disconnect_Description {
             get {
@@ -268,7 +268,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The power status to send to the service..
+        ///   Looks up a localized string similar to The power status to send to the service.  This is only available in interactive mode..
         /// </summary>
         internal static string Cmd_PowerEvent_PowerStatus_Description {
             get {
@@ -313,7 +313,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shuts down the service and quits..
+        ///   Looks up a localized string similar to Shuts down the service and quits.  This is only available in interactive mode..
         /// </summary>
         internal static string Cmd_Shutdown_Description {
             get {

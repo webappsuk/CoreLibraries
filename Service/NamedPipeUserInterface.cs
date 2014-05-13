@@ -25,30 +25,21 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using System.Reactive.Linq;
-using System.ServiceProcess;
-using System.Threading.Tasks;
-using JetBrains.Annotations;
+using System.IO;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 
-namespace WebApplications.Utilities.Service.Test
+namespace WebApplications.Utilities.Service
 {
-    /// <summary>
-    /// Main entry point of the application.
-    /// </summary>
-    [UsedImplicitly]
-    internal class Program
+    public class NamedPipeUserInterface : IServiceUserInterface
     {
-        /// <summary>
-        /// Defines the entry point of the application.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        private static void Main([CanBeNull] string[] args)
+        public TextWriter LogWriter { get; private set; }
+        public void OnDisconnect()
         {
-            TestService testService = new TestService();
-            testService.Run();
+            throw new System.NotImplementedException();
         }
+
+        public FormatBuilder DefaultLogFormat { get; private set; }
+        public LoggingLevels DefaultLoggingLevels { get; private set; }
     }
 }

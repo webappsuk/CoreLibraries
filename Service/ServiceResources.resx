@@ -136,7 +136,7 @@
     <value>No description is available for the command in the current language.</value>
   </data>
   <data name="Cmd_Disconnect_Description" xml:space="preserve">
-    <value>Disconnect from the service without shutting it down.</value>
+    <value>Disconnect from the service without shutting it down.  If running in interactive console mode, consider using the Shutdown if you wish the service to cleanly exit.</value>
   </data>
   <data name="Cmd_Disconnect_Names" xml:space="preserve">
     <value>Quit,Exit,X,Disconnect</value>
@@ -187,7 +187,7 @@
     <value>Power</value>
   </data>
   <data name="Cmd_PowerEvent_PowerStatus_Description" xml:space="preserve">
-    <value>The power status to send to the service.</value>
+    <value>The power status to send to the service.  This is only available in interactive mode.</value>
   </data>
   <data name="Cmd_SessionChange_ChangeReason_Description" xml:space="preserve">
     <value>The reason for the change notice.</value>
@@ -202,7 +202,7 @@
     <value>The ID of the session.</value>
   </data>
   <data name="Cmd_Shutdown_Description" xml:space="preserve">
-    <value>Shuts down the service and quits.</value>
+    <value>Shuts down the service and quits.  This is only available in interactive mode.</value>
   </data>
   <data name="Cmd_Shutdown_Names" xml:space="preserve">
     <value>Shutdown</value>
