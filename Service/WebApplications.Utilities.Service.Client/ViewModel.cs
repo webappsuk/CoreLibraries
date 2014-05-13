@@ -37,6 +37,21 @@ namespace WebApplications.Utilities.Service.Client
         }
 
         /// <summary>
+        /// Gets or sets the color of the highlight.
+        /// </summary>
+        /// <value>The color of the highlight.</value>
+        public SolidColorBrush HighlightColor
+        {
+            get { return _highlightColor; }
+            set
+            {
+                if (Equals(value, _highlightColor)) return;
+                _highlightColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Called when [property changed].
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
@@ -54,6 +69,19 @@ namespace WebApplications.Utilities.Service.Client
 
         private int _bufferSize = 500;
         private int _historySize = 50;
+        public readonly SolidColorBrush DefaultHighlight;
+        public readonly SolidColorBrush LogsHighlight;
+        public readonly SolidColorBrush CommandsHighlight;
+        private SolidColorBrush _highlightColor;
+
+
+        public ViewModel()
+        {
+            DefaultHighlight = (SolidColorBrush)App.Current.Resources["DefaultHighlight"];
+            LogsHighlight = (SolidColorBrush)App.Current.Resources["LogsHighlight"];
+            CommandsHighlight = (SolidColorBrush)App.Current.Resources["CommandsHighlight"];
+            _highlightColor = DefaultHighlight;
+        }
 
         /// <summary>
         /// Gets the command history.

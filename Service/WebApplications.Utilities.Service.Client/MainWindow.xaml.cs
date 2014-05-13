@@ -35,8 +35,14 @@ namespace WebApplications.Utilities.Service.Client
         [NotNull]
         private readonly ViewModel _viewModel;
 
+        /// <summary>
+        /// The clear routed command.
+        /// </summary>
         public static RoutedCommand ClearRoutedCommand = new RoutedCommand();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindow"/> class.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -48,6 +54,14 @@ namespace WebApplications.Utilities.Service.Client
             _viewModel = (ViewModel)DataContext;
             _viewModel.LogView = LogView;
             _viewModel.CommandsView = CommandsView;
+
+            // Workaround for fixing inability to focus the AutoCompletBox directly (WPF has so many bugs)
+            CommandLine.Loaded += (s, e) =>
+            {
+                AutoCompleteBox a = s as AutoCompleteBox;
+                TextBox textbox = a.Template.FindName("Text", a) as TextBox;
+                textbox.Focus();
+            };
         }
 
         #region PInvoke GetCursorPos
@@ -227,7 +241,7 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="sender">The sender.</param>
         /// <param name="e">The <see cref="CanExecuteRoutedEventArgs"/> instance containing the event data.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        private void OnCloseCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private void OnCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
@@ -320,18 +334,125 @@ namespace WebApplications.Utilities.Service.Client
                 return;
 
             TextRange t = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
-            using (FileStream file = new FileStream(saveFileDialog.FileName, FileMode.Create))
+            try
             {
-                t.Save(
-                    file,
-                    string.Equals(
-                        System.IO.Path.GetExtension(saveFileDialog.FileName),
-                        ".rtf",
-                        StringComparison.CurrentCultureIgnoreCase)
-                        ? DataFormats.Rtf
-                        : DataFormats.Text);
-                file.Close();
+                using (FileStream file = new FileStream(saveFileDialog.FileName, FileMode.Create))
+                {
+                    t.Save(
+                        file,
+                        string.Equals(
+                            System.IO.Path.GetExtension(saveFileDialog.FileName),
+                            ".rtf",
+                            StringComparison.CurrentCultureIgnoreCase)
+                            ? DataFormats.Rtf
+                            : DataFormats.Text);
+                    file.Close();
+                }
             }
+            catch (Exception exception)
+            {
+                // TODO show error
+            }
+        }
+
+        /// <summary>
+        /// Handles the <see cref="E:OpenExecuted" /> event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="ExecutedRoutedEventArgs"/> instance containing the event data.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        private void OnOpenExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Rich Text file (*.rtf)|*.rtf|Text file (*.txt)|*.txt",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Multiselect = false
+            };
+
+            if (openFileDialog.ShowDialog() != true)
+                return;
+
+            TextRange t = new TextRange(LogView.Document.ContentEnd, LogView.Document.ContentEnd);
+            try
+            {
+                _viewModel.AppendLine(LogView);
+                _viewModel.AppendText(LogView, "Imported logs from '" + openFileDialog.FileName + "'", Colors.White, FontStyles.Italic);
+                _viewModel.AppendLine(LogView);
+
+                if (string.Equals(
+                    System.IO.Path.GetExtension(openFileDialog.FileName),
+                    ".rtf",
+                    StringComparison.CurrentCultureIgnoreCase))
+                {
+                    using (FileStream file = new FileStream(openFileDialog.FileName, FileMode.Open))
+                    {
+                        t.Load(file, DataFormats.Rtf);
+                        file.Close();
+                    }
+                }
+                else
+                    // For some reason DateFormats.Text doesn't work on load, yet another known 'feature'.
+                    LogView.AppendText(File.ReadAllText(openFileDialog.FileName));
+
+                _viewModel.AppendLine(LogView);
+                _viewModel.AppendText(LogView, "End of imported logs from '" + openFileDialog.FileName + "'", Colors.White, FontStyles.Italic);
+                _viewModel.AppendLine(LogView);
+            }
+            catch (Exception exception)
+            {
+                // TODO show error
+            }
+        }
+
+        /// <summary>
+        /// Handles the GotFocus event of the LogView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void LogView_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _viewModel.HighlightColor = _viewModel.LogsHighlight;
+        }
+
+        /// <summary>
+        /// Handles the LostFocus event of the LogView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void LogView_LostFocus(object sender, RoutedEventArgs e)
+        {
+            _viewModel.HighlightColor = _viewModel.DefaultHighlight;
+        }
+
+        /// <summary>
+        /// Handles the GotFocus event of the CommandsView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void CommandsView_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _viewModel.HighlightColor = _viewModel.CommandsHighlight;
+        }
+
+        /// <summary>
+        /// Handles the LostFocus event of the CommandsView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void CommandsView_LostFocus(object sender, RoutedEventArgs e)
+        {
+            _viewModel.HighlightColor = _viewModel.DefaultHighlight;
+        }
+
+        /// <summary>
+        /// Handles the GotFocus event of the CommandLine control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void CommandLine_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _viewModel.HighlightColor = _viewModel.DefaultHighlight;
         }
     }
 }

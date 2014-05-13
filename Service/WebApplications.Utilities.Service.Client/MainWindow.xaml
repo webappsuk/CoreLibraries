@@ -20,11 +20,14 @@
         Icon="babel.ico">
     <Window.CommandBindings>
         <CommandBinding Command="Close"
-                        CanExecute="OnCloseCanExecute"
+                        CanExecute="OnCanExecute"
                         Executed="OnCloseExecuted"/>
         <CommandBinding Command="{x:Static client:MainWindow.ClearRoutedCommand}"
                     CanExecute="OnClearCanExecute"
                     Executed="OnClearExecuted" />
+        <CommandBinding Command="Open"
+                        CanExecute="OnCanExecute"
+                        Executed="OnOpenExecuted"/>
         <CommandBinding Command="Save"
                         CanExecute="OnSaveCanExecute"
                         Executed="OnSaveExecuted"/>
@@ -96,6 +99,16 @@
                 </DockPanel>
             </ContentControl>
             <ToolBar Name="MainToolBar" Grid.Row="1" Background="Transparent" BorderThickness="0" ToolBarTray.IsLocked="True" OverflowMode="Never" Template="{DynamicResource ToolBarControlTemplate}">
+                <Button Name="LoadeButton"
+                        Style="{StaticResource IconButtonStyle}" 
+                        ToolTip="Import Logs"
+                        ToolBar.OverflowMode="Never"
+                        Command="ApplicationCommands.Open">
+                    <Grid>
+                        <Label Style="{StaticResource IconLabelStyle}">&#xe63b;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource DefaultHighlight}">&#xe63e;</Label>
+                    </Grid>
+                </Button>
                 <Button Name="SaveButton"
                         Style="{StaticResource IconButtonStyle}" 
                         ToolTip="Save"
@@ -103,7 +116,7 @@
                         Command="ApplicationCommands.Save">
                     <Grid>
                         <Label Style="{StaticResource IconLabelStyle}">&#xe678;</Label>
-                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource HighlightBrush}">&#xe677;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{Binding HighlightColor}">&#xe677;</Label>
                     </Grid>
                 </Button>
                 <Button Name="CopyButton"
@@ -113,7 +126,7 @@
                         Command="ApplicationCommands.Copy">
                     <Grid>
                         <Label Style="{StaticResource IconLabelStyle}">&#xe632;</Label>
-                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource HighlightBrush}">&#xe631;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{Binding HighlightColor}">&#xe631;</Label>
                     </Grid>
                 </Button>
                 <Button Name="ClearButton" 
@@ -123,7 +136,7 @@
                         Command="{x:Static client:MainWindow.ClearRoutedCommand}">
                     <Grid>
                         <Label Style="{StaticResource IconLabelStyle}">&#xe625;</Label>
-                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{StaticResource HighlightBrush}">&#xe624;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{Binding HighlightColor}">&#xe624;</Label>
                     </Grid>
                 </Button>
                 <Button Name="ShowCommandsButton" 
@@ -156,7 +169,7 @@
                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
                      Style="{StaticResource LogRichTextBoxStyle}"
                      Background="{StaticResource BackgroundBrush}" 
-                     IsReadOnly="True">
+                     IsReadOnly="True" GotFocus="LogView_GotFocus" LostFocus="LogView_LostFocus">
                     <RichTextBox.Resources>
                         <Style TargetType="{x:Type Paragraph}">
                             <Setter Property="Margin" Value="0"/>
@@ -186,7 +199,7 @@
                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
                      Style="{StaticResource LogRichTextBoxStyle}"
                      Background="{StaticResource BackgroundBrush}" 
-                     IsReadOnly="True">
+                     IsReadOnly="True" GotFocus="CommandsView_GotFocus" LostFocus="CommandsView_LostFocus">
                     <RichTextBox.Resources>
                         <Style TargetType="{x:Type Paragraph}">
                             <Setter Property="Margin" Value="0"/>
@@ -225,7 +238,10 @@
                     ItemContainerStyle="{StaticResource HistoryStyle}"
                     VerticalAlignment="Stretch"
                     ItemsSource="{Binding CommandHistory}"
-                    MaxDropDownHeight="200" MinimumPrefixLength="0" KeyUp="CommandLine_KeyUp"/>
+                    MaxDropDownHeight="200" 
+                    MinimumPrefixLength="0"
+                    KeyUp="CommandLine_KeyUp"
+                    GotFocus="CommandLine_GotFocus"/>
             </DockPanel>
         </Grid>
     </Border>

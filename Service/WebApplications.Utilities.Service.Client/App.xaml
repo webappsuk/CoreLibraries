@@ -22,7 +22,9 @@
 
             <Color x:Key="BabelRed">#ED2726</Color>
             <SolidColorBrush x:Key="BackgroundBrush" Color="#FF292929" />
-            <SolidColorBrush x:Key="HighlightBrush" Color="DeepSkyBlue" />
+            <SolidColorBrush x:Key="DefaultHighlight" Color="DeepSkyBlue" />
+            <SolidColorBrush x:Key="LogsHighlight" Color="MediumPurple" />
+            <SolidColorBrush x:Key="CommandsHighlight" Color="ForestGreen" />
             <SolidColorBrush x:Key="BabelRedBrush" Color="{StaticResource BabelRed}" />
 
             <Style x:Key="LogRichTextBoxStyle" TargetType="{x:Type RichTextBox}">
