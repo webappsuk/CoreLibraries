@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,6 +27,8 @@ namespace WebApplications.Utilities.Service.Client
     {
         [NotNull]
         private readonly ObservableCollection<string> _history = new ObservableCollection<string>();
+
+        private Point _startPoint = default(Point);
 
         /// <summary>
         /// Gets the command history.
@@ -51,15 +55,106 @@ namespace WebApplications.Utilities.Service.Client
             Application.Current.Shutdown();
         }
 
+        #region PInvoke GetCursorPos
+        /*
+         * We have to use GetCursorPos rather than Mouse.GetPosition(null); as the later is inaccurate during drag
+         * (see http://msdn.microsoft.com/en-us/library/system.windows.input.mouse.getposition(v=vs.110).aspx)
+         * Which causes unwanted interaction when trying to mimic drag to restore functionality
+         */
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetCursorPos(out POINT lpPoint);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+
+            public POINT(int x, int y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+
+            public POINT(Point pt) : this((int)pt.X, (int)pt.Y) { }
+
+            public static implicit operator Point(POINT p)
+            {
+                return new Point(p.X, p.Y);
+            }
+        }
+        #endregion
+
         /// <summary>
-        /// Handles the OnMouseDown event of the MainWindow control.
+        /// Handles the MouseLeftButtonDown event of the Window control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
-        private void MainWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
-                this.DragMove();
+            POINT p;
+            _startPoint = GetCursorPos(out p) ? p : default(Point);
+            this.DragMove();
+        }
+
+        /// <summary>
+        /// Handles the MouseLeftButtonUp event of the Window control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
+        private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _startPoint = default(Point);
+        }
+
+        /// <summary>
+        /// Handles the MouseMove event of the Window control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void Window_MouseMove(object sender, MouseEventArgs e)
+        {
+            if ((WindowState != WindowState.Maximized) ||
+                (e.LeftButton != MouseButtonState.Pressed) ||
+                (_startPoint == default(Point)))
+                return;
+            // Get the current mouse position
+            POINT p;
+            Point mousePos = GetCursorPos(out p) ? p : default(Point);
+            Vector diff = _startPoint - mousePos;
+
+            if ((Math.Abs(diff.X) < SystemParameters.MinimumHorizontalDragDistance) &&
+                (Math.Abs(diff.Y) < SystemParameters.MinimumVerticalDragDistance)) 
+                return;
+            
+            using (Dispatcher.DisableProcessing())
+            {
+                WindowState = WindowState.Normal;
+                Top = mousePos.Y + 15;
+                Left = mousePos.X - (Width / 2);
+            }
+
+            DragMove();
+        }
+
+        /// <summary>
+        /// Handles the MouseDoubleClick event of the Window control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
+        private void Window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            _startPoint = default(Point);
+            switch (WindowState)
+            {
+                case WindowState.Normal:
+                    WindowState = WindowState.Maximized;
+                    break;
+                case WindowState.Maximized:
+                    WindowState = WindowState.Normal;
+                    break;
+            }
         }
 
         /// <summary>
@@ -121,6 +216,16 @@ namespace WebApplications.Utilities.Service.Client
             AppendText("Executed: ", Colors.Yellow, FontStyles.Italic);
             AppendText(command, Colors.White, FontStyles.Italic);
             AppendLine();
+        }
+
+        /// <summary>
+        /// Appends the text.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="color">The color.</param>
+        public void AppendText(string text)
+        {
+            LogView.AppendText(text);
         }
 
         /// <summary>

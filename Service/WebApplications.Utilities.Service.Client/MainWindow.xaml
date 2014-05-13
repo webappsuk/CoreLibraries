@@ -10,9 +10,10 @@
         WindowStyle="None"
         AllowsTransparency="True"
         ResizeMode="CanResizeWithGrip"
-        Background="#AA000000"
-        MouseDown="MainWindow_OnMouseDown" WindowStartupLocation="CenterScreen"
-        Margin="10">
+        Background="#AA000000" WindowStartupLocation="CenterScreen"
+        Margin="10" 
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        MouseDoubleClick="Window_MouseDoubleClick" MouseLeftButtonUp="Window_MouseLeftButtonUp" MouseMove="Window_MouseMove">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
