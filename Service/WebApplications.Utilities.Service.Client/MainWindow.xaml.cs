@@ -198,9 +198,9 @@ namespace WebApplications.Utilities.Service.Client
                 }
                 c++;
             }
-            _history.Add(command);
+            _history.Insert(0, command);
             while (_history.Count > HistorySize)
-                _history.RemoveAt(0);
+                _history.RemoveAt(_history.Count - 1);
 
             AppendCommand(command);
             // TODO Execute the command
