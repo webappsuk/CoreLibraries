@@ -36,33 +36,40 @@
             </Style>
         </Border.Style>
         <Grid>
-        <Grid.Resources>
-            <Style  x:Key="HistoryStyle" TargetType="ListBoxItem">
-                <Setter Property="Margin" Value="0" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="FontFamily" Value="Consolas" />
-                <Setter Property="FontSize" Value="12" />
-            </Style>
-        </Grid.Resources>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="68*" MinHeight="91"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="28*" MinHeight="91"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition  Height="4*" MinHeight="38"/>
-        </Grid.RowDefinitions>
-        <DockPanel Grid.Row="0">
-            <Label Name="TitleLabel" Foreground="White" FontWeight="Bold">Service Client for Babel API</Label>
-            <Button Name="CloseButton" DockPanel.Dock="Right" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="Close_Click">X</Button>
-        </DockPanel>
-        <DockPanel                     
-            Grid.Row="1"
+            <Grid.Resources>
+                <Style  x:Key="HistoryStyle" TargetType="ListBoxItem">
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="FontFamily" Value="Consolas" />
+                    <Setter Property="FontSize" Value="12" />
+                </Style>
+            </Grid.Resources>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="68*" MinHeight="91"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="28*" MinHeight="91"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition  Height="4*" MinHeight="38"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0">
+                <Label Name="TitleLabel" Foreground="White" FontWeight="Bold">Service Client for Babel API</Label>
+                <Button Name="CloseButton" DockPanel.Dock="Right" Margin="0" HorizontalAlignment="Right" BorderThickness="0" Click="Close_Click">X</Button>
+            </DockPanel>
+            <ToolBarTray Grid.Row="1" Background="Transparent">
+                <ToolBar Band="1" BandIndex="1">
+                    <Button>Connect</Button>
+                </ToolBar>
+            </ToolBarTray>
+            <DockPanel                     
+            Grid.Row="2"
             Height="Auto"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
-            <Label DockPanel.Dock="Top">Logs</Label>
-            <RichTextBox Name="LogView" 
+                <Label DockPanel.Dock="Top">Logs</Label>
+                <RichTextBox Name="LogView" 
                      Margin="0"
                      HorizontalAlignment="Stretch"
                      ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -70,26 +77,26 @@
                      Style="{StaticResource LogRichTextBoxStyle}"
                      Background="{StaticResource BackgroundKey}" 
                      IsReadOnly="True">
-                <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Paragraph}">
-                        <Setter Property="Margin" Value="0"/>
-                        <Setter Property="FontFamily" Value="Consolas"/>
-                    </Style>
-                </RichTextBox.Resources>
-            </RichTextBox>
-        </DockPanel>
-        <GridSplitter Grid.Row="2" Grid.Column="0" Height="4"
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="FontFamily" Value="Consolas"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </DockPanel>
+            <GridSplitter Grid.Row="3" Grid.Column="0" Height="4"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Center" 
               MaxHeight="4"
               ShowsPreview="true"/>
-        <DockPanel                     
-            Grid.Row="3"
+            <DockPanel                     
+            Grid.Row="4"
             Height="Auto"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
-            <Label DockPanel.Dock="Top">Commands</Label>
-            <RichTextBox Name="CommandView" 
+                <Label DockPanel.Dock="Top">Commands</Label>
+                <RichTextBox Name="CommandView" 
                      Margin="0"
                      HorizontalAlignment="Stretch"
                      VerticalAlignment="Stretch"
@@ -98,33 +105,33 @@
                      Style="{StaticResource LogRichTextBoxStyle}"
                      Background="{StaticResource BackgroundKey}" 
                      IsReadOnly="True">
-                <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Paragraph}">
-                        <Setter Property="Margin" Value="0"/>
-                        <Setter Property="FontFamily" Value="Consolas"/>
-                    </Style>
-                </RichTextBox.Resources>
-            </RichTextBox>
-        </DockPanel>
-        <GridSplitter Grid.Row="4"
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="FontFamily" Value="Consolas"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </DockPanel>
+            <GridSplitter Grid.Row="5"
                       Height="4"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Center" 
               MaxHeight="4"
               ShowsPreview="true"/>
-        <DockPanel                     
-            Grid.Row="5"
+            <DockPanel                     
+            Grid.Row="6"
             Height="Auto"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch">
-            <Button Name="Execute"
+                <Button Name="Execute"
                 DockPanel.Dock="Right"
                 Margin="4,4,20,4" 
                 Click="Execute_Click" 
                 VerticalAlignment="Stretch"
                 HorizontalAlignment="Right"
                 IsDefault="{Binding ElementName=CommandLine, Path=IsKeyboardFocused}">Execute</Button>
-            <controls:AutoCompleteBox
+                <controls:AutoCompleteBox
                 Name="CommandLine"
                 Margin="4"
                 Height="Auto" 
@@ -134,7 +141,7 @@
                 VerticalAlignment="Stretch"
                 ItemsSource="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=History}"
                 MaxDropDownHeight="200" MinimumPrefixLength="0" KeyUp="CommandLine_KeyUp"/>
-        </DockPanel>
+            </DockPanel>
         </Grid>
     </Border>
 </Window>
