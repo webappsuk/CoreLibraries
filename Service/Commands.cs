@@ -57,30 +57,6 @@ namespace WebApplications.Utilities.Service
         #region Formats
         // ReSharper disable FormatStringProblem
         /// <summary>
-        /// The format to use for outputting the current log format.
-        /// </summary>
-        [NotNull]
-        protected static readonly FormatBuilder CurrentLogFormatFormat =
-            new FormatBuilder()
-                .AppendLine("Current format:")
-                .AppendForegroundColor(ConsoleColor.White)
-                .AppendFormatLine("{format}")
-                .AppendResetForegroundColor()
-                .MakeReadOnly();
-
-        /// <summary>
-        /// The format to use for outputting the current logging levels.
-        /// </summary>
-        [NotNull]
-        protected static readonly FormatBuilder CurrentLogLevelsFormat =
-            new FormatBuilder()
-                .AppendLine("Current logging levels:")
-                .AppendForegroundColor(ConsoleColor.White)
-                .AppendFormatLine("{levels}")
-                .AppendResetForegroundColor()
-                .MakeReadOnly();
-
-        /// <summary>
         /// The format to use for outputting help for all commands.
         /// </summary>
         [NotNull]
@@ -146,6 +122,29 @@ namespace WebApplications.Utilities.Service
                 .AppendFormatLine("{Parameter:{Description}}")
                 .AppendLine()
                 .MakeReadOnly();
+
+        /// <summary>
+        /// The format to use when the command name given to the help command does not exist.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder HelpCommandNotFoundFormat =
+            new FormatBuilder()
+                .AppendForegroundColor(Color.Red)
+                .AppendFormatLine("The command '{Name}' does not exist.")
+                .AppendLine()
+                .MakeReadOnly();
+
+        /// <summary>
+        /// The format to use when the command parameter name given to the help command does not exist.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder HelpCommandParameterNotFoundFormat =
+            new FormatBuilder()
+                .AppendForegroundColor(Color.Red)
+                .AppendFormatLine("The parameter '{ParamName}' does not exist on the '{CommandName}' command.")
+                .AppendLine()
+                .MakeReadOnly();
+
         // ReSharper restore FormatStringProblem, FormatStringProblem
         #endregion
     }
@@ -171,10 +170,24 @@ namespace WebApplications.Utilities.Service
                 return;
             }
 
-            ServiceCommand cmd;
+            // If no command was given, or the command they gave does not exist, then all the commands will be listed.
+            ServiceCommand cmd = null;
             if (command == null ||
                 !Commands.TryGetValue(command, out cmd))
             {
+                // If the command they gave does not exist, show an error
+                if (command != null && cmd == null)
+                {
+                    HelpCommandNotFoundFormat.WriteTo(
+                        writer,
+                        null,
+                        (_, c) =>
+                            string.Equals(c.Tag, "name", StringComparison.CurrentCultureIgnoreCase)
+                                ? command
+                                : Resolution.Unknown);
+                }
+
+                // List all the commands
                 AllCommandsHelpFormat.WriteTo(
                     writer,
                     null,
@@ -192,6 +205,27 @@ namespace WebApplications.Utilities.Service
                     : cmd.ArgumentParameters.FirstOrDefault(
                         p => string.Equals(p.Name, parameter, StringComparison.CurrentCultureIgnoreCase));
 
+            // If the parameter name given does not exist, show an error
+            if (parameter != null && parameterInfo == null)
+            {
+                HelpCommandParameterNotFoundFormat.WriteTo(
+                    writer,
+                    null,
+                    (_, c) =>
+                    {
+                        switch (c.Tag.ToLowerInvariant())
+                        {
+                            case "paramname":
+                                return parameter;
+                            case "commandname":
+                                return command;
+                            default:
+                                return Resolution.Unknown;
+                        }
+                    });
+            }
+
+            // If there was no parameter given, or it did not exist, then show all the parameters for the command
             if (parameterInfo == null)
             {
                 CommandHelpFormat.WriteTo(
@@ -204,6 +238,7 @@ namespace WebApplications.Utilities.Service
                 return;
             }
 
+            // Show the details for a single parameter
             ParameterHelpFormat.WriteTo(
                 writer,
                 null,

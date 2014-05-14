@@ -153,24 +153,6 @@
   <data name="Cmd_Help_Parameter_Description" xml:space="preserve">
     <value>The name of the parameter to get help for. If omitted, all parameters of the command will be listed.</value>
   </data>
-  <data name="Cmd_LogFormat_Description" xml:space="preserve">
-    <value>Gets or sets the current log format.</value>
-  </data>
-  <data name="Cmd_LogFormat_Format_Description" xml:space="preserve">
-    <value>The new log format to use. If omitted, the current log format will be returned.</value>
-  </data>
-  <data name="Cmd_LogFormat_Names" xml:space="preserve">
-    <value>LogFormat,lf</value>
-  </data>
-  <data name="Cmd_LogLevels_Description" xml:space="preserve">
-    <value>Gets or sets the valid logging levels.</value>
-  </data>
-  <data name="Cmd_LogLevels_Levels_Description" xml:space="preserve">
-    <value>The valid logging levels. If ommited, the current valid logging levels will be returned.</value>
-  </data>
-  <data name="Cmd_LogLevels_Names" xml:space="preserve">
-    <value>LogLevels,ll</value>
-  </data>
   <data name="Cmd_Param_Description" xml:space="preserve">
     <value>No description is available for the parameter in the current language.</value>
   </data>
@@ -179,6 +161,15 @@
   </data>
   <data name="Cmd_Pause_Names" xml:space="preserve">
     <value>Pause,P</value>
+  </data>
+  <data name="Cmd_Performance_Counter_Description" xml:space="preserve">
+    <value>The name of the performance counter to get the details of. If omitted, all performance counters will be listed.</value>
+  </data>
+  <data name="Cmd_Performance_Description" xml:space="preserve">
+    <value>Displays the performance counters for this service.</value>
+  </data>
+  <data name="Cmd_Performance_Names" xml:space="preserve">
+    <value>Perf,Performance</value>
   </data>
   <data name="Cmd_PowerEvent_Description" xml:space="preserve">
     <value>Sends the power status to the service, e.g. power Suspend.</value>
@@ -222,20 +213,11 @@
   <data name="Cmd_Stop_Names" xml:space="preserve">
     <value>Stop,S</value>
   </data>
-  <data name="Cri_Base_Service_Command_Error" xml:space="preserve">
-    <value>An error was received from the command observable of the '{0}' connection, disconnecting.</value>
-  </data>
   <data name="Err_Command_Exception" xml:space="preserve">
     <value>Fatal error executing the '{0}' command.</value>
   </data>
   <data name="Err_Command_Failed" xml:space="preserve">
     <value>The '{0}' command failed.</value>
-  </data>
-  <data name="Err_Command_Not_On_Instance" xml:space="preserve">
-    <value>The '{0}' command was not found on the '{1}' instance.</value>
-  </data>
-  <data name="Err_No_Console_Logger" xml:space="preserve">
-    <value>No console logger has been set!</value>
   </data>
   <data name="Err_ServiceCommand_Invalid_Command_Method" xml:space="preserve">
     <value>Invalid command method '{0}'. A service runner command with ConsumeLine set must declare exactly one string parameter.</value>
@@ -248,51 +230,6 @@
   </data>
   <data name="Err_ServiceRunner_Pause_ServiceNotRunning" xml:space="preserve">
     <value>The '{0}' service is not running, so cannot be paused!</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_CommandParameterInvalid" xml:space="preserve">
-    <value>The command number '{0}' must be an integer.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_CommandParameterMissing" xml:space="preserve">
-    <value>Command requires one parameters, a command number.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_ConsoleNotFound" xml:space="preserve">
-    <value>Cannot run the '{0}' service in interactive mode as no console found!</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_ContinueParameters" xml:space="preserve">
-    <value>Continue does not accept parameters.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_LoggingLevelsInvalid" xml:space="preserve">
-    <value>The LoggingLevels '{0}' must be one of: {1}.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_LoggingLevelsTooManyParameters" xml:space="preserve">
-    <value>Loglevels allows one parameters, a LoggingLevels.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_PauseParameters" xml:space="preserve">
-    <value>Pause does not accept parameters.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_PowerParameterMissing" xml:space="preserve">
-    <value>Power requires one parameters, a PowerBroadcastStatus.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_PowerParamterInvalid" xml:space="preserve">
-    <value>The PowerBroadcastStatus '{0}' must be one of: {1}.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_SessionChangeInvalid" xml:space="preserve">
-    <value>The SessionChangeReason '{0}' must be one of: {1}.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_SessionIdInvalid" xml:space="preserve">
-    <value>The session id '{0}' must be an integer.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_SessionParamtersMissing" xml:space="preserve">
-    <value>Session requires two parameters, a SessionChangeReason and a Session id.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_ShutdownParameters" xml:space="preserve">
-    <value>Shutdown does not accept parameters.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_StopParameters" xml:space="preserve">
-    <value>Stop does not accept parameters.</value>
-  </data>
-  <data name="Err_ServiceRunner_RunInteractive_UnknownCommand" xml:space="preserve">
-    <value>Unknown command '{0}'.</value>
   </data>
   <data name="Err_ServiceRunner_ServiceAlreadyRunning" xml:space="preserve">
     <value>The '{0}' service is already running!</value>
@@ -312,9 +249,6 @@
   <data name="Inf_ServiceRunner_Continue_Continuing" xml:space="preserve">
     <value>Continuing service '{0}'.</value>
   </data>
-  <data name="Inf_ServiceRunner_Continue_NotSupported" xml:space="preserve">
-    <value>Service '{0}' does not support continue.</value>
-  </data>
   <data name="Inf_ServiceRunner_CustomCommand_Complete" xml:space="preserve">
     <value>Running '{0}' custom command on service '{1}' took {2}ms.</value>
   </data>
@@ -330,17 +264,11 @@
   <data name="Inf_ServiceRunner_Dispose_Disposing" xml:space="preserve">
     <value>Disposing service '{0}'.</value>
   </data>
-  <data name="Inf_ServiceRunner_Pause_NotSupported" xml:space="preserve">
-    <value>Service '{0}' does not support pausing.</value>
-  </data>
   <data name="Inf_ServiceRunner_Pause_Paused" xml:space="preserve">
     <value>Paused service '{0}' in {1}ms.</value>
   </data>
   <data name="Inf_ServiceRunner_Pause_Pausing" xml:space="preserve">
     <value>Pausing service '{0}'.</value>
-  </data>
-  <data name="Inf_ServiceRunner_PowerEvent_NotSupported" xml:space="preserve">
-    <value>Service '{0}' does not support power events.</value>
   </data>
   <data name="Inf_ServiceRunner_PowerEvent_Sending" xml:space="preserve">
     <value>Sending the '{0}' power event to service '{1}'.</value>
@@ -348,20 +276,11 @@
   <data name="Inf_ServiceRunner_PowerEvent_Sent" xml:space="preserve">
     <value>Sending the '{0}' power event to service '{1}' took {2}ms, and returned '{3}'.</value>
   </data>
-  <data name="Inf_ServiceRunner_RunAsService_ServiceNotInteractive" xml:space="preserve">
-    <value>The '{0}' service is running in non-interactive mode</value>
-  </data>
-  <data name="Inf_ServiceRunner_SessionChange_NotSupported" xml:space="preserve">
-    <value>Service '{0}' does not support session change events.</value>
-  </data>
   <data name="Inf_ServiceRunner_SessionChange_Sending" xml:space="preserve">
     <value>Sending the '{0}' session change event for session '{1}' to service '{2}'.</value>
   </data>
   <data name="Inf_ServiceRunner_SessionChange_Sent" xml:space="preserve">
     <value>Sending the '{0}' session change event for session '{1}' to service '{2}' took {3}ms.</value>
-  </data>
-  <data name="Inf_ServiceRunner_Shutdown_NotSupported" xml:space="preserve">
-    <value>Service '{0}' does not support shutdown.</value>
   </data>
   <data name="Inf_ServiceRunner_Shutdown_ShutDown" xml:space="preserve">
     <value>Shut down service '{0}' in {1}ms.</value>
@@ -375,9 +294,6 @@
   <data name="Inf_ServiceRunner_Start_Starting" xml:space="preserve">
     <value>Starting service '{0}'.</value>
   </data>
-  <data name="Inf_ServiceRunner_Stop_NotSupported" xml:space="preserve">
-    <value>Service '{0}' does not support stopping.</value>
-  </data>
   <data name="Inf_ServiceRunner_Stop_Stopped" xml:space="preserve">
     <value>Stopped service '{0}' in {1}ms.</value>
   </data>
@@ -386,9 +302,6 @@
   </data>
   <data name="Wrn_Command_Alias_Already_Used_By_Other_Command" xml:space="preserve">
     <value>The '{0}' command alias for '{1}' is already used by the '{2}' command.</value>
-  </data>
-  <data name="Wrn_Command_Already_Registered" xml:space="preserve">
-    <value>The '{0}' command on the '{1}' type has already been registered by the '{2}' type.</value>
   </data>
   <data name="Wrn_Command_Invalid_Generic" xml:space="preserve">
     <value>The '{0}' method cannot implement a service runner command as it is generic.</value>

@@ -612,7 +612,7 @@ namespace WebApplications.Utilities.Service
                 {
                     "defaultvalue",
                     parameter.HasDefaultValue
-                        ? parameter.RawDefaultValueSafe() ?? Resolution.Empty
+                        ? parameter.RawDefaultValueSafe() ?? "<null>"
                         : Resolution.Null
                 },
                 {"description", _parameters[parameter] ?? Resolution.Null},
