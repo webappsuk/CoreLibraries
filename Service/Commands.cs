@@ -33,6 +33,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
+using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;

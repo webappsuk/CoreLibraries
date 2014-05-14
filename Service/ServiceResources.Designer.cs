@@ -349,6 +349,24 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; does not define a GuidAttribute, so creating a random one. Add a GuidAttribute to prevent multiple instances of the service being started..
+        /// </summary>
+        internal static string Err_BaseService_CouldNotLocateAssemblyGuid {
+            get {
+                return ResourceManager.GetString("Err_BaseService_CouldNotLocateAssemblyGuid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Another instance of the service is running so this instance cannot be started..
+        /// </summary>
+        internal static string Err_BaseService_Failed_To_Acquire_Mutex {
+            get {
+                return ResourceManager.GetString("Err_BaseService_Failed_To_Acquire_Mutex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fatal error executing the &apos;{0}&apos; command..
         /// </summary>
         internal static string Err_Command_Exception {
@@ -390,6 +408,15 @@ namespace WebApplications.Utilities.Service {
         internal static string Err_NamedPipeServer_Fatal_Error_Securing {
             get {
                 return ResourceManager.GetString("Err_NamedPipeServer_Fatal_Error_Securing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; named pipe already exists on the server, and so cannot be created!.
+        /// </summary>
+        internal static string Err_NamedPipeServer_PipeAlreadyExists {
+            get {
+                return ResourceManager.GetString("Err_NamedPipeServer_PipeAlreadyExists", resourceCulture);
             }
         }
         
@@ -633,6 +660,15 @@ namespace WebApplications.Utilities.Service {
         internal static string Inf_ServiceRunner_Stop_Stopping {
             get {
                 return ResourceManager.GetString("Inf_ServiceRunner_Stop_Stopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Another instance of the service may be running, so starting or stopping the service may fail..
+        /// </summary>
+        internal static string Wrn_BaseService_EventHandlerAlreadyExists {
+            get {
+                return ResourceManager.GetString("Wrn_BaseService_EventHandlerAlreadyExists", resourceCulture);
             }
         }
         

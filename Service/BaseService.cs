@@ -32,6 +32,9 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
@@ -475,15 +478,130 @@ namespace WebApplications.Utilities.Service
 
             if (string.IsNullOrWhiteSpace(Description))
                 Description = "A windows service.";
+
+            
+            if (assembly.IsDefined(typeof (GuidAttribute), false))
+            {
+                GuidAttribute g =
+                    Attribute.GetCustomAttribute(assembly, typeof (GuidAttribute)) as GuidAttribute;
+                if (g != null)
+                    AssemblyGuid = g.Value;
+            }
+            if (string.IsNullOrWhiteSpace(AssemblyGuid))
+            {
+                AssemblyGuid = Guid.NewGuid().ToString();
+                Log.Add(LoggingLevel.Warning, () => ServiceResources.Err_BaseService_CouldNotLocateAssemblyGuid, assembly);
+            }
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseService"/> class.
+        /// The assembly unique identifier
         /// </summary>
-        protected BaseService([CanBeNull] string description = null)
+        public static readonly string AssemblyGuid;
+
+        /// <summary>
+        /// The global mutext to prevent multiple services running on the same machine.
+        /// </summary>
+        private readonly EventWaitHandle _runEventWaitHandle;
+
+        /// <summary>
+        /// Whether the service currently owns the run mutex.
+        /// </summary>
+        private bool _hasRunMutex;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseService" /> class.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="sddlForm">SDDL string for the SID used to create the <see cref="SecurityIdentifier"/> object to 
+        /// identify who can can start/stop the service.</param>
+        protected BaseService([CanBeNull] string description, [NotNull] string sddlForm)
+            : this(description, new SecurityIdentifier(sddlForm))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseService" /> class.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="sidType">One of the enumeration of well known sid types, the value must not be 
+        /// <see cref="WellKnownSidType.LogonIdsSid" />.  This defines
+        /// who can start/stop the service.</param>
+        /// <param name="domainSid"><para>The domain SID. This value is required for the following <see cref="WellKnownSidType" /> values.
+        /// This parameter is ignored for any other <see cref="WellKnownSidType" /> values.</para>
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>AccountAdministratorSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountGuestSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountKrbtgtSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountDomainAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountDomainUsersSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountDomainGuestsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountComputersSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountControllersSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountCertAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountSchemaAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountEnterpriseAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountPolicyAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountRasAndIasServersSid</description>
+        ///   </item>
+        /// </list></param>
+        protected BaseService([CanBeNull] string description,
+            WellKnownSidType sidType,
+            SecurityIdentifier domainSid = null)
+            : this(description, new SecurityIdentifier(sidType, domainSid))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseService" /> class.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="identity">The identity of users that can start/stop the service, defaults to world.</param>
+        protected BaseService([CanBeNull] string description = null, IdentityReference identity = null)
             : base((string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
         {
             _state = ServiceState.Stopped;
+
+            if (identity == null)
+                identity = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+
+            EventWaitHandleSecurity sec = new EventWaitHandleSecurity();
+            sec.AddAccessRule(new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
+            bool createdNew;
+            _runEventWaitHandle = new EventWaitHandle(
+                true, 
+                EventResetMode.AutoReset,
+                string.Format("Global\\{{{0}}} {1}", AssemblyGuid, description),
+                out createdNew,
+                sec);
+
+            if (!createdNew)
+                Log.Add(LoggingLevel.Warning, () => ServiceResources.Wrn_BaseService_EventHandlerAlreadyExists);
         }
 
         /// <summary>
@@ -534,6 +652,23 @@ namespace WebApplications.Utilities.Service
                             ServiceName);
                         return;
                     }
+
+                    // Try to grab the global mutex
+                    if (!_hasRunMutex) // Sanity check, should never have at this point!
+                    {
+                        try
+                        {
+                            _hasRunMutex = _runEventWaitHandle.WaitOne(1000, false);
+                        }
+                        catch (AbandonedMutexException)
+                        {
+                            // The mutex was abandoned by another process so we now own it.
+                            _hasRunMutex = true;
+                        }
+                    }
+                    if (!_hasRunMutex)
+                        throw new ServiceException(() => ServiceResources.Err_BaseService_Failed_To_Acquire_Mutex);
+
                     _cancellationTokenSource = new CancellationTokenSource();
                     _pauseTokenSource.IsPaused = false;
                     _state = ServiceState.Running;
@@ -563,6 +698,13 @@ namespace WebApplications.Utilities.Service
                     _cancellationTokenSource.Cancel();
                     _cancellationTokenSource = null;
                     _pauseTokenSource.IsPaused = true;
+
+                    // Try to release the global mutex
+                    if (_hasRunMutex) // This should always be true at this stage.
+                    {
+                        _runEventWaitHandle.Set();
+                        _hasRunMutex = false;
+                    }
                 }
         }
 
@@ -777,6 +919,12 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
+                if (_hasRunMutex)
+                {
+                    _runEventWaitHandle.Set();
+                    _hasRunMutex = false;
+                }
+
                 if (_cancellationTokenSource != null)
                 {
                     _cancellationTokenSource.Cancel();

@@ -28,12 +28,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Service
 {
@@ -42,6 +42,11 @@ namespace WebApplications.Utilities.Service
     /// </summary>
     public partial class NamedPipeServer : IDisposable
     {
+        /// <summary>
+        /// The name suffix.
+        /// </summary>
+        public const string NameSuffix = "_WAUKService";
+
         /// <summary>
         /// The connection lock.
         /// </summary>
@@ -113,11 +118,12 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="name">The name.</param>
-        /// <param name="sddlForm">SDDL string for the SID used to create the <see cref="SecurityIdentifier"/> object.</param>
+        /// <param name="sddlForm">SDDL string for the SID used to create the <see cref="SecurityIdentifier"/> object to 
+        /// identify clients that can access the pipe.</param>
         /// <param name="maximumConnections">The maximum number of connections.</param>
         public NamedPipeServer(
             [NotNull] BaseService service,
-            [NotNull] string name,
+            [CanBeNull] string name,
             [NotNull] string sddlForm,
             int maximumConnections = 1)
             : this(service, name, new SecurityIdentifier(sddlForm), maximumConnections)
@@ -178,7 +184,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="maximumConnections">The maximum number of connections.</param>
         public NamedPipeServer(
             [NotNull] BaseService service,
-            [NotNull] string name,
+            [CanBeNull] string name,
             WellKnownSidType sidType,
             SecurityIdentifier domainSid = null,
             int maximumConnections = 1)
@@ -191,24 +197,30 @@ namespace WebApplications.Utilities.Service
         /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        /// <param name="name">The name.</param>
+        /// <param name="name">The pipe name.</param>
         /// <param name="maximumConnections">The maximum number of connections.</param>
         /// <param name="identity">The identity of clients that can access the pipe (defaults to BuiltinUsers).</param>
-        public NamedPipeServer([NotNull]BaseService service, [NotNull]string name, IdentityReference identity = null, int maximumConnections = 1)
+        public NamedPipeServer(
+            [NotNull] BaseService service,
+            [CanBeNull] string name = null,
+            IdentityReference identity = null,
+            int maximumConnections = 1)
         {
             Contract.Requires(maximumConnections > 0);
             Service = service;
-            Name = name;
             MaximumConnections = maximumConnections;
+            Name = string.Format("{0}_{1}", Guid.NewGuid(), NameSuffix);
 
             // Create security context
             try
             {
+
                 if (identity == null)
                     identity = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
 
                 WindowsIdentity currentIdentity = WindowsIdentity.GetCurrent();
-                if (currentIdentity == null || currentIdentity.Owner == null)
+                if (currentIdentity == null ||
+                    currentIdentity.Owner == null)
                     throw new ServiceException(() => ServiceResources.Err_NamedPipeServer_CannotGetCurrentOwner);
 
                 _pipeSecurity = new PipeSecurity();
@@ -228,9 +240,14 @@ namespace WebApplications.Utilities.Service
                 throw new ServiceException(exception, () => ServiceResources.Err_NamedPipeServer_Fatal_Error_Securing);
             }
 
+            // Check no one has tried to create the pipe before us, combined with the GUID name this makes the most common
+            // form of pipe attack (pre-registration) impossible.
+            if (File.Exists(@"\\.\pipe\" + Name))
+                throw new ServiceException(() => ServiceResources.Err_NamedPipeServer_PipeAlreadyExists);
+
             // Create a connection, before adding it to the list and starting.
             NamedPipeConnection connection = new NamedPipeConnection(this);
-            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) { connection };
+            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) {connection};
             connection.Start();
         }
 
@@ -274,10 +291,11 @@ namespace WebApplications.Utilities.Service
         {
             lock (_namedPipeConnections)
             {
-                foreach (NamedPipeConnection connection in _namedPipeConnections)
+                foreach (NamedPipeConnection connection in _namedPipeConnections.ToArray())
                     // ReSharper disable once PossibleNullReferenceException
                     connection.Dispose();
 
+                // Should already be clear, but do anyway.
                 _namedPipeConnections.Clear();
             }
         }

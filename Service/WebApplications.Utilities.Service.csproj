@@ -181,13 +181,13 @@
     <Compile Include="ServiceCommandParameterAttribute.cs" />
     <Compile Include="ServiceException.cs" />
     <None Include="ServiceRunner.cs" />
+    <Compile Include="ServiceCommand.cs" />
+    <Compile Include="ServiceCommandAttribute.cs" />
     <Compile Include="ServiceResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ServiceResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ServiceCommand.cs" />
-    <Compile Include="ServiceCommandAttribute.cs" />
     <Compile Include="ServiceState.cs" />
   </ItemGroup>
   <ItemGroup>

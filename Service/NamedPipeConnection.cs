@@ -56,7 +56,7 @@ namespace WebApplications.Utilities.Service
         private class NamedPipeConnection : IConnection, IDisposable
         {
             [NotNull]
-            private readonly NamedPipeServer _server;
+            private NamedPipeServer _server;
 
             private CancellationTokenSource _cancellationTokenSource;
 
@@ -248,6 +248,10 @@ namespace WebApplications.Utilities.Service
                 Task stask = Interlocked.Exchange(ref _serverTask, null);
                 if (stask != null)
                     stask.Dispose();
+
+                var server = Interlocked.Exchange(ref _server, null);
+                if (server != null)
+                    server.Remove(this);
             }
         }
     }

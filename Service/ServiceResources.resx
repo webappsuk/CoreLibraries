@@ -213,6 +213,12 @@
   <data name="Cmd_Stop_Names" xml:space="preserve">
     <value>Stop,S</value>
   </data>
+  <data name="Err_BaseService_CouldNotLocateAssemblyGuid" xml:space="preserve">
+    <value>The '{0}' does not define a GuidAttribute, so creating a random one. Add a GuidAttribute to prevent multiple instances of the service being started.</value>
+  </data>
+  <data name="Err_BaseService_Failed_To_Acquire_Mutex" xml:space="preserve">
+    <value>Another instance of the service is running so this instance cannot be started.</value>
+  </data>
   <data name="Err_Command_Exception" xml:space="preserve">
     <value>Fatal error executing the '{0}' command.</value>
   </data>
@@ -227,6 +233,9 @@
   </data>
   <data name="Err_NamedPipeServer_Fatal_Error_Securing" xml:space="preserve">
     <value>A fatal error occurred trying to secure the named pipe server.</value>
+  </data>
+  <data name="Err_NamedPipeServer_PipeAlreadyExists" xml:space="preserve">
+    <value>The '{0}' named pipe already exists on the server, and so cannot be created!</value>
   </data>
   <data name="Err_ServiceCommand_Invalid_Command_Method" xml:space="preserve">
     <value>Invalid command method '{0}'. A service runner command with ConsumeLine set must declare exactly one string parameter.</value>
@@ -308,6 +317,9 @@
   </data>
   <data name="Inf_ServiceRunner_Stop_Stopping" xml:space="preserve">
     <value>Stopping service '{0}'.</value>
+  </data>
+  <data name="Wrn_BaseService_EventHandlerAlreadyExists" xml:space="preserve">
+    <value>Another instance of the service may be running, so starting or stopping the service may fail.</value>
   </data>
   <data name="Wrn_Command_Alias_Already_Used_By_Other_Command" xml:space="preserve">
     <value>The '{0}' command alias for '{1}' is already used by the '{2}' command.</value>
