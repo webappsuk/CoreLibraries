@@ -36,9 +36,13 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Implements a connection to the service over a named pipe.
     /// </summary>
-    internal class NamedPipeUserInterface : IServiceUserInterface
+    internal class NamedPipeUserInterface : IConnection
     {
         internal NamedPipeUserInterface()
+        {
+            
+        }
+
         public void OnDisconnect()
         {
             throw new NotImplementedException();
