@@ -198,9 +198,9 @@ namespace WebApplications.Utilities.Service {
         /// <summary>
         ///   Looks up a localized string similar to The name of the performance counter to get the details of. If omitted, all performance counters will be listed..
         /// </summary>
-        internal static string Cmd_Performance_Counter_Description {
+        internal static string Cmd_Performance_Category_Description {
             get {
-                return ResourceManager.GetString("Cmd_Performance_Counter_Description", resourceCulture);
+                return ResourceManager.GetString("Cmd_Performance_Category_Description", resourceCulture);
             }
         }
         

@@ -162,7 +162,7 @@
   <data name="Cmd_Pause_Names" xml:space="preserve">
     <value>Pause,P</value>
   </data>
-  <data name="Cmd_Performance_Counter_Description" xml:space="preserve">
+  <data name="Cmd_Performance_Category_Description" xml:space="preserve">
     <value>The name of the performance counter to get the details of. If omitted, all performance counters will be listed.</value>
   </data>
   <data name="Cmd_Performance_Description" xml:space="preserve">

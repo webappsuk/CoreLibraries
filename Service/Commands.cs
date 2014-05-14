@@ -37,6 +37,7 @@ using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Logging.Loggers;
+using WebApplications.Utilities.Performance;
 using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
 namespace WebApplications.Utilities.Service
@@ -145,6 +146,35 @@ namespace WebApplications.Utilities.Service
                 .AppendLine()
                 .MakeReadOnly();
 
+        /// <summary>
+        /// The format for listing all performance categories.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder AllPerformanceCategoriesFormat =
+            new FormatBuilder()
+                .AppendForegroundColor(Color.White)
+                .AppendLine("The following performance categories are loaded:")
+                .AppendLine()
+                .AppendForegroundColor(Color.Yellow)
+                .AppendFormatLine(
+                    "{counters:{<items>:{<item>:{CategoryName}}}{<join>:\r\n}}")
+                .AppendResetForegroundColor()
+                .AppendLine()
+                .AppendFormatLine("Type 'perf {!fgcolor:Yellow}<category>{!fgcolor}' for more details of a specific counter.")
+                .AppendLine()
+                .MakeReadOnly();
+
+        /// <summary>
+        /// The format to use when the category name given to the performance command does not exist.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder PerformanceCatergoryNotFoundFormat =
+            new FormatBuilder()
+                .AppendForegroundColor(Color.Red)
+                .AppendFormatLine("The command '{Name}' does not exist.")
+                .AppendLine()
+                .MakeReadOnly();
+
         // ReSharper restore FormatStringProblem, FormatStringProblem
         #endregion
     }
@@ -193,7 +223,7 @@ namespace WebApplications.Utilities.Service
                     null,
                     (_, c) =>
                         string.Equals(c.Tag, "commands", StringComparison.CurrentCultureIgnoreCase)
-                            ? Commands.Values.Distinct()
+                            ? Commands.Values.Distinct().OrderBy(d => d.Name)
                             : Resolution.Unknown);
                 return;
             }
@@ -608,6 +638,55 @@ namespace WebApplications.Utilities.Service
                     Contract.Assert(exception.InnerException != null);
                     Log.Add(exception.InnerException);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets the details of the performance counters loaded.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="category">The category.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true, writerParameter: "writer")]
+        public void Performance(
+            [NotNull] TextWriter writer,
+            [CanBeNull][SCP(typeof(ServiceResources), "Cmd_Performance_Category_Description")] string category = null)
+        {
+            lock (_lock)
+            {
+                bool categoryOmitted = string.IsNullOrWhiteSpace(category);
+
+                PerfCategory cat = categoryOmitted
+                    ? null
+                    : PerfCategory.All.FirstOrDefault(p => p.CategoryName == category);
+
+                if (!categoryOmitted && cat == null)
+                {
+                    PerformanceCatergoryNotFoundFormat.WriteTo(
+                        writer,
+                        null,
+                        (_, c) =>
+                            string.Equals(c.Tag, "name", StringComparison.CurrentCultureIgnoreCase)
+                                ? category
+                                : Resolution.Unknown);
+                }
+
+                if (cat == null) // Or the counter does not exist
+                {
+
+                    AllPerformanceCategoriesFormat.WriteTo(
+                        writer,
+                        null,
+                        (_, c) =>
+                            string.Equals(c.Tag, "counters", StringComparison.CurrentCultureIgnoreCase)
+                                ? PerfCategory.All.OrderBy(pc => pc.CategoryName)
+                                : Resolution.Unknown);
+                    return;
+                }
+
+                cat.WriteTo(writer, PerfCategory.VerboseFormat);
+                writer.WriteLine();
+                writer.WriteLine();
             }
         }
     }
