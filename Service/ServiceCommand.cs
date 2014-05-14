@@ -27,8 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -41,16 +39,16 @@ using WebApplications.Utilities.Logging;
 namespace WebApplications.Utilities.Service
 {
     /// <summary>
-    /// Implements a command that can be executed by the <see cref="BaseService">service</see>.
+    /// Implements a command that can be executed by a <see cref="BaseService">service</see>.
     /// </summary>
-    public class ServiceRunnerCommand : Resolvable
+    public class ServiceCommand : Resolvable
     {
 #if DEBUG
         /// <summary>
         /// Grabs the debug view for an expression.
         /// </summary>
         [NotNull]
-        private static readonly Func<Expression, string> _expressionDebugView = typeof(Expression).GetProperty(
+        private static readonly Func<Expression, string> _expressionDebugView = typeof (Expression).GetProperty(
             "DebugView",
             BindingFlags.NonPublic | BindingFlags.Instance)
             .GetGetMethod(true)
@@ -67,25 +65,27 @@ namespace WebApplications.Utilities.Service
         /// The <see cref="MethodInfo"/> for <see cref="string.Split(char[])"/>.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _stringSplit = typeof(string).GetMethod("Split", new[] { typeof(char[]), typeof(StringSplitOptions) });
+        private static readonly MethodInfo _stringSplit = typeof (string).GetMethod(
+            "Split",
+            new[] {typeof (char[]), typeof (StringSplitOptions)});
 
         /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="string.IsNullOrEmpty(string)"/>.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _stringIsNullOrEmpty = typeof(string).GetMethod(
+        private static readonly MethodInfo _stringIsNullOrEmpty = typeof (string).GetMethod(
             "IsNullOrEmpty",
-            new[] { typeof(string) });
+            new[] {typeof (string)});
 
         /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="Rebase"/>.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _rebase = typeof(ServiceRunnerCommand).GetMethod(
+        private static readonly MethodInfo _rebase = typeof (ServiceCommand).GetMethod(
             "Rebase",
             BindingFlags.Static | BindingFlags.NonPublic,
             null,
-            new[] { typeof(string[]), typeof(int) },
+            new[] {typeof (string[]), typeof (int)},
             null);
 
         [NotNull]
@@ -95,8 +95,8 @@ namespace WebApplications.Utilities.Service
         /// The <see cref="MethodInfo"/> for <see cref="Enum.Parse(Type, string, bool)"/>.
         /// </summary>
         [NotNull]
-        private static readonly MethodInfo _enumParse = typeof(Enum)
-            .GetMethod("Parse", new[] { typeof(Type), typeof(string), typeof(bool) });
+        private static readonly MethodInfo _enumParse = typeof (Enum)
+            .GetMethod("Parse", new[] {typeof (Type), typeof (string), typeof (bool)});
 
         [NotNull]
         private readonly string[] _names;
@@ -190,12 +190,12 @@ namespace WebApplications.Utilities.Service
         private readonly ParameterInfo _idParameter;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceRunnerCommand"/> class.
+        /// Initializes a new instance of the <see cref="ServiceCommand"/> class.
         /// </summary>
         /// <param name="method">The method.</param>
         /// <param name="attribute">The attribute.</param>
         /// <exception cref="System.NotImplementedException"></exception>
-        internal ServiceRunnerCommand([NotNull] MethodInfo method, [NotNull] ServiceCommandAttribute attribute)
+        internal ServiceCommand([NotNull] MethodInfo method, [NotNull] ServiceCommandAttribute attribute)
         {
             Contract.Requires<RequiredContractException>(method != null, "Parameter_Null");
             Contract.Requires<RequiredContractException>(attribute != null, "Parameter_Null");
@@ -207,13 +207,13 @@ namespace WebApplications.Utilities.Service
             bool needWriterParameter = attribute.WriterParameter != null;
             bool needIdParameter = attribute.IDParameter != null;
 
-            ParameterExpression instanceParameterExpression = Expression.Parameter(typeof(object), "instance");
-            ParameterExpression argsParameterExpression = Expression.Parameter(typeof(string), "arguments");
-            ParameterExpression writerParameterExpression = Expression.Parameter(typeof(TextWriter), "writer");
-            ParameterExpression connectionParameterExpression = Expression.Parameter(typeof(Guid), "connection");
+            ParameterExpression instanceParameterExpression = Expression.Parameter(typeof (object), "instance");
+            ParameterExpression argsParameterExpression = Expression.Parameter(typeof (string), "arguments");
+            ParameterExpression writerParameterExpression = Expression.Parameter(typeof (TextWriter), "writer");
+            ParameterExpression connectionParameterExpression = Expression.Parameter(typeof (Guid), "connection");
 
-            Expression instance = InstanceType == typeof(object)
-                ? (Expression)instanceParameterExpression
+            Expression instance = InstanceType == typeof (object)
+                ? (Expression) instanceParameterExpression
                 : Expression.Convert(instanceParameterExpression, InstanceType);
 
             ParameterInfo[] parameters = method.GetParameters();
@@ -238,7 +238,7 @@ namespace WebApplications.Utilities.Service
 
                 if (parameter.Name == attribute.WriterParameter)
                 {
-                    if (!parameterType.DescendsFrom(typeof(TextWriter)))
+                    if (!parameterType.DescendsFrom(typeof (TextWriter)))
                         throw new ServiceException(
                             LoggingLevel.Error,
                             () => "TODO Writer parameter should be of type TextWriter, but was actually of type '{0}'",
@@ -251,7 +251,7 @@ namespace WebApplications.Utilities.Service
                 }
                 if (parameter.Name == attribute.IDParameter)
                 {
-                    if (parameterType != typeof(Guid))
+                    if (parameterType != typeof (Guid))
                         throw new ServiceException(
                             LoggingLevel.Error,
                             () => "TODO ID parameter should be of type Guid, but was actually of type '{0}'",
@@ -292,13 +292,11 @@ namespace WebApplications.Utilities.Service
                 ParameterInfo parameter = null;
                 int p = 0;
                 for (; p < parameters.Length; p++)
-                {
-                    if (parameters[p].ParameterType == typeof(string))
+                    if (parameters[p].ParameterType == typeof (string))
                     {
                         parameter = parameters[p];
                         break;
                     }
-                }
 
                 if (parameter == null)
                     throw new ServiceException(() => ServiceResources.Err_ServiceCommand_Invalid_Command_Method, method);
@@ -318,7 +316,7 @@ namespace WebApplications.Utilities.Service
             {
                 minimumArguments =
                     parameters.Select((p, i) => p.IsOptional ? i : int.MaxValue)
-                        .Union(new[] { parameters.Length })
+                        .Union(new[] {parameters.Length})
                         .Min() -
                     parameters.Count(
                         p => !p.IsOptional &&
@@ -331,7 +329,7 @@ namespace WebApplications.Utilities.Service
                 // If the last parameter is a string[], and there are no optional parameters it can accept a parameters collection.
                 bool hasParams =
                     (minimumArguments == parameters.Length) &&
-                    (lastParam.ParameterType == typeof(string[]));
+                    (lastParam.ParameterType == typeof (string[]));
 
                 if (!hasParams)
                     maximumArguments = parameters.Length - extraParams;
@@ -346,7 +344,7 @@ namespace WebApplications.Utilities.Service
                 if (maximumArguments > 0)
                 {
                     // Split the arguments
-                    splitArgs = Expression.Variable(typeof(string[]), "splitArguments");
+                    splitArgs = Expression.Variable(typeof (string[]), "splitArguments");
 
                     // Assign split arguments to body
                     locals.Add(splitArgs);
@@ -356,7 +354,7 @@ namespace WebApplications.Utilities.Service
                             Expression.Call(
                                 argsParameterExpression,
                                 _stringSplit,
-                                Expression.Constant(null, typeof(char[])),
+                                Expression.Constant(null, typeof (char[])),
                                 Expression.Constant(StringSplitOptions.RemoveEmptyEntries))));
 
                     // Map args to inputs
@@ -379,11 +377,11 @@ namespace WebApplications.Utilities.Service
 
 
                         // We can pass strings straight through
-                        if (parameterType == typeof(string))
+                        if (parameterType == typeof (string))
                             input = argExpression;
                         else if (hasParams &&
                                  (p == (parameters.Length - 1)) &&
-                                 (parameterType == typeof(string[])))
+                                 (parameterType == typeof (string[])))
                         {
                             // This is the final parameters argument
                             input = splitArgs;
@@ -396,7 +394,7 @@ namespace WebApplications.Utilities.Service
 
                             // Check for nullable
                             bool isNullable = parameterType.IsGenericType &&
-                                              parameterType.GetGenericTypeDefinition() == typeof(Nullable<>);
+                                              parameterType.GetGenericTypeDefinition() == typeof (Nullable<>);
 
                             if (isNullable)
                                 parameterType = parameterType.GetGenericArguments()[0];
@@ -404,7 +402,6 @@ namespace WebApplications.Utilities.Service
                             Contract.Assert(parameterType != null);
                             MethodInfo parseMethod;
                             if (parameterType.IsEnum)
-                            {
                                 input = Expression.Convert(
                                     Expression.Call(
                                         _enumParse,
@@ -412,11 +409,8 @@ namespace WebApplications.Utilities.Service
                                         argExpression,
                                         Expression.Constant(true)),
                                     parameterType);
-                            }
-                            else if ((parseMethod = parameterType.GetMethod("Parse", new[] { typeof(string) })) != null)
-                            {
+                            else if ((parseMethod = parameterType.GetMethod("Parse", new[] {typeof (string)})) != null)
                                 input = Expression.Call(parseMethod, argExpression);
-                            }
                             else if (!argExpression.TryConvert(parameterType, out input))
                                 throw new ServiceException(
                                     () => ServiceResources.Err_ServiceCommand_Parameter_Conversion_Unsupported,
@@ -431,7 +425,6 @@ namespace WebApplications.Utilities.Service
 
                         if ((a >= minimumArguments) &&
                             parameter.IsOptional)
-                        {
                             // Argument is optional
                             input = Expression.Condition(
                                 Expression.LessThan(
@@ -439,7 +432,6 @@ namespace WebApplications.Utilities.Service
                                     Expression.Constant(a + 1)),
                                 Expression.Constant(parameter.DefaultValue, parameter.ParameterType),
                                 input);
-                        }
 
                         a++;
                         inputs[p] = input;
@@ -451,34 +443,33 @@ namespace WebApplications.Utilities.Service
             Expression methodCall = Expression.Call(instance, method, inputs);
 
             // If the method doesn't return a bool, return true
-            if (method.ReturnType != typeof(bool))
-                methodCall = Expression.Block(methodCall, Expression.Constant(true, typeof(bool)));
+            if (method.ReturnType != typeof (bool))
+                methodCall = Expression.Block(methodCall, Expression.Constant(true, typeof (bool)));
 
             // Validate min & max arguments
             if (minimumArguments > 0)
-            {
                 methodCall = Expression.Condition(
                     splitArgs != null
-                        ? (Expression)Expression.LessThan(Expression.ArrayLength(splitArgs), Expression.Constant(minimumArguments))
+                        ? (Expression)
+                        Expression.LessThan(Expression.ArrayLength(splitArgs), Expression.Constant(minimumArguments))
                         : Expression.Call(_stringIsNullOrEmpty, argsParameterExpression),
-                    Expression.Constant(false, typeof(bool)),
+                    Expression.Constant(false, typeof (bool)),
                     methodCall);
-            }
             if (maximumArguments == 0)
             {
                 Contract.Assert(splitArgs == null);
                 methodCall = Expression.Condition(
                     Expression.Not(Expression.Call(_stringIsNullOrEmpty, argsParameterExpression)),
-                    Expression.Constant(false, typeof(bool)),
+                    Expression.Constant(false, typeof (bool)),
                     methodCall);
             }
             else if (!attribute.ConsumeLine &&
-                (maximumArguments < int.MaxValue))
+                     (maximumArguments < int.MaxValue))
             {
                 Contract.Assert(splitArgs != null);
                 methodCall = Expression.Condition(
                     Expression.GreaterThan(Expression.ArrayLength(splitArgs), Expression.Constant(maximumArguments)),
-                    Expression.Constant(false, typeof(bool)),
+                    Expression.Constant(false, typeof (bool)),
                     methodCall);
             }
             MinimumArguments = minimumArguments;
@@ -487,12 +478,13 @@ namespace WebApplications.Utilities.Service
             body.Add(methodCall);
 
             // Build 
-            Expression<Func<object, TextWriter, Guid, string, bool>> lambda = Expression.Lambda<Func<object, TextWriter, Guid, string, bool>>(
-                body.Blockify(locals),
-                instanceParameterExpression,
-                writerParameterExpression,
-                connectionParameterExpression,
-                argsParameterExpression);
+            Expression<Func<object, TextWriter, Guid, string, bool>> lambda = Expression
+                .Lambda<Func<object, TextWriter, Guid, string, bool>>(
+                    body.Blockify(locals),
+                    instanceParameterExpression,
+                    writerParameterExpression,
+                    connectionParameterExpression,
+                    argsParameterExpression);
 
 #if DEBUG
             // Update the DebugView
@@ -509,7 +501,7 @@ namespace WebApplications.Utilities.Service
             {
                 Log.Add(LoggingLevel.Warning, () => ServiceResources.Wrn_No_Names_For_Command, methodName);
                 // Use the method name.
-                _names = new[] { methodName };
+                _names = new[] {methodName};
             }
             else
                 _names = names.Message
@@ -539,7 +531,7 @@ namespace WebApplications.Utilities.Service
                 {
                     ServiceCommandParameterAttribute att =
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        p.GetCustomAttributes(typeof(ServiceCommandParameterAttribute))
+                        p.GetCustomAttributes(typeof (ServiceCommandParameterAttribute))
                             .Cast<ServiceCommandParameterAttribute>()
                             .FirstOrDefault();
 
@@ -548,9 +540,14 @@ namespace WebApplications.Utilities.Service
 
                     // Get the description.
                     Translation d = Translation.Get(att.ResourceType, att.DescriptionProperty);
-                    if ((d == null) || string.IsNullOrWhiteSpace(d.Message))
+                    if ((d == null) ||
+                        string.IsNullOrWhiteSpace(d.Message))
                     {
-                        Log.Add(LoggingLevel.Warning, () => ServiceResources.Wrn_No_Description_For_Parameter, p.Name, Name);
+                        Log.Add(
+                            LoggingLevel.Warning,
+                            () => ServiceResources.Wrn_No_Description_For_Parameter,
+                            p.Name,
+                            Name);
                         return ServiceResources.Cmd_Param_Description;
                     }
                     return d.Message;
@@ -565,7 +562,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="connectionId">The connection identifier.</param>
         /// <param name="arguments">The arguments.</param>
         /// <returns><see langword="true" /> if succeeded, <see langword="false" /> otherwise.</returns>
-        public bool Run([NotNull] object instance, [NotNull] TextWriter writer, Guid connectionId, [NotNull] string arguments)
+        public bool Run(
+            [NotNull] object instance,
+            [NotNull] TextWriter writer,
+            Guid connectionId,
+            [NotNull] string arguments)
         {
             Contract.Requires<RequiredContractException>(instance != null, "Parameter_Null");
             Contract.Requires<RequiredContractException>(arguments != null, "Parameter_Null");

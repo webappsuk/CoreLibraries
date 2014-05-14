@@ -25,42 +25,16 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using System.IO;
-using JetBrains.Annotations;
-using WebApplications.Utilities.Formatting;
-using WebApplications.Utilities.Logging;
-
 namespace WebApplications.Utilities.Service
 {
     /// <summary>
-    /// Interface IServiceUI defines an interface for a user interface that a service can interact with.
+    /// An interface for a connection to a service.
     /// </summary>
-    public interface IServiceUserInterface
+    public interface IConnection
     {
-        /// <summary>
-        /// Gets the writer for outputting logs from the service.
-        /// </summary>
-        /// <value>The writer.</value>
-        [NotNull]
-        TextWriter LogWriter { get; }
-
         /// <summary>
         /// Called when the server disconnects the UI.
         /// </summary>
         void OnDisconnect();
-
-        /// <summary>
-        /// Gets the default log format, this can be changed by commands.
-        /// </summary>
-        /// <value>The default log format.</value>
-        [CanBeNull]
-        FormatBuilder DefaultLogFormat { get; }
-
-        /// <summary>
-        /// Gets the default logging levels, this can be changed by commands.
-        /// </summary>
-        /// <value>The default logging levels.</value>
-        LoggingLevels DefaultLoggingLevels { get; }
     }
 }

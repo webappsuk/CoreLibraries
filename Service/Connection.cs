@@ -26,23 +26,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.ServiceProcess;
 using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Formatting;
-using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Logging.Interfaces;
-using WebApplications.Utilities.Logging.Loggers;
-using WebApplications.Utilities.Performance;
-using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service
 {
@@ -60,66 +46,21 @@ namespace WebApplications.Utilities.Service
             public readonly Guid ID;
 
             /// <summary>
-            /// The user interface
+            /// The connection
             /// </summary>
             [NotNull]
-            private IServiceUserInterface _userInterface;
-
-            /// <summary>
-            /// The _logger
-            /// </summary>
-            private TextWriterLogger _logger;
-
-            /// <summary>
-            /// Gets the logger.
-            /// </summary>
-            /// <value>The logger.</value>
-            [NotNull]
-            [PublicAPI]
-            public TextWriterLogger Logger
-            {
-                get
-                {
-                    if (_logger == null)
-                        throw new ObjectDisposedException("Connection");
-                    return _logger;
-                }
-            }
-
-            /// <summary>
-            /// The default format.
-            /// </summary>
-            [NotNull]
-            public readonly FormatBuilder DefaultFormat;
-
-            /// <summary>
-            /// The default logging levels.
-            /// </summary>
-            public readonly LoggingLevels DefaultLoggingLevels;
+            private IConnection _connection;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Connection" /> class.
             /// </summary>
-            /// <param name="service">The service.</param>
             /// <param name="id">The identifier.</param>
-            /// <param name="userInterface">The user interface.</param>
-            public Connection([NotNull] BaseService<TService> service, Guid id, [NotNull] IServiceUserInterface userInterface)
+            /// <param name="connection">The connection.</param>
+            public Connection(Guid id, [NotNull] IConnection connection)
             {
-                Contract.Requires<RequiredContractException>(userInterface != null, "Parameter_Null");
-                Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
+                Contract.Requires<RequiredContractException>(connection != null, "Parameter_Null");
                 ID = id;
-                _userInterface = userInterface;
-
-                DefaultFormat = userInterface.DefaultLogFormat ?? Log.ShortFormat;
-                DefaultLoggingLevels = userInterface.DefaultLoggingLevels;
-
-                // Send logs to writer.
-                _logger = new TextWriterLogger(
-                    string.Format("Log writer for '{0}' service connection.", id),
-                    userInterface.LogWriter,
-                    DefaultFormat,
-                    DefaultLoggingLevels);
-                Log.AddLogger(_logger);
+                _connection = connection;
             }
 
             /// <summary>
@@ -127,22 +68,14 @@ namespace WebApplications.Utilities.Service
             /// </summary>
             public void Dispose()
             {
-                TextWriterLogger logger = Interlocked.Exchange(ref _logger, null);
-                if (logger != null)
-                {
-                    Log.Flush().Wait();
-                    Log.RemoveLogger(logger);
-                    logger.Dispose();
-                }
-
-                IServiceUserInterface ui = Interlocked.Exchange(ref _userInterface, null);
-                if (ui == null) return;
+                IConnection con = Interlocked.Exchange(ref _connection, null);
+                if (con == null) return;
 
                 try
                 {
-                    ui.OnDisconnect();
+                    con.OnDisconnect();
                 }
-                // ReSharper disable once EmptyGeneralCatchClause
+                    // ReSharper disable once EmptyGeneralCatchClause
                 catch
                 {
                     // Surpress any more errors.

@@ -36,7 +36,6 @@ using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Performance;
 using WebApplications.Utilities.Threading;
@@ -112,10 +111,13 @@ namespace WebApplications.Utilities.Service
                 IsService = false;
                 try
                 {
+                    // ReSharper disable PossibleNullReferenceException
                     Type entryType = Assembly.GetEntryAssembly().EntryPoint.ReflectedType;
-                    while (entryType != typeof(object))
+                    // ReSharper restore PossibleNullReferenceException
+                    while (entryType != typeof (object))
                     {
-                        if (entryType == typeof(ServiceBase))
+                        Contract.Assert(entryType != null);
+                        if (entryType == typeof (ServiceBase))
                         {
                             IsService = true;
                             break;
@@ -123,6 +125,7 @@ namespace WebApplications.Utilities.Service
                         entryType = entryType.BaseType;
                     }
                 }
+                    // ReSharper disable once EmptyGeneralCatchClause
                 catch
                 {
                 }
@@ -158,7 +161,7 @@ namespace WebApplications.Utilities.Service
         }
 
         // TODO Move to Utilities
-        protected static readonly PauseToken Paused = new PauseTokenSource { IsPaused = true }.Token;
+        protected static readonly PauseToken Paused = new PauseTokenSource {IsPaused = true}.Token;
         protected static readonly CancellationToken Cancelled;
 
 
@@ -246,11 +249,13 @@ namespace WebApplications.Utilities.Service
         }
 
         /// <summary>
-        /// Connects the specified user interface.
+        /// Connects the specified connection.
         /// </summary>
-        /// <param name="userInterface">The user interface.</param>
-        /// <returns>A connection GUID.</returns>
-        public abstract Guid Connect([NotNull] IServiceUserInterface userInterface);
+        /// <param name="connection">The connection.</param>
+        /// <returns>
+        /// A connection GUID.
+        /// </returns>
+        public abstract Guid Connect([NotNull] IConnection connection);
 
         /// <summary>
         /// Executes the specified identifier.
@@ -260,7 +265,10 @@ namespace WebApplications.Utilities.Service
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>The result.</returns>
         [NotNull]
-        private string Execute(Guid id, [CanBeNull] string commandLine, [CanBeNull] IFormatProvider formatProvider = null)
+        private string Execute(
+            Guid id,
+            [CanBeNull] string commandLine,
+            [CanBeNull] IFormatProvider formatProvider = null)
         {
             if (string.IsNullOrWhiteSpace(commandLine))
                 return string.Empty;
@@ -293,11 +301,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
         protected abstract void Help(
             [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Command_Description")] string command = null,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Command_Description")] string command = null,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
     }
 
     /// <summary>
@@ -312,7 +320,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [NotNull]
         // ReSharper disable once StaticFieldInGenericType
-        public static readonly IReadOnlyDictionary<string, ServiceRunnerCommand> Commands;
+        public static readonly IReadOnlyDictionary<string, ServiceCommand> Commands;
 
         /// <summary>
         /// The service assembly description.
@@ -393,21 +401,21 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         static BaseService()
         {
-            MethodInfo[] allMethods = typeof(TService)
+            MethodInfo[] allMethods = typeof (TService)
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .ToArray();
-            Dictionary<string, ServiceRunnerCommand> commands =
-                new Dictionary<string, ServiceRunnerCommand>(
+            Dictionary<string, ServiceCommand> commands =
+                new Dictionary<string, ServiceCommand>(
                     allMethods.Length * 3,
                     StringComparer.CurrentCultureIgnoreCase);
             foreach (MethodInfo method in allMethods)
             {
                 Contract.Assert(method != null);
-                ServiceRunnerCommand src;
+                ServiceCommand src;
                 try
                 {
                     ServiceCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof(ServiceCommandAttribute), true)
+                        .GetCustomAttributes(typeof (ServiceCommandAttribute), true)
                         .OfType<ServiceCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
@@ -420,7 +428,7 @@ namespace WebApplications.Utilities.Service
                         continue;
                     }
 
-                    src = new ServiceRunnerCommand(method, attribute);
+                    src = new ServiceCommand(method, attribute);
                 }
                 catch (Exception e)
                 {
@@ -436,7 +444,7 @@ namespace WebApplications.Utilities.Service
                 foreach (string name in src.AllNames)
                 {
                     Contract.Assert(name != null);
-                    ServiceRunnerCommand existing;
+                    ServiceCommand existing;
                     if (commands.TryGetValue(name, out existing))
                     {
                         Contract.Assert(existing != null);
@@ -450,13 +458,13 @@ namespace WebApplications.Utilities.Service
                     commands[name] = src;
                 }
             }
-            Commands = new ReadOnlyDictionary<string, ServiceRunnerCommand>(commands);
+            Commands = new ReadOnlyDictionary<string, ServiceCommand>(commands);
 
-            Assembly assembly = typeof(TService).Assembly;
-            if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
+            Assembly assembly = typeof (TService).Assembly;
+            if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
                         AssemblyDescriptionAttribute;
                 if (a != null)
                 {
@@ -503,7 +511,7 @@ namespace WebApplications.Utilities.Service
 
                 // If we allow the console, connect the console UI, and wait until both tasks complete
                 return allowConsole
-                    ? Task.WhenAll(_lifeTimeTask.Task, ConsoleUserInterface.Run(this))
+                    ? Task.WhenAll(_lifeTimeTask.Task, ConsoleConnection.Run(this))
                     : _lifeTimeTask.Task;
             }
         }
@@ -670,10 +678,12 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Connects the specified user interface.
         /// </summary>
-        /// <param name="userInterface">The user interface.</param>
-        /// <returns>A connection GUID.</returns>
+        /// <param name="connection">The connection.</param>
+        /// <returns>
+        /// A connection GUID.
+        /// </returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override Guid Connect(IServiceUserInterface userInterface)
+        public override Guid Connect(IConnection connection)
         {
             lock (_lock)
             {
@@ -683,7 +693,7 @@ namespace WebApplications.Utilities.Service
                     // Technically this loop should be unnecessary, but it's cheap.
                     connectionGuid = Guid.NewGuid();
                 } while (_connections.ContainsKey(connectionGuid));
-                _connections[connectionGuid] = new Connection(this, connectionGuid, userInterface);
+                _connections[connectionGuid] = new Connection(connectionGuid, connection);
                 return connectionGuid;
             }
         }
@@ -714,7 +724,7 @@ namespace WebApplications.Utilities.Service
             string commandName = commandLine.Substring(0, firstSpace);
             commandLine = firstSpace < commandLine.Length ? commandLine.Substring(firstSpace + 1) : string.Empty;
 
-            ServiceRunnerCommand src;
+            ServiceCommand src;
             if (!Commands.TryGetValue(commandName, out src))
             {
                 Log.Add(() => ServiceResources.Err_Unknown_Command, commandName);
@@ -727,7 +737,8 @@ namespace WebApplications.Utilities.Service
             {
                 if (src.Run(this, writer, id, commandLine)) return;
                 Log.Add(() => ServiceResources.Err_Command_Failed, commandName);
-                Help(writer, commandName);}
+                Help(writer, commandName);
+            }
             catch (Exception e)
             {
                 Log.Add(e, LoggingLevel.Error, () => ServiceResources.Err_Command_Exception, commandName);

@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -37,9 +36,9 @@ using WebApplications.Utilities.Logging;
 namespace WebApplications.Utilities.Service
 {
     /// <summary>
-    /// Implements a console-based service user interface, if running in a console.
+    /// Implements a console-based service connection, if running in a console.
     /// </summary>
-    public class ConsoleUserInterface : IDisposable, IServiceUserInterface
+    public class ConsoleConnection : IDisposable, IConnection
     {
         /// <summary>
         /// The task completion source
@@ -59,16 +58,21 @@ namespace WebApplications.Utilities.Service
         private readonly LoggingLevels _defaultLoggingLevels;
 
         /// <summary>
-        /// Prevents a default instance of the <see cref="ConsoleUserInterface"/> class from being created.
+        /// Prevents a default instance of the <see cref="ConsoleConnection"/> class from being created.
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
         // ReSharper disable once CodeAnnotationAnalyzer
-        private ConsoleUserInterface(FormatBuilder defaultLogFormat, LoggingLevels defaultLoggingLevels, CancellationToken token)
+        private ConsoleConnection(
+            FormatBuilder defaultLogFormat,
+            LoggingLevels defaultLoggingLevels,
+            CancellationToken token)
         {
             Contract.Requires<RequiredContractException>(ConsoleHelper.IsConsole, "Not_In_Console");
             _defaultLogFormat = defaultLogFormat;
             _defaultLoggingLevels = defaultLoggingLevels;
-            _cancellationTokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource();
+            _cancellationTokenSource = token.CanBeCanceled
+                // ReSharper disable once PossiblyMistakenUseOfParamsMethod
+                ? CancellationTokenSource.CreateLinkedTokenSource(token)
+                : new CancellationTokenSource();
         }
 
         /// <summary>
@@ -80,15 +84,20 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static Task Run([NotNull] BaseService service, FormatBuilder defaultLogFormat = null, LoggingLevels defaultLoggingLevels = LoggingLevels.All, CancellationToken token = default(CancellationToken))
+        public static Task Run(
+            [NotNull] BaseService service,
+            FormatBuilder defaultLogFormat = null,
+            LoggingLevels defaultLoggingLevels = LoggingLevels.All,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
             if (!ConsoleHelper.IsConsole)
                 return TaskResult.Completed;
+            Log.SetConsole(defaultLogFormat, defaultLoggingLevels);
 
-            ConsoleUserInterface ui = new ConsoleUserInterface(defaultLogFormat, defaultLoggingLevels, token);
-            Guid id = service.Connect(ui);
-            CancellationToken t = ui._cancellationTokenSource.Token;
+            ConsoleConnection connection = new ConsoleConnection(defaultLogFormat, defaultLoggingLevels, token);
+            Guid id = service.Connect(connection);
+            CancellationToken t = connection._cancellationTokenSource.Token;
             return Task.Run(
                 async () =>
                 {
@@ -102,12 +111,6 @@ namespace WebApplications.Utilities.Service
         }
 
         /// <summary>
-        /// Gets the writer for outputting logs from the service.
-        /// </summary>
-        /// <value>The writer.</value>
-        public TextWriter LogWriter { get { return ConsoleTextWriter.Default; } }
-
-        /// <summary>
         /// Called when the server disconnects the UI.
         /// </summary>
         public void OnDisconnect()
@@ -119,20 +122,29 @@ namespace WebApplications.Utilities.Service
         /// Gets the default log format, this can be changed by commands.
         /// </summary>
         /// <value>The default log format.</value>
-        public FormatBuilder DefaultLogFormat { get { return _defaultLogFormat; } }
+        [CanBeNull]
+        [PublicAPI]
+        public FormatBuilder DefaultLogFormat
+        {
+            get { return _defaultLogFormat; }
+        }
 
         /// <summary>
         /// Gets the default logging levels, this can be changed by commands.
         /// </summary>
         /// <value>The default logging levels.</value>
-        public LoggingLevels DefaultLoggingLevels { get { return _defaultLoggingLevels; } }
+        [PublicAPI]
+        public LoggingLevels DefaultLoggingLevels
+        {
+            get { return _defaultLoggingLevels; }
+        }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            var cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+            CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
             if (cts != null)
                 cts.Dispose();
         }

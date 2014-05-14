@@ -166,13 +166,13 @@
     <Compile Include="BaseService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ConsoleUserInterface.cs" />
+    <Compile Include="ConsoleConnection.cs" />
     <Compile Include="ContractResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ContractResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="IServiceUserInterface.cs" />
+    <Compile Include="IConnection.cs" />
     <Compile Include="NamedPipe.cs" />
     <Compile Include="NamedPipeConfig.cs" />
     <Compile Include="NamedPipeUserInterface.cs" />
@@ -186,7 +186,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ServiceResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ServiceRunnerCommand.cs" />
+    <Compile Include="ServiceCommand.cs" />
     <Compile Include="ServiceCommandAttribute.cs" />
     <Compile Include="ServiceState.cs" />
   </ItemGroup>

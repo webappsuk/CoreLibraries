@@ -25,21 +25,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.IO;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Service
 {
-    public class NamedPipeUserInterface : IServiceUserInterface
+    public class NamedPipeUserInterface : IConnection
     {
-        public TextWriter LogWriter { get; private set; }
         public void OnDisconnect()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        public FormatBuilder DefaultLogFormat { get; private set; }
-        public LoggingLevels DefaultLoggingLevels { get; private set; }
     }
 }

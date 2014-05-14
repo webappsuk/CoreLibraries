@@ -171,7 +171,7 @@ namespace WebApplications.Utilities.Service
                 return;
             }
 
-            ServiceRunnerCommand cmd;
+            ServiceCommand cmd;
             if (command == null ||
                 !Commands.TryGetValue(command, out cmd))
             {
@@ -574,76 +574,6 @@ namespace WebApplications.Utilities.Service
                     Log.Add(exception.InnerException);
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets or sets the log format for the current connection.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="id">The connection ID.</param>
-        /// <param name="format">The format.</param>
-        [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_LogFormat_Names", "Cmd_LogFormat_Description", true, 0, "writer",
-            "id")]
-        protected void LogFormat(
-            [NotNull] TextWriter writer,
-            Guid id,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_LogFormat_Format_Description")] string format = null)
-        {
-            Connection connection;
-            bool result = _connections.TryGetValue(id, out connection);
-            Contract.Assert(result);
-            Contract.Assert(connection != null);
-
-            TextWriterLogger logger = connection.Logger;
-
-            if (!string.IsNullOrEmpty(format))
-                if (string.Equals(format, "default", StringComparison.InvariantCultureIgnoreCase))
-                    logger.Format = connection.DefaultFormat;
-                else
-                    logger.Format = format;
-            else
-                CurrentLogFormatFormat.WriteTo(
-                    writer,
-                    null,
-                    (_, c) =>
-                        string.Equals(c.Tag, "format", StringComparison.CurrentCultureIgnoreCase)
-                            ? (logger.Format ?? connection.DefaultFormat).ToString("F")
-                            : Resolution.Unknown);
-        }
-
-        /// <summary>
-        /// Gets or sets the current valid logging levels.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="id">The identifier.</param>
-        /// <param name="levels">The new <see cref="LoggingLevels" />, if any; otherwise <see langword="null" /> to output current levels.</param>
-        [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_LogLevels_Names", "Cmd_LogLevels_Description", false, 0,
-            "writer", "id")]
-        protected void LogLevels(
-            [NotNull] TextWriter writer,
-            Guid id,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_LogLevels_Levels_Description")] LoggingLevels? levels =
-                null)
-        {
-            Connection connection;
-            bool result = _connections.TryGetValue(id, out connection);
-            Contract.Assert(result);
-            Contract.Assert(connection != null);
-
-            TextWriterLogger logger = connection.Logger;
-
-            if (levels != null)
-                logger.ValidLevels = levels.Value;
-            else
-                CurrentLogLevelsFormat.WriteTo(
-                    writer,
-                    null,
-                    (_, c) =>
-                        string.Equals(c.Tag, "levels", StringComparison.CurrentCultureIgnoreCase)
-                            ? Log.ValidLevels & logger.ValidLevels
-                            : Resolution.Unknown);
         }
     }
 }
