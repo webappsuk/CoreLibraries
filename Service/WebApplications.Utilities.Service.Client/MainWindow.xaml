@@ -142,8 +142,8 @@
                         ToolBar.OverflowMode="Never"
                         Command="ApplicationCommands.Copy">
                     <Grid>
-                        <Label Style="{StaticResource IconLabelStyle}">&#xe632;</Label>
-                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{Binding HighlightColor}">&#xe631;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}">&#xe672;</Label>
+                        <Label Style="{StaticResource IconLabelStyle}" Foreground="{Binding HighlightColor}">&#xe671;</Label>
                     </Grid>
                 </Button>
                 <Button Style="{StaticResource IconButtonStyle}"

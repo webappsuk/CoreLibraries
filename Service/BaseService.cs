@@ -494,7 +494,7 @@ namespace WebApplications.Utilities.Service
         /// <returns>An awaitable task.</returns>
         public override Task RunAsync(bool allowConsole = true, NamedPipeConfig namedPipeConfig = null)
         {
-            if (namedPipeConfig != null)
+            if (namedPipeConfig != null && namedPipeConfig.MaximumConnections > 0)
             {
                 // TODO
             }

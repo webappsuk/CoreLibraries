@@ -27,13 +27,18 @@
 
 using System;
 using System.IO;
+using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Service
 {
-    public class NamedPipeUserInterface : IConnection
+    /// <summary>
+    /// Implements a connection to the service over a named pipe.
+    /// </summary>
+    internal class NamedPipeUserInterface : IServiceUserInterface
     {
+        internal NamedPipeUserInterface()
         public void OnDisconnect()
         {
             throw new NotImplementedException();
