@@ -344,10 +344,27 @@ namespace WebApplications.Utilities.Test.Formatting
         [TestMethod]
         public void TestEmptyChunksIgnored()
         {
+            Dictionary<string, object> dictionary = new Dictionary<string, object> { { "tag", Resolution.Empty } };
+
             FormatBuilder builder = new FormatBuilder(100, 4, firstLineIndentSize: 4)
                 .AppendFormat("Text{tag}text");
 
-            Assert.AreEqual("    Texttext", builder.ToString(new Dictionary<string, object> { { "tag", Resolution.Empty } }));
+            Assert.AreEqual("    Texttext", builder.ToString(dictionary));
+
+            builder.Clear();
+            builder.AppendFormat("Text{tag}");
+
+            Assert.AreEqual("    Text", builder.ToString(dictionary));
+
+            builder.Clear();
+            builder.AppendFormat("Text{tag: sub {tag}}");
+
+            Assert.AreEqual("    Text sub ", builder.ToString(dictionary));
+
+            builder.Clear();
+            builder.AppendFormat("Text{tag:{<items>:{<item>}}}");
+
+            Assert.AreEqual("    Text", builder.ToString(dictionary));
         }
     }
 }

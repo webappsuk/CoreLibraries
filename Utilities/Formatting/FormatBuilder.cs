@@ -3178,7 +3178,8 @@ namespace WebApplications.Utilities.Formatting
              * Process chunks
              */
             while (stack.Count > 0 ||
-                   (wordBuilder != null && wordBuilder.Length > 0))
+                   (wordBuilder != null && wordBuilder.Length > 0) ||
+                   (words != null && words.Count > 0))
             {
                 string chunkStr;
                 if (stack.Count > 0)
