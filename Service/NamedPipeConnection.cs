@@ -93,14 +93,6 @@ namespace WebApplications.Utilities.Service
                         // Create pipe access rule to allow everyone to connect - may want to change this later
                         try
                         {
-                            PipeSecurity pipeSecurity = new PipeSecurity();
-                            SecurityIdentifier everyoneSID = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
-                            PipeAccessRule accessRule = new PipeAccessRule(
-                                everyoneSID,
-                                PipeAccessRights.ReadWrite,
-                                AccessControlType.Allow);
-                            pipeSecurity.AddAccessRule(accessRule);
-
                             byte[] buffer = new byte[InBufferSize];
                             using (MemoryStream readerStream = new MemoryStream(InBufferSize))
                                 // Create pipe stream.
@@ -112,7 +104,7 @@ namespace WebApplications.Utilities.Service
                                 PipeOptions.Asynchronous,
                                 InBufferSize,
                                 OutBufferSize,
-                                pipeSecurity))
+                                _server._pipeSecurity))
                             {
                                 _state = PipeState.Open;
 
@@ -188,8 +180,7 @@ namespace WebApplications.Utilities.Service
                             _stream = null;
                             _state = PipeState.Closed;
 
-                            // TODO comment
-                            Log.Add(exception);
+                            Log.Add(exception, LoggingLevel.Error, () => ServiceResources.Err_NamedPipeConnection_Failed);
                         }
                         finally
                         {

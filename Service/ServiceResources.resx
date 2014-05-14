@@ -219,6 +219,15 @@
   <data name="Err_Command_Failed" xml:space="preserve">
     <value>The '{0}' command failed.</value>
   </data>
+  <data name="Err_NamedPipeConnection_Failed" xml:space="preserve">
+    <value>A fatal error occurred on the current named pipe connection, closing.</value>
+  </data>
+  <data name="Err_NamedPipeServer_CannotGetCurrentOwner" xml:space="preserve">
+    <value>Cannot get the current security identity for securing a named pipe, so aborting.</value>
+  </data>
+  <data name="Err_NamedPipeServer_Fatal_Error_Securing" xml:space="preserve">
+    <value>A fatal error occurred trying to secure the named pipe server.</value>
+  </data>
   <data name="Err_ServiceCommand_Invalid_Command_Method" xml:space="preserve">
     <value>Invalid command method '{0}'. A service runner command with ConsumeLine set must declare exactly one string parameter.</value>
   </data>

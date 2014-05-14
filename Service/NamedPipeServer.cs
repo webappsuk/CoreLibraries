@@ -28,8 +28,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO.Pipes;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Service
 {
@@ -99,17 +103,131 @@ namespace WebApplications.Utilities.Service
         public const int OutBufferSize = 32768;
 
         /// <summary>
+        /// The pipe security.
+        /// </summary>
+        [NotNull]
+        private readonly PipeSecurity _pipeSecurity;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
+        /// </summary>
+        /// <param name="service">The service.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="sddlForm">SDDL string for the SID used to create the <see cref="SecurityIdentifier"/> object.</param>
+        /// <param name="maximumConnections">The maximum number of connections.</param>
+        public NamedPipeServer(
+            [NotNull] BaseService service,
+            [NotNull] string name,
+            [NotNull] string sddlForm,
+            int maximumConnections = 1)
+            : this(service, name, new SecurityIdentifier(sddlForm), maximumConnections)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
+        /// </summary>
+        /// <param name="service">The service.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="sidType">One of the enumeration of well known sid types, the value must not be 
+        /// <see cref="WellKnownSidType.LogonIdsSid" />.  This defines
+        /// who can connect to the pipe.</param>
+        /// <param name="domainSid"><para>The domain SID. This value is required for the following <see cref="WellKnownSidType" /> values.
+        /// This parameter is ignored for any other <see cref="WellKnownSidType" /> values.</para>
+        /// <list type="bullet">
+        ///   <item>
+        ///     <description>AccountAdministratorSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountGuestSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountKrbtgtSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountDomainAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountDomainUsersSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountDomainGuestsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountComputersSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountControllersSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountCertAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountSchemaAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountEnterpriseAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountPolicyAdminsSid</description>
+        ///   </item>
+        ///   <item>
+        ///     <description>AccountRasAndIasServersSid</description>
+        ///   </item>
+        /// </list></param>
+        /// <param name="maximumConnections">The maximum number of connections.</param>
+        public NamedPipeServer(
+            [NotNull] BaseService service,
+            [NotNull] string name,
+            WellKnownSidType sidType,
+            SecurityIdentifier domainSid = null,
+            int maximumConnections = 1)
+            : this(service, name, new SecurityIdentifier(sidType, domainSid), maximumConnections)
+        {
+        }
+
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="name">The name.</param>
         /// <param name="maximumConnections">The maximum number of connections.</param>
-        public NamedPipeServer([NotNull]BaseService service, [NotNull]string name, int maximumConnections = 1)
+        /// <param name="identity">The identity of clients that can access the pipe (defaults to BuiltinUsers).</param>
+        public NamedPipeServer([NotNull]BaseService service, [NotNull]string name, IdentityReference identity = null, int maximumConnections = 1)
         {
             Contract.Requires(maximumConnections > 0);
             Service = service;
             Name = name;
             MaximumConnections = maximumConnections;
+
+            // Create security context
+            try
+            {
+                if (identity == null)
+                    identity = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
+
+                WindowsIdentity currentIdentity = WindowsIdentity.GetCurrent();
+                if (currentIdentity == null || currentIdentity.Owner == null)
+                    throw new ServiceException(() => ServiceResources.Err_NamedPipeServer_CannotGetCurrentOwner);
+
+                _pipeSecurity = new PipeSecurity();
+                _pipeSecurity.AddAccessRule(
+                    new PipeAccessRule(
+                        identity,
+                        PipeAccessRights.ReadWrite,
+                        AccessControlType.Allow));
+                _pipeSecurity.AddAccessRule(
+                    new PipeAccessRule(
+                        currentIdentity.Owner,
+                        PipeAccessRights.FullControl,
+                        AccessControlType.Allow));
+            }
+            catch (Exception exception)
+            {
+                throw new ServiceException(exception, () => ServiceResources.Err_NamedPipeServer_Fatal_Error_Securing);
+            }
+
             // Create a connection, before adding it to the list and starting.
             NamedPipeConnection connection = new NamedPipeConnection(this);
             _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) { connection };
