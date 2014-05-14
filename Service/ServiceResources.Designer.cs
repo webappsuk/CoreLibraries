@@ -360,9 +360,9 @@ namespace WebApplications.Utilities.Service {
         /// <summary>
         ///   Looks up a localized string similar to Another instance of the service is running so this instance cannot be started..
         /// </summary>
-        internal static string Err_BaseService_Failed_To_Acquire_Mutex {
+        internal static string Err_BaseService_Failed_To_Acquire_WaitHandle {
             get {
-                return ResourceManager.GetString("Err_BaseService_Failed_To_Acquire_Mutex", resourceCulture);
+                return ResourceManager.GetString("Err_BaseService_Failed_To_Acquire_WaitHandle", resourceCulture);
             }
         }
         

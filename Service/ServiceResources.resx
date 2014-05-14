@@ -216,7 +216,7 @@
   <data name="Err_BaseService_CouldNotLocateAssemblyGuid" xml:space="preserve">
     <value>The '{0}' does not define a GuidAttribute, so creating a random one. Add a GuidAttribute to prevent multiple instances of the service being started.</value>
   </data>
-  <data name="Err_BaseService_Failed_To_Acquire_Mutex" xml:space="preserve">
+  <data name="Err_BaseService_Failed_To_Acquire_WaitHandle" xml:space="preserve">
     <value>Another instance of the service is running so this instance cannot be started.</value>
   </data>
   <data name="Err_Command_Exception" xml:space="preserve">

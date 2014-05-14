@@ -117,10 +117,10 @@ namespace WebApplications.Utilities.Service
                     // ReSharper disable PossibleNullReferenceException
                     Type entryType = Assembly.GetEntryAssembly().EntryPoint.ReflectedType;
                     // ReSharper restore PossibleNullReferenceException
-                    while (entryType != typeof (object))
+                    while (entryType != typeof(object))
                     {
                         Contract.Assert(entryType != null);
-                        if (entryType == typeof (ServiceBase))
+                        if (entryType == typeof(ServiceBase))
                         {
                             IsService = true;
                             break;
@@ -128,7 +128,7 @@ namespace WebApplications.Utilities.Service
                         entryType = entryType.BaseType;
                     }
                 }
-                    // ReSharper disable once EmptyGeneralCatchClause
+                // ReSharper disable once EmptyGeneralCatchClause
                 catch
                 {
                 }
@@ -164,7 +164,7 @@ namespace WebApplications.Utilities.Service
         }
 
         // TODO Move to Utilities
-        protected static readonly PauseToken Paused = new PauseTokenSource {IsPaused = true}.Token;
+        protected static readonly PauseToken Paused = new PauseTokenSource { IsPaused = true }.Token;
         protected static readonly CancellationToken Cancelled;
 
 
@@ -304,11 +304,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         [PublicAPI]
-        [ServiceCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
         protected abstract void Help(
             [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Command_Description")] string command = null,
-            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
+            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Command_Description")] string command = null,
+            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
     }
 
     /// <summary>
@@ -404,7 +404,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         static BaseService()
         {
-            MethodInfo[] allMethods = typeof (TService)
+            MethodInfo[] allMethods = typeof(TService)
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .ToArray();
             Dictionary<string, ServiceCommand> commands =
@@ -418,7 +418,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     ServiceCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof (ServiceCommandAttribute), true)
+                        .GetCustomAttributes(typeof(ServiceCommandAttribute), true)
                         .OfType<ServiceCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
@@ -463,11 +463,11 @@ namespace WebApplications.Utilities.Service
             }
             Commands = new ReadOnlyDictionary<string, ServiceCommand>(commands);
 
-            Assembly assembly = typeof (TService).Assembly;
-            if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
+            Assembly assembly = typeof(TService).Assembly;
+            if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
                         AssemblyDescriptionAttribute;
                 if (a != null)
                 {
@@ -479,11 +479,11 @@ namespace WebApplications.Utilities.Service
             if (string.IsNullOrWhiteSpace(Description))
                 Description = "A windows service.";
 
-            
-            if (assembly.IsDefined(typeof (GuidAttribute), false))
+
+            if (assembly.IsDefined(typeof(GuidAttribute), false))
             {
                 GuidAttribute g =
-                    Attribute.GetCustomAttribute(assembly, typeof (GuidAttribute)) as GuidAttribute;
+                    Attribute.GetCustomAttribute(assembly, typeof(GuidAttribute)) as GuidAttribute;
                 if (g != null)
                     AssemblyGuid = g.Value;
             }
@@ -500,14 +500,14 @@ namespace WebApplications.Utilities.Service
         public static readonly string AssemblyGuid;
 
         /// <summary>
-        /// The global mutext to prevent multiple services running on the same machine.
+        /// The global wait handler to prevent multiple services running on the same machine.
         /// </summary>
-        private readonly EventWaitHandle _runEventWaitHandle;
+        private EventWaitHandle _runEventWaitHandle;
 
         /// <summary>
-        /// Whether the service currently owns the run mutex.
+        /// Security for the global event wait handle.
         /// </summary>
-        private bool _hasRunMutex;
+        private readonly EventWaitHandleSecurity _eventWaitHandleSecurity;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseService" /> class.
@@ -590,18 +590,8 @@ namespace WebApplications.Utilities.Service
             if (identity == null)
                 identity = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
 
-            EventWaitHandleSecurity sec = new EventWaitHandleSecurity();
-            sec.AddAccessRule(new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
-            bool createdNew;
-            _runEventWaitHandle = new EventWaitHandle(
-                true, 
-                EventResetMode.AutoReset,
-                string.Format("Global\\{{{0}}} {1}", AssemblyGuid, description),
-                out createdNew,
-                sec);
-
-            if (!createdNew)
-                Log.Add(LoggingLevel.Warning, () => ServiceResources.Wrn_BaseService_EventHandlerAlreadyExists);
+            _eventWaitHandleSecurity = new EventWaitHandleSecurity();
+            _eventWaitHandleSecurity.AddAccessRule(new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
         }
 
         /// <summary>
@@ -654,20 +644,42 @@ namespace WebApplications.Utilities.Service
                     }
 
                     // Try to grab the global mutex
-                    if (!_hasRunMutex) // Sanity check, should never have at this point!
+                    bool hasHandle = false;
+                    try
                     {
-                        try
+                        if (_runEventWaitHandle == null) // Sanity check, should be null!
                         {
-                            _hasRunMutex = _runEventWaitHandle.WaitOne(1000, false);
+                            // Create the wait handle.
+                            bool createdNew;
+                            _runEventWaitHandle = new EventWaitHandle(
+                                true,
+                                EventResetMode.AutoReset,
+                                string.Format("Global\\{{{0}}} {1}", AssemblyGuid, ServiceName),
+                                out createdNew,
+                                _eventWaitHandleSecurity);
+
+                            // We should be the first to create the handle.
+                            if (!createdNew)
+                                Log.Add(
+                                    LoggingLevel.Warning,
+                                    () => ServiceResources.Wrn_BaseService_EventHandlerAlreadyExists);
                         }
-                        catch (AbandonedMutexException)
+
+                        hasHandle = _runEventWaitHandle.WaitOne(1000, false);
+                    }
+                    catch (Exception)
+                    {
+                        // Clean up if we somehow have the handle but also have an exception?!
+                        if (_runEventWaitHandle != null)
                         {
-                            // The mutex was abandoned by another process so we now own it.
-                            _hasRunMutex = true;
+                            if (hasHandle)
+                                _runEventWaitHandle.Set();
+                            _runEventWaitHandle.Dispose();
+                            _runEventWaitHandle = null;
                         }
                     }
-                    if (!_hasRunMutex)
-                        throw new ServiceException(() => ServiceResources.Err_BaseService_Failed_To_Acquire_Mutex);
+                    if (!hasHandle)
+                        throw new ServiceException(() => ServiceResources.Err_BaseService_Failed_To_Acquire_WaitHandle);
 
                     _cancellationTokenSource = new CancellationTokenSource();
                     _pauseTokenSource.IsPaused = false;
@@ -700,10 +712,11 @@ namespace WebApplications.Utilities.Service
                     _pauseTokenSource.IsPaused = true;
 
                     // Try to release the global mutex
-                    if (_hasRunMutex) // This should always be true at this stage.
+                    if (_runEventWaitHandle != null) // This should always be true
                     {
                         _runEventWaitHandle.Set();
-                        _hasRunMutex = false;
+                        _runEventWaitHandle.Dispose();
+                        _runEventWaitHandle = null;
                     }
                 }
         }
@@ -919,10 +932,11 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
-                if (_hasRunMutex)
+                if (_runEventWaitHandle != null)
                 {
                     _runEventWaitHandle.Set();
-                    _hasRunMutex = false;
+                    _runEventWaitHandle.Dispose();
+                    _runEventWaitHandle = null;
                 }
 
                 if (_cancellationTokenSource != null)
