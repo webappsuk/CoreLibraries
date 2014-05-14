@@ -664,6 +664,15 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The service received a connection from &apos;{0}&apos;..
+        /// </summary>
+        internal static string Not_NamedPipeConnection_Connection {
+            get {
+                return ResourceManager.GetString("Not_NamedPipeConnection_Connection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Another instance of the service may be running, so starting or stopping the service may fail..
         /// </summary>
         internal static string Wrn_BaseService_EventHandlerAlreadyExists {

@@ -318,6 +318,9 @@
   <data name="Inf_ServiceRunner_Stop_Stopping" xml:space="preserve">
     <value>Stopping service '{0}'.</value>
   </data>
+  <data name="Not_NamedPipeConnection_Connection" xml:space="preserve">
+    <value>The service received a connection from '{0}'.</value>
+  </data>
   <data name="Wrn_BaseService_EventHandlerAlreadyExists" xml:space="preserve">
     <value>Another instance of the service may be running, so starting or stopping the service may fail.</value>
   </data>

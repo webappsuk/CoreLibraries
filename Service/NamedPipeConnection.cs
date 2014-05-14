@@ -31,7 +31,10 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using ProtoBuf;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Service.PipeProtocol;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service
 {
@@ -54,6 +57,11 @@ namespace WebApplications.Utilities.Service
             /// The connection is open.
             /// </summary>
             Open,
+
+            /// <summary>
+            /// The connection is connected but we need a connect message.
+            /// </summary>
+            AwaitingConnect,
 
             /// <summary>
             /// The connection is connected.
@@ -87,6 +95,9 @@ namespace WebApplications.Utilities.Service
 
             private Guid _connectionGuid = Guid.Empty;
 
+            [NotNull]
+            private readonly AsyncLock _writeLock = new AsyncLock();
+
             /// <summary>
             /// Initializes a new instance of the <see cref="NamedPipeConnection"/> class.
             /// </summary>
@@ -95,6 +106,22 @@ namespace WebApplications.Utilities.Service
             {
                 _server = server;
                 _cancellationTokenSource = new CancellationTokenSource();
+            }
+
+            /// <summary>
+            /// Sends the specified message.
+            /// </summary>
+            /// <param name="message">The message.</param>
+            /// <returns><see langword="true" /> if succeeded, <see langword="false" /> otherwise.</returns>
+            [NotNull]
+            public async Task<bool> Send(Message message, CancellationToken token = default(CancellationToken))
+            {
+                using (await _writeLock.LockAsync(token))
+                {
+                    if (_state != PipeState.Connected) return false;
+                    Serializer.Serialize(_stream, message);
+                    return true;
+                }
             }
 
             /// <summary>
@@ -130,6 +157,8 @@ namespace WebApplications.Utilities.Service
                                     stream.EndWaitForConnection,
                                     null).WithCancellation(token);
 
+                                ConnectRequest connectRequest = null;
+
                                 if (!token.IsCancellationRequested)
                                 {
                                     // Connect this connection to the service.
@@ -147,7 +176,7 @@ namespace WebApplications.Utilities.Service
                                                _connectionGuid == Guid.Empty)
                                         {
                                             _server.Add();
-                                            _state = PipeState.Connected;
+                                            _state = PipeState.AwaitingConnect;
 
                                             // Read data in.
                                             int read = await _stream.ReadAsync(buffer, 0, InBufferSize, token);
@@ -162,17 +191,40 @@ namespace WebApplications.Utilities.Service
 
                                             if (!_stream.IsMessageComplete) continue;
 
-                                            // Reset the stream for read.
+                                            // Deserialize the incoming message.
                                             readerStream.Seek(0, SeekOrigin.Begin);
+                                            Message message = Serializer.Deserialize<Message>(readerStream);
+                                            readerStream.Seek(0, SeekOrigin.Begin);
+
+                                            Request request = message as Request;
+
+                                            // We only accept requests, anything else is a protocol error and so we must disconnect.
+                                            if (request == null)
+                                                break;
+
+                                            if (connectRequest == null)
+                                            {
+                                                // We require a connect request to start
+                                                connectRequest = request as ConnectRequest;
+                                                if (connectRequest == null)
+                                                    break;
+
+                                                _state = PipeState.Connected;
+
+                                                Log.Add(LoggingLevel.Notification, () => ServiceResources.Not_NamedPipeConnection_Connection, connectRequest.Description);
+
+                                                // TODO Add logger and start outputting logs...
+
+                                                await Send(new ConnectResponse(request.ID), token);
+                                                continue;
+                                            }
 
                                             // TODO We need to deserialized our message now.
 
                                             // TODO Send to the associated service
 
                                             // Reset the stream for write.
-                                            readerStream.Seek(0, SeekOrigin.Begin);
                                         }
-
                                         // Tell ther server we're disconnected.
                                         _server.Service.Disconnect(_connectionGuid);
                                     }
