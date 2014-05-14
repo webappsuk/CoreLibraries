@@ -116,6 +116,8 @@ namespace WebApplications.Utilities.Service
 
         private Timer _connectionCheckTimer;
 
+        private TimeSpan _heartbeat;
+
         #region Constructor overloads
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
@@ -125,12 +127,14 @@ namespace WebApplications.Utilities.Service
         /// <param name="sddlForm">SDDL string for the SID used to create the <see cref="SecurityIdentifier"/> object to 
         /// identify clients that can access the pipe.</param>
         /// <param name="maximumConnections">The maximum number of connections.</param>
+        /// <param name="heartbeat">The heartbeat timespan, ensures a connection is always available, defaults to once every 5 seconds.</param>
         public NamedPipeServer(
             [NotNull] BaseService service,
             [CanBeNull] string name,
             [NotNull] string sddlForm,
-            int maximumConnections = 1)
-            : this(service, name, new SecurityIdentifier(sddlForm), maximumConnections)
+            int maximumConnections = 1,
+            TimeSpan heartbeat = default(TimeSpan))
+            : this(service, name, new SecurityIdentifier(sddlForm), maximumConnections, heartbeat)
         {
         }
 
@@ -186,13 +190,15 @@ namespace WebApplications.Utilities.Service
         ///   </item>
         /// </list></param>
         /// <param name="maximumConnections">The maximum number of connections.</param>
+        /// <param name="heartbeat">The heartbeat timespan, ensures a connection is always available, defaults to once every 5 seconds.</param>
         public NamedPipeServer(
             [NotNull] BaseService service,
             [CanBeNull] string name,
             WellKnownSidType sidType,
             SecurityIdentifier domainSid = null,
-            int maximumConnections = 1)
-            : this(service, name, new SecurityIdentifier(sidType, domainSid), maximumConnections)
+            int maximumConnections = 1,
+            TimeSpan heartbeat = default(TimeSpan))
+            : this(service, name, new SecurityIdentifier(sidType, domainSid), maximumConnections, heartbeat)
         {
         }
         #endregion
@@ -202,13 +208,17 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="service">The service.</param>
         /// <param name="name">The pipe name.</param>
-        /// <param name="maximumConnections">The maximum number of connections.</param>
         /// <param name="identity">The identity of clients that can access the pipe (defaults to BuiltinUsers).</param>
+        /// <param name="maximumConnections">The maximum number of connections.</param>
+        /// <param name="heartbeat">The heartbeat timespan, ensures a connection is always available, defaults to once every 5 seconds.</param>
+        /// <exception cref="ServiceException">
+        /// </exception>
         public NamedPipeServer(
             [NotNull] BaseService service,
             [CanBeNull] string name = null,
             IdentityReference identity = null,
-            int maximumConnections = 1)
+            int maximumConnections = 1,
+            TimeSpan heartbeat = default(TimeSpan))
         {
             Contract.Requires(maximumConnections > 0);
             Service = service;
@@ -218,7 +228,6 @@ namespace WebApplications.Utilities.Service
             // Create security context
             try
             {
-
                 if (identity == null)
                     identity = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
 
@@ -254,8 +263,15 @@ namespace WebApplications.Utilities.Service
             _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) { connection };
             connection.Start();
 
+            if (heartbeat < TimeSpan.Zero)
+            {
+                _heartbeat = TimeSpan.MinValue;
+                return;
+            }
+
+            _heartbeat = heartbeat == default(TimeSpan) ? TimeSpan.FromSeconds(5) : heartbeat;
             _connectionCheckTimer = new Timer(CheckConnections);
-            _connectionCheckTimer.Change(1000, Timeout.Infinite);
+            _connectionCheckTimer.Change(_heartbeat, Timeout.InfiniteTimeSpan);
         }
 
         /// <summary>
@@ -263,8 +279,7 @@ namespace WebApplications.Utilities.Service
         /// if something truly fatal happens this should restore connectivity.
         /// </summary>
         /// <param name="state">The state.</param>
-        /// <exception cref="System.NotImplementedException"></exception>
-        private void CheckConnections(object state)
+        private void CheckConnections([CanBeNull] object state)
         {
             lock (_connectionLock)
             {
@@ -279,7 +294,7 @@ namespace WebApplications.Utilities.Service
                 }
 
                 // Kick off timer again
-                _connectionCheckTimer.Change(1000, Timeout.Infinite);
+                _connectionCheckTimer.Change(_heartbeat, Timeout.InfiniteTimeSpan);
             }
         }
 

@@ -28,8 +28,6 @@
 using System;
 using System.IO;
 using System.IO.Pipes;
-using System.Security.AccessControl;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -51,14 +49,17 @@ namespace WebApplications.Utilities.Service
             /// The connection is starting up.
             /// </summary>
             Starting,
+
             /// <summary>
             /// The connection is open.
             /// </summary>
             Open,
+
             /// <summary>
             /// The connection is connected.
             /// </summary>
             Connected,
+
             /// <summary>
             /// The connection is closed.
             /// </summary>
@@ -195,7 +196,10 @@ namespace WebApplications.Utilities.Service
                             _stream = null;
                             _state = PipeState.Closed;
 
-                            Log.Add(exception, LoggingLevel.Error, () => ServiceResources.Err_NamedPipeConnection_Failed);
+                            Log.Add(
+                                exception,
+                                LoggingLevel.Error,
+                                () => ServiceResources.Err_NamedPipeConnection_Failed);
                         }
                         finally
                         {
@@ -241,6 +245,15 @@ namespace WebApplications.Utilities.Service
             }
 
             /// <summary>
+            /// Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+            public override string ToString()
+            {
+                return State.ToString();
+            }
+
+            /// <summary>
             /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
             /// </summary>
             public void Dispose()
@@ -264,7 +277,7 @@ namespace WebApplications.Utilities.Service
                 if (stask != null)
                     stask.Dispose();
 
-                var server = Interlocked.Exchange(ref _server, null);
+                NamedPipeServer server = Interlocked.Exchange(ref _server, null);
                 if (server != null)
                     server.Remove(this);
             }
