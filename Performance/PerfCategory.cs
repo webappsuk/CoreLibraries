@@ -565,7 +565,7 @@ namespace WebApplications.Utilities.Performance
                 case "instanceguid":
                     return InstanceGuid;
                 case "info":
-                    return _infoDictionary.Values.Count > 0 ? _infoDictionary.Values : Resolution.Empty;
+                    return _infoDictionary.Values.Count > 0 ? _infoDictionary.Values : Resolution.Null;
                 default:
                     return Resolution.Unknown;
             }

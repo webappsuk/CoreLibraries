@@ -51,6 +51,8 @@ namespace WebApplications.Utilities.Performance.Test
         [TestMethod]
         public void TestInstance()
         {
+            Assert.IsTrue(PerfCategory.Exists("Test Timer"));
+            Assert.IsTrue(PerfCategory.Exists<PerfTimer>("Test Timer"));
             PerfTimer t = PerfCategory.GetOrAdd<PerfTimer>("Test Timer");
             Assert.IsNotNull(_timer);
             Assert.AreSame(t, _timer);
