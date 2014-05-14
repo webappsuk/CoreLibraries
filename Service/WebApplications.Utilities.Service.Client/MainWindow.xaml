@@ -66,7 +66,7 @@
 
             <ContentControl Grid.Row="0" MouseDoubleClick="Window_MouseDoubleClick">
                 <DockPanel >
-                    <Grid DockPanel.Dock="Left">
+                    <Grid DockPanel.Dock="Left" Height="30">
                         <Label Style="{StaticResource LogoLabelStyle}" Foreground="{StaticResource BabelRedBrush}">&#xe100;</Label>
                         <Label Style="{StaticResource LogoLabelStyle}" Foreground="White">&#xe101;</Label>
                         <Label Style="{StaticResource LogoLabelStyle}" Foreground="{StaticResource BabelRedBrush}">&#xe102;</Label>

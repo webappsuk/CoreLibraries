@@ -48,7 +48,8 @@ namespace WebApplications.Utilities.Service.Test
         private static void Main([CanBeNull] string[] args)
         {
             TestService testService = new TestService();
-            testService.Run();
+            using (NamedPipeServer server = new NamedPipeServer(testService, "Test Service", 5))
+                testService.Run();
         }
     }
 }
