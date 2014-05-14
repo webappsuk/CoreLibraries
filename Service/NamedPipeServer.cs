@@ -33,6 +33,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service
@@ -113,6 +114,9 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         private readonly PipeSecurity _pipeSecurity;
 
+        private Timer _connectionCheckTimer;
+
+        #region Constructor overloads
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
         /// </summary>
@@ -191,7 +195,7 @@ namespace WebApplications.Utilities.Service
             : this(service, name, new SecurityIdentifier(sidType, domainSid), maximumConnections)
         {
         }
-
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
@@ -247,8 +251,36 @@ namespace WebApplications.Utilities.Service
 
             // Create a connection, before adding it to the list and starting.
             NamedPipeConnection connection = new NamedPipeConnection(this);
-            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) {connection};
+            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) { connection };
             connection.Start();
+
+            _connectionCheckTimer = new Timer(CheckConnections);
+            _connectionCheckTimer.Change(1000, Timeout.Infinite);
+        }
+
+        /// <summary>
+        /// Checks the connections to ensure we have at least one open, this should never happen but services are long running, and so
+        /// if something truly fatal happens this should restore connectivity.
+        /// </summary>
+        /// <param name="state">The state.</param>
+        /// <exception cref="System.NotImplementedException"></exception>
+        private void CheckConnections(object state)
+        {
+            lock (_connectionLock)
+            {
+                if (_connectionCheckTimer == null) return;
+
+                if (_namedPipeConnections.Count < MaximumConnections)
+                {
+                    _connectionCheckTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+                    if (!_namedPipeConnections.Any(c => c.State == PipeState.Open))
+                        Add();
+                }
+
+                // Kick off timer again
+                _connectionCheckTimer.Change(1000, Timeout.Infinite);
+            }
         }
 
         /// <summary>
@@ -289,6 +321,13 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         public void Dispose()
         {
+            Timer timer = Interlocked.Exchange(ref _connectionCheckTimer, null);
+            if (timer != null)
+            {
+                timer.Change(Timeout.Infinite, Timeout.Infinite);
+                timer.Dispose();
+            }
+
             lock (_namedPipeConnections)
             {
                 foreach (NamedPipeConnection connection in _namedPipeConnections.ToArray())

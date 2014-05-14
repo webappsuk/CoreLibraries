@@ -42,11 +42,26 @@ namespace WebApplications.Utilities.Service
     /// </summary>
     public partial class NamedPipeServer
     {
+        /// <summary>
+        /// The PipeState indicates whether the connection
+        /// </summary>
         private enum PipeState
         {
+            /// <summary>
+            /// The connection is starting up.
+            /// </summary>
             Starting,
+            /// <summary>
+            /// The connection is open.
+            /// </summary>
             Open,
+            /// <summary>
+            /// The connection is connected.
+            /// </summary>
             Connected,
+            /// <summary>
+            /// The connection is closed.
+            /// </summary>
             Closed
         }
 
