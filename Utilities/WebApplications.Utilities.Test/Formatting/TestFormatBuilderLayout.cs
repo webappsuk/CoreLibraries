@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -338,6 +339,15 @@ namespace WebApplications.Utilities.Test.Formatting
             int position = 5;
             Assert.AreEqual("Mid line\r\nFirst Line", builder.ToString(null, ref position));
             Assert.AreEqual(10, position);
+        }
+
+        [TestMethod]
+        public void TestEmptyChunksIgnored()
+        {
+            FormatBuilder builder = new FormatBuilder(100, 4, firstLineIndentSize: 4)
+                .AppendFormat("Text{tag}text");
+
+            Assert.AreEqual("    Texttext", builder.ToString(new Dictionary<string, object> { { "tag", Resolution.Empty } }));
         }
     }
 }

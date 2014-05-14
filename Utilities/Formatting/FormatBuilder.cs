@@ -3518,6 +3518,11 @@ namespace WebApplications.Utilities.Formatting
                         writer.Write(chunkStr);
                         continue;
                     }
+
+                    // Ignore empty chunks
+                    if ((chunkStr != null) &&
+                        (chunkStr.Length < 1))
+                        continue;
                 }
                 else
                     chunkStr = string.Empty;
