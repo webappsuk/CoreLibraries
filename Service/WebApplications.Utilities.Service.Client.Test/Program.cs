@@ -44,10 +44,7 @@ namespace WebApplications.Utilities.Service.Client.Test
         /// <param name="args">The arguments.</param>
         private static void Main([CanBeNull] string[] args)
         {
-            // Find the test server
-            string pipe = NamedPipeClient.GetServerPipes().FirstOrDefault();
-
-            ConsoleClient.Run(pipe);
+            ConsoleClient.Run(null);
         }
     }
 }
