@@ -24,11 +24,10 @@ namespace WebApplications.Utilities.Service.Client
             .AppendForegroundColor(ConsoleColor.White)
             .AppendLine("Current matching pipes:")
             .AppendLayout(indentSize: 25, tabStops: new[] {7, 25})
-            .AppendForegroundColor(ConsoleColor.Cyan)
-            .Append("Host\tName\tPipe")
+            .AppendForegroundColor(ConsoleColor.Yellow)
+            .AppendLine("Host\tName\tPipe")
             .AppendResetForegroundColor()
-            .AppendFormatLine("{Pipes:{<items>:\r\n{<item>}}}")
-            .AppendLine();
+            .AppendFormatLine("{Pipes:{<items>:{<item>}{<join>:\r\n}}}");
 
 
         public static void Run(string pipe)
