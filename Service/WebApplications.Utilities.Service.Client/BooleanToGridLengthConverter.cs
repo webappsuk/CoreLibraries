@@ -31,7 +31,7 @@ using System.Windows;
 using System.Windows.Data;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Service.Client
+namespace WebApplications.Utilities.Service.Servicer
 {
     public class BooleanToGridLengthConverter : IValueConverter
     {

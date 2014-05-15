@@ -31,7 +31,7 @@ using System.Windows;
 using WebApplications.Utilities;
 
 [assembly: Guid("774FD886-89B9-4DB1-8FE1-3891E735A29B")]
-[assembly: AssemblyTitle("WebApplications.Utilities.Service.Client")]
+[assembly: AssemblyTitle("WebApplications.Utilities.Service.Servicer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("Web Applications UK Ltd")]

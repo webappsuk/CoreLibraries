@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using JetBrains.Annotations;
 
-namespace WebApplications.Utilities.Service.Client
+namespace WebApplications.Utilities.Service.Servicer
 {
     public class ViewModel : INotifyPropertyChanged
     {

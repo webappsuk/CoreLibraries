@@ -2,9 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:client="clr-namespace:WebApplications.Utilities.Service.Client"
+             xmlns:client="clr-namespace:WebApplications.Utilities.Service.Servicer"
              xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" 
-             x:Class="WebApplications.Utilities.Service.Client.App"
+             x:Class="WebApplications.Utilities.Service.Servicer.App"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
 

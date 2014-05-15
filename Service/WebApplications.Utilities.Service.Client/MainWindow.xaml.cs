@@ -23,7 +23,7 @@ using System.Windows.Shapes;
 using JetBrains.Annotations;
 using Microsoft.Win32;
 
-namespace WebApplications.Utilities.Service.Client
+namespace WebApplications.Utilities.Service.Servicer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

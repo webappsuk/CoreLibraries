@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace WebApplications.Utilities.Service.Client
+namespace WebApplications.Utilities.Service.Servicer
 {
     /// <summary>
     /// Interaction logic for App.xaml

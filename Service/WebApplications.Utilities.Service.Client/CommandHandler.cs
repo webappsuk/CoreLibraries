@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace WebApplications.Utilities.Service.Client
+namespace WebApplications.Utilities.Service.Servicer
 {
     /// <summary>
     /// Class CommandHandler.
