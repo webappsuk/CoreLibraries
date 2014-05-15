@@ -25,6 +25,8 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service.Client.Test
@@ -41,6 +43,9 @@ namespace WebApplications.Utilities.Service.Client.Test
         /// <param name="args">The arguments.</param>
         private static void Main([CanBeNull] string[] args)
         {
+            // Find the test server
+            NamedPipeServerInfo server = NamedPipeClient.Servers.FirstOrDefault(s => string.Equals(s.Name, "TestServer"));
+            ConsoleClient.Run(server);
         }
     }
 }

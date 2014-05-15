@@ -25,12 +25,55 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO.Pipes;
+using System.Linq;
+using JetBrains.Annotations;
+
 namespace WebApplications.Utilities.Service.Client
 {
-    public class NamedPipClient
+    public class NamedPipeClient : IDisposable
     {
-        public NamedPipClient()
+        [NotNull]
+        public static IEnumerable<NamedPipeServerInfo> Servers
         {
+            get
+            {
+                // TODO Find servers!
+                return Enumerable.Empty<NamedPipeServerInfo>();
+            }
+        }
+
+        private NamedPipeClient()
+        {
+        }
+
+        public static NamedPipeClient Connect(NamedPipeServerInfo server)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static NamedPipeClient Connect(string pipe)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Finds the server with the specified name.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>NamedPipeServerInfo.</returns>
+        [CanBeNull]
+        public static NamedPipeServerInfo FindServer([NotNull]string name)
+        {
+            return Servers.FirstOrDefault(s => string.Equals(s.Name, name));
         }
     }
 }
