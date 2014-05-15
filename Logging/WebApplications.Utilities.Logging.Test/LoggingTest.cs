@@ -244,7 +244,13 @@ namespace WebApplications.Utilities.Logging.Test
 
             Log[] logs = new Log[testCount];
             for (int m = 0; m < testCount; m++)
-                logs[m] = new Log(new LogContext().Set("Test No", m), LoggingLevel.Information,"Test Message {0} - {1}", m, Guid.NewGuid());
+                logs[m] = new Log(
+                    new LogContext().Set("Test No", m),
+                    new Exception("Exception", new Exception("Inner exception")),
+                    LoggingLevel.Information,
+                    "Test Message {0} - {1}",
+                    m,
+                    Guid.NewGuid());
 
             await Log.Flush();
 
@@ -280,7 +286,13 @@ namespace WebApplications.Utilities.Logging.Test
 
             Log[] logs = new Log[testCount];
             for (int m = 0; m < testCount; m++)
-                logs[m] = new Log(new LogContext().Set("Test No", m), null, LoggingLevel.Information, () => Resources.TestString, m, Guid.NewGuid());
+                logs[m] = new Log(
+                    new LogContext().Set("Test No", m),
+                    new Exception("Exception", new Exception("Inner exception")),
+                    LoggingLevel.Information,
+                    () => Resources.TestString,
+                    m,
+                    Guid.NewGuid());
 
             await Log.Flush();
 

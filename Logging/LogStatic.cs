@@ -138,7 +138,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         [NonSerialized]
-        private static readonly CombGuid[] _emptyCombGuidArray = new CombGuid[0];
+        private static readonly Guid[] _emptyGuidArray = new Guid[0];
 
         #region Format Tags
         /// <summary>

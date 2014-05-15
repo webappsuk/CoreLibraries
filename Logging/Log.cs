@@ -77,7 +77,7 @@ namespace WebApplications.Utilities.Logging
 
         [CanBeNull]
         [ProtoMember(12)]
-        private readonly CombGuid[] _innerExceptionGuids;
+        private readonly Guid[] _innerExceptionGuids;
 
         [ProtoMember(2)]
         [DefaultValue(LoggingLevel.Information)]
@@ -182,7 +182,7 @@ namespace WebApplications.Utilities.Logging
             Contract.Requires(dictionary != null);
             Dictionary<string, string> context = new Dictionary<string, string>();
             SortedDictionary<int, string> parameters = new SortedDictionary<int, string>();
-            SortedDictionary<int, CombGuid> ieGuids = new SortedDictionary<int, CombGuid>();
+            SortedDictionary<int, Guid> ieGuids = new SortedDictionary<int, Guid>();
             int maxParamIndex = 0;
             int maxIeIndex = 0;
 
@@ -265,8 +265,8 @@ namespace WebApplications.Utilities.Logging
                     else if (index > maxIeIndex)
                         maxIeIndex = index;
 
-                    CombGuid guid;
-                    ieGuids.Add(index, CombGuid.TryParse(value, out guid) ? guid : CombGuid.Empty);
+                    Guid guid;
+                    ieGuids.Add(index, System.Guid.TryParse(value, out guid) ? guid : System.Guid.Empty);
                     continue;
                 }
 
@@ -435,8 +435,8 @@ namespace WebApplications.Utilities.Logging
                         {
                             LoggingException le = e as LoggingException;
                             return le == null || ReferenceEquals(le, exception)
-                                ? new Log(culture, null, e, LoggingLevel.Error, resourceType, null, null, null).Guid
-                                : le.Guid;
+                                ? new Log(culture, null, e, LoggingLevel.Error, resourceType, null, null, null).Guid.Guid
+                                : le.Guid.Guid;
                         }).ToArray();
 
             // If there was a message and no stack trace was added for an exception, get the current stack trace
@@ -1353,9 +1353,9 @@ namespace WebApplications.Utilities.Logging
         /// <value>The inner exceptions unique identifiers.</value>
         [PublicAPI]
         [NotNull]
-        public IEnumerable<CombGuid> InnerExceptionGuids
+        public IEnumerable<Guid> InnerExceptionGuids
         {
-            get { return _innerExceptionGuids ?? _emptyCombGuidArray; }
+            get { return _innerExceptionGuids ?? _emptyGuidArray; }
         }
 
         /// <summary>
