@@ -325,10 +325,7 @@ namespace WebApplications.Utilities.Service
                     cts.Dispose();
                 }
 
-                Task stask = Interlocked.Exchange(ref _serverTask, null);
-                if (stask != null)
-                    stask.Dispose();
-
+                _serverTask = null;
                 NamedPipeServer server = Interlocked.Exchange(ref _server, null);
                 if (server != null)
                     server.Remove(this);

@@ -28,11 +28,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Service.PipeProtocol;
@@ -219,7 +221,17 @@ namespace WebApplications.Utilities.Service
             Contract.Requires(maximumConnections > 0);
             Service = service;
             MaximumConnections = maximumConnections;
-            Name = string.Format("{0}_{1}", Guid.NewGuid(), Common.NameSuffix);
+            StringBuilder builder = new StringBuilder();
+            builder.Append(Guid.NewGuid().ToString("D"))
+                .Append('_');
+            if (string.IsNullOrWhiteSpace(name))
+                name = service.ServiceName;
+            foreach (char c in name)
+            {
+                builder.Append(char.IsLetterOrDigit(c) ? c : '_');
+            }
+            builder.Append(Common.NameSuffix);
+            Name = builder.ToString();
 
             // Create security context
             try

@@ -63,14 +63,15 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="machine">The machine, defaults to the local machine.</param>
         /// <returns>An enumeration of pipes with the correct suffix.</returns>
         [NotNull]
-        public static IEnumerable<string> GetServerPipes([CanBeNull]string machine = null)
+        public static IEnumerable<NamedPipeServerInfo> GetServerPipes([CanBeNull]string machine = null)
         {
             return
                 Directory.GetFiles(
                     string.Format(
                         @"\\{0}\pipe\",
                         string.IsNullOrWhiteSpace(machine) ? "." : machine))
-                    .Where(p => p.EndsWith(Common.NameSuffix));
+                    .Select(p => new NamedPipeServerInfo(p))
+                    .Where(s => s.IsValid);
         }
     }
 }
