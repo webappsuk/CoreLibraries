@@ -320,6 +320,7 @@ namespace WebApplications.Utilities.Service
                     }
                     else
                         OnStart(args);
+
                     Log.Add(
                         LoggingLevel.Information,
                         () => ServiceResources.Inf_ServiceRunner_Start_Started,
@@ -659,7 +660,7 @@ namespace WebApplications.Utilities.Service
 
                 PerfCategory cat = categoryOmitted
                     ? null
-                    : PerfCategory.All.FirstOrDefault(p => p.CategoryName == category);
+                    : PerfCategory.All.FirstOrDefault(p => string.Equals(p.CategoryName, category, StringComparison.CurrentCultureIgnoreCase));
 
                 if (!categoryOmitted && cat == null)
                 {
@@ -674,7 +675,6 @@ namespace WebApplications.Utilities.Service
 
                 if (cat == null) // Or the counter does not exist
                 {
-
                     AllPerformanceCategoriesFormat.WriteTo(
                         writer,
                         null,
