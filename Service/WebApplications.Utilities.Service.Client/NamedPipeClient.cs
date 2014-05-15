@@ -28,31 +28,23 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Service.PipeProtocol;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service.Client
 {
     public class NamedPipeClient : IDisposable
     {
-        [NotNull]
-        public static IEnumerable<NamedPipeServerInfo> Servers
-        {
-            get
-            {
-                // TODO Find servers!
-                return Enumerable.Empty<NamedPipeServerInfo>();
-            }
-        }
-
         private NamedPipeClient()
         {
-        }
-
-        public static NamedPipeClient Connect(NamedPipeServerInfo server)
-        {
-            throw new NotImplementedException();
         }
 
         public static NamedPipeClient Connect(string pipe)
@@ -66,14 +58,19 @@ namespace WebApplications.Utilities.Service.Client
         }
 
         /// <summary>
-        /// Finds the server with the specified name.
+        /// Gets the server pipes.
         /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>NamedPipeServerInfo.</returns>
-        [CanBeNull]
-        public static NamedPipeServerInfo FindServer([NotNull]string name)
+        /// <param name="machine">The machine, defaults to the local machine.</param>
+        /// <returns>An enumeration of pipes with the correct suffix.</returns>
+        [NotNull]
+        public static IEnumerable<string> GetServerPipes([CanBeNull]string machine = null)
         {
-            return Servers.FirstOrDefault(s => string.Equals(s.Name, name));
+            return
+                Directory.GetFiles(
+                    string.Format(
+                        @"\\{0}\pipe\",
+                        string.IsNullOrWhiteSpace(machine) ? "." : machine))
+                    .Where(p => p.EndsWith(Common.NameSuffix));
         }
     }
 }

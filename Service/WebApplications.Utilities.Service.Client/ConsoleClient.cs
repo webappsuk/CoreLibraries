@@ -8,15 +8,16 @@ namespace WebApplications.Utilities.Service.Client
 {
     public class ConsoleClient
     {
-        public static void Run(NamedPipeServerInfo server)
+        public static void Run(string pipe)
         {
             if (!ConsoleHelper.IsConsole)
                 return;
-            RunAsync(server).Wait();
+            RunAsync(pipe).Wait();
         }
 
-        public static Task RunAsync(NamedPipeServerInfo server)
+        public static Task RunAsync(string pipe)
         {
+            Console.WriteLine("Pipe: "+pipe);
             return TaskResult.Completed;
         }
     }

@@ -27,6 +27,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service.Client.Test
@@ -44,8 +45,9 @@ namespace WebApplications.Utilities.Service.Client.Test
         private static void Main([CanBeNull] string[] args)
         {
             // Find the test server
-            NamedPipeServerInfo server = NamedPipeClient.Servers.FirstOrDefault(s => string.Equals(s.Name, "TestServer"));
-            ConsoleClient.Run(server);
+            string pipe = NamedPipeClient.GetServerPipes().FirstOrDefault();
+
+            ConsoleClient.Run(pipe);
         }
     }
 }

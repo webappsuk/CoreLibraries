@@ -176,6 +176,7 @@
     <Compile Include="NamedPipeServer.cs" />
     <Compile Include="NamedPipeConfig.cs" />
     <Compile Include="NamedPipeConnection.cs" />
+    <Compile Include="PipeProtocol\Common.cs" />
     <Compile Include="PipeProtocol\Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiredContractException.cs" />

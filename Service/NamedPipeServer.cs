@@ -35,6 +35,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Service.PipeProtocol;
 
 namespace WebApplications.Utilities.Service
 {
@@ -43,11 +44,6 @@ namespace WebApplications.Utilities.Service
     /// </summary>
     public partial class NamedPipeServer : IDisposable
     {
-        /// <summary>
-        /// The name suffix.
-        /// </summary>
-        public const string NameSuffix = "_WAUKService";
-
         /// <summary>
         /// The connection lock.
         /// </summary>
@@ -223,7 +219,7 @@ namespace WebApplications.Utilities.Service
             Contract.Requires(maximumConnections > 0);
             Service = service;
             MaximumConnections = maximumConnections;
-            Name = string.Format("{0}_{1}", Guid.NewGuid(), NameSuffix);
+            Name = string.Format("{0}_{1}", Guid.NewGuid(), Common.NameSuffix);
 
             // Create security context
             try
