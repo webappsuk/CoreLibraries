@@ -45,8 +45,9 @@ namespace WebApplications.Utilities.Service.Client
             while (server == null)
             {
                 WriteServerList();
+                ConsoleTextWriter.Default.WriteLine("Please specify a valid server name or pipe to connect to...");
                 WritePrompt(server);
-                string serverName = Console.ReadLine();
+                server = NamedPipeClient.FindServer(Console.ReadLine());
             }
         }
 
@@ -61,7 +62,7 @@ namespace WebApplications.Utilities.Service.Client
                 {
                     if (!string.Equals(c.Tag, "pipes", StringComparison.CurrentCultureIgnoreCase))
                         return Resolution.Unknown;
-                    var pipes = NamedPipeClient.GetServerPipes().ToArray();
+                    var pipes = NamedPipeClient.GetServers().ToArray();
                     return pipes.Length > 0 ? pipes : Resolution.Null;
                 });
         }

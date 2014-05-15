@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Service.Client
         [NotNull]
         public static readonly FormatBuilder VerboseFormat =
             new FormatBuilder()
-                .AppendForegroundColor(ConsoleColor.Red)
+                .AppendForegroundColor(ConsoleColor.Blue)
                 .AppendFormat("{IsValid:{Host}}")
                 .AppendForegroundColor(ConsoleColor.Green)
                 .AppendFormat("\t{IsValid:{Name}}")

@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,21 +58,88 @@ namespace WebApplications.Utilities.Service.Client
             throw new NotImplementedException();
         }
 
+        #region Find files kernal methods
+        [StructLayout(LayoutKind.Sequential)]
+        private struct FILETIME
+        {
+            public uint dwLowDateTime;
+            public uint dwHighDateTime;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct WIN32_FIND_DATA
+        {
+            public uint dwFileAttributes;
+            public FILETIME ftCreationTime;
+            public FILETIME ftLastAccessTime;
+            public FILETIME ftLastWriteTime;
+            public uint nFileSizeHigh;
+            public uint nFileSizeLow;
+            public uint dwReserved0;
+            public uint dwReserved1;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+            public string cFileName;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
+            public string cAlternateFileName;
+        }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        private static extern IntPtr FindFirstFile(string lpFileName, out WIN32_FIND_DATA lpFindFileData);
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        private static extern int FindNextFile(IntPtr hFindFile, out WIN32_FIND_DATA lpFindFileData);
+        [DllImport("kernel32.dll")]
+        private static extern bool FindClose(IntPtr hFindFile);
+        #endregion
+
         /// <summary>
         /// Gets the server pipes.
         /// </summary>
-        /// <param name="machine">The machine, defaults to the local machine.</param>
         /// <returns>An enumeration of pipes with the correct suffix.</returns>
         [NotNull]
-        public static IEnumerable<NamedPipeServerInfo> GetServerPipes([CanBeNull]string machine = null)
+        public static IEnumerable<NamedPipeServerInfo> GetServers()
         {
+            // Note: Directory.GetFiles() can fail if there are pipes on the system with invalid characters,
+            // to be safe we use the underlying kernal methods instead.
+            IntPtr invalid = new IntPtr(-1);
+            IntPtr handle = IntPtr.Zero;
+            try
+            {
+                WIN32_FIND_DATA data;
+                handle = FindFirstFile(@"\\.\pipe\*", out data);
+                if (handle == invalid) yield break;
+
+                do
+                {
+                    NamedPipeServerInfo nps = new NamedPipeServerInfo(@"\\.\pipe\" + data.cFileName);
+                    if (nps.IsValid)
+                        yield return nps;
+                } while (FindNextFile(handle, out data) != 0);
+                FindClose(handle);
+                handle = invalid;
+            }
+            finally
+            {
+                if (handle != invalid)
+                    FindClose(handle);
+            }
+        }
+
+        /// <summary>
+        /// Finds the server that matches the name or pipe specified.
+        /// </summary>
+        /// <param name="serverName">Name (or pipe) of the server.</param>
+        /// <returns>The <see cref="NamedPipeServerInfo"/> if found; otherwise <see langword="null"/>.</returns>
+        [CanBeNull]
+        public static NamedPipeServerInfo FindServer([CanBeNull] string serverName)
+        {
+            if (string.IsNullOrWhiteSpace(serverName))
+                return null;
+
             return
-                Directory.GetFiles(
-                    string.Format(
-                        @"\\{0}\pipe\",
-                        string.IsNullOrWhiteSpace(machine) ? "." : machine))
-                    .Select(p => new NamedPipeServerInfo(p))
-                    .Where(s => s.IsValid);
+                GetServers()
+                    .FirstOrDefault(
+                        n => string.Equals(serverName, n.Name, StringComparison.CurrentCultureIgnoreCase) ||
+                             string.Equals(serverName, n.Pipe, StringComparison.CurrentCultureIgnoreCase));
         }
     }
 }

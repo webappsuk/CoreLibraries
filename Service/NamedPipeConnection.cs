@@ -248,10 +248,13 @@ namespace WebApplications.Utilities.Service
                             _stream = null;
                             _state = PipeState.Closed;
 
-                            Log.Add(
-                                exception,
-                                LoggingLevel.Error,
-                                () => ServiceResources.Err_NamedPipeConnection_Failed);
+                            // We only log if this wasn't a cancellation exception.
+                            TaskCanceledException tce = exception as TaskCanceledException;
+                            if (tce == null)
+                                Log.Add(
+                                    exception,
+                                    LoggingLevel.Error,
+                                    () => ServiceResources.Err_NamedPipeConnection_Failed);
                         }
                         finally
                         {
