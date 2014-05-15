@@ -178,6 +178,7 @@
     <Compile Include="NamedPipeConnection.cs" />
     <Compile Include="PipeProtocol\Common.cs" />
     <Compile Include="PipeProtocol\Message.cs" />
+    <Compile Include="PipeProtocol\PipeState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiredContractException.cs" />
     <Compile Include="ServiceCommandParameterAttribute.cs" />

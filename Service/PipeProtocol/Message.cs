@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using ProtoBuf;
 using WebApplications.Utilities.Logging;
 
@@ -26,9 +27,9 @@ namespace WebApplications.Utilities.Service.PipeProtocol
         [ProtoMember(1)]
         public readonly Guid ID;
 
-        protected Request(Guid id)
+        protected Request()
         {
-            ID = id;
+            ID = Guid.NewGuid();
         }
     }
 
@@ -64,8 +65,7 @@ namespace WebApplications.Utilities.Service.PipeProtocol
         [ProtoMember(1)]
         public readonly string Description;
 
-        public ConnectRequest(Guid id, string description)
-            : base(id)
+        public ConnectRequest(string description)
         {
             Description = description;
         }
@@ -74,19 +74,19 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     [ProtoContract(SkipConstructor = true)]
     public class ConnectResponse : Response
     {
-        public ConnectResponse(Guid id)
+        [ProtoMember(1)]
+        public readonly string ServiceName;
+
+        public ConnectResponse(Guid id, [CanBeNull] string serviceName)
             : base(id)
         {
+            ServiceName = serviceName;
         }
     }
 
     [ProtoContract(SkipConstructor = true)]
     public class DisconnectRequest : Request
     {
-        public DisconnectRequest(Guid id)
-            : base(id)
-        {
-        }
     }
 
     [ProtoContract(SkipConstructor = true)]
@@ -100,8 +100,7 @@ namespace WebApplications.Utilities.Service.PipeProtocol
         [ProtoMember(1)]
         public readonly string CommandLine;
 
-        public CommandRequest(Guid id, string commandLine)
-            : base(id)
+        public CommandRequest(string commandLine)
         {
             CommandLine = commandLine;
         }
@@ -111,12 +110,12 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     public class CommandResponse : Response
     {
         [ProtoMember(1)]
-        public readonly IEnumerable<string> Chunks;
+        public readonly string Result;
 
-        public CommandResponse(Guid id, IEnumerable<string> chunks)
+        public CommandResponse(Guid id, string result)
             : base(id)
         {
-            Chunks = chunks;
+            Result = result;
         }
     }
 }

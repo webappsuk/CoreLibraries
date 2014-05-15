@@ -80,6 +80,13 @@ namespace WebApplications.Utilities.Service.Client
         public readonly string Name;
 
         /// <summary>
+        /// The service full name.
+        /// </summary>
+        [PublicAPI]
+        [NotNull]
+        public readonly string FullName;
+
+        /// <summary>
         /// The full pipe path.
         /// </summary>
         [PublicAPI]
@@ -96,6 +103,7 @@ namespace WebApplications.Utilities.Service.Client
             Pipe = pipe;
             Host = ".";
             Name = "Invalid";
+            FullName = "Invalid";
             if (string.IsNullOrWhiteSpace(pipe) ||
                 !pipe.EndsWith(Common.NameSuffix))
                 return;
@@ -117,6 +125,7 @@ namespace WebApplications.Utilities.Service.Client
 
             int nsl = Common.NameSuffix.Length;
             string name = Path.GetFileName(pipe);
+            FullName = name;
             if (name.Length < 38 + nsl)
                 // Guid is 36 characters, one _ characters, a name of at least 1 character and then the name suffix.
                 return;
@@ -152,6 +161,8 @@ namespace WebApplications.Utilities.Service.Client
                     return Host;
                 case "name":
                     return Name;
+                case "fullname":
+                    return FullName;
                 case "pipe":
                     return Pipe;
                 default:

@@ -44,37 +44,6 @@ namespace WebApplications.Utilities.Service
     public partial class NamedPipeServer
     {
         /// <summary>
-        /// The PipeState indicates whether the connection
-        /// </summary>
-        private enum PipeState
-        {
-            /// <summary>
-            /// The connection is starting up.
-            /// </summary>
-            Starting,
-
-            /// <summary>
-            /// The connection is open.
-            /// </summary>
-            Open,
-
-            /// <summary>
-            /// The connection is connected but we need a connect message.
-            /// </summary>
-            AwaitingConnect,
-
-            /// <summary>
-            /// The connection is connected.
-            /// </summary>
-            Connected,
-
-            /// <summary>
-            /// The connection is closed.
-            /// </summary>
-            Closed
-        }
-
-        /// <summary>
         /// Implements a connection to the service over a named pipe.
         /// </summary>
         private class NamedPipeConnection : IConnection, IDisposable
@@ -119,7 +88,9 @@ namespace WebApplications.Utilities.Service
                 using (await _writeLock.LockAsync(token))
                 {
                     if (_state != PipeState.Connected) return false;
-                    Serializer.Serialize(_stream, message);
+                    NamedPipeServerStream stream = _stream;
+                    if (stream == null) return false;
+                    Serializer.Serialize(stream, message);
                     return true;
                 }
             }
@@ -157,8 +128,6 @@ namespace WebApplications.Utilities.Service
                                     stream.EndWaitForConnection,
                                     null).WithCancellation(token);
 
-                                ConnectRequest connectRequest = null;
-
                                 if (!token.IsCancellationRequested)
                                 {
                                     // Connect this connection to the service.
@@ -166,20 +135,22 @@ namespace WebApplications.Utilities.Service
 
                                     if (_connectionGuid != Guid.Empty)
                                     {
+                                        ConnectRequest connectRequest = null;
+
                                         // Set the stream.
                                         _stream = stream;
 
-                                        // Keep going as long as we're connected.
-                                        while (stream.IsConnected ||
-                                               token.IsCancellationRequested ||
-                                               _server.Service.State == ServiceState.Shutdown ||
-                                               _connectionGuid == Guid.Empty)
-                                        {
-                                            _server.Add();
-                                            _state = PipeState.AwaitingConnect;
+                                        _server.Add();
+                                        _state = PipeState.AwaitingConnect;
 
+                                        // Keep going as long as we're connected.
+                                        while (stream.IsConnected &&
+                                               !token.IsCancellationRequested &&
+                                               _server.Service.State != ServiceState.Shutdown &&
+                                               _connectionGuid != Guid.Empty)
+                                        {
                                             // Read data in.
-                                            int read = await _stream.ReadAsync(buffer, 0, InBufferSize, token);
+                                            int read = await stream.ReadAsync(buffer, 0, InBufferSize, token);
                                             if (read < 1 ||
                                                 token.IsCancellationRequested ||
                                                 _server.Service.State == ServiceState.Shutdown ||
@@ -189,12 +160,13 @@ namespace WebApplications.Utilities.Service
                                             // Write data to reader stream (no point in doing this async).
                                             readerStream.Write(buffer, 0, read);
 
-                                            if (!_stream.IsMessageComplete) continue;
+                                            if (!stream.IsMessageComplete) continue;
 
                                             // Deserialize the incoming message.
                                             readerStream.Seek(0, SeekOrigin.Begin);
                                             Message message = Serializer.Deserialize<Message>(readerStream);
                                             readerStream.Seek(0, SeekOrigin.Begin);
+                                            readerStream.SetLength(0);
 
                                             Request request = message as Request;
 
@@ -215,16 +187,38 @@ namespace WebApplications.Utilities.Service
 
                                                 // TODO Add logger and start outputting logs...
 
-                                                await Send(new ConnectResponse(request.ID), token);
+                                                await Send(new ConnectResponse(request.ID, _server.Service.ServiceName), token);
                                                 continue;
                                             }
 
-                                            // TODO We need to deserialized our message now.
+                                            DisconnectRequest disconnectRequest = request as DisconnectRequest;
+                                            if (disconnectRequest != null)
+                                            {
+                                                await Send(new DisconnectResponse(), token);
+                                                break;
+                                            }
 
-                                            // TODO Send to the associated service
+                                            CommandRequest commandRequest = request as CommandRequest;
+                                            if (commandRequest == null)
+                                                continue;
+
+                                            CommandResponse response;
+                                            using (StringWriter resultWriter = new StringWriter())
+                                            {
+                                                _server.Service.Execute(_connectionGuid, commandRequest.CommandLine, resultWriter);
+                                                response = new CommandResponse(
+                                                    request.ID,
+                                                    resultWriter.ToString()); // TODO Use custom writer.
+                                            }
+
+                                            await Send(response, token);
 
                                             // Reset the stream for write.
                                         }
+
+                                        if (stream.IsConnected)
+                                            await Send(new DisconnectResponse(), token);
+
                                         // Tell ther server we're disconnected.
                                         _server.Service.Disconnect(_connectionGuid);
                                     }

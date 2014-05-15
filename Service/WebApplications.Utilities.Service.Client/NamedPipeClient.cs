@@ -27,15 +27,21 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using ProtoBuf;
+using WebApplications.Utilities.Caching;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Service.PipeProtocol;
 using WebApplications.Utilities.Threading;
@@ -44,18 +50,323 @@ namespace WebApplications.Utilities.Service.Client
 {
     public class NamedPipeClient : IDisposable
     {
-        private NamedPipeClient()
+        /// <summary>
+        /// The input buffer size
+        /// </summary>
+        [PublicAPI]
+        public const int InBufferSize = 32768;
+
+        /// <summary>
+        /// The output buffer size
+        /// </summary>
+        [PublicAPI]
+        public const int OutBufferSize = 16384;
+
+        [NotNull]
+        private readonly NamedPipeServerInfo _server;
+
+        [NotNull]
+        private readonly AsyncLock _writeLock = new AsyncLock();
+
+        private PipeState _state = PipeState.Starting;
+
+        private NamedPipeClientStream _stream;
+
+        private CancellationTokenSource _cancellationTokenSource;
+
+        private Task _clientTask;
+
+        [NotNull]
+        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<Message>> _commandRequests = new ConcurrentDictionary<Guid, TaskCompletionSource<Message>>(); 
+
+        /// <summary>
+        /// Gets the state.
+        /// </summary>
+        /// <value>The state.</value>
+        public PipeState State
         {
+            get
+            {
+                Task ctask = _clientTask;
+                if (ctask == null) return PipeState.Closed;
+                switch (ctask.Status)
+                {
+                    case TaskStatus.Running:
+                        return _state;
+                    case TaskStatus.Created:
+                    case TaskStatus.WaitingForActivation:
+                    case TaskStatus.WaitingToRun:
+                        return PipeState.Starting;
+                    default:
+                        return PipeState.Closed;
+                }
+            }
         }
 
-        public static NamedPipeClient Connect(string pipe)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedPipeClient" /> class.
+        /// </summary>
+        /// <param name="server">The server.</param>
+        /// <param name="onReceive">The action to call on receipt of a message.</param>
+        /// <param name="connectionTimeout">The connection timeout (defaults to 5s).</param>
+        private NamedPipeClient([NotNull] NamedPipeServerInfo server, [NotNull]Action<Message> onReceive, TimeSpan connectionTimeout = default(TimeSpan))
         {
-            throw new NotImplementedException();
+            Contract.Requires(server != null);
+            _server = server;
+            _cancellationTokenSource = new CancellationTokenSource();
+            CancellationToken token = _cancellationTokenSource.Token;
+            if (connectionTimeout <= TimeSpan.Zero)
+                connectionTimeout = TimeSpan.FromSeconds(5);
+            _clientTask = Task.Run(
+                async () =>
+                {
+                    try
+                    {
+                        byte[] buffer = new byte[InBufferSize];
+                        using (MemoryStream readerStream = new MemoryStream(InBufferSize))
+                        using (NamedPipeClientStream stream = new NamedPipeClientStream(
+                            _server.Host,
+                            _server.FullName,
+                            PipeDirection.InOut,
+                            PipeOptions.Asynchronous))
+                        {
+                            _state = PipeState.Open;
+
+                            stream.Connect((int)Math.Ceiling(connectionTimeout.TotalMilliseconds));
+                            stream.ReadMode = PipeTransmissionMode.Message;
+
+                            if (!token.IsCancellationRequested)
+                            {
+                                // Set the stream.
+                                _stream = stream;
+                                _state = PipeState.AwaitingConnect;
+
+                                // Kick off a connect request, but don't wait for it's result as we're the task that will receive it!
+                                ConnectRequest connectRequest = new ConnectRequest("TODO Description");
+                                using (await _writeLock.LockAsync(token))
+                                    Serializer.Serialize(stream, connectRequest);
+
+                                ConnectResponse connectResponse = null;
+                                // Keep going as long as we're connected.
+                                while (stream.IsConnected &&
+                                       !token.IsCancellationRequested)
+                                {
+                                    // Read data in.
+                                    int read = await stream.ReadAsync(buffer, 0, InBufferSize, token);
+                                    if (read < 1 ||
+                                        token.IsCancellationRequested)
+                                        break;
+
+                                    // Write data to reader stream (no point in doing this async).
+                                    readerStream.Write(buffer, 0, read);
+
+                                    if (!stream.IsMessageComplete) continue;
+
+                                    // Deserialize the incoming message.
+                                    readerStream.Seek(0, SeekOrigin.Begin);
+                                    Message message = Serializer.Deserialize<Message>(readerStream);
+                                    readerStream.Seek(0, SeekOrigin.Begin);
+                                    readerStream.SetLength(0);
+
+                                    if (connectResponse == null)
+                                    {
+                                        // We require a connect response to start
+                                        connectResponse = message as ConnectResponse;
+                                        if (connectResponse == null ||
+                                            connectResponse.ID != connectRequest.ID)
+                                            break;
+
+                                        _state = PipeState.Connected;
+
+                                        Log.Add(
+                                            LoggingLevel.Notification,
+                                            () => "TODO ClientResources.Not_NamedPipeConnection_Connection",
+                                            connectResponse.ServiceName);
+
+                                        // Observer the message.
+                                        onReceive(message);
+                                        continue;
+                                    }
+
+                                    // Observer the message.
+                                    onReceive(message);
+
+                                    Response response = message as Response;
+                                    if (response != null)
+                                    {
+                                        TaskCompletionSource<Message> tcs;
+                                        if (_commandRequests.TryRemove(response.ID, out tcs))
+                                            tcs.TrySetResult(message);
+
+                                        continue;
+                                    }
+
+                                    DisconnectResponse disconnectResponse = message as DisconnectResponse;
+                                    if (disconnectResponse != null) 
+                                        break;
+                                }
+                            }
+
+                            // Remove the stream.
+                            _stream = null;
+                            _state = PipeState.Closed;
+
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        _stream = null;
+                        _state = PipeState.Closed;
+                        
+                        // We only log if this wasn't a cancellation exception.
+                        TaskCanceledException tce = exception as TaskCanceledException;
+                        if (tce == null)
+                            Log.Add(
+                                exception,
+                                LoggingLevel.Error,
+                                () => "TODO ClientResources.Err_NamedPipeConnection_Failed");
+                    }
+                    finally
+                    {
+                        Dispose();
+                    }
+                }, token);
         }
 
+        /// <summary>
+        /// Connects to the specified pipe.
+        /// </summary>
+        /// <param name="pipe">The pipe.</param>
+        /// <param name="onReceive">The action to call on receipt of a message.</param>
+        /// <param name="connectionTimeout">The connection timeout (defaults to 5s).</param>
+        /// <returns>A new <see cref="NamedPipeClient"/> that is connected to the given pipe.</returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static NamedPipeClient Connect([CanBeNull] string pipe, [NotNull]Action<Message> onReceive, TimeSpan connectionTimeout = default(TimeSpan))
+        {
+            NamedPipeServerInfo server = FindServer(pipe);
+            if (server == null ||
+                !server.IsValid)
+                return null;
+
+            return new NamedPipeClient(server, onReceive, connectionTimeout);
+        }
+
+        /// <summary>
+        /// Connects to the specified pipe server.
+        /// </summary>
+        /// <param name="server">The server.</param>
+        /// <param name="onReceive">The action to call on receipt of a message.</param>
+        /// <param name="connectionTimeout">The connection timeout (defaults to 5s).</param>
+        /// <returns>A new <see cref="NamedPipeClient" /> that is connected to the given pipe.</returns>
+        [CanBeNull]
+        [PublicAPI]
+        public static NamedPipeClient Connect([CanBeNull] NamedPipeServerInfo server, [NotNull]Action<Message> onReceive, TimeSpan connectionTimeout = default(TimeSpan))
+        {
+            if (server == null ||
+                !server.IsValid)
+                return null;
+
+            return new NamedPipeClient(server, onReceive, connectionTimeout);
+        }
+
+        /// <summary>
+        /// Sends the specified request.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="token">The token.</param>
+        /// <returns><see langword="true" /> if succeeded, <see langword="false" /> otherwise.</returns>
+        [NotNull]
+        private async Task<Message> Send([NotNull] Request request, CancellationToken token = default(CancellationToken))
+        {
+            using (await _writeLock.LockAsync(token))
+            {
+                if (_state != PipeState.Connected) return null;
+                NamedPipeClientStream stream = _stream;
+                if (stream == null) return null;
+
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+                token = token.CanBeCanceled
+                    ? CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token).Token
+                    : cts.Token;
+
+                TaskCompletionSource<Message> tcs = new TaskCompletionSource<Message>();
+                token.Register(
+                    () =>
+                    {
+                        tcs.TrySetCanceled();
+                        TaskCompletionSource<Message> t;
+                        _commandRequests.TryRemove(request.ID, out t);
+                    });
+
+                if (!_commandRequests.TryAdd(request.ID, tcs))
+                    return null;
+
+                Serializer.Serialize(stream, request);
+
+                return await tcs.Task;
+            }
+        }
+
+        /// <summary>
+        /// Executes the specified command line.
+        /// </summary>
+        /// <param name="commandLine">The command line.</param>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>An awaitable task that contains the result of the execution.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task<string> Execute([CanBeNull] string commandLine, CancellationToken token = default (CancellationToken))
+        {
+            if (_clientTask == null ||
+                string.IsNullOrWhiteSpace(commandLine))
+                return TaskResult<string>.Default;
+
+            return Send(new CommandRequest(commandLine), token)
+                .ContinueWith(
+                    t =>
+                    {
+                        CommandResponse response = t.Result as CommandResponse;
+                        return response != null ? response.Result : null;
+                    },
+                    token,
+                    TaskContinuationOptions.OnlyOnRanToCompletion,
+                    TaskScheduler.Default);
+        }
+
+        /// <summary>
+        /// Disconnects from the server.
+        /// </summary>
+        /// <returns>Task.</returns>
+        [NotNull]
+        [PublicAPI]
+        public Task Disconnect(CancellationToken token = default(CancellationToken))
+        {
+            return Send(new DisconnectRequest(), token);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
-            throw new NotImplementedException();
+            CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+            if (cts != null)
+            {
+                cts.Cancel();
+                cts.Dispose();
+            }
+
+            _clientTask = null;
+            _state = PipeState.Closed;
+
+            foreach (Guid id in _commandRequests.Keys.ToArray())
+            {
+                TaskCompletionSource<Message> tcs;
+                if (_commandRequests.TryRemove(id, out tcs))
+                    tcs.TrySetCanceled();
+            }
         }
 
         #region Find files kernal methods

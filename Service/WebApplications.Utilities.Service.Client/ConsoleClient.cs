@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
+using WebApplications.Utilities.Service.PipeProtocol;
 
 namespace WebApplications.Utilities.Service.Client
 {
@@ -30,23 +33,56 @@ namespace WebApplications.Utilities.Service.Client
             .AppendFormatLine("{Pipes:{<items>:{<item>}{<join>:\r\n}}}");
 
 
-        public static void Run(string pipe)
+        public static void Run([CanBeNull] string pipe)
         {
             Run(new NamedPipeServerInfo(pipe));
         }
 
-        public static void Run(NamedPipeServerInfo server = null)
+        public static void Run([CanBeNull] NamedPipeServerInfo server = null)
         {
             if (!ConsoleHelper.IsConsole)
                 return;
 
+            RunAsync(server).Wait();
+        }
+
+        [NotNull]
+        public static async Task RunAsync([CanBeNull] NamedPipeServerInfo server = null, CancellationToken token = default(CancellationToken))
+        {
+            if (!ConsoleHelper.IsConsole)
+                return;
 
             while (server == null)
             {
                 WriteServerList();
                 ConsoleTextWriter.Default.WriteLine("Please specify a valid server name or pipe to connect to...");
-                WritePrompt(server);
+                WritePrompt(null);
                 server = NamedPipeClient.FindServer(Console.ReadLine());
+            }
+
+            NamedPipeClient client = NamedPipeClient.Connect(server, OnReceive);
+            Contract.Assert(client != null);
+
+            while (client.State != PipeState.Closed)
+            {
+                WritePrompt(server);
+                string command = Console.ReadLine();
+                ConsoleTextWriter.Default.WriteLine(await client.Execute(command, token));
+            }
+        }
+
+        private static void OnReceive([CanBeNull] Message message)
+        {
+            if (message == null)
+                return;
+
+            // TODO Deal with messages
+
+            LogResponse logResponse = message as LogResponse;
+            if (logResponse != null && logResponse.Log != null)
+            {
+                logResponse.Log.ReLog();
+                return;
             }
         }
 
