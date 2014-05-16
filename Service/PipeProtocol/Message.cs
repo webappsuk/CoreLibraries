@@ -13,7 +13,6 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     [ProtoInclude(100, typeof(Request))]
     [ProtoInclude(200, typeof(Response))]
     [ProtoInclude(300, typeof(LogResponse))]
-    [ProtoInclude(400, typeof(DisconnectResponse))]
     public abstract class Message
     {
     }
@@ -36,6 +35,7 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     [ProtoContract(SkipConstructor = true)]
     [ProtoInclude(100, typeof(CommandResponse))]
     [ProtoInclude(200, typeof(ConnectResponse))]
+    [ProtoInclude(300, typeof(DisconnectResponse))]
     public abstract class Response : Message
     {
         [ProtoMember(1)]
@@ -90,8 +90,12 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     }
 
     [ProtoContract(SkipConstructor = true)]
-    public class DisconnectResponse : Message
+    public class DisconnectResponse : Response
     {
+        public DisconnectResponse(Guid id)
+            : base(id)
+        {
+        }
     }
 
     [ProtoContract(SkipConstructor = true)]

@@ -104,6 +104,9 @@ namespace WebApplications.Utilities.Service
                 _serverTask = Task.Run(
                     async () =>
                     {
+                        // The disconnect GUID can be set by a disconnect request if the client requests it.
+                        Guid disconnectGuid = Guid.Empty;
+
                         // Create pipe access rule to allow everyone to connect - may want to change this later
                         try
                         {
@@ -194,7 +197,8 @@ namespace WebApplications.Utilities.Service
                                             DisconnectRequest disconnectRequest = request as DisconnectRequest;
                                             if (disconnectRequest != null)
                                             {
-                                                await Send(new DisconnectResponse(), token);
+                                                // Set the guid for disconnect.
+                                                disconnectGuid = disconnectRequest.ID;
                                                 break;
                                             }
 
@@ -217,7 +221,7 @@ namespace WebApplications.Utilities.Service
                                         }
 
                                         if (stream.IsConnected)
-                                            await Send(new DisconnectResponse(), token);
+                                            await Send(new DisconnectResponse(disconnectGuid), token);
 
                                         // Tell ther server we're disconnected.
                                         _server.Service.Disconnect(_connectionGuid);
@@ -272,9 +276,9 @@ namespace WebApplications.Utilities.Service
                     switch (stask.Status)
                     {
                         case TaskStatus.Running:
+                        case TaskStatus.WaitingForActivation:
                             return _state;
                         case TaskStatus.Created:
-                        case TaskStatus.WaitingForActivation:
                         case TaskStatus.WaitingToRun:
                             return PipeState.Starting;
                         default:

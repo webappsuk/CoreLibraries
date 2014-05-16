@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Service.Client.Test
         /// <param name="args">The arguments.</param>
         private static void Main([CanBeNull] string[] args)
         {
-            ConsoleClient.Run();
+            ConsoleClient.Run("Test Client");
         }
     }
 }
