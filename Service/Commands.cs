@@ -646,6 +646,23 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
+                if (!IsAdministrator)
+                {
+                    Log.Add(
+                        LoggingLevel.Error,
+                        () => ServiceResources.Err_Install_Requires_Administrator);
+                    return;
+                }
+
+                if (IsService)
+                {
+                    Log.Add(
+                        LoggingLevel.Error,
+                        () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                        ServiceName);
+                    return;
+                }
+
                 Log.Add(
                     LoggingLevel.Information,
                     () => ServiceResources.Inf_ServiceRunner_Install,
@@ -688,6 +705,14 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
+                if (!IsAdministrator)
+                {
+                    Log.Add(
+                        LoggingLevel.Error,
+                        () => ServiceResources.Err_Uninstall_Requires_Administrator);
+                    return;
+                }
+
                 Log.Add(
                     LoggingLevel.Information,
                     () => ServiceResources.Inf_ServiceRunner_Uninstall,

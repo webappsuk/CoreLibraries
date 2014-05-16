@@ -28,19 +28,26 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Logging.Interfaces;
+using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
+using WebApplications.Utilities.Reflect;
 using WebApplications.Utilities.Threading;
 using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
@@ -104,40 +111,59 @@ namespace WebApplications.Utilities.Service
         private static readonly bool IsServiceProcess;
 
         /// <summary>
+        /// Gets an event log you can use to write notification of service command calls, such as Start and Stop, to the Application event log.
+        /// </summary>
+        /// <value>The event log.</value>
+        /// <returns>An <see cref="T:System.Diagnostics.EventLog" /> instance whose source is registered to the Application log.</returns>
+        /// <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode" />
+        ///   <IPermission class="System.Diagnostics.EventLogPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        /// </PermissionSet>
+        [NotNull]
+        public override EventLog EventLog
+        {
+            get { return _eventLog; }
+        }
+
+        /// <summary>
+        /// The event logger
+        /// </summary>
+        [NotNull]
+        private readonly EventLog _eventLog;
+
+        private static readonly bool _isAdministrator;
+
+        /// <summary>
+        /// Determines whether this instance is an administrator.
+        /// </summary>
+        /// <returns><see langword="true" /> if this instance is administrator; otherwise, <see langword="false" />.</returns>
+        public static bool IsAdministrator
+        {
+            get { return _isAdministrator; }
+        }
+
+        /// <summary>
         /// Initializes static members of the <see cref="BaseService"/> class.
         /// </summary>
         static BaseService()
         {
             IsServiceProcess = !Environment.UserInteractive;
-            if (IsServiceProcess)
-            {
-                IsServiceProcess = false;
-                try
-                {
-                    // ReSharper disable PossibleNullReferenceException
-                    Type entryType = Assembly.GetEntryAssembly().EntryPoint.ReflectedType;
-                    // ReSharper restore PossibleNullReferenceException
-                    while (entryType != typeof(object))
-                    {
-                        Contract.Assert(entryType != null);
-                        if (entryType == typeof(ServiceBase))
-                        {
-                            IsServiceProcess = true;
-                            break;
-                        }
-                        entryType = entryType.BaseType;
-                    }
-                }
-                // ReSharper disable once EmptyGeneralCatchClause
-                catch
-                {
-                }
-            }
 
-            // TODO Move to Utilities
+            // Create a cancelled token.
             CancellationTokenSource cts = new CancellationTokenSource();
             cts.Cancel();
             Cancelled = cts.Token;
+
+            try
+            {
+                WindowsIdentity identity = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                _isAdministrator = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            catch
+            {
+                _isAdministrator = false;
+            }
         }
 
         /// <summary>
@@ -146,7 +172,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="name">The name.</param>
         /// <param name="displayName">The display name.</param>
         /// <param name="description">The description.</param>
-        protected BaseService([NotNull] string name, [CanBeNull]string displayName, [CanBeNull]string description)
+        protected BaseService([NotNull] string name, [CanBeNull] string displayName, [CanBeNull] string description)
         {
             Contract.Requires<RequiredContractException>(name != null, "Parameter_Null");
             ServiceName = name;
@@ -158,7 +184,47 @@ namespace WebApplications.Utilities.Service
             CanHandleSessionChangeEvent = true;
             CanPauseAndContinue = true;
             CanShutdown = true;
-            IsService = IsServiceProcess && ServiceUtils.ServiceIsInstalled(name);
+            IsService = IsServiceProcess &&
+                        ServiceUtils.ServiceIsInstalled(name) &&
+                        ServiceUtils.GetServiceStatus(name) == ServiceState.StartPending;
+
+            // Create event log.
+            EventLogger eventLogger = Log.GetLoggers<EventLogger>().FirstOrDefault();
+            if (eventLogger != null)
+            {
+                string source = Log.ApplicationName;
+                if (string.IsNullOrWhiteSpace(source))
+                    source = "Application";
+                else if (source.Length > 254)
+                    source = source.Substring(0, 254);
+
+                _eventLog = new EventLog
+                {
+                    Source = source,
+                    MachineName = eventLogger.MachineName,
+                    Log = eventLogger.EventLog
+                };
+            }
+            else
+                _eventLog = new EventLog
+                {
+                    Source = "Application",
+                    MachineName = ".",
+                    Log = ServiceName
+                };
+
+            if (_eventLog.MachineName == ".")
+            {
+                // Create the event log if necessary.
+                ((ISupportInitialize)(this._eventLog)).BeginInit();
+                if (!EventLog.SourceExists(this._eventLog.Source))
+                {
+                    EventLog.CreateEventSource(this._eventLog.Source, this._eventLog.Log);
+                }
+                ((ISupportInitialize)(this._eventLog)).EndInit();
+            }
+
+            _eventLog.WriteEntry("Completed base constructor, IsService=" + IsService);
         }
 
         /// <summary>
@@ -181,26 +247,27 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         [NotNull]
         public readonly string Description;
-        
+
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
+        /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
         /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
-        /// <param name="namedPipeConfig">The named pipe configuration, if named pipes are supported.</param>
         /// <returns>An awaitable task.</returns>
-        public void Run(bool allowConsole = true, [CanBeNull] NamedPipeConfig namedPipeConfig = null)
+        public void Run(bool promptInstall = true, bool allowConsole = true)
         {
-            RunAsync(allowConsole, namedPipeConfig).Wait();
+            EventLog.WriteEntry("Hit Run");
+            RunAsync(promptInstall, allowConsole).Wait();
         }
 
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
+        /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
         /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
-        /// <param name="namedPipeConfig">The named pipe configuration, if named pipes are supported.</param>
         /// <returns>An awaitable task.</returns>
         [NotNull]
-        public abstract Task RunAsync(bool allowConsole = true, [CanBeNull] NamedPipeConfig namedPipeConfig = null);
+        public abstract Task RunAsync(bool promptInstall = true, bool allowConsole = true);
 
         /// <summary>
         /// When implemented in a derived class, executes when a Start command is sent to the service by the Service Control Manager (SCM) or when the operating system starts (for a service that starts automatically). Specifies actions to take when the service starts.
@@ -557,30 +624,45 @@ namespace WebApplications.Utilities.Service
         protected BaseService([CanBeNull] string name = null, [CanBeNull] string displayName = null, [CanBeNull] string description = null, IdentityReference identity = null)
             : base(
             (string.IsNullOrWhiteSpace(name) || name.Length > 128) ? Title : name,
-            displayName, 
+            displayName,
             (string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
         {
-            if (identity == null)
-                identity = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+            EventLog.WriteEntry("Hit Contructor");
+            try
+            {
+                if (identity == null)
+                    identity = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
 
-            _eventWaitHandleSecurity = new EventWaitHandleSecurity();
-            _eventWaitHandleSecurity.AddAccessRule(new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
+                _eventWaitHandleSecurity = new EventWaitHandleSecurity();
+                _eventWaitHandleSecurity.AddAccessRule(
+                    new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
 
-            _state = IsService ? ServiceUtils.GetServiceStatus(ServiceName) : ServiceState.Stopped;
+                _state = IsService ? ServiceUtils.GetServiceStatus(ServiceName) : ServiceState.Stopped;
+            }
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, "Fatal error in constructor.");
+            }
         }
+
+        private static readonly FormatBuilder _promptInstall = new FormatBuilder()
+            .AppendForegroundColor(ConsoleColor.Yellow)
+            .AppendLine("Select one of :")
+            .AppendLayout(indentSize: 3, firstLineIndentSize: 5)
+            .AppendFormatLine("{Options:{<items>:\r\n{!fgcolor:Cyan}{Key}\t{!fgcolor:White}{Value}}}")
+            .AppendPopLayout()
+            .MakeReadOnly();
 
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
+        /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
         /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
-        /// <param name="namedPipeConfig">The named pipe configuration, if named pipes are supported.</param>
         /// <returns>An awaitable task.</returns>
-        public override Task RunAsync(bool allowConsole = true, NamedPipeConfig namedPipeConfig = null)
+        public override Task RunAsync(bool promptInstall = true, bool allowConsole = true)
         {
-            if (namedPipeConfig != null && namedPipeConfig.MaximumConnections > 0)
-            {
-                // TODO
-            }
+            if (!IsAdministrator)
+                Log.Add(LoggingLevel.Information, "The service is not running as an administrator, some functionality will be disabled.");
 
             if (IsService)
             {
@@ -589,11 +671,171 @@ namespace WebApplications.Utilities.Service
             }
             lock (_lock)
             {
+                WindowsIdentity identity = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                if (promptInstall && ConsoleHelper.IsConsole && IsAdministrator)
+                {
+                    
+                    bool done = false;
+                    do
+                    {
+                        Dictionary<string, string> options = new Dictionary<string, string>
+                        {
+                            {"I", "Install service."},
+                            {"U", "Uninstall service."},
+                            {"R", "Re-install the service."},
+                            {"S", "Start service."},
+                            {"T", "Stop service."},
+                            {"P", "Pause service."},
+                            {"C", "Continue service."},
+                            {"Y", "Run service from command line."},
+                            {"X", "Exit."}
+                        };
+
+                        if (ServiceUtils.ServiceIsInstalled(ServiceName))
+                        {
+                            ServiceState state = ServiceUtils.GetServiceStatus(ServiceName);
+                            ConsoleTextWriter.Default.WriteLine(
+                                "The '{0}' service is already installed and {1}.",
+                                ServiceName,
+                                state);
+
+                            options.Remove("I");
+
+                            switch (state)
+                            {
+                                case ServiceState.Unknown:
+                                case ServiceState.NotFound:
+                                    options.Remove("S");
+                                    options.Remove("T");
+                                    options.Remove("C");
+                                    options.Remove("P");
+                                    break;
+                                case ServiceState.StopPending:
+                                case ServiceState.Stopped:
+                                    options.Remove("C");
+                                    options.Remove("T");
+                                    break;
+                                case ServiceState.StartPending:
+                                case ServiceState.ContinuePending:
+                                case ServiceState.Running:
+                                    options.Remove("S");
+                                    options.Remove("C");
+                                    break;
+                                    break;
+                                case ServiceState.PausePending:
+                                case ServiceState.Paused:
+                                    options.Remove("S");
+                                    options.Remove("T");
+                                    options.Remove("P");
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+                            options.Remove("Y");
+                        }
+                        else
+                        {
+                            options.Remove("U");
+                            options.Remove("R");
+                            options.Remove("S");
+                            options.Remove("T");
+                            options.Remove("P");
+                            options.Remove("C");
+                        }
+
+                        _promptInstall.WriteToConsole(
+                            null,
+                            (_, c) => !string.Equals(c.Tag, "options", StringComparison.CurrentCultureIgnoreCase)
+                                ? Resolution.Unknown
+                                : options);
+
+                        string key;
+                        do
+                        {
+                            key = Console.ReadKey(true).KeyChar.ToString().ToUpperInvariant();
+                        } while (!options.ContainsKey(key));
+
+                        switch (key)
+                        {
+                            case "I":
+                                Console.WriteLine("Attempting to install service.");
+                                Install();
+                                Console.Write("Waiting for service to be detected...");
+                                while (!ServiceUtils.ServiceIsInstalled(ServiceName))
+                                    Thread.Sleep(250);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                break;
+
+                            case "U":
+                                Console.WriteLine("Attempting to uninstall service.");
+                                Uninstall();
+                                Console.Write("Waiting for service removal to be detected...");
+                                while (ServiceUtils.ServiceIsInstalled(ServiceName))
+                                    Thread.Sleep(250);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                return TaskResult.Completed;
+
+                            case "R":
+                                Console.WriteLine("Attempting to uninstall service.");
+                                Uninstall();
+                                Console.Write("Waiting for service removal to be detected...");
+                                while (ServiceUtils.ServiceIsInstalled(ServiceName))
+                                    Thread.Sleep(250);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine("Attempting to install service.");
+                                Install();
+                                Console.Write("Waiting for service to be detected...");
+                                while (!ServiceUtils.ServiceIsInstalled(ServiceName))
+                                    Thread.Sleep(250);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                return TaskResult.Completed;
+
+                            case "S":
+                                Console.Write("Attempting to start service...");
+                                ServiceUtils.StartService(ServiceName);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                break;
+
+                            case "T":
+                                Console.Write("Attempting to stop service...");
+                                ServiceUtils.StopService(ServiceName);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                break;
+
+                            case "P":
+                                Console.Write("Attempting to pause service...");
+                                ServiceUtils.PauseService(ServiceName);
+                                Console.WriteLine("Done.");
+                                break;
+
+                            case "C":
+                                Console.Write("Attempting to continue service...");
+                                ServiceUtils.ContinueService(ServiceName);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                break;
+
+                            case "Y":
+                                done = true;
+                                break;
+
+                            default:
+                                return TaskResult.Completed;
+                        }
+                    } while (!done);
+                }
+
                 // Create a task that completes when this service finally shutsdown.
                 _lifeTimeTask = new TaskCompletionSource<bool>();
 
                 // If we allow the console, connect the console UI, and wait until both tasks complete
-                return allowConsole
+                return allowConsole && ConsoleHelper.IsConsole
                     ? Task.WhenAll(_lifeTimeTask.Task, ConsoleConnection.Run(this))
                     : _lifeTimeTask.Task;
             }
@@ -606,66 +848,77 @@ namespace WebApplications.Utilities.Service
         // ReSharper disable once CodeAnnotationAnalyzer
         protected override sealed void OnStart([NotNull] string[] args)
         {
-            using (PerfTimerStart.Region())
-                lock (_lock)
-                {
-                    switch (_state)
+            try
+            {
+                using (PerfTimerStart.Region())
+                    lock (_lock)
                     {
-                        case ServiceState.Unknown:
-                        case ServiceState.Stopped:
-                            break;
-                        default:
-                            Log.Add(
-                                LoggingLevel.Error,
-                                () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning,
-                                ServiceName);
-                            return;
-                    }
-                    _state = ServiceState.StartPending;
-
-                    // Try to grab the global mutex
-                    bool hasHandle = false;
-                    try
-                    {
-                        if (_runEventWaitHandle == null) // Sanity check, should be null!
+                        if (!IsService)
                         {
-                            // Create the wait handle.
-                            bool createdNew;
-                            _runEventWaitHandle = new EventWaitHandle(
-                                true,
-                                EventResetMode.AutoReset,
-                                string.Format("Global\\{{{0}}} {1}", AssemblyGuid, ServiceName),
-                                out createdNew,
-                                _eventWaitHandleSecurity);
-
-                            // We should be the first to create the handle.
-                            if (!createdNew)
-                                Log.Add(
-                                    LoggingLevel.Warning,
-                                    () => ServiceResources.Wrn_BaseService_EventHandlerAlreadyExists);
+                            switch (_state)
+                            {
+                                case ServiceState.Unknown:
+                                case ServiceState.Stopped:
+                                    break;
+                                default:
+                                    Log.Add(
+                                        LoggingLevel.Error,
+                                        () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning,
+                                        ServiceName);
+                                    return;
+                            }
                         }
+                        _state = ServiceState.StartPending;
 
-                        hasHandle = _runEventWaitHandle.WaitOne(1000, false);
-                    }
-                    catch (Exception)
-                    {
-                        // Clean up if we somehow have the handle but also have an exception?!
-                        if (_runEventWaitHandle != null)
+                        // Try to grab the global mutex
+                        bool hasHandle = false;
+                        try
                         {
-                            if (hasHandle)
-                                _runEventWaitHandle.Set();
-                            _runEventWaitHandle.Dispose();
-                            _runEventWaitHandle = null;
-                        }
-                    }
-                    if (!hasHandle)
-                        throw new ServiceException(() => ServiceResources.Err_BaseService_Failed_To_Acquire_WaitHandle);
+                            if (_runEventWaitHandle == null) // Sanity check, should be null!
+                            {
+                                // Create the wait handle.
+                                bool createdNew;
+                                _runEventWaitHandle = new EventWaitHandle(
+                                    true,
+                                    EventResetMode.AutoReset,
+                                    string.Format("Global\\{{{0}}} {1}", AssemblyGuid, ServiceName),
+                                    out createdNew,
+                                    _eventWaitHandleSecurity);
 
-                    _cancellationTokenSource = new CancellationTokenSource();
-                    _pauseTokenSource.IsPaused = false;
-                    DoStart(args);
-                    _state = ServiceState.Running;
-                }
+                                // We should be the first to create the handle.
+                                if (!createdNew)
+                                    Log.Add(
+                                        LoggingLevel.Warning,
+                                        () => ServiceResources.Wrn_BaseService_EventHandlerAlreadyExists);
+                            }
+
+                            hasHandle = _runEventWaitHandle.WaitOne(1000, false);
+                        }
+                        catch (Exception)
+                        {
+                            // Clean up if we somehow have the handle but also have an exception?!
+                            if (_runEventWaitHandle != null)
+                            {
+                                if (hasHandle)
+                                    _runEventWaitHandle.Set();
+                                _runEventWaitHandle.Dispose();
+                                _runEventWaitHandle = null;
+                            }
+                        }
+                        if (!hasHandle)
+                            throw new ServiceException(
+                                () => ServiceResources.Err_BaseService_Failed_To_Acquire_WaitHandle);
+
+                        _cancellationTokenSource = new CancellationTokenSource();
+                        _pauseTokenSource.IsPaused = false;
+                        DoStart(args);
+                        _state = ServiceState.Running;
+                    }
+            }
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, "Fatal error in OnStart");
+            }
         }
 
         /// <summary>

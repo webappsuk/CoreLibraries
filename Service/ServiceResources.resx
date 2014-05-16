@@ -237,6 +237,9 @@
   <data name="Err_Command_Failed" xml:space="preserve">
     <value>The '{0}' command failed.</value>
   </data>
+  <data name="Err_Install_Requires_Administrator" xml:space="preserve">
+    <value>Service installation requires running as an administrator.</value>
+  </data>
   <data name="Err_NamedPipeConnection_Failed" xml:space="preserve">
     <value>A fatal error occurred on the current named pipe connection, closing.</value>
   </data>
@@ -269,6 +272,9 @@
   </data>
   <data name="Err_ServiceRunner_Stop_ServiceNotRunning" xml:space="preserve">
     <value>The '{0}' service is not running, so cannot be stopped!</value>
+  </data>
+  <data name="Err_Uninstall_Requires_Administrator" xml:space="preserve">
+    <value>Service removal requires running as an administrator.</value>
   </data>
   <data name="Err_Unknown_Command" xml:space="preserve">
     <value>The '{0}' command is not supported by the service.</value>

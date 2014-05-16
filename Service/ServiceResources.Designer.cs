@@ -421,6 +421,15 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Service installation requires running as an administrator..
+        /// </summary>
+        internal static string Err_Install_Requires_Administrator {
+            get {
+                return ResourceManager.GetString("Err_Install_Requires_Administrator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A fatal error occurred on the current named pipe connection, closing..
         /// </summary>
         internal static string Err_NamedPipeConnection_Failed {
@@ -516,6 +525,15 @@ namespace WebApplications.Utilities.Service {
         internal static string Err_ServiceRunner_Stop_ServiceNotRunning {
             get {
                 return ResourceManager.GetString("Err_ServiceRunner_Stop_ServiceNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service removal requires running as an administrator..
+        /// </summary>
+        internal static string Err_Uninstall_Requires_Administrator {
+            get {
+                return ResourceManager.GetString("Err_Uninstall_Requires_Administrator", resourceCulture);
             }
         }
         
