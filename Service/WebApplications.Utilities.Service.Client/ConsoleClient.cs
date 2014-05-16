@@ -152,9 +152,10 @@ namespace WebApplications.Utilities.Service.Client
                 return;
 
             LogResponse logResponse = message as LogResponse;
-            if (logResponse != null && logResponse.Log != null)
+            if (logResponse != null && logResponse.Logs != null)
             {
-                logResponse.Log.WriteTo(ConsoleTextWriter.Default);
+                foreach (Log log in logResponse.Logs)
+                    log.WriteTo(ConsoleTextWriter.Default);
                 return;
             }
 

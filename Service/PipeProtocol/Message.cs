@@ -78,12 +78,12 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     [ProtoContract(SkipConstructor = true)]
     public class LogResponse : Message
     {
-        [ProtoMember(1)]
-        public readonly Log Log;
+        [ProtoMember(1, OverwriteList = true)]
+        public readonly IEnumerable<Log> Logs;
 
-        public LogResponse(Log log)
+        public LogResponse(IEnumerable<Log> logs)
         {
-            Log = log;
+            Logs = logs;
         }
     }
 

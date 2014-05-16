@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ProtoBuf;
 using WebApplications.Utilities.Caching;
+using WebApplications.Utilities.IO;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Service.PipeProtocol;
 using WebApplications.Utilities.Threading;
@@ -67,7 +68,7 @@ namespace WebApplications.Utilities.Service.Client
 
         private PipeState _state = PipeState.Starting;
 
-        private OverlappingPipeClient _stream;
+        private OverlappingPipeClientStream _stream;
 
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -132,7 +133,7 @@ namespace WebApplications.Utilities.Service.Client
                 {
                     try
                     {
-                        using (OverlappingPipeClient stream = new OverlappingPipeClient(_server.Host, _server.FullName, PipeTransmissionMode.Message))
+                        using (OverlappingPipeClientStream stream = new OverlappingPipeClientStream(_server.Host, _server.FullName, PipeTransmissionMode.Message))
                         {
                             _state = PipeState.Open;
 
@@ -309,7 +310,7 @@ namespace WebApplications.Utilities.Service.Client
         private async Task<Message> Send([NotNull] Request request, CancellationToken token = default(CancellationToken))
         {
             if (_state != PipeState.Connected) return null;
-            OverlappingPipeClient stream = _stream;
+            OverlappingPipeClientStream stream = _stream;
             if (stream == null) return null;
 
             CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));

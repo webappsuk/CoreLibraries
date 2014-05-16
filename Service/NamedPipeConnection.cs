@@ -32,6 +32,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using ProtoBuf;
+using WebApplications.Utilities.IO;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Service.PipeProtocol;
 using WebApplications.Utilities.Threading;
@@ -60,7 +61,7 @@ namespace WebApplications.Utilities.Service
             /// <summary>
             /// The stream
             /// </summary>
-            private OverlappingPipeServer _stream;
+            private OverlappingPipeServerStream _stream;
 
             private Guid _connectionGuid = Guid.Empty;
 
@@ -97,7 +98,7 @@ namespace WebApplications.Utilities.Service
             public async Task<bool> Send([NotNull] byte[] data, CancellationToken token = default(CancellationToken))
             {
                     if (_state != PipeState.Connected) return false;
-                    OverlappingPipeServer stream = _stream;
+                    OverlappingPipeServerStream stream = _stream;
                     if (stream == null) return false;
                     await stream.WriteAsync(data, token);
                     return true;
@@ -119,7 +120,7 @@ namespace WebApplications.Utilities.Service
                         try
                         {
                             // Create pipe stream.
-                            using (OverlappingPipeServer stream = new OverlappingPipeServer(
+                            using (OverlappingPipeServerStream stream = new OverlappingPipeServerStream(
                                 _server.Name,
                                 _server.MaximumConnections,
                                 PipeTransmissionMode.Message, 

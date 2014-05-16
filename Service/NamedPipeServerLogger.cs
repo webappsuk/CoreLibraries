@@ -54,17 +54,14 @@ namespace WebApplications.Utilities.Service
         /// <param name="logs">The logs.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task.</returns>
-        private Task WriteLogs(IEnumerable<Log> logs, CancellationToken token)
+        [NotNull]
+        private Task WriteLogs([NotNull] IEnumerable<Log> logs, CancellationToken token)
         {
             NamedPipeConnection[] connections;
             lock (_connectionLock)
                 connections = _namedPipeConnections.ToArray();
 
-            // TODO Add support for serializing IEnumerable<Log>
-            var log = logs.FirstOrDefault();
-            if (log == null) return TaskResult.Completed;
-
-            byte[] data = new LogResponse(log).Serialize();
+            byte[] data = new LogResponse(logs).Serialize();
             return Task.WhenAll(connections.Select(c => c.Send(data, token)));
         }
     }
