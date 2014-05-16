@@ -106,6 +106,7 @@ namespace WebApplications.Utilities.Service
                 return TaskResult.Completed;
             Console.Clear();
             Console.Title = service.ServiceName;
+            Log.SetTrace(validLevels: LoggingLevels.None);
             Log.SetConsole(defaultLogFormat, defaultLoggingLevels);
 
             ConsoleConnection connection = new ConsoleConnection(defaultLogFormat, defaultLoggingLevels, token);

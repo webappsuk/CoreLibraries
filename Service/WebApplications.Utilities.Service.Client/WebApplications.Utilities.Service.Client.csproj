@@ -83,6 +83,7 @@
     <Compile Include="ConsoleClient.cs" />
     <Compile Include="NamedPipeClient.cs" />
     <Compile Include="NamedPipeServerInfo.cs" />
+    <Compile Include="OverlappingPipeClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

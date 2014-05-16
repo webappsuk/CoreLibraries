@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
@@ -63,6 +65,7 @@ namespace WebApplications.Utilities.Service
             if (log == null) return TaskResult.Completed;
 
             byte[] data = new LogResponse(log).Serialize();
+            TraceTextWriter.Default.WriteLine("**** SENDING LOG MESSAGE:" + log.Message);
             return Task.WhenAll(connections.Select(c => c.Send(data, token)));
         }
     }

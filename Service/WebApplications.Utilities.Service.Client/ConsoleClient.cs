@@ -99,8 +99,7 @@ namespace WebApplications.Utilities.Service.Client
                     if (services.Length > 0)
                         WriteServerList(services);
 
-                    ConsoleTextWriter.Default.WriteLine(
-                        "Please specify a valid service name or pipe to connect to, or enter to rescan...");
+                    ConsoleTextWriter.Default.WriteLine("Please specify a valid service name or pipe to connect to...");
                     string serviceName = Console.ReadLine();
                     if (!string.IsNullOrWhiteSpace(serviceName))
                         service = NamedPipeClient.FindService(serviceName);

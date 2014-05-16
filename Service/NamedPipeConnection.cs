@@ -60,12 +60,9 @@ namespace WebApplications.Utilities.Service
             /// <summary>
             /// The stream
             /// </summary>
-            private NamedPipeServerStream _stream;
+            private OverlappingPipeServer _stream;
 
             private Guid _connectionGuid = Guid.Empty;
-
-            [NotNull]
-            private readonly AsyncLock _writeLock = new AsyncLock();
 
             /// <summary>
             /// Initializes a new instance of the <see cref="NamedPipeConnection"/> class.
@@ -97,14 +94,11 @@ namespace WebApplications.Utilities.Service
             [NotNull]
             public async Task<bool> Send([NotNull] byte[] data, CancellationToken token = default(CancellationToken))
             {
-                using (await _writeLock.LockAsync(token))
-                {
                     if (_state != PipeState.Connected) return false;
-                    NamedPipeServerStream stream = _stream;
+                    OverlappingPipeServer stream = _stream;
                     if (stream == null) return false;
-                    await stream.WriteAsync(data, 0, data.Length, token);
+                    await stream.WriteAsync(data, token);
                     return true;
-                }
             }
 
             /// <summary>
@@ -122,15 +116,11 @@ namespace WebApplications.Utilities.Service
                         // Create pipe access rule to allow everyone to connect - may want to change this later
                         try
                         {
-                            byte[] buffer = new byte[InBufferSize];
-                            using (MemoryStream readerStream = new MemoryStream(InBufferSize))
-                                // Create pipe stream.
-                            using (NamedPipeServerStream stream = new NamedPipeServerStream(
+                            // Create pipe stream.
+                            using (OverlappingPipeServer stream = new OverlappingPipeServer(
                                 _server.Name,
-                                PipeDirection.InOut,
                                 _server.MaximumConnections,
-                                PipeTransmissionMode.Message,
-                                PipeOptions.Asynchronous,
+                                PipeTransmissionMode.Message, 
                                 InBufferSize,
                                 OutBufferSize,
                                 _server._pipeSecurity))
@@ -138,10 +128,7 @@ namespace WebApplications.Utilities.Service
                                 _state = PipeState.Open;
 
                                 // Wait for connection
-                                await Task.Factory.FromAsync(
-                                    stream.BeginWaitForConnection,
-                                    stream.EndWaitForConnection,
-                                    null).WithCancellation(token);
+                                await stream.Connect(token);
 
                                 if (!token.IsCancellationRequested)
                                 {
@@ -165,22 +152,15 @@ namespace WebApplications.Utilities.Service
                                                _connectionGuid != Guid.Empty)
                                         {
                                             // Read data in.
-                                            int read = await stream.ReadAsync(buffer, 0, InBufferSize, token);
-                                            if (read < 1 ||
+                                            byte[] data = await stream.ReadAsync(token);
+                                            if (data == null ||
                                                 token.IsCancellationRequested ||
                                                 _server.Service.State == ServiceState.Shutdown ||
                                                 _connectionGuid == Guid.Empty)
                                                 break;
 
-                                            // Write data to reader stream (no point in doing this async).
-                                            readerStream.Write(buffer, 0, read);
-
-                                            if (!stream.IsMessageComplete) continue;
-
                                             // Deserialize the incoming message.
-                                            Message message = Message.Deserialize(readerStream.ToArray());
-                                            readerStream.Seek(0, SeekOrigin.Begin);
-                                            readerStream.SetLength(0);
+                                            Message message = Message.Deserialize(data);
 
                                             Request request = message as Request;
 
@@ -201,9 +181,7 @@ namespace WebApplications.Utilities.Service
                                                     LoggingLevel.Notification,
                                                     () => ServiceResources.Not_NamedPipeConnection_Connection,
                                                     connectRequest.Description);
-
-                                                // TODO Add logger and start outputting logs...
-
+                                                
                                                 await
                                                     Send(
                                                         new ConnectResponse(request.ID, _server.Service.ServiceName),

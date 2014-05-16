@@ -65,12 +65,9 @@ namespace WebApplications.Utilities.Service.Client
         [NotNull]
         private readonly NamedPipeServerInfo _server;
 
-        [NotNull]
-        private readonly AsyncLock _writeLock = new AsyncLock();
-
         private PipeState _state = PipeState.Starting;
 
-        private NamedPipeClientStream _stream;
+        private OverlappingPipeClient _stream;
 
         private CancellationTokenSource _cancellationTokenSource;
 
@@ -83,7 +80,7 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         /// <value>The name of the service.</value>
         [CanBeNull]
-        public string ServiceName { get { return _serviceName; }}
+        public string ServiceName { get { return _serviceName; } }
 
         /// <summary>
         /// The connection completion source indicates connection has occured.
@@ -135,13 +132,7 @@ namespace WebApplications.Utilities.Service.Client
                 {
                     try
                     {
-                        byte[] buffer = new byte[InBufferSize];
-                        using (MemoryStream readerStream = new MemoryStream(InBufferSize))
-                        using (NamedPipeClientStream stream = new NamedPipeClientStream(
-                            _server.Host,
-                            _server.FullName,
-                            PipeDirection.InOut,
-                            PipeOptions.Asynchronous))
+                        using (OverlappingPipeClient stream = new OverlappingPipeClient(_server.Host, _server.FullName, PipeTransmissionMode.Message))
                         {
                             _state = PipeState.Open;
 
@@ -150,9 +141,8 @@ namespace WebApplications.Utilities.Service.Client
                                 : disposeToken;
 
                             // We need to support cancelling the connect.
-                            await Task.Run(() => stream.Connect(60000), token);
+                            await stream.Connect(token);
 
-                            stream.ReadMode = PipeTransmissionMode.Message;
                             DisconnectResponse disconnectResponse = null;
 
                             if (!token.IsCancellationRequested)
@@ -163,11 +153,7 @@ namespace WebApplications.Utilities.Service.Client
 
                                 // Kick off a connect request, but don't wait for it's result as we're the task that will receive it!
                                 ConnectRequest connectRequest = new ConnectRequest(description);
-                                using (await _writeLock.LockAsync(token))
-                                {
-                                    byte[] data = connectRequest.Serialize();
-                                    await stream.WriteAsync(data, 0, data.Length, token);
-                                }
+                                await stream.WriteAsync(connectRequest.Serialize(), token);
 
                                 ConnectResponse connectResponse = null;
 
@@ -176,20 +162,10 @@ namespace WebApplications.Utilities.Service.Client
                                        !disposeToken.IsCancellationRequested)
                                 {
                                     // Read data in.
-                                    int read = await stream.ReadAsync(buffer, 0, InBufferSize, disposeToken);
-                                    if (read < 1 ||
-                                        disposeToken.IsCancellationRequested)
-                                        break;
-
-                                    // Write data to reader stream (no point in doing this async).
-                                    readerStream.Write(buffer, 0, read);
-
-                                    if (!stream.IsMessageComplete) continue;
+                                    byte[] data = await stream.ReadAsync(disposeToken);
 
                                     // Deserialize the incoming message.
-                                    Message message = Message.Deserialize(readerStream.ToArray());
-                                    readerStream.Seek(0, SeekOrigin.Begin);
-                                    readerStream.SetLength(0);
+                                    Message message = Message.Deserialize(data);
 
                                     if (connectResponse == null)
                                     {
@@ -332,35 +308,31 @@ namespace WebApplications.Utilities.Service.Client
         [NotNull]
         private async Task<Message> Send([NotNull] Request request, CancellationToken token = default(CancellationToken))
         {
-            using (await _writeLock.LockAsync(token))
-            {
-                if (_state != PipeState.Connected) return null;
-                NamedPipeClientStream stream = _stream;
-                if (stream == null) return null;
+            if (_state != PipeState.Connected) return null;
+            OverlappingPipeClient stream = _stream;
+            if (stream == null) return null;
 
-                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
-                token = token.CanBeCanceled
-                    ? CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token).Token
-                    : cts.Token;
+            token = token.CanBeCanceled
+                ? CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token).Token
+                : cts.Token;
 
-                TaskCompletionSource<Message> tcs = new TaskCompletionSource<Message>();
-                token.Register(
-                    () =>
-                    {
-                        tcs.TrySetCanceled();
-                        TaskCompletionSource<Message> t;
-                        _commandRequests.TryRemove(request.ID, out t);
-                    });
+            TaskCompletionSource<Message> tcs = new TaskCompletionSource<Message>();
+            token.Register(
+                () =>
+                {
+                    tcs.TrySetCanceled();
+                    TaskCompletionSource<Message> t;
+                    _commandRequests.TryRemove(request.ID, out t);
+                });
 
-                if (!_commandRequests.TryAdd(request.ID, tcs))
-                    return null;
+            if (!_commandRequests.TryAdd(request.ID, tcs))
+                return null;
 
-                byte[] data = request.Serialize();
-                await stream.WriteAsync(data, 0, data.Length, token);
+            await stream.WriteAsync(request.Serialize(), token);
 
-                return await tcs.Task;
-            }
+            return await tcs.Task;
         }
 
         /// <summary>
