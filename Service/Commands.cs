@@ -313,7 +313,6 @@ namespace WebApplications.Utilities.Service
                 if (args == null)
                     args = new string[0];
 
-                Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Start_Starting, ServiceName);
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {
@@ -358,7 +357,6 @@ namespace WebApplications.Utilities.Service
                         return;
                 }
 
-                Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Stop_Stopping, ServiceName);
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {
@@ -398,7 +396,6 @@ namespace WebApplications.Utilities.Service
                     return;
                 }
 
-                Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Pause_Pausing, ServiceName);
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {
@@ -438,10 +435,6 @@ namespace WebApplications.Utilities.Service
                     return;
                 }
 
-                Log.Add(
-                    LoggingLevel.Information,
-                    () => ServiceResources.Inf_ServiceRunner_Continue_Continuing,
-                    ServiceName);
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {
@@ -472,10 +465,6 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
-                Log.Add(
-                    LoggingLevel.Information,
-                    () => ServiceResources.Inf_ServiceRunner_Shutdown_ShuttingDown,
-                    ServiceName);
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {
@@ -513,11 +502,6 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
-                Log.Add(
-                    LoggingLevel.Information,
-                    () => ServiceResources.Inf_ServiceRunner_CustomCommand_Running,
-                    command,
-                    ServiceName);
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {
@@ -552,11 +536,6 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
-                Log.Add(
-                    LoggingLevel.Information,
-                    () => ServiceResources.Inf_ServiceRunner_PowerEvent_Sending,
-                    powerStatus,
-                    ServiceName);
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {
@@ -601,12 +580,6 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
-                Log.Add(
-                    LoggingLevel.Information,
-                    () => ServiceResources.Inf_ServiceRunner_SessionChange_Sending,
-                    changeReason,
-                    sessionId,
-                    ServiceName);
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {

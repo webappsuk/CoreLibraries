@@ -119,7 +119,6 @@ namespace WebApplications.Utilities.Service
         ///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode" />
         ///   <IPermission class="System.Diagnostics.EventLogPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
-        [NotNull]
         public override EventLog EventLog
         {
             get { return _eventLog; }
@@ -223,8 +222,6 @@ namespace WebApplications.Utilities.Service
                 }
                 ((ISupportInitialize)(this._eventLog)).EndInit();
             }
-
-            _eventLog.WriteEntry("Completed base constructor, IsService=" + IsService);
         }
 
         /// <summary>
@@ -256,7 +253,6 @@ namespace WebApplications.Utilities.Service
         /// <returns>An awaitable task.</returns>
         public void Run(bool promptInstall = true, bool allowConsole = true)
         {
-            EventLog.WriteEntry("Hit Run");
             RunAsync(promptInstall, allowConsole).Wait();
         }
 
@@ -627,7 +623,6 @@ namespace WebApplications.Utilities.Service
             displayName,
             (string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
         {
-            EventLog.WriteEntry("Hit Contructor");
             try
             {
                 if (identity == null)
@@ -848,6 +843,7 @@ namespace WebApplications.Utilities.Service
         // ReSharper disable once CodeAnnotationAnalyzer
         protected override sealed void OnStart([NotNull] string[] args)
         {
+            Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Start_Starting, ServiceName);
             try
             {
                 using (PerfTimerStart.Region())
@@ -926,6 +922,8 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnStop()
         {
+            Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Stop_Stopping, ServiceName);
+            Log.Flush();
             using (PerfTimerStop.Region())
                 lock (_lock)
                 {
@@ -964,6 +962,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnPause()
         {
+            Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Pause_Pausing, ServiceName);
             lock (_lock)
             {
                 if (State != ServiceState.Running)
@@ -987,6 +986,10 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnContinue()
         {
+            Log.Add(
+                LoggingLevel.Information,
+                () => ServiceResources.Inf_ServiceRunner_Continue_Continuing,
+                ServiceName);
             lock (_lock)
             {
                 if (State != ServiceState.Paused)
@@ -1010,6 +1013,11 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnShutdown()
         {
+            Log.Add(
+                LoggingLevel.Information,
+                () => ServiceResources.Inf_ServiceRunner_Shutdown_ShuttingDown,
+                ServiceName);
+            Log.Flush();
             lock (_lock)
             {
                 _state = ServiceState.StopPending;
@@ -1039,6 +1047,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">The command message sent to the service.</param>
         protected override sealed void OnCustomCommand(int command)
         {
+            Log.Add(
+                LoggingLevel.Information,
+                () => ServiceResources.Inf_ServiceRunner_CustomCommand_Running,
+                command,
+                ServiceName);
             using (PerfTimerCustomCommand.Region())
                 DoCustomCommand(command);
         }
@@ -1050,6 +1063,12 @@ namespace WebApplications.Utilities.Service
         /// <returns>When implemented in a derived class, the needs of your application determine what value to return. For example, if a QuerySuspend broadcast status is passed, you could cause your application to reject the query by returning false.</returns>
         protected override sealed bool OnPowerEvent(PowerBroadcastStatus powerStatus)
         {
+            Log.Add(
+                LoggingLevel.Information,
+                () => ServiceResources.Inf_ServiceRunner_PowerEvent_Sending,
+                powerStatus,
+                ServiceName);
+            Log.Flush();
             lock (_lock)
             {
                 bool result = DoPowerEvent(powerStatus);
@@ -1064,6 +1083,12 @@ namespace WebApplications.Utilities.Service
         /// <param name="changeDescription">A <see cref="T:System.ServiceProcess.SessionChangeDescription" /> structure that identifies the change type.</param>
         protected override sealed void OnSessionChange(SessionChangeDescription changeDescription)
         {
+            Log.Add(
+                LoggingLevel.Information,
+                () => ServiceResources.Inf_ServiceRunner_SessionChange_Sending,
+                changeDescription.Reason,
+                changeDescription.SessionId,
+                ServiceName);
             lock (_lock)
             {
                 DoSessionChange(changeDescription);
