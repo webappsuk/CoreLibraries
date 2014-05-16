@@ -22,7 +22,8 @@ namespace WebApplications.Utilities.Service.Client
             .AppendForegroundColor(ConsoleColor.Yellow)
             .AppendFormat("{Server: {Name}}")
             .AppendResetForegroundColor()
-            .Append(" > ");
+            .Append(" > ")
+            .MakeReadOnly();
 
         [NotNull]
         private static readonly FormatBuilder _serverList = new FormatBuilder()
@@ -32,7 +33,8 @@ namespace WebApplications.Utilities.Service.Client
             .AppendForegroundColor(ConsoleColor.Yellow)
             .AppendLine("Host\tName\tPipe")
             .AppendResetForegroundColor()
-            .AppendFormatLine("{Servers:{<items>:{<item>}{<join>:\r\n}}}");
+            .AppendFormatLine("{Servers:{<items>:{<item>}{<join>:\r\n}}}")
+            .MakeReadOnly();
 
         [NotNull]
         private static readonly FormatBuilder _connected = new FormatBuilder()
@@ -41,7 +43,8 @@ namespace WebApplications.Utilities.Service.Client
             .Append("Connected to ")
             .AppendForegroundColor(ConsoleColor.Yellow)
             .AppendFormatLine("{ServiceName}")
-            .AppendResetForegroundColor();
+            .AppendResetForegroundColor()
+            .MakeReadOnly();
 
 
         public static void Run(string description, [CanBeNull] string pipe)
@@ -76,6 +79,7 @@ namespace WebApplications.Utilities.Service.Client
             NamedPipeClient client = null;
             while (client == null)
             {
+                token.ThrowIfCancellationRequested();
                 while (service == null ||
                        !service.IsValid)
                 {
@@ -88,7 +92,8 @@ namespace WebApplications.Utilities.Service.Client
                         services = NamedPipeClient.GetServices().ToArray();
                         if (Console.KeyAvailable)
                             break;
-                        await Task.Delay(500);
+                        await Task.Delay(500, token);
+                        token.ThrowIfCancellationRequested();
                     }
 
                     if (services.Length > 0)
@@ -107,15 +112,23 @@ namespace WebApplications.Utilities.Service.Client
             }
 
             Console.Title = string.Format("{0} connected to {1}", description, service.Name);
+            _connected.WriteToConsole(
+                null,
+                new Dictionary<string, object>
+                    {
+                        {"ServiceName", client.ServiceName}
+                    });
 
             while (client.State != PipeState.Closed)
             {
+                token.ThrowIfCancellationRequested();
                 WritePrompt(service);
                 string command = Console.ReadLine();
 
                 ConsoleTextWriter.Default.WriteLine(await client.Execute(command, token));
                 // Wait to allow any disconnects or logs to come through.
-                await Task.Delay(500);
+                await Log.Flush(token);
+                await Task.Delay(200, token);
             }
         }
 
@@ -128,18 +141,6 @@ namespace WebApplications.Utilities.Service.Client
             if (logResponse != null && logResponse.Log != null)
             {
                 logResponse.Log.WriteTo(ConsoleTextWriter.Default);
-                return;
-            }
-
-            ConnectResponse connectResponse = message as ConnectResponse;
-            if (connectResponse != null)
-            {
-                _connected.WriteToConsole(
-                    null,
-                    new Dictionary<string, object>
-                    {
-                        {"ServiceName", connectResponse.ServiceName}
-                    });
                 return;
             }
 

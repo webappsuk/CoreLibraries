@@ -76,6 +76,15 @@ namespace WebApplications.Utilities.Service.Client
 
         private Task _clientTask;
 
+        private string _serviceName;
+
+        /// <summary>
+        /// Gets the name of the service (whilst connected).
+        /// </summary>
+        /// <value>The name of the service.</value>
+        [CanBeNull]
+        public string ServiceName { get { return _serviceName; }}
+
         /// <summary>
         /// The connection completion source indicates connection has occured.
         /// </summary>
@@ -189,6 +198,7 @@ namespace WebApplications.Utilities.Service.Client
                                             break;
 
                                         _state = PipeState.Connected;
+                                        _serviceName = connectResponse.ServiceName;
 
                                         Log.Add(
                                             LoggingLevel.Notification,
@@ -227,6 +237,7 @@ namespace WebApplications.Utilities.Service.Client
                             // Remove the stream.
                             _stream = null;
                             _state = PipeState.Closed;
+                            _serviceName = null;
 
                             // If we had a disconnect message observe it now that the disconnect has been actioned,
                             // this prevents the receiver thinking the connection is still active.
@@ -243,6 +254,7 @@ namespace WebApplications.Utilities.Service.Client
                     {
                         _stream = null;
                         _state = PipeState.Closed;
+                        _serviceName = null;
                         TaskCanceledException tce = exception as TaskCanceledException;
 
                         TaskCompletionSource<NamedPipeClient> ccs = Interlocked.Exchange(ref _connectionCompletionSource, null);
@@ -408,6 +420,7 @@ namespace WebApplications.Utilities.Service.Client
 
             _clientTask = null;
             _state = PipeState.Closed;
+            _serviceName = null;
 
             foreach (Guid id in _commandRequests.Keys.ToArray())
             {

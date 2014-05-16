@@ -27,6 +27,7 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -40,6 +41,16 @@ namespace WebApplications.Utilities.Service
     /// </summary>
     public class ConsoleConnection : IDisposable, IConnection
     {
+        [NotNull]
+        private static readonly FormatBuilder _promptBuilder = new FormatBuilder()
+            .AppendForegroundColor(ConsoleColor.Cyan)
+            .AppendFormat("[{Time:hh:mm:ss.ffff}] ")
+            .AppendForegroundColor(ConsoleColor.Yellow)
+            .AppendFormat("{State}")
+            .AppendResetForegroundColor()
+            .Append(" > ")
+            .MakeReadOnly();
+
         /// <summary>
         /// The task completion source
         /// </summary>
@@ -93,6 +104,8 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
             if (!ConsoleHelper.IsConsole)
                 return TaskResult.Completed;
+            Console.Clear();
+            Console.Title = service.ServiceName;
             Log.SetConsole(defaultLogFormat, defaultLoggingLevels);
 
             ConsoleConnection connection = new ConsoleConnection(defaultLogFormat, defaultLoggingLevels, token);
@@ -101,11 +114,25 @@ namespace WebApplications.Utilities.Service
             return Task.Run(
                 async () =>
                 {
-                    do
+                    try
                     {
-                        service.Execute(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default);
-                    } while (!t.IsCancellationRequested);
-                    service.Disconnect(id);
+                        do
+                        {
+                            // Flush logs
+                            await Log.Flush(t);
+                            WritePrompt(service);
+                            service.Execute(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default);
+
+                            // Let any async stuff done by the command have a bit of time, also throttle commands.
+                            await Task.Delay(500, t);
+                        } while (!t.IsCancellationRequested);
+                    }
+                    catch (TaskCanceledException) { }
+                    finally
+                    {
+                        Log.Flush().Wait();
+                        service.Disconnect(id);
+                    }
                 },
                 t);
         }
@@ -137,6 +164,29 @@ namespace WebApplications.Utilities.Service
         public LoggingLevels DefaultLoggingLevels
         {
             get { return _defaultLoggingLevels; }
+        }
+
+        /// <summary>
+        /// Writes the prompt.
+        /// </summary>
+        private static void WritePrompt([NotNull]BaseService service)
+        {
+            if (Console.CursorLeft != 0)
+                ConsoleTextWriter.Default.WriteLine();
+            _promptBuilder.WriteToConsole(
+                null,
+                (_, c) =>
+                {
+                    switch (c.Tag.ToLowerInvariant())
+                    {
+                        case "time":
+                            return DateTime.UtcNow;
+                        case "state":
+                            return service.State;
+                        default:
+                            return Resolution.Unknown;
+                    }
+                });
         }
 
         /// <summary>
