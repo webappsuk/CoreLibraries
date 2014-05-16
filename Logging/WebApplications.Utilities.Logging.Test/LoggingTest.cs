@@ -319,12 +319,52 @@ namespace WebApplications.Utilities.Logging.Test
         }
 
         [TestMethod]
+        public async Task TestProtoBufEnumerationSerialization()
+        {
+            Trace.WriteLine(RuntimeTypeModel.Default.GetSchema(typeof(IEnumerable<Log>)));
+            const int testCount = 5;
+
+            Log[] logs = new Log[testCount];
+            for (int m = 0; m < testCount; m++)
+                logs[m] = new Log(
+                    new LogContext().Set("Test No", m),
+                    new Exception("Exception", new Exception("Inner exception")),
+                    LoggingLevel.Information,
+                    () => Resources.TestString,
+                    m,
+                    Guid.NewGuid());
+
+            await Log.Flush();
+
+            CollectionAssert.AllItemsAreNotNull(logs);
+            Assert.IsTrue(logs.All(l => l.MessageFormat == Resources.TestString), "Logs contain incorrect message format.");
+
+            IEnumerable<Log> logs2;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                Serializer.Serialize(memoryStream, logs);
+
+                Trace.WriteLine(string.Format("Serialized logs took up {0} bytes.", memoryStream.Position));
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                //logs2 = Serializer.Deserialize<IEnumerable<Log>>(memoryStream); This doesnt work with the Trace.WriteLine at the top
+                logs2 = Serializer.Deserialize<Log[]>(memoryStream);
+                Assert.AreEqual(memoryStream.Position, memoryStream.Length);
+            }
+            Assert.IsNotNull(logs2);
+            List<Log> result = logs2.ToList();
+            Assert.AreEqual(logs.Length, result.Count);
+            for (int i = 0; i < logs.Length; i++)
+                Assert.AreEqual(logs[i].ToString(), result[i].ToString());
+        }
+
+        [TestMethod]
         public void TestResource()
         {
             Contract.Assert(Resources.TestString != null);
 
             Log log = new Log(() => Resources.TestString, "p0");
-            Assert.AreEqual(typeof(Resources).FullName +".TestString", log.ResourceProperty);
+            Assert.AreEqual(typeof(Resources).FullName + ".TestString", log.ResourceProperty);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.Message);
         }
 
