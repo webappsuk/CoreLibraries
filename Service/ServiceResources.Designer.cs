@@ -169,6 +169,24 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Installs the running service as a windows service..
+        /// </summary>
+        internal static string Cmd_Install_Description {
+            get {
+                return ResourceManager.GetString("Cmd_Install_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install.
+        /// </summary>
+        internal static string Cmd_Install_Names {
+            get {
+                return ResourceManager.GetString("Cmd_Install_Names", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No description is available for the parameter in the current language..
         /// </summary>
         internal static string Cmd_Param_Description {
@@ -345,6 +363,24 @@ namespace WebApplications.Utilities.Service {
         internal static string Cmd_Stop_Names {
             get {
                 return ResourceManager.GetString("Cmd_Stop_Names", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstalls the running service as a windows service..
+        /// </summary>
+        internal static string Cmd_Uninstall_Description {
+            get {
+                return ResourceManager.GetString("Cmd_Uninstall_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstall.
+        /// </summary>
+        internal static string Cmd_Uninstall_Names {
+            get {
+                return ResourceManager.GetString("Cmd_Uninstall_Names", resourceCulture);
             }
         }
         
@@ -556,6 +592,24 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Installing the &apos;{0}&apos; service..
+        /// </summary>
+        internal static string Inf_ServiceRunner_Install {
+            get {
+                return ResourceManager.GetString("Inf_ServiceRunner_Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installing the &apos;{0}&apos; service from the &apos;{1}&apos; path took {2}ms..
+        /// </summary>
+        internal static string Inf_ServiceRunner_Installed {
+            get {
+                return ResourceManager.GetString("Inf_ServiceRunner_Installed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Paused service &apos;{0}&apos; in {1}ms..
         /// </summary>
         internal static string Inf_ServiceRunner_Pause_Paused {
@@ -660,6 +714,24 @@ namespace WebApplications.Utilities.Service {
         internal static string Inf_ServiceRunner_Stop_Stopping {
             get {
                 return ResourceManager.GetString("Inf_ServiceRunner_Stop_Stopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstalling the &apos;{0}&apos; service took {1}ms..
+        /// </summary>
+        internal static string Inf_ServiceRunner_Uninstall {
+            get {
+                return ResourceManager.GetString("Inf_ServiceRunner_Uninstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstalling the &apos;{0}&apos; service..
+        /// </summary>
+        internal static string Inf_ServiceRunner_Uninstalled {
+            get {
+                return ResourceManager.GetString("Inf_ServiceRunner_Uninstalled", resourceCulture);
             }
         }
         

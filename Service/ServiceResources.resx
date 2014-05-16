@@ -153,6 +153,12 @@
   <data name="Cmd_Help_Parameter_Description" xml:space="preserve">
     <value>The name of the parameter to get help for. If omitted, all parameters of the command will be listed.</value>
   </data>
+  <data name="Cmd_Install_Description" xml:space="preserve">
+    <value>Installs the running service as a windows service.</value>
+  </data>
+  <data name="Cmd_Install_Names" xml:space="preserve">
+    <value>Install</value>
+  </data>
   <data name="Cmd_Param_Description" xml:space="preserve">
     <value>No description is available for the parameter in the current language.</value>
   </data>
@@ -212,6 +218,12 @@
   </data>
   <data name="Cmd_Stop_Names" xml:space="preserve">
     <value>Stop,S</value>
+  </data>
+  <data name="Cmd_Uninstall_Description" xml:space="preserve">
+    <value>Uninstalls the running service as a windows service.</value>
+  </data>
+  <data name="Cmd_Uninstall_Names" xml:space="preserve">
+    <value>Uninstall</value>
   </data>
   <data name="Err_BaseService_CouldNotLocateAssemblyGuid" xml:space="preserve">
     <value>The '{0}' does not define a GuidAttribute, so creating a random one. Add a GuidAttribute to prevent multiple instances of the service being started.</value>
@@ -282,6 +294,12 @@
   <data name="Inf_ServiceRunner_Dispose_Disposing" xml:space="preserve">
     <value>Disposing service '{0}'.</value>
   </data>
+  <data name="Inf_ServiceRunner_Install" xml:space="preserve">
+    <value>Installing the '{0}' service.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Installed" xml:space="preserve">
+    <value>Installing the '{0}' service from the '{1}' path took {2}ms.</value>
+  </data>
   <data name="Inf_ServiceRunner_Pause_Paused" xml:space="preserve">
     <value>Paused service '{0}' in {1}ms.</value>
   </data>
@@ -317,6 +335,12 @@
   </data>
   <data name="Inf_ServiceRunner_Stop_Stopping" xml:space="preserve">
     <value>Stopping service '{0}'.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Uninstall" xml:space="preserve">
+    <value>Uninstalling the '{0}' service took {1}ms.</value>
+  </data>
+  <data name="Inf_ServiceRunner_Uninstalled" xml:space="preserve">
+    <value>Uninstalling the '{0}' service.</value>
   </data>
   <data name="Not_NamedPipeConnection_Connection" xml:space="preserve">
     <value>The service received a connection from '{0}'.</value>

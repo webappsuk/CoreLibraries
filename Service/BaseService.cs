@@ -99,19 +99,19 @@ namespace WebApplications.Utilities.Service
         public abstract ServiceState State { get; }
 
         /// <summary>
-        /// The current instance is running as a service.
+        /// The current process is running as a service.
         /// </summary>
-        public static readonly bool IsService;
+        private static readonly bool IsServiceProcess;
 
         /// <summary>
         /// Initializes static members of the <see cref="BaseService"/> class.
         /// </summary>
         static BaseService()
         {
-            IsService = !Environment.UserInteractive;
-            if (IsService)
+            IsServiceProcess = !Environment.UserInteractive;
+            if (IsServiceProcess)
             {
-                IsService = false;
+                IsServiceProcess = false;
                 try
                 {
                     // ReSharper disable PossibleNullReferenceException
@@ -122,7 +122,7 @@ namespace WebApplications.Utilities.Service
                         Contract.Assert(entryType != null);
                         if (entryType == typeof(ServiceBase))
                         {
-                            IsService = true;
+                            IsServiceProcess = true;
                             break;
                         }
                         entryType = entryType.BaseType;
@@ -141,33 +141,47 @@ namespace WebApplications.Utilities.Service
         }
 
         /// <summary>
-        /// The service controller for this service (if running as a service).
+        /// Initializes a new instance of the <see cref="BaseService" /> class.
         /// </summary>
-        [CanBeNull]
-        protected readonly ServiceController ServiceController;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseService"/> class.
-        /// </summary>
-        protected BaseService([NotNull] string description)
+        /// <param name="name">The name.</param>
+        /// <param name="displayName">The display name.</param>
+        /// <param name="description">The description.</param>
+        protected BaseService([NotNull] string name, [CanBeNull]string displayName, [CanBeNull]string description)
         {
-            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
-            ServiceName = description;
+            Contract.Requires<RequiredContractException>(name != null, "Parameter_Null");
+            ServiceName = name;
+            DisplayName = displayName ?? name;
+            Description = description ?? DisplayName;
             AutoLog = false;
             CanStop = true;
             CanHandlePowerEvent = true;
             CanHandleSessionChangeEvent = true;
             CanPauseAndContinue = true;
             CanShutdown = true;
-            if (IsService)
-                ServiceController = new ServiceController(ServiceName);
+            IsService = IsServiceProcess && ServiceUtils.ServiceIsInstalled(name);
         }
+
+        /// <summary>
+        /// Whether the service is running as a service.
+        /// </summary>
+        public readonly bool IsService;
 
         // TODO Move to Utilities
         protected static readonly PauseToken Paused = new PauseTokenSource { IsPaused = true }.Token;
         protected static readonly CancellationToken Cancelled;
 
+        /// <summary>
+        /// The display name.
+        /// </summary>
+        [NotNull]
+        public readonly string DisplayName;
 
+        /// <summary>
+        /// The description.
+        /// </summary>
+        [NotNull]
+        public readonly string Description;
+        
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
@@ -331,6 +345,14 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [NotNull]
         // ReSharper disable once StaticFieldInGenericType
+        public static readonly string Title;
+
+        /// <summary>
+        /// The service assembly description.
+        /// </summary>
+        [PublicAPI]
+        [NotNull]
+        // ReSharper disable once StaticFieldInGenericType
         public static readonly string Description;
 
         /// <summary>
@@ -339,7 +361,7 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         private readonly object _lock = new object();
 
-        private ServiceState _state;
+        private ServiceState _state = ServiceState.Unknown;
 
         /// <summary>
         /// Gets the current state of the service.
@@ -464,6 +486,22 @@ namespace WebApplications.Utilities.Service
             Commands = new ReadOnlyDictionary<string, ServiceCommand>(commands);
 
             Assembly assembly = typeof(TService).Assembly;
+
+            if (assembly.IsDefined(typeof(AssemblyTitleAttribute), false))
+            {
+                AssemblyTitleAttribute a =
+                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute)) as
+                        AssemblyTitleAttribute;
+                if (a != null)
+                {
+                    Contract.Assert(a.Title != null);
+                    Title = a.Title;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(Description))
+                Description = "A windows service.";
+
             if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
@@ -512,86 +550,23 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseService" /> class.
         /// </summary>
-        /// <param name="description">The description.</param>
-        /// <param name="sddlForm">SDDL string for the SID used to create the <see cref="SecurityIdentifier"/> object to 
-        /// identify who can can start/stop the service.</param>
-        protected BaseService([CanBeNull] string description, [NotNull] string sddlForm)
-            : this(description, new SecurityIdentifier(sddlForm))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseService" /> class.
-        /// </summary>
-        /// <param name="description">The description.</param>
-        /// <param name="sidType">One of the enumeration of well known sid types, the value must not be 
-        /// <see cref="WellKnownSidType.LogonIdsSid" />.  This defines
-        /// who can start/stop the service.</param>
-        /// <param name="domainSid"><para>The domain SID. This value is required for the following <see cref="WellKnownSidType" /> values.
-        /// This parameter is ignored for any other <see cref="WellKnownSidType" /> values.</para>
-        /// <list type="bullet">
-        ///   <item>
-        ///     <description>AccountAdministratorSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountGuestSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountKrbtgtSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountDomainAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountDomainUsersSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountDomainGuestsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountComputersSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountControllersSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountCertAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountSchemaAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountEnterpriseAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountPolicyAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountRasAndIasServersSid</description>
-        ///   </item>
-        /// </list></param>
-        protected BaseService([CanBeNull] string description,
-            WellKnownSidType sidType,
-            SecurityIdentifier domainSid = null)
-            : this(description, new SecurityIdentifier(sidType, domainSid))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseService" /> class.
-        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="displayName">The display name.</param>
         /// <param name="description">The description.</param>
         /// <param name="identity">The identity of users that can start/stop the service, defaults to world.</param>
-        protected BaseService([CanBeNull] string description = null, IdentityReference identity = null)
-            : base((string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
+        protected BaseService([CanBeNull] string name = null, [CanBeNull] string displayName = null, [CanBeNull] string description = null, IdentityReference identity = null)
+            : base(
+            (string.IsNullOrWhiteSpace(name) || name.Length > 128) ? Title : name,
+            displayName, 
+            (string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
         {
-            _state = ServiceState.Stopped;
-
             if (identity == null)
                 identity = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
 
             _eventWaitHandleSecurity = new EventWaitHandleSecurity();
             _eventWaitHandleSecurity.AddAccessRule(new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
+
+            _state = IsService ? ServiceUtils.GetServiceStatus(ServiceName) : ServiceState.Stopped;
         }
 
         /// <summary>
@@ -634,14 +609,19 @@ namespace WebApplications.Utilities.Service
             using (PerfTimerStart.Region())
                 lock (_lock)
                 {
-                    if (_state != ServiceState.Stopped)
+                    switch (_state)
                     {
-                        Log.Add(
-                            LoggingLevel.Error,
-                            () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning,
-                            ServiceName);
-                        return;
+                        case ServiceState.Unknown:
+                        case ServiceState.Stopped:
+                            break;
+                        default:
+                            Log.Add(
+                                LoggingLevel.Error,
+                                () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning,
+                                ServiceName);
+                            return;
                     }
+                    _state = ServiceState.StartPending;
 
                     // Try to grab the global mutex
                     bool hasHandle = false;
@@ -683,8 +663,8 @@ namespace WebApplications.Utilities.Service
 
                     _cancellationTokenSource = new CancellationTokenSource();
                     _pauseTokenSource.IsPaused = false;
-                    _state = ServiceState.Running;
                     DoStart(args);
+                    _state = ServiceState.Running;
                 }
         }
 
@@ -696,17 +676,21 @@ namespace WebApplications.Utilities.Service
             using (PerfTimerStop.Region())
                 lock (_lock)
                 {
-                    if (State != ServiceState.Running)
+                    switch (_state)
                     {
-                        Log.Add(
-                            LoggingLevel.Error,
-                            () => ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning,
-                            ServiceName);
-                        return;
+                        case ServiceState.Running:
+                        case ServiceState.Paused:
+                            break;
+                        default:
+                            Log.Add(
+                                LoggingLevel.Error,
+                                () => ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning,
+                                ServiceName);
+                            return;
                     }
+                    _state = ServiceState.StopPending;
                     DoStop();
                     Contract.Assert(_cancellationTokenSource != null);
-                    _state = ServiceState.Stopped;
                     _cancellationTokenSource.Cancel();
                     _cancellationTokenSource = null;
                     _pauseTokenSource.IsPaused = true;
@@ -718,6 +702,7 @@ namespace WebApplications.Utilities.Service
                         _runEventWaitHandle.Dispose();
                         _runEventWaitHandle = null;
                     }
+                    _state = ServiceState.Stopped;
                 }
         }
 
@@ -736,10 +721,11 @@ namespace WebApplications.Utilities.Service
                         ServiceName);
                     return;
                 }
+                _state = ServiceState.PausePending;
                 DoPause();
-                _state = ServiceState.Paused;
                 _pauseTokenSource.IsPaused = true;
                 PerfCounterPause.Increment();
+                _state = ServiceState.Paused;
             }
         }
 
@@ -758,10 +744,11 @@ namespace WebApplications.Utilities.Service
                         ServiceName);
                     return;
                 }
+                _state = ServiceState.ContinuePending;
                 _pauseTokenSource.IsPaused = false;
-                _state = ServiceState.Running;
                 DoContinue();
                 PerfCounterContinue.Increment();
+                _state = ServiceState.Running;
             }
         }
 
@@ -772,8 +759,8 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
+                _state = ServiceState.StopPending;
                 DoShutdown();
-                _state = ServiceState.Shutdown;
                 CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
                 if (cts != null)
                     cts.Cancel();
@@ -789,6 +776,7 @@ namespace WebApplications.Utilities.Service
                 TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTask, null);
                 if (ltt != null)
                     ltt.TrySetResult(true);
+                _state = ServiceState.Unknown;
             }
         }
 

@@ -182,7 +182,13 @@
     <Compile Include="PipeProtocol\PipeState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiredContractException.cs" />
+    <Compile Include="ScmAccessRights.cs" />
+    <Compile Include="ServiceAccessRights.cs" />
+    <Compile Include="ServiceBootFlag.cs" />
     <Compile Include="ServiceCommandParameterAttribute.cs" />
+    <Compile Include="ServiceConfig.cs" />
+    <Compile Include="ServiceControl.cs" />
+    <Compile Include="ServiceError.cs" />
     <Compile Include="ServiceException.cs" />
     <None Include="ServiceRunner.cs" />
     <Compile Include="ServiceCommand.cs" />
@@ -192,6 +198,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ServiceResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ServiceUtils.cs" />
     <Compile Include="ServiceState.cs" />
   </ItemGroup>
   <ItemGroup>

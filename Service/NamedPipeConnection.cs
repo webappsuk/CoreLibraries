@@ -151,14 +151,14 @@ namespace WebApplications.Utilities.Service
                                         // Keep going as long as we're connected.
                                         while (stream.IsConnected &&
                                                !token.IsCancellationRequested &&
-                                               _server.Service.State != ServiceState.Shutdown &&
+                                               _server.Service.State != ServiceState.NotFound &&
                                                _connectionGuid != Guid.Empty)
                                         {
                                             // Read data in.
                                             byte[] data = await stream.ReadAsync(token);
                                             if (data == null ||
                                                 token.IsCancellationRequested ||
-                                                _server.Service.State == ServiceState.Shutdown ||
+                                                _server.Service.State == ServiceState.NotFound ||
                                                 _connectionGuid == Guid.Empty)
                                                 break;
 

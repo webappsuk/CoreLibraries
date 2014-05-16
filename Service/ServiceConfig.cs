@@ -25,25 +25,16 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using JetBrains.Annotations;
-
-namespace WebApplications.Utilities.Service.Test
+namespace WebApplications.Utilities.Service
 {
-    /// <summary>
-    /// Main entry point of the application.
-    /// </summary>
-    [UsedImplicitly]
-    internal class Program
+    internal enum ServiceConfig
     {
-        /// <summary>
-        /// Defines the entry point of the application.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        private static void Main([CanBeNull] string[] args)
-        {
-            TestService testService = new TestService();
-            using (new NamedPipeServer(testService, maximumConnections: 5))
-                testService.Run();
-        }
+        Description = 1,
+        FailureActions = 2,
+        DelayedAutoStartInfo = 3,
+        FailureActionsFlag = 4,
+        ServiceSidInfo = 5,
+        RequiredPrivilegesInfo = 6,
+        PreShutdownInfo = 7
     }
 }

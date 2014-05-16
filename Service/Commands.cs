@@ -293,17 +293,21 @@ namespace WebApplications.Utilities.Service
         /// <param name="args">The arguments.</param>
         [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description")]
-        public void Start([CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Start_Args_Description")] string[] args)
+        public void StartService([CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Start_Args_Description")] string[] args)
         {
             lock (_lock)
             {
-                if (State != ServiceState.Stopped)
+                switch (_state)
                 {
-                    Log.Add(
-                        LoggingLevel.Error,
-                        () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning,
-                        ServiceName);
-                    return;
+                    case ServiceState.Unknown:
+                    case ServiceState.Stopped:
+                        break;
+                    default:
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning,
+                            ServiceName);
+                        return;
                 }
 
                 if (args == null)
@@ -314,10 +318,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     if (IsService)
-                    {
-                        Contract.Assert(ServiceController != null);
-                        ServiceController.Start(args);
-                    }
+                        ServiceUtils.StopService(ServiceName);
                     else
                         OnStart(args);
 
@@ -344,13 +345,17 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
-                if (State != ServiceState.Running)
+                switch (_state)
                 {
-                    Log.Add(
-                        LoggingLevel.Error,
-                        () => ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning,
-                        ServiceName);
-                    return;
+                    case ServiceState.Running:
+                    case ServiceState.Paused:
+                        break;
+                    default:
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning,
+                            ServiceName);
+                        return;
                 }
 
                 Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Stop_Stopping, ServiceName);
@@ -358,10 +363,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     if (IsService)
-                    {
-                        Contract.Assert(ServiceController != null);
-                        ServiceController.Stop();
-                    }
+                        ServiceUtils.StopService(ServiceName);
                     else
                         OnStop();
                     Log.Add(
@@ -401,10 +403,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     if (IsService)
-                    {
-                        Contract.Assert(ServiceController != null);
-                        ServiceController.Pause();
-                    }
+                        ServiceUtils.PauseService(ServiceName);
                     else
                         OnPause();
                     Log.Add(
@@ -447,10 +446,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     if (IsService)
-                    {
-                        Contract.Assert(ServiceController != null);
-                        ServiceController.Continue();
-                    }
+                        ServiceUtils.ContinueService(ServiceName);
                     else
                         OnContinue();
                     Log.Add(
@@ -526,10 +522,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     if (IsService)
-                    {
-                        Contract.Assert(ServiceController != null);
-                        ServiceController.ExecuteCommand(command);
-                    }
+                        ServiceUtils.CommandService(ServiceName, command);
                     else
                         OnCustomCommand(command);
                     Log.Add(
@@ -642,13 +635,97 @@ namespace WebApplications.Utilities.Service
                 }
             }
         }
+        
+        /// <summary>
+        /// Install services.
+        /// Sends the <see cref="SessionChangeDescription" /> to the service.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description")]
+        public void Install()
+        {
+            lock (_lock)
+            {
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_Install,
+                    ServiceName);
+                Stopwatch s = Stopwatch.StartNew();
+                try
+                {
+                    if (IsService)
+                    {
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                            ServiceName);
+                        return;
+                    }
+
+                    string fileName = Process.GetCurrentProcess().MainModule.FileName;
+                    ServiceUtils.Install(ServiceName, DisplayName, Description, fileName);
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Installed,
+                        ServiceName,
+                        fileName,
+                        s.Elapsed.TotalMilliseconds);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    Contract.Assert(exception.InnerException != null);
+                    Log.Add(exception.InnerException);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Uninstall services.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description")]
+        public void Uninstall()
+        {
+            lock (_lock)
+            {
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_Uninstall,
+                    ServiceName);
+                Stopwatch s = Stopwatch.StartNew();
+                try
+                {
+                    if (IsService)
+                    {
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                            ServiceName);
+                        return;
+                    }
+
+                    ServiceUtils.Uninstall(ServiceName);
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Uninstalled,
+                        ServiceName,
+                        s.Elapsed.TotalMilliseconds);
+                }
+                catch (TargetInvocationException exception)
+                {
+                    Contract.Assert(exception.InnerException != null);
+                    Log.Add(exception.InnerException);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the details of the performance counters loaded.
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="category">The category.</param>
-        [PublicAPI]
+        [
+        PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true, writerParameter: "writer")]
         public void Performance(
             [NotNull] TextWriter writer,

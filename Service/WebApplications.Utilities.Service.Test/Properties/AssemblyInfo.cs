@@ -29,8 +29,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using WebApplications.Utilities;
 
-[assembly: AssemblyTitle("WebApplications.Utilities.Service.Test")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("TestService")]
+[assembly: AssemblyDescription("A test service.")]
 [assembly: Guid("249e3a84-7faf-4fc2-9462-e4e54a26dd3b")]
 [assembly: ComVisible(false)]
 [assembly: AssemblyConfiguration("Release")]

@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -25,25 +25,27 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using JetBrains.Annotations;
+using System;
 
-namespace WebApplications.Utilities.Service.Test
+namespace WebApplications.Utilities.Service
 {
-    /// <summary>
-    /// Main entry point of the application.
-    /// </summary>
-    [UsedImplicitly]
-    internal class Program
+    [Flags]
+    internal enum ServiceAccessRights
     {
-        /// <summary>
-        /// Defines the entry point of the application.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        private static void Main([CanBeNull] string[] args)
-        {
-            TestService testService = new TestService();
-            using (new NamedPipeServer(testService, maximumConnections: 5))
-                testService.Run();
-        }
+        QueryConfig = 0x1,
+        ChangeConfig = 0x2,
+        QueryStatus = 0x4,
+        EnumerateDependants = 0x8,
+        Start = 0x10,
+        Stop = 0x20,
+        PauseContinue = 0x40,
+        Interrogate = 0x80,
+        UserDefinedControl = 0x100,
+        Delete = 0x00010000,
+        StandardRightsRequired = 0xF0000,
+
+        AllAccess = (StandardRightsRequired | QueryConfig | ChangeConfig |
+                     QueryStatus | EnumerateDependants | Start | Stop | PauseContinue |
+                     Interrogate | UserDefinedControl)
     }
 }

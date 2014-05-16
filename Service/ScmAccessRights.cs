@@ -25,25 +25,22 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using JetBrains.Annotations;
+using System;
 
-namespace WebApplications.Utilities.Service.Test
+namespace WebApplications.Utilities.Service
 {
-    /// <summary>
-    /// Main entry point of the application.
-    /// </summary>
-    [UsedImplicitly]
-    internal class Program
+    [Flags]
+    internal enum ScmAccessRights
     {
-        /// <summary>
-        /// Defines the entry point of the application.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        private static void Main([CanBeNull] string[] args)
-        {
-            TestService testService = new TestService();
-            using (new NamedPipeServer(testService, maximumConnections: 5))
-                testService.Run();
-        }
+        Connect = 0x0001,
+        CreateService = 0x0002,
+        EnumerateService = 0x0004,
+        Lock = 0x0008,
+        QueryLockStatus = 0x0010,
+        ModifyBootConfig = 0x0020,
+        StandardRightsRequired = 0xF0000,
+
+        AllAccess = (StandardRightsRequired | Connect | CreateService |
+                     EnumerateService | Lock | QueryLockStatus | ModifyBootConfig)
     }
 }

@@ -33,11 +33,6 @@ namespace WebApplications.Utilities.Service.Test
 {
     public class TestService : BaseService<TestService>
     {
-        public TestService()
-            : base("A test service")
-        {
-        }
-
         [PublicAPI]
         [ServiceCommand(typeof (TestServiceResources), "Cmd_TestCommand_Names", "Cmd_TestCommand_Description",
             writerParameter: "writer", idParameter: "id")]
