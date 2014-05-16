@@ -227,6 +227,9 @@
     <Compile Include="Formatting\ResolveDelegate.cs" />
     <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
+    <Compile Include="IO\OverlappingPipeClientStream.cs" />
+    <Compile Include="IO\OverlappingPipeServerStream.cs" />
+    <Compile Include="IO\OverlappingPipeStream.cs" />
     <Compile Include="Queue.cs">
       <DependentUpon>Queue.tt</DependentUpon>
       <AutoGen>True</AutoGen>
