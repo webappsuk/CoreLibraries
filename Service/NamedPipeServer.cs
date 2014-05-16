@@ -37,6 +37,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Service.PipeProtocol;
 
 namespace WebApplications.Utilities.Service
@@ -115,6 +116,8 @@ namespace WebApplications.Utilities.Service
         private Timer _connectionCheckTimer;
 
         private TimeSpan _heartbeat;
+
+        private NamedPipeServerLogger _logger;
 
         #region Constructor overloads
         /// <summary>
@@ -270,6 +273,8 @@ namespace WebApplications.Utilities.Service
             NamedPipeConnection connection = new NamedPipeConnection(this);
             _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) { connection };
             connection.Start();
+            _logger = new NamedPipeServerLogger(this);
+            Log.AddLogger(_logger);
 
             if (heartbeat < TimeSpan.Zero)
             {
@@ -349,6 +354,13 @@ namespace WebApplications.Utilities.Service
             {
                 timer.Change(Timeout.Infinite, Timeout.Infinite);
                 timer.Dispose();
+            }
+
+            NamedPipeServerLogger logger =Interlocked.Exchange(ref _logger, null);
+            if (logger != null)
+            {
+                Log.RemoveLogger(logger);
+                logger.Dispose();
             }
 
             lock (_namedPipeConnections)

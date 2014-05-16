@@ -83,14 +83,26 @@ namespace WebApplications.Utilities.Service
             /// <param name="message">The message.</param>
             /// <returns><see langword="true" /> if succeeded, <see langword="false" /> otherwise.</returns>
             [NotNull]
-            public async Task<bool> Send(Message message, CancellationToken token = default(CancellationToken))
+            public Task<bool> Send([NotNull]Message message, CancellationToken token = default(CancellationToken))
+            {
+                return _state != PipeState.Connected ? TaskResult.False : Send(message.Serialize(), token);
+            }
+
+            /// <summary>
+            /// Sends the specified message.
+            /// </summary>
+            /// <param name="data">The data.</param>
+            /// <param name="token">The token.</param>
+            /// <returns><see langword="true" /> if succeeded, <see langword="false" /> otherwise.</returns>
+            [NotNull]
+            public async Task<bool> Send([NotNull] byte[] data, CancellationToken token = default(CancellationToken))
             {
                 using (await _writeLock.LockAsync(token))
                 {
                     if (_state != PipeState.Connected) return false;
                     NamedPipeServerStream stream = _stream;
                     if (stream == null) return false;
-                    Serializer.Serialize(stream, message);
+                    await stream.WriteAsync(data, 0, data.Length, token);
                     return true;
                 }
             }
@@ -166,8 +178,7 @@ namespace WebApplications.Utilities.Service
                                             if (!stream.IsMessageComplete) continue;
 
                                             // Deserialize the incoming message.
-                                            readerStream.Seek(0, SeekOrigin.Begin);
-                                            Message message = Serializer.Deserialize<Message>(readerStream);
+                                            Message message = Message.Deserialize(readerStream.ToArray());
                                             readerStream.Seek(0, SeekOrigin.Begin);
                                             readerStream.SetLength(0);
 
@@ -186,11 +197,17 @@ namespace WebApplications.Utilities.Service
 
                                                 _state = PipeState.Connected;
 
-                                                Log.Add(LoggingLevel.Notification, () => ServiceResources.Not_NamedPipeConnection_Connection, connectRequest.Description);
+                                                Log.Add(
+                                                    LoggingLevel.Notification,
+                                                    () => ServiceResources.Not_NamedPipeConnection_Connection,
+                                                    connectRequest.Description);
 
                                                 // TODO Add logger and start outputting logs...
 
-                                                await Send(new ConnectResponse(request.ID, _server.Service.ServiceName), token);
+                                                await
+                                                    Send(
+                                                        new ConnectResponse(request.ID, _server.Service.ServiceName),
+                                                        token);
                                                 continue;
                                             }
 
@@ -209,7 +226,10 @@ namespace WebApplications.Utilities.Service
                                             CommandResponse response;
                                             using (StringWriter resultWriter = new StringWriter())
                                             {
-                                                _server.Service.Execute(_connectionGuid, commandRequest.CommandLine, resultWriter);
+                                                _server.Service.Execute(
+                                                    _connectionGuid,
+                                                    commandRequest.CommandLine,
+                                                    resultWriter);
                                                 response = new CommandResponse(
                                                     request.ID,
                                                     resultWriter.ToString()); // TODO Use custom writer.
@@ -233,30 +253,27 @@ namespace WebApplications.Utilities.Service
                                 _state = PipeState.Closed;
                             }
                         }
+                        catch (TaskCanceledException)
+                        {
+                            // Don't log cancellation.
+                        }
+                        catch (IOException ioe)
+                        {
+                            // Common exception caused by sudden disconnect, lower level
+                            Log.Add(
+                                ioe,
+                                LoggingLevel.Information,
+                                () => ServiceResources.Err_NamedPipeConnection_Failed);
+                        }
                         catch (Exception exception)
                         {
-                            // This is a safe race condition, we can tell the service we're disconnected as many times as we want.
-                            Guid cg = _connectionGuid;
-                            if (cg != Guid.Empty)
-                            {
-                                _connectionGuid = Guid.Empty;
-                                _server.Service.Disconnect(cg);
-                            }
-
-                            _stream = null;
-                            _state = PipeState.Closed;
-
-                            // We only log if this wasn't a cancellation exception.
-                            TaskCanceledException tce = exception as TaskCanceledException;
-                            if (tce == null)
-                                Log.Add(
-                                    exception,
-                                    LoggingLevel.Error,
-                                    () => ServiceResources.Err_NamedPipeConnection_Failed);
+                            Log.Add(
+                                exception,
+                                LoggingLevel.Error,
+                                () => ServiceResources.Err_NamedPipeConnection_Failed);
                         }
                         finally
                         {
-                            _server.Remove(this);
                             Dispose();
                         }
                     },
@@ -311,6 +328,7 @@ namespace WebApplications.Utilities.Service
             /// </summary>
             public void Dispose()
             {
+                _state = PipeState.Closed;
                 // This is a safe race condition, we can tell the service we're disconnected as many times as we want.
                 Guid cg = _connectionGuid;
                 if (cg != Guid.Empty)

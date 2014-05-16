@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,33 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     [ProtoInclude(300, typeof(LogResponse))]
     public abstract class Message
     {
+        /// <summary>
+        /// Gets the serialized form of a message.
+        /// </summary>
+        /// <returns>System.Byte[].</returns>
+        [NotNull]
+        public byte[] Serialize()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Serializer.Serialize(ms, this);
+                return ms.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the specified data to a message.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>Message.</returns>
+        [NotNull]
+        public static Message Deserialize([NotNull] byte[] data)
+        {
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                return Serializer.Deserialize<Message>(ms);
+            }
+        }
     }
 
     [ProtoContract(SkipConstructor = true)]

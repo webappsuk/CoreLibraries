@@ -163,8 +163,11 @@ namespace WebApplications.Utilities.Service.Client
 
                                 // Kick off a connect request, but don't wait for it's result as we're the task that will receive it!
                                 ConnectRequest connectRequest = new ConnectRequest(description);
-                                using (await _writeLock.LockAsync(disposeToken))
-                                    Serializer.Serialize(stream, connectRequest);
+                                using (await _writeLock.LockAsync(token))
+                                {
+                                    byte[] data = connectRequest.Serialize();
+                                    await stream.WriteAsync(data, 0, data.Length, token);
+                                }
 
                                 ConnectResponse connectResponse = null;
 
@@ -184,8 +187,7 @@ namespace WebApplications.Utilities.Service.Client
                                     if (!stream.IsMessageComplete) continue;
 
                                     // Deserialize the incoming message.
-                                    readerStream.Seek(0, SeekOrigin.Begin);
-                                    Message message = Serializer.Deserialize<Message>(readerStream);
+                                    Message message = Message.Deserialize(readerStream.ToArray());
                                     readerStream.Seek(0, SeekOrigin.Begin);
                                     readerStream.SetLength(0);
 
@@ -354,7 +356,8 @@ namespace WebApplications.Utilities.Service.Client
                 if (!_commandRequests.TryAdd(request.ID, tcs))
                     return null;
 
-                Serializer.Serialize(stream, request);
+                byte[] data = request.Serialize();
+                await stream.WriteAsync(data, 0, data.Length, token);
 
                 return await tcs.Task;
             }
