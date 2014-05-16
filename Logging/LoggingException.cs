@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Logging
     /// </summary>
     [Serializable]
     [DebuggerDisplay("[{ExceptionTypeFullName}] {Message} @ {TimeStamp}")]
-    public class LoggingException : ApplicationException, IEnumerable<KeyValuePair<string, string>>, IFormattable
+    public class LoggingException : ApplicationException, IFormattable
     {
         /// <summary>
         /// Set's the underlying exception format, not strictly necessary but easily doable.
@@ -1174,21 +1174,12 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Gets the enumerator.
+        /// Gets all the properties of the logging exception.
         /// </summary>
-        /// <returns>IEnumerator{KeyValuePair{System.StringSystem.String}}.</returns>
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        [NotNull]
+        public IEnumerable<KeyValuePair<string, string>> AllProperties
         {
-            return Log.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            get { return Log.AllProperties; }
         }
 
         /// <summary>

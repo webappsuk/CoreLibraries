@@ -159,9 +159,9 @@ namespace WebApplications.Utilities.Logging.Test
             Trace.WriteLine(initialLog.ToString(Log.AllFormat));
             Trace.WriteLine(string.Empty);
 
-            Dictionary<string, string> resultDictionary = initialLog.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            Dictionary<string, string> resultDictionary = initialLog.AllProperties.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-            Log resultLog = new Log(initialLog);
+            Log resultLog = new Log(initialLog.AllProperties);
             Trace.WriteLine(resultLog.ToString(Log.AllFormat));
             Trace.WriteLine(string.Empty);
 
@@ -342,13 +342,15 @@ namespace WebApplications.Utilities.Logging.Test
             IEnumerable<Log> logs2;
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                Serializer.Serialize(memoryStream, logs);
+                TestLogEnumeration test = new TestLogEnumeration(logs);
+                Serializer.Serialize(memoryStream, test);
 
                 Trace.WriteLine(string.Format("Serialized logs took up {0} bytes.", memoryStream.Position));
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
                 //logs2 = Serializer.Deserialize<IEnumerable<Log>>(memoryStream); This doesnt work with the Trace.WriteLine at the top
-                logs2 = Serializer.Deserialize<Log[]>(memoryStream);
+                TestLogEnumeration test2 = Serializer.Deserialize<TestLogEnumeration>(memoryStream);
+                logs2 = test2.Logs;
                 Assert.AreEqual(memoryStream.Position, memoryStream.Length);
             }
             Assert.IsNotNull(logs2);
@@ -356,6 +358,16 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.AreEqual(logs.Length, result.Count);
             for (int i = 0; i < logs.Length; i++)
                 Assert.AreEqual(logs[i].ToString(), result[i].ToString());
+        }
+
+        private class TestLogEnumeration
+        {
+            public readonly IEnumerable<Log> Logs;
+
+            public TestLogEnumeration(IEnumerable<Log> logs)
+            {
+                Logs = logs;
+            }
         }
 
         [TestMethod]

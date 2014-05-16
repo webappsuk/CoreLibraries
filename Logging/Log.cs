@@ -61,7 +61,7 @@ namespace WebApplications.Utilities.Logging
     [Serializable]
     [DebuggerDisplay("{Message} @ {TimeStamp}")]
     [PublicAPI]
-    public sealed partial class Log : ResolvableWriteable, IEnumerable<KeyValuePair<string, string>>
+    public sealed partial class Log : ResolvableWriteable
     {
         #region Serialized Members
         [CanBeNull]
@@ -1465,7 +1465,7 @@ namespace WebApplications.Utilities.Logging
         [PublicAPI]
         public string this[[NotNull] string key]
         {
-            get { return this.FirstOrDefault(kvp => string.Equals(kvp.Key, key)).Value; }
+            get { return AllProperties.FirstOrDefault(kvp => string.Equals(kvp.Key, key)).Value; }
         }
 
         /// <summary>
@@ -1823,57 +1823,52 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Gets the enumerator.
+        /// Gets all the properties of the log.
         /// </summary>
         /// <returns>A set of key value pairs.</returns>
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        [NotNull]
+        public IEnumerable<KeyValuePair<string, string>> AllProperties
         {
-            // We have to manually yield our fields, as we don't hold everything in the context for performance.
-            yield return new KeyValuePair<string, string>(GuidKey, _guid.ToString());
-            yield return new KeyValuePair<string, string>(LevelKey, _level.ToString());
-            if (_messageFormat != null)
-                yield return new KeyValuePair<string, string>(MessageFormatKey, _messageFormat);
-            if (_resourceProperty != null)
-                yield return new KeyValuePair<string, string>(ResourcePropertyKey, _resourceProperty);
-            yield return new KeyValuePair<string, string>(ThreadIDKey, _threadID.ToString(CultureInfo.InvariantCulture))
-                ;
-            if (_threadName != null)
-                yield return new KeyValuePair<string, string>(ThreadNameKey, _threadName);
-            if (_stackTrace != null)
-                yield return new KeyValuePair<string, string>(StackTraceKey, _stackTrace);
-            if (_exceptionType != null)
-                yield return new KeyValuePair<string, string>(ExceptionTypeFullNameKey, _exceptionType);
-            if (_storedProcedure != null)
+            get
             {
-                yield return new KeyValuePair<string, string>(StoredProcedureKey, _storedProcedure);
-                yield return
-                    new KeyValuePair<string, string>(
-                        StoredProcedureLineKey,
-                        _storedProcedureLine.ToString(CultureInfo.InvariantCulture));
+                // We have to manually yield our fields, as we don't hold everything in the context for performance.
+                yield return new KeyValuePair<string, string>(GuidKey, _guid.ToString());
+                yield return new KeyValuePair<string, string>(LevelKey, _level.ToString());
+                if (_messageFormat != null)
+                    yield return new KeyValuePair<string, string>(MessageFormatKey, _messageFormat);
+                if (_resourceProperty != null)
+                    yield return new KeyValuePair<string, string>(ResourcePropertyKey, _resourceProperty);
+                yield return new KeyValuePair<string, string>(ThreadIDKey, _threadID.ToString(CultureInfo.InvariantCulture))
+                    ;
+                if (_threadName != null)
+                    yield return new KeyValuePair<string, string>(ThreadNameKey, _threadName);
+                if (_stackTrace != null)
+                    yield return new KeyValuePair<string, string>(StackTraceKey, _stackTrace);
+                if (_exceptionType != null)
+                    yield return new KeyValuePair<string, string>(ExceptionTypeFullNameKey, _exceptionType);
+                if (_storedProcedure != null)
+                {
+                    yield return new KeyValuePair<string, string>(StoredProcedureKey, _storedProcedure);
+                    yield return
+                        new KeyValuePair<string, string>(
+                            StoredProcedureLineKey,
+                            _storedProcedureLine.ToString(CultureInfo.InvariantCulture));
+                }
+
+                int count = 0;
+                if (_parameters != null)
+                    foreach (string parameter in _parameters)
+                        yield return new KeyValuePair<string, string>(ParameterPrefix + count++, parameter);
+
+                count = 0;
+                if (_innerExceptionGuids != null)
+                    foreach (CombGuid ieg in _innerExceptionGuids)
+                        yield return new KeyValuePair<string, string>(InnerExceptionGuidsPrefix + count++, ieg.ToString());
+
+                if (_context != null)
+                    foreach (KeyValuePair<string, string> kvp in _context)
+                        yield return kvp;
             }
-
-            int count = 0;
-            if (_parameters != null)
-                foreach (string parameter in _parameters)
-                    yield return new KeyValuePair<string, string>(ParameterPrefix + count++, parameter);
-
-            count = 0;
-            if (_innerExceptionGuids != null)
-                foreach (CombGuid ieg in _innerExceptionGuids)
-                    yield return new KeyValuePair<string, string>(InnerExceptionGuidsPrefix + count++, ieg.ToString());
-
-            if (_context != null)
-                foreach (KeyValuePair<string, string> kvp in _context)
-                    yield return kvp;
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
@@ -2080,7 +2075,7 @@ namespace WebApplications.Utilities.Logging
         public string Get([NotNull] string key)
         {
             Contract.Requires(key != null);
-            return this.FirstOrDefault(kvp => string.Equals(kvp.Key, key)).Value;
+            return AllProperties.FirstOrDefault(kvp => string.Equals(kvp.Key, key)).Value;
         }
 
         /// <summary>
@@ -2093,7 +2088,7 @@ namespace WebApplications.Utilities.Logging
         {
             Contract.Requires(prefix != null);
             // ReSharper disable once PossibleNullReferenceException
-            return this.Where(kvp => kvp.Key.StartsWith(prefix));
+            return AllProperties.Where(kvp => kvp.Key.StartsWith(prefix));
         }
     }
 }
