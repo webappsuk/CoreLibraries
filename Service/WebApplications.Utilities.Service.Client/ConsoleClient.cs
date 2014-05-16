@@ -99,10 +99,11 @@ namespace WebApplications.Utilities.Service.Client
                     if (services.Length > 0)
                         WriteServerList(services);
 
-                    ConsoleTextWriter.Default.WriteLine("Please specify a valid service name or pipe to connect to...");
+                    ConsoleTextWriter.Default.WriteLine("Please specify a valid service name or pipe to connect to; or press enter to use the first service found...");
                     string serviceName = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(serviceName))
-                        service = NamedPipeClient.FindService(serviceName);
+                    service = !string.IsNullOrWhiteSpace(serviceName)
+                        ? NamedPipeClient.FindService(serviceName)
+                        : NamedPipeClient.GetServices().FirstOrDefault();
                 }
 
                 Console.Clear();
@@ -124,7 +125,8 @@ namespace WebApplications.Utilities.Service.Client
                 WritePrompt(service);
                 string command = Console.ReadLine();
 
-                ConsoleTextWriter.Default.WriteLine(await client.Execute(command, token));
+                if (!string.IsNullOrWhiteSpace(command))
+                    ConsoleTextWriter.Default.WriteLine(await client.Execute(command, token));
                 // Wait to allow any disconnects or logs to come through.
                 await Log.Flush(token);
                 await Task.Delay(200, token);
