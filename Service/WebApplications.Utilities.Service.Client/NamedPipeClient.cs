@@ -296,7 +296,7 @@ namespace WebApplications.Utilities.Service.Client
 
             NamedPipeClient npc = new NamedPipeClient(description, server, onReceive, token);
             TaskCompletionSource<NamedPipeClient> ccs = npc._connectionCompletionSource;
-            return ccs != null ? ccs.Task : Task.FromResult(npc);
+            return (ccs != null ? ccs.Task : Task.FromResult(npc));
         }
 
         /// <summary>

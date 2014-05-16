@@ -673,6 +673,15 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The service disconnected from &apos;{0}&apos;..
+        /// </summary>
+        internal static string Not_NamedPipeConnection_Disconnected {
+            get {
+                return ResourceManager.GetString("Not_NamedPipeConnection_Disconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Another instance of the service may be running, so starting or stopping the service may fail..
         /// </summary>
         internal static string Wrn_BaseService_EventHandlerAlreadyExists {

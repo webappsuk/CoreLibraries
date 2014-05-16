@@ -207,7 +207,11 @@ namespace WebApplications.Utilities.Service
 
                                     if (stream.ReadMode == PipeTransmissionMode.Byte ||
                                         stream.IsMessageComplete)
-                                        return ms.ToArray();
+                                    {
+                                        return ms.Length > 0
+                                            ? ms.ToArray()
+                                            : null;
+                                    }
 
                                     // We haven't finished our message so continue
                                     continue;

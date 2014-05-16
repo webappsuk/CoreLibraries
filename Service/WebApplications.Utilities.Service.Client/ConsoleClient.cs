@@ -75,62 +75,75 @@ namespace WebApplications.Utilities.Service.Client
             if (!ConsoleHelper.IsConsole)
                 return;
 
-            Console.Title = description;
-            NamedPipeClient client = null;
-            while (client == null)
+            try
             {
-                token.ThrowIfCancellationRequested();
-                while (service == null ||
-                       !service.IsValid)
+                Log.SetTrace(validLevels: LoggingLevels.None);
+                Log.SetConsole();
+
+                Console.Title = description;
+                NamedPipeClient client = null;
+                while (client == null)
                 {
-                    Console.Clear();
-                    NamedPipeServerInfo[] services = null;
-                    ConsoleTextWriter.Default.WriteLine("Scanning for service... press any key to stop");
-                    while (services == null ||
-                           services.Length < 1)
+                    token.ThrowIfCancellationRequested();
+                    while (service == null ||
+                           !service.IsValid)
                     {
-                        services = NamedPipeClient.GetServices().ToArray();
-                        if (Console.KeyAvailable)
-                            break;
-                        await Task.Delay(500, token);
-                        token.ThrowIfCancellationRequested();
+                        Console.Clear();
+                        NamedPipeServerInfo[] services = null;
+                        await Log.Flush(token);
+
+                        ConsoleTextWriter.Default.WriteLine("Scanning for service... press any key to stop");
+                        while (services == null ||
+                               services.Length < 1)
+                        {
+                            services = NamedPipeClient.GetServices().ToArray();
+                            if (Console.KeyAvailable)
+                                break;
+                            await Task.Delay(500, token);
+                            token.ThrowIfCancellationRequested();
+                        }
+
+                        if (services.Length > 0)
+                            WriteServerList(services);
+
+                        ConsoleTextWriter.Default.WriteLine(
+                            "Please specify a valid service name or pipe to connect to; or press enter to use the first service found...");
+                        string serviceName = Console.ReadLine();
+                        service = !string.IsNullOrWhiteSpace(serviceName)
+                            ? NamedPipeClient.FindService(serviceName)
+                            : NamedPipeClient.GetServices().FirstOrDefault();
                     }
 
-                    if (services.Length > 0)
-                        WriteServerList(services);
-
-                    ConsoleTextWriter.Default.WriteLine("Please specify a valid service name or pipe to connect to; or press enter to use the first service found...");
-                    string serviceName = Console.ReadLine();
-                    service = !string.IsNullOrWhiteSpace(serviceName)
-                        ? NamedPipeClient.FindService(serviceName)
-                        : NamedPipeClient.GetServices().FirstOrDefault();
+                    Console.Clear();
+                    ConsoleTextWriter.Default.WriteLine("Connecting to {0}...", service.Name);
+                    client = await NamedPipeClient.Connect(description, service, OnReceive, token);
                 }
 
-                Console.Clear();
-                ConsoleTextWriter.Default.WriteLine("Connecting to {0}...", service.Name);
-                client = await NamedPipeClient.Connect(description, service, OnReceive, token);
-            }
-
-            Console.Title = string.Format("{0} connected to {1}", description, service.Name);
-            _connected.WriteToConsole(
-                null,
-                new Dictionary<string, object>
+                Console.Title = string.Format("{0} connected to {1}", description, service.Name);
+                _connected.WriteToConsole(
+                    null,
+                    new Dictionary<string, object>
                     {
                         {"ServiceName", client.ServiceName}
                     });
 
-            while (client.State != PipeState.Closed)
-            {
-                token.ThrowIfCancellationRequested();
-                WritePrompt(service);
-                string command = Console.ReadLine();
-
-                if (!string.IsNullOrWhiteSpace(command))
-                    ConsoleTextWriter.Default.WriteLine(await client.Execute(command, token));
-                // Wait to allow any disconnects or logs to come through.
-                await Log.Flush(token);
                 await Task.Delay(200, token);
+
+                while (client.State != PipeState.Closed)
+                {
+                    token.ThrowIfCancellationRequested();
+                    WritePrompt(service);
+                    string command = Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(command))
+                        ConsoleTextWriter.Default.WriteLine(await client.Execute(command, token));
+
+                    // Wait to allow any disconnects or logs to come through.
+                    await Log.Flush(token);
+                    await Task.Delay(200, token);
+                }
             }
+            catch (TaskCanceledException) { }
         }
 
         private static void OnReceive([CanBeNull] Message message)

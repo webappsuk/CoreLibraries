@@ -64,6 +64,8 @@ namespace WebApplications.Utilities.Service
 
             private Guid _connectionGuid = Guid.Empty;
 
+            private string _connectionDescription = "Unknown";
+
             /// <summary>
             /// Initializes a new instance of the <see cref="NamedPipeConnection"/> class.
             /// </summary>
@@ -176,11 +178,11 @@ namespace WebApplications.Utilities.Service
                                                     break;
 
                                                 _state = PipeState.Connected;
-
+                                                _connectionDescription = connectRequest.Description;
                                                 Log.Add(
                                                     LoggingLevel.Notification,
                                                     () => ServiceResources.Not_NamedPipeConnection_Connection,
-                                                    connectRequest.Description);
+                                                    _connectionDescription);
                                                 
                                                 await
                                                     Send(
@@ -220,9 +222,6 @@ namespace WebApplications.Utilities.Service
 
                                         if (stream.IsConnected)
                                             await Send(new DisconnectResponse(disconnectGuid), token);
-
-                                        // Tell ther server we're disconnected.
-                                        _server.Service.Disconnect(_connectionGuid);
                                     }
                                 }
 
@@ -313,6 +312,10 @@ namespace WebApplications.Utilities.Service
                 {
                     _connectionGuid = Guid.Empty;
                     _server.Service.Disconnect(cg);
+                    Log.Add(
+                        LoggingLevel.Notification,
+                        () => ServiceResources.Not_NamedPipeConnection_Disconnected,
+                        _connectionDescription);
                 }
 
                 CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);

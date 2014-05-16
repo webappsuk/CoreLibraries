@@ -65,7 +65,6 @@ namespace WebApplications.Utilities.Service
             if (log == null) return TaskResult.Completed;
 
             byte[] data = new LogResponse(log).Serialize();
-            TraceTextWriter.Default.WriteLine("**** SENDING LOG MESSAGE:" + log.Message);
             return Task.WhenAll(connections.Select(c => c.Send(data, token)));
         }
     }
