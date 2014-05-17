@@ -110,6 +110,15 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Test Signature.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Annotations">
       <HintPath>..\packages\JetBrains.Annotations.7.0\lib\net45\JetBrains.Annotations.dll</HintPath>
@@ -181,7 +190,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="app.manifest" />
     <None Include="packages.config" />
+    <None Include="Test Signature.snk" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WebApplications.Utilities.Service.csproj">
