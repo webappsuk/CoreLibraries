@@ -107,7 +107,7 @@ namespace WebApplications.Utilities.Service
             Console.Clear();
             Console.Title = service.ServiceName;
             Log.SetTrace(validLevels: LoggingLevels.None);
-            Log.SetConsole(defaultLogFormat, defaultLoggingLevels);
+            Log.SetConsole(defaultLogFormat ?? Log.ShortFormat, defaultLoggingLevels);
 
             ConsoleConnection connection = new ConsoleConnection(defaultLogFormat, defaultLoggingLevels, token);
             Guid id = service.Connect(connection);

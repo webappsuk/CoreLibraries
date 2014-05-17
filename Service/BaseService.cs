@@ -666,11 +666,17 @@ namespace WebApplications.Utilities.Service
             }
             lock (_lock)
             {
-                WindowsIdentity identity = WindowsIdentity.GetCurrent();
-                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                if (ConsoleHelper.IsConsole)
+                {
+                    Console.Title = ServiceName;
+                    Log.SetTrace(validLevels: LoggingLevels.None);
+                    Log.SetConsole(Log.ShortFormat);
+                    Log.Flush().Wait();
+                }
+
                 if (promptInstall && ConsoleHelper.IsConsole && IsAdministrator)
                 {
-
+                    Console.Title = "Configure " + ServiceName;
                     bool done = false;
                     do
                     {
@@ -684,8 +690,12 @@ namespace WebApplications.Utilities.Service
                             {"P", "Pause service."},
                             {"C", "Continue service."},
                             {"Y", "Run service from command line."},
+                            {"Z", "Run service without interaction."},
                             {"X", "Exit."}
                         };
+
+                        if (!allowConsole)
+                            options.Remove("Y");
 
                         if (ServiceUtils.ServiceIsInstalled(ServiceName))
                         {
@@ -728,6 +738,7 @@ namespace WebApplications.Utilities.Service
                                     throw new ArgumentOutOfRangeException();
                             }
                             options.Remove("Y");
+                            options.Remove("Z");
                         }
                         else
                         {
@@ -814,6 +825,14 @@ namespace WebApplications.Utilities.Service
 
                             case "Y":
                                 done = true;
+                                break;
+
+                            case "Z":
+                                allowConsole = false;
+                                done = true;
+                                Console.WriteLine("Running service in non-interactive mode (use CTRL-C to kill).");
+                                Console.WriteLine("To control connect using a service client.");
+                                Console.WriteLine();
                                 break;
 
                             default:
