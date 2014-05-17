@@ -328,7 +328,9 @@ namespace WebApplications.Utilities.Service
 
                 // If the last parameter is a string[], and there are no optional parameters it can accept a parameters collection.
                 bool hasParams =
-                    (minimumArguments == parameters.Length) &&
+                    (minimumArguments == parameters.Length -
+                     ((attribute.WriterParameter != null) ? 1 : 0) -
+                     ((attribute.IDParameter != null) ? 1 : 0)) &&
                     (lastParam.ParameterType == typeof (string[]));
 
                 if (!hasParams)
@@ -374,7 +376,6 @@ namespace WebApplications.Utilities.Service
                         Type parameterType = parameter.ParameterType;
                         Expression argExpression = Expression.ArrayIndex(splitArgs, Expression.Constant(a));
                         Expression input;
-
 
                         // We can pass strings straight through
                         if (parameterType == typeof (string))
