@@ -547,7 +547,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Continued service &apos;{0}&apos; in {1}ms..
+        ///   Looks up a localized string similar to Continued service &apos;{0}&apos;..
         /// </summary>
         internal static string Inf_ServiceRunner_Continue_Continued {
             get {
@@ -619,7 +619,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installing the &apos;{0}&apos; service from the &apos;{1}&apos; path took {2}ms..
+        ///   Looks up a localized string similar to Installed the &apos;{0}&apos; service from the &apos;{1}&apos; path..
         /// </summary>
         internal static string Inf_ServiceRunner_Installed {
             get {
@@ -628,7 +628,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Paused service &apos;{0}&apos; in {1}ms..
+        ///   Looks up a localized string similar to Paused service &apos;{0}&apos;..
         /// </summary>
         internal static string Inf_ServiceRunner_Pause_Paused {
             get {
@@ -655,7 +655,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sending the &apos;{0}&apos; power event to service &apos;{1}&apos; took {2}ms, and returned &apos;{3}&apos;..
+        ///   Looks up a localized string similar to Sending the &apos;{0}&apos; power event to service &apos;{1}&apos; returned &apos;{2}&apos;..
         /// </summary>
         internal static string Inf_ServiceRunner_PowerEvent_Sent {
             get {
@@ -673,7 +673,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sending the &apos;{0}&apos; session change event for session &apos;{1}&apos; to service &apos;{2}&apos; took {3}ms..
+        ///   Looks up a localized string similar to Sent the &apos;{0}&apos; session change event for session &apos;{1}&apos; to service &apos;{2}&apos;..
         /// </summary>
         internal static string Inf_ServiceRunner_SessionChange_Sent {
             get {
@@ -682,7 +682,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shut down service &apos;{0}&apos; in {1}ms..
+        ///   Looks up a localized string similar to Shut down service &apos;{0}&apos;..
         /// </summary>
         internal static string Inf_ServiceRunner_Shutdown_ShutDown {
             get {
@@ -736,7 +736,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Uninstalling the &apos;{0}&apos; service took {1}ms..
+        ///   Looks up a localized string similar to Uninstalled the &apos;{0}&apos;..
         /// </summary>
         internal static string Inf_ServiceRunner_Uninstall {
             get {

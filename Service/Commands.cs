@@ -33,11 +33,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
-using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
 using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
@@ -54,7 +52,7 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         protected static readonly Func<SessionChangeReason, int, SessionChangeDescription>
             CreateSessionChangeDescription =
-                typeof(SessionChangeDescription).ConstructorFunc<SessionChangeReason, int, SessionChangeDescription>();
+                typeof (SessionChangeDescription).ConstructorFunc<SessionChangeReason, int, SessionChangeDescription>();
 
         #region Formats
         // ReSharper disable FormatStringProblem
@@ -75,7 +73,8 @@ namespace WebApplications.Utilities.Service
                     "{!fgcolor:White}{Name}{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}{Params:{Params}...}\r\n" +
                     "}}}{!layout}{!layout:f8;i8}{Description}{!layout}}}{<join>:\r\n}}")
                 .AppendLine()
-                .AppendFormatLine("Type 'help {!fgcolor:Lime}<command>{!fgcolor}' for more information on a specific command.")
+                .AppendFormatLine(
+                    "Type 'help {!fgcolor:Lime}<command>{!fgcolor}' for more information on a specific command.")
                 .AppendLine()
                 .MakeReadOnly();
 
@@ -161,7 +160,8 @@ namespace WebApplications.Utilities.Service
                     "{counters:{<items>:{<item>:{CategoryName}}}{<join>:\r\n}}")
                 .AppendResetForegroundColor()
                 .AppendLine()
-                .AppendFormatLine("Type 'perf {!fgcolor:Yellow}<category>{!fgcolor}' for more details of a specific counter.")
+                .AppendFormatLine(
+                    "Type 'perf {!fgcolor:Yellow}<category>{!fgcolor}' for more details of a specific counter.")
                 .AppendLine()
                 .MakeReadOnly();
 
@@ -207,8 +207,8 @@ namespace WebApplications.Utilities.Service
                 !Commands.TryGetValue(command, out cmd))
             {
                 // If the command they gave does not exist, show an error
-                if (command != null && cmd == null)
-                {
+                if (command != null &&
+                    cmd == null)
                     HelpCommandNotFoundFormat.WriteTo(
                         writer,
                         null,
@@ -216,7 +216,6 @@ namespace WebApplications.Utilities.Service
                             string.Equals(c.Tag, "name", StringComparison.CurrentCultureIgnoreCase)
                                 ? command
                                 : Resolution.Unknown);
-                }
 
                 // List all the commands
                 AllCommandsHelpFormat.WriteTo(
@@ -237,8 +236,8 @@ namespace WebApplications.Utilities.Service
                         p => string.Equals(p.Name, parameter, StringComparison.CurrentCultureIgnoreCase));
 
             // If the parameter name given does not exist, show an error
-            if (parameter != null && parameterInfo == null)
-            {
+            if (parameter != null &&
+                parameterInfo == null)
                 HelpCommandParameterNotFoundFormat.WriteTo(
                     writer,
                     null,
@@ -254,7 +253,6 @@ namespace WebApplications.Utilities.Service
                                 return Resolution.Unknown;
                         }
                     });
-            }
 
             // If there was no parameter given, or it did not exist, then show all the parameters for the command
             if (parameterInfo == null)
@@ -290,10 +288,13 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Starts this instance.
         /// </summary>
+        /// <param name="writer">The writer.</param>
         /// <param name="args">The arguments.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description")]
-        public void StartService([CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Start_Args_Description")] string[] args)
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description", writerParameter: "writer")]
+        public void StartService(
+            [NotNull] TextWriter writer,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Start_Args_Description")] string[] args)
         {
             lock (_lock)
             {
@@ -303,17 +304,13 @@ namespace WebApplications.Utilities.Service
                     case ServiceState.Stopped:
                         break;
                     default:
-                        Log.Add(
-                            LoggingLevel.Error,
-                            () => ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning,
-                            ServiceName);
+                        writer.WriteLine(ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning);
                         return;
                 }
 
                 if (args == null)
                     args = new string[0];
 
-                Stopwatch s = Stopwatch.StartNew();
                 try
                 {
                     if (IsService)
@@ -321,16 +318,12 @@ namespace WebApplications.Utilities.Service
                     else
                         OnStart(args);
 
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_Start_Started,
-                        ServiceName,
-                        s.Elapsed.TotalMilliseconds);
+                    writer.WriteLine("Service started.");
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                 }
             }
         }
@@ -339,8 +332,8 @@ namespace WebApplications.Utilities.Service
         /// Stops this instance.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description")]
-        public void StopService()
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description", writerParameter: "writer")]
+        public void StopService([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
@@ -350,30 +343,23 @@ namespace WebApplications.Utilities.Service
                     case ServiceState.Paused:
                         break;
                     default:
-                        Log.Add(
-                            LoggingLevel.Error,
-                            () => ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning,
-                            ServiceName);
+                        writer.WriteLine(ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning, ServiceName);
                         return;
                 }
-
-                Stopwatch s = Stopwatch.StartNew();
+                
                 try
                 {
                     if (IsService)
                         ServiceUtils.StopService(ServiceName);
                     else
                         OnStop();
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_Stop_Stopped,
-                        ServiceName,
-                        s.Elapsed.TotalMilliseconds);
+                    
+                    writer.WriteLine("Service stopped.");
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                 }
             }
         }
@@ -382,37 +368,33 @@ namespace WebApplications.Utilities.Service
         /// Pauses this instance.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description")]
-        public void Pause()
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description", writerParameter: "writer"
+            )]
+        public void Pause([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
                 if (State != ServiceState.Running)
                 {
-                    Log.Add(
-                        LoggingLevel.Error,
-                        () => ServiceResources.Err_ServiceRunner_Pause_ServiceNotRunning,
+                    writer.WriteLine(
+                        ServiceResources.Err_ServiceRunner_Pause_ServiceNotRunning,
                         ServiceName);
                     return;
                 }
 
-                Stopwatch s = Stopwatch.StartNew();
                 try
                 {
                     if (IsService)
                         ServiceUtils.PauseService(ServiceName);
                     else
                         OnPause();
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_Pause_Paused,
-                        ServiceName,
-                        s.Elapsed.TotalMilliseconds);
+
+                    writer.WriteLine("Service paused.");
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                 }
             }
         }
@@ -421,37 +403,33 @@ namespace WebApplications.Utilities.Service
         /// Continues this instance.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description")]
-        public void Continue()
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description",
+            writerParameter: "writer")]
+        public void Continue([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
                 if (State != ServiceState.Paused)
                 {
-                    Log.Add(
-                        LoggingLevel.Error,
-                        () => ServiceResources.Err_ServiceRunner_Continue_ServiceNotPaused,
+                    writer.WriteLine(
+                        ServiceResources.Err_ServiceRunner_Continue_ServiceNotPaused,
                         ServiceName);
                     return;
                 }
 
-                Stopwatch s = Stopwatch.StartNew();
                 try
                 {
                     if (IsService)
                         ServiceUtils.ContinueService(ServiceName);
                     else
                         OnContinue();
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_Continue_Continued,
-                        ServiceName,
-                        s.Elapsed.TotalMilliseconds);
+
+                    writer.WriteLine("Service continued.");
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                 }
             }
         }
@@ -460,34 +438,30 @@ namespace WebApplications.Utilities.Service
         /// Shuts down this instance.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description")]
-        public void Shutdown()
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description",
+            writerParameter: "writer")]
+        public void Shutdown([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
-                Stopwatch s = Stopwatch.StartNew();
                 try
                 {
                     if (IsService)
                     {
-                        Log.Add(
-                            LoggingLevel.Error,
-                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                        writer.WriteLine(
+                            ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
                             ServiceName);
                         return;
                     }
 
                     OnShutdown();
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_Shutdown_ShutDown,
-                        ServiceName,
-                        s.Elapsed.TotalMilliseconds);
+
+                    writer.WriteLine("Service shutdown.");
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                 }
             }
         }
@@ -497,29 +471,27 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="command">The command.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description")]
-        public void CustomCommand([SCP(typeof(ServiceResources), "Cmd_CustomCommand_Command_Description")] int command)
+        [ServiceCommand(typeof (ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description",
+            writerParameter: "writer")]
+        public void CustomCommand(
+            [NotNull] TextWriter writer,
+            [SCP(typeof (ServiceResources), "Cmd_CustomCommand_Command_Description")] int command)
         {
             lock (_lock)
             {
-                Stopwatch s = Stopwatch.StartNew();
                 try
                 {
                     if (IsService)
                         ServiceUtils.CommandService(ServiceName, command);
                     else
                         OnCustomCommand(command);
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_CustomCommand_Complete,
-                        command,
-                        ServiceName,
-                        s.Elapsed.TotalMilliseconds);
+
+                    writer.WriteLine("Service command '{0}' completed.", command);
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                 }
             }
         }
@@ -530,37 +502,35 @@ namespace WebApplications.Utilities.Service
         /// <param name="powerStatus">The power status.</param>
         /// <returns><see langword="true" /> if failed, or the result of the call was <see langword="true"/>; <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description",
+            writerParameter: "writer")]
         public bool PowerEvent(
-            [SCP(typeof(ServiceResources), "Cmd_PowerEvent_PowerStatus_Description")] PowerBroadcastStatus powerStatus)
+            [NotNull] TextWriter writer,
+            [SCP(typeof (ServiceResources), "Cmd_PowerEvent_PowerStatus_Description")] PowerBroadcastStatus powerStatus)
         {
             lock (_lock)
             {
-                Stopwatch s = Stopwatch.StartNew();
                 try
                 {
                     if (IsService)
                     {
-                        Log.Add(
-                            LoggingLevel.Error,
-                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                        writer.WriteLine(
+                            ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
                             ServiceName);
                         return true;
                     }
                     bool result = OnPowerEvent(powerStatus);
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_PowerEvent_Sent,
+
+                    writer.Write(ServiceResources.Inf_ServiceRunner_PowerEvent_Sent,
                         powerStatus,
                         ServiceName,
-                        s.Elapsed.TotalMilliseconds,
                         result);
                     return result;
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                     return true;
                 }
             }
@@ -572,99 +542,83 @@ namespace WebApplications.Utilities.Service
         /// <param name="changeReason">The change reason.</param>
         /// <param name="sessionId">The session identifier.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description",
+            writerParameter: "writer")]
         public void SessionChange(
-            [SCP(typeof(ServiceResources), "Cmd_SessionChange_ChangeReason_Description")] SessionChangeReason
+            [NotNull] TextWriter writer,
+            [SCP(typeof (ServiceResources), "Cmd_SessionChange_ChangeReason_Description")] SessionChangeReason
                 changeReason,
-            [SCP(typeof(ServiceResources), "Cmd_SessionChange_SessionID_Description")] int sessionId)
+            [SCP(typeof (ServiceResources), "Cmd_SessionChange_SessionID_Description")] int sessionId)
         {
             lock (_lock)
             {
-                Stopwatch s = Stopwatch.StartNew();
                 try
                 {
                     if (IsService)
                     {
-                        Log.Add(
-                            LoggingLevel.Error,
-                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                        writer.WriteLine(
+                            ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
                             ServiceName);
                         return;
                     }
 
                     OnSessionChange(CreateSessionChangeDescription(changeReason, sessionId));
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_SessionChange_Sent,
+
+                    writer.WriteLine(
+                        ServiceResources.Inf_ServiceRunner_SessionChange_Sent,
                         changeReason,
                         sessionId,
-                        ServiceName,
-                        s.Elapsed.TotalMilliseconds);
+                        ServiceName);
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                 }
             }
         }
-        
+
         /// <summary>
         /// Install services.
         /// Sends the <see cref="SessionChangeDescription" /> to the service.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description")]
-        public void Install()
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description",
+            writerParameter: "writer")]
+        public void Install([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
                 if (!IsAdministrator)
                 {
-                    Log.Add(
-                        LoggingLevel.Error,
-                        () => ServiceResources.Err_Install_Requires_Administrator);
+                    writer.WriteLine(ServiceResources.Err_Install_Requires_Administrator);
                     return;
                 }
 
                 if (IsService)
                 {
-                    Log.Add(
-                        LoggingLevel.Error,
-                        () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                    writer.WriteLine(
+                        ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
                         ServiceName);
                     return;
                 }
 
-                Log.Add(
-                    LoggingLevel.Information,
-                    () => ServiceResources.Inf_ServiceRunner_Install,
+                writer.WriteLine(
+                    ServiceResources.Inf_ServiceRunner_Install,
                     ServiceName);
-                Stopwatch s = Stopwatch.StartNew();
                 try
                 {
-                    if (IsService)
-                    {
-                        Log.Add(
-                            LoggingLevel.Error,
-                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
-                            ServiceName);
-                        return;
-                    }
-
                     string fileName = Process.GetCurrentProcess().MainModule.FileName;
                     ServiceUtils.Install(ServiceName, DisplayName, Description, fileName);
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_Installed,
+                    writer.WriteLine(
+                        ServiceResources.Inf_ServiceRunner_Installed,
                         ServiceName,
-                        fileName,
-                        s.Elapsed.TotalMilliseconds);
+                        fileName);
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                 }
             }
         }
@@ -673,46 +627,41 @@ namespace WebApplications.Utilities.Service
         /// Uninstall services.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description")]
-        public void Uninstall()
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description",
+            writerParameter: "writer")]
+        public void Uninstall([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
                 if (!IsAdministrator)
                 {
-                    Log.Add(
-                        LoggingLevel.Error,
-                        () => ServiceResources.Err_Uninstall_Requires_Administrator);
+                    writer.WriteLine(ServiceResources.Err_Uninstall_Requires_Administrator);
+                    return;
+                }
+                if (IsService)
+                {
+                    writer.WriteLine(
+                        ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                        ServiceName);
                     return;
                 }
 
-                Log.Add(
-                    LoggingLevel.Information,
-                    () => ServiceResources.Inf_ServiceRunner_Uninstall,
+                writer.WriteLine(
+                    ServiceResources.Inf_ServiceRunner_Uninstall,
                     ServiceName);
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {
-                    if (IsService)
-                    {
-                        Log.Add(
-                            LoggingLevel.Error,
-                            () => ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
-                            ServiceName);
-                        return;
-                    }
-
                     ServiceUtils.Uninstall(ServiceName);
-                    Log.Add(
-                        LoggingLevel.Information,
-                        () => ServiceResources.Inf_ServiceRunner_Uninstalled,
+                    writer.WriteLine(
+                        ServiceResources.Inf_ServiceRunner_Uninstalled,
                         ServiceName,
                         s.Elapsed.TotalMilliseconds);
                 }
                 catch (TargetInvocationException exception)
                 {
                     Contract.Assert(exception.InnerException != null);
-                    Log.Add(exception.InnerException);
+                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
                 }
             }
         }
@@ -723,11 +672,12 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="category">The category.</param>
         [
-        PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true, writerParameter: "writer")]
+            PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true,
+            writerParameter: "writer")]
         public void Performance(
             [NotNull] TextWriter writer,
-            [CanBeNull][SCP(typeof(ServiceResources), "Cmd_Performance_Category_Description")] string category = null)
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Performance_Category_Description")] string category = null)
         {
             lock (_lock)
             {
@@ -735,10 +685,11 @@ namespace WebApplications.Utilities.Service
 
                 PerfCategory cat = categoryOmitted
                     ? null
-                    : PerfCategory.All.FirstOrDefault(p => string.Equals(p.CategoryName, category, StringComparison.CurrentCultureIgnoreCase));
+                    : PerfCategory.All.FirstOrDefault(
+                        p => string.Equals(p.CategoryName, category, StringComparison.CurrentCultureIgnoreCase));
 
-                if (!categoryOmitted && cat == null)
-                {
+                if (!categoryOmitted &&
+                    cat == null)
                     PerformanceCatergoryNotFoundFormat.WriteTo(
                         writer,
                         null,
@@ -746,7 +697,6 @@ namespace WebApplications.Utilities.Service
                             string.Equals(c.Tag, "name", StringComparison.CurrentCultureIgnoreCase)
                                 ? category
                                 : Resolution.Unknown);
-                }
 
                 if (cat == null) // Or the counter does not exist
                 {

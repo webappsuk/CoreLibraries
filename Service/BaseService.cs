@@ -670,7 +670,7 @@ namespace WebApplications.Utilities.Service
                 WindowsPrincipal principal = new WindowsPrincipal(identity);
                 if (promptInstall && ConsoleHelper.IsConsole && IsAdministrator)
                 {
-                    
+
                     bool done = false;
                     do
                     {
@@ -754,8 +754,7 @@ namespace WebApplications.Utilities.Service
                         switch (key)
                         {
                             case "I":
-                                Console.WriteLine("Attempting to install service.");
-                                Install();
+                                Install(ConsoleTextWriter.Default);
                                 Console.Write("Waiting for service to be detected...");
                                 while (!ServiceUtils.ServiceIsInstalled(ServiceName))
                                     Thread.Sleep(250);
@@ -764,8 +763,7 @@ namespace WebApplications.Utilities.Service
                                 break;
 
                             case "U":
-                                Console.WriteLine("Attempting to uninstall service.");
-                                Uninstall();
+                                Uninstall(ConsoleTextWriter.Default);
                                 Console.Write("Waiting for service removal to be detected...");
                                 while (ServiceUtils.ServiceIsInstalled(ServiceName))
                                     Thread.Sleep(250);
@@ -774,14 +772,12 @@ namespace WebApplications.Utilities.Service
                                 return TaskResult.Completed;
 
                             case "R":
-                                Console.WriteLine("Attempting to uninstall service.");
-                                Uninstall();
+                                Uninstall(ConsoleTextWriter.Default);
                                 Console.Write("Waiting for service removal to be detected...");
                                 while (ServiceUtils.ServiceIsInstalled(ServiceName))
                                     Thread.Sleep(250);
                                 Console.WriteLine("Done.");
-                                Console.WriteLine("Attempting to install service.");
-                                Install();
+                                Install(ConsoleTextWriter.Default);
                                 Console.Write("Waiting for service to be detected...");
                                 while (!ServiceUtils.ServiceIsInstalled(ServiceName))
                                     Thread.Sleep(250);
@@ -843,10 +839,12 @@ namespace WebApplications.Utilities.Service
         // ReSharper disable once CodeAnnotationAnalyzer
         protected override sealed void OnStart([NotNull] string[] args)
         {
-            Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Start_Starting, ServiceName);
             try
             {
-                using (PerfTimerStart.Region())
+                using (PerfTimer.Timer region = PerfTimerStart.Region())
+                {
+                    Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Start_Starting, ServiceName);
+
                     lock (_lock)
                     {
                         if (!IsService)
@@ -910,10 +908,18 @@ namespace WebApplications.Utilities.Service
                         DoStart(args);
                         _state = ServiceState.Running;
                     }
+
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Start_Started,
+                        ServiceName,
+                        region.Elapsed.TotalMilliseconds);
+                }
             }
             catch (Exception e)
             {
                 Log.Add(e, LoggingLevel.Error, "Fatal error in OnStart");
+                throw;
             }
         }
 
@@ -922,39 +928,54 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnStop()
         {
-            Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Stop_Stopping, ServiceName);
-            Log.Flush();
-            using (PerfTimerStop.Region())
-                lock (_lock)
+            try
+            {
+                using (PerfTimer.Timer region = PerfTimerStop.Region())
                 {
-                    switch (_state)
-                    {
-                        case ServiceState.Running:
-                        case ServiceState.Paused:
-                            break;
-                        default:
-                            Log.Add(
-                                LoggingLevel.Error,
-                                () => ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning,
-                                ServiceName);
-                            return;
-                    }
-                    _state = ServiceState.StopPending;
-                    DoStop();
-                    Contract.Assert(_cancellationTokenSource != null);
-                    _cancellationTokenSource.Cancel();
-                    _cancellationTokenSource = null;
-                    _pauseTokenSource.IsPaused = true;
+                    Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Stop_Stopping, ServiceName);
 
-                    // Try to release the global mutex
-                    if (_runEventWaitHandle != null) // This should always be true
+                    lock (_lock)
                     {
-                        _runEventWaitHandle.Set();
-                        _runEventWaitHandle.Dispose();
-                        _runEventWaitHandle = null;
+                        switch (_state)
+                        {
+                            case ServiceState.Running:
+                            case ServiceState.Paused:
+                                break;
+                            default:
+                                Log.Add(
+                                    LoggingLevel.Error,
+                                    () => ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning,
+                                    ServiceName);
+                                return;
+                        }
+                        _state = ServiceState.StopPending;
+                        DoStop();
+                        Contract.Assert(_cancellationTokenSource != null);
+                        _cancellationTokenSource.Cancel();
+                        _cancellationTokenSource = null;
+                        _pauseTokenSource.IsPaused = true;
+
+                        // Try to release the global mutex
+                        if (_runEventWaitHandle != null) // This should always be true
+                        {
+                            _runEventWaitHandle.Set();
+                            _runEventWaitHandle.Dispose();
+                            _runEventWaitHandle = null;
+                        }
+                        _state = ServiceState.Stopped;
                     }
-                    _state = ServiceState.Stopped;
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Stop_Stopped,
+                        ServiceName,
+                        region.Elapsed.TotalMilliseconds);
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, "Fatal error in OnStop");
+                throw;
+            }
         }
 
         /// <summary>
@@ -962,22 +983,35 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnPause()
         {
-            Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Pause_Pausing, ServiceName);
-            lock (_lock)
+            try
             {
-                if (State != ServiceState.Running)
+                Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Pause_Pausing, ServiceName);
+                lock (_lock)
                 {
+                    if (State != ServiceState.Running)
+                    {
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_Pause_ServiceNotRunning,
+                            ServiceName);
+                        return;
+                    }
+                    _state = ServiceState.PausePending;
+                    DoPause();
+                    _pauseTokenSource.IsPaused = true;
+                    PerfCounterPause.Increment();
+                    _state = ServiceState.Paused;
+
                     Log.Add(
-                        LoggingLevel.Error,
-                        () => ServiceResources.Err_ServiceRunner_Pause_ServiceNotRunning,
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Pause_Paused,
                         ServiceName);
-                    return;
                 }
-                _state = ServiceState.PausePending;
-                DoPause();
-                _pauseTokenSource.IsPaused = true;
-                PerfCounterPause.Increment();
-                _state = ServiceState.Paused;
+            }
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, "Fatal error in OnPause");
+                throw;
             }
         }
 
@@ -986,25 +1020,38 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnContinue()
         {
-            Log.Add(
-                LoggingLevel.Information,
-                () => ServiceResources.Inf_ServiceRunner_Continue_Continuing,
-                ServiceName);
-            lock (_lock)
+            try
             {
-                if (State != ServiceState.Paused)
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_Continue_Continuing,
+                    ServiceName);
+                lock (_lock)
                 {
+                    if (State != ServiceState.Paused)
+                    {
+                        Log.Add(
+                            LoggingLevel.Error,
+                            () => ServiceResources.Err_ServiceRunner_Continue_ServiceNotPaused,
+                            ServiceName);
+                        return;
+                    }
+                    _state = ServiceState.ContinuePending;
+                    _pauseTokenSource.IsPaused = false;
+                    DoContinue();
+                    PerfCounterContinue.Increment();
+                    _state = ServiceState.Running;
+
                     Log.Add(
-                        LoggingLevel.Error,
-                        () => ServiceResources.Err_ServiceRunner_Continue_ServiceNotPaused,
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Continue_Continued,
                         ServiceName);
-                    return;
                 }
-                _state = ServiceState.ContinuePending;
-                _pauseTokenSource.IsPaused = false;
-                DoContinue();
-                PerfCounterContinue.Increment();
-                _state = ServiceState.Running;
+            }
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, "Fatal error in OnContinue");
+                throw;
             }
         }
 
@@ -1013,31 +1060,47 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnShutdown()
         {
-            Log.Add(
-                LoggingLevel.Information,
-                () => ServiceResources.Inf_ServiceRunner_Shutdown_ShuttingDown,
-                ServiceName);
-            Log.Flush();
-            lock (_lock)
+            try
             {
-                _state = ServiceState.StopPending;
-                DoShutdown();
-                CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
-                if (cts != null)
-                    cts.Cancel();
-                _pauseTokenSource.IsPaused = true;
-
-                // Disconnect all connected user interfaces
-                foreach (Connection connection in _connections.Values.ToArray())
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_Shutdown_ShuttingDown,
+                    ServiceName);
+                lock (_lock)
                 {
-                    Contract.Assert(connection != null);
-                    Disconnect(connection.ID);
-                }
+                    _state = ServiceState.StopPending;
+                    DoShutdown();
+                    CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+                    if (cts != null)
+                        cts.Cancel();
+                    _pauseTokenSource.IsPaused = true;
 
-                TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTask, null);
-                if (ltt != null)
-                    ltt.TrySetResult(true);
-                _state = ServiceState.Unknown;
+                    // Disconnect all connected user interfaces
+                    foreach (Connection connection in _connections.Values.ToArray())
+                    {
+                        Contract.Assert(connection != null);
+                        Disconnect(connection.ID);
+                    }
+
+                    TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTask, null);
+                    if (ltt != null)
+                        ltt.TrySetResult(true);
+                    _state = ServiceState.Unknown;
+
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Shutdown_ShutDown,
+                        ServiceName);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, "Fatal error in OnShutdown");
+                throw;
+            }
+            finally
+            {
+                Log.Flush().Wait();
             }
         }
 
@@ -1047,13 +1110,30 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">The command message sent to the service.</param>
         protected override sealed void OnCustomCommand(int command)
         {
-            Log.Add(
-                LoggingLevel.Information,
-                () => ServiceResources.Inf_ServiceRunner_CustomCommand_Running,
-                command,
-                ServiceName);
-            using (PerfTimerCustomCommand.Region())
-                DoCustomCommand(command);
+            try
+            {
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_CustomCommand_Running,
+                    command,
+                    ServiceName);
+                using (PerfTimer.Timer region = PerfTimerCustomCommand.Region())
+                {
+                    DoCustomCommand(command);
+
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_CustomCommand_Complete,
+                        command,
+                        ServiceName,
+                        region.Elapsed.TotalMilliseconds);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, "Fatal error in OnCustomCommand '{0}'.", command);
+                throw;
+            }
         }
 
         /// <summary>
@@ -1063,17 +1143,35 @@ namespace WebApplications.Utilities.Service
         /// <returns>When implemented in a derived class, the needs of your application determine what value to return. For example, if a QuerySuspend broadcast status is passed, you could cause your application to reject the query by returning false.</returns>
         protected override sealed bool OnPowerEvent(PowerBroadcastStatus powerStatus)
         {
-            Log.Add(
-                LoggingLevel.Information,
-                () => ServiceResources.Inf_ServiceRunner_PowerEvent_Sending,
-                powerStatus,
-                ServiceName);
-            Log.Flush();
-            lock (_lock)
+            try
             {
-                bool result = DoPowerEvent(powerStatus);
-                PerfCounterPowerEvent.Increment();
-                return result;
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_PowerEvent_Sending,
+                    powerStatus,
+                    ServiceName);
+                lock (_lock)
+                {
+                    bool result = DoPowerEvent(powerStatus);
+                    PerfCounterPowerEvent.Increment();
+
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_PowerEvent_Sent,
+                        powerStatus,
+                        ServiceName,
+                        result);
+                    return result;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, "Fatal error in OnShutdown");
+                throw;
+            }
+            finally
+            {
+                Log.Flush().Wait();
             }
         }
 
@@ -1083,16 +1181,31 @@ namespace WebApplications.Utilities.Service
         /// <param name="changeDescription">A <see cref="T:System.ServiceProcess.SessionChangeDescription" /> structure that identifies the change type.</param>
         protected override sealed void OnSessionChange(SessionChangeDescription changeDescription)
         {
-            Log.Add(
-                LoggingLevel.Information,
-                () => ServiceResources.Inf_ServiceRunner_SessionChange_Sending,
-                changeDescription.Reason,
-                changeDescription.SessionId,
-                ServiceName);
-            lock (_lock)
+            try
             {
-                DoSessionChange(changeDescription);
-                PerfCounterSessionChange.Increment();
+                Log.Add(
+                    LoggingLevel.Information,
+                    () => ServiceResources.Inf_ServiceRunner_SessionChange_Sending,
+                    changeDescription.Reason,
+                    changeDescription.SessionId,
+                    ServiceName);
+                lock (_lock)
+                {
+                    DoSessionChange(changeDescription);
+                    PerfCounterSessionChange.Increment();
+
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_SessionChange_Sent,
+                        changeDescription.Reason,
+                        changeDescription.SessionId,
+                        ServiceName);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Add(e, LoggingLevel.Error, "Fatal error in OnShutdown");
+                throw;
             }
         }
 

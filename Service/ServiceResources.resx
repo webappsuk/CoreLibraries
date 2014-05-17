@@ -280,7 +280,7 @@
     <value>The '{0}' command is not supported by the service.</value>
   </data>
   <data name="Inf_ServiceRunner_Continue_Continued" xml:space="preserve">
-    <value>Continued service '{0}' in {1}ms.</value>
+    <value>Continued service '{0}'.</value>
   </data>
   <data name="Inf_ServiceRunner_Continue_Continuing" xml:space="preserve">
     <value>Continuing service '{0}'.</value>
@@ -304,10 +304,10 @@
     <value>Installing the '{0}' service.</value>
   </data>
   <data name="Inf_ServiceRunner_Installed" xml:space="preserve">
-    <value>Installing the '{0}' service from the '{1}' path took {2}ms.</value>
+    <value>Installed the '{0}' service from the '{1}' path.</value>
   </data>
   <data name="Inf_ServiceRunner_Pause_Paused" xml:space="preserve">
-    <value>Paused service '{0}' in {1}ms.</value>
+    <value>Paused service '{0}'.</value>
   </data>
   <data name="Inf_ServiceRunner_Pause_Pausing" xml:space="preserve">
     <value>Pausing service '{0}'.</value>
@@ -316,16 +316,16 @@
     <value>Sending the '{0}' power event to service '{1}'.</value>
   </data>
   <data name="Inf_ServiceRunner_PowerEvent_Sent" xml:space="preserve">
-    <value>Sending the '{0}' power event to service '{1}' took {2}ms, and returned '{3}'.</value>
+    <value>Sending the '{0}' power event to service '{1}' returned '{2}'.</value>
   </data>
   <data name="Inf_ServiceRunner_SessionChange_Sending" xml:space="preserve">
     <value>Sending the '{0}' session change event for session '{1}' to service '{2}'.</value>
   </data>
   <data name="Inf_ServiceRunner_SessionChange_Sent" xml:space="preserve">
-    <value>Sending the '{0}' session change event for session '{1}' to service '{2}' took {3}ms.</value>
+    <value>Sent the '{0}' session change event for session '{1}' to service '{2}'.</value>
   </data>
   <data name="Inf_ServiceRunner_Shutdown_ShutDown" xml:space="preserve">
-    <value>Shut down service '{0}' in {1}ms.</value>
+    <value>Shut down service '{0}'.</value>
   </data>
   <data name="Inf_ServiceRunner_Shutdown_ShuttingDown" xml:space="preserve">
     <value>Shutting down service '{0}'.</value>
@@ -343,7 +343,7 @@
     <value>Stopping service '{0}'.</value>
   </data>
   <data name="Inf_ServiceRunner_Uninstall" xml:space="preserve">
-    <value>Uninstalling the '{0}' service took {1}ms.</value>
+    <value>Uninstalled the '{0}'.</value>
   </data>
   <data name="Inf_ServiceRunner_Uninstalled" xml:space="preserve">
     <value>Uninstalling the '{0}' service.</value>
