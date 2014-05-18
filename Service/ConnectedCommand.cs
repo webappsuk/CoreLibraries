@@ -29,7 +29,7 @@ namespace WebApplications.Utilities.Service
             [NotNull]
             private readonly CommandRequest _request;
 
-            private TaskCompletionSource<bool> _completionSource;
+            private CancellationTokenSource _cancellationTokenSource;
 
             /// <summary>
             /// The sequence identifier.
@@ -48,6 +48,8 @@ namespace WebApplications.Utilities.Service
             [NotNull]
             private readonly HashSet<char> _escapeChars = new HashSet<char>(new[] { '{', '}', '\\' });
 
+            private Task _flushTask;
+
             /// <summary>
             /// Initializes a new instance of the <see cref="ConnectedCommand" /> class.
             /// </summary>
@@ -55,40 +57,54 @@ namespace WebApplications.Utilities.Service
             /// <param name="service">The service.</param>
             /// <param name="connection">The connection.</param>
             /// <param name="request">The request.</param>
-            public ConnectedCommand(Guid connectionGuid, [NotNull]BaseService service, [NotNull]NamedPipeConnection connection, [NotNull]CommandRequest request, CancellationToken token)
+            public ConnectedCommand(Guid connectionGuid, [NotNull]BaseService service, [NotNull]NamedPipeConnection connection, [NotNull]CommandRequest request, CancellationToken token = default (CancellationToken))
             {
                 ConnectionGuid = connectionGuid;
                 _connection = connection;
                 _request = request;
+                _cancellationTokenSource = new CancellationTokenSource();
+                var flushToken = token.CanBeCanceled
+                    ? CancellationTokenSource.CreateLinkedTokenSource(token, _cancellationTokenSource.Token).Token
+                    : _cancellationTokenSource.Token;
 
-                _completionSource = new TaskCompletionSource<bool>();
+                _flushTask = Task.Run(
+                    async () =>
+                    {
+                        do
+                        {
+                            await Task.Delay(250, token);
+                            if (flushToken.IsCancellationRequested) return;
+                            await Flush(0, flushToken);
+                        } while (true);
+                    },
+                    flushToken);
                 // Kick of task to run command.
                 Task.Run(
                     async () =>
                     {
-                        Exception exception;
+                        Exception exception = null;
                         try
                         {
                             service.Execute(ConnectionGuid, _request.CommandLine, this);
                             token.ThrowIfCancellationRequested();
-
-                            _completionSource.TrySetResult(true);
                             await Flush(-1, token);
-                            return;
                         }
                         catch (Exception e)
                         {
-                            exception = e;
+                            if (!(e is TaskCanceledException))
+                                exception = e;
                         }
-                        if (exception is TaskCanceledException)
-                            _completionSource.TrySetCanceled();
-                        else
+                        if (exception != null)
                         {
-                            _completionSource.TrySetException(exception);
-                            await Flush(0, token);
-                            _builder.Append(exception.Message);
-                            await Flush(-2, token);
+                            try
+                            {
+                                await Flush(0, token);
+                                _builder.Append(exception.Message);
+                                await Flush(-2, token);
+                            }
+                            catch { }
                         }
+                        Dispose(true);
                     },
                     token);
             }
@@ -108,9 +124,9 @@ namespace WebApplications.Utilities.Service
             /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
             protected override void Dispose(bool disposing)
             {
-                TaskCompletionSource<bool> tcs = Interlocked.Exchange(ref _completionSource, null);
-                if (tcs != null)
-                    tcs.SetCanceled();
+                CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+                if (cts != null)
+                    cts.Cancel();
 
                 NamedPipeConnection connexion = Interlocked.Exchange(ref _connection, null);
                 if (connexion != null)
