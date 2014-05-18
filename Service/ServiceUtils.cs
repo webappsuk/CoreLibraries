@@ -142,7 +142,8 @@ namespace WebApplications.Utilities.Service
 
         #region StartService
         [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern int StartService(IntPtr hService, int dwNumServiceArgs, int lpServiceArgVectors);
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool StartService(IntPtr hService, int dwNumServiceArgs, int lpServiceArgVectors);
         #endregion
 
         #region ChangeServiceConfig2
@@ -166,19 +167,44 @@ namespace WebApplications.Utilities.Service
 
                 try
                 {
-                    SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS
+                    SERVICE_STATUS_PROCESS status = GetServiceStatus(service);
+                    bool changedStatus;
+                    switch (status.CurrentState)
                     {
-                        Reason = ServiceControlReason.Planned |
-                                 ServiceControlReason.Application |
-                                 ServiceControlReason.Uninstall,
-                        Comment = "User initiated using service utilities."
-                    };
-                    if (ControlServiceEx(service, ServiceControl.Stop, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) == 0)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                        case ServiceState.Unknown:
+                        case ServiceState.NotFound:
+                            throw new ApplicationException("Service state unknown.");
+                            break;
+                        case ServiceState.Stopped:
+                            break;
+                        case ServiceState.StopPending:
+                            changedStatus = WaitForServiceStatus(service, ServiceState.StopPending, ServiceState.Stopped);
+                            if (!changedStatus)
+                                throw new ApplicationException("Unable to stop service");
+                            break;
+                        case ServiceState.StartPending:
+                        case ServiceState.Running:
+                        case ServiceState.ContinuePending:
+                        case ServiceState.PausePending:
+                        case ServiceState.Paused:
+                            SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS
+                            {
+                                Reason = ServiceControlReason.Planned |
+                                         ServiceControlReason.Application |
+                                         ServiceControlReason.Uninstall,
+                                Comment = "User initiated using service utilities."
+                            };
+                            if (ControlServiceEx(service, ServiceControl.Stop, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) == 0)
+                                throw new Win32Exception(Marshal.GetLastWin32Error());
 
-                    bool changedStatus = WaitForServiceStatus(service, ServiceState.StopPending, ServiceState.Stopped);
-                    if (!changedStatus)
-                        throw new ApplicationException("Unable to stop service");
+                            changedStatus = WaitForServiceStatus(service, ServiceState.StopPending, ServiceState.Stopped);
+                            if (!changedStatus)
+                                throw new ApplicationException("Unable to stop service");
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
                     if (!DeleteService(service))
                         throw new ApplicationException("Could not delete service " + Marshal.GetLastWin32Error());
                 }
@@ -264,7 +290,7 @@ namespace WebApplications.Utilities.Service
 
         public static void StartService(string serviceName)
         {
-            IntPtr scm = OpenSCManager(ScmAccessRights.Connect);
+            IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
             try
             {
                 IntPtr service = OpenService(
@@ -276,7 +302,7 @@ namespace WebApplications.Utilities.Service
 
                 try
                 {
-                    if (StartService(service, 0, 0) == 0)
+                    if (!StartService(service, 0, 0))
                         throw new Win32Exception(Marshal.GetLastWin32Error());
 
                     bool changedStatus = WaitForServiceStatus(service, ServiceState.StartPending, ServiceState.Running);
