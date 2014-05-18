@@ -187,6 +187,24 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The optional password for the account the service is to run under.  An incorrect password will prevent the service from starting..
+        /// </summary>
+        internal static string Cmd_Install_Password_Description {
+            get {
+                return ResourceManager.GetString("Cmd_Install_Password_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The optional username for the service to run under (note must have enough permission to interact with local performance counters and filesystem).  Use form &quot;DomainName\UserName&quot;, e.g. &quot;NT AUTHORITY\LocalService&quot; for local service account; &quot;NT AUTHORITY\NetworkService&quot; for network service account; &quot;NT Service\ServiceName&quot; to use a virtual account; or &quot;.\UserName&quot; to use a local account.  The default is to use the LocalSystem account, but this doesn&apos;t normally have the required permissions and so the service  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Cmd_Install_UserName_Description {
+            get {
+                return ResourceManager.GetString("Cmd_Install_UserName_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No description is available for the parameter in the current language..
         /// </summary>
         internal static string Cmd_Param_Description {

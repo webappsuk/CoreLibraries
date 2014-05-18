@@ -31,6 +31,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -640,6 +641,7 @@ namespace WebApplications.Utilities.Service
             }
         }
 
+        [NotNull]
         private static readonly FormatBuilder _promptInstall = new FormatBuilder()
             .AppendForegroundColor(ConsoleColor.Yellow)
             .AppendLine("Select one of :")
@@ -700,10 +702,11 @@ namespace WebApplications.Utilities.Service
                         if (ServiceUtils.ServiceIsInstalled(ServiceName))
                         {
                             ServiceState state = ServiceUtils.GetServiceStatus(ServiceName);
-                            ConsoleTextWriter.Default.WriteLine(
-                                "The '{0}' service is already installed and {1}.",
-                                ServiceName,
-                                state);
+                            new FormatBuilder()
+                                .AppendForegroundColor(ConsoleColor.White)
+                                .AppendFormatLine("The '{0}' service is installed and {1}.", ServiceName, state)
+                                .AppendResetForegroundColor()
+                                .WriteToConsole();
 
                             options.Remove("I");
 
@@ -726,7 +729,6 @@ namespace WebApplications.Utilities.Service
                                 case ServiceState.Running:
                                     options.Remove("S");
                                     options.Remove("C");
-                                    break;
                                     break;
                                 case ServiceState.PausePending:
                                 case ServiceState.Paused:
@@ -759,13 +761,61 @@ namespace WebApplications.Utilities.Service
                         string key;
                         do
                         {
-                            key = Console.ReadKey(true).KeyChar.ToString().ToUpperInvariant();
+                            key = Char.ToUpperInvariant(Console.ReadKey(true).KeyChar)
+                                .ToString(CultureInfo.InvariantCulture);
                         } while (!options.ContainsKey(key));
 
                         switch (key)
                         {
                             case "I":
-                                Install(ConsoleTextWriter.Default);
+                                string userName;
+                                string password;
+                                do
+                                {
+                                    new FormatBuilder()
+                                        .AppendForegroundColor(ConsoleColor.Cyan)
+                                        .Append("User name: ")
+                                        .AppendResetForegroundColor()
+                                        .WriteToConsole();
+                                    userName = Console.ReadLine();
+                                    if (string.IsNullOrWhiteSpace(userName))
+                                    {
+                                        userName = null;
+                                        password = null;
+                                        break;
+                                    }
+
+                                    string[] unp = userName.Split('\\');
+                                    if (unp.Length != 2 ||
+                                        string.IsNullOrWhiteSpace(unp[0]) ||
+                                        string.IsNullOrWhiteSpace(unp[1]))
+                                    {
+                                        new FormatBuilder()
+                                            .AppendForegroundColor(ConsoleColor.Red)
+                                            .AppendLine("Invalid user name!")
+                                            .AppendForegroundColor(ConsoleColor.Gray)
+                                            .AppendLine(ServiceResources.Cmd_Install_UserName_Description)
+                                            .AppendResetForegroundColor()
+                                            .WriteToConsole();
+                                        continue;
+                                    }
+
+                                    new FormatBuilder()
+                                        .AppendForegroundColor(ConsoleColor.Cyan)
+                                        .Append("Password: ")
+                                        .AppendResetForegroundColor()
+                                        .WriteToConsole();
+                                    password = ConsoleEx.ReadPassword();
+                                    if (!string.IsNullOrEmpty(password)) break;
+
+                                    new FormatBuilder()
+                                        .AppendForegroundColor(ConsoleColor.Red)
+                                        .AppendLine("Invalid password!")
+                                        .AppendResetForegroundColor()
+                                        .WriteToConsole();
+                                } while (true);
+
+                                Install(ConsoleTextWriter.Default, userName, password);
                                 Console.Write("Waiting for service to be detected...");
                                 while (!ServiceUtils.ServiceIsInstalled(ServiceName))
                                     Thread.Sleep(250);

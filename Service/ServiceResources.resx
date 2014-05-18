@@ -159,6 +159,12 @@
   <data name="Cmd_Install_Names" xml:space="preserve">
     <value>Install</value>
   </data>
+  <data name="Cmd_Install_Password_Description" xml:space="preserve">
+    <value>The optional password for the account the service is to run under.  An incorrect password will prevent the service from starting.</value>
+  </data>
+  <data name="Cmd_Install_UserName_Description" xml:space="preserve">
+    <value>The optional username for the service to run under (note must have enough permission to interact with local performance counters and filesystem).  Use form "DomainName\UserName", e.g. "NT AUTHORITY\LocalService" for local service account; "NT AUTHORITY\NetworkService" for network service account; "NT Service\ServiceName" to use a virtual account; or ".\UserName" to use a local account.  The default is to use the LocalSystem account, but this doesn't normally have the required permissions and so the service will fail to start.</value>
+  </data>
   <data name="Cmd_Param_Description" xml:space="preserve">
     <value>No description is available for the parameter in the current language.</value>
   </data>

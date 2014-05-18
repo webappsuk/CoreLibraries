@@ -167,6 +167,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ConsoleConnection.cs" />
+    <Compile Include="ConsoleEx.cs" />
     <Compile Include="ContractResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -183,7 +183,7 @@ namespace WebApplications.Utilities.Service
             }
         }
 
-        public static void Install(string serviceName, string displayName, string description, string fileName)
+        public static void Install(string serviceName, string displayName, string description, string fileName, string userName = null, string password = null)
         {
             IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
 
@@ -204,8 +204,8 @@ namespace WebApplications.Utilities.Service
                         null,
                         IntPtr.Zero,
                         null,
-                        null,
-                        null);
+                        userName,
+                        password);
 
                 if (service == IntPtr.Zero)
                     throw new ApplicationException("Failed to install service.");
