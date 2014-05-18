@@ -136,7 +136,8 @@ namespace WebApplications.Utilities.Service.Client
                     string command = Console.ReadLine();
 
                     if (!string.IsNullOrWhiteSpace(command))
-                        ConsoleTextWriter.Default.WriteLine(await client.Execute(command, token));
+                        client.Execute(command, token)
+                            .Subscribe(c => new FormatBuilder(c).WriteToConsole());
 
                     // Wait to allow any disconnects or logs to come through.
                     await Log.Flush(token);

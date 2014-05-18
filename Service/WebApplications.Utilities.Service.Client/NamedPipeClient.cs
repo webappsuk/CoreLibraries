@@ -33,8 +33,10 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Threading;
@@ -89,7 +91,7 @@ namespace WebApplications.Utilities.Service.Client
         private TaskCompletionSource<NamedPipeClient> _connectionCompletionSource = new TaskCompletionSource<NamedPipeClient>();
 
         [NotNull]
-        private readonly ConcurrentDictionary<Guid, TaskCompletionSource<Message>> _commandRequests = new ConcurrentDictionary<Guid, TaskCompletionSource<Message>>();
+        private readonly ConcurrentDictionary<Guid, ConnectedCommand> _commandRequests = new ConcurrentDictionary<Guid, ConnectedCommand>();
 
         /// <summary>
         /// Gets the state.
@@ -204,11 +206,14 @@ namespace WebApplications.Utilities.Service.Client
                                     Response response = message as Response;
                                     if (response != null)
                                     {
-                                        TaskCompletionSource<Message> tcs;
-                                        if (_commandRequests.TryRemove(response.ID, out tcs))
-                                            tcs.TrySetResult(message);
+                                        CommandResponse commandResponse = response as CommandResponse;
+                                        bool complete = commandResponse == null || commandResponse.Sequence < 0;
 
-                                        continue;
+                                        ConnectedCommand connectedCommand;
+                                        if (complete
+                                            ? _commandRequests.TryRemove(response.ID, out connectedCommand)
+                                            : _commandRequests.TryGetValue(response.ID, out connectedCommand))
+                                            connectedCommand.Received(response, complete);
                                     }
                                 }
                             }
@@ -223,9 +228,9 @@ namespace WebApplications.Utilities.Service.Client
                             if (disconnectResponse != null)
                             {
                                 onReceive(disconnectResponse);
-                                TaskCompletionSource<Message> tcs;
-                                if (_commandRequests.TryRemove(disconnectResponse.ID, out tcs))
-                                    tcs.TrySetResult(disconnectResponse);
+                                ConnectedCommand connectedCommand;
+                                if (_commandRequests.TryRemove(disconnectResponse.ID, out connectedCommand))
+                                    connectedCommand.Received(disconnectResponse, true);
                             }
                         }
                     }
@@ -301,39 +306,126 @@ namespace WebApplications.Utilities.Service.Client
         }
 
         /// <summary>
+        /// Information about an ongoing command.
+        /// </summary>
+        private class ConnectedCommand : IDisposable
+        {
+            /// <summary>
+            /// The request.
+            /// </summary>
+            [NotNull]
+            public readonly Request Request;
+
+            /// <summary>
+            /// The observer of responses.
+            /// </summary>
+            public IObserver<Response> Observer;
+
+            /// <summary>
+            /// The completion handle signal competion.
+            /// </summary>
+            private TaskCompletionSource<bool> _completionTask;
+
+            /// <summary>
+            /// Gets the completion task.
+            /// </summary>
+            /// <value>The completion task.</value>
+            [NotNull]
+            public Task CompletionTask
+            {
+                get
+                {
+                    TaskCompletionSource<bool> cts = _completionTask;
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    return cts == null
+                        ? TaskResult.False
+                        : cts.Task;
+                }
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ConnectedCommand" /> class.
+            /// </summary>
+            /// <param name="request">The request.</param>
+            /// <param name="observer">The observer.</param>
+            public ConnectedCommand([NotNull] Request request, [NotNull] IObserver<Response> observer)
+            {
+                Request = request;
+                Observer = observer;
+                _completionTask = new TaskCompletionSource<bool>();
+            }
+
+            /// <summary>
+            /// Received the specified connected command.
+            /// </summary>
+            /// <param name="response">The response.</param>
+            /// <param name="completed">if set to <see langword="true" /> the command is completed.</param>
+            public void Received(Response response, bool completed)
+            {
+                IObserver<Response> observer = Observer;
+                if (observer == null) return;
+
+                observer.OnNext(response);
+                if (!completed) return;
+                try
+                {
+                    observer.OnCompleted();
+                }
+                finally
+                {
+                    TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
+                    if (cts != null)
+                        cts.TrySetResult(true);
+                }
+            }
+
+            /// <summary>
+            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            /// </summary>
+            public void Dispose()
+            {
+                IObserver<Response> observer = Interlocked.Exchange(ref Observer, null);
+                if (observer != null)
+                    try
+                    {
+                        observer.OnError(new TaskCanceledException());
+                    }
+                    catch { }
+
+                TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
+                if (cts != null)
+                    cts.TrySetCanceled();
+            }
+        }
+
+        /// <summary>
         /// Sends the specified request.
         /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="token">The token.</param>
-        /// <returns><see langword="true" /> if succeeded, <see langword="false" /> otherwise.</returns>
+        /// <returns>An observable of responses..</returns>
         [NotNull]
-        private async Task<Message> Send([NotNull] Request request, CancellationToken token = default(CancellationToken))
+        private IObservable<Response> Send([NotNull] Request request, CancellationToken token = default(CancellationToken))
         {
             if (_state != PipeState.Connected) return null;
             OverlappingPipeClientStream stream = _stream;
-            if (stream == null) return null;
+            if (stream == null) return Observable.Empty<Response>();
 
-            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-
-            token = token.CanBeCanceled
-                ? CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token).Token
-                : cts.Token;
-
-            TaskCompletionSource<Message> tcs = new TaskCompletionSource<Message>();
-            token.Register(
-                () =>
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return Observable.Create<Response>(
+                async (observer, t) =>
                 {
-                    tcs.TrySetCanceled();
-                    TaskCompletionSource<Message> t;
-                    _commandRequests.TryRemove(request.ID, out t);
+                    Contract.Assert(observer != null);
+
+                    token = token.CanBeCanceled
+                        ? CancellationTokenSource.CreateLinkedTokenSource(token, t).Token
+                        : t;
+                    ConnectedCommand cr = new ConnectedCommand(request, observer);
+                    _commandRequests.TryAdd(request.ID, cr);
+                    await stream.WriteAsync(request.Serialize(), token);
+                    await cr.CompletionTask.WithCancellation(token);
+                    _commandRequests.TryRemove(request.ID, out cr);
                 });
-
-            if (!_commandRequests.TryAdd(request.ID, tcs))
-                return null;
-
-            await stream.WriteAsync(request.Serialize(), token);
-
-            return await tcs.Task;
         }
 
         /// <summary>
@@ -344,23 +436,17 @@ namespace WebApplications.Utilities.Service.Client
         /// <returns>An awaitable task that contains the result of the execution.</returns>
         [NotNull]
         [PublicAPI]
-        public Task<string> Execute([CanBeNull] string commandLine, CancellationToken token = default (CancellationToken))
+        public IObservable<string> Execute([CanBeNull] string commandLine, CancellationToken token = default (CancellationToken))
         {
             if (_clientTask == null ||
                 State != PipeState.Connected ||
                 string.IsNullOrWhiteSpace(commandLine))
-                return TaskResult<string>.Default;
+                return Observable.Empty<string>();
 
             return Send(new CommandRequest(commandLine), token)
-                .ContinueWith(
-                    t =>
-                    {
-                        CommandResponse response = t.Result as CommandResponse;
-                        return response != null ? response.Result : null;
-                    },
-                    token,
-                    TaskContinuationOptions.OnlyOnRanToCompletion,
-                    TaskScheduler.Default);
+                .Cast<CommandResponse>()
+                .Select(r => r.Chunk)
+                .Where(c => !string.IsNullOrEmpty(c));
         }
 
         /// <summary>
@@ -375,7 +461,8 @@ namespace WebApplications.Utilities.Service.Client
                 State != PipeState.Connected)
                 return TaskResult<string>.Default;
 
-            return Send(new DisconnectRequest(), token);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return Send(new DisconnectRequest(), token).ToTask(token);
         }
 
         /// <summary>
@@ -400,9 +487,9 @@ namespace WebApplications.Utilities.Service.Client
 
             foreach (Guid id in _commandRequests.Keys.ToArray())
             {
-                TaskCompletionSource<Message> tcs;
-                if (_commandRequests.TryRemove(id, out tcs))
-                    tcs.TrySetCanceled();
+                ConnectedCommand cc;
+                if (_commandRequests.TryRemove(id, out cc))
+                    cc.Dispose();
             }
         }
 

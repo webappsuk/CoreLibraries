@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -141,13 +142,24 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     [ProtoContract(SkipConstructor = true)]
     public class CommandResponse : Response
     {
+        /// <summary>
+        /// The sequence starts at 0 and continues until the final chunk which is set at -1.
+        /// </summary>
         [ProtoMember(1)]
-        public readonly string Result;
+        public readonly int Sequence;
 
-        public CommandResponse(Guid id, string result)
+        [ProtoMember(2)]
+        public readonly string Chunk;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandResponse"/> class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="chunk">The chunk.</param>
+        public CommandResponse(Guid id, string chunk)
             : base(id)
         {
-            Result = result;
+            Chunk = chunk;
         }
     }
 }

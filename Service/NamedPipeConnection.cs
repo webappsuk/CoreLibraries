@@ -26,6 +26,9 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading;
@@ -66,6 +69,12 @@ namespace WebApplications.Utilities.Service
             private Guid _connectionGuid = Guid.Empty;
 
             private string _connectionDescription = "Unknown";
+
+            /// <summary>
+            /// The currently executing commands.
+            /// </summary>
+            [NotNull]
+            private static readonly List<ConnectedCommand> _commands = new List<ConnectedCommand>();
 
             /// <summary>
             /// Initializes a new instance of the <see cref="NamedPipeConnection"/> class.
@@ -201,24 +210,9 @@ namespace WebApplications.Utilities.Service
                                             }
 
                                             CommandRequest commandRequest = request as CommandRequest;
-                                            if (commandRequest == null)
-                                                continue;
-
-                                            CommandResponse response;
-                                            using (StringWriter resultWriter = new StringWriter())
-                                            {
-                                                _server.Service.Execute(
-                                                    _connectionGuid,
-                                                    commandRequest.CommandLine,
-                                                    resultWriter);
-                                                response = new CommandResponse(
-                                                    request.ID,
-                                                    resultWriter.ToString()); // TODO Use custom writer.
-                                            }
-
-                                            await Send(response, token);
-
-                                            // Reset the stream for write.
+                                            if (commandRequest == null) continue;
+                                            if (!string.IsNullOrWhiteSpace(commandRequest.CommandLine))
+                                                _commands.Add(new ConnectedCommand(_connectionGuid, _server.Service, this, commandRequest));
                                         }
 
                                         if (stream.IsConnected)
@@ -299,6 +293,16 @@ namespace WebApplications.Utilities.Service
             public override string ToString()
             {
                 return State.ToString();
+            }
+
+            /// <summary>
+            /// Removes the specified connected command.
+            /// </summary>
+            /// <param name="connectedCommand">The connected command.</param>
+            public void Remove([NotNull] ConnectedCommand connectedCommand)
+            {
+                lock (_commands)
+                    _commands.Remove(connectedCommand);
             }
 
             /// <summary>

@@ -160,6 +160,7 @@
     <Compile Include="Commands.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ConnectedCommand.cs" />
     <Compile Include="Connection.cs">
       <SubType>Component</SubType>
     </Compile>
