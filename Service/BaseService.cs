@@ -262,9 +262,10 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
         /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         [NotNull]
-        public abstract Task RunAsync(bool promptInstall = true, bool allowConsole = true);
+        public abstract Task RunAsync(bool promptInstall = true, bool allowConsole = true, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// When implemented in a derived class, executes when a Start command is sent to the service by the Service Control Manager (SCM) or when the operating system starts (for a service that starts automatically). Specifies actions to take when the service starts.
@@ -655,8 +656,9 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
         /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
-        public override Task RunAsync(bool promptInstall = true, bool allowConsole = true)
+        public override Task RunAsync(bool promptInstall = true, bool allowConsole = true, CancellationToken token = default(CancellationToken))
         {
             if (!IsAdministrator)
                 Log.Add(LoggingLevel.Information, "The service is not running as an administrator, some functionality will be disabled.");
@@ -668,236 +670,265 @@ namespace WebApplications.Utilities.Service
             }
             lock (_lock)
             {
-                if (ConsoleHelper.IsConsole)
+                try
                 {
-                    Console.Title = ServiceName;
-                    Log.SetTrace(validLevels: LoggingLevels.None);
-                    Log.SetConsole(Log.ShortFormat);
-                    Log.Flush().Wait();
-                }
-
-                if (promptInstall && ConsoleHelper.IsConsole && IsAdministrator)
-                {
-                    Console.Title = "Configure " + ServiceName;
-                    bool done = false;
-                    do
+                    if (ConsoleHelper.IsConsole)
                     {
-                        Dictionary<string, string> options = new Dictionary<string, string>
-                        {
-                            {"I", "Install service."},
-                            {"U", "Uninstall service."},
-                            {"R", "Re-install the service."},
-                            {"S", "Start service."},
-                            {"T", "Stop service."},
-                            {"P", "Pause service."},
-                            {"C", "Continue service."},
-                            {"Y", "Run service from command line."},
-                            {"Z", "Run service without interaction."},
-                            {"X", "Exit."}
-                        };
+                        Console.Title = ServiceName;
+                        Log.SetTrace(validLevels: LoggingLevels.None);
+                        Log.SetConsole(Log.ShortFormat);
+                        Log.Flush().Wait();
+                    }
 
-                        if (!allowConsole)
-                            options.Remove("Y");
-
-                        if (ServiceUtils.ServiceIsInstalled(ServiceName))
-                        {
-                            ServiceState state = ServiceUtils.GetServiceStatus(ServiceName);
-                            new FormatBuilder()
-                                .AppendForegroundColor(ConsoleColor.White)
-                                .AppendFormatLine("The '{0}' service is installed and {1}.", ServiceName, state)
-                                .AppendResetForegroundColor()
-                                .WriteToConsole();
-
-                            options.Remove("I");
-
-                            switch (state)
-                            {
-                                case ServiceState.Unknown:
-                                case ServiceState.NotFound:
-                                    options.Remove("S");
-                                    options.Remove("T");
-                                    options.Remove("C");
-                                    options.Remove("P");
-                                    break;
-                                case ServiceState.StopPending:
-                                case ServiceState.Stopped:
-                                    options.Remove("C");
-                                    options.Remove("T");
-                                    break;
-                                case ServiceState.StartPending:
-                                case ServiceState.ContinuePending:
-                                case ServiceState.Running:
-                                    options.Remove("S");
-                                    options.Remove("C");
-                                    break;
-                                case ServiceState.PausePending:
-                                case ServiceState.Paused:
-                                    options.Remove("S");
-                                    options.Remove("T");
-                                    options.Remove("P");
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-                            options.Remove("Y");
-                            options.Remove("Z");
-                        }
-                        else
-                        {
-                            options.Remove("U");
-                            options.Remove("R");
-                            options.Remove("S");
-                            options.Remove("T");
-                            options.Remove("P");
-                            options.Remove("C");
-                        }
-
-                        _promptInstall.WriteToConsole(
-                            null,
-                            (_, c) => !string.Equals(c.Tag, "options", StringComparison.CurrentCultureIgnoreCase)
-                                ? Resolution.Unknown
-                                : options);
-
-                        string key;
+                    if (promptInstall &&
+                        ConsoleHelper.IsConsole &&
+                        IsAdministrator)
+                    {
+                        Console.Title = "Configure " + ServiceName;
+                        bool done = false;
                         do
                         {
-                            key = Char.ToUpperInvariant(Console.ReadKey(true).KeyChar)
-                                .ToString(CultureInfo.InvariantCulture);
-                        } while (!options.ContainsKey(key));
+                            token.ThrowIfCancellationRequested();
 
-                        switch (key)
-                        {
-                            case "I":
-                                string userName;
-                                string password;
-                                do
+                            Dictionary<string, string> options = new Dictionary<string, string>
+                            {
+                                {"I", "Install service."},
+                                {"U", "Uninstall service."},
+                                {"S", "Start service."},
+                                {"R", "Restart service."},
+                                {"T", "Stop service."},
+                                {"P", "Pause service."},
+                                {"C", "Continue service."},
+                                {"Y", "Run service from command line."},
+                                {"Z", "Run service without interaction."},
+                                {"X", "Exit."}
+                            };
+
+                            if (!allowConsole)
+                                options.Remove("Y");
+
+                            if (ServiceUtils.ServiceIsInstalled(ServiceName))
+                            {
+                                ServiceState state = ServiceUtils.GetServiceStatus(ServiceName);
+                                new FormatBuilder()
+                                    .AppendForegroundColor(ConsoleColor.White)
+                                    .AppendFormatLine("The '{0}' service is installed and {1}.", ServiceName, state)
+                                    .AppendResetForegroundColor()
+                                    .WriteToConsole();
+
+                                options.Remove("I");
+
+                                switch (state)
                                 {
-                                    new FormatBuilder()
-                                        .AppendForegroundColor(ConsoleColor.Cyan)
-                                        .Append("User name: ")
-                                        .AppendResetForegroundColor()
-                                        .WriteToConsole();
-                                    userName = Console.ReadLine();
-                                    if (string.IsNullOrWhiteSpace(userName))
-                                    {
-                                        userName = null;
-                                        password = null;
+                                    case ServiceState.Unknown:
+                                    case ServiceState.NotFound:
+                                        // Service is not installed.
+                                        options.Remove("U");
+                                        options.Remove("S");
+                                        options.Remove("R");
+                                        options.Remove("T");
+                                        options.Remove("C");
+                                        options.Remove("P");
                                         break;
-                                    }
+                                    case ServiceState.StopPending:
+                                    case ServiceState.Stopped:
+                                        // Service is stopped or stopping.
+                                        options.Remove("C");
+                                        options.Remove("R");
+                                        options.Remove("T");
+                                        break;
+                                    case ServiceState.StartPending:
+                                    case ServiceState.ContinuePending:
+                                    case ServiceState.Running:
+                                        // Service is starting or running.
+                                        options.Remove("S");
+                                        options.Remove("C");
+                                        break;
+                                    case ServiceState.PausePending:
+                                    case ServiceState.Paused:
+                                        // Service is paused or pausing.
+                                        options.Remove("S");
+                                        options.Remove("R");
+                                        options.Remove("T");
+                                        options.Remove("P");
+                                        break;
+                                }
+                                options.Remove("Y");
+                                options.Remove("Z");
+                            }
+                            else
+                            {
+                                // No service installed.
+                                options.Remove("U");
+                                options.Remove("S");
+                                options.Remove("R");
+                                options.Remove("T");
+                                options.Remove("P");
+                                options.Remove("C");
+                            }
 
-                                    string[] unp = userName.Split('\\');
-                                    if (unp.Length != 2 ||
-                                        string.IsNullOrWhiteSpace(unp[0]) ||
-                                        string.IsNullOrWhiteSpace(unp[1]))
+                            _promptInstall.WriteToConsole(
+                                null,
+                                (_, c) => !string.Equals(c.Tag, "options", StringComparison.CurrentCultureIgnoreCase)
+                                    ? Resolution.Unknown
+                                    : options);
+
+                            string key;
+                            do
+                            {
+                                key = Char.ToUpperInvariant(Console.ReadKey(true).KeyChar)
+                                    .ToString(CultureInfo.InvariantCulture);
+                            } while (!options.ContainsKey(key));
+
+                            switch (key)
+                            {
+                                case "I":
+                                    string userName;
+                                    string password;
+                                    do
                                     {
                                         new FormatBuilder()
-                                            .AppendForegroundColor(ConsoleColor.Red)
-                                            .AppendLine("Invalid user name!")
-                                            .AppendForegroundColor(ConsoleColor.Gray)
-                                            .AppendLine(ServiceResources.Cmd_Install_UserName_Description)
+                                            .AppendForegroundColor(ConsoleColor.Cyan)
+                                            .Append("User name: ")
                                             .AppendResetForegroundColor()
                                             .WriteToConsole();
-                                        continue;
+                                        userName = Console.ReadLine();
+                                        if (string.IsNullOrWhiteSpace(userName))
+                                        {
+                                            userName = null;
+                                            password = null;
+                                            break;
+                                        }
+
+                                        string[] unp = userName.Split('\\');
+                                        if (unp.Length != 2 ||
+                                            string.IsNullOrWhiteSpace(unp[0]) ||
+                                            string.IsNullOrWhiteSpace(unp[1]))
+                                        {
+                                            new FormatBuilder()
+                                                .AppendForegroundColor(ConsoleColor.Red)
+                                                .AppendLine("Invalid user name!")
+                                                .AppendForegroundColor(ConsoleColor.Gray)
+                                                .AppendLine(ServiceResources.Cmd_Install_UserName_Description)
+                                                .AppendResetForegroundColor()
+                                                .WriteToConsole();
+                                            continue;
+                                        }
+
+                                        new FormatBuilder()
+                                            .AppendForegroundColor(ConsoleColor.Cyan)
+                                            .Append("Password: ")
+                                            .AppendResetForegroundColor()
+                                            .WriteToConsole();
+                                        password = ConsoleEx.ReadPassword();
+                                        if (!string.IsNullOrEmpty(password)) break;
+
+                                        new FormatBuilder()
+                                            .AppendForegroundColor(ConsoleColor.Red)
+                                            .AppendLine("Invalid password!")
+                                            .AppendResetForegroundColor()
+                                            .WriteToConsole();
+                                    } while (true);
+
+                                    Install(ConsoleTextWriter.Default, userName, password);
+
+                                    Console.Write("Waiting for service to be detected...");
+                                    while (!ServiceUtils.ServiceIsInstalled(ServiceName))
+                                    {
+                                        Thread.Sleep(250);
+                                        Console.Write('.');
                                     }
+                                    Console.WriteLine("Done.");
+                                    Console.WriteLine();
+                                    break;
 
-                                    new FormatBuilder()
-                                        .AppendForegroundColor(ConsoleColor.Cyan)
-                                        .Append("Password: ")
-                                        .AppendResetForegroundColor()
-                                        .WriteToConsole();
-                                    password = ConsoleEx.ReadPassword();
-                                    if (!string.IsNullOrEmpty(password)) break;
+                                case "U":
+                                    Uninstall(ConsoleTextWriter.Default);
 
-                                    new FormatBuilder()
-                                        .AppendForegroundColor(ConsoleColor.Red)
-                                        .AppendLine("Invalid password!")
-                                        .AppendResetForegroundColor()
-                                        .WriteToConsole();
-                                } while (true);
+                                    Console.Write("Waiting for service removal to be detected...");
+                                    while (ServiceUtils.ServiceIsInstalled(ServiceName))
+                                    {
+                                        Thread.Sleep(250);
+                                        Console.Write('.');
+                                    }
+                                    Console.WriteLine("Done.");
+                                    Console.WriteLine();
+                                    return TaskResult.Completed;
 
-                                Install(ConsoleTextWriter.Default, userName, password);
-                                Console.Write("Waiting for service to be detected...");
-                                while (!ServiceUtils.ServiceIsInstalled(ServiceName))
-                                    Thread.Sleep(250);
-                                Console.WriteLine("Done.");
-                                Console.WriteLine();
-                                break;
+                                case "R":
+                                    Console.Write("Attempting to stop service...");
+                                    ServiceUtils.StopService(ServiceName);
+                                    Console.WriteLine("Done.");
+                                    Console.WriteLine();
+                                    Console.Write("Attempting to start service...");
+                                    ServiceUtils.StartService(ServiceName);
+                                    Console.WriteLine("Done.");
+                                    Console.WriteLine();
+                                    break;
 
-                            case "U":
-                                Uninstall(ConsoleTextWriter.Default);
-                                Console.Write("Waiting for service removal to be detected...");
-                                while (ServiceUtils.ServiceIsInstalled(ServiceName))
-                                    Thread.Sleep(250);
-                                Console.WriteLine("Done.");
-                                Console.WriteLine();
-                                return TaskResult.Completed;
+                                case "S":
+                                    Console.Write("Attempting to start service...");
+                                    ServiceUtils.StartService(ServiceName);
+                                    Console.WriteLine("Done.");
+                                    Console.WriteLine();
+                                    break;
 
-                            case "R":
-                                Uninstall(ConsoleTextWriter.Default);
-                                Console.Write("Waiting for service removal to be detected...");
-                                while (ServiceUtils.ServiceIsInstalled(ServiceName))
-                                    Thread.Sleep(250);
-                                Console.WriteLine("Done.");
-                                Install(ConsoleTextWriter.Default);
-                                Console.Write("Waiting for service to be detected...");
-                                while (!ServiceUtils.ServiceIsInstalled(ServiceName))
-                                    Thread.Sleep(250);
-                                Console.WriteLine("Done.");
-                                Console.WriteLine();
-                                return TaskResult.Completed;
+                                case "T":
+                                    Console.Write("Attempting to stop service...");
+                                    ServiceUtils.StopService(ServiceName);
+                                    Console.WriteLine("Done.");
+                                    Console.WriteLine();
+                                    break;
 
-                            case "S":
-                                Console.Write("Attempting to start service...");
-                                ServiceUtils.StartService(ServiceName);
-                                Console.WriteLine("Done.");
-                                Console.WriteLine();
-                                break;
+                                case "P":
+                                    Console.Write("Attempting to pause service...");
+                                    ServiceUtils.PauseService(ServiceName);
+                                    Console.WriteLine("Done.");
+                                    break;
 
-                            case "T":
-                                Console.Write("Attempting to stop service...");
-                                ServiceUtils.StopService(ServiceName);
-                                Console.WriteLine("Done.");
-                                Console.WriteLine();
-                                break;
+                                case "C":
+                                    Console.Write("Attempting to continue service...");
+                                    ServiceUtils.ContinueService(ServiceName);
+                                    Console.WriteLine("Done.");
+                                    Console.WriteLine();
+                                    break;
 
-                            case "P":
-                                Console.Write("Attempting to pause service...");
-                                ServiceUtils.PauseService(ServiceName);
-                                Console.WriteLine("Done.");
-                                break;
+                                case "Y":
+                                    done = true;
+                                    break;
 
-                            case "C":
-                                Console.Write("Attempting to continue service...");
-                                ServiceUtils.ContinueService(ServiceName);
-                                Console.WriteLine("Done.");
-                                Console.WriteLine();
-                                break;
+                                case "Z":
+                                    allowConsole = false;
+                                    done = true;
+                                    Console.WriteLine("Running service in non-interactive mode (use CTRL-C to kill).");
+                                    Console.WriteLine("To control connect using a service client.");
+                                    Console.WriteLine();
+                                    break;
 
-                            case "Y":
-                                done = true;
-                                break;
+                                default:
+                                    return TaskResult.Completed;
+                            }
+                        } while (!done);
+                    }
 
-                            case "Z":
-                                allowConsole = false;
-                                done = true;
-                                Console.WriteLine("Running service in non-interactive mode (use CTRL-C to kill).");
-                                Console.WriteLine("To control connect using a service client.");
-                                Console.WriteLine();
-                                break;
+                    // Create a task that completes when this service finally shutsdown.
+                    _lifeTimeTask = new TaskCompletionSource<bool>();
 
-                            default:
-                                return TaskResult.Completed;
-                        }
-                    } while (!done);
+                    // If we allow the console, connect the console UI, and wait until both tasks complete
+                    return allowConsole && ConsoleHelper.IsConsole
+                        ? Task.WhenAll(_lifeTimeTask.Task, ConsoleConnection.RunAsync(this, token: token))
+                        : _lifeTimeTask.Task;
                 }
-
-                // Create a task that completes when this service finally shutsdown.
-                _lifeTimeTask = new TaskCompletionSource<bool>();
-
-                // If we allow the console, connect the console UI, and wait until both tasks complete
-                return allowConsole && ConsoleHelper.IsConsole
-                    ? Task.WhenAll(_lifeTimeTask.Task, ConsoleConnection.Run(this))
-                    : _lifeTimeTask.Task;
+                catch (Exception e)
+                {
+                    Log.Add(e);
+                    if (ConsoleHelper.IsConsole)
+                    {
+                        Console.WriteLine("Fatal error! Press any key to exit.");
+                        Console.ReadKey();
+                    }
+                    return Log.Flush(token);
+                }
             }
         }
 
@@ -908,6 +939,7 @@ namespace WebApplications.Utilities.Service
         // ReSharper disable once CodeAnnotationAnalyzer
         protected override sealed void OnStart([NotNull] string[] args)
         {
+            RequestAdditionalTime(5000);
             try
             {
                 using (PerfTimer.Timer region = PerfTimerStart.Region())
@@ -916,6 +948,7 @@ namespace WebApplications.Utilities.Service
 
                     lock (_lock)
                     {
+                        RequestAdditionalTime(5000);
                         if (!IsService)
                         {
                             switch (_state)
@@ -997,6 +1030,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnStop()
         {
+            RequestAdditionalTime(5000);
             try
             {
                 using (PerfTimer.Timer region = PerfTimerStop.Region())
@@ -1005,6 +1039,7 @@ namespace WebApplications.Utilities.Service
 
                     lock (_lock)
                     {
+                        RequestAdditionalTime(5000);
                         switch (_state)
                         {
                             case ServiceState.Running:
@@ -1052,11 +1087,13 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnPause()
         {
+            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Pause_Pausing, ServiceName);
                 lock (_lock)
                 {
+                    RequestAdditionalTime(5000);
                     if (State != ServiceState.Running)
                     {
                         Log.Add(
@@ -1089,6 +1126,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnContinue()
         {
+            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1097,6 +1135,7 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 lock (_lock)
                 {
+                    RequestAdditionalTime(5000);
                     if (State != ServiceState.Paused)
                     {
                         Log.Add(
@@ -1129,6 +1168,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnShutdown()
         {
+            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1137,6 +1177,7 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 lock (_lock)
                 {
+                    RequestAdditionalTime(5000);
                     _state = ServiceState.StopPending;
                     DoShutdown();
                     CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
@@ -1179,6 +1220,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">The command message sent to the service.</param>
         protected override sealed void OnCustomCommand(int command)
         {
+            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1188,6 +1230,7 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 using (PerfTimer.Timer region = PerfTimerCustomCommand.Region())
                 {
+                    RequestAdditionalTime(5000);
                     DoCustomCommand(command);
 
                     Log.Add(
@@ -1212,6 +1255,7 @@ namespace WebApplications.Utilities.Service
         /// <returns>When implemented in a derived class, the needs of your application determine what value to return. For example, if a QuerySuspend broadcast status is passed, you could cause your application to reject the query by returning false.</returns>
         protected override sealed bool OnPowerEvent(PowerBroadcastStatus powerStatus)
         {
+            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1221,6 +1265,7 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 lock (_lock)
                 {
+                    RequestAdditionalTime(5000);
                     bool result = DoPowerEvent(powerStatus);
                     PerfCounterPowerEvent.Increment();
 
@@ -1250,6 +1295,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="changeDescription">A <see cref="T:System.ServiceProcess.SessionChangeDescription" /> structure that identifies the change type.</param>
         protected override sealed void OnSessionChange(SessionChangeDescription changeDescription)
         {
+            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1260,6 +1306,7 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 lock (_lock)
                 {
+                    RequestAdditionalTime(5000);
                     DoSessionChange(changeDescription);
                     PerfCounterSessionChange.Increment();
 

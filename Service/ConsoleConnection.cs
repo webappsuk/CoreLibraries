@@ -95,7 +95,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static Task Run(
+        public static Task RunAsync(
             [NotNull] BaseService service,
             FormatBuilder defaultLogFormat = null,
             LoggingLevels defaultLoggingLevels = LoggingLevels.All,

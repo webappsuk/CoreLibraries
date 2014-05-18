@@ -477,6 +477,12 @@ namespace WebApplications.Utilities.Service
             [NotNull] TextWriter writer,
             [SCP(typeof(ServiceResources), "Cmd_CustomCommand_Command_Description")] int command)
         {
+            if (command < 128 ||
+                command > 255)
+            {
+                writer.WriteLine("Service command must be between 128 and 255");
+                return;
+            }
             lock (_lock)
             {
                 try
