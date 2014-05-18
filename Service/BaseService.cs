@@ -265,7 +265,10 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         [NotNull]
-        public abstract Task RunAsync(bool promptInstall = true, bool allowConsole = true, CancellationToken token = default(CancellationToken));
+        public abstract Task RunAsync(
+            bool promptInstall = true,
+            bool allowConsole = true,
+            CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// When implemented in a derived class, executes when a Start command is sent to the service by the Service Control Manager (SCM) or when the operating system starts (for a service that starts automatically). Specifies actions to take when the service starts.
@@ -593,7 +596,10 @@ namespace WebApplications.Utilities.Service
             if (string.IsNullOrWhiteSpace(AssemblyGuid))
             {
                 AssemblyGuid = Guid.NewGuid().ToString();
-                Log.Add(LoggingLevel.Warning, () => ServiceResources.Err_BaseService_CouldNotLocateAssemblyGuid, assembly);
+                Log.Add(
+                    LoggingLevel.Warning,
+                    () => ServiceResources.Err_BaseService_CouldNotLocateAssemblyGuid,
+                    assembly);
             }
         }
 
@@ -619,11 +625,15 @@ namespace WebApplications.Utilities.Service
         /// <param name="displayName">The display name.</param>
         /// <param name="description">The description.</param>
         /// <param name="identity">The identity of users that can start/stop the service, defaults to world.</param>
-        protected BaseService([CanBeNull] string name = null, [CanBeNull] string displayName = null, [CanBeNull] string description = null, IdentityReference identity = null)
+        protected BaseService(
+            [CanBeNull] string name = null,
+            [CanBeNull] string displayName = null,
+            [CanBeNull] string description = null,
+            IdentityReference identity = null)
             : base(
-            (string.IsNullOrWhiteSpace(name) || name.Length > 128) ? Title : name,
-            displayName,
-            (string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
+                (string.IsNullOrWhiteSpace(name) || name.Length > 128) ? Title : name,
+                displayName,
+                (string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
         {
             try
             {
@@ -658,10 +668,15 @@ namespace WebApplications.Utilities.Service
         /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
-        public override Task RunAsync(bool promptInstall = true, bool allowConsole = true, CancellationToken token = default(CancellationToken))
+        public override Task RunAsync(
+            bool promptInstall = true,
+            bool allowConsole = true,
+            CancellationToken token = default(CancellationToken))
         {
             if (!IsAdministrator)
-                Log.Add(LoggingLevel.Information, "The service is not running as an administrator, some functionality will be disabled.");
+                Log.Add(
+                    LoggingLevel.Information,
+                    "The service is not running as an administrator, some functionality will be disabled.");
 
             if (IsService)
             {
@@ -677,9 +692,12 @@ namespace WebApplications.Utilities.Service
                         Console.Title = ServiceName;
                         Log.SetTrace(validLevels: LoggingLevels.None);
                         Log.SetConsole(Log.ShortFormat);
-                        Log.Flush().Wait();
+                        Log.Flush(token).Wait(token);
+                        token.ThrowIfCancellationRequested();
                     }
 
+                    string userName = null;
+                    string password = null;
                     if (promptInstall &&
                         ConsoleHelper.IsConsole &&
                         IsAdministrator)
@@ -700,12 +718,16 @@ namespace WebApplications.Utilities.Service
                                 {"P", "Pause service."},
                                 {"C", "Continue service."},
                                 {"Y", "Run service from command line."},
+                                {"W", "Run service from command line under new credentials."},
                                 {"Z", "Run service without interaction."},
                                 {"X", "Exit."}
                             };
 
                             if (!allowConsole)
+                            {
                                 options.Remove("Y");
+                                options.Remove("W");
+                            }
 
                             if (ServiceUtils.ServiceIsInstalled(ServiceName))
                             {
@@ -783,52 +805,7 @@ namespace WebApplications.Utilities.Service
                             switch (key)
                             {
                                 case "I":
-                                    string userName;
-                                    string password;
-                                    do
-                                    {
-                                        new FormatBuilder()
-                                            .AppendForegroundColor(ConsoleColor.Cyan)
-                                            .Append("User name: ")
-                                            .AppendResetForegroundColor()
-                                            .WriteToConsole();
-                                        userName = Console.ReadLine();
-                                        if (string.IsNullOrWhiteSpace(userName))
-                                        {
-                                            userName = null;
-                                            password = null;
-                                            break;
-                                        }
-
-                                        string[] unp = userName.Split('\\');
-                                        if (unp.Length != 2 ||
-                                            string.IsNullOrWhiteSpace(unp[0]) ||
-                                            string.IsNullOrWhiteSpace(unp[1]))
-                                        {
-                                            new FormatBuilder()
-                                                .AppendForegroundColor(ConsoleColor.Red)
-                                                .AppendLine("Invalid user name!")
-                                                .AppendForegroundColor(ConsoleColor.Gray)
-                                                .AppendLine(ServiceResources.Cmd_Install_UserName_Description)
-                                                .AppendResetForegroundColor()
-                                                .WriteToConsole();
-                                            continue;
-                                        }
-
-                                        new FormatBuilder()
-                                            .AppendForegroundColor(ConsoleColor.Cyan)
-                                            .Append("Password: ")
-                                            .AppendResetForegroundColor()
-                                            .WriteToConsole();
-                                        password = ConsoleEx.ReadPassword();
-                                        if (!string.IsNullOrEmpty(password)) break;
-
-                                        new FormatBuilder()
-                                            .AppendForegroundColor(ConsoleColor.Red)
-                                            .AppendLine("Invalid password!")
-                                            .AppendResetForegroundColor()
-                                            .WriteToConsole();
-                                    } while (true);
+                                    GetUserNamePassword(out userName, out password);
 
                                     Install(ConsoleTextWriter.Default, userName, password);
 
@@ -895,6 +872,14 @@ namespace WebApplications.Utilities.Service
 
                                 case "Y":
                                     done = true;
+                                    userName = null;
+                                    password = null;
+                                    break;
+
+                                case "W":
+                                    done = true;
+                                    if (userName == null)
+                                        GetUserNamePassword(out userName, out password);
                                     break;
 
                                 case "Z":
@@ -913,23 +898,87 @@ namespace WebApplications.Utilities.Service
 
                     // Create a task that completes when this service finally shutsdown.
                     _lifeTimeTask = new TaskCompletionSource<bool>();
+                    return Task.Run(
+                        async () =>
+                        {
+                            IDisposable context = userName != null ? new Impersonator(userName, password) : null;
+                            try
+                            {
+                                if (allowConsole && ConsoleHelper.IsConsole)
+                                    await ConsoleConnection.RunAsync(this, token: token);
+                                else
+                                    StartService(ConsoleTextWriter.Default, null);
 
-                    // If we allow the console, connect the console UI, and wait until both tasks complete
-                    return allowConsole && ConsoleHelper.IsConsole
-                        ? Task.WhenAll(_lifeTimeTask.Task, ConsoleConnection.RunAsync(this, token: token))
-                        : _lifeTimeTask.Task;
+                                await _lifeTimeTask.Task.WithCancellation(token);
+                            }
+                            finally
+                            {
+                                if (context != null)
+                                    context.Dispose();
+                            }
+
+                        },
+                        token);
                 }
                 catch (Exception e)
                 {
                     Log.Add(e);
-                    if (ConsoleHelper.IsConsole)
-                    {
-                        Console.WriteLine("Fatal error! Press any key to exit.");
-                        Console.ReadKey();
-                    }
                     return Log.Flush(token);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the user name and password from the console.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        private void GetUserNamePassword(out string userName, out string password)
+        {
+            do
+            {
+                new FormatBuilder()
+                    .AppendForegroundColor(ConsoleColor.Cyan)
+                    .Append("User name: ")
+                    .AppendResetForegroundColor()
+                    .WriteToConsole();
+                userName = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(userName))
+                {
+                    userName = null;
+                    password = null;
+                    break;
+                }
+
+                string[] unp = userName.Split('\\');
+                if (unp.Length != 2 ||
+                    string.IsNullOrWhiteSpace(unp[0]) ||
+                    string.IsNullOrWhiteSpace(unp[1]))
+                {
+                    new FormatBuilder()
+                        .AppendForegroundColor(ConsoleColor.Red)
+                        .AppendLine("Invalid user name!")
+                        .AppendForegroundColor(ConsoleColor.Gray)
+                        .AppendLine(ServiceResources.Cmd_Install_UserName_Description)
+                        .AppendResetForegroundColor()
+                        .WriteToConsole();
+                    continue;
+                }
+
+                new FormatBuilder()
+                    .AppendForegroundColor(ConsoleColor.Cyan)
+                    .Append("Password: ")
+                    .AppendResetForegroundColor()
+                    .WriteToConsole();
+                password = ConsoleEx.ReadPassword();
+                if (!string.IsNullOrEmpty(password)) break;
+
+                new FormatBuilder()
+                    .AppendForegroundColor(ConsoleColor.Red)
+                    .AppendLine("Invalid password!")
+                    .AppendResetForegroundColor()
+                    .WriteToConsole();
+            } while (true);
         }
 
         /// <summary>
@@ -939,16 +988,21 @@ namespace WebApplications.Utilities.Service
         // ReSharper disable once CodeAnnotationAnalyzer
         protected override sealed void OnStart([NotNull] string[] args)
         {
-            RequestAdditionalTime(5000);
+            if (IsService)
+                RequestAdditionalTime(5000);
             try
             {
                 using (PerfTimer.Timer region = PerfTimerStart.Region())
                 {
-                    Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Start_Starting, ServiceName);
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Start_Starting,
+                        ServiceName);
 
                     lock (_lock)
                     {
-                        RequestAdditionalTime(5000);
+                        if (IsService)
+                            RequestAdditionalTime(5000);
                         if (!IsService)
                         {
                             switch (_state)
@@ -1030,16 +1084,21 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnStop()
         {
-            RequestAdditionalTime(5000);
+            if (IsService)
+                RequestAdditionalTime(5000);
             try
             {
                 using (PerfTimer.Timer region = PerfTimerStop.Region())
                 {
-                    Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Stop_Stopping, ServiceName);
+                    Log.Add(
+                        LoggingLevel.Information,
+                        () => ServiceResources.Inf_ServiceRunner_Stop_Stopping,
+                        ServiceName);
 
                     lock (_lock)
                     {
-                        RequestAdditionalTime(5000);
+                        if (IsService)
+                            RequestAdditionalTime(5000);
                         switch (_state)
                         {
                             case ServiceState.Running:
@@ -1087,13 +1146,15 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnPause()
         {
-            RequestAdditionalTime(5000);
+            if (IsService)
+                RequestAdditionalTime(5000);
             try
             {
                 Log.Add(LoggingLevel.Information, () => ServiceResources.Inf_ServiceRunner_Pause_Pausing, ServiceName);
                 lock (_lock)
                 {
-                    RequestAdditionalTime(5000);
+                    if (IsService)
+                        RequestAdditionalTime(5000);
                     if (State != ServiceState.Running)
                     {
                         Log.Add(
@@ -1126,7 +1187,8 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnContinue()
         {
-            RequestAdditionalTime(5000);
+            if (IsService)
+                RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1135,7 +1197,8 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 lock (_lock)
                 {
-                    RequestAdditionalTime(5000);
+                    if (IsService)
+                        RequestAdditionalTime(5000);
                     if (State != ServiceState.Paused)
                     {
                         Log.Add(
@@ -1168,7 +1231,6 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnShutdown()
         {
-            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1177,7 +1239,6 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 lock (_lock)
                 {
-                    RequestAdditionalTime(5000);
                     _state = ServiceState.StopPending;
                     DoShutdown();
                     CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
@@ -1220,7 +1281,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">The command message sent to the service.</param>
         protected override sealed void OnCustomCommand(int command)
         {
-            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1230,7 +1290,6 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 using (PerfTimer.Timer region = PerfTimerCustomCommand.Region())
                 {
-                    RequestAdditionalTime(5000);
                     DoCustomCommand(command);
 
                     Log.Add(
@@ -1255,7 +1314,6 @@ namespace WebApplications.Utilities.Service
         /// <returns>When implemented in a derived class, the needs of your application determine what value to return. For example, if a QuerySuspend broadcast status is passed, you could cause your application to reject the query by returning false.</returns>
         protected override sealed bool OnPowerEvent(PowerBroadcastStatus powerStatus)
         {
-            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1265,7 +1323,6 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 lock (_lock)
                 {
-                    RequestAdditionalTime(5000);
                     bool result = DoPowerEvent(powerStatus);
                     PerfCounterPowerEvent.Increment();
 
@@ -1295,7 +1352,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="changeDescription">A <see cref="T:System.ServiceProcess.SessionChangeDescription" /> structure that identifies the change type.</param>
         protected override sealed void OnSessionChange(SessionChangeDescription changeDescription)
         {
-            RequestAdditionalTime(5000);
             try
             {
                 Log.Add(
@@ -1306,7 +1362,6 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 lock (_lock)
                 {
-                    RequestAdditionalTime(5000);
                     DoSessionChange(changeDescription);
                     PerfCounterSessionChange.Increment();
 
