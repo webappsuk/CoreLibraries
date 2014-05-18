@@ -212,7 +212,13 @@ namespace WebApplications.Utilities.Service
                                             CommandRequest commandRequest = request as CommandRequest;
                                             if (commandRequest == null) continue;
                                             if (!string.IsNullOrWhiteSpace(commandRequest.CommandLine))
-                                                _commands.Add(new ConnectedCommand(_connectionGuid, _server.Service, this, commandRequest));
+                                                _commands.Add(
+                                                    new ConnectedCommand(
+                                                        _connectionGuid,
+                                                        _server.Service,
+                                                        this,
+                                                        commandRequest,
+                                                        token));
                                         }
 
                                         if (stream.IsConnected)

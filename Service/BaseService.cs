@@ -1442,12 +1442,11 @@ namespace WebApplications.Utilities.Service
             {
                 if (src.Run(this, writer, id, commandLine)) return;
                 Log.Add(() => ServiceResources.Err_Command_Failed, commandName);
-                Help(writer, commandName);
             }
             catch (Exception e)
             {
                 Log.Add(e, LoggingLevel.Error, () => ServiceResources.Err_Command_Exception, commandName);
-                Help(writer, commandName);
+                throw;
             }
         }
 

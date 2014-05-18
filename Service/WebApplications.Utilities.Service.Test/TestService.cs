@@ -27,6 +27,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service.Test
@@ -34,7 +35,7 @@ namespace WebApplications.Utilities.Service.Test
     public class TestService : BaseService<TestService>
     {
         [PublicAPI]
-        [ServiceCommand(typeof (TestServiceResources), "Cmd_TestCommand_Names", "Cmd_TestCommand_Description",
+        [ServiceCommand(typeof(TestServiceResources), "Cmd_TestCommand_Names", "Cmd_TestCommand_Description",
             writerParameter: "writer", idParameter: "id")]
         public void TestCommand(
             [NotNull] TextWriter writer,
@@ -46,6 +47,30 @@ namespace WebApplications.Utilities.Service.Test
             writer.WriteLine("Parameter: {0}", parameter);
             if (optional != null)
                 writer.WriteLine("Optional: {0}", optional);
+        }
+
+
+
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof (TestResource), "Cmd_LongRun", "Cmd_LongRun_Description", writerParameter: "writer")]
+        public void StopService(
+            [NotNull] TextWriter writer,
+            [ServiceCommandParameter(typeof (TestResource), "Cmd_LongRun_Loops_Description")] int loops = 10,
+            [ServiceCommandParameter(typeof (TestResource), "Cmd_LongRun_ThrowError_Description")] bool throwError =
+                false)
+        {
+            writer.WriteLine("Running long running operation:");
+            for (int l = 0; l < loops; l++)
+            {
+                writer.WriteLine(string.Format("Loop {0} completed", l));
+                Thread.Sleep(1000);
+            }
+            if (throwError)
+                throw new ApplicationException("Test exception");
+            writer.WriteLine("Completed");
         }
     }
 }

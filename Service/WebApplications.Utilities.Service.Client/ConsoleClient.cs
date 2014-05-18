@@ -137,7 +137,15 @@ namespace WebApplications.Utilities.Service.Client
 
                     if (!string.IsNullOrWhiteSpace(command))
                         client.Execute(command, token)
-                            .Subscribe(c => new FormatBuilder(c).WriteToConsole());
+                            .Subscribe(
+                                c => new FormatBuilder(c).WriteToConsole(),
+                                e => new FormatBuilder()
+                                    .AppendForegroundColor(ConsoleColor.Red)
+                                    .AppendLine(e.Message)
+                                    .AppendResetForegroundColor()
+                                    .WriteToConsole(),
+                                () => { },
+                                token);
 
                     // Wait to allow any disconnects or logs to come through.
                     await Log.Flush(token);

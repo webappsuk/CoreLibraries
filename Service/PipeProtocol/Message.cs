@@ -143,7 +143,7 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     public class CommandResponse : Response
     {
         /// <summary>
-        /// The sequence starts at 0 and continues until the final chunk which is set at -1.
+        /// The sequence starts at 0 and continues until the final chunk which is set at -1 for completed, or -2 for error.
         /// </summary>
         [ProtoMember(1)]
         public readonly int Sequence;
@@ -152,13 +152,15 @@ namespace WebApplications.Utilities.Service.PipeProtocol
         public readonly string Chunk;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandResponse"/> class.
+        /// Initializes a new instance of the <see cref="CommandResponse" /> class.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="sequence">The sequence.</param>
         /// <param name="chunk">The chunk.</param>
-        public CommandResponse(Guid id, string chunk)
+        public CommandResponse(Guid id, int sequence, string chunk)
             : base(id)
         {
+            Sequence = sequence;
             Chunk = chunk;
         }
     }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Service.PipeProtocol;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service
 {
@@ -28,7 +29,7 @@ namespace WebApplications.Utilities.Service
             [NotNull]
             private readonly CommandRequest _request;
 
-            private Task _executionTask;
+            private TaskCompletionSource<bool> _completionSource;
 
             /// <summary>
             /// The sequence identifier.
@@ -54,21 +55,42 @@ namespace WebApplications.Utilities.Service
             /// <param name="service">The service.</param>
             /// <param name="connection">The connection.</param>
             /// <param name="request">The request.</param>
-            public ConnectedCommand(Guid connectionGuid, [NotNull]BaseService service, [NotNull]NamedPipeConnection connection, [NotNull]CommandRequest request)
+            public ConnectedCommand(Guid connectionGuid, [NotNull]BaseService service, [NotNull]NamedPipeConnection connection, [NotNull]CommandRequest request, CancellationToken token)
             {
                 ConnectionGuid = connectionGuid;
                 _connection = connection;
                 _request = request;
 
+                _completionSource = new TaskCompletionSource<bool>();
                 // Kick of task to run command.
-                _executionTask = Task.Run(
-                    () =>
+                Task.Run(
+                    async () =>
                     {
-                        service.Execute(ConnectionGuid, _request.CommandLine, this);
-                        Flush(true);
-                        _executionTask = null;
-                        Dispose();
-                    });
+                        Exception exception;
+                        try
+                        {
+                            service.Execute(ConnectionGuid, _request.CommandLine, this);
+                            token.ThrowIfCancellationRequested();
+
+                            _completionSource.TrySetResult(true);
+                            await Flush(-1, token);
+                            return;
+                        }
+                        catch (Exception e)
+                        {
+                            exception = e;
+                        }
+                        if (exception is TaskCanceledException)
+                            _completionSource.TrySetCanceled();
+                        else
+                        {
+                            _completionSource.TrySetException(exception);
+                            await Flush(0, token);
+                            _builder.Append(exception.Message);
+                            await Flush(-2, token);
+                        }
+                    },
+                    token);
             }
 
             /// <summary>
@@ -86,9 +108,10 @@ namespace WebApplications.Utilities.Service
             /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
             protected override void Dispose(bool disposing)
             {
-                Task et = Interlocked.Exchange(ref _executionTask, null);
-                if (et != null)
-                    et.Dispose();
+                TaskCompletionSource<bool> tcs = Interlocked.Exchange(ref _completionSource, null);
+                if (tcs != null)
+                    tcs.SetCanceled();
+
                 NamedPipeConnection connexion = Interlocked.Exchange(ref _connection, null);
                 if (connexion != null)
                     connexion.Remove(this);
@@ -96,27 +119,35 @@ namespace WebApplications.Utilities.Service
                 base.Dispose(disposing);
             }
 
+            [NotNull]
+            private readonly AsyncLock _flushLock = new AsyncLock();
+
             /// <summary>
             /// Flushes the specified final.
             /// </summary>
-            /// <param name="final">The final.</param>
-            private void Flush(bool final)
+            /// <param name="sequence">The sequence.</param>
+            /// <param name="token">The token.</param>
+            /// <returns>Task.</returns>
+            private async Task Flush(int sequence, CancellationToken token = default(CancellationToken))
             {
-                lock (_builder)
+                using (await _flushLock.LockAsync(token))
                 {
-                    string chunk = _builder.ToString();
-                    if (!final &&
-                        string.IsNullOrEmpty(chunk))
-                        return;
-                    _builder.Clear();
+                    string chunk;
+                    lock (_builder)
+                    {
+                        chunk = _builder.ToString();
+                        if ((sequence > -1) &&
+                            string.IsNullOrEmpty(chunk))
+                            return;
+                        _builder.Clear();
 
-                    NamedPipeConnection connection = _connection;
-                    if (connection == null ||
-                        _sequenceId < 0) return;
-
-                    if (final) _sequenceId = -1;
+                        if (_sequenceId < 0) return;
+                        if (sequence < 0) _sequenceId = sequence;
+                    }
                     Guid id = _request.ID;
-                    connection.Send(new CommandResponse(id, chunk));
+                    NamedPipeConnection connection = _connection;
+                    if (connection != null)
+                        await connection.Send(new CommandResponse(id, _sequenceId, chunk), token);
                 }
             }
 
@@ -133,7 +164,7 @@ namespace WebApplications.Utilities.Service
             /// </summary>
             public void Flush()
             {
-                Flush(false);
+                Flush(0).Wait();
             }
 
             /// <summary>

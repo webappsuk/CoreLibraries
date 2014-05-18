@@ -207,13 +207,15 @@ namespace WebApplications.Utilities.Service.Client
                                     if (response != null)
                                     {
                                         CommandResponse commandResponse = response as CommandResponse;
-                                        bool complete = commandResponse == null || commandResponse.Sequence < 0;
+                                        int sequence = commandResponse == null
+                                            ? -1
+                                            : commandResponse.Sequence;
 
                                         ConnectedCommand connectedCommand;
-                                        if (complete
+                                        if (sequence < 0
                                             ? _commandRequests.TryRemove(response.ID, out connectedCommand)
                                             : _commandRequests.TryGetValue(response.ID, out connectedCommand))
-                                            connectedCommand.Received(response, complete);
+                                            connectedCommand.Received(response, sequence);
                                     }
                                 }
                             }
@@ -230,7 +232,7 @@ namespace WebApplications.Utilities.Service.Client
                                 onReceive(disconnectResponse);
                                 ConnectedCommand connectedCommand;
                                 if (_commandRequests.TryRemove(disconnectResponse.ID, out connectedCommand))
-                                    connectedCommand.Received(disconnectResponse, true);
+                                    connectedCommand.Received(disconnectResponse, -1);
                             }
                         }
                     }
@@ -360,22 +362,38 @@ namespace WebApplications.Utilities.Service.Client
             /// </summary>
             /// <param name="response">The response.</param>
             /// <param name="completed">if set to <see langword="true" /> the command is completed.</param>
-            public void Received(Response response, bool completed)
+            public void Received(Response response, int sequence)
             {
                 IObserver<Response> observer = Observer;
                 if (observer == null) return;
-
-                observer.OnNext(response);
-                if (!completed) return;
+                bool complete = false;
                 try
                 {
-                    observer.OnCompleted();
+                    if (sequence != -2)
+                    {
+                        observer.OnNext(response);
+                        if (sequence != -1) return;
+                        complete = true;
+                        observer.OnCompleted();
+                    }
+                    else
+                    {
+                        complete = true;
+                        observer.OnError(
+                            new ApplicationException(((CommandResponse) response).Chunk));
+                    }
+                }
+                catch
+                {
+                    complete = true;
                 }
                 finally
                 {
-                    TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
-                    if (cts != null)
-                        cts.TrySetResult(true);
+                    if (complete)
+                    {
+                        TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
+                        if (cts != null) cts.TrySetResult(true);
+                    }
                 }
             }
 

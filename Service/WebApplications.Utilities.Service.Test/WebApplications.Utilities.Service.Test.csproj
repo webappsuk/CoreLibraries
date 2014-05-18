@@ -177,6 +177,11 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TestResource.resx</DependentUpon>
+    </Compile>
     <Compile Include="TestService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -201,6 +206,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="TestResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TestResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="TestServiceResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>TestServiceResources.Designer.cs</LastGenOutput>
