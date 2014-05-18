@@ -380,7 +380,7 @@ namespace WebApplications.Utilities.Service.Client
                     {
                         complete = true;
                         observer.OnError(
-                            new ApplicationException(((CommandResponse) response).Chunk));
+                            new ApplicationException(((CommandResponse)response).Chunk));
                     }
                 }
                 catch
@@ -440,9 +440,18 @@ namespace WebApplications.Utilities.Service.Client
                         : t;
                     ConnectedCommand cr = new ConnectedCommand(request, observer);
                     _commandRequests.TryAdd(request.ID, cr);
-                    await stream.WriteAsync(request.Serialize(), token);
-                    await cr.CompletionTask.WithCancellation(token);
-                    _commandRequests.TryRemove(request.ID, out cr);
+                    try
+                    {
+                        await stream.WriteAsync(request.Serialize(), token);
+                        await cr.CompletionTask.WithCancellation(token);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                    }
+                    finally
+                    {
+                        _commandRequests.TryRemove(request.ID, out cr);
+                    }
                 });
         }
 
