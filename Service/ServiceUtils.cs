@@ -34,7 +34,6 @@ using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Caching;
 
 namespace WebApplications.Utilities.Service
 {
@@ -46,13 +45,13 @@ namespace WebApplications.Utilities.Service
     {
         #region PInvoke
         private const int SERVICE_WIN32_OWN_PROCESS = 0x00000010;
-        
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct SERVICE_DESCRIPTION
         {
             public IntPtr description;
         }
-        
+
         [DllImport("advapi32.dll", EntryPoint = "OpenSCManagerW", ExactSpelling = true, CharSet = CharSet.Unicode,
             SetLastError = true)]
         private static extern IntPtr OpenSCManager(
@@ -127,7 +126,9 @@ namespace WebApplications.Utilities.Service
         /// or
         /// Could not delete service  + Marshal.GetLastWin32Error()</exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public static async Task Uninstall([NotNull] string serviceName, CancellationToken token = default(CancellationToken))
+        public static async Task Uninstall(
+            [NotNull] string serviceName,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             if (!ServiceIsInstalled(serviceName))
@@ -204,21 +205,27 @@ namespace WebApplications.Utilities.Service
 
                 if (service == IntPtr.Zero)
                     throw new Win32Exception(Marshal.GetLastWin32Error());
-
-                // Set description
-                SERVICE_DESCRIPTION sd = new SERVICE_DESCRIPTION
-                {
-                    description = Marshal.StringToHGlobalUni(description)
-                };
                 try
                 {
-                    bool flag = ChangeServiceConfig2(service, ServiceConfig.Description, ref sd);
-                    if (!flag)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                    // Set description
+                    SERVICE_DESCRIPTION sd = new SERVICE_DESCRIPTION
+                    {
+                        description = Marshal.StringToHGlobalUni(description)
+                    };
+                    try
+                    {
+                        bool flag = ChangeServiceConfig2(service, ServiceConfig.Description, ref sd);
+                        if (!flag)
+                            throw new Win32Exception(Marshal.GetLastWin32Error());
+                    }
+                    finally
+                    {
+                        Marshal.FreeHGlobal(sd.description);
+                    }
                 }
                 finally
                 {
-                    Marshal.FreeHGlobal(sd.description);
+                    CloseServiceHandle(service);
                 }
             }
             finally
@@ -235,7 +242,10 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
         [NotNull]
-        private static async Task<bool> WaitForAsync([NotNull] ServiceController serviceController, ServiceControllerStatus status, CancellationToken token = default(CancellationToken))
+        private static async Task<bool> WaitForAsync(
+            [NotNull] ServiceController serviceController,
+            ServiceControllerStatus status,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceController != null, "Parameter_Null");
             CancellationToken timeoutToken = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
@@ -243,11 +253,13 @@ namespace WebApplications.Utilities.Service
                 ? CancellationTokenSource.CreateLinkedTokenSource(token, timeoutToken).Token
                 : timeoutToken;
 
+            serviceController.Refresh();
             while (serviceController.Status != status)
             {
                 // ReSharper disable once PossibleNullReferenceException
                 await Task.Delay(250, token);
                 if (token.IsCancellationRequested) return false;
+                serviceController.Refresh();
             }
             return true;
         }
@@ -259,14 +271,16 @@ namespace WebApplications.Utilities.Service
         /// <param name="args">The arguments.</param>
         /// <param name="token">The token.</param>
         /// <returns>System.Threading.Tasks.Task.</returns>
-        public static async Task<bool> StartService([NotNull]string serviceName, [CanBeNull] string[] args = null, CancellationToken token = default(CancellationToken))
+        public static async Task<bool> StartService(
+            [NotNull] string serviceName,
+            [CanBeNull] string[] args = null,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             if (args == null) args = new string[] {};
             try
             {
                 using (ServiceController serviceController = new ServiceController(serviceName))
-                {
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -293,7 +307,6 @@ namespace WebApplications.Utilities.Service
                         default:
                             return false;
                     }
-                }
             }
             catch (TaskCanceledException)
             {
@@ -307,13 +320,14 @@ namespace WebApplications.Utilities.Service
         /// <param name="serviceName">Name of the service.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
-        public static async Task<bool> PauseService(string serviceName, CancellationToken token = default(CancellationToken))
+        public static async Task<bool> PauseService(
+            string serviceName,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
                 using (ServiceController serviceController = new ServiceController(serviceName))
-                {
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -332,7 +346,6 @@ namespace WebApplications.Utilities.Service
                         default:
                             return false;
                     }
-                }
             }
             catch (TaskCanceledException)
             {
@@ -347,7 +360,9 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
         [NotNull]
-        public static async Task<bool> ContinueService([NotNull] string serviceName, CancellationToken token = default(CancellationToken))
+        public static async Task<bool> ContinueService(
+            [NotNull] string serviceName,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
@@ -385,13 +400,14 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
         [NotNull]
-        public static async Task<bool> StopService([NotNull] string serviceName, CancellationToken token = default(CancellationToken))
+        public static async Task<bool> StopService(
+            [NotNull] string serviceName,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
                 using (ServiceController serviceController = new ServiceController(serviceName))
-                {
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -418,7 +434,6 @@ namespace WebApplications.Utilities.Service
                         default:
                             return false;
                     }
-                }
             }
             catch (TaskCanceledException)
             {
@@ -433,13 +448,15 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">The command.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
-        public static async Task<bool> CommandService(string serviceName, int command, CancellationToken token = default(CancellationToken))
+        public static async Task<bool> CommandService(
+            string serviceName,
+            int command,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
                 using (ServiceController serviceController = new ServiceController(serviceName))
-                {
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -454,7 +471,6 @@ namespace WebApplications.Utilities.Service
                         default:
                             return false;
                     }
-                }
             }
             catch (TaskCanceledException)
             {

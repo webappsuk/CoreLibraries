@@ -686,55 +686,7 @@ namespace WebApplications.Utilities.Service
             }
             lock (_lock)
             {
-                /*
-                try
-                {
-                    if (ConsoleHelper.IsConsole)
-                    {
-                        Console.Title = ServiceName;
-                        Log.SetTrace(validLevels: LoggingLevels.None);
-                        Log.SetConsole(Log.ShortFormat);
-                        Log.Flush(token).Wait(token);
-                        token.ThrowIfCancellationRequested();
-                    }
-
-                    string userName = null;
-                    string password = null;
-                    if (promptInstall &&
-                        ConsoleHelper.IsConsole &&
-                        IsAdministrator)
-                    {
-                    }
-
-                    // Create a task that completes when this service finally shutsdown.
-                    _lifeTimeTask = new TaskCompletionSource<bool>();
-                    return Task.Run(
-                        async () =>
-                        {
-                            IDisposable context = userName != null ? new Impersonator(userName, password) : null;
-                            try
-                            {
-                                if (allowConsoleInteraction && ConsoleHelper.IsConsole)
-                                    await ConsoleConnection.RunAsync(this, token: token);
-                                else
-                                    StartService(ConsoleTextWriter.Default, null);
-
-                                await _lifeTimeTask.Task.WithCancellation(token);
-                            }
-                            finally
-                            {
-                                if (context != null)
-                                    context.Dispose();
-                            }
-                        },
-                        token);
-                }
-                catch (Exception e)
-                {
-                    Log.Add(e);
-                    return Log.Flush(token);
-                }
-                 */
+                _lifeTimeTaskCompletionSource = new TaskCompletionSource<bool>();
                 return ConsoleHelper.IsConsole
                     ? (Task)Task.WhenAny(
                         _lifeTimeTaskCompletionSource.Task,
