@@ -300,8 +300,7 @@ namespace WebApplications.Utilities.Service
             {
                 switch (_state)
                 {
-                    case ServiceState.Unknown:
-                    case ServiceState.Stopped:
+                    case ServiceControllerStatus.Stopped:
                         break;
                     default:
                         writer.WriteLine(ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning, ServiceName);
@@ -339,8 +338,8 @@ namespace WebApplications.Utilities.Service
             {
                 switch (_state)
                 {
-                    case ServiceState.Running:
-                    case ServiceState.Paused:
+                    case ServiceControllerStatus.Running:
+                    case ServiceControllerStatus.Paused:
                         break;
                     default:
                         writer.WriteLine(ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning, ServiceName);
@@ -374,7 +373,7 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
-                if (State != ServiceState.Running)
+                if (State != ServiceControllerStatus.Running)
                 {
                     writer.WriteLine(
                         ServiceResources.Err_ServiceRunner_Pause_ServiceNotRunning,
@@ -409,7 +408,7 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
-                if (State != ServiceState.Paused)
+                if (State != ServiceControllerStatus.Paused)
                 {
                     writer.WriteLine(
                         ServiceResources.Err_ServiceRunner_Continue_ServiceNotPaused,
@@ -601,8 +600,8 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description",
             writerParameter: "writer")]
-        public void Install(
-            [NotNull] TextWriter writer,
+        public override void Install(
+            TextWriter writer,
             [SCP(typeof (ServiceResources), "Cmd_Install_UserName_Description")] string userName = null,
             [SCP(typeof (ServiceResources), "Cmd_Install_Password_Description")] string password = null)
         {
@@ -678,7 +677,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description",
             writerParameter: "writer")]
-        public void Uninstall([NotNull] TextWriter writer)
+        public override void Uninstall(TextWriter writer)
         {
             lock (_lock)
             {

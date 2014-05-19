@@ -101,7 +101,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <value>The state.</value>
         [PublicAPI]
-        public abstract ServiceState State { get; }
+        public abstract ServiceControllerStatus State { get; }
 
         /// <summary>
         /// The current process is running as a service.
@@ -178,7 +178,7 @@ namespace WebApplications.Utilities.Service
             CanShutdown = true;
             IsService = IsServiceProcess &&
                         ServiceUtils.ServiceIsInstalled(name) &&
-                        ServiceUtils.GetServiceStatus(name) == ServiceState.StartPending;
+                        ServiceUtils.GetServiceStatus(name) == ServiceControllerStatus.StartPending;
 
             // Create event log.
             EventLogger eventLogger = Log.GetLoggers<EventLogger>().FirstOrDefault();
@@ -247,13 +247,13 @@ namespace WebApplications.Utilities.Service
         /// Runs the service, either as a service or as a console application.
         /// </summary>
         /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
-        /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="allowConsoleInteraction">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         [NotNull]
         public abstract Task RunAsync(
             bool promptInstall = true,
-            bool allowConsole = true,
+            bool allowConsoleInteraction = true,
             CancellationToken token = default(CancellationToken));
 
         /// <summary>
@@ -377,6 +377,30 @@ namespace WebApplications.Utilities.Service
             [NotNull] TextWriter writer,
             [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Command_Description")] string command = null,
             [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
+
+        /// <summary>
+        /// Install services.
+        /// Sends the 
+        /// <see cref="SessionChangeDescription" /> to the service.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="userName">The user name.</param>
+        /// <param name="password">The password.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description",
+            writerParameter: "writer")]
+        public abstract void Install(
+            [NotNull] TextWriter writer,
+            [SCP(typeof (ServiceResources), "Cmd_Install_UserName_Description")] string userName = null,
+            [SCP(typeof (ServiceResources), "Cmd_Install_Password_Description")] string password = null);
+
+        /// <summary>
+        /// Uninstall services.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description",
+            writerParameter: "writer")]
+        public abstract void Uninstall([NotNull] TextWriter writer);
     }
 
     /// <summary>
@@ -415,13 +439,13 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         private readonly object _lock = new object();
 
-        private ServiceState _state = ServiceState.Unknown;
+        private ServiceControllerStatus _state = ServiceControllerStatus.Stopped;
 
         /// <summary>
         /// Gets the current state of the service.
         /// </summary>
         /// <value>The state.</value>
-        public override ServiceState State
+        public override ServiceControllerStatus State
         {
             get { return _state; }
         }
@@ -446,7 +470,7 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// The <see cref="CancellationTokenSource"/>.
         /// </summary>
-        private TaskCompletionSource<bool> _lifeTimeTask;
+        private TaskCompletionSource<bool> _lifeTimeTaskCompletionSource;
 
         /// <summary>
         /// Gets a <see cref="Utilities.Threading.PauseToken"/> that is paused when the service is not running, or paused.
@@ -630,7 +654,7 @@ namespace WebApplications.Utilities.Service
                 _eventWaitHandleSecurity.AddAccessRule(
                     new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
 
-                _state = IsService ? ServiceUtils.GetServiceStatus(ServiceName) : ServiceState.Stopped;
+                _state = IsService ? ServiceUtils.GetServiceStatus(ServiceName) : ServiceControllerStatus.Stopped;
             }
             catch (Exception e)
             {
@@ -638,25 +662,16 @@ namespace WebApplications.Utilities.Service
             }
         }
 
-        [NotNull]
-        private static readonly FormatBuilder _promptInstall = new FormatBuilder()
-            .AppendForegroundColor(ConsoleColor.Yellow)
-            .AppendLine("Select one of :")
-            .AppendLayout(indentSize: 3, firstLineIndentSize: 5)
-            .AppendFormatLine("{Options:{<items>:\r\n{!fgcolor:Cyan}{Key}\t{!fgcolor:White}{Value}}}")
-            .AppendPopLayout()
-            .MakeReadOnly();
-
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
         /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
-        /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="allowConsoleInteraction">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         public override Task RunAsync(
             bool promptInstall = true,
-            bool allowConsole = true,
+            bool allowConsoleInteraction = true,
             CancellationToken token = default(CancellationToken))
         {
             if (!IsAdministrator)
@@ -671,6 +686,7 @@ namespace WebApplications.Utilities.Service
             }
             lock (_lock)
             {
+                /*
                 try
                 {
                     if (ConsoleHelper.IsConsole)
@@ -688,198 +704,6 @@ namespace WebApplications.Utilities.Service
                         ConsoleHelper.IsConsole &&
                         IsAdministrator)
                     {
-                        Console.Title = "Configure " + ServiceName;
-                        bool done = false;
-                        do
-                        {
-                            token.ThrowIfCancellationRequested();
-
-                            Dictionary<string, string> options = new Dictionary<string, string>
-                            {
-                                {"I", "Install service."},
-                                {"U", "Uninstall service."},
-                                {"S", "Start service."},
-                                {"R", "Restart service."},
-                                {"T", "Stop service."},
-                                {"P", "Pause service."},
-                                {"C", "Continue service."},
-                                {"Y", "Run service from command line."},
-                                {"W", "Run service from command line under new credentials."},
-                                {"Z", "Run service without interaction."},
-                                {"X", "Exit."}
-                            };
-
-                            if (!allowConsole)
-                            {
-                                options.Remove("Y");
-                                options.Remove("W");
-                            }
-
-                            if (ServiceUtils.ServiceIsInstalled(ServiceName))
-                            {
-                                ServiceState state = ServiceUtils.GetServiceStatus(ServiceName);
-                                new FormatBuilder()
-                                    .AppendForegroundColor(ConsoleColor.White)
-                                    .AppendFormatLine("The '{0}' service is installed and {1}.", ServiceName, state)
-                                    .AppendResetForegroundColor()
-                                    .WriteToConsole();
-
-                                options.Remove("I");
-
-                                switch (state)
-                                {
-                                    case ServiceState.Unknown:
-                                    case ServiceState.NotFound:
-                                        // Service is not installed.
-                                        options.Remove("U");
-                                        options.Remove("S");
-                                        options.Remove("R");
-                                        options.Remove("T");
-                                        options.Remove("C");
-                                        options.Remove("P");
-                                        break;
-                                    case ServiceState.StopPending:
-                                    case ServiceState.Stopped:
-                                        // Service is stopped or stopping.
-                                        options.Remove("C");
-                                        options.Remove("R");
-                                        options.Remove("T");
-                                        break;
-                                    case ServiceState.StartPending:
-                                    case ServiceState.ContinuePending:
-                                    case ServiceState.Running:
-                                        // Service is starting or running.
-                                        options.Remove("S");
-                                        options.Remove("C");
-                                        break;
-                                    case ServiceState.PausePending:
-                                    case ServiceState.Paused:
-                                        // Service is paused or pausing.
-                                        options.Remove("S");
-                                        options.Remove("R");
-                                        options.Remove("T");
-                                        options.Remove("P");
-                                        break;
-                                }
-                                options.Remove("Y");
-                                options.Remove("Z");
-                            }
-                            else
-                            {
-                                // No service installed.
-                                options.Remove("U");
-                                options.Remove("S");
-                                options.Remove("R");
-                                options.Remove("T");
-                                options.Remove("P");
-                                options.Remove("C");
-                            }
-
-                            _promptInstall.WriteToConsole(
-                                null,
-                                (_, c) => !string.Equals(c.Tag, "options", StringComparison.CurrentCultureIgnoreCase)
-                                    ? Resolution.Unknown
-                                    : options);
-
-                            string key;
-                            do
-                            {
-                                key = Char.ToUpperInvariant(Console.ReadKey(true).KeyChar)
-                                    .ToString(CultureInfo.InvariantCulture);
-                            } while (!options.ContainsKey(key));
-
-                            switch (key)
-                            {
-                                case "I":
-                                    GetUserNamePassword(out userName, out password);
-
-                                    Install(ConsoleTextWriter.Default, userName, password);
-
-                                    Console.Write("Waiting for service to be detected...");
-                                    while (!ServiceUtils.ServiceIsInstalled(ServiceName))
-                                    {
-                                        Thread.Sleep(250);
-                                        Console.Write('.');
-                                    }
-                                    Console.WriteLine("Done.");
-                                    Console.WriteLine();
-                                    break;
-
-                                case "U":
-                                    Uninstall(ConsoleTextWriter.Default);
-
-                                    Console.Write("Waiting for service removal to be detected...");
-                                    while (ServiceUtils.ServiceIsInstalled(ServiceName))
-                                    {
-                                        Thread.Sleep(250);
-                                        Console.Write('.');
-                                    }
-                                    Console.WriteLine("Done.");
-                                    Console.WriteLine();
-                                    return TaskResult.Completed;
-
-                                case "R":
-                                    Console.Write("Attempting to stop service...");
-                                    ServiceUtils.StopService(ServiceName);
-                                    Console.WriteLine("Done.");
-                                    Console.WriteLine();
-                                    Console.Write("Attempting to start service...");
-                                    ServiceUtils.StartService(ServiceName);
-                                    Console.WriteLine("Done.");
-                                    Console.WriteLine();
-                                    break;
-
-                                case "S":
-                                    Console.Write("Attempting to start service...");
-                                    ServiceUtils.StartService(ServiceName);
-                                    Console.WriteLine("Done.");
-                                    Console.WriteLine();
-                                    break;
-
-                                case "T":
-                                    Console.Write("Attempting to stop service...");
-                                    ServiceUtils.StopService(ServiceName);
-                                    Console.WriteLine("Done.");
-                                    Console.WriteLine();
-                                    break;
-
-                                case "P":
-                                    Console.Write("Attempting to pause service...");
-                                    ServiceUtils.PauseService(ServiceName);
-                                    Console.WriteLine("Done.");
-                                    break;
-
-                                case "C":
-                                    Console.Write("Attempting to continue service...");
-                                    ServiceUtils.ContinueService(ServiceName);
-                                    Console.WriteLine("Done.");
-                                    Console.WriteLine();
-                                    break;
-
-                                case "Y":
-                                    done = true;
-                                    userName = null;
-                                    password = null;
-                                    break;
-
-                                case "W":
-                                    done = true;
-                                    if (userName == null)
-                                        GetUserNamePassword(out userName, out password);
-                                    break;
-
-                                case "Z":
-                                    allowConsole = false;
-                                    done = true;
-                                    Console.WriteLine("Running service in non-interactive mode (use CTRL-C to kill).");
-                                    Console.WriteLine("To control connect using a service client.");
-                                    Console.WriteLine();
-                                    break;
-
-                                default:
-                                    return TaskResult.Completed;
-                            }
-                        } while (!done);
                     }
 
                     // Create a task that completes when this service finally shutsdown.
@@ -890,7 +714,7 @@ namespace WebApplications.Utilities.Service
                             IDisposable context = userName != null ? new Impersonator(userName, password) : null;
                             try
                             {
-                                if (allowConsole && ConsoleHelper.IsConsole)
+                                if (allowConsoleInteraction && ConsoleHelper.IsConsole)
                                     await ConsoleConnection.RunAsync(this, token: token);
                                 else
                                     StartService(ConsoleTextWriter.Default, null);
@@ -910,60 +734,13 @@ namespace WebApplications.Utilities.Service
                     Log.Add(e);
                     return Log.Flush(token);
                 }
+                 */
+                return ConsoleHelper.IsConsole
+                    ? (Task)Task.WhenAny(
+                        _lifeTimeTaskCompletionSource.Task,
+                        ConsoleConnection.RunAsync(this, promptInstall, allowConsoleInteraction, token: token))
+                    : _lifeTimeTaskCompletionSource.Task;
             }
-        }
-
-        /// <summary>
-        /// Gets the user name and password from the console.
-        /// </summary>
-        /// <param name="userName">Name of the user.</param>
-        /// <param name="password">The password.</param>
-        private void GetUserNamePassword(out string userName, out string password)
-        {
-            do
-            {
-                new FormatBuilder()
-                    .AppendForegroundColor(ConsoleColor.Cyan)
-                    .Append("User name: ")
-                    .AppendResetForegroundColor()
-                    .WriteToConsole();
-                userName = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(userName))
-                {
-                    userName = null;
-                    password = null;
-                    break;
-                }
-
-                string[] unp = userName.Split('\\');
-                if (unp.Length != 2 ||
-                    string.IsNullOrWhiteSpace(unp[0]) ||
-                    string.IsNullOrWhiteSpace(unp[1]))
-                {
-                    new FormatBuilder()
-                        .AppendForegroundColor(ConsoleColor.Red)
-                        .AppendLine("Invalid user name!")
-                        .AppendForegroundColor(ConsoleColor.Gray)
-                        .AppendLine(ServiceResources.Cmd_Install_UserName_Description)
-                        .AppendResetForegroundColor()
-                        .WriteToConsole();
-                    continue;
-                }
-
-                new FormatBuilder()
-                    .AppendForegroundColor(ConsoleColor.Cyan)
-                    .Append("Password: ")
-                    .AppendResetForegroundColor()
-                    .WriteToConsole();
-                password = ConsoleHelper.ReadPassword();
-                if (!string.IsNullOrEmpty(password)) break;
-
-                new FormatBuilder()
-                    .AppendForegroundColor(ConsoleColor.Red)
-                    .AppendLine("Invalid password!")
-                    .AppendResetForegroundColor()
-                    .WriteToConsole();
-            } while (true);
         }
 
         /// <summary>
@@ -991,8 +768,7 @@ namespace WebApplications.Utilities.Service
                         if (!IsService)
                             switch (_state)
                             {
-                                case ServiceState.Unknown:
-                                case ServiceState.Stopped:
+                                case ServiceControllerStatus.Stopped:
                                     break;
                                 default:
                                     Log.Add(
@@ -1001,7 +777,7 @@ namespace WebApplications.Utilities.Service
                                         ServiceName);
                                     return;
                             }
-                        _state = ServiceState.StartPending;
+                        _state = ServiceControllerStatus.StartPending;
 
                         // Try to grab the global mutex
                         bool hasHandle = false;
@@ -1045,7 +821,7 @@ namespace WebApplications.Utilities.Service
                         _cancellationTokenSource = new CancellationTokenSource();
                         _pauseTokenSource.IsPaused = false;
                         DoStart(args);
-                        _state = ServiceState.Running;
+                        _state = ServiceControllerStatus.Running;
                     }
 
                     Log.Add(
@@ -1084,8 +860,8 @@ namespace WebApplications.Utilities.Service
                             RequestAdditionalTime(5000);
                         switch (_state)
                         {
-                            case ServiceState.Running:
-                            case ServiceState.Paused:
+                            case ServiceControllerStatus.Running:
+                            case ServiceControllerStatus.Paused:
                                 break;
                             default:
                                 Log.Add(
@@ -1094,7 +870,7 @@ namespace WebApplications.Utilities.Service
                                     ServiceName);
                                 return;
                         }
-                        _state = ServiceState.StopPending;
+                        _state = ServiceControllerStatus.StopPending;
                         DoStop();
                         Contract.Assert(_cancellationTokenSource != null);
                         _cancellationTokenSource.Cancel();
@@ -1108,7 +884,7 @@ namespace WebApplications.Utilities.Service
                             _runEventWaitHandle.Dispose();
                             _runEventWaitHandle = null;
                         }
-                        _state = ServiceState.Stopped;
+                        _state = ServiceControllerStatus.Stopped;
                     }
                     Log.Add(
                         LoggingLevel.Information,
@@ -1138,7 +914,7 @@ namespace WebApplications.Utilities.Service
                 {
                     if (IsService)
                         RequestAdditionalTime(5000);
-                    if (State != ServiceState.Running)
+                    if (State != ServiceControllerStatus.Running)
                     {
                         Log.Add(
                             LoggingLevel.Error,
@@ -1146,11 +922,11 @@ namespace WebApplications.Utilities.Service
                             ServiceName);
                         return;
                     }
-                    _state = ServiceState.PausePending;
+                    _state = ServiceControllerStatus.PausePending;
                     DoPause();
                     _pauseTokenSource.IsPaused = true;
                     PerfCounterPause.Increment();
-                    _state = ServiceState.Paused;
+                    _state = ServiceControllerStatus.Paused;
 
                     Log.Add(
                         LoggingLevel.Information,
@@ -1182,7 +958,7 @@ namespace WebApplications.Utilities.Service
                 {
                     if (IsService)
                         RequestAdditionalTime(5000);
-                    if (State != ServiceState.Paused)
+                    if (State != ServiceControllerStatus.Paused)
                     {
                         Log.Add(
                             LoggingLevel.Error,
@@ -1190,11 +966,11 @@ namespace WebApplications.Utilities.Service
                             ServiceName);
                         return;
                     }
-                    _state = ServiceState.ContinuePending;
+                    _state = ServiceControllerStatus.ContinuePending;
                     _pauseTokenSource.IsPaused = false;
                     DoContinue();
                     PerfCounterContinue.Increment();
-                    _state = ServiceState.Running;
+                    _state = ServiceControllerStatus.Running;
 
                     Log.Add(
                         LoggingLevel.Information,
@@ -1222,7 +998,7 @@ namespace WebApplications.Utilities.Service
                     ServiceName);
                 lock (_lock)
                 {
-                    _state = ServiceState.StopPending;
+                    _state = ServiceControllerStatus.StopPending;
                     DoShutdown();
                     CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
                     if (cts != null)
@@ -1236,10 +1012,10 @@ namespace WebApplications.Utilities.Service
                         Disconnect(connection.ID);
                     }
 
-                    TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTask, null);
+                    TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTaskCompletionSource, null);
                     if (ltt != null)
                         ltt.TrySetResult(true);
-                    _state = ServiceState.Unknown;
+                    _state = ServiceControllerStatus.Stopped;
 
                     Log.Add(
                         LoggingLevel.Information,
@@ -1478,7 +1254,7 @@ namespace WebApplications.Utilities.Service
                 }
                 _pauseTokenSource.IsPaused = true;
 
-                TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTask, null);
+                TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTaskCompletionSource, null);
                 if (ltt != null)
                     ltt.TrySetResult(true);
             }

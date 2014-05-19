@@ -27,74 +27,45 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.ServiceProcess;
 using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Caching;
 
 namespace WebApplications.Utilities.Service
 {
     /// <summary>
     /// Handles manipulation of services.
     /// </summary>
-    /// <remarks>
-    /// See http://stackoverflow.com/questions/358700/how-to-install-a-windows-service-programmatically-in-c
-    /// </remarks>
+    /// <remarks>See http://stackoverflow.com/questions/358700/how-to-install-a-windows-service-programmatically-in-c</remarks>
     internal static class ServiceUtils
     {
         #region PInvoke
-        private const int STANDARD_RIGHTS_REQUIRED = 0xF0000;
         private const int SERVICE_WIN32_OWN_PROCESS = 0x00000010;
-        private const int ERROR_SERVICE_DOES_NOT_EXIST = 0x424;
-        private const int SC_STATUS_PROCESS_INFO = 0;
-        private const int SERVICE_CONTROL_STATUS_REASON_INFO = 1;
-        private const int ERROR_INSUFFICIENT_BUFFER = 122;
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        private class SERVICE_STATUS_PROCESS
-        {
-            public int ServiceType;
-            public ServiceState CurrentState;
-            public int ControlsAccepted;
-            public int Win32ExitCode;
-            public int ServiceSpecificExitCode;
-            public int CheckPoint;
-            public int WaitHint;
-            public int ProcessID;
-            public int ServiceFlags;
-        }
-
+        
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct SERVICE_DESCRIPTION
         {
             public IntPtr description;
         }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        private struct SERVICE_CONTROL_STATUS_REASON_PARAMS
-        {
-            public ServiceControlReason Reason;
-            public string Comment;
-            public SERVICE_STATUS_PROCESS Status;
-        }
-
-        #region OpenSCManager
+        
         [DllImport("advapi32.dll", EntryPoint = "OpenSCManagerW", ExactSpelling = true, CharSet = CharSet.Unicode,
             SetLastError = true)]
         private static extern IntPtr OpenSCManager(
             string machineName,
             string databaseName,
             ScmAccessRights dwDesiredAccess);
-        #endregion
 
-        #region OpenService
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         private static extern IntPtr OpenService(
             IntPtr hSCManager,
             string lpServiceName,
             ServiceAccessRights dwDesiredAccess);
-        #endregion
 
-        #region CreateService
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         private static extern IntPtr CreateService(
             IntPtr hSCManager,
@@ -110,47 +81,15 @@ namespace WebApplications.Utilities.Service
             string lpDependencies,
             string lp,
             string lpPassword);
-        #endregion
 
-        #region CloseServiceHandle
         [DllImport("advapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool CloseServiceHandle(IntPtr hSCObject);
-        #endregion
 
-        #region QueryServiceStatusEx
-        [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool QueryServiceStatusEx(
-            IntPtr hService,
-            int infoLevel,
-            IntPtr lpBuffer,
-            int cbBufSize,
-            out int pcbBytesNeeded);
-        #endregion
-
-        #region DeleteService
         [DllImport("advapi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool DeleteService(IntPtr hService);
-        #endregion
 
-        #region ControlServiceEx
-        [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern int ControlServiceEx(
-            IntPtr hService,
-            ServiceControl dwControl,
-            int dwInfoLevel,
-            ref SERVICE_CONTROL_STATUS_REASON_PARAMS pControlParams);
-        #endregion
-
-        #region StartService
-        [DllImport("advapi32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool StartService(IntPtr hService, int dwNumServiceArgs, int lpServiceArgVectors);
-        #endregion
-
-        #region ChangeServiceConfig2
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool ChangeServiceConfig2(
@@ -159,10 +98,43 @@ namespace WebApplications.Utilities.Service
             ref SERVICE_DESCRIPTION lpInfo);
         #endregion
 
-        #endregion
-
-        public static void Uninstall(string serviceName)
+        /// <summary>
+        /// Whether the specified service is installed.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <returns><see langword="true" /> if installed, <see langword="false" /> otherwise.</returns>
+        public static bool ServiceIsInstalled([NotNull] string serviceName)
         {
+            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            return
+                ServiceController.GetServices()
+                    .Any(
+                        sc => string.Equals(sc.ServiceName, serviceName, StringComparison.CurrentCulture));
+        }
+
+        /// <summary>
+        /// Uninstalls the specified service name.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task.</returns>
+        /// <exception cref="System.ComponentModel.Win32Exception"></exception>
+        /// <exception cref="System.ApplicationException">Service state unknown.
+        /// or
+        /// Unable to stop service
+        /// or
+        /// Unable to stop service
+        /// or
+        /// Could not delete service  + Marshal.GetLastWin32Error()</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        public static async Task Uninstall([NotNull] string serviceName, CancellationToken token = default(CancellationToken))
+        {
+            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            if (!ServiceIsInstalled(serviceName))
+                return;
+
+            await StopService(serviceName, token);
+
             IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
             try
             {
@@ -172,54 +144,6 @@ namespace WebApplications.Utilities.Service
 
                 try
                 {
-                    SERVICE_STATUS_PROCESS status = GetServiceStatus(service);
-                    bool changedStatus;
-                    switch (status.CurrentState)
-                    {
-                        case ServiceState.Unknown:
-                        case ServiceState.NotFound:
-                            throw new ApplicationException("Service state unknown.");
-                        case ServiceState.Stopped:
-                            break;
-                        case ServiceState.StopPending:
-                            changedStatus = WaitForServiceStatus(
-                                service,
-                                ServiceState.StopPending,
-                                ServiceState.Stopped);
-                            if (!changedStatus)
-                                throw new ApplicationException("Unable to stop service");
-                            break;
-                        case ServiceState.StartPending:
-                        case ServiceState.Running:
-                        case ServiceState.ContinuePending:
-                        case ServiceState.PausePending:
-                        case ServiceState.Paused:
-                            SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS
-                            {
-                                Reason = ServiceControlReason.Planned |
-                                         ServiceControlReason.Application |
-                                         ServiceControlReason.Uninstall,
-                                Comment = "User initiated using service utilities."
-                            };
-                            if (
-                                ControlServiceEx(
-                                    service,
-                                    ServiceControl.Stop,
-                                    SERVICE_CONTROL_STATUS_REASON_INFO,
-                                    ref reason) == 0)
-                                throw new Win32Exception(Marshal.GetLastWin32Error());
-
-                            changedStatus = WaitForServiceStatus(
-                                service,
-                                ServiceState.StopPending,
-                                ServiceState.Stopped);
-                            if (!changedStatus)
-                                throw new ApplicationException("Unable to stop service");
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-
                     if (!DeleteService(service))
                         throw new ApplicationException("Could not delete service " + Marshal.GetLastWin32Error());
                 }
@@ -234,37 +158,32 @@ namespace WebApplications.Utilities.Service
             }
         }
 
-        public static bool ServiceIsInstalled(string serviceName)
-        {
-            IntPtr scm = OpenSCManager(ScmAccessRights.Connect);
-            try
-            {
-                IntPtr service = OpenService(scm, serviceName, ServiceAccessRights.QueryStatus);
-                if (service == IntPtr.Zero)
-                {
-                    int lastError = Marshal.GetLastWin32Error();
-                    if (lastError != ERROR_SERVICE_DOES_NOT_EXIST)
-                        throw new Win32Exception();
-                    return false;
-                }
-
-                CloseServiceHandle(service);
-                return true;
-            }
-            finally
-            {
-                CloseServiceHandle(scm);
-            }
-        }
-
+        /// <summary>
+        /// Installs the specified service name.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <param name="displayName">The display name.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="fileName">Name of the file.</param>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        /// <exception cref="System.ComponentModel.Win32Exception">
+        /// </exception>
         public static void Install(
-            string serviceName,
-            string displayName,
-            string description,
-            string fileName,
+            [NotNull] string serviceName,
+            [NotNull] string displayName,
+            [NotNull] string description,
+            [NotNull] string fileName,
             string userName = null,
             string password = null)
         {
+            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            Contract.Requires<RequiredContractException>(displayName != null, "Parameter_Null");
+            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
+            Contract.Requires<RequiredContractException>(fileName != null, "Parameter_Null");
+            if (ServiceIsInstalled(serviceName))
+                return;
+
             IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
             try
             {
@@ -308,282 +227,265 @@ namespace WebApplications.Utilities.Service
             }
         }
 
-        public static void StartService(string serviceName)
-        {
-            IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
-            try
-            {
-                IntPtr service = OpenService(
-                    scm,
-                    serviceName,
-                    ServiceAccessRights.QueryStatus | ServiceAccessRights.Start);
-                if (service == IntPtr.Zero)
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-
-                try
-                {
-                    if (!StartService(service, 0, 0))
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
-
-                    bool changedStatus = WaitForServiceStatus(service, ServiceState.StartPending, ServiceState.Running);
-                    if (!changedStatus)
-                        throw new ApplicationException("Unable to start service");
-                }
-                finally
-                {
-                    CloseServiceHandle(service);
-                }
-            }
-            finally
-            {
-                CloseServiceHandle(scm);
-            }
-        }
-
-        public static void PauseService(string serviceName)
-        {
-            IntPtr scm = OpenSCManager(ScmAccessRights.Connect);
-            try
-            {
-                IntPtr service = OpenService(
-                    scm,
-                    serviceName,
-                    ServiceAccessRights.QueryStatus | ServiceAccessRights.PauseContinue);
-                if (service == IntPtr.Zero)
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-
-                try
-                {
-                    SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS();
-                    if (
-                        ControlServiceEx(service, ServiceControl.Pause, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) ==
-                        0)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
-                    bool changedStatus = WaitForServiceStatus(service, ServiceState.PausePending, ServiceState.Paused);
-                    if (!changedStatus)
-                        throw new ApplicationException("Unable to pause service");
-                }
-                finally
-                {
-                    CloseServiceHandle(service);
-                }
-            }
-            finally
-            {
-                CloseServiceHandle(scm);
-            }
-        }
-
-        public static void ContinueService(string serviceName)
-        {
-            IntPtr scm = OpenSCManager(ScmAccessRights.Connect);
-            try
-            {
-                IntPtr service = OpenService(
-                    scm,
-                    serviceName,
-                    ServiceAccessRights.QueryStatus | ServiceAccessRights.PauseContinue);
-                if (service == IntPtr.Zero)
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-
-                try
-                {
-                    SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS();
-                    if (
-                        ControlServiceEx(
-                            service,
-                            ServiceControl.Continue,
-                            SERVICE_CONTROL_STATUS_REASON_INFO,
-                            ref reason) == 0)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
-                    bool changedStatus = WaitForServiceStatus(
-                        service,
-                        ServiceState.ContinuePending,
-                        ServiceState.Running);
-                    if (!changedStatus)
-                        throw new ApplicationException("Unable to pause service");
-                }
-                finally
-                {
-                    CloseServiceHandle(service);
-                }
-            }
-            finally
-            {
-                CloseServiceHandle(scm);
-            }
-        }
-
-        public static void StopService(string serviceName)
-        {
-            IntPtr scm = OpenSCManager(ScmAccessRights.Connect);
-            try
-            {
-                IntPtr service = OpenService(
-                    scm,
-                    serviceName,
-                    ServiceAccessRights.QueryStatus | ServiceAccessRights.Stop);
-                if (service == IntPtr.Zero)
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-
-                try
-                {
-                    SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS
-                    {
-                        Reason = ServiceControlReason.Planned |
-                                 ServiceControlReason.Application |
-                                 ServiceControlReason.Maintenance,
-                        Comment = "User initiated using service utilities."
-                    };
-                    if (
-                        ControlServiceEx(service, ServiceControl.Stop, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) ==
-                        0)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
-                    bool changedStatus = WaitForServiceStatus(service, ServiceState.StopPending, ServiceState.Stopped);
-                    if (!changedStatus)
-                        throw new ApplicationException("Unable to stop service");
-                }
-                finally
-                {
-                    CloseServiceHandle(service);
-                }
-            }
-            finally
-            {
-                CloseServiceHandle(scm);
-            }
-        }
-
-        public static void CommandService(string serviceName, int command)
-        {
-            IntPtr scm = OpenSCManager(ScmAccessRights.Connect);
-            try
-            {
-                IntPtr service = OpenService(
-                    scm,
-                    serviceName,
-                    ServiceAccessRights.QueryStatus | ServiceAccessRights.Stop);
-                if (service == IntPtr.Zero)
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-
-                try
-                {
-                    SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS();
-                    if (
-                        ControlServiceEx(
-                            service,
-                            (ServiceControl) command,
-                            SERVICE_CONTROL_STATUS_REASON_INFO,
-                            ref reason) == 0)
-                        throw new Win32Exception(Marshal.GetLastWin32Error());
-                }
-                finally
-                {
-                    CloseServiceHandle(service);
-                }
-            }
-            finally
-            {
-                CloseServiceHandle(scm);
-            }
-        }
-
-        public static ServiceState GetServiceStatus(string serviceName)
-        {
-            IntPtr scm = OpenSCManager(ScmAccessRights.Connect);
-            try
-            {
-                IntPtr service = OpenService(scm, serviceName, ServiceAccessRights.QueryStatus);
-                if (service == IntPtr.Zero)
-                {
-                    int lastError = Marshal.GetLastWin32Error();
-                    if (lastError != ERROR_SERVICE_DOES_NOT_EXIST)
-                        throw new Win32Exception();
-                    return ServiceState.NotFound;
-                }
-
-                try
-                {
-                    return GetServiceStatus(service).CurrentState;
-                }
-                finally
-                {
-                    CloseServiceHandle(service);
-                }
-            }
-            finally
-            {
-                CloseServiceHandle(scm);
-            }
-        }
-
+        /// <summary>
+        /// Waits for the service to enter a certain status..
+        /// </summary>
+        /// <param name="serviceController">The service controller.</param>
+        /// <param name="status">The status.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task&lt;System.Boolean&gt;.</returns>
         [NotNull]
-        private static SERVICE_STATUS_PROCESS GetServiceStatus(IntPtr service)
+        private static async Task<bool> WaitForAsync([NotNull] ServiceController serviceController, ServiceControllerStatus status, CancellationToken token = default(CancellationToken))
         {
-            IntPtr buf = IntPtr.Zero;
+            Contract.Requires<RequiredContractException>(serviceController != null, "Parameter_Null");
+            CancellationToken timeoutToken = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
+            token = token.CanBeCanceled
+                ? CancellationTokenSource.CreateLinkedTokenSource(token, timeoutToken).Token
+                : timeoutToken;
+
+            while (serviceController.Status != status)
+            {
+                // ReSharper disable once PossibleNullReferenceException
+                await Task.Delay(250, token);
+                if (token.IsCancellationRequested) return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Starts the service.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <param name="args">The arguments.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>System.Threading.Tasks.Task.</returns>
+        public static async Task<bool> StartService([NotNull]string serviceName, [CanBeNull] string[] args = null, CancellationToken token = default(CancellationToken))
+        {
+            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            if (args == null) args = new string[] {};
             try
             {
-                int size = 0;
-                // Request buffer size
-                if (!QueryServiceStatusEx(service, 0, buf, size, out size))
+                using (ServiceController serviceController = new ServiceController(serviceName))
                 {
-                    int error = Marshal.GetLastWin32Error();
-                    if (error != ERROR_INSUFFICIENT_BUFFER)
-                        throw new Win32Exception(error);
+                    switch (serviceController.Status)
+                    {
+                        case ServiceControllerStatus.Running:
+                            return true;
+                        case ServiceControllerStatus.ContinuePending:
+                        case ServiceControllerStatus.StartPending:
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                        case ServiceControllerStatus.Paused:
+                            serviceController.Continue();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                        case ServiceControllerStatus.PausePending:
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token))
+                                return false;
+                            serviceController.Continue();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                        case ServiceControllerStatus.Stopped:
+                            serviceController.Start(args);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                        case ServiceControllerStatus.StopPending:
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token))
+                                return false;
+                            serviceController.Start(args);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                        default:
+                            return false;
+                    }
                 }
-                else
-                    throw new ApplicationException("Could not get query info buffer size.");
-
-                buf = Marshal.AllocHGlobal(size);
-                if (!QueryServiceStatusEx(service, 0, buf, size, out size))
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
-
-                return (SERVICE_STATUS_PROCESS) Marshal.PtrToStructure(buf, typeof (SERVICE_STATUS_PROCESS));
             }
-            finally
+            catch (TaskCanceledException)
             {
-                if (!buf.Equals(IntPtr.Zero))
-                    Marshal.FreeHGlobal(buf);
+                return false;
             }
         }
 
-        private static bool WaitForServiceStatus(IntPtr service, ServiceState waitStatus, ServiceState desiredStatus)
+        /// <summary>
+        /// Pauses the service.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        public static async Task<bool> PauseService(string serviceName, CancellationToken token = default(CancellationToken))
         {
-            SERVICE_STATUS_PROCESS status = GetServiceStatus(service);
-            if (status.CurrentState == desiredStatus) return true;
-
-            int dwStartTickCount = Environment.TickCount;
-            int dwOldCheckPoint = status.CheckPoint;
-
-            while (status.CurrentState == waitStatus)
+            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            try
             {
-                // Do not wait longer than the wait hint. A good interval is
-                // one tenth the wait hint, but no less than 1 second and no
-                // more than 10 seconds.
-
-                int dwWaitTime = status.WaitHint / 10;
-
-                if (dwWaitTime < 1000) dwWaitTime = 1000;
-                else if (dwWaitTime > 10000) dwWaitTime = 10000;
-
-                Thread.Sleep(dwWaitTime);
-
-                // Check the status again.
-                status = GetServiceStatus(service);
-
-                if (status.CheckPoint > dwOldCheckPoint)
+                using (ServiceController serviceController = new ServiceController(serviceName))
                 {
-                    // The service is making progress.
-                    dwStartTickCount = Environment.TickCount;
-                    dwOldCheckPoint = status.CheckPoint;
+                    switch (serviceController.Status)
+                    {
+                        case ServiceControllerStatus.Running:
+                            serviceController.Pause();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token);
+                        case ServiceControllerStatus.ContinuePending:
+                        case ServiceControllerStatus.StartPending:
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token))
+                                return false;
+                            serviceController.Pause();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token);
+                        case ServiceControllerStatus.Paused:
+                            return true;
+                        case ServiceControllerStatus.PausePending:
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token);
+                        default:
+                            return false;
+                    }
                 }
-                else if (Environment.TickCount - dwStartTickCount > status.WaitHint)
-                    // No progress made within the wait hint
-                    break;
             }
-            return (status.CurrentState == desiredStatus);
+            catch (TaskCanceledException)
+            {
+                return false;
+            }
         }
 
+        /// <summary>
+        /// Continues the service.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        [NotNull]
+        public static async Task<bool> ContinueService([NotNull] string serviceName, CancellationToken token = default(CancellationToken))
+        {
+            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            try
+            {
+                using (ServiceController serviceController = new ServiceController(serviceName))
+                    switch (serviceController.Status)
+                    {
+                        case ServiceControllerStatus.Running:
+                            return true;
+                        case ServiceControllerStatus.ContinuePending:
+                        case ServiceControllerStatus.StartPending:
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                        case ServiceControllerStatus.Paused:
+                            serviceController.Continue();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                        case ServiceControllerStatus.PausePending:
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token))
+                                return false;
+                            serviceController.Continue();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                        default:
+                            return false;
+                    }
+            }
+            catch (TaskCanceledException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Stops the service.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        [NotNull]
+        public static async Task<bool> StopService([NotNull] string serviceName, CancellationToken token = default(CancellationToken))
+        {
+            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            try
+            {
+                using (ServiceController serviceController = new ServiceController(serviceName))
+                {
+                    switch (serviceController.Status)
+                    {
+                        case ServiceControllerStatus.Running:
+                            serviceController.Stop();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                        case ServiceControllerStatus.ContinuePending:
+                        case ServiceControllerStatus.StartPending:
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token))
+                                return false;
+                            serviceController.Stop();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                        case ServiceControllerStatus.Paused:
+                            serviceController.Stop();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                        case ServiceControllerStatus.PausePending:
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token))
+                                return false;
+                            serviceController.Stop();
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                        case ServiceControllerStatus.Stopped:
+                            return true;
+                        case ServiceControllerStatus.StopPending:
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                        default:
+                            return false;
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Commands the service.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <param name="command">The command.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        public static async Task<bool> CommandService(string serviceName, int command, CancellationToken token = default(CancellationToken))
+        {
+            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
+            try
+            {
+                using (ServiceController serviceController = new ServiceController(serviceName))
+                {
+                    switch (serviceController.Status)
+                    {
+                        case ServiceControllerStatus.Running:
+                            await Task.Run(() => serviceController.ExecuteCommand(command), token);
+                            return !token.IsCancellationRequested;
+                        case ServiceControllerStatus.ContinuePending:
+                        case ServiceControllerStatus.StartPending:
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token))
+                                return false;
+                            await Task.Run(() => serviceController.ExecuteCommand(command), token);
+                            return !token.IsCancellationRequested;
+                        default:
+                            return false;
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the service status.
+        /// </summary>
+        /// <param name="serviceName">Name of the service.</param>
+        /// <returns>ServiceControllerStatus.</returns>
+        public static ServiceControllerStatus GetServiceStatus(string serviceName)
+        {
+            try
+            {
+                using (ServiceController serviceController = new ServiceController(serviceName))
+                    return serviceController.Status;
+            }
+            catch (TaskCanceledException)
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Opens the sc manager.
+        /// </summary>
+        /// <param name="rights">The rights.</param>
+        /// <returns>IntPtr.</returns>
+        /// <exception cref="System.ComponentModel.Win32Exception"></exception>
         private static IntPtr OpenSCManager(ScmAccessRights rights)
         {
             IntPtr scm = OpenSCManager(null, null, rights);

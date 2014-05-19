@@ -26,7 +26,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Globalization;
+using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -86,57 +89,345 @@ namespace WebApplications.Utilities.Service
         }
 
         /// <summary>
+        /// The installation prompt.
+        /// </summary>
+        [NotNull]
+        private static readonly FormatBuilder _promptInstall = new FormatBuilder()
+            .AppendForegroundColor(ConsoleColor.Yellow)
+            .AppendLine("Select one of :")
+            .AppendLayout(indentSize: 3, firstLineIndentSize: 5)
+            .AppendFormatLine("{Options:{<items>:\r\n{!fgcolor:Cyan}{Key}\t{!fgcolor:White}{Value}}}")
+            .AppendPopLayout()
+            .MakeReadOnly();
+
+        /// <summary>
         /// Runs the specified service using the command console as a user interface.
         /// </summary>
         /// <param name="service">The service.</param>
+        /// <param name="promptInstall">if set to <see langword="true" /> and running as administrator prompts for installation options.</param>
+        /// <param name="allowConsoleInteraction">if set to <see langword="true" /> allows console command line.</param>
         /// <param name="defaultLogFormat">The default log format.</param>
         /// <param name="defaultLoggingLevels">The default logging levels.</param>
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public static Task RunAsync(
+        public static async Task RunAsync(
             [NotNull] BaseService service,
+            bool promptInstall = true,
+            bool allowConsoleInteraction = true,
             FormatBuilder defaultLogFormat = null,
             LoggingLevels defaultLoggingLevels = LoggingLevels.All,
             CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
             if (!ConsoleHelper.IsConsole)
-                return TaskResult.Completed;
+                return;
             Console.Clear();
-            Console.Title = service.ServiceName;
             Log.SetTrace(validLevels: LoggingLevels.None);
             Log.SetConsole(defaultLogFormat ?? Log.ShortFormat, defaultLoggingLevels);
 
+            if (promptInstall)
+            {
+                Contract.Assert(service.ServiceName != null);
+                Console.Title = "Configure " + service.ServiceName;
+                bool done = false;
+                do
+                {
+                    if (token.IsCancellationRequested) return;
+
+                    string userName = null;
+                    string password = null;
+
+                    Dictionary<string, string> options = new Dictionary<string, string>
+                        {
+                                {"I", "Install service."},
+                                {"U", "Uninstall service."},
+                                {"S", "Start service."},
+                                {"R", "Restart service."},
+                                {"T", "Stop service."},
+                                {"P", "Pause service."},
+                                {"C", "Continue service."},
+                                {"Y", "Run service from command line."},
+                                {"W", "Run service from command line under new credentials."},
+                                {"Z", "Run service without interaction."},
+                                {"X", "Exit."}
+                            };
+
+                    if (!allowConsoleInteraction)
+                    {
+                        options.Remove("Y");
+                        options.Remove("W");
+                    }
+
+                    if (ServiceUtils.ServiceIsInstalled(service.ServiceName))
+                    {
+                        ServiceControllerStatus state = ServiceUtils.GetServiceStatus(service.ServiceName);
+                        new FormatBuilder()
+                            .AppendForegroundColor(ConsoleColor.White)
+                            .AppendFormatLine("The '{0}' service is installed and {1}.", service.ServiceName, state)
+                            .AppendResetForegroundColor()
+                            .WriteToConsole();
+
+                        options.Remove("I");
+
+                        switch (state)
+                        {
+                            case ServiceControllerStatus.StopPending:
+                            case ServiceControllerStatus.Stopped:
+                                // Service is stopped or stopping.
+                                options.Remove("C");
+                                options.Remove("R");
+                                options.Remove("T");
+                                break;
+                            case ServiceControllerStatus.StartPending:
+                            case ServiceControllerStatus.ContinuePending:
+                            case ServiceControllerStatus.Running:
+                                // Service is starting or running.
+                                options.Remove("S");
+                                options.Remove("C");
+                                break;
+                            case ServiceControllerStatus.PausePending:
+                            case ServiceControllerStatus.Paused:
+                                // Service is paused or pausing.
+                                options.Remove("S");
+                                options.Remove("R");
+                                options.Remove("T");
+                                options.Remove("P");
+                                break;
+                            default:
+                                // Service is not installed - shouldn't happen.
+                                options.Remove("U");
+                                options.Remove("S");
+                                options.Remove("R");
+                                options.Remove("T");
+                                options.Remove("C");
+                                options.Remove("P");
+                                break;
+                        }
+                        options.Remove("Y");
+                        options.Remove("Z");
+                    }
+                    else
+                    {
+                        // No service installed.
+                        options.Remove("U");
+                        options.Remove("S");
+                        options.Remove("R");
+                        options.Remove("T");
+                        options.Remove("P");
+                        options.Remove("C");
+                    }
+
+                    _promptInstall.WriteToConsole(
+                        null,
+                        (_, c) => !String.Equals(c.Tag, "options", StringComparison.CurrentCultureIgnoreCase)
+                            ? Resolution.Unknown
+                            : options);
+
+                    string key;
+                    do
+                    {
+                        key = Char.ToUpperInvariant(Console.ReadKey(true).KeyChar)
+                            .ToString(CultureInfo.InvariantCulture);
+                    } while (!options.ContainsKey(key));
+
+                    switch (key)
+                    {
+                        case "I":
+                            GetUserNamePassword(out userName, out password);
+
+                            service.Install(ConsoleTextWriter.Default, userName, password);
+
+                            Console.Write("Waiting for service to be detected...");
+                            while (!ServiceUtils.ServiceIsInstalled(service.ServiceName))
+                            {
+                                await Task.Delay(250);
+                                Console.Write('.');
+                            }
+                            Console.WriteLine("Done.");
+                            Console.WriteLine();
+                            break;
+
+                        case "U":
+                            service.Uninstall(ConsoleTextWriter.Default);
+
+                            Console.Write("Waiting for service removal to be detected...");
+                            while (ServiceUtils.ServiceIsInstalled(service.ServiceName))
+                            {
+                                await Task.Delay(250);
+                                Console.Write('.');
+                            }
+                            Console.WriteLine("Done.");
+                            Console.WriteLine();
+                            break;
+
+                        case "R":
+                            Console.Write("Attempting to stop service...");
+                            await ServiceUtils.StopService(service.ServiceName, token);
+                            Console.WriteLine("Done.");
+                            Console.WriteLine();
+                            Console.Write("Attempting to start service...");
+                            await ServiceUtils.StartService(service.ServiceName, null, token);
+                            Console.WriteLine("Done.");
+                            Console.WriteLine();
+                            break;
+
+                        case "S":
+                            Console.Write("Attempting to start service...");
+                            await ServiceUtils.StartService(service.ServiceName, null, token);
+                            Console.WriteLine("Done.");
+                            Console.WriteLine();
+                            break;
+
+                        case "T":
+                            Console.Write("Attempting to stop service...");
+                            await ServiceUtils.StopService(service.ServiceName, token);
+                            Console.WriteLine("Done.");
+                            Console.WriteLine();
+                            break;
+
+                        case "P":
+                            Console.Write("Attempting to pause service...");
+                            await ServiceUtils.PauseService(service.ServiceName, token);
+                            Console.WriteLine("Done.");
+                            break;
+
+                        case "C":
+                            Console.Write("Attempting to continue service...");
+                            await ServiceUtils.ContinueService(service.ServiceName, token);
+                            Console.WriteLine("Done.");
+                            Console.WriteLine();
+                            break;
+
+                        case "Y":
+                            done = true;
+                            break;
+
+                        case "W":
+                            done = true;
+                            GetUserNamePassword(out userName, out password);
+                            if (userName == null)
+                                break;
+                            Contract.Assert(password != null);
+                            // Run in new security context.
+                            using (new Impersonator(userName, password))
+                                await
+                                    RunAsync(
+                                        service,
+                                        false,
+                                        allowConsoleInteraction,
+                                        defaultLogFormat,
+                                        defaultLoggingLevels,
+                                        token);
+                            return;
+
+                        case "Z":
+                            allowConsoleInteraction = false;
+                            done = true;
+                            Console.WriteLine("Running service in non-interactive mode (use CTRL-C to kill).");
+                            Console.WriteLine("To control connect using a service client.");
+                            Console.WriteLine();
+                            break;
+
+                        default:
+                            return;
+                    }
+                } while (!done);
+            }
+
+            // Create connection
+            Console.Title = "Running " + service.ServiceName;
             ConsoleConnection connection = new ConsoleConnection(defaultLogFormat, defaultLoggingLevels, token);
             Guid id = service.Connect(connection);
-            CancellationToken t = connection._cancellationTokenSource.Token;
-            return Task.Run(
-                async () =>
+            // Combined cancellation tokens.
+            CancellationToken t = token.CanBeCanceled
+                ? CancellationTokenSource.CreateLinkedTokenSource(token, connection._cancellationTokenSource.Token)
+                    .Token
+                : connection._cancellationTokenSource.Token;
+            if (t.IsCancellationRequested) return;
+            try
+            {
+                if (!allowConsoleInteraction)
                 {
-                    try
-                    {
-                        do
-                        {
-                            // Flush logs
-                            await Log.Flush(t);
-                            WritePrompt(service);
-                            service.Execute(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default);
+                    // Wait to be cancelled as nothing to do.
+                    await t.WaitHandle;
+                    return;
+                }
+                do
+                {
+                    // Flush logs
+                    await Log.Flush(t);
 
-                            // Let any async stuff done by the command have a bit of time, also throttle commands.
-                            await Task.Delay(500, t);
-                        } while (!t.IsCancellationRequested);
-                    }
-                    catch (TaskCanceledException)
-                    {
-                    }
-                    finally
-                    {
-                        Log.Flush().Wait();
-                        service.Disconnect(id);
-                    }
-                },
-                t);
+                    if (t.IsCancellationRequested) break;
+
+                    WritePrompt(service);
+                    service.Execute(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default);
+
+                    // Let any async stuff done by the command have a bit of time, also throttle commands.
+                    await Task.Delay(500, t);
+                } while (!t.IsCancellationRequested);
+            }
+            catch (TaskCanceledException)
+            {
+            }
+            finally
+            {
+                Log.Flush().Wait();
+                service.Disconnect(id);
+            }
+        }
+
+        /// <summary>
+        /// Gets the user name and password from the console.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="password">The password.</param>
+        private static void GetUserNamePassword(out string userName, out string password)
+        {
+            do
+            {
+                new FormatBuilder()
+                    .AppendForegroundColor(ConsoleColor.Cyan)
+                    .Append("User name: ")
+                    .AppendResetForegroundColor()
+                    .WriteToConsole();
+                userName = Console.ReadLine();
+                if (String.IsNullOrWhiteSpace(userName))
+                {
+                    userName = null;
+                    password = null;
+                    break;
+                }
+
+                string[] unp = userName.Split('\\');
+                if (unp.Length != 2 ||
+                    String.IsNullOrWhiteSpace(unp[0]) ||
+                    String.IsNullOrWhiteSpace(unp[1]))
+                {
+                    new FormatBuilder()
+                        .AppendForegroundColor(ConsoleColor.Red)
+                        .AppendLine("Invalid user name!")
+                        .AppendForegroundColor(ConsoleColor.Gray)
+                        .AppendLine(ServiceResources.Cmd_Install_UserName_Description)
+                        .AppendResetForegroundColor()
+                        .WriteToConsole();
+                    continue;
+                }
+
+                new FormatBuilder()
+                    .AppendForegroundColor(ConsoleColor.Cyan)
+                    .Append("Password: ")
+                    .AppendResetForegroundColor()
+                    .WriteToConsole();
+                password = ConsoleHelper.ReadPassword();
+                if (!String.IsNullOrEmpty(password)) break;
+
+                new FormatBuilder()
+                    .AppendForegroundColor(ConsoleColor.Red)
+                    .AppendLine("Invalid password!")
+                    .AppendResetForegroundColor()
+                    .WriteToConsole();
+            } while (true);
         }
 
         /// <summary>
