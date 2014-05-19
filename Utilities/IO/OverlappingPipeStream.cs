@@ -59,6 +59,7 @@ namespace WebApplications.Utilities.IO
             out uint lpNumberOfBytesRead,
             ref NativeOverlapped lpOverlapped);
 
+        private const int ErrorMoreData = 234;
         private const int ErrorIoPending = 997;
         #endregion
 
@@ -198,7 +199,8 @@ namespace WebApplications.Utilities.IO
                             {
                                 // Operation is completing asynchronously
                                 int lastError = Marshal.GetLastWin32Error();
-                                if (lastError != ErrorIoPending)
+                                if (lastError != ErrorIoPending &&
+                                    lastError != ErrorMoreData)
                                     throw new Win32Exception(lastError);
 
                                 breakCause = WaitHandle.WaitAny(breakConditions);
