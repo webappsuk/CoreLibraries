@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -95,6 +96,12 @@ namespace WebApplications.Utilities
         /// <returns>IntPtr.</returns>
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr GetStdHandle(int stdHandle);
+
+        /// <summary>
+        /// Invalid characters when reading a password line.
+        /// </summary>
+        [NotNull]
+        private static readonly HashSet<char> _passwordFilter = new HashSet<char>(new[] { '\0', '\x1b', '\t', '\n' });
 
         /// <summary>
         /// Represents a coordinate
@@ -255,10 +262,10 @@ namespace WebApplications.Utilities
                     csbe.BufferSize = Marshal.SizeOf(csbe); // 96 = 0x60
                     IntPtr hConsoleOutput = GetStdHandle(StdOutputHandle); // 7
                     if (hConsoleOutput == _invalidHandleValue)
-                        return;
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
                     bool brc = GetConsoleScreenBufferInfoEx(hConsoleOutput, ref csbe);
                     if (!brc)
-                        return;
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
 
                     _consoleColors = new Dictionary<ConsoleColor, Color>
                     {
@@ -377,6 +384,48 @@ namespace WebApplications.Utilities
                    gd * gd +
                    bd * bd +
                    ad * ad;
+        }
+
+        /// <summary>
+        /// Like System.Console.ReadLine(), only with a mask.
+        /// </summary>
+        /// <param name="mask">a <c>char</c> representing your choice of console mask</param>
+        /// <returns>the string the user typed in</returns>
+        [NotNull]
+        [PublicAPI]
+        public static string ReadPassword(char mask = '*')
+        {
+            LinkedList<char> pass = new LinkedList<char>();
+            char chr;
+
+            while ((chr = Console.ReadKey(true).KeyChar) != '\r')
+                switch (chr)
+                {
+                    case '\b':
+                        if (pass.Count > 0)
+                        {
+                            Console.Write("\b \b");
+                            pass.RemoveLast();
+                        }
+                        break;
+                    case '\x7f':
+                        int c = pass.Count;
+                        pass.Clear();
+                        string cb = new string('\b', c);
+                        string cs = new string(' ', c);
+                        Console.Write(cb + cs + cb);
+                        break;
+                    default:
+                        if (!_passwordFilter.Contains(chr))
+                        {
+                            pass.AddLast(chr);
+                            Console.Write(mask);
+                        }
+                        break;
+                }
+
+            Console.WriteLine();
+            return new string(pass.ToArray());
         }
     }
 }

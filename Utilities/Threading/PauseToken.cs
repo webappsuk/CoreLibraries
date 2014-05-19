@@ -46,6 +46,19 @@ namespace WebApplications.Utilities.Threading
         public static readonly PauseToken None = default(PauseToken);
 
         /// <summary>
+        /// A pause token that is always paused.
+        /// </summary>
+        [PublicAPI]
+        public static readonly PauseToken Paused;
+
+        static PauseToken()
+        {
+            PauseTokenSource pausedSource= new PauseTokenSource();
+            pausedSource.IsPaused = true;
+            Paused = pausedSource.Token;
+        }
+
+        /// <summary>
         /// The source <see cref="PauseTokenSource"/>, if any.
         /// </summary>
         [PublicAPI]

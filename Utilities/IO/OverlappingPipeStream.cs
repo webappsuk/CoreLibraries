@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Pipes;
@@ -49,6 +50,7 @@ namespace WebApplications.Utilities.IO
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool CancelIoEx(SafePipeHandle hFile, ref NativeOverlapped lpOverlapped);
 
+        // TODO Could use ReadFileEx for async only read
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool ReadFile(
             SafePipeHandle hFile,
@@ -228,7 +230,9 @@ namespace WebApplications.Utilities.IO
                                 case 1:
                                     //asked to yield
                                     //first kill that read operation
-                                    CancelIoEx(stream.SafePipeHandle, ref lpOverlapped);
+                                    if (!CancelIoEx(stream.SafePipeHandle, ref lpOverlapped))
+                                        throw new Win32Exception(Marshal.GetLastWin32Error());
+
                                     //should hand over the pipe mutex and wait to be told to take it back
                                     _writeRequiredSignal.Reset();
                                     _writeCompleteSignal.WaitOne();

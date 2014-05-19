@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
@@ -78,10 +79,28 @@ namespace WebApplications.Utilities
         public static readonly Task<int> MaxInt;
 
         /// <summary>
+        /// The cancelled result
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly Task Cancelled;
+
+        /// <summary>
+        /// The cancelled token.
+        /// </summary>
+        [PublicAPI]
+        public static readonly CancellationToken CancelledToken;
+
+        /// <summary>
         /// Initializes static members of the <see cref="TaskResult"/> class.
         /// </summary>
         static TaskResult()
         {
+            TaskCompletionSource<bool> cancelledSource = new TaskCompletionSource<bool>();
+            cancelledSource.SetCanceled();
+            CancellationTokenSource cancelledTokenSource = new CancellationTokenSource();
+            cancelledTokenSource.Cancel();
+
             // ReSharper disable AssignNullToNotNullAttribute
             True = Task.FromResult(true);
             Completed = True;
@@ -89,7 +108,10 @@ namespace WebApplications.Utilities
             Zero = Task.FromResult(0);
             MinInt = Task.FromResult(int.MinValue);
             MaxInt = Task.FromResult(int.MaxValue);
+            Cancelled = cancelledSource.Task;
             // ReSharper restore AssignNullToNotNullAttribute
+
+            CancelledToken = cancelledTokenSource.Token;
         }
     }
 
