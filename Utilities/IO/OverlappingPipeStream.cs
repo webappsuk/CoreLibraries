@@ -237,8 +237,8 @@ namespace WebApplications.Utilities.IO
                                     _writeCompleteSignal.Reset();
                                     continue;
 
-                                case 2:
-                                    //asked to die
+                                default:
+                                    //asked to die, either due to disposal or cancellation.
                                     //we are the ones responsible for cleaning up the pipe
                                     if (!CancelIoEx(stream.SafePipeHandle, ref lpOverlapped))
                                         throw new Win32Exception(Marshal.GetLastWin32Error());
