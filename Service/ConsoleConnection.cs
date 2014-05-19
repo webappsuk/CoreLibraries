@@ -431,13 +431,7 @@ namespace WebApplications.Utilities.Service
                     .AppendResetForegroundColor()
                     .WriteToConsole();
                 password = ConsoleHelper.ReadPassword();
-                if (!String.IsNullOrEmpty(password)) break;
-
-                new FormatBuilder()
-                    .AppendForegroundColor(ConsoleColor.Red)
-                    .AppendLine("Invalid password!")
-                    .AppendResetForegroundColor()
-                    .WriteToConsole();
+                break;
             } while (true);
         }
 

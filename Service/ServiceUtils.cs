@@ -310,7 +310,8 @@ namespace WebApplications.Utilities.Service
             if (args == null) args = new string[] {};
             try
             {
-                using (ServiceController serviceController = new ServiceController(serviceName))
+                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -357,7 +358,8 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                using (ServiceController serviceController = new ServiceController(serviceName))
+                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -397,7 +399,8 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                using (ServiceController serviceController = new ServiceController(serviceName))
+                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -437,7 +440,8 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                using (ServiceController serviceController = new ServiceController(serviceName))
+                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -479,14 +483,15 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
         public static async Task<bool> CommandService(
-            string serviceName,
+            [NotNull] string serviceName,
             int command,
             CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                using (ServiceController serviceController = new ServiceController(serviceName))
+                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -513,11 +518,13 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
         /// <returns>ServiceControllerStatus.</returns>
-        public static ServiceControllerStatus GetServiceStatus(string serviceName)
+        public static ServiceControllerStatus GetServiceStatus([NotNull] string serviceName)
         {
+            Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                using (ServiceController serviceController = new ServiceController(serviceName))
+                new ServiceControllerPermission(ServiceControllerPermissionAccess.Browse, Environment.MachineName, serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
                     return serviceController.Status;
             }
             catch (TaskCanceledException)

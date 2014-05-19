@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Creates a server for a bi-directional pipe.
     /// </summary>
-    public partial class NamedPipeServer
+    internal partial class NamedPipeServer
     {
         /// <summary>
         /// Implements a connection to the service over a named pipe.

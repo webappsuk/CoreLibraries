@@ -164,12 +164,18 @@ namespace WebApplications.Utilities.Service
         /// <param name="name">The name.</param>
         /// <param name="displayName">The display name.</param>
         /// <param name="description">The description.</param>
-        protected BaseService([NotNull] string name, [CanBeNull] string displayName, [CanBeNull] string description)
+        /// <param name="serverConfiguration">The server configuration.</param>
+        protected BaseService(
+            [NotNull] string name,
+            [CanBeNull] string displayName,
+            [CanBeNull] string description,
+            [CanBeNull] ServerConfig serverConfiguration = null)
         {
             Contract.Requires<RequiredContractException>(name != null, "Parameter_Null");
             ServiceName = name;
             DisplayName = displayName ?? name;
             Description = description ?? DisplayName;
+            ServerConfiguration = serverConfiguration ?? ServerConfig.Default;
             AutoLog = false;
             CanStop = true;
             CanHandlePowerEvent = true;
@@ -208,10 +214,10 @@ namespace WebApplications.Utilities.Service
             if (_eventLog.MachineName == ".")
             {
                 // Create the event log if necessary.
-                ((ISupportInitialize) (_eventLog)).BeginInit();
+                ((ISupportInitialize)(_eventLog)).BeginInit();
                 if (!EventLog.SourceExists(_eventLog.Source))
                     EventLog.CreateEventSource(_eventLog.Source, _eventLog.Log);
-                ((ISupportInitialize) (_eventLog)).EndInit();
+                ((ISupportInitialize)(_eventLog)).EndInit();
             }
         }
 
@@ -230,13 +236,22 @@ namespace WebApplications.Utilities.Service
         /// The description.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly string Description;
+
+        /// <summary>
+        /// The server configuration.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public readonly ServerConfig ServerConfiguration;
 
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
         /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
         /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="maximumRemoteConnection">The maximum remote connections.</param>
         /// <returns>An awaitable task.</returns>
         public void Run(bool promptInstall = true, bool allowConsole = true)
         {
@@ -372,11 +387,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         [PublicAPI]
-        [ServiceCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
         protected abstract void Help(
             [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Command_Description")] string command = null,
-            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
+            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Command_Description")] string command = null,
+            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
 
         /// <summary>
         /// Install services.
@@ -387,18 +402,18 @@ namespace WebApplications.Utilities.Service
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
         [PublicAPI]
-        [ServiceCommand(typeof (ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description",
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description",
             writerParameter: "writer")]
         public abstract void Install(
             [NotNull] TextWriter writer,
-            [SCP(typeof (ServiceResources), "Cmd_Install_UserName_Description")] string userName = null,
-            [SCP(typeof (ServiceResources), "Cmd_Install_Password_Description")] string password = null);
+            [SCP(typeof(ServiceResources), "Cmd_Install_UserName_Description")] string userName = null,
+            [SCP(typeof(ServiceResources), "Cmd_Install_Password_Description")] string password = null);
 
         /// <summary>
         /// Uninstall services.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof (ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description",
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description",
             writerParameter: "writer")]
         public abstract void Uninstall([NotNull] TextWriter writer);
     }
@@ -504,7 +519,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         static BaseService()
         {
-            MethodInfo[] allMethods = typeof (TService)
+            MethodInfo[] allMethods = typeof(TService)
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .ToArray();
             Dictionary<string, ServiceCommand> commands =
@@ -518,7 +533,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     ServiceCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof (ServiceCommandAttribute), true)
+                        .GetCustomAttributes(typeof(ServiceCommandAttribute), true)
                         .OfType<ServiceCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
@@ -563,12 +578,12 @@ namespace WebApplications.Utilities.Service
             }
             Commands = new ReadOnlyDictionary<string, ServiceCommand>(commands);
 
-            Assembly assembly = typeof (TService).Assembly;
+            Assembly assembly = typeof(TService).Assembly;
 
-            if (assembly.IsDefined(typeof (AssemblyTitleAttribute), false))
+            if (assembly.IsDefined(typeof(AssemblyTitleAttribute), false))
             {
                 AssemblyTitleAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyTitleAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute)) as
                         AssemblyTitleAttribute;
                 if (a != null)
                 {
@@ -580,10 +595,10 @@ namespace WebApplications.Utilities.Service
             if (string.IsNullOrWhiteSpace(Description))
                 Description = "A windows service.";
 
-            if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
+            if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
                         AssemblyDescriptionAttribute;
                 if (a != null)
                 {
@@ -596,10 +611,10 @@ namespace WebApplications.Utilities.Service
                 Description = "A windows service.";
 
 
-            if (assembly.IsDefined(typeof (GuidAttribute), false))
+            if (assembly.IsDefined(typeof(GuidAttribute), false))
             {
                 GuidAttribute g =
-                    Attribute.GetCustomAttribute(assembly, typeof (GuidAttribute)) as GuidAttribute;
+                    Attribute.GetCustomAttribute(assembly, typeof(GuidAttribute)) as GuidAttribute;
                 if (g != null)
                     AssemblyGuid = g.Value;
             }
@@ -629,21 +644,29 @@ namespace WebApplications.Utilities.Service
         private readonly EventWaitHandleSecurity _eventWaitHandleSecurity;
 
         /// <summary>
+        /// The named pipe server.
+        /// </summary>
+        private NamedPipeServer _namedPipeServer;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="BaseService" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="displayName">The display name.</param>
         /// <param name="description">The description.</param>
+        /// <param name="serverConfiguration">The server configuration.</param>
         /// <param name="identity">The identity of users that can start/stop the service, defaults to world.</param>
         protected BaseService(
             [CanBeNull] string name = null,
             [CanBeNull] string displayName = null,
             [CanBeNull] string description = null,
+            [CanBeNull] ServerConfig serverConfiguration = null,
             IdentityReference identity = null)
             : base(
                 (string.IsNullOrWhiteSpace(name) || name.Length > 128) ? Title : name,
                 displayName,
-                (string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description)
+                (string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description,
+                serverConfiguration)
         {
             try
             {
@@ -667,6 +690,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
         /// <param name="allowConsoleInteraction">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="maximumRemoteConnection">The maximum remote connection.</param>
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         public override Task RunAsync(
@@ -773,6 +797,11 @@ namespace WebApplications.Utilities.Service
                         _cancellationTokenSource = new CancellationTokenSource();
                         _pauseTokenSource.IsPaused = false;
                         DoStart(args);
+
+                        // Finally start named pipe server
+                        if (ServerConfiguration.MaximumConnections > 0)
+                            _namedPipeServer = new NamedPipeServer(this, ServerConfiguration);
+
                         _state = ServiceControllerStatus.Running;
                     }
 
@@ -823,6 +852,11 @@ namespace WebApplications.Utilities.Service
                                 return;
                         }
                         _state = ServiceControllerStatus.StopPending;
+                        if (_namedPipeServer != null)
+                        {
+                            _namedPipeServer.Dispose();
+                            _namedPipeServer = null;
+                        }
                         DoStop();
                         Contract.Assert(_cancellationTokenSource != null);
                         _cancellationTokenSource.Cancel();
@@ -951,6 +985,11 @@ namespace WebApplications.Utilities.Service
                 lock (_lock)
                 {
                     _state = ServiceControllerStatus.StopPending;
+                    if (_namedPipeServer != null)
+                    {
+                        _namedPipeServer.Dispose();
+                        _namedPipeServer = null;
+                    }
                     DoShutdown();
                     CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
                     if (cts != null)
@@ -1167,7 +1206,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="id">The connection.</param>
         /// <returns><see langword="true" /> if disconnected, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        [ServiceCommand(typeof (ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
             idParameter: "id")]
         public override bool Disconnect(Guid id)
         {
@@ -1192,6 +1231,12 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
+                if (_namedPipeServer != null)
+                {
+                    _namedPipeServer.Dispose();
+                    _namedPipeServer = null;
+                }
+
                 if (_runEventWaitHandle != null)
                 {
                     _runEventWaitHandle.Set();

@@ -42,8 +42,7 @@ namespace WebApplications.Utilities.Service.Test
         private static void Main([CanBeNull] string[] args)
         {
             TestService testService = new TestService();
-            using (new NamedPipeServer(testService, maximumConnections: 5))
-                testService.Run();
+            testService.Run();
         }
     }
 }

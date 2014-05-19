@@ -44,7 +44,7 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Creates a server for a bi-directional pipe.
     /// </summary>
-    public partial class NamedPipeServer : IDisposable
+    internal partial class NamedPipeServer : IDisposable
     {
         /// <summary>
         /// The connection lock.
@@ -114,131 +114,45 @@ namespace WebApplications.Utilities.Service
 
         private Timer _connectionCheckTimer;
 
-        private TimeSpan _heartbeat;
+        private readonly TimeSpan _heartbeat;
 
         private NamedPipeServerLogger _logger;
 
-        #region Constructor overloads
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
         /// </summary>
         /// <param name="service">The service.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="sddlForm">SDDL string for the SID used to create the <see cref="SecurityIdentifier"/> object to 
-        /// identify clients that can access the pipe.</param>
-        /// <param name="maximumConnections">The maximum number of connections.</param>
-        /// <param name="heartbeat">The heartbeat timespan, ensures a connection is always available, defaults to once every 5 seconds.</param>
-        public NamedPipeServer(
-            [NotNull] BaseService service,
-            [CanBeNull] string name,
-            [NotNull] string sddlForm,
-            int maximumConnections = 1,
-            TimeSpan heartbeat = default(TimeSpan))
-            : this(service, name, new SecurityIdentifier(sddlForm), maximumConnections, heartbeat)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
-        /// </summary>
-        /// <param name="service">The service.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="sidType">One of the enumeration of well known sid types, the value must not be 
-        /// <see cref="WellKnownSidType.LogonIdsSid" />.  This defines
-        /// who can connect to the pipe.</param>
-        /// <param name="domainSid"><para>The domain SID. This value is required for the following <see cref="WellKnownSidType" /> values.
-        /// This parameter is ignored for any other <see cref="WellKnownSidType" /> values.</para>
-        /// <list type="bullet">
-        ///   <item>
-        ///     <description>AccountAdministratorSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountGuestSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountKrbtgtSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountDomainAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountDomainUsersSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountDomainGuestsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountComputersSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountControllersSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountCertAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountSchemaAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountEnterpriseAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountPolicyAdminsSid</description>
-        ///   </item>
-        ///   <item>
-        ///     <description>AccountRasAndIasServersSid</description>
-        ///   </item>
-        /// </list></param>
-        /// <param name="maximumConnections">The maximum number of connections.</param>
-        /// <param name="heartbeat">The heartbeat timespan, ensures a connection is always available, defaults to once every 5 seconds.</param>
-        public NamedPipeServer(
-            [NotNull] BaseService service,
-            [CanBeNull] string name,
-            WellKnownSidType sidType,
-            SecurityIdentifier domainSid = null,
-            int maximumConnections = 1,
-            TimeSpan heartbeat = default(TimeSpan))
-            : this(service, name, new SecurityIdentifier(sidType, domainSid), maximumConnections, heartbeat)
-        {
-        }
-        #endregion
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
-        /// </summary>
-        /// <param name="service">The service.</param>
-        /// <param name="name">The pipe name.</param>
-        /// <param name="identity">The identity of clients that can access the pipe (defaults to BuiltinUsers).</param>
-        /// <param name="maximumConnections">The maximum number of connections.</param>
-        /// <param name="heartbeat">The heartbeat timespan, ensures a connection is always available, defaults to once every 5 seconds.</param>
+        /// <param name="configuration">The configuration.</param>
         /// <exception cref="ServiceException">
         /// </exception>
         public NamedPipeServer(
             [NotNull] BaseService service,
-            [CanBeNull] string name = null,
-            IdentityReference identity = null,
-            int maximumConnections = 1,
-            TimeSpan heartbeat = default(TimeSpan))
+            [NotNull] ServerConfig configuration)
         {
-            Contract.Requires<RequiredContractException>(maximumConnections > 0, "NamedPipeServer_MaxConnections");
+            Contract.Requires<RequiredContractException>(service != null, "Parameter_Null");
+            Contract.Requires<RequiredContractException>(configuration != null, "Parameter_Null");
+            Contract.Requires<RequiredContractException>(
+                configuration.MaximumConnections > 0,
+                "NamedPipeServer_MaxConnections");
+
             Service = service;
-            MaximumConnections = maximumConnections;
-            StringBuilder builder = new StringBuilder();
-            builder.Append(Guid.NewGuid().ToString("D"))
-                .Append('_');
-            if (string.IsNullOrWhiteSpace(name))
-                name = service.ServiceName;
-            foreach (char c in name)
-                builder.Append(char.IsLetterOrDigit(c) ? c : '_');
-            builder.Append(Common.NameSuffix);
-            Name = builder.ToString();
+            MaximumConnections = configuration.MaximumConnections;
+            if (!string.IsNullOrWhiteSpace(configuration.Name))
+                Name = configuration.Name;
+            else
+            {
+                StringBuilder builder = new StringBuilder();
+                builder.Append(Guid.NewGuid().ToString("D"))
+                    .Append('_');
+                foreach (char c in service.ServiceName)
+                    builder.Append(char.IsLetterOrDigit(c) ? c : '_');
+                builder.Append(Common.NameSuffix);
+                Name = builder.ToString();
+            }
 
             // Create security context
             try
             {
-                if (identity == null)
-                    identity = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
-
                 WindowsIdentity currentIdentity = WindowsIdentity.GetCurrent();
                 if (currentIdentity == null ||
                     currentIdentity.Owner == null)
@@ -247,7 +161,7 @@ namespace WebApplications.Utilities.Service
                 _pipeSecurity = new PipeSecurity();
                 _pipeSecurity.AddAccessRule(
                     new PipeAccessRule(
-                        identity,
+                        configuration.Identity,
                         PipeAccessRights.ReadWrite,
                         AccessControlType.Allow));
                 _pipeSecurity.AddAccessRule(
@@ -273,13 +187,9 @@ namespace WebApplications.Utilities.Service
             _logger = new NamedPipeServerLogger(this);
             Log.AddLogger(_logger);
 
-            if (heartbeat < TimeSpan.Zero)
-            {
-                _heartbeat = TimeSpan.MinValue;
-                return;
-            }
+            _heartbeat = configuration.Heartbeat;
+            if (_heartbeat < TimeSpan.Zero) return;
 
-            _heartbeat = heartbeat == default(TimeSpan) ? TimeSpan.FromSeconds(5) : heartbeat;
             _connectionCheckTimer = new Timer(CheckConnections);
             _connectionCheckTimer.Change(_heartbeat, Timeout.InfiniteTimeSpan);
         }
