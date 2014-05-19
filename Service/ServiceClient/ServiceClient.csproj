@@ -6,8 +6,8 @@
     <ProjectGuid>{12FE7E65-E744-4F7F-A7EB-608249C75235}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebApplications.Utilities.Service.Client.Test</RootNamespace>
-    <AssemblyName>WebApplications.Utilities.Service.Client.Test</AssemblyName>
+    <RootNamespace>WebApplications.Utilities.ServiceClient</RootNamespace>
+    <AssemblyName>ServiceClient</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
