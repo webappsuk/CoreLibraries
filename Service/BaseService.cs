@@ -146,11 +146,6 @@ namespace WebApplications.Utilities.Service
         {
             IsServiceProcess = !Environment.UserInteractive;
 
-            // Create a cancelled token.
-            CancellationTokenSource cts = new CancellationTokenSource();
-            cts.Cancel();
-            Cancelled = cts.Token;
-
             try
             {
                 WindowsIdentity identity = WindowsIdentity.GetCurrent();
@@ -224,18 +219,6 @@ namespace WebApplications.Utilities.Service
         /// Whether the service is running as a service.
         /// </summary>
         public readonly bool IsService;
-
-        /// <summary>
-        /// The paused token.
-        /// TODO Move to utilities.
-        /// </summary>
-        protected static readonly PauseToken Paused = new PauseTokenSource {IsPaused = true}.Token;
-
-        /// <summary>
-        /// The cancelled token.
-        /// TODO Move to utilities.
-        /// </summary>
-        protected static readonly CancellationToken Cancelled;
 
         /// <summary>
         /// The display name.
@@ -487,7 +470,7 @@ namespace WebApplications.Utilities.Service
                 lock (_lock)
                 {
                     CancellationTokenSource ts = _cancellationTokenSource;
-                    return ts == null ? Cancelled : ts.Token;
+                    return ts == null ? TaskResult.CancelledToken : ts.Token;
                 }
             }
         }
@@ -972,7 +955,7 @@ namespace WebApplications.Utilities.Service
                     .Append("Password: ")
                     .AppendResetForegroundColor()
                     .WriteToConsole();
-                password = ConsoleEx.ReadPassword();
+                password = ConsoleHelper.ReadPassword();
                 if (!string.IsNullOrEmpty(password)) break;
 
                 new FormatBuilder()
