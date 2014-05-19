@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO.Pipes;
 using System.Linq;
+using System.Net.Security;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Runtime.InteropServices;
@@ -127,7 +128,7 @@ namespace WebApplications.Utilities.Service.Client
             [NotNull] Action<Message> onReceive,
             CancellationToken token = default(CancellationToken))
         {
-            Contract.Requires(server != null);
+            Contract.Requires<RequiredContractException>(server != null, "Parameter_Null");
             _server = server;
             _cancellationTokenSource = new CancellationTokenSource();
             CancellationToken disposeToken = _cancellationTokenSource.Token;
@@ -188,7 +189,7 @@ namespace WebApplications.Utilities.Service.Client
 
                                         Log.Add(
                                             LoggingLevel.Notification,
-                                            () => "TODO ClientResources.Not_NamedPipeConnection_Connection",
+                                            () => ClientResources.Not_NamedPipeClient_Connection,
                                             connectResponse.ServiceName);
 
                                         TaskCompletionSource<NamedPipeClient> ccs =
@@ -263,7 +264,7 @@ namespace WebApplications.Utilities.Service.Client
                             Log.Add(
                                 exception,
                                 LoggingLevel.Error,
-                                () => "TODO ClientResources.Err_NamedPipeConnection_Failed");
+                                () => ClientResources.Err_NamedPipeClient_Failed);
                     }
                     finally
                     {

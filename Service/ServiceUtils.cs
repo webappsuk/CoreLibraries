@@ -179,7 +179,6 @@ namespace WebApplications.Utilities.Service
                         case ServiceState.Unknown:
                         case ServiceState.NotFound:
                             throw new ApplicationException("Service state unknown.");
-                            break;
                         case ServiceState.Stopped:
                             break;
                         case ServiceState.StopPending:

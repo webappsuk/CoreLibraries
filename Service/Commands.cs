@@ -469,6 +469,7 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Runs the custom command on this instance.
         /// </summary>
+        /// <param name="writer">The writer.</param>
         /// <param name="command">The command.</param>
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description",
@@ -503,10 +504,13 @@ namespace WebApplications.Utilities.Service
         }
 
         /// <summary>
-        /// Sends the <see cref="PowerBroadcastStatus"/> to the service.
+        /// Sends the <see cref="PowerBroadcastStatus" /> to the service.
         /// </summary>
+        /// <param name="writer">The writer.</param>
         /// <param name="powerStatus">The power status.</param>
-        /// <returns><see langword="true" /> if failed, or the result of the call was <see langword="true"/>; <see langword="false" /> otherwise.</returns>
+        /// <returns>
+        ///   <see langword="true" /> if failed, or the result of the call was <see langword="true" />; <see langword="false" /> otherwise.
+        /// </returns>
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description",
             writerParameter: "writer")]
@@ -546,6 +550,7 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Sends the <see cref="SessionChangeDescription" /> to the service.
         /// </summary>
+        /// <param name="writer">The writer.</param>
         /// <param name="changeReason">The change reason.</param>
         /// <param name="sessionId">The session identifier.</param>
         [PublicAPI]

@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -25,16 +25,34 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-namespace WebApplications.Utilities.Service.PipeProtocol
+using JetBrains.Annotations;
+using WebApplications.Utilities.Logging;
+
+namespace WebApplications.Utilities.Service.Client
 {
     /// <summary>
-    /// Common code for named pipes.
+    /// Exception thrown by requires contracts.
     /// </summary>
-    public static class Common
+    public class RequiredContractException : ContractException<ClientResources>
     {
         /// <summary>
-        /// The name suffix.
+        /// Initializes a new instance of the <see cref="RequiredContractException"/> class.
         /// </summary>
-        public const string NameSuffix = "_WAUKService";
+        /// <param name="conditions">The conditions.</param>
+        internal RequiredContractException([CanBeNull] string conditions)
+            : base(conditions)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequiredContractException"/> class.
+        /// </summary>
+        /// <param name="conditions">The conditions.</param>
+        /// <param name="resourceProperty">The resource property.</param>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        internal RequiredContractException([CanBeNull] string conditions, [NotNull] string resourceProperty)
+            : base(conditions, resourceProperty)
+        {
+        }
     }
 }

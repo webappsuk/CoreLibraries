@@ -84,6 +84,7 @@ namespace WebApplications.Utilities.Service
             /// <param name="service">The service.</param>
             /// <param name="connection">The connection.</param>
             /// <param name="request">The request.</param>
+            /// <param name="token">The cancellation token.</param>
             public ConnectedCommand(
                 Guid connectionGuid,
                 [NotNull] BaseService service,
@@ -198,19 +199,11 @@ namespace WebApplications.Utilities.Service
                         await connection.Send(new CommandResponse(id, _sequenceId, chunk), token);
                 }
             }
-
-            /// <summary>
-            /// Closes the current writer and releases any system resources associated with the writer.
-            /// </summary>
-            public void Close()
-            {
-                base.Close();
-            }
-
+            
             /// <summary>
             /// Clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
             /// </summary>
-            public void Flush()
+            public override void Flush()
             {
                 Flush(0).Wait();
             }
@@ -307,7 +300,7 @@ namespace WebApplications.Utilities.Service
             /// Writes a string followed by a line terminator to the text string or stream.
             /// </summary>
             /// <param name="value">The string to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-            public void WriteLine(string value)
+            public override void WriteLine(string value)
             {
                 lock (_builder)
                 {

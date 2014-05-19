@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service
 {
@@ -34,6 +35,7 @@ namespace WebApplications.Utilities.Service
     /// </summary>
     /// <remarks>See http://msdn.microsoft.com/en-us/library/windows/desktop/ms685154(v=vs.85).aspx</remarks>
     [Flags]
+    [PublicAPI]
     public enum ServiceControlReason
     {
         #region General reason codes
@@ -87,12 +89,15 @@ namespace WebApplications.Utilities.Service
         #endregion
 
         #region Minor reasons
+#pragma warning disable 1591
+        // ReSharper disable UnusedMember.Global
         Disk = 0x00000008,
         Environment = 0x0000000a,
         HardwareDriver = 0x0000000b,
         Hung = 0x00000006,
         Installation = 0x00000003,
         Maintenance = 0x00000002,
+        // ReSharper disable once InconsistentNaming
         MMC = 0x00000016,
         NetworkConnectivity = 0x00000011,
         NetworCard = 0x00000009,
@@ -109,6 +114,8 @@ namespace WebApplications.Utilities.Service
         Unstable = 0x0000000e,
         Upgrade = 0x00000004,
         WMI = 0x00000012
+        // ReSharper restore UnusedMember.Global
+#pragma warning restore 1591
         #endregion
     }
 }

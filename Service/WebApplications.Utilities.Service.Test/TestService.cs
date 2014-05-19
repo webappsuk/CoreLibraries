@@ -32,8 +32,18 @@ using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service.Test
 {
+    /// <summary>
+    /// A test service
+    /// </summary>
     public class TestService : BaseService<TestService>
     {
+        /// <summary>
+        /// A test command.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="parameter">The parameter.</param>
+        /// <param name="id">The identifier.</param>
+        /// <param name="optional">The optional.</param>
         [PublicAPI]
         [ServiceCommand(typeof (TestServiceResources), "Cmd_TestCommand_Names", "Cmd_TestCommand_Description",
             writerParameter: "writer", idParameter: "id")]

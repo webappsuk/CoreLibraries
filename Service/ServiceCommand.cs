@@ -241,7 +241,7 @@ namespace WebApplications.Utilities.Service
                     if (!parameterType.DescendsFrom(typeof (TextWriter)))
                         throw new ServiceException(
                             LoggingLevel.Error,
-                            () => "TODO Writer parameter should be of type TextWriter, but was actually of type '{0}'",
+                            () => ServiceResources.Err_ServiceCommand_WriterParameterWrongType,
                             parameterType);
                     inputs[i] = writerParameterExpression;
                     needWriterParameter = false;
@@ -254,7 +254,7 @@ namespace WebApplications.Utilities.Service
                     if (parameterType != typeof (Guid))
                         throw new ServiceException(
                             LoggingLevel.Error,
-                            () => "TODO ID parameter should be of type Guid, but was actually of type '{0}'",
+                            () => ServiceResources.Err_ServiceCommand_IDParameterWrongType,
                             parameterType);
                     inputs[i] = connectionParameterExpression;
                     needIdParameter = false;
@@ -270,18 +270,21 @@ namespace WebApplications.Utilities.Service
                 if (!needIdParameter)
                     throw new ServiceException(
                         LoggingLevel.Error,
-                        () => "TODO Writer parameter '{0}' expected but not found.",
-                        attribute.WriterParameter);
+                        () => ServiceResources.Err_ServiceCommand_WriterParameterMissing,
+                        attribute.WriterParameter,
+                        method.Name);
                 if (!needWriterParameter)
                     throw new ServiceException(
                         LoggingLevel.Error,
-                        () => "TODO ID parameter '{0}' expected but not found.",
-                        attribute.IDParameter);
+                        () => ServiceResources.Err_ServiceCommand_IDParameterMissing,
+                        attribute.IDParameter,
+                        method.Name);
                 throw new ServiceException(
                     LoggingLevel.Error,
-                    () => "TODO Writer parameter '{0}' and ID parameter '{1}' expected but not found.",
+                    () => ServiceResources.Err_ServiceCommand_WriterAndIDParameterMissing,
                     attribute.WriterParameter,
-                    attribute.IDParameter);
+                    attribute.IDParameter,
+                    method.Name);
             }
 
             if (attribute.ConsumeLine)

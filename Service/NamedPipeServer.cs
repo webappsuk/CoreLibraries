@@ -220,7 +220,7 @@ namespace WebApplications.Utilities.Service
             int maximumConnections = 1,
             TimeSpan heartbeat = default(TimeSpan))
         {
-            Contract.Requires(maximumConnections > 0);
+            Contract.Requires<RequiredContractException>(maximumConnections > 0, "NamedPipeServer_MaxConnections");
             Service = service;
             MaximumConnections = maximumConnections;
             StringBuilder builder = new StringBuilder();

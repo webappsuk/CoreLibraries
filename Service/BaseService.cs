@@ -407,7 +407,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [NotNull]
         // ReSharper disable once StaticFieldInGenericType
-        public static readonly string Description;
+        public new static readonly string Description;
 
         /// <summary>
         /// The lock.
@@ -634,7 +634,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, "Fatal error in constructor.");
+                Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_FatalConstructorError);
             }
         }
 
@@ -662,7 +662,7 @@ namespace WebApplications.Utilities.Service
             if (!IsAdministrator)
                 Log.Add(
                     LoggingLevel.Information,
-                    "The service is not running as an administrator, some functionality will be disabled.");
+                    ServiceResources.Inf_BaseService_RunAsync_NotRunningAsAdmin);
 
             if (IsService)
             {
@@ -1057,7 +1057,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, "Fatal error in OnStart");
+                Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnStart_FatalError);
                 throw;
             }
         }
@@ -1119,7 +1119,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, "Fatal error in OnStop");
+                Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnStop_FatalError);
                 throw;
             }
         }
@@ -1160,7 +1160,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, "Fatal error in OnPause");
+                Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnPause_FatalError);
                 throw;
             }
         }
@@ -1204,7 +1204,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, "Fatal error in OnContinue");
+                Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnContinue_FatalError);
                 throw;
             }
         }
@@ -1249,7 +1249,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, "Fatal error in OnShutdown");
+                Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnShutdown_FatalError);
                 throw;
             }
             finally
@@ -1285,7 +1285,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, "Fatal error in OnCustomCommand '{0}'.", command);
+                Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnCustomCommand_FatalError, command);
                 throw;
             }
         }
@@ -1320,7 +1320,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, "Fatal error in OnShutdown");
+                Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnPowerEvent_FatalError);
                 throw;
             }
             finally
@@ -1358,7 +1358,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, "Fatal error in OnShutdown");
+                Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnSessionChange_FatalError);
                 throw;
             }
         }

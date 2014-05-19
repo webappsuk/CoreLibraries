@@ -86,7 +86,10 @@ namespace WebApplications.Utilities.Service
             /// Sends the specified message.
             /// </summary>
             /// <param name="message">The message.</param>
-            /// <returns><see langword="true" /> if succeeded, <see langword="false" /> otherwise.</returns>
+            /// <param name="token">The cancellation token.</param>
+            /// <returns>
+            ///   <see langword="true" /> if succeeded, <see langword="false" /> otherwise.
+            /// </returns>
             [NotNull]
             public Task<bool> Send([NotNull] Message message, CancellationToken token = default(CancellationToken))
             {

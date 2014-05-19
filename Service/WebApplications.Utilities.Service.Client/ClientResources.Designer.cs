@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplications.Utilities.Service {
+namespace WebApplications.Utilities.Service.Client {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace WebApplications.Utilities.Service {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class ContractResources {
+    public class ClientResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ContractResources() {
+        internal ClientResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Service {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WebApplications.Utilities.Service.ContractResources", typeof(ContractResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WebApplications.Utilities.Service.Client.ClientResources", typeof(ClientResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,15 +61,6 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The service runner command was based an instance of the wrong type..
-        /// </summary>
-        public static string Bad_Instance {
-            get {
-                return ResourceManager.GetString("Bad_Instance", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Contract failed. {0}.
         /// </summary>
         public static string Contract_Failed {
@@ -79,38 +70,20 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The service runner does not accept generic methods..
+        ///   Looks up a localized string similar to A fatal error occurred on the current named pipe client, closing..
         /// </summary>
-        public static string Method_Generic {
+        public static string Err_NamedPipeClient_Failed {
             get {
-                return ResourceManager.GetString("Method_Generic", resourceCulture);
+                return ResourceManager.GetString("Err_NamedPipeClient_Failed", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The maximum number of connections must be greater than zero..
+        ///   Looks up a localized string similar to The client has connected to the service &apos;{0}&apos;..
         /// </summary>
-        public static string NamedPipeServer_MaxConnections {
+        public static string Not_NamedPipeClient_Connection {
             get {
-                return ResourceManager.GetString("NamedPipeServer_MaxConnections", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This class can only be created when running in a console..
-        /// </summary>
-        public static string Not_In_Console {
-            get {
-                return ResourceManager.GetString("Not_In_Console", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A required GUID paramter cannot be empty..
-        /// </summary>
-        public static string Parameter_Guid_Empty {
-            get {
-                return ResourceManager.GetString("Parameter_Guid_Empty", resourceCulture);
+                return ResourceManager.GetString("Not_NamedPipeClient_Connection", resourceCulture);
             }
         }
         
@@ -120,15 +93,6 @@ namespace WebApplications.Utilities.Service {
         public static string Parameter_Null {
             get {
                 return ResourceManager.GetString("Parameter_Null", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The service description must be between 1 and 80 characters long..
-        /// </summary>
-        public static string Service_DescriptionLength {
-            get {
-                return ResourceManager.GetString("Service_DescriptionLength", resourceCulture);
             }
         }
     }
