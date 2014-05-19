@@ -50,7 +50,7 @@ namespace WebApplications.Utilities.IO
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool CancelIoEx(SafePipeHandle hFile, ref NativeOverlapped lpOverlapped);
 
-        // TODO Could use ReadFileEx for async only read
+        // TODO Change to ReadFileEx
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool ReadFile(
             SafePipeHandle hFile,
@@ -59,10 +59,7 @@ namespace WebApplications.Utilities.IO
             out uint lpNumberOfBytesRead,
             ref NativeOverlapped lpOverlapped);
 
-        //[DllImport("kernel32.dll", SetLastError = true)]
-        //private static extern uint GetLastError();
-
-        //private const uint ErrorIoPending = 997;
+        private const int ErrorIoPending = 997;
         #endregion
 
         protected PipeStream Stream;
@@ -200,10 +197,9 @@ namespace WebApplications.Utilities.IO
                             if (!rval)
                             {
                                 // Operation is completing asynchronously
-                                /*TODO Reinstate this?
-                                 * uint lastError = GetLastError();
+                                int lastError = Marshal.GetLastWin32Error();
                                 if (lastError != ErrorIoPending)
-                                    throw new IOException();*/
+                                    throw new Win32Exception(lastError);
 
                                 breakCause = WaitHandle.WaitAny(breakConditions);
                             }
@@ -242,7 +238,8 @@ namespace WebApplications.Utilities.IO
                                 case 2:
                                     //asked to die
                                     //we are the ones responsible for cleaning up the pipe
-                                    CancelIoEx(stream.SafePipeHandle, ref lpOverlapped);
+                                    if (!CancelIoEx(stream.SafePipeHandle, ref lpOverlapped))
+                                        throw new Win32Exception(Marshal.GetLastWin32Error());
                                     //finally block will clean up the pipe and the mutex
                                     return null; //quit the thread
                             }

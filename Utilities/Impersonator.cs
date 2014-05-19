@@ -153,7 +153,6 @@ namespace WebApplications.Utilities
             }
             finally
             {
-                // TODO throw if these fail?
                 if (logonToken != IntPtr.Zero)
                     CloseHandle(logonToken);
 
