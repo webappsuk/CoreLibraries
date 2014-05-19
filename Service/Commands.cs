@@ -35,6 +35,7 @@ using System.Reflection;
 using System.ServiceProcess;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
+using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Performance;
 using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
@@ -657,6 +658,22 @@ namespace WebApplications.Utilities.Service
                             fileName = realFileName;
                         }
                     }
+
+                    // Copy service into a new directory.
+                    string installDirectory = Directory.CreateDirectory(
+                        Path.Combine(
+                            Environment.GetFolderPath(
+                                Environment.SpecialFolder.CommonProgramFiles,
+                                Environment.SpecialFolderOption.Create),
+                            Guid.NewGuid().ToString("D"))).FullName;
+                    writer.Write("Copying service to {0}...", installDirectory);
+                    foreach (string file in Directory.GetFiles(Path.GetDirectoryName(fileName)))
+                        File.Copy(file, Path.Combine(installDirectory, Path.GetFileName(file)));
+                    writer.WriteLine("done.");
+
+                    // Change filename to new location.
+                    fileName = Path.Combine(installDirectory, Path.GetFileName(fileName));
+
                     ServiceUtils.Install(ServiceName, DisplayName, Description, fileName, userName, password);
                     writer.WriteLine(
                         ServiceResources.Inf_ServiceRunner_Installed,
@@ -700,7 +717,7 @@ namespace WebApplications.Utilities.Service
                 Stopwatch s = Stopwatch.StartNew();
                 try
                 {
-                    ServiceUtils.Uninstall(ServiceName);
+                    ServiceUtils.Uninstall(ServiceName).Wait();
                     writer.WriteLine(
                         ServiceResources.Inf_ServiceRunner_Uninstalled,
                         ServiceName,

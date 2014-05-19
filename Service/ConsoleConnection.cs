@@ -231,106 +231,117 @@ namespace WebApplications.Utilities.Service
                             .ToString(CultureInfo.InvariantCulture);
                     } while (!options.ContainsKey(key));
 
-                    switch (key)
+                    try
                     {
-                        case "I":
-                            GetUserNamePassword(out userName, out password);
+                        switch (key)
+                        {
+                            case "I":
+                                GetUserNamePassword(out userName, out password);
 
-                            service.Install(ConsoleTextWriter.Default, userName, password);
+                                service.Install(ConsoleTextWriter.Default, userName, password);
 
-                            Console.Write("Waiting for service to be detected...");
-                            while (!ServiceUtils.ServiceIsInstalled(service.ServiceName))
-                            {
-                                await Task.Delay(250);
-                                Console.Write('.');
-                            }
-                            Console.WriteLine("Done.");
-                            Console.WriteLine();
-                            break;
-
-                        case "U":
-                            service.Uninstall(ConsoleTextWriter.Default);
-
-                            Console.Write("Waiting for service removal to be detected...");
-                            while (ServiceUtils.ServiceIsInstalled(service.ServiceName))
-                            {
-                                await Task.Delay(250);
-                                Console.Write('.');
-                            }
-                            Console.WriteLine("Done.");
-                            Console.WriteLine();
-                            break;
-
-                        case "R":
-                            Console.Write("Attempting to stop service...");
-                            await ServiceUtils.StopService(service.ServiceName, token);
-                            Console.WriteLine("Done.");
-                            Console.WriteLine();
-                            Console.Write("Attempting to start service...");
-                            await ServiceUtils.StartService(service.ServiceName, null, token);
-                            Console.WriteLine("Done.");
-                            Console.WriteLine();
-                            break;
-
-                        case "S":
-                            Console.Write("Attempting to start service...");
-                            await ServiceUtils.StartService(service.ServiceName, null, token);
-                            Console.WriteLine("Done.");
-                            Console.WriteLine();
-                            break;
-
-                        case "T":
-                            Console.Write("Attempting to stop service...");
-                            await ServiceUtils.StopService(service.ServiceName, token);
-                            Console.WriteLine("Done.");
-                            Console.WriteLine();
-                            break;
-
-                        case "P":
-                            Console.Write("Attempting to pause service...");
-                            await ServiceUtils.PauseService(service.ServiceName, token);
-                            Console.WriteLine("Done.");
-                            break;
-
-                        case "C":
-                            Console.Write("Attempting to continue service...");
-                            await ServiceUtils.ContinueService(service.ServiceName, token);
-                            Console.WriteLine("Done.");
-                            Console.WriteLine();
-                            break;
-
-                        case "Y":
-                            done = true;
-                            break;
-
-                        case "W":
-                            done = true;
-                            GetUserNamePassword(out userName, out password);
-                            if (userName == null)
+                                Console.Write("Waiting for service to be detected...");
+                                while (!ServiceUtils.ServiceIsInstalled(service.ServiceName))
+                                {
+                                    await Task.Delay(250);
+                                    Console.Write('.');
+                                }
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
                                 break;
-                            Contract.Assert(password != null);
-                            // Run in new security context.
-                            using (new Impersonator(userName, password))
-                                await
-                                    RunAsync(
-                                        service,
-                                        false,
-                                        allowConsoleInteraction,
-                                        defaultLogFormat,
-                                        defaultLoggingLevels,
-                                        token);
-                            return;
 
-                        case "Z":
-                            allowConsoleInteraction = false;
-                            done = true;
-                            Console.WriteLine("Running service in non-interactive mode (use CTRL-C to kill).");
-                            Console.WriteLine("To control connect using a service client.");
-                            Console.WriteLine();
-                            break;
+                            case "U":
+                                service.Uninstall(ConsoleTextWriter.Default);
 
-                        default:
-                            return;
+                                Console.Write("Waiting for service removal to be detected...");
+                                while (ServiceUtils.ServiceIsInstalled(service.ServiceName))
+                                {
+                                    await Task.Delay(250);
+                                    Console.Write('.');
+                                }
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                break;
+
+                            case "R":
+                                Console.Write("Attempting to stop service...");
+                                await ServiceUtils.StopService(service.ServiceName, token);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                Console.Write("Attempting to start service...");
+                                await ServiceUtils.StartService(service.ServiceName, null, token);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                break;
+
+                            case "S":
+                                Console.Write("Attempting to start service...");
+                                await ServiceUtils.StartService(service.ServiceName, null, token);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                break;
+
+                            case "T":
+                                Console.Write("Attempting to stop service...");
+                                await ServiceUtils.StopService(service.ServiceName, token);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                break;
+
+                            case "P":
+                                Console.Write("Attempting to pause service...");
+                                await ServiceUtils.PauseService(service.ServiceName, token);
+                                Console.WriteLine("Done.");
+                                break;
+
+                            case "C":
+                                Console.Write("Attempting to continue service...");
+                                await ServiceUtils.ContinueService(service.ServiceName, token);
+                                Console.WriteLine("Done.");
+                                Console.WriteLine();
+                                break;
+
+                            case "Y":
+                                done = true;
+                                break;
+
+                            case "W":
+                                done = true;
+                                GetUserNamePassword(out userName, out password);
+                                if (userName == null)
+                                    break;
+                                Contract.Assert(password != null);
+                                // Run in new security context.
+                                using (new Impersonator(userName, password))
+                                    await
+                                        RunAsync(
+                                            service,
+                                            false,
+                                            allowConsoleInteraction,
+                                            defaultLogFormat,
+                                            defaultLoggingLevels,
+                                            token);
+                                return;
+
+                            case "Z":
+                                allowConsoleInteraction = false;
+                                done = true;
+                                Console.WriteLine("Running service in non-interactive mode (use CTRL-C to kill).");
+                                Console.WriteLine("To control connect using a service client.");
+                                Console.WriteLine();
+                                break;
+
+                            default:
+                                return;
+                        }
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Add(e);
                     }
                 } while (!done);
             }

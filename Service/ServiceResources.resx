@@ -340,10 +340,10 @@
     <value>Stopping service '{0}'.</value>
   </data>
   <data name="Inf_ServiceRunner_Uninstall" xml:space="preserve">
-    <value>Uninstalled the '{0}'.</value>
+    <value>Uninstalling the '{0}'.</value>
   </data>
   <data name="Inf_ServiceRunner_Uninstalled" xml:space="preserve">
-    <value>Uninstalling the '{0}' service.</value>
+    <value>Uninstalled the '{0}' service.</value>
   </data>
   <data name="Not_NamedPipeConnection_Connection" xml:space="preserve">
     <value>The service received a connection from '{0}'.</value>

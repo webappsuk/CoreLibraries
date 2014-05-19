@@ -28,7 +28,9 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Threading;
@@ -134,6 +136,28 @@ namespace WebApplications.Utilities.Service
             if (!ServiceIsInstalled(serviceName))
                 return;
 
+            string servicePath;
+            try
+            {
+                // Find location of service.
+                using (ManagementClass mc = new ManagementClass("Win32_Service"))
+                {
+                    ManagementObject mo = mc.GetInstances()
+                        .Cast<ManagementObject>()
+                        .FirstOrDefault(o => string.Equals(o.GetPropertyValue("Name").ToString(), "TestService"));
+                    if (mo == null)
+                        throw new ApplicationException(string.Format("Could not find location of '{0}' service.", serviceName));
+                    servicePath = mo.GetPropertyValue("PathName").ToString().Trim('"');
+                    if (!File.Exists(servicePath))
+                        throw new ApplicationException(string.Format("'{0}' service location '{1}' doesn't exist.", serviceName, servicePath));
+                }
+            }
+            catch (Exception e)
+            {
+                throw new ApplicationException(string.Format("Could not find location of '{0}' service.", serviceName), e);
+            }
+
+
             await StopService(serviceName, token);
 
             IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
@@ -157,6 +181,9 @@ namespace WebApplications.Utilities.Service
             {
                 CloseServiceHandle(scm);
             }
+
+            // Try to remove service directory
+            Directory.Delete(Path.GetDirectoryName(servicePath), true);
         }
 
         /// <summary>
@@ -188,6 +215,9 @@ namespace WebApplications.Utilities.Service
             IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
             try
             {
+                if (fileName.Contains(' '))
+                    fileName = string.Format("\"{0}\"", fileName);
+
                 IntPtr service = CreateService(
                     scm,
                     serviceName,
