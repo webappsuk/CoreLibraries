@@ -304,7 +304,7 @@ namespace WebApplications.Utilities.Service
                     case ServiceState.Stopped:
                         break;
                     default:
-                        writer.WriteLine(ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning);
+                        writer.WriteLine(ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning, ServiceName);
                         return;
                 }
 
