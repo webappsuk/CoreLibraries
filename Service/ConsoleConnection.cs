@@ -360,6 +360,8 @@ namespace WebApplications.Utilities.Service
             {
                 if (!allowConsoleInteraction)
                 {
+                    // Start the service
+                    service.StartService(ConsoleTextWriter.Default, null);
                     // Wait to be cancelled as nothing to do.
                     await t.WaitHandle;
                     return;

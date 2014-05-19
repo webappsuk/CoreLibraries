@@ -35,7 +35,6 @@ using System.Reflection;
 using System.ServiceProcess;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
-using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Performance;
 using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
@@ -53,6 +52,140 @@ namespace WebApplications.Utilities.Service
         protected static readonly Func<SessionChangeReason, int, SessionChangeDescription>
             CreateSessionChangeDescription =
                 typeof (SessionChangeDescription).ConstructorFunc<SessionChangeReason, int, SessionChangeDescription>();
+        
+        /// <summary>
+        /// Provides command help.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="command">Name of the command.</param>
+        /// <param name="parameter">The parameter.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
+        protected abstract void Help(
+            [NotNull] TextWriter writer,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Command_Description")] string command = null,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
+
+        /// <summary>
+        /// Install services.
+        /// Sends the 
+        /// <see cref="SessionChangeDescription" /> to the service.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="userName">The user name.</param>
+        /// <param name="password">The password.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description",
+            writerParameter: "writer")]
+        public abstract void Install(
+            [NotNull] TextWriter writer,
+            [SCP(typeof (ServiceResources), "Cmd_Install_UserName_Description")] string userName = null,
+            [SCP(typeof (ServiceResources), "Cmd_Install_Password_Description")] string password = null);
+
+        /// <summary>
+        /// Uninstall services.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description",
+            writerParameter: "writer")]
+        public abstract void Uninstall([NotNull] TextWriter writer);
+
+        /// <summary>
+        /// Starts this instance.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="args">The arguments.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description", writerParameter: "writer"
+            )]
+        public abstract void StartService(
+            [NotNull] TextWriter writer,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Start_Args_Description")] string[] args);
+
+        /// <summary>
+        /// Stops this instance.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description", writerParameter: "writer")]
+        public abstract void StopService([NotNull] TextWriter writer);
+
+        /// <summary>
+        /// Pauses this instance.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description", writerParameter: "writer"
+            )]
+        public abstract void Pause([NotNull] TextWriter writer);
+
+        /// <summary>
+        /// Continues this instance.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description",
+            writerParameter: "writer")]
+        public abstract void Continue([NotNull] TextWriter writer);
+
+        /// <summary>
+        /// Shuts down this instance.
+        /// </summary>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description",
+            writerParameter: "writer")]
+        public abstract void Shutdown([NotNull] TextWriter writer);
+
+        /// <summary>
+        /// Runs the custom command on this instance.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="command">The command.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description",
+            writerParameter: "writer")]
+        public abstract void CustomCommand(
+            [NotNull] TextWriter writer,
+            [SCP(typeof (ServiceResources), "Cmd_CustomCommand_Command_Description")] int command);
+
+        /// <summary>
+        /// Sends the <see cref="PowerBroadcastStatus" /> to the service.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="powerStatus">The power status.</param>
+        /// <returns>
+        ///   <see langword="true" /> if failed, or the result of the call was <see langword="true" />; <see langword="false" /> otherwise.
+        /// </returns>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description",
+            writerParameter: "writer")]
+        public abstract bool PowerEvent(
+            [NotNull] TextWriter writer,
+            [SCP(typeof (ServiceResources), "Cmd_PowerEvent_PowerStatus_Description")] PowerBroadcastStatus powerStatus);
+
+        /// <summary>
+        /// Sends the <see cref="SessionChangeDescription" /> to the service.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="changeReason">The change reason.</param>
+        /// <param name="sessionId">The session identifier.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description",
+            writerParameter: "writer")]
+        public abstract void SessionChange(
+            [NotNull] TextWriter writer,
+            [SCP(typeof (ServiceResources), "Cmd_SessionChange_ChangeReason_Description")] SessionChangeReason
+                changeReason,
+            [SCP(typeof (ServiceResources), "Cmd_SessionChange_SessionID_Description")] int sessionId);
+
+        /// <summary>
+        /// Gets the details of the performance counters loaded.
+        /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="category">The category.</param>
+        [PublicAPI]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true,
+            writerParameter: "writer")]
+        public abstract void Performance(
+            [NotNull] TextWriter writer,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Performance_Category_Description")] string category = null);
 
         #region Formats
         // ReSharper disable FormatStringProblem
@@ -293,7 +426,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description", writerParameter: "writer"
             )]
-        public void StartService(
+        public override void StartService(
             [NotNull] TextWriter writer,
             [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Start_Args_Description")] string[] args)
         {
@@ -333,7 +466,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description", writerParameter: "writer")]
-        public void StopService([NotNull] TextWriter writer)
+        public override void StopService([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
@@ -370,7 +503,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description", writerParameter: "writer"
             )]
-        public void Pause([NotNull] TextWriter writer)
+        public override void Pause([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
@@ -405,7 +538,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description",
             writerParameter: "writer")]
-        public void Continue([NotNull] TextWriter writer)
+        public override void Continue([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
@@ -440,7 +573,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description",
             writerParameter: "writer")]
-        public void Shutdown([NotNull] TextWriter writer)
+        public override void Shutdown([NotNull] TextWriter writer)
         {
             lock (_lock)
             {
@@ -474,7 +607,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description",
             writerParameter: "writer")]
-        public void CustomCommand(
+        public override void CustomCommand(
             [NotNull] TextWriter writer,
             [SCP(typeof (ServiceResources), "Cmd_CustomCommand_Command_Description")] int command)
         {
@@ -514,7 +647,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description",
             writerParameter: "writer")]
-        public bool PowerEvent(
+        public override bool PowerEvent(
             [NotNull] TextWriter writer,
             [SCP(typeof (ServiceResources), "Cmd_PowerEvent_PowerStatus_Description")] PowerBroadcastStatus powerStatus)
         {
@@ -556,7 +689,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description",
             writerParameter: "writer")]
-        public void SessionChange(
+        public override void SessionChange(
             [NotNull] TextWriter writer,
             [SCP(typeof (ServiceResources), "Cmd_SessionChange_ChangeReason_Description")] SessionChangeReason
                 changeReason,
@@ -674,7 +807,7 @@ namespace WebApplications.Utilities.Service
                     // Change filename to new location.
                     fileName = Path.Combine(installDirectory, Path.GetFileName(fileName));
 
-                    ServiceUtils.Install(ServiceName, DisplayName, Description, fileName, userName, password);
+                    ServiceUtils.Install(ServiceName, DisplayName, AssemblyDescription, fileName, userName, password);
                     writer.WriteLine(
                         ServiceResources.Inf_ServiceRunner_Installed,
                         ServiceName,
@@ -740,7 +873,7 @@ namespace WebApplications.Utilities.Service
             PublicAPI]
         [ServiceCommand(typeof (ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true,
             writerParameter: "writer")]
-        public void Performance(
+        public override void Performance(
             [NotNull] TextWriter writer,
             [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Performance_Category_Description")] string category = null)
         {

@@ -31,7 +31,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -42,7 +41,6 @@ using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
@@ -140,6 +138,20 @@ namespace WebApplications.Utilities.Service
         }
 
         /// <summary>
+        /// Gets a <see cref="Utilities.Threading.PauseToken"/> that is paused when the service is not running, or paused.
+        /// </summary>
+        /// <value>A pause token.</value>
+        [PublicAPI]
+        public abstract PauseToken PauseToken { get; }
+
+        /// <summary>
+        /// Gets a <see cref="CancellationToken"/> that is cancelled when the service is not running.
+        /// </summary>
+        /// <value>A pause token.</value>
+        [PublicAPI]
+        public abstract CancellationToken CancellationToken { get; }
+
+        /// <summary>
         /// Initializes static members of the <see cref="BaseService"/> class.
         /// </summary>
         static BaseService()
@@ -214,10 +226,10 @@ namespace WebApplications.Utilities.Service
             if (_eventLog.MachineName == ".")
             {
                 // Create the event log if necessary.
-                ((ISupportInitialize)(_eventLog)).BeginInit();
+                ((ISupportInitialize) (_eventLog)).BeginInit();
                 if (!EventLog.SourceExists(_eventLog.Source))
                     EventLog.CreateEventSource(_eventLog.Source, _eventLog.Log);
-                ((ISupportInitialize)(_eventLog)).EndInit();
+                ((ISupportInitialize) (_eventLog)).EndInit();
             }
         }
 
@@ -379,43 +391,6 @@ namespace WebApplications.Utilities.Service
         /// <param name="id">The connection.</param>
         /// <returns><see langword="true" /> if disconnected, <see langword="false" /> otherwise.</returns>
         public abstract bool Disconnect(Guid id);
-
-        /// <summary>
-        /// Provides command help.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="command">Name of the command.</param>
-        /// <param name="parameter">The parameter.</param>
-        [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
-        protected abstract void Help(
-            [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Command_Description")] string command = null,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
-
-        /// <summary>
-        /// Install services.
-        /// Sends the 
-        /// <see cref="SessionChangeDescription" /> to the service.
-        /// </summary>
-        /// <param name="writer">The writer.</param>
-        /// <param name="userName">The user name.</param>
-        /// <param name="password">The password.</param>
-        [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description",
-            writerParameter: "writer")]
-        public abstract void Install(
-            [NotNull] TextWriter writer,
-            [SCP(typeof(ServiceResources), "Cmd_Install_UserName_Description")] string userName = null,
-            [SCP(typeof(ServiceResources), "Cmd_Install_Password_Description")] string password = null);
-
-        /// <summary>
-        /// Uninstall services.
-        /// </summary>
-        [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description",
-            writerParameter: "writer")]
-        public abstract void Uninstall([NotNull] TextWriter writer);
     }
 
     /// <summary>
@@ -438,7 +413,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [NotNull]
         // ReSharper disable once StaticFieldInGenericType
-        public static readonly string Title;
+        public static readonly string AssemblyTitle;
 
         /// <summary>
         /// The service assembly description.
@@ -446,7 +421,15 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [NotNull]
         // ReSharper disable once StaticFieldInGenericType
-        public new static readonly string Description;
+        public static readonly string AssemblyDescription;
+
+        /// <summary>
+        /// The assembly unique identifier
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        // ReSharper disable once StaticFieldInGenericType
+        public static readonly string AssemblyGuid;
 
         /// <summary>
         /// The lock.
@@ -492,7 +475,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <value>A pause token.</value>
         [PublicAPI]
-        public PauseToken PauseToken
+        public override PauseToken PauseToken
         {
             get { return _pauseTokenSource.Token; }
         }
@@ -502,7 +485,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <value>A pause token.</value>
         [PublicAPI]
-        public CancellationToken CancellationToken
+        public override CancellationToken CancellationToken
         {
             get
             {
@@ -519,7 +502,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         static BaseService()
         {
-            MethodInfo[] allMethods = typeof(TService)
+            MethodInfo[] allMethods = typeof (TService)
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .ToArray();
             Dictionary<string, ServiceCommand> commands =
@@ -533,7 +516,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     ServiceCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof(ServiceCommandAttribute), true)
+                        .GetCustomAttributes(typeof (ServiceCommandAttribute), true)
                         .OfType<ServiceCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
@@ -578,43 +561,43 @@ namespace WebApplications.Utilities.Service
             }
             Commands = new ReadOnlyDictionary<string, ServiceCommand>(commands);
 
-            Assembly assembly = typeof(TService).Assembly;
+            Assembly assembly = typeof (TService).Assembly;
 
-            if (assembly.IsDefined(typeof(AssemblyTitleAttribute), false))
+            if (assembly.IsDefined(typeof (AssemblyTitleAttribute), false))
             {
                 AssemblyTitleAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyTitleAttribute)) as
                         AssemblyTitleAttribute;
                 if (a != null)
                 {
                     Contract.Assert(a.Title != null);
-                    Title = a.Title;
+                    AssemblyTitle = a.Title;
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(Description))
-                Description = "A windows service.";
+            if (string.IsNullOrWhiteSpace(AssemblyDescription))
+                AssemblyDescription = "A windows service.";
 
-            if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
+            if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
                         AssemblyDescriptionAttribute;
                 if (a != null)
                 {
                     Contract.Assert(a.Description != null);
-                    Description = a.Description;
+                    AssemblyDescription = a.Description;
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(Description))
-                Description = "A windows service.";
+            if (string.IsNullOrWhiteSpace(AssemblyDescription))
+                AssemblyDescription = "A windows service.";
 
 
-            if (assembly.IsDefined(typeof(GuidAttribute), false))
+            if (assembly.IsDefined(typeof (GuidAttribute), false))
             {
                 GuidAttribute g =
-                    Attribute.GetCustomAttribute(assembly, typeof(GuidAttribute)) as GuidAttribute;
+                    Attribute.GetCustomAttribute(assembly, typeof (GuidAttribute)) as GuidAttribute;
                 if (g != null)
                     AssemblyGuid = g.Value;
             }
@@ -627,11 +610,6 @@ namespace WebApplications.Utilities.Service
                     assembly);
             }
         }
-
-        /// <summary>
-        /// The assembly unique identifier
-        /// </summary>
-        public static readonly string AssemblyGuid;
 
         /// <summary>
         /// The global wait handler to prevent multiple services running on the same machine.
@@ -663,9 +641,9 @@ namespace WebApplications.Utilities.Service
             [CanBeNull] ServerConfig serverConfiguration = null,
             IdentityReference identity = null)
             : base(
-                (string.IsNullOrWhiteSpace(name) || name.Length > 128) ? Title : name,
+                (string.IsNullOrWhiteSpace(name) || name.Length > 128) ? AssemblyTitle : name,
                 displayName,
-                (string.IsNullOrWhiteSpace(description) || description.Length > 80) ? Description : description,
+                (string.IsNullOrWhiteSpace(description) || description.Length > 80) ? AssemblyDescription : description,
                 serverConfiguration)
         {
             try
@@ -712,7 +690,7 @@ namespace WebApplications.Utilities.Service
             {
                 _lifeTimeTaskCompletionSource = new TaskCompletionSource<bool>();
                 return ConsoleHelper.IsConsole
-                    ? (Task)Task.WhenAny(
+                    ? (Task) Task.WhenAny(
                         _lifeTimeTaskCompletionSource.Task,
                         ConsoleConnection.RunAsync(this, promptInstall, allowConsoleInteraction, token: token))
                     : _lifeTimeTaskCompletionSource.Task;
@@ -1206,7 +1184,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="id">The connection.</param>
         /// <returns><see langword="true" /> if disconnected, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
             idParameter: "id")]
         public override bool Disconnect(Guid id)
         {
