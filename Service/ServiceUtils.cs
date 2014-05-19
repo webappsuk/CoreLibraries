@@ -121,8 +121,12 @@ namespace WebApplications.Utilities.Service
         #region QueryServiceStatusEx
         [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool QueryServiceStatusEx(IntPtr hService, int infoLevel, IntPtr lpBuffer, int cbBufSize, out int pcbBytesNeeded);
-
+        private static extern bool QueryServiceStatusEx(
+            IntPtr hService,
+            int infoLevel,
+            IntPtr lpBuffer,
+            int cbBufSize,
+            out int pcbBytesNeeded);
         #endregion
 
         #region DeleteService
@@ -154,6 +158,7 @@ namespace WebApplications.Utilities.Service
             ServiceConfig dwInfoLevel,
             ref SERVICE_DESCRIPTION lpInfo);
         #endregion
+
         #endregion
 
         public static void Uninstall(string serviceName)
@@ -178,7 +183,10 @@ namespace WebApplications.Utilities.Service
                         case ServiceState.Stopped:
                             break;
                         case ServiceState.StopPending:
-                            changedStatus = WaitForServiceStatus(service, ServiceState.StopPending, ServiceState.Stopped);
+                            changedStatus = WaitForServiceStatus(
+                                service,
+                                ServiceState.StopPending,
+                                ServiceState.Stopped);
                             if (!changedStatus)
                                 throw new ApplicationException("Unable to stop service");
                             break;
@@ -194,10 +202,18 @@ namespace WebApplications.Utilities.Service
                                          ServiceControlReason.Uninstall,
                                 Comment = "User initiated using service utilities."
                             };
-                            if (ControlServiceEx(service, ServiceControl.Stop, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) == 0)
+                            if (
+                                ControlServiceEx(
+                                    service,
+                                    ServiceControl.Stop,
+                                    SERVICE_CONTROL_STATUS_REASON_INFO,
+                                    ref reason) == 0)
                                 throw new Win32Exception(Marshal.GetLastWin32Error());
 
-                            changedStatus = WaitForServiceStatus(service, ServiceState.StopPending, ServiceState.Stopped);
+                            changedStatus = WaitForServiceStatus(
+                                service,
+                                ServiceState.StopPending,
+                                ServiceState.Stopped);
                             if (!changedStatus)
                                 throw new ApplicationException("Unable to stop service");
                             break;
@@ -242,25 +258,31 @@ namespace WebApplications.Utilities.Service
             }
         }
 
-        public static void Install(string serviceName, string displayName, string description, string fileName, string userName = null, string password = null)
+        public static void Install(
+            string serviceName,
+            string displayName,
+            string description,
+            string fileName,
+            string userName = null,
+            string password = null)
         {
             IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
             try
             {
                 IntPtr service = CreateService(
-                        scm,
-                        serviceName,
-                        displayName,
-                        ServiceAccessRights.AllAccess,
-                        SERVICE_WIN32_OWN_PROCESS,
-                        ServiceBootFlag.AutoStart,
-                        ServiceError.Normal,
-                        fileName,
-                        null,
-                        IntPtr.Zero,
-                        null,
-                        userName,
-                        password);
+                    scm,
+                    serviceName,
+                    displayName,
+                    ServiceAccessRights.AllAccess,
+                    SERVICE_WIN32_OWN_PROCESS,
+                    ServiceBootFlag.AutoStart,
+                    ServiceError.Normal,
+                    fileName,
+                    null,
+                    IntPtr.Zero,
+                    null,
+                    userName,
+                    password);
 
                 if (service == IntPtr.Zero)
                     throw new Win32Exception(Marshal.GetLastWin32Error());
@@ -280,7 +302,6 @@ namespace WebApplications.Utilities.Service
                 {
                     Marshal.FreeHGlobal(sd.description);
                 }
-
             }
             finally
             {
@@ -335,7 +356,9 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS();
-                    if (ControlServiceEx(service, ServiceControl.Pause, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) == 0)
+                    if (
+                        ControlServiceEx(service, ServiceControl.Pause, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) ==
+                        0)
                         throw new Win32Exception(Marshal.GetLastWin32Error());
                     bool changedStatus = WaitForServiceStatus(service, ServiceState.PausePending, ServiceState.Paused);
                     if (!changedStatus)
@@ -367,9 +390,17 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS();
-                    if (ControlServiceEx(service, ServiceControl.Continue, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) == 0)
+                    if (
+                        ControlServiceEx(
+                            service,
+                            ServiceControl.Continue,
+                            SERVICE_CONTROL_STATUS_REASON_INFO,
+                            ref reason) == 0)
                         throw new Win32Exception(Marshal.GetLastWin32Error());
-                    bool changedStatus = WaitForServiceStatus(service, ServiceState.ContinuePending, ServiceState.Running);
+                    bool changedStatus = WaitForServiceStatus(
+                        service,
+                        ServiceState.ContinuePending,
+                        ServiceState.Running);
                     if (!changedStatus)
                         throw new ApplicationException("Unable to pause service");
                 }
@@ -405,7 +436,9 @@ namespace WebApplications.Utilities.Service
                                  ServiceControlReason.Maintenance,
                         Comment = "User initiated using service utilities."
                     };
-                    if (ControlServiceEx(service, ServiceControl.Stop, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) == 0)
+                    if (
+                        ControlServiceEx(service, ServiceControl.Stop, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) ==
+                        0)
                         throw new Win32Exception(Marshal.GetLastWin32Error());
                     bool changedStatus = WaitForServiceStatus(service, ServiceState.StopPending, ServiceState.Stopped);
                     if (!changedStatus)
@@ -437,7 +470,12 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     SERVICE_CONTROL_STATUS_REASON_PARAMS reason = new SERVICE_CONTROL_STATUS_REASON_PARAMS();
-                    if (ControlServiceEx(service, (ServiceControl)command, SERVICE_CONTROL_STATUS_REASON_INFO, ref reason) == 0)
+                    if (
+                        ControlServiceEx(
+                            service,
+                            (ServiceControl) command,
+                            SERVICE_CONTROL_STATUS_REASON_INFO,
+                            ref reason) == 0)
                         throw new Win32Exception(Marshal.GetLastWin32Error());
                 }
                 finally
@@ -493,14 +531,15 @@ namespace WebApplications.Utilities.Service
                     int error = Marshal.GetLastWin32Error();
                     if (error != ERROR_INSUFFICIENT_BUFFER)
                         throw new Win32Exception(error);
-                } else
+                }
+                else
                     throw new ApplicationException("Could not get query info buffer size.");
 
                 buf = Marshal.AllocHGlobal(size);
                 if (!QueryServiceStatusEx(service, 0, buf, size, out size))
                     throw new Win32Exception(Marshal.GetLastWin32Error());
 
-                return (SERVICE_STATUS_PROCESS)Marshal.PtrToStructure(buf, typeof(SERVICE_STATUS_PROCESS));
+                return (SERVICE_STATUS_PROCESS) Marshal.PtrToStructure(buf, typeof (SERVICE_STATUS_PROCESS));
             }
             finally
             {

@@ -36,34 +36,42 @@ namespace WebApplications.Utilities.Service
         /// The state cannot be retrieved.
         /// </summary>
         Unknown = -1, // The state cannot be (has not been) retrieved.
+
         /// <summary>
         /// The service is not known on the host server.
         /// </summary>
         NotFound = 0,
+
         /// <summary>
         /// The service is stopped.
         /// </summary>
         Stopped = 1,
+
         /// <summary>
         /// The service is starting.
         /// </summary>
         StartPending = 2,
+
         /// <summary>
         /// The service is stopping.
         /// </summary>
         StopPending = 3,
+
         /// <summary>
         /// The service is running>
         /// </summary>
         Running = 4,
+
         /// <summary>
         /// The service is restarting.
         /// </summary>
         ContinuePending = 5,
+
         /// <summary>
         /// The service is pausing.
         /// </summary>
         PausePending = 6,
+
         /// <summary>
         /// The service is paused.
         /// </summary>

@@ -36,7 +36,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.ServiceProcess;
@@ -45,10 +44,8 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Logging.Interfaces;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
-using WebApplications.Utilities.Reflect;
 using WebApplications.Utilities.Threading;
 using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
@@ -216,12 +213,10 @@ namespace WebApplications.Utilities.Service
             if (_eventLog.MachineName == ".")
             {
                 // Create the event log if necessary.
-                ((ISupportInitialize)(this._eventLog)).BeginInit();
-                if (!EventLog.SourceExists(this._eventLog.Source))
-                {
-                    EventLog.CreateEventSource(this._eventLog.Source, this._eventLog.Log);
-                }
-                ((ISupportInitialize)(this._eventLog)).EndInit();
+                ((ISupportInitialize) (_eventLog)).BeginInit();
+                if (!EventLog.SourceExists(_eventLog.Source))
+                    EventLog.CreateEventSource(_eventLog.Source, _eventLog.Log);
+                ((ISupportInitialize) (_eventLog)).EndInit();
             }
         }
 
@@ -230,8 +225,16 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         public readonly bool IsService;
 
-        // TODO Move to Utilities
-        protected static readonly PauseToken Paused = new PauseTokenSource { IsPaused = true }.Token;
+        /// <summary>
+        /// The paused token.
+        /// TODO Move to utilities.
+        /// </summary>
+        protected static readonly PauseToken Paused = new PauseTokenSource {IsPaused = true}.Token;
+
+        /// <summary>
+        /// The cancelled token.
+        /// TODO Move to utilities.
+        /// </summary>
         protected static readonly CancellationToken Cancelled;
 
         /// <summary>
@@ -386,11 +389,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
         protected abstract void Help(
             [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Command_Description")] string command = null,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Command_Description")] string command = null,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
     }
 
     /// <summary>
@@ -494,7 +497,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         static BaseService()
         {
-            MethodInfo[] allMethods = typeof(TService)
+            MethodInfo[] allMethods = typeof (TService)
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .ToArray();
             Dictionary<string, ServiceCommand> commands =
@@ -508,7 +511,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     ServiceCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof(ServiceCommandAttribute), true)
+                        .GetCustomAttributes(typeof (ServiceCommandAttribute), true)
                         .OfType<ServiceCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
@@ -553,12 +556,12 @@ namespace WebApplications.Utilities.Service
             }
             Commands = new ReadOnlyDictionary<string, ServiceCommand>(commands);
 
-            Assembly assembly = typeof(TService).Assembly;
+            Assembly assembly = typeof (TService).Assembly;
 
-            if (assembly.IsDefined(typeof(AssemblyTitleAttribute), false))
+            if (assembly.IsDefined(typeof (AssemblyTitleAttribute), false))
             {
                 AssemblyTitleAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyTitleAttribute)) as
                         AssemblyTitleAttribute;
                 if (a != null)
                 {
@@ -570,10 +573,10 @@ namespace WebApplications.Utilities.Service
             if (string.IsNullOrWhiteSpace(Description))
                 Description = "A windows service.";
 
-            if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
+            if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
                         AssemblyDescriptionAttribute;
                 if (a != null)
                 {
@@ -586,10 +589,10 @@ namespace WebApplications.Utilities.Service
                 Description = "A windows service.";
 
 
-            if (assembly.IsDefined(typeof(GuidAttribute), false))
+            if (assembly.IsDefined(typeof (GuidAttribute), false))
             {
                 GuidAttribute g =
-                    Attribute.GetCustomAttribute(assembly, typeof(GuidAttribute)) as GuidAttribute;
+                    Attribute.GetCustomAttribute(assembly, typeof (GuidAttribute)) as GuidAttribute;
                 if (g != null)
                     AssemblyGuid = g.Value;
             }
@@ -916,7 +919,6 @@ namespace WebApplications.Utilities.Service
                                 if (context != null)
                                     context.Dispose();
                             }
-
                         },
                         token);
                 }
@@ -1004,7 +1006,6 @@ namespace WebApplications.Utilities.Service
                         if (IsService)
                             RequestAdditionalTime(5000);
                         if (!IsService)
-                        {
                             switch (_state)
                             {
                                 case ServiceState.Unknown:
@@ -1017,7 +1018,6 @@ namespace WebApplications.Utilities.Service
                                         ServiceName);
                                     return;
                             }
-                        }
                         _state = ServiceState.StartPending;
 
                         // Try to grab the global mutex
@@ -1456,7 +1456,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="id">The connection.</param>
         /// <returns><see langword="true" /> if disconnected, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
             idParameter: "id")]
         public override bool Disconnect(Guid id)
         {

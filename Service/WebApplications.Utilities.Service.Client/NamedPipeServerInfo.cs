@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Drawing;
 using System.IO;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
@@ -112,7 +111,7 @@ namespace WebApplications.Utilities.Service.Client
             if (string.IsNullOrWhiteSpace(directory))
                 return;
 
-            string[] rootParts = directory.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] rootParts = directory.Split(new[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
             if (rootParts.Length != 2 ||
                 !string.Equals(rootParts[1], "pipe", StringComparison.CurrentCultureIgnoreCase))
                 return;
@@ -139,7 +138,6 @@ namespace WebApplications.Utilities.Service.Client
                 .Replace('_', ' ');
 
             IsValid = true;
-
         }
 
         /// <summary>

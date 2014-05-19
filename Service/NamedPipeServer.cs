@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
@@ -230,9 +229,7 @@ namespace WebApplications.Utilities.Service
             if (string.IsNullOrWhiteSpace(name))
                 name = service.ServiceName;
             foreach (char c in name)
-            {
                 builder.Append(char.IsLetterOrDigit(c) ? c : '_');
-            }
             builder.Append(Common.NameSuffix);
             Name = builder.ToString();
 
@@ -271,7 +268,7 @@ namespace WebApplications.Utilities.Service
 
             // Create a connection, before adding it to the list and starting.
             NamedPipeConnection connection = new NamedPipeConnection(this);
-            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) { connection };
+            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) {connection};
             connection.Start();
             _logger = new NamedPipeServerLogger(this);
             Log.AddLogger(_logger);
@@ -356,7 +353,7 @@ namespace WebApplications.Utilities.Service
                 timer.Dispose();
             }
 
-            NamedPipeServerLogger logger =Interlocked.Exchange(ref _logger, null);
+            NamedPipeServerLogger logger = Interlocked.Exchange(ref _logger, null);
             if (logger != null)
             {
                 Log.RemoveLogger(logger);

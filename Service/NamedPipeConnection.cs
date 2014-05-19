@@ -26,19 +26,15 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using ProtoBuf;
 using WebApplications.Utilities.IO;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Service.PipeProtocol;
-using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service
 {
@@ -92,7 +88,7 @@ namespace WebApplications.Utilities.Service
             /// <param name="message">The message.</param>
             /// <returns><see langword="true" /> if succeeded, <see langword="false" /> otherwise.</returns>
             [NotNull]
-            public Task<bool> Send([NotNull]Message message, CancellationToken token = default(CancellationToken))
+            public Task<bool> Send([NotNull] Message message, CancellationToken token = default(CancellationToken))
             {
                 return _state != PipeState.Connected ? TaskResult.False : Send(message.Serialize(), token);
             }
@@ -106,11 +102,11 @@ namespace WebApplications.Utilities.Service
             [NotNull]
             public async Task<bool> Send([NotNull] byte[] data, CancellationToken token = default(CancellationToken))
             {
-                    if (_state != PipeState.Connected) return false;
-                    OverlappingPipeServerStream stream = _stream;
-                    if (stream == null) return false;
-                    await stream.WriteAsync(data, token);
-                    return true;
+                if (_state != PipeState.Connected) return false;
+                OverlappingPipeServerStream stream = _stream;
+                if (stream == null) return false;
+                await stream.WriteAsync(data, token);
+                return true;
             }
 
             /// <summary>
@@ -132,7 +128,7 @@ namespace WebApplications.Utilities.Service
                             using (OverlappingPipeServerStream stream = new OverlappingPipeServerStream(
                                 _server.Name,
                                 _server.MaximumConnections,
-                                PipeTransmissionMode.Message, 
+                                PipeTransmissionMode.Message,
                                 InBufferSize,
                                 OutBufferSize,
                                 _server._pipeSecurity))
@@ -193,7 +189,7 @@ namespace WebApplications.Utilities.Service
                                                     LoggingLevel.Notification,
                                                     () => ServiceResources.Not_NamedPipeConnection_Connection,
                                                     _connectionDescription);
-                                                
+
                                                 await
                                                     Send(
                                                         new ConnectResponse(request.ID, _server.Service.ServiceName),

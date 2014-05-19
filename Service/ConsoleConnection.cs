@@ -27,7 +27,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -128,7 +127,9 @@ namespace WebApplications.Utilities.Service
                             await Task.Delay(500, t);
                         } while (!t.IsCancellationRequested);
                     }
-                    catch (TaskCanceledException) { }
+                    catch (TaskCanceledException)
+                    {
+                    }
                     finally
                     {
                         Log.Flush().Wait();
@@ -170,7 +171,7 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Writes the prompt.
         /// </summary>
-        private static void WritePrompt([NotNull]BaseService service)
+        private static void WritePrompt([NotNull] BaseService service)
         {
             if (Console.CursorLeft != 0)
                 ConsoleTextWriter.Default.WriteLine();

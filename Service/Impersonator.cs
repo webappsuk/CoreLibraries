@@ -27,7 +27,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Data.Odbc;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
@@ -113,7 +112,7 @@ namespace WebApplications.Utilities.Service
             string domainName;
             if (up.Length > 2)
                 throw new ArgumentException(userName, "Invalid username.");
-            else if (up.Length < 2)
+            if (up.Length < 2)
                 domainName = ".";
             else
             {
@@ -133,8 +132,8 @@ namespace WebApplications.Utilities.Service
                     userName,
                     domainName,
                     password,
-                    (int)logonType,
-                    (int)logonProvider,
+                    (int) logonType,
+                    (int) logonProvider,
                     ref logonToken) != 0)
                     if (DuplicateToken(logonToken, ImpersonationLevel.SecurityImpersonation, ref logonTokenDuplicate) !=
                         0)

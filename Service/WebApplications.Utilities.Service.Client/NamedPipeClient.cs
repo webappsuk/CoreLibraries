@@ -26,28 +26,20 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.IO.Pipes;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Runtime.InteropServices;
-using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using ProtoBuf;
-using WebApplications.Utilities.Caching;
 using WebApplications.Utilities.IO;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Service.PipeProtocol;
-using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service.Client
 {
@@ -83,15 +75,20 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         /// <value>The name of the service.</value>
         [CanBeNull]
-        public string ServiceName { get { return _serviceName; } }
+        public string ServiceName
+        {
+            get { return _serviceName; }
+        }
 
         /// <summary>
         /// The connection completion source indicates connection has occured.
         /// </summary>
-        private TaskCompletionSource<NamedPipeClient> _connectionCompletionSource = new TaskCompletionSource<NamedPipeClient>();
+        private TaskCompletionSource<NamedPipeClient> _connectionCompletionSource =
+            new TaskCompletionSource<NamedPipeClient>();
 
         [NotNull]
-        private readonly ConcurrentDictionary<Guid, ConnectedCommand> _commandRequests = new ConcurrentDictionary<Guid, ConnectedCommand>();
+        private readonly ConcurrentDictionary<Guid, ConnectedCommand> _commandRequests =
+            new ConcurrentDictionary<Guid, ConnectedCommand>();
 
         /// <summary>
         /// Gets the state.
@@ -124,7 +121,11 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="server">The server.</param>
         /// <param name="onReceive">The action to call on receipt of a message.</param>
         /// <param name="token">The token.</param>
-        private NamedPipeClient(string description, [NotNull] NamedPipeServerInfo server, [NotNull]Action<Message> onReceive, CancellationToken token = default(CancellationToken))
+        private NamedPipeClient(
+            string description,
+            [NotNull] NamedPipeServerInfo server,
+            [NotNull] Action<Message> onReceive,
+            CancellationToken token = default(CancellationToken))
         {
             Contract.Requires(server != null);
             _server = server;
@@ -135,7 +136,11 @@ namespace WebApplications.Utilities.Service.Client
                 {
                     try
                     {
-                        using (OverlappingPipeClientStream stream = new OverlappingPipeClientStream(_server.Host, _server.FullName, PipeTransmissionMode.Message))
+                        using (
+                            OverlappingPipeClientStream stream = new OverlappingPipeClientStream(
+                                _server.Host,
+                                _server.FullName,
+                                PipeTransmissionMode.Message))
                         {
                             _state = PipeState.Open;
 
@@ -186,7 +191,8 @@ namespace WebApplications.Utilities.Service.Client
                                             () => "TODO ClientResources.Not_NamedPipeConnection_Connection",
                                             connectResponse.ServiceName);
 
-                                        TaskCompletionSource<NamedPipeClient> ccs = Interlocked.Exchange(ref _connectionCompletionSource, null);
+                                        TaskCompletionSource<NamedPipeClient> ccs =
+                                            Interlocked.Exchange(ref _connectionCompletionSource, null);
                                         if (ccs != null)
                                             ccs.TrySetResult(this);
 
@@ -243,14 +249,14 @@ namespace WebApplications.Utilities.Service.Client
                         _serviceName = null;
                         TaskCanceledException tce = exception as TaskCanceledException;
 
-                        TaskCompletionSource<NamedPipeClient> ccs = Interlocked.Exchange(ref _connectionCompletionSource, null);
+                        TaskCompletionSource<NamedPipeClient> ccs = Interlocked.Exchange(
+                            ref _connectionCompletionSource,
+                            null);
                         if (ccs != null)
-                        {
                             if (tce != null)
                                 ccs.TrySetCanceled();
                             else
                                 ccs.TrySetException(exception);
-                        }
 
                         // We only log if this wasn't a cancellation exception.
                         if (tce == null)
@@ -263,7 +269,8 @@ namespace WebApplications.Utilities.Service.Client
                     {
                         Dispose();
                     }
-                }, disposeToken);
+                },
+                disposeToken);
         }
 
         /// <summary>
@@ -276,7 +283,11 @@ namespace WebApplications.Utilities.Service.Client
         /// <returns>A new <see cref="NamedPipeClient" /> that is connected to the given pipe.</returns>
         [CanBeNull]
         [PublicAPI]
-        public static Task<NamedPipeClient> Connect([NotNull]string description, [CanBeNull] string pipe, [NotNull]Action<Message> onReceive, CancellationToken token = default(CancellationToken))
+        public static Task<NamedPipeClient> Connect(
+            [NotNull] string description,
+            [CanBeNull] string pipe,
+            [NotNull] Action<Message> onReceive,
+            CancellationToken token = default(CancellationToken))
         {
             NamedPipeServerInfo server = FindService(pipe);
             if (server == null ||
@@ -296,7 +307,11 @@ namespace WebApplications.Utilities.Service.Client
         /// <returns>A new <see cref="NamedPipeClient" /> that is connected to the given pipe.</returns>
         [CanBeNull]
         [PublicAPI]
-        public static Task<NamedPipeClient> Connect([NotNull]string description, [CanBeNull] NamedPipeServerInfo server, [NotNull]Action<Message> onReceive, CancellationToken token = default(CancellationToken))
+        public static Task<NamedPipeClient> Connect(
+            [NotNull] string description,
+            [CanBeNull] NamedPipeServerInfo server,
+            [NotNull] Action<Message> onReceive,
+            CancellationToken token = default(CancellationToken))
         {
             if (server == null ||
                 !server.IsValid)
@@ -380,7 +395,7 @@ namespace WebApplications.Utilities.Service.Client
                     {
                         complete = true;
                         observer.OnError(
-                            new ApplicationException(((CommandResponse)response).Chunk));
+                            new ApplicationException(((CommandResponse) response).Chunk));
                     }
                 }
                 catch
@@ -408,7 +423,9 @@ namespace WebApplications.Utilities.Service.Client
                     {
                         observer.OnError(new TaskCanceledException());
                     }
-                    catch { }
+                    catch
+                    {
+                    }
 
                 TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
                 if (cts != null)
@@ -423,7 +440,9 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="token">The token.</param>
         /// <returns>An observable of responses..</returns>
         [NotNull]
-        private IObservable<Response> Send([NotNull] Request request, CancellationToken token = default(CancellationToken))
+        private IObservable<Response> Send(
+            [NotNull] Request request,
+            CancellationToken token = default(CancellationToken))
         {
             if (_state != PipeState.Connected) return null;
             OverlappingPipeClientStream stream = _stream;
@@ -463,7 +482,9 @@ namespace WebApplications.Utilities.Service.Client
         /// <returns>An awaitable task that contains the result of the execution.</returns>
         [NotNull]
         [PublicAPI]
-        public IObservable<string> Execute([CanBeNull] string commandLine, CancellationToken token = default (CancellationToken))
+        public IObservable<string> Execute(
+            [CanBeNull] string commandLine,
+            CancellationToken token = default (CancellationToken))
         {
             if (_clientTask == null ||
                 State != PipeState.Connected ||
@@ -539,16 +560,20 @@ namespace WebApplications.Utilities.Service.Client
             public uint nFileSizeLow;
             public uint dwReserved0;
             public uint dwReserved1;
+
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
             public string cFileName;
+
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
             public string cAlternateFileName;
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr FindFirstFile(string lpFileName, out WIN32_FIND_DATA lpFindFileData);
+
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern int FindNextFile(IntPtr hFindFile, out WIN32_FIND_DATA lpFindFileData);
+
         [DllImport("kernel32.dll")]
         private static extern bool FindClose(IntPtr hFindFile);
         #endregion
