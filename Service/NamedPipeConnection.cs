@@ -157,72 +157,85 @@ namespace WebApplications.Utilities.Service
                                         _server.Add();
                                         _state = PipeState.AwaitingConnect;
 
-                                        // Keep going as long as we're connected.
-                                        while (stream.IsConnected &&
-                                               !token.IsCancellationRequested &&
-                                               _server.Service.State != ServiceControllerStatus.Stopped &&
-                                               _connectionGuid != Guid.Empty)
+                                        try
                                         {
-                                            // Read data in.
-                                            byte[] data = await stream.ReadAsync(token);
-                                            if (data == null ||
-                                                token.IsCancellationRequested ||
-                                                _server.Service.State == ServiceControllerStatus.Stopped ||
-                                                _connectionGuid == Guid.Empty)
-                                                break;
-
-                                            // Deserialize the incoming message.
-                                            Message message = Message.Deserialize(data);
-
-                                            Request request = message as Request;
-
-                                            // We only accept requests, anything else is a protocol error and so we must disconnect.
-                                            if (request == null)
-                                                break;
-
-                                            if (connectRequest == null)
+                                            // Keep going as long as we're connected.
+                                            while (stream.IsConnected &&
+                                                   !token.IsCancellationRequested &&
+                                                   _server.Service.State != ServiceControllerStatus.Stopped &&
+                                                   _connectionGuid != Guid.Empty)
                                             {
-                                                // We require a connect request to start
-                                                connectRequest = request as ConnectRequest;
-                                                if (connectRequest == null)
+                                                // Read data in.
+                                                byte[] data = await stream.ReadAsync(token);
+                                                if (data == null ||
+                                                    token.IsCancellationRequested ||
+                                                    _server.Service.State == ServiceControllerStatus.Stopped ||
+                                                    _connectionGuid == Guid.Empty)
                                                     break;
 
-                                                _state = PipeState.Connected;
-                                                _connectionDescription = connectRequest.Description;
-                                                Log.Add(
-                                                    LoggingLevel.Notification,
-                                                    () => ServiceResources.Not_NamedPipeConnection_Connection,
-                                                    _connectionDescription);
+                                                // Deserialize the incoming message.
+                                                Message message = Message.Deserialize(data);
 
-                                                await
-                                                    Send(
-                                                        new ConnectResponse(request.ID, _server.Service.ServiceName),
-                                                        token);
-                                                continue;
+                                                Request request = message as Request;
+
+                                                // We only accept requests, anything else is a protocol error and so we must disconnect.
+                                                if (request == null)
+                                                    break;
+
+                                                if (connectRequest == null)
+                                                {
+                                                    // We require a connect request to start
+                                                    connectRequest = request as ConnectRequest;
+                                                    if (connectRequest == null)
+                                                        break;
+
+                                                    _state = PipeState.Connected;
+                                                    _connectionDescription = connectRequest.Description;
+                                                    Log.Add(
+                                                        LoggingLevel.Notification,
+                                                        () => ServiceResources.Not_NamedPipeConnection_Connection,
+                                                        _connectionDescription);
+
+                                                    await
+                                                        Send(
+                                                            new ConnectResponse(request.ID, _server.Service.ServiceName),
+                                                            token);
+                                                    continue;
+                                                }
+
+                                                DisconnectRequest disconnectRequest = request as DisconnectRequest;
+                                                if (disconnectRequest != null)
+                                                {
+                                                    // Set the guid for disconnect.
+                                                    disconnectGuid = disconnectRequest.ID;
+                                                    break;
+                                                }
+
+                                                CommandRequest commandRequest = request as CommandRequest;
+                                                if (commandRequest == null) continue;
+                                                if (!string.IsNullOrWhiteSpace(commandRequest.CommandLine))
+                                                    _commands.Add(
+                                                        new ConnectedCommand(
+                                                            _connectionGuid,
+                                                            _server.Service,
+                                                            this,
+                                                            commandRequest,
+                                                            token));
                                             }
-
-                                            DisconnectRequest disconnectRequest = request as DisconnectRequest;
-                                            if (disconnectRequest != null)
-                                            {
-                                                // Set the guid for disconnect.
-                                                disconnectGuid = disconnectRequest.ID;
-                                                break;
-                                            }
-
-                                            CommandRequest commandRequest = request as CommandRequest;
-                                            if (commandRequest == null) continue;
-                                            if (!string.IsNullOrWhiteSpace(commandRequest.CommandLine))
-                                                _commands.Add(
-                                                    new ConnectedCommand(
-                                                        _connectionGuid,
-                                                        _server.Service,
-                                                        this,
-                                                        commandRequest,
-                                                        token));
                                         }
+                                        catch (TaskCanceledException) { }
 
                                         if (stream.IsConnected)
-                                            await Send(new DisconnectResponse(disconnectGuid), token);
+                                            try
+                                            {
+                                                // Try to send disconnect resposne.
+                                                await Send(
+                                                    new DisconnectResponse(disconnectGuid),
+                                                    token.IsCancellationRequested
+                                                        ? new CancellationTokenSource(500).Token
+                                                        : token);
+                                            }
+                                            catch (TaskCanceledException) { }
                                     }
                                 }
 

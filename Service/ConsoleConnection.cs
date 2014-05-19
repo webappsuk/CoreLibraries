@@ -125,6 +125,7 @@ namespace WebApplications.Utilities.Service
             Console.Clear();
             Log.SetTrace(validLevels: LoggingLevels.None);
             Log.SetConsole(defaultLogFormat ?? Log.ShortFormat, defaultLoggingLevels);
+            await Log.Flush(token);
 
             if (promptInstall)
             {
@@ -387,6 +388,8 @@ namespace WebApplications.Utilities.Service
             {
                 Log.Flush().Wait();
                 service.Disconnect(id);
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey(true);
             }
         }
 

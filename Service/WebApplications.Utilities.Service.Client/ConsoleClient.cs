@@ -105,7 +105,7 @@ namespace WebApplications.Utilities.Service.Client
             try
             {
                 Log.SetTrace(validLevels: LoggingLevels.None);
-                Log.SetConsole();
+                Log.SetConsole(Log.ShortFormat);
 
                 Console.Title = description;
                 NamedPipeClient client = null;
@@ -154,7 +154,8 @@ namespace WebApplications.Utilities.Service.Client
                         {"ServiceName", client.ServiceName}
                     });
 
-                await Task.Delay(200, token);
+                await Task.Delay(1100, token);
+                await Log.Flush(token);
 
                 while (client.State != PipeState.Closed)
                 {
@@ -175,13 +176,21 @@ namespace WebApplications.Utilities.Service.Client
                                 token);
 
                     // Wait to allow any disconnects or logs to come through.
+                    await Task.Delay(1100, token);
                     await Log.Flush(token);
-                    await Task.Delay(200, token);
                 }
             }
             catch (TaskCanceledException)
             {
             }
+            catch (Exception e)
+            {
+                Log.Add(e);
+            }
+            await Log.Flush(token);
+            await Task.Delay(200, token);
+            Console.WriteLine("Press any key to finish.");
+            Console.ReadKey(true);
         }
 
         private static void OnReceive([CanBeNull] Message message)
@@ -194,7 +203,7 @@ namespace WebApplications.Utilities.Service.Client
                 logResponse.Logs != null)
             {
                 foreach (Log log in logResponse.Logs)
-                    log.WriteTo(ConsoleTextWriter.Default);
+                    log.WriteTo(ConsoleTextWriter.Default, Log.ShortFormat);
                 return;
             }
 

@@ -159,6 +159,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ClientResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ConnectedCommand.cs" />
     <Compile Include="ConsoleClient.cs" />
     <Compile Include="NamedPipeClient.cs" />
     <Compile Include="NamedPipeServerInfo.cs" />

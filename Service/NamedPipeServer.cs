@@ -274,7 +274,7 @@ namespace WebApplications.Utilities.Service
             {
                 foreach (NamedPipeConnection connection in _namedPipeConnections.ToArray())
                     // ReSharper disable once PossibleNullReferenceException
-                    connection.Dispose();
+                    connection.OnDisconnect();
 
                 // Should already be clear, but do anyway.
                 _namedPipeConnections.Clear();

@@ -78,7 +78,7 @@ namespace WebApplications.Utilities.Service
                     // ReSharper disable once EmptyGeneralCatchClause
                 catch
                 {
-                    // Surpress any more errors.
+                    // Suppress any more errors.
                 }
             }
         }

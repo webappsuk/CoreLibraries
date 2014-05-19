@@ -29,6 +29,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Net.Security;
@@ -44,7 +45,10 @@ using WebApplications.Utilities.Service.PipeProtocol;
 
 namespace WebApplications.Utilities.Service.Client
 {
-    public class NamedPipeClient : IDisposable
+    /// <summary>
+    /// Implements a client for talking to a service.
+    /// </summary>
+    public partial class NamedPipeClient : IDisposable
     {
         /// <summary>
         /// The input buffer size
@@ -152,6 +156,7 @@ namespace WebApplications.Utilities.Service.Client
                             // We need to support cancelling the connect.
                             await stream.Connect(token);
 
+                            ConnectResponse connectResponse = null;
                             DisconnectResponse disconnectResponse = null;
 
                             if (!token.IsCancellationRequested)
@@ -164,68 +169,86 @@ namespace WebApplications.Utilities.Service.Client
                                 ConnectRequest connectRequest = new ConnectRequest(description);
                                 await stream.WriteAsync(connectRequest.Serialize(), token);
 
-                                ConnectResponse connectResponse = null;
-
                                 // Keep going as long as we're connected.
-                                while (stream.IsConnected &&
-                                       !disposeToken.IsCancellationRequested)
+                                try
                                 {
-                                    // Read data in.
-                                    byte[] data = await stream.ReadAsync(disposeToken);
-
-                                    // Deserialize the incoming message.
-                                    Message message = Message.Deserialize(data);
-
-                                    if (connectResponse == null)
+                                    while (stream.IsConnected &&
+                                           !disposeToken.IsCancellationRequested)
                                     {
-                                        // We require a connect response to start
-                                        connectResponse = message as ConnectResponse;
-                                        if (connectResponse == null ||
-                                            connectResponse.ID != connectRequest.ID)
+                                        // Read data in.
+                                        byte[] data = await stream.ReadAsync(disposeToken);
+
+                                        // Deserialize the incoming message.
+                                        Message message = Message.Deserialize(data);
+
+                                        if (connectResponse == null)
+                                        {
+                                            // We require a connect response to start
+                                            connectResponse = message as ConnectResponse;
+                                            if (connectResponse == null ||
+                                                connectResponse.ID != connectRequest.ID)
+                                                break;
+
+                                            _state = PipeState.Connected;
+                                            _serviceName = connectResponse.ServiceName;
+
+                                            Log.Add(
+                                                LoggingLevel.Notification,
+                                                () => ClientResources.Not_NamedPipeClient_Connection,
+                                                connectResponse.ServiceName);
+
+                                            TaskCompletionSource<NamedPipeClient> ccs =
+                                                Interlocked.Exchange(ref _connectionCompletionSource, null);
+                                            if (ccs != null)
+                                                ccs.TrySetResult(this);
+
+                                            // Observer the message.
+                                            onReceive(message);
+                                            continue;
+                                        }
+
+                                        // Check for disconnect, we don't observe the message until the disconnect is complete.
+                                        disconnectResponse = message as DisconnectResponse;
+                                        if (disconnectResponse != null)
                                             break;
 
-                                        _state = PipeState.Connected;
-                                        _serviceName = connectResponse.ServiceName;
-
-                                        Log.Add(
-                                            LoggingLevel.Notification,
-                                            () => ClientResources.Not_NamedPipeClient_Connection,
-                                            connectResponse.ServiceName);
-
-                                        TaskCompletionSource<NamedPipeClient> ccs =
-                                            Interlocked.Exchange(ref _connectionCompletionSource, null);
-                                        if (ccs != null)
-                                            ccs.TrySetResult(this);
-
-                                        // Observer the message.
+                                        // Observe the message.
                                         onReceive(message);
-                                        continue;
-                                    }
 
-                                    // Check for disconnect, we don't observe the message until the disconnect is complete.
-                                    disconnectResponse = message as DisconnectResponse;
-                                    if (disconnectResponse != null)
-                                        break;
+                                        Response response = message as Response;
+                                        if (response != null)
+                                        {
+                                            CommandResponse commandResponse = response as CommandResponse;
+                                            int sequence = commandResponse == null
+                                                ? -1
+                                                : commandResponse.Sequence;
 
-                                    // Observe the message.
-                                    onReceive(message);
-
-                                    Response response = message as Response;
-                                    if (response != null)
-                                    {
-                                        CommandResponse commandResponse = response as CommandResponse;
-                                        int sequence = commandResponse == null
-                                            ? -1
-                                            : commandResponse.Sequence;
-
-                                        ConnectedCommand connectedCommand;
-                                        if (sequence < 0
-                                            ? _commandRequests.TryRemove(response.ID, out connectedCommand)
-                                            : _commandRequests.TryGetValue(response.ID, out connectedCommand))
-                                            connectedCommand.Received(response, sequence);
+                                            ConnectedCommand connectedCommand;
+                                            if (sequence < 0
+                                                ? _commandRequests.TryRemove(response.ID, out connectedCommand)
+                                                : _commandRequests.TryGetValue(response.ID, out connectedCommand))
+                                                connectedCommand.Received(response, sequence);
+                                        }
                                     }
                                 }
+                                catch (TaskCanceledException)
+                                {
+                                }
                             }
+
+                            // If we're still connected, and we haven't received a disconnect response, try to send a disconnect request.
+                            if (stream.IsConnected && 
+                                disconnectResponse == null)
+                                try
+                                {
+                                    // Try to send disconnect request.
+                                    await Send(
+                                        new DisconnectRequest(),
+                                        token.IsCancellationRequested
+                                            ? new CancellationTokenSource(500).Token
+                                            : token);
+                                }
+                                catch (TaskCanceledException) { }
 
                             // Remove the stream.
                             _stream = null;
@@ -243,13 +266,18 @@ namespace WebApplications.Utilities.Service.Client
                             }
                         }
                     }
+                    catch (TaskCanceledException) { }
+                    catch (IOException ioe)
+                    {
+                        // Common exception caused by sudden disconnect, lower level
+                        Log.Add(
+                            ioe,
+                            LoggingLevel.Information,
+                            () => ClientResources.Err_NamedPipeClient_Failed);
+                    }
                     catch (Exception exception)
                     {
-                        _stream = null;
-                        _state = PipeState.Closed;
-                        _serviceName = null;
                         TaskCanceledException tce = exception as TaskCanceledException;
-
                         TaskCompletionSource<NamedPipeClient> ccs = Interlocked.Exchange(
                             ref _connectionCompletionSource,
                             null);
@@ -324,117 +352,6 @@ namespace WebApplications.Utilities.Service.Client
         }
 
         /// <summary>
-        /// Information about an ongoing command.
-        /// </summary>
-        private class ConnectedCommand : IDisposable
-        {
-            /// <summary>
-            /// The request.
-            /// </summary>
-            [NotNull]
-            public readonly Request Request;
-
-            /// <summary>
-            /// The observer of responses.
-            /// </summary>
-            public IObserver<Response> Observer;
-
-            /// <summary>
-            /// The completion handle signal competion.
-            /// </summary>
-            private TaskCompletionSource<bool> _completionTask;
-
-            /// <summary>
-            /// Gets the completion task.
-            /// </summary>
-            /// <value>The completion task.</value>
-            [NotNull]
-            public Task CompletionTask
-            {
-                get
-                {
-                    TaskCompletionSource<bool> cts = _completionTask;
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    return cts == null
-                        ? TaskResult.False
-                        : cts.Task;
-                }
-            }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="ConnectedCommand" /> class.
-            /// </summary>
-            /// <param name="request">The request.</param>
-            /// <param name="observer">The observer.</param>
-            public ConnectedCommand([NotNull] Request request, [NotNull] IObserver<Response> observer)
-            {
-                Request = request;
-                Observer = observer;
-                _completionTask = new TaskCompletionSource<bool>();
-            }
-
-            /// <summary>
-            /// Received the specified connected command.
-            /// </summary>
-            /// <param name="response">The response.</param>
-            /// <param name="completed">if set to <see langword="true" /> the command is completed.</param>
-            public void Received(Response response, int sequence)
-            {
-                IObserver<Response> observer = Observer;
-                if (observer == null) return;
-                bool complete = false;
-                try
-                {
-                    if (sequence != -2)
-                    {
-                        observer.OnNext(response);
-                        if (sequence != -1) return;
-                        complete = true;
-                        observer.OnCompleted();
-                    }
-                    else
-                    {
-                        complete = true;
-                        observer.OnError(
-                            new ApplicationException(((CommandResponse) response).Chunk));
-                    }
-                }
-                catch
-                {
-                    complete = true;
-                }
-                finally
-                {
-                    if (complete)
-                    {
-                        TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
-                        if (cts != null) cts.TrySetResult(true);
-                    }
-                }
-            }
-
-            /// <summary>
-            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            /// </summary>
-            public void Dispose()
-            {
-                IObserver<Response> observer = Interlocked.Exchange(ref Observer, null);
-                if (observer != null)
-                    try
-                    {
-                        observer.OnError(new TaskCanceledException());
-                    }
-                    catch
-                    {
-                    }
-
-                TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
-                if (cts != null)
-                    cts.TrySetCanceled();
-            }
-        }
-
-        /// <summary>
         /// Sends the specified request.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -476,6 +393,14 @@ namespace WebApplications.Utilities.Service.Client
         }
 
         /// <summary>
+        /// The disconnect commands
+        /// </summary>
+        [NotNull]
+        private static readonly HashSet<string> _disconnectCommands = new HashSet<string>(
+            new[] {"Quit", "Exit", "Disconnect", "X"},
+            StringComparer.CurrentCultureIgnoreCase);
+
+        /// <summary>
         /// Executes the specified command line.
         /// </summary>
         /// <param name="commandLine">The command line.</param>
@@ -491,6 +416,14 @@ namespace WebApplications.Utilities.Service.Client
                 State != PipeState.Connected ||
                 string.IsNullOrWhiteSpace(commandLine))
                 return Observable.Empty<string>();
+
+            // We intercept disconnect commands and convert to a proper disconnect request for a cleaner disconnect.
+            // This isn't technically necessary, but it means that the connection requests the disconnect rather than
+            // the server disconnecting the connection - which is how the command works.
+            if (_disconnectCommands.Contains(commandLine.Trim()))
+                return Send(new DisconnectRequest(), token)
+                    .Select(c => string.Empty)
+                    .IgnoreElements();
 
             return Send(new CommandRequest(commandLine), token)
                 .Cast<CommandResponse>()
@@ -519,6 +452,9 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         public void Dispose()
         {
+            _state = PipeState.Closed;
+            _serviceName = null;
+
             CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
             if (cts != null)
             {
