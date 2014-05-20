@@ -252,7 +252,7 @@ namespace WebApplications.Utilities.Service
                                 break;
 
                             case "U":
-                                service.Uninstall(ConsoleTextWriter.Default);
+                                await service.Uninstall(ConsoleTextWriter.Default);
 
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_WaitUninstall);
                                 while (ServiceUtils.ServiceIsInstalled(service.ServiceName))
@@ -362,7 +362,7 @@ namespace WebApplications.Utilities.Service
                 if (!allowConsoleInteraction)
                 {
                     // Start the service
-                    service.StartService(ConsoleTextWriter.Default, null);
+                    await service.StartService(ConsoleTextWriter.Default, null, t);
                     // Wait to be cancelled as nothing to do.
                     await t.WaitHandle;
                     return;
@@ -375,7 +375,23 @@ namespace WebApplications.Utilities.Service
                     if (t.IsCancellationRequested) break;
 
                     WritePrompt(service);
-                    service.Execute(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default);
+                    try
+                    {
+                        await service.ExecuteAsync(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default, t);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception e)
+                    {
+                        new FormatBuilder()
+                            .AppendForegroundColor(ConsoleColor.Red)
+                            .Append("Error: ")
+                            .AppendLine(e.Message)
+                            .AppendResetForegroundColor()
+                            .WriteToConsole();
+                    }
 
                     // Let any async stuff done by the command have a bit of time, also throttle commands.
                     await Task.Delay(500, t);
@@ -386,7 +402,9 @@ namespace WebApplications.Utilities.Service
             }
             finally
             {
+                // ReSharper disable MethodSupportsCancellation
                 Log.Flush().Wait();
+                // ReSharper restore MethodSupportsCancellation
                 service.Disconnect(id);
                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_PressKeyToExit);
                 Console.ReadKey(true);

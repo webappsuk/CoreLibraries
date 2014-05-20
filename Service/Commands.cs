@@ -33,6 +33,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Performance;
@@ -60,7 +62,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description", writerParameter: "writer")]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description")]
         protected abstract void Help(
             [NotNull] TextWriter writer,
             [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Command_Description")] string command = null,
@@ -75,8 +77,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description",
-            writerParameter: "writer")]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description")]
         public abstract void Install(
             [NotNull] TextWriter writer,
             [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Install_UserName_Description")] string userName = null,
@@ -85,65 +86,88 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Uninstall services.
         /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description",
-            writerParameter: "writer")]
-        public abstract void Uninstall([NotNull] TextWriter writer);
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description")]
+        public abstract Task<bool> Uninstall(
+            [NotNull] TextWriter writer,
+            CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Starts this instance.
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="args">The arguments.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description",
-            writerParameter: "writer")]
-        public abstract void StartService(
-            [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Start_Args_Description")] string[] args);
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description")]
+        public abstract Task<bool> StartService(
+            [NotNull] TextWriter writer, 
+            [CanBeNull, SCP(typeof(ServiceResources), "Cmd_Start_Args_Description")] string[] args,
+            CancellationToken token = default (CancellationToken));
 
         /// <summary>
         /// Stops this instance.
         /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="token">The token.</param>
+        [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description", writerParameter: "writer")]
-        public abstract void StopService([NotNull] TextWriter writer);
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description")]
+        public abstract Task<bool> StopService(
+            [NotNull] TextWriter writer,
+            CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Pauses this instance.
         /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="token">The token.</param>
+        [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description",
-            writerParameter: "writer")]
-        public abstract void Pause([NotNull] TextWriter writer);
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description")]
+        public abstract Task<bool> Pause(
+            [NotNull] TextWriter writer,
+            CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Continues this instance.
         /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="token">The token.</param>
+        [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description",
-            writerParameter: "writer")]
-        public abstract void Continue([NotNull] TextWriter writer);
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description")]
+        public abstract Task<bool> Continue(
+            [NotNull] TextWriter writer,
+            CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Shuts down this instance.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description",
-            writerParameter: "writer")]
-        public abstract void Shutdown([NotNull] TextWriter writer);
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description")]
+        public abstract bool Shutdown([NotNull] TextWriter writer);
 
         /// <summary>
         /// Runs the custom command on this instance.
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="command">The command.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description",
-            writerParameter: "writer")]
-        public abstract void CustomCommand(
+        [ServiceCommand(typeof(ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description")]
+        public abstract Task<bool> CustomCommand(
             [NotNull] TextWriter writer,
-            [SCP(typeof(ServiceResources), "Cmd_CustomCommand_Command_Description")] int command);
+            [SCP(typeof(ServiceResources), "Cmd_CustomCommand_Command_Description")] int command,
+            CancellationToken token = default (CancellationToken));
 
         /// <summary>
         /// Sends the <see cref="PowerBroadcastStatus" /> to the service.
@@ -154,8 +178,7 @@ namespace WebApplications.Utilities.Service
         ///   <see langword="true" /> if failed, or the result of the call was <see langword="true" />; <see langword="false" /> otherwise.
         /// </returns>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description",
-            writerParameter: "writer")]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description")]
         public abstract bool PowerEvent(
             [NotNull] TextWriter writer,
             [SCP(typeof(ServiceResources), "Cmd_PowerEvent_PowerStatus_Description")] PowerBroadcastStatus powerStatus);
@@ -167,12 +190,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="changeReason">The change reason.</param>
         /// <param name="sessionId">The session identifier.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description",
-            writerParameter: "writer")]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description")]
         public abstract void SessionChange(
             [NotNull] TextWriter writer,
-            [SCP(typeof(ServiceResources), "Cmd_SessionChange_ChangeReason_Description")] 
-            SessionChangeReason changeReason,
+            [SCP(typeof(ServiceResources), "Cmd_SessionChange_ChangeReason_Description")] SessionChangeReason
+                changeReason,
             [SCP(typeof(ServiceResources), "Cmd_SessionChange_SessionID_Description")] int sessionId);
 
         /// <summary>
@@ -181,8 +203,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="category">The category.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true,
-            writerParameter: "writer")]
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true)]
         public abstract void Performance(
             [NotNull] TextWriter writer,
             [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Performance_Category_Description")] string category = null);
@@ -346,6 +367,7 @@ namespace WebApplications.Utilities.Service
                         writer,
                         null,
                         (_, c) =>
+                            // ReSharper disable once PossibleNullReferenceException
                             string.Equals(c.Tag, "name", StringComparison.CurrentCultureIgnoreCase)
                                 ? command
                                 : Resolution.Unknown);
@@ -355,8 +377,11 @@ namespace WebApplications.Utilities.Service
                     writer,
                     null,
                     (_, c) =>
+                        // ReSharper disable PossibleNullReferenceException
                         string.Equals(c.Tag, "commands", StringComparison.CurrentCultureIgnoreCase)
+                        // ReSharper disable once AssignNullToNotNullAttribute
                             ? Commands.Values.Distinct().OrderBy(d => d.Name)
+                        // ReSharper restore PossibleNullReferenceException
                             : Resolution.Unknown);
                 return;
             }
@@ -366,6 +391,7 @@ namespace WebApplications.Utilities.Service
                 parameter == null
                     ? null
                     : cmd.ArgumentParameters.FirstOrDefault(
+                // ReSharper disable once PossibleNullReferenceException
                         p => string.Equals(p.Name, parameter, StringComparison.CurrentCultureIgnoreCase));
 
             // If the parameter name given does not exist, show an error
@@ -376,6 +402,8 @@ namespace WebApplications.Utilities.Service
                     null,
                     (_, c) =>
                     {
+                        Contract.Assert(c != null);
+                        Contract.Assert(c.Tag != null);
                         switch (c.Tag.ToLowerInvariant())
                         {
                             case "paramname":
@@ -394,6 +422,7 @@ namespace WebApplications.Utilities.Service
                     writer,
                     null,
                     (_, c) =>
+                        // ReSharper disable once PossibleNullReferenceException
                         string.Equals(c.Tag, "command", StringComparison.CurrentCultureIgnoreCase)
                             ? cmd
                             : Resolution.Unknown);
@@ -406,6 +435,8 @@ namespace WebApplications.Utilities.Service
                 null,
                 (_, c) =>
                 {
+                    Contract.Assert(c != null);
+                    Contract.Assert(c.Tag != null);
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "command":
@@ -423,169 +454,172 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="args">The arguments.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         [PublicAPI]
-        public override void StartService(TextWriter writer, string[] args)
+        public override Task<bool> StartService(TextWriter writer, string[] args, CancellationToken token = default (CancellationToken))
         {
-            lock (_lock)
+            if (args == null)
+                args = new string[0];
+
+            try
             {
+                Contract.Assert(ServiceName != null);
+                if (IsService)
+                    return ServiceUtils.StartService(ServiceName, token: token);
+
                 switch (_state)
                 {
                     case ServiceControllerStatus.Stopped:
                         break;
                     default:
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         writer.WriteLine(ServiceResources.Err_ServiceRunner_ServiceAlreadyRunning, ServiceName);
-                        return;
+                        return TaskResult.False;
                 }
+                OnStart(args);
 
-                if (args == null)
-                    args = new string[0];
-
-                try
-                {
-                    if (IsService)
-                        ServiceUtils.StartService(ServiceName);
-                    else
-                        OnStart(args);
-
-                    writer.WriteLine("Service started.");
-                }
-                catch (TargetInvocationException exception)
-                {
-                    Contract.Assert(exception.InnerException != null);
-                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
-                }
+                writer.WriteLine("Service started.");
             }
+            catch (TargetInvocationException exception)
+            {
+                Contract.Assert(exception.InnerException != null);
+                writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
+                return TaskResult.False;
+            }
+            return TaskResult.True;
         }
 
         /// <summary>
         /// Stops this instance.
         /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="token">The token.</param>
         [PublicAPI]
-        public override void StopService(TextWriter writer)
+        public override Task<bool> StopService(TextWriter writer, CancellationToken token = default(CancellationToken))
         {
-            lock (_lock)
+            try
             {
+                Contract.Assert(ServiceName != null);
+                if (IsService)
+                    return ServiceUtils.StopService(ServiceName, token);
+
                 switch (_state)
                 {
                     case ServiceControllerStatus.Running:
                     case ServiceControllerStatus.Paused:
                         break;
                     default:
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         writer.WriteLine(ServiceResources.Err_ServiceRunner_Stop_ServiceNotRunning, ServiceName);
-                        return;
+                        return TaskResult.False;
                 }
+                OnStop();
 
-                try
-                {
-                    if (IsService)
-                        ServiceUtils.StopService(ServiceName);
-                    else
-                        OnStop();
-
-                    writer.WriteLine("Service stopped.");
-                }
-                catch (TargetInvocationException exception)
-                {
-                    Contract.Assert(exception.InnerException != null);
-                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
-                }
+                writer.WriteLine("Service stopped.");
             }
+            catch (TargetInvocationException exception)
+            {
+                Contract.Assert(exception.InnerException != null);
+                writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
+                return TaskResult.False;
+            }
+            return TaskResult.True;
         }
 
         /// <summary>
         /// Pauses this instance.
         /// </summary>
         [PublicAPI]
-        public override void Pause(TextWriter writer)
+        public override Task<bool> Pause(TextWriter writer, CancellationToken token = default(CancellationToken))
         {
-            lock (_lock)
+            try
             {
+                Contract.Assert(ServiceName != null);
+                if (IsService)
+                    return ServiceUtils.PauseService(ServiceName, token);
+
                 if (State != ServiceControllerStatus.Running)
                 {
-                    writer.WriteLine(
-                        ServiceResources.Err_ServiceRunner_Pause_ServiceNotRunning,
-                        ServiceName);
-                    return;
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    writer.WriteLine(ServiceResources.Err_ServiceRunner_Pause_ServiceNotRunning, ServiceName);
+                    return TaskResult.False;
                 }
+                OnPause();
 
-                try
-                {
-                    if (IsService)
-                        ServiceUtils.PauseService(ServiceName);
-                    else
-                        OnPause();
-
-                    writer.WriteLine("Service paused.");
-                }
-                catch (TargetInvocationException exception)
-                {
-                    Contract.Assert(exception.InnerException != null);
-                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
-                }
+                writer.WriteLine("Service paused.");
             }
+            catch (TargetInvocationException exception)
+            {
+                Contract.Assert(exception.InnerException != null);
+                writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
+                return TaskResult.False;
+            }
+            return TaskResult.True;
         }
 
         /// <summary>
         /// Continues this instance.
         /// </summary>
+        /// <param name="writer">The writer.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         [PublicAPI]
-        public override void Continue(TextWriter writer)
+        public override Task<bool> Continue(TextWriter writer, CancellationToken token = default(CancellationToken))
         {
-            lock (_lock)
+            try
             {
+                Contract.Assert(ServiceName != null);
+                if (IsService)
+                    return ServiceUtils.ContinueService(ServiceName, token);
+
                 if (State != ServiceControllerStatus.Paused)
                 {
-                    writer.WriteLine(
-                        ServiceResources.Err_ServiceRunner_Continue_ServiceNotPaused,
-                        ServiceName);
-                    return;
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    writer.WriteLine(ServiceResources.Err_ServiceRunner_Continue_ServiceNotPaused, ServiceName);
+                    return TaskResult.False;
                 }
+                OnContinue();
 
-                try
-                {
-                    if (IsService)
-                        ServiceUtils.ContinueService(ServiceName);
-                    else
-                        OnContinue();
-
-                    writer.WriteLine("Service continued.");
-                }
-                catch (TargetInvocationException exception)
-                {
-                    Contract.Assert(exception.InnerException != null);
-                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
-                }
+                writer.WriteLine("Service continued.");
             }
+            catch (TargetInvocationException exception)
+            {
+                Contract.Assert(exception.InnerException != null);
+                writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
+                return TaskResult.False;
+            }
+            return TaskResult.True;
         }
 
         /// <summary>
         /// Shuts down this instance.
         /// </summary>
         [PublicAPI]
-        public override void Shutdown(TextWriter writer)
+        public override bool Shutdown(TextWriter writer)
         {
-            lock (_lock)
+            try
             {
-                try
+                if (IsService)
                 {
-                    if (IsService)
-                    {
-                        writer.WriteLine(
-                            ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
-                            ServiceName);
-                        return;
-                    }
-
-                    OnShutdown();
-
-                    writer.WriteLine("Service shutdown.");
+                    writer.WriteLine(
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                        ServiceName);
+                    return false;
                 }
-                catch (TargetInvocationException exception)
-                {
-                    Contract.Assert(exception.InnerException != null);
-                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
-                }
+
+                OnShutdown();
+
+                writer.WriteLine("Service shutdown.");
             }
+            catch (TargetInvocationException exception)
+            {
+                Contract.Assert(exception.InnerException != null);
+                writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -593,32 +627,38 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="writer">The writer.</param>
         /// <param name="command">The command.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         [PublicAPI]
-        public override void CustomCommand(TextWriter writer, int command)
+        public override Task<bool> CustomCommand(
+            TextWriter writer,
+            int command,
+            CancellationToken token = default (CancellationToken))
         {
             if (command < 128 ||
                 command > 255)
             {
                 writer.WriteLine("Service command must be between 128 and 255");
-                return;
+                return TaskResult.False;
             }
-            lock (_lock)
-            {
-                try
-                {
-                    if (IsService)
-                        ServiceUtils.CommandService(ServiceName, command);
-                    else
-                        OnCustomCommand(command);
 
-                    writer.WriteLine("Service command '{0}' completed.", command);
-                }
-                catch (TargetInvocationException exception)
-                {
-                    Contract.Assert(exception.InnerException != null);
-                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
-                }
+            try
+            {
+                Contract.Assert(ServiceName != null);
+                if (IsService)
+                    return ServiceUtils.CommandService(ServiceName, command, token);
+
+                OnCustomCommand(command);
+
+                writer.WriteLine("Service command '{0}' completed.", command);
             }
+            catch (TargetInvocationException exception)
+            {
+                Contract.Assert(exception.InnerException != null);
+                writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
+                return TaskResult.False;
+            }
+            return TaskResult.True;
         }
 
         /// <summary>
@@ -639,6 +679,7 @@ namespace WebApplications.Utilities.Service
                     if (IsService)
                     {
                         writer.WriteLine(
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
                             ServiceName);
                         return true;
@@ -646,6 +687,7 @@ namespace WebApplications.Utilities.Service
                     bool result = OnPowerEvent(powerStatus);
 
                     writer.Write(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         ServiceResources.Inf_ServiceRunner_PowerEvent_Sent,
                         powerStatus,
                         ServiceName,
@@ -677,6 +719,7 @@ namespace WebApplications.Utilities.Service
                     if (IsService)
                     {
                         writer.WriteLine(
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
                             ServiceName);
                         return;
@@ -685,6 +728,7 @@ namespace WebApplications.Utilities.Service
                     OnSessionChange(CreateSessionChangeDescription(changeReason, sessionId));
 
                     writer.WriteLine(
+                        // ReSharper disable once AssignNullToNotNullAttribute
                         ServiceResources.Inf_ServiceRunner_SessionChange_Sent,
                         changeReason,
                         sessionId,
@@ -709,85 +753,88 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         public override void Install(TextWriter writer, string userName = null, string password = null)
         {
-            lock (_lock)
+            if (!IsAdministrator)
             {
-                if (!IsAdministrator)
-                {
-                    writer.WriteLine(ServiceResources.Err_Install_Requires_Administrator);
-                    return;
-                }
+                writer.WriteLine(ServiceResources.Err_Install_Requires_Administrator);
+                return;
+            }
 
-                if (IsService)
-                {
-                    writer.WriteLine(
-                        ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
-                        ServiceName);
-                    return;
-                }
-
-                // Validate user name/password if supplied.
-                if (userName != null)
-                {
-                    string[] unp = userName.Split('\\');
-                    if (unp.Length != 2 ||
-                        string.IsNullOrWhiteSpace(unp[0]) ||
-                        string.IsNullOrWhiteSpace(unp[1]))
-                    {
-                        writer.WriteLine("Invalid user name!");
-                        return;
-                    }
-                    if (string.IsNullOrEmpty(password))
-                    {
-                        writer.WriteLine("Invalid password!");
-                        return;
-                    }
-                }
-                else
-                    password = null;
-
+            if (IsService)
+            {
                 writer.WriteLine(
-                    ServiceResources.Inf_ServiceRunner_Install,
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
                     ServiceName);
-                try
+                return;
+            }
+
+            // Validate user name/password if supplied.
+            if (userName != null)
+            {
+                string[] unp = userName.Split('\\');
+                if (unp.Length != 2 ||
+                    string.IsNullOrWhiteSpace(unp[0]) ||
+                    string.IsNullOrWhiteSpace(unp[1]))
                 {
-                    string fileName = Process.GetCurrentProcess().MainModule.FileName;
-                    if (fileName.EndsWith(".vshost.exe", StringComparison.InvariantCultureIgnoreCase) &&
-                        (fileName.Length > 11))
+                    writer.WriteLine("Invalid user name!");
+                    return;
+                }
+                if (string.IsNullOrEmpty(password))
+                {
+                    writer.WriteLine("Invalid password!");
+                    return;
+                }
+            }
+            else
+                password = null;
+
+            writer.WriteLine(
+                // ReSharper disable once AssignNullToNotNullAttribute
+                ServiceResources.Inf_ServiceRunner_Install,
+                ServiceName);
+            try
+            {
+                string fileName = Process.GetCurrentProcess().MainModule.FileName;
+                if (fileName.EndsWith(".vshost.exe", StringComparison.InvariantCultureIgnoreCase) &&
+                    (fileName.Length > 11))
+                {
+                    string realFileName = fileName.Substring(0, fileName.Length - 11) + ".exe";
+                    if (File.Exists(realFileName))
                     {
-                        string realFileName = fileName.Substring(0, fileName.Length - 11) + ".exe";
-                        if (File.Exists(realFileName))
-                        {
-                            writer.WriteLine("Process running in vshost, using '{0}' instead.", realFileName);
-                            fileName = realFileName;
-                        }
+                        writer.WriteLine("Process running in vshost, using '{0}' instead.", realFileName);
+                        fileName = realFileName;
                     }
-
-                    // Copy service into a new directory.
-                    string installDirectory = Directory.CreateDirectory(
-                        Path.Combine(
-                            Environment.GetFolderPath(
-                                Environment.SpecialFolder.CommonProgramFiles,
-                                Environment.SpecialFolderOption.Create),
-                            Guid.NewGuid().ToString("D"))).FullName;
-                    writer.Write("Copying service to {0}...", installDirectory);
-                    foreach (string file in Directory.GetFiles(Path.GetDirectoryName(fileName)))
-                        File.Copy(file, Path.Combine(installDirectory, Path.GetFileName(file)));
-                    writer.WriteLine("done.");
-
-                    // Change filename to new location.
-                    fileName = Path.Combine(installDirectory, Path.GetFileName(fileName));
-
-                    ServiceUtils.Install(ServiceName, DisplayName, AssemblyDescription, fileName, userName, password);
-                    writer.WriteLine(
-                        ServiceResources.Inf_ServiceRunner_Installed,
-                        ServiceName,
-                        fileName);
                 }
-                catch (TargetInvocationException exception)
-                {
-                    Contract.Assert(exception.InnerException != null);
-                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
-                }
+
+                // Copy service into a new directory.
+                string installDirectory = Directory.CreateDirectory(
+                    Path.Combine(
+                        Environment.GetFolderPath(
+                            Environment.SpecialFolder.CommonProgramFiles,
+                            Environment.SpecialFolderOption.Create),
+                        Guid.NewGuid().ToString("D"))).FullName;
+                writer.Write("Copying service to {0}...", installDirectory);
+                // ReSharper disable AssignNullToNotNullAttribute
+                foreach (string file in Directory.GetFiles(Path.GetDirectoryName(fileName)))
+                    File.Copy(file, Path.Combine(installDirectory, Path.GetFileName(file)));
+                // ReSharper restore AssignNullToNotNullAttribute
+                writer.WriteLine("done.");
+
+                // Change filename to new location.
+                fileName = Path.Combine(installDirectory, Path.GetFileName(fileName));
+
+                Contract.Assert(ServiceName != null);
+                ServiceUtils.Install(ServiceName, DisplayName, AssemblyDescription, fileName, userName, password);
+                writer.WriteLine(
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    ServiceResources.Inf_ServiceRunner_Installed,
+                    ServiceName,
+                    fileName);
+            }
+            catch (TargetInvocationException exception)
+            {
+                Contract.Assert(exception.InnerException != null);
+                writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
             }
         }
 
@@ -795,41 +842,39 @@ namespace WebApplications.Utilities.Service
         /// Uninstall services.
         /// </summary>
         [PublicAPI]
-        public override void Uninstall(TextWriter writer)
+        public override async Task<bool> Uninstall(
+            TextWriter writer,
+            CancellationToken token = default (CancellationToken))
         {
-            lock (_lock)
+            if (!IsAdministrator)
             {
-                if (!IsAdministrator)
-                {
-                    writer.WriteLine(ServiceResources.Err_Uninstall_Requires_Administrator);
-                    return;
-                }
-                if (IsService)
-                {
-                    writer.WriteLine(
-                        ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
-                        ServiceName);
-                    return;
-                }
-
-                writer.WriteLine(
-                    ServiceResources.Inf_ServiceRunner_Uninstall,
-                    ServiceName);
-                Stopwatch s = Stopwatch.StartNew();
-                try
-                {
-                    ServiceUtils.Uninstall(ServiceName).Wait();
-                    writer.WriteLine(
-                        ServiceResources.Inf_ServiceRunner_Uninstalled,
-                        ServiceName,
-                        s.Elapsed.TotalMilliseconds);
-                }
-                catch (TargetInvocationException exception)
-                {
-                    Contract.Assert(exception.InnerException != null);
-                    writer.WriteLine("Fatal exception: " + exception.InnerException.Message);
-                }
+                writer.WriteLine(ServiceResources.Err_Uninstall_Requires_Administrator);
+                return false;
             }
+            if (IsService)
+            {
+                writer.WriteLine(
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    ServiceResources.Err_ServiceRunner_ServiceNotInteractive,
+                    ServiceName);
+                return false;
+            }
+
+            writer.WriteLine(
+                // ReSharper disable once AssignNullToNotNullAttribute
+                ServiceResources.Inf_ServiceRunner_Uninstall,
+                ServiceName);
+            Stopwatch s = Stopwatch.StartNew();
+
+            Contract.Assert(ServiceName != null);
+            await ServiceUtils.Uninstall(ServiceName, token);
+
+            writer.WriteLine(
+                // ReSharper disable once AssignNullToNotNullAttribute
+                ServiceResources.Inf_ServiceRunner_Uninstalled,
+                ServiceName,
+                s.Elapsed.TotalMilliseconds);
+            return true;
         }
 
         /// <summary>
@@ -847,6 +892,7 @@ namespace WebApplications.Utilities.Service
                 PerfCategory cat = categoryOmitted
                     ? null
                     : PerfCategory.All.FirstOrDefault(
+                    // ReSharper disable once PossibleNullReferenceException
                         p => string.Equals(p.CategoryName, category, StringComparison.CurrentCultureIgnoreCase));
 
                 if (!categoryOmitted &&
@@ -855,6 +901,7 @@ namespace WebApplications.Utilities.Service
                         writer,
                         null,
                         (_, c) =>
+                            // ReSharper disable once PossibleNullReferenceException
                             string.Equals(c.Tag, "name", StringComparison.CurrentCultureIgnoreCase)
                                 ? category
                                 : Resolution.Unknown);
@@ -865,8 +912,10 @@ namespace WebApplications.Utilities.Service
                         writer,
                         null,
                         (_, c) =>
+                            // ReSharper disable PossibleNullReferenceException
                             string.Equals(c.Tag, "counters", StringComparison.CurrentCultureIgnoreCase)
                                 ? PerfCategory.All.OrderBy(pc => pc.CategoryName)
+                            // ReSharper restore PossibleNullReferenceException
                                 : Resolution.Unknown);
                     return;
                 }

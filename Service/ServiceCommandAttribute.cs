@@ -28,6 +28,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service
@@ -74,14 +75,7 @@ namespace WebApplications.Utilities.Service
         public readonly int MinimumArguments;
 
         /// <summary>
-        /// The writer parameter, if specified, this parameter must be of type <see cref="TextWriter"/>, and it will be passed a writer for outputting any results to.
-        /// </summary>
-        [CanBeNull]
-        [PublicAPI]
-        public readonly string WriterParameter;
-
-        /// <summary>
-        /// The writer parameter, if specified, this parameter must be of type <see cref="Guid"/>, and it will be passed the current connection ID.
+        /// The identifier parameter. If specified, this parameter must be of type <see cref="Guid"/>, and it will be passed the current connection ID.
         /// </summary>
         [CanBeNull]
         [PublicAPI]
@@ -95,15 +89,15 @@ namespace WebApplications.Utilities.Service
         /// <param name="descriptionProperty">The description property.</param>
         /// <param name="consumeLine">if set to <see langword="true" /> [consume line].</param>
         /// <param name="minimumArguments">The minimum arguments.</param>
-        /// <param name="writerParameter">The writer parameter, if specified, this parameter must be of type <see cref="TextWriter"/>, and it will be passed a writer for outputting any results to.</param>
-        /// <param name="idParameter">The identifier parameter, if specified, this parameter must be of type <see cref="Guid"/>, and it will be passed the current connection ID.</param>
+        /// <param name="idParameter">The identifier parameter. if specified, this parameter must be of type 
+        /// <see cref="Guid" />,
+        /// and it will be passed the current connection ID.</param>
         public ServiceCommandAttribute(
             [NotNull] Type resourceType,
             [NotNull] string namesProperty,
             [NotNull] string descriptionProperty,
             bool consumeLine = false,
             int minimumArguments = 0,
-            [CanBeNull] string writerParameter = null,
             [CanBeNull] string idParameter = null)
         {
             Contract.Requires<RequiredContractException>(resourceType != null, "Parameter_Null");
@@ -114,7 +108,6 @@ namespace WebApplications.Utilities.Service
             DescriptionProperty = descriptionProperty;
             MinimumArguments = minimumArguments;
             ConsumeLine = consumeLine;
-            WriterParameter = writerParameter;
             IDParameter = idParameter;
         }
     }

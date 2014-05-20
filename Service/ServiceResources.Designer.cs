@@ -682,7 +682,16 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ID parameter &apos;{0}&apos; expected but not found in method &apos;{1}&apos;..
+        ///   Looks up a localized string similar to Cancellation token parameter should be of type CancellationToken, but was actually of type &apos;{0}&apos;.
+        /// </summary>
+        internal static string Err_ServiceCommand_CancellationTokenParameterWrongType {
+            get {
+                return ResourceManager.GetString("Err_ServiceCommand_CancellationTokenParameterWrongType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The ID parameter &apos;{0}&apos; expected but not found in method &apos;{1}&apos;..
         /// </summary>
         internal static string Err_ServiceCommand_IDParameterMissing {
             get {
@@ -714,24 +723,6 @@ namespace WebApplications.Utilities.Service {
         internal static string Err_ServiceCommand_Parameter_Conversion_Unsupported {
             get {
                 return ResourceManager.GetString("Err_ServiceCommand_Parameter_Conversion_Unsupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Writer parameter &apos;{0}&apos; and ID parameter &apos;{1}&apos; expected but not found in method &apos;{2}&apos;..
-        /// </summary>
-        internal static string Err_ServiceCommand_WriterAndIDParameterMissing {
-            get {
-                return ResourceManager.GetString("Err_ServiceCommand_WriterAndIDParameterMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Writer parameter &apos;{0}&apos; expected but not found on method &apos;{1}&apos;..
-        /// </summary>
-        internal static string Err_ServiceCommand_WriterParameterMissing {
-            get {
-                return ResourceManager.GetString("Err_ServiceCommand_WriterParameterMissing", resourceCulture);
             }
         }
         

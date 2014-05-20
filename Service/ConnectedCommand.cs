@@ -117,7 +117,7 @@ namespace WebApplications.Utilities.Service
                         Exception exception = null;
                         try
                         {
-                            service.Execute(ConnectionGuid, _request.CommandLine, this);
+                            await service.ExecuteAsync(ConnectionGuid, _request.CommandLine, this, token);
                             token.ThrowIfCancellationRequested();
                             await Flush(-1, token);
                         }
@@ -178,11 +178,13 @@ namespace WebApplications.Utilities.Service
             /// <param name="sequence">The sequence.</param>
             /// <param name="token">The token.</param>
             /// <returns>Task.</returns>
+            [NotNull]
             private async Task Flush(int sequence, CancellationToken token = default(CancellationToken))
             {
                 using (await _flushLock.LockAsync(token))
                 {
                     string chunk;
+                    bool increment = false;
                     lock (_builder)
                     {
                         chunk = _builder.ToString();
@@ -193,12 +195,15 @@ namespace WebApplications.Utilities.Service
 
                         if (_sequenceId < 0) return;
                         if (sequence < 0) _sequenceId = sequence;
-                        else _sequenceId++;
+                        else increment = true;
                     }
                     Guid id = _request.ID;
                     NamedPipeConnection connection = _connection;
                     if (connection != null)
                         await connection.Send(new CommandResponse(id, _sequenceId, chunk), token);
+                    if (increment)
+                        lock (_builder)
+                            _sequenceId++;
                 }
             }
 

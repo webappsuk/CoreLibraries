@@ -227,10 +227,10 @@ namespace WebApplications.Utilities.Service
             if (_eventLog.MachineName == ".")
             {
                 // Create the event log if necessary.
-                ((ISupportInitialize) (_eventLog)).BeginInit();
+                ((ISupportInitialize)(_eventLog)).BeginInit();
                 if (!EventLog.SourceExists(_eventLog.Source))
                     EventLog.CreateEventSource(_eventLog.Source, _eventLog.Log);
-                ((ISupportInitialize) (_eventLog)).EndInit();
+                ((ISupportInitialize)(_eventLog)).EndInit();
             }
         }
 
@@ -374,7 +374,9 @@ namespace WebApplications.Utilities.Service
         /// <param name="id">The identifier.</param>
         /// <param name="commandLine">The command line.</param>
         /// <param name="writer">The result writer.</param>
-        public abstract void Execute(Guid id, [CanBeNull] string commandLine, [NotNull] TextWriter writer);
+        /// <param name="token"></param>
+        [NotNull]
+        public abstract Task ExecuteAsync(Guid id, [CanBeNull] string commandLine, [NotNull] TextWriter writer, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Disconnects the specified user interface.
@@ -494,7 +496,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         static BaseService()
         {
-            MethodInfo[] allMethods = typeof (TService)
+            MethodInfo[] allMethods = typeof(TService)
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .ToArray();
             Dictionary<string, ServiceCommand> commands =
@@ -508,7 +510,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     ServiceCommandAttribute attribute = method
-                        .GetCustomAttributes(typeof (ServiceCommandAttribute), true)
+                        .GetCustomAttributes(typeof(ServiceCommandAttribute), true)
                         .OfType<ServiceCommandAttribute>()
                         .FirstOrDefault();
                     if (attribute == null) continue;
@@ -553,12 +555,12 @@ namespace WebApplications.Utilities.Service
             }
             Commands = new ReadOnlyDictionary<string, ServiceCommand>(commands);
 
-            Assembly assembly = typeof (TService).Assembly;
+            Assembly assembly = typeof(TService).Assembly;
 
-            if (assembly.IsDefined(typeof (AssemblyTitleAttribute), false))
+            if (assembly.IsDefined(typeof(AssemblyTitleAttribute), false))
             {
                 AssemblyTitleAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyTitleAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute)) as
                         AssemblyTitleAttribute;
                 if (a != null)
                 {
@@ -570,10 +572,10 @@ namespace WebApplications.Utilities.Service
             if (string.IsNullOrWhiteSpace(AssemblyDescription))
                 AssemblyDescription = "A windows service.";
 
-            if (assembly.IsDefined(typeof (AssemblyDescriptionAttribute), false))
+            if (assembly.IsDefined(typeof(AssemblyDescriptionAttribute), false))
             {
                 AssemblyDescriptionAttribute a =
-                    Attribute.GetCustomAttribute(assembly, typeof (AssemblyDescriptionAttribute)) as
+                    Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute)) as
                         AssemblyDescriptionAttribute;
                 if (a != null)
                 {
@@ -586,9 +588,9 @@ namespace WebApplications.Utilities.Service
                 AssemblyDescription = "A windows service.";
 
 
-            if (assembly.IsDefined(typeof (GuidAttribute), false))
+            if (assembly.IsDefined(typeof(GuidAttribute), false))
             {
-                GuidAttribute g = Attribute.GetCustomAttribute(assembly, typeof (GuidAttribute)) as GuidAttribute;
+                GuidAttribute g = Attribute.GetCustomAttribute(assembly, typeof(GuidAttribute)) as GuidAttribute;
                 if (g != null)
                     AssemblyGuid = g.Value;
             }
@@ -683,7 +685,7 @@ namespace WebApplications.Utilities.Service
                 _lifeTimeTaskCompletionSource = new TaskCompletionSource<bool>();
                 // ReSharper disable AssignNullToNotNullAttribute
                 return ConsoleHelper.IsConsole
-                    ? (Task) Task.WhenAny(
+                    ? (Task)Task.WhenAny(
                         _lifeTimeTaskCompletionSource.Task,
                         ConsoleConnection.RunAsync(this, promptInstall, allowConsoleInteraction, token: token))
                     : _lifeTimeTaskCompletionSource.Task;
@@ -1135,13 +1137,17 @@ namespace WebApplications.Utilities.Service
         /// <param name="id">The identifier.</param>
         /// <param name="commandLine">The command line.</param>
         /// <param name="writer">The result writer.</param>
+        /// <param name="token"></param>
         // ReSharper disable once CodeAnnotationAnalyzer
-        public override void Execute(Guid id, string commandLine, TextWriter writer)
+        public override async Task ExecuteAsync(Guid id, string commandLine, TextWriter writer, CancellationToken token = default(CancellationToken))
         {
             Connection connection;
             if (!_connections.TryGetValue(id, out connection) ||
                 string.IsNullOrWhiteSpace(commandLine))
+            {
+                writer.WriteLine("Invalid connection specified.");
                 return;
+            }
 
             // Find the first split point, and grab the command
             commandLine = commandLine.TrimStart();
@@ -1159,15 +1165,23 @@ namespace WebApplications.Utilities.Service
             if (!Commands.TryGetValue(commandName, out src))
             {
                 Log.Add(() => ServiceResources.Err_Unknown_Command, commandName);
-                Help(writer);
+                try
+                {
+                    Help(writer);
+                }
+                catch (TaskCanceledException)
+                { }
                 return;
             }
 
             Contract.Assert(src != null);
             try
             {
-                if (src.Run(this, writer, id, commandLine)) return;
-                Log.Add(() => ServiceResources.Err_Command_Failed, commandName);
+                if (await src.RunAsync(this, writer, id, commandLine, token)) return;
+                writer.WriteLine(ServiceResources.Err_Command_Failed, commandName);
+            }
+            catch (TaskCanceledException)
+            {
             }
             catch (Exception e)
             {
@@ -1182,7 +1196,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="id">The connection.</param>
         /// <returns><see langword="true" /> if disconnected, <see langword="false" /> otherwise.</returns>
         [PublicAPI]
-        [ServiceCommand(typeof (ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
+        [ServiceCommand(typeof(ServiceResources), "Cmd_Disconnect_Names", "Cmd_Disconnect_Description",
             idParameter: "id")]
         public override bool Disconnect(Guid id)
         {

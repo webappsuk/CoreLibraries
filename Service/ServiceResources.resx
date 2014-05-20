@@ -288,9 +288,6 @@
   <data name="Err_ServerConfig_InvalidPipeName" xml:space="preserve">
     <value>Invalid pipe name '{0}'.</value>
   </data>
-  <data name="Err_ServiceCommand_IDParameterMissing" xml:space="preserve">
-    <value>ID parameter '{0}' expected but not found in method '{1}'.</value>
-  </data>
   <data name="Err_ServiceCommand_IDParameterWrongType" xml:space="preserve">
     <value>ID parameter should be of type Guid, but was actually of type '{0}'</value>
   </data>
@@ -300,11 +297,8 @@
   <data name="Err_ServiceCommand_Parameter_Conversion_Unsupported" xml:space="preserve">
     <value>Cannot convert string to '{0}' for parameter '{1}' on method '{2}'.</value>
   </data>
-  <data name="Err_ServiceCommand_WriterAndIDParameterMissing" xml:space="preserve">
-    <value>Writer parameter '{0}' and ID parameter '{1}' expected but not found in method '{2}'.</value>
-  </data>
-  <data name="Err_ServiceCommand_WriterParameterMissing" xml:space="preserve">
-    <value>Writer parameter '{0}' expected but not found on method '{1}'.</value>
+  <data name="Err_ServiceCommand_IDParameterMissing" xml:space="preserve">
+    <value>The ID parameter '{0}' expected but not found in method '{1}'.</value>
   </data>
   <data name="Err_ServiceCommand_WriterParameterWrongType" xml:space="preserve">
     <value>Writer parameter should be of type TextWriter, but was actually of type '{0}'</value>
@@ -476,5 +470,8 @@
   </data>
   <data name="ConsoleConnection_RunAsync_ConfigureTitle" xml:space="preserve">
     <value>Configure </value>
+  </data>
+  <data name="Err_ServiceCommand_CancellationTokenParameterWrongType" xml:space="preserve">
+    <value>Cancellation token parameter should be of type CancellationToken, but was actually of type '{0}'</value>
   </data>
 </root>

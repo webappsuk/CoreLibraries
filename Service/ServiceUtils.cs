@@ -374,15 +374,20 @@ namespace WebApplications.Utilities.Service
         /// <param name="serviceName">Name of the service.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        [NotNull]
         public static async Task<bool> PauseService(
-            string serviceName,
+            [NotNull] string serviceName,
             CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
+                new ServiceControllerPermission(
+                    ServiceControllerPermissionAccess.Control,
+                    Environment.MachineName,
+                    serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
+                    )
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -505,6 +510,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">The command.</param>
         /// <param name="token">The token.</param>
         /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        [NotNull]
         public static async Task<bool> CommandService(
             [NotNull] string serviceName,
             int command,
@@ -513,8 +519,12 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
+                new ServiceControllerPermission(
+                    ServiceControllerPermissionAccess.Control,
+                    Environment.MachineName,
+                    serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
+                    )
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:

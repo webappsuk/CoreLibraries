@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Service.Test
         /// <param name="optional">The optional.</param>
         [PublicAPI]
         [ServiceCommand(typeof (TestServiceResources), "Cmd_TestCommand_Names", "Cmd_TestCommand_Description",
-            writerParameter: "writer", idParameter: "id")]
+            idParameter: "id")]
         public void TestCommand(
             [NotNull] TextWriter writer,
             [NotNull] string parameter,
@@ -64,7 +64,7 @@ namespace WebApplications.Utilities.Service.Test
         /// Stops this instance.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof (TestResource), "Cmd_LongRun", "Cmd_LongRun_Description", writerParameter: "writer")]
+        [ServiceCommand(typeof (TestResource), "Cmd_LongRun", "Cmd_LongRun_Description")]
         public void StopService(
             [NotNull] TextWriter writer,
             [ServiceCommandParameter(typeof (TestResource), "Cmd_LongRun_Loops_Description")] int loops = 10,
