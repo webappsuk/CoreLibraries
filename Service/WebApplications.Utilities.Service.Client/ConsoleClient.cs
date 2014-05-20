@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace WebApplications.Utilities.Service.Client
         private static readonly FormatBuilder _serverList = new FormatBuilder()
             .AppendForegroundColor(ConsoleColor.White)
             .AppendLine("Current matching pipes:")
-            .AppendLayout(indentSize: 25, tabStops: new[] {7, 25})
+            .AppendLayout(indentSize: 25, tabStops: new[] { 7, 25 })
             .AppendForegroundColor(ConsoleColor.Yellow)
             .AppendLine("Host\tName\tPipe")
             .AppendResetForegroundColor()
@@ -71,34 +72,70 @@ namespace WebApplications.Utilities.Service.Client
             .MakeReadOnly();
 
 
-        public static void Run(string description, [CanBeNull] string pipe)
+        /// <summary>
+        /// Runs the client asynchronously, optionally connecting to the service with the given pipe. 
+        /// If no pipe is given, or the pipe is invalid, the user will be prompted to select a service to connect to.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="pipe">The pipe.</param>
+        [PublicAPI]
+        public static void Run([NotNull] string description, [CanBeNull] string pipe)
         {
+            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
             Run(description, new NamedPipeServerInfo(pipe));
         }
 
-        public static void Run(string description, [CanBeNull] NamedPipeServerInfo server = null)
+        /// <summary>
+        /// Runs the client, optionally connecting to the given service. 
+        /// If no service is given, or the service is invalid, the user will be prompted to select a service to connect to.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="server">The server.</param>
+        [PublicAPI]
+        public static void Run([NotNull] string description, [CanBeNull] NamedPipeServerInfo server = null)
         {
+            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
             if (!ConsoleHelper.IsConsole)
                 return;
 
             RunAsync(description, server).Wait();
         }
 
+        /// <summary>
+        /// Runs the client asynchronously, optionally connecting to the service with the given pipe. 
+        /// If no pipe is given, or the pipe is invalid, the user will be prompted to select a service to connect to.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="pipe">The pipe.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         [NotNull]
+        [PublicAPI]
         public static Task RunAsync(
-            string description,
+            [NotNull] string description,
             [CanBeNull] string pipe,
             CancellationToken token = default(CancellationToken))
         {
+            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
             return RunAsync(description, new NamedPipeServerInfo(pipe), token);
         }
 
+        /// <summary>
+        /// Runs the client asynchronously, optionally connecting to the given service. 
+        /// If no service is given, or the service is invalid, the user will be prompted to select a service to connect to.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="service">The service.</param>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
         [NotNull]
+        [PublicAPI]
         public static async Task RunAsync(
-            string description,
+            [NotNull] string description,
             [CanBeNull] NamedPipeServerInfo service = null,
             CancellationToken token = default(CancellationToken))
         {
+            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
             if (!ConsoleHelper.IsConsole)
                 return;
 
@@ -167,11 +204,15 @@ namespace WebApplications.Utilities.Service.Client
                         client.Execute(command, token)
                             .Subscribe(
                                 c => new FormatBuilder(c).WriteToConsole(),
-                                e => new FormatBuilder()
-                                    .AppendForegroundColor(ConsoleColor.Red)
-                                    .AppendLine(e.Message)
-                                    .AppendResetForegroundColor()
-                                    .WriteToConsole(),
+                                e =>
+                                {
+                                    if (!(e is TaskCanceledException))
+                                        new FormatBuilder()
+                                            .AppendForegroundColor(ConsoleColor.Red)
+                                            .AppendLine(e.Message)
+                                            .AppendResetForegroundColor()
+                                            .WriteToConsole();
+                                },
                                 () => { },
                                 token);
 
@@ -216,7 +257,7 @@ namespace WebApplications.Utilities.Service.Client
         /// <summary>
         /// Writes the pipe list.
         /// </summary>
-        private static void WriteServerList(params NamedPipeServerInfo[] servers)
+        private static void WriteServerList([CanBeNull] params NamedPipeServerInfo[] servers)
         {
             _serverList.WriteToConsole(
                 null,
@@ -224,7 +265,9 @@ namespace WebApplications.Utilities.Service.Client
                 {
                     if (!string.Equals(c.Tag, "servers", StringComparison.CurrentCultureIgnoreCase))
                         return Resolution.Unknown;
-                    return servers.Length > 0 ? servers : Resolution.Null;
+                    return (servers != null) && (servers.Length > 0)
+                        ? servers
+                        : Resolution.Null;
                 });
         }
 

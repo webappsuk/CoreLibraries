@@ -120,6 +120,17 @@ namespace WebApplications.Utilities.Service
                 .Select(x => x.Method.MakeGenericMethod(typeof(bool)))
                 .First();
 
+        /// <summary>
+        /// Parameter types that are reserved for special parameters
+        /// </summary>
+        [NotNull]
+        private static readonly HashSet<Type> _reservedParameterTypes = new HashSet<Type>
+        {
+            typeof(TextWriter),
+            typeof(string[]),
+            typeof(CancellationToken)
+        };
+
         [NotNull]
         private readonly string[] _names;
 
@@ -188,7 +199,13 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         public IEnumerable<ParameterInfo> ArgumentParameters
         {
-            get { return _parameters.Keys.Where(p => p != _writerParameter && p != _idParameter); }
+            get
+            {
+                return _parameters.Keys.Where(
+                    p => (p != _idParameter) &&
+                         (p.ParameterType != typeof(TextWriter)) &&
+                         (p.ParameterType != typeof(CancellationToken)));
+            }
         }
 
         /// <summary>
@@ -209,9 +226,7 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         private readonly Dictionary<ParameterInfo, string> _parameters;
 
-        private readonly ParameterInfo _writerParameter;
         private readonly ParameterInfo _idParameter;
-        private readonly ParameterInfo _cancellationTokenParameter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceCommand"/> class.
@@ -248,6 +263,7 @@ namespace WebApplications.Utilities.Service
             List<Expression> body = new List<Expression>();
             ParameterExpression splitArgs = null;
             int extraParams = 0;
+            bool hasParams = false;
 
             // Populate the ID parameter and any parameters that arent specified by the user
             for (int i = 0; i < inputs.Length; i++)
@@ -287,6 +303,7 @@ namespace WebApplications.Utilities.Service
                                     Expression.Constant(StringSplitOptions.RemoveEmptyEntries))));
                     }
 
+                    hasParams = true;
                     inputs[i] = splitArgs;
                     extraParams++;
                 }
@@ -349,12 +366,7 @@ namespace WebApplications.Utilities.Service
                     parameters.Count(
                         p => !p.IsOptional &&
                              (p.Name == attribute.IDParameter ||
-                             p.ParameterType == typeof(string[]) ||
-                             p.ParameterType == typeof(TextWriter) ||
-                             p.ParameterType == typeof(CancellationToken)));
-
-                ParameterInfo lastParam = parameters.Last();
-                Contract.Assert(lastParam != null);
+                             _reservedParameterTypes.Contains(p.ParameterType)));
 
                 maximumArguments = parameters.Length - extraParams;
 
@@ -488,21 +500,24 @@ namespace WebApplications.Utilities.Service
                         : Expression.Call(_stringIsNullOrEmpty, argsParameterExpression),
                     Expression.Constant(TaskResult.False, typeof(Task<bool>)),
                     methodCall);
-            if (maximumArguments == 0)
+            if (!hasParams)
             {
-                methodCall = Expression.Condition(
-                    Expression.Not(Expression.Call(_stringIsNullOrEmpty, argsParameterExpression)),
-                    Expression.Constant(TaskResult.False, typeof(Task<bool>)),
-                    methodCall);
-            }
-            else if (!attribute.ConsumeLine &&
-                     (maximumArguments < int.MaxValue))
-            {
-                Contract.Assert(splitArgs != null);
-                methodCall = Expression.Condition(
-                    Expression.GreaterThan(Expression.ArrayLength(splitArgs), Expression.Constant(maximumArguments)),
-                    Expression.Constant(TaskResult.False, typeof(Task<bool>)),
-                    methodCall);
+                if (maximumArguments == 0)
+                {
+                    methodCall = Expression.Condition(
+                        Expression.Not(Expression.Call(_stringIsNullOrEmpty, argsParameterExpression)),
+                        Expression.Constant(TaskResult.False, typeof(Task<bool>)),
+                        methodCall);
+                }
+                else if (!attribute.ConsumeLine &&
+                         (maximumArguments < int.MaxValue))
+                {
+                    Contract.Assert(splitArgs != null);
+                    methodCall = Expression.Condition(
+                        Expression.GreaterThan(Expression.ArrayLength(splitArgs), Expression.Constant(maximumArguments)),
+                        Expression.Constant(TaskResult.False, typeof (Task<bool>)),
+                        methodCall);
+                }
             }
             MinimumArguments = minimumArguments;
             MaximumArguments = maximumArguments;

@@ -262,7 +262,6 @@ namespace WebApplications.Utilities.Service.Client
                             }
                         }
                     }
-                    catch (TaskCanceledException) { }
                     catch (IOException ioe)
                     {
                         // Common exception caused by sudden disconnect, lower level
@@ -379,6 +378,9 @@ namespace WebApplications.Utilities.Service.Client
                         await cr.CompletionTask.WithCancellation(token);
                     }
                     catch (TaskCanceledException)
+                    {
+                    }
+                    catch (OperationCanceledException)
                     {
                     }
                     finally

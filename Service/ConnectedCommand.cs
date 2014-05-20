@@ -102,12 +102,18 @@ namespace WebApplications.Utilities.Service
                 Task.Run(
                     async () =>
                     {
-                        do
+                        try
                         {
-                            await Task.Delay(250, token);
-                            if (flushToken.IsCancellationRequested) return;
-                            await Flush(0, flushToken);
-                        } while (true);
+                            do
+                            {
+                                await Task.Delay(250, flushToken);
+                                if (flushToken.IsCancellationRequested) return;
+                                await Flush(0, flushToken);
+                            } while (true);
+                        }
+                        catch (TaskCanceledException)
+                        {
+                        }
                     },
                     flushToken);
                 // Kick of task to run command.
@@ -123,7 +129,7 @@ namespace WebApplications.Utilities.Service
                         }
                         catch (Exception e)
                         {
-                            if (!(e is TaskCanceledException))
+                            if (!(e is TaskCanceledException) && !(e is OperationCanceledException))
                                 exception = e;
                         }
                         if (exception != null)
