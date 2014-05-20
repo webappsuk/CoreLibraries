@@ -70,6 +70,15 @@ namespace WebApplications.Utilities.Service.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The command response was missing sequence elements..
+        /// </summary>
+        public static string Err_ConnectedCommand_Received_MissingSequenceElements {
+            get {
+                return ResourceManager.GetString("Err_ConnectedCommand_Received_MissingSequenceElements", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A fatal error occurred on the current named pipe client, closing..
         /// </summary>
         public static string Err_NamedPipeClient_Failed {
@@ -93,6 +102,15 @@ namespace WebApplications.Utilities.Service.Client {
         public static string Parameter_Null {
             get {
                 return ResourceManager.GetString("Parameter_Null", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate sequence element recieved. Will be ignored..
+        /// </summary>
+        public static string Wrn_ConnectedCommand_Received_DuplicateSequence {
+            get {
+                return ResourceManager.GetString("Wrn_ConnectedCommand_Received_DuplicateSequence", resourceCulture);
             }
         }
     }

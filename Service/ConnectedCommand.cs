@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -61,7 +62,7 @@ namespace WebApplications.Utilities.Service
             /// <summary>
             /// The sequence identifier.
             /// </summary>
-            private int _sequenceId = 0;
+            private int _sequenceId;
 
             /// <summary>
             /// The write buffer.
@@ -74,8 +75,6 @@ namespace WebApplications.Utilities.Service
             /// </summary>
             [NotNull]
             private readonly HashSet<char> _escapeChars = new HashSet<char>(new[] {'{', '}', '\\'});
-
-            private Task _flushTask;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ConnectedCommand" /> class.
@@ -100,7 +99,7 @@ namespace WebApplications.Utilities.Service
                     ? CancellationTokenSource.CreateLinkedTokenSource(token, _cancellationTokenSource.Token).Token
                     : _cancellationTokenSource.Token;
 
-                _flushTask = Task.Run(
+                Task.Run(
                     async () =>
                     {
                         do
@@ -134,6 +133,7 @@ namespace WebApplications.Utilities.Service
                                 _builder.Append(exception.Message);
                                 await Flush(-2, token);
                             }
+                                // ReSharper disable once EmptyGeneralCatchClause
                             catch
                             {
                             }
@@ -148,6 +148,7 @@ namespace WebApplications.Utilities.Service
             /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
             public override string ToString()
             {
+                Contract.Assert(_request.CommandLine != null);
                 return _request.CommandLine;
             }
 
@@ -161,9 +162,9 @@ namespace WebApplications.Utilities.Service
                 if (cts != null)
                     cts.Cancel();
 
-                NamedPipeConnection connexion = Interlocked.Exchange(ref _connection, null);
-                if (connexion != null)
-                    connexion.Remove(this);
+                NamedPipeConnection connection = Interlocked.Exchange(ref _connection, null);
+                if (connection != null)
+                    connection.Remove(this);
 
                 base.Dispose(disposing);
             }
@@ -200,7 +201,7 @@ namespace WebApplications.Utilities.Service
                         await connection.Send(new CommandResponse(id, _sequenceId, chunk), token);
                 }
             }
-            
+
             /// <summary>
             /// Clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
             /// </summary>
@@ -227,7 +228,7 @@ namespace WebApplications.Utilities.Service
             /// Writes a character array to the text string or stream.
             /// </summary>
             /// <param name="buffer">The character array to write to the text stream.</param>
-            public override void Write(char[] buffer)
+            public override void Write([NotNull] char[] buffer)
             {
                 lock (_builder)
                 {
@@ -244,7 +245,7 @@ namespace WebApplications.Utilities.Service
             /// Writes a string to the text string or stream.
             /// </summary>
             /// <param name="value">The string to write.</param>
-            public override void Write(string value)
+            public override void Write([NotNull] string value)
             {
                 lock (_builder)
                 {
@@ -283,7 +284,7 @@ namespace WebApplications.Utilities.Service
             /// Writes an array of characters followed by a line terminator to the text string or stream.
             /// </summary>
             /// <param name="buffer">The character array from which data is read.</param>
-            public override void WriteLine(char[] buffer)
+            public override void WriteLine([NotNull] char[] buffer)
             {
                 lock (_builder)
                 {
@@ -301,7 +302,7 @@ namespace WebApplications.Utilities.Service
             /// Writes a string followed by a line terminator to the text string or stream.
             /// </summary>
             /// <param name="value">The string to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-            public override void WriteLine(string value)
+            public override void WriteLine([NotNull] string value)
             {
                 lock (_builder)
                 {

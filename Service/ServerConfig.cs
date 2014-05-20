@@ -194,11 +194,11 @@ namespace WebApplications.Utilities.Service
 
             string directory = Path.GetDirectoryName(name);
             if (string.IsNullOrWhiteSpace(directory))
-                throw new ArgumentException("Invalid pipe name.", "name");
+                throw new ServiceException(() => ServiceResources.Err_ServerConfig_InvalidPipeName, name);
             string[] rootParts = name.Split(new[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
             if (rootParts.Length != 2 ||
                 !string.Equals(rootParts[1], "pipe", StringComparison.CurrentCultureIgnoreCase))
-                throw new ArgumentException("Invalid pipe name.", "name");
+                throw new ServiceException(() => ServiceResources.Err_ServerConfig_InvalidPipeName, name);
             Name = name;
         }
     }

@@ -134,8 +134,7 @@ namespace WebApplications.Utilities.Service.Client
                                 if (_oooResponses.Count > 0)
                                 {
                                     // Suppress actual completion/error, as we
-                                    observer.OnError(
-                                        new ApplicationException("The command response was missing sequence elements."));
+                                    observer.OnError(new LoggingException(() => ClientResources.Err_ConnectedCommand_Received_MissingSequenceElements));
                                     return true;
                                 }
 
@@ -145,20 +144,19 @@ namespace WebApplications.Utilities.Service.Client
                                     observer.OnCompleted();
                                 }
                                 else
-                                    observer.OnError(
-                                        new ApplicationException(((CommandResponse) response).Chunk));
+                                    observer.OnError(new LoggingException(((CommandResponse)response).Chunk));
                                 return true;
                             }
 
                             if (sequence < _expectedSequence)
                             {
-                                Log.Add(LoggingLevel.Warning, () => "TODO Duplicate sequence");
+                                Log.Add(LoggingLevel.Warning, () => ClientResources.Wrn_ConnectedCommand_Received_DuplicateSequence);
                                 return false;
                             }
 
                             LinkedListNode<CommandResponse> current = _oooResponses.First;
                             while (current != null &&
-                                   // ReSharper disable once PossibleNullReferenceException
+                                // ReSharper disable once PossibleNullReferenceException
                                    current.Value.Sequence < sequence)
                                 current = current.Next;
 

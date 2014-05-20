@@ -237,6 +237,33 @@
   <data name="Err_BaseService_Failed_To_Acquire_WaitHandle" xml:space="preserve">
     <value>Another instance of the service is running so this instance cannot be started.</value>
   </data>
+  <data name="Err_BaseService_FatalConstructorError" xml:space="preserve">
+    <value>Fatal error in constructor.</value>
+  </data>
+  <data name="Err_BaseService_OnContinue_FatalError" xml:space="preserve">
+    <value>Fatal error in OnContinue</value>
+  </data>
+  <data name="Err_BaseService_OnCustomCommand_FatalError" xml:space="preserve">
+    <value>Fatal error in OnCustomCommand '{0}'.</value>
+  </data>
+  <data name="Err_BaseService_OnPause_FatalError" xml:space="preserve">
+    <value>Fatal error in OnPause</value>
+  </data>
+  <data name="Err_BaseService_OnPowerEvent_FatalError" xml:space="preserve">
+    <value>Fatal error in OnPowerEvent</value>
+  </data>
+  <data name="Err_BaseService_OnSessionChange_FatalError" xml:space="preserve">
+    <value>Fatal error in OnSessionChange</value>
+  </data>
+  <data name="Err_BaseService_OnShutdown_FatalError" xml:space="preserve">
+    <value>Fatal error in OnShutdown</value>
+  </data>
+  <data name="Err_BaseService_OnStart_FatalError" xml:space="preserve">
+    <value>Fatal error in OnStart</value>
+  </data>
+  <data name="Err_BaseService_OnStop_FatalError" xml:space="preserve">
+    <value>Fatal error in OnStop</value>
+  </data>
   <data name="Err_Command_Exception" xml:space="preserve">
     <value>Fatal error executing the '{0}' command.</value>
   </data>
@@ -258,11 +285,29 @@
   <data name="Err_NamedPipeServer_PipeAlreadyExists" xml:space="preserve">
     <value>The '{0}' named pipe already exists on the server, and so cannot be created!</value>
   </data>
+  <data name="Err_ServerConfig_InvalidPipeName" xml:space="preserve">
+    <value>Invalid pipe name '{0}'.</value>
+  </data>
+  <data name="Err_ServiceCommand_IDParameterMissing" xml:space="preserve">
+    <value>ID parameter '{0}' expected but not found in method '{1}'.</value>
+  </data>
+  <data name="Err_ServiceCommand_IDParameterWrongType" xml:space="preserve">
+    <value>ID parameter should be of type Guid, but was actually of type '{0}'</value>
+  </data>
   <data name="Err_ServiceCommand_Invalid_Command_Method" xml:space="preserve">
     <value>Invalid command method '{0}'. A service runner command with ConsumeLine set must declare exactly one string parameter.</value>
   </data>
   <data name="Err_ServiceCommand_Parameter_Conversion_Unsupported" xml:space="preserve">
     <value>Cannot convert string to '{0}' for parameter '{1}' on method '{2}'.</value>
+  </data>
+  <data name="Err_ServiceCommand_WriterAndIDParameterMissing" xml:space="preserve">
+    <value>Writer parameter '{0}' and ID parameter '{1}' expected but not found in method '{2}'.</value>
+  </data>
+  <data name="Err_ServiceCommand_WriterParameterMissing" xml:space="preserve">
+    <value>Writer parameter '{0}' expected but not found on method '{1}'.</value>
+  </data>
+  <data name="Err_ServiceCommand_WriterParameterWrongType" xml:space="preserve">
+    <value>Writer parameter should be of type TextWriter, but was actually of type '{0}'</value>
   </data>
   <data name="Err_ServiceRunner_Continue_ServiceNotPaused" xml:space="preserve">
     <value>The '{0}' service is not paused!</value>
@@ -279,11 +324,29 @@
   <data name="Err_ServiceRunner_Stop_ServiceNotRunning" xml:space="preserve">
     <value>The '{0}' service is not running, so cannot be stopped!</value>
   </data>
+  <data name="Err_ServiceUtils_Install_CouldNotInstallService" xml:space="preserve">
+    <value>Could not install the '{0}' service.</value>
+  </data>
+  <data name="Err_ServiceUtils_Uninstall_CouldNotFindLocation" xml:space="preserve">
+    <value>Could not find the location of the '{0}' service.</value>
+  </data>
+  <data name="Err_ServiceUtils_Uninstall_CouldNotOpenService" xml:space="preserve">
+    <value>Could not open the '{0}' service.</value>
+  </data>
+  <data name="Err_ServiceUtils_Uninstall_CouldNotUninstallService" xml:space="preserve">
+    <value>Could not uninstall the '{0}' service.</value>
+  </data>
+  <data name="Err_ServiceUtils_Uninstall_ServiceLocationDoesntExist" xml:space="preserve">
+    <value>The '{0}' service location '{1}' doesn not exist.</value>
+  </data>
   <data name="Err_Uninstall_Requires_Administrator" xml:space="preserve">
     <value>Service removal requires running as an administrator.</value>
   </data>
   <data name="Err_Unknown_Command" xml:space="preserve">
     <value>The '{0}' command is not supported by the service.</value>
+  </data>
+  <data name="Inf_BaseService_RunAsync_NotRunningAsAdmin" xml:space="preserve">
+    <value>The service is not running as an administrator, some functionality will be disabled.</value>
   </data>
   <data name="Inf_ServiceRunner_Continue_Continued" xml:space="preserve">
     <value>Continued service '{0}'.</value>
@@ -372,49 +435,46 @@
   <data name="Wrn_ServiceCommand_Creation_Failed" xml:space="preserve">
     <value>Failed to create a service runner command for the '{0}' method</value>
   </data>
-  <data name="Err_ServiceCommand_WriterParameterWrongType" xml:space="preserve">
-    <value>Writer parameter should be of type TextWriter, but was actually of type '{0}'</value>
+  <data name="Err_ServiceUtils_Install_CouldNotSetDescription" xml:space="preserve">
+    <value>Could not set the description of the '{0}' service.</value>
   </data>
-  <data name="Err_ServiceCommand_IDParameterWrongType" xml:space="preserve">
-    <value>ID parameter should be of type Guid, but was actually of type '{0}'</value>
+  <data name="Err_ServiceUtils_OpenSCManager_CouldNotOpenManager" xml:space="preserve">
+    <value>Could not open the service control manager.</value>
   </data>
-  <data name="Err_ServiceCommand_WriterParameterMissing" xml:space="preserve">
-    <value>Writer parameter '{0}' expected but not found on method '{1}'.</value>
+  <data name="ConsoleConnection_RunAsync_WaitInstall" xml:space="preserve">
+    <value>Waiting for service to be detected...</value>
   </data>
-  <data name="Err_ServiceCommand_IDParameterMissing" xml:space="preserve">
-    <value>ID parameter '{0}' expected but not found in method '{1}'.</value>
+  <data name="ConsoleConnection_RunAsync_Done" xml:space="preserve">
+    <value>Done.</value>
   </data>
-  <data name="Err_ServiceCommand_WriterAndIDParameterMissing" xml:space="preserve">
-    <value>Writer parameter '{0}' and ID parameter '{1}' expected but not found in method '{2}'.</value>
+  <data name="ConsoleConnection_RunAsync_WaitUninstall" xml:space="preserve">
+    <value>Waiting for service removal to be detected...</value>
   </data>
-  <data name="Err_BaseService_FatalConstructorError" xml:space="preserve">
-    <value>Fatal error in constructor.</value>
+  <data name="ConsoleConnection_RunAsync_AttemptingStop" xml:space="preserve">
+    <value>Attempting to stop service...</value>
   </data>
-  <data name="Inf_BaseService_RunAsync_NotRunningAsAdmin" xml:space="preserve">
-    <value>The service is not running as an administrator, some functionality will be disabled.</value>
+  <data name="ConsoleConnection_RunAsync_AttemptingStart" xml:space="preserve">
+    <value>Attempting to start service...</value>
   </data>
-  <data name="Err_BaseService_OnStart_FatalError" xml:space="preserve">
-    <value>Fatal error in OnStart</value>
+  <data name="ConsoleConnection_RunAsync_AttemptingPause" xml:space="preserve">
+    <value>Attempting to pause service...</value>
   </data>
-  <data name="Err_BaseService_OnStop_FatalError" xml:space="preserve">
-    <value>Fatal error in OnStop</value>
+  <data name="ConsoleConnection_RunAsync_AttemptingContinue" xml:space="preserve">
+    <value>Attempting to continue service...</value>
   </data>
-  <data name="Err_BaseService_OnPause_FatalError" xml:space="preserve">
-    <value>Fatal error in OnPause</value>
+  <data name="ConsoleConnection_RunAsync_RunningNonInteractive" xml:space="preserve">
+    <value>Running service in non-interactive mode (use CTRL-C to kill).</value>
   </data>
-  <data name="Err_BaseService_OnContinue_FatalError" xml:space="preserve">
-    <value>Fatal error in OnContinue</value>
+  <data name="ConsoleConnection_RunAsync_RunningNonInteractive2" xml:space="preserve">
+    <value>To control, connect using a service client.</value>
   </data>
-  <data name="Err_BaseService_OnShutdown_FatalError" xml:space="preserve">
-    <value>Fatal error in OnShutdown</value>
+  <data name="ConsoleConnection_RunAsync_RunningTitle" xml:space="preserve">
+    <value>Running </value>
   </data>
-  <data name="Err_BaseService_OnCustomCommand_FatalError" xml:space="preserve">
-    <value>Fatal error in OnCustomCommand '{0}'.</value>
+  <data name="ConsoleConnection_RunAsync_PressKeyToExit" xml:space="preserve">
+    <value>Press any key to exit...</value>
   </data>
-  <data name="Err_BaseService_OnPowerEvent_FatalError" xml:space="preserve">
-    <value>Fatal error in OnPowerEvent</value>
-  </data>
-  <data name="Err_BaseService_OnSessionChange_FatalError" xml:space="preserve">
-    <value>Fatal error in OnSessionChange</value>
+  <data name="ConsoleConnection_RunAsync_ConfigureTitle" xml:space="preserve">
+    <value>Configure </value>
   </data>
 </root>

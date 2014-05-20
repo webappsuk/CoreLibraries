@@ -46,6 +46,7 @@ namespace WebApplications.Utilities.Service
     internal static class ServiceUtils
     {
         #region PInvoke
+        // ReSharper disable InconsistentNaming
         private const int SERVICE_WIN32_OWN_PROCESS = 0x00000010;
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -97,6 +98,7 @@ namespace WebApplications.Utilities.Service
             IntPtr hService,
             ServiceConfig dwInfoLevel,
             ref SERVICE_DESCRIPTION lpInfo);
+        // ReSharper restore InconsistentNaming
         #endregion
 
         /// <summary>
@@ -109,8 +111,7 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             return
                 ServiceController.GetServices()
-                    .Any(
-                        sc => string.Equals(sc.ServiceName, serviceName, StringComparison.CurrentCulture));
+                    .Any(sc => string.Equals(sc.ServiceName, serviceName, StringComparison.CurrentCulture));
         }
 
         /// <summary>
@@ -128,6 +129,7 @@ namespace WebApplications.Utilities.Service
         /// or
         /// Could not delete service  + Marshal.GetLastWin32Error()</exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        [NotNull]
         public static async Task Uninstall(
             [NotNull] string serviceName,
             CancellationToken token = default(CancellationToken))
@@ -146,15 +148,23 @@ namespace WebApplications.Utilities.Service
                         .Cast<ManagementObject>()
                         .FirstOrDefault(o => string.Equals(o.GetPropertyValue("Name").ToString(), "TestService"));
                     if (mo == null)
-                        throw new ApplicationException(string.Format("Could not find location of '{0}' service.", serviceName));
+                        throw new ServiceException(
+                            () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,
+                            serviceName);
                     servicePath = mo.GetPropertyValue("PathName").ToString().Trim('"');
                     if (!File.Exists(servicePath))
-                        throw new ApplicationException(string.Format("'{0}' service location '{1}' doesn't exist.", serviceName, servicePath));
+                        throw new ServiceException(
+                            () => ServiceResources.Err_ServiceUtils_Uninstall_ServiceLocationDoesntExist,
+                            serviceName,
+                            servicePath);
                 }
             }
             catch (Exception e)
             {
-                throw new ApplicationException(string.Format("Could not find location of '{0}' service.", serviceName), e);
+                throw new ServiceException(
+                    e,
+                    () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,
+                    serviceName);
             }
 
 
@@ -165,12 +175,18 @@ namespace WebApplications.Utilities.Service
             {
                 IntPtr service = OpenService(scm, serviceName, ServiceAccessRights.AllAccess);
                 if (service == IntPtr.Zero)
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                    throw new ServiceException(
+                        new Win32Exception(),
+                        () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotOpenService,
+                        serviceName);
 
                 try
                 {
                     if (!DeleteService(service))
-                        throw new ApplicationException("Could not delete service " + Marshal.GetLastWin32Error());
+                        throw new ServiceException(
+                            new Win32Exception(),
+                            () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotUninstallService,
+                            serviceName);
                 }
                 finally
                 {
@@ -183,6 +199,7 @@ namespace WebApplications.Utilities.Service
             }
 
             // Try to remove service directory
+            // ReSharper disable once AssignNullToNotNullAttribute
             Directory.Delete(Path.GetDirectoryName(servicePath), true);
         }
 
@@ -202,8 +219,8 @@ namespace WebApplications.Utilities.Service
             [NotNull] string displayName,
             [NotNull] string description,
             [NotNull] string fileName,
-            string userName = null,
-            string password = null)
+            [CanBeNull] string userName = null,
+            [CanBeNull] string password = null)
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             Contract.Requires<RequiredContractException>(displayName != null, "Parameter_Null");
@@ -234,7 +251,10 @@ namespace WebApplications.Utilities.Service
                     password);
 
                 if (service == IntPtr.Zero)
-                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                    throw new ServiceException(
+                        new Win32Exception(),
+                        () => ServiceResources.Err_ServiceUtils_Install_CouldNotInstallService,
+                        serviceName);
                 try
                 {
                     // Set description
@@ -246,7 +266,10 @@ namespace WebApplications.Utilities.Service
                     {
                         bool flag = ChangeServiceConfig2(service, ServiceConfig.Description, ref sd);
                         if (!flag)
-                            throw new Win32Exception(Marshal.GetLastWin32Error());
+                            throw new ServiceException(
+                                new Win32Exception(),
+                                () => ServiceResources.Err_ServiceUtils_Install_CouldNotSetDescription,
+                                serviceName);
                     }
                     finally
                     {
@@ -307,7 +330,7 @@ namespace WebApplications.Utilities.Service
             CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
-            if (args == null) args = new string[] {};
+            if (args == null) args = new string[] { };
             try
             {
                 new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
@@ -495,12 +518,14 @@ namespace WebApplications.Utilities.Service
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
+                            // ReSharper disable once AccessToDisposedClosure, PossibleNullReferenceException
                             await Task.Run(() => serviceController.ExecuteCommand(command), token);
                             return !token.IsCancellationRequested;
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
                             if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token))
                                 return false;
+                            // ReSharper disable once AccessToDisposedClosure, PossibleNullReferenceException
                             await Task.Run(() => serviceController.ExecuteCommand(command), token);
                             return !token.IsCancellationRequested;
                         default:
@@ -539,11 +564,14 @@ namespace WebApplications.Utilities.Service
         /// <param name="rights">The rights.</param>
         /// <returns>IntPtr.</returns>
         /// <exception cref="System.ComponentModel.Win32Exception"></exception>
+        // ReSharper disable once InconsistentNaming
         private static IntPtr OpenSCManager(ScmAccessRights rights)
         {
             IntPtr scm = OpenSCManager(null, null, rights);
             if (scm == IntPtr.Zero)
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                throw new ServiceException(
+                    new Win32Exception(),
+                    () => ServiceResources.Err_ServiceUtils_OpenSCManager_CouldNotOpenManager);
 
             return scm;
         }

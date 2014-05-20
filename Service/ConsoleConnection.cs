@@ -115,7 +115,7 @@ namespace WebApplications.Utilities.Service
             [NotNull] BaseService service,
             bool promptInstall = true,
             bool allowConsoleInteraction = true,
-            FormatBuilder defaultLogFormat = null,
+            [CanBeNull] FormatBuilder defaultLogFormat = null,
             LoggingLevels defaultLoggingLevels = LoggingLevels.All,
             CancellationToken token = default(CancellationToken))
         {
@@ -130,29 +130,26 @@ namespace WebApplications.Utilities.Service
             if (promptInstall)
             {
                 Contract.Assert(service.ServiceName != null);
-                Console.Title = "Configure " + service.ServiceName;
+                Console.Title = ServiceResources.ConsoleConnection_RunAsync_ConfigureTitle + service.ServiceName;
                 bool done = false;
                 do
                 {
                     if (token.IsCancellationRequested) return;
 
-                    string userName = null;
-                    string password = null;
-
                     Dictionary<string, string> options = new Dictionary<string, string>
-                        {
-                                {"I", "Install service."},
-                                {"U", "Uninstall service."},
-                                {"S", "Start service."},
-                                {"R", "Restart service."},
-                                {"T", "Stop service."},
-                                {"P", "Pause service."},
-                                {"C", "Continue service."},
-                                {"Y", "Run service from command line."},
-                                {"W", "Run service from command line under new credentials."},
-                                {"Z", "Run service without interaction."},
-                                {"X", "Exit."}
-                            };
+                    {
+                        {"I", "Install service."},
+                        {"U", "Uninstall service."},
+                        {"S", "Start service."},
+                        {"R", "Restart service."},
+                        {"T", "Stop service."},
+                        {"P", "Pause service."},
+                        {"C", "Continue service."},
+                        {"Y", "Run service from command line."},
+                        {"W", "Run service from command line under new credentials."},
+                        {"Z", "Run service without interaction."},
+                        {"X", "Exit."}
+                    };
 
                     if (!allowConsoleInteraction)
                     {
@@ -234,6 +231,9 @@ namespace WebApplications.Utilities.Service
 
                     try
                     {
+                        string userName;
+                        string password;
+
                         switch (key)
                         {
                             case "I":
@@ -241,64 +241,64 @@ namespace WebApplications.Utilities.Service
 
                                 service.Install(ConsoleTextWriter.Default, userName, password);
 
-                                Console.Write("Waiting for service to be detected...");
+                                Console.Write(ServiceResources.ConsoleConnection_RunAsync_WaitInstall);
                                 while (!ServiceUtils.ServiceIsInstalled(service.ServiceName))
                                 {
                                     await Task.Delay(250);
                                     Console.Write('.');
                                 }
-                                Console.WriteLine("Done.");
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "U":
                                 service.Uninstall(ConsoleTextWriter.Default);
 
-                                Console.Write("Waiting for service removal to be detected...");
+                                Console.Write(ServiceResources.ConsoleConnection_RunAsync_WaitUninstall);
                                 while (ServiceUtils.ServiceIsInstalled(service.ServiceName))
                                 {
                                     await Task.Delay(250);
                                     Console.Write('.');
                                 }
-                                Console.WriteLine("Done.");
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "R":
-                                Console.Write("Attempting to stop service...");
+                                Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStop);
                                 await ServiceUtils.StopService(service.ServiceName, token);
-                                Console.WriteLine("Done.");
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
-                                Console.Write("Attempting to start service...");
+                                Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStart);
                                 await ServiceUtils.StartService(service.ServiceName, null, token);
-                                Console.WriteLine("Done.");
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "S":
-                                Console.Write("Attempting to start service...");
+                                Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStart);
                                 await ServiceUtils.StartService(service.ServiceName, null, token);
-                                Console.WriteLine("Done.");
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "T":
-                                Console.Write("Attempting to stop service...");
+                                Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStop);
                                 await ServiceUtils.StopService(service.ServiceName, token);
-                                Console.WriteLine("Done.");
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "P":
-                                Console.Write("Attempting to pause service...");
+                                Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingPause);
                                 await ServiceUtils.PauseService(service.ServiceName, token);
-                                Console.WriteLine("Done.");
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 break;
 
                             case "C":
-                                Console.Write("Attempting to continue service...");
+                                Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingContinue);
                                 await ServiceUtils.ContinueService(service.ServiceName, token);
-                                Console.WriteLine("Done.");
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
@@ -327,8 +327,8 @@ namespace WebApplications.Utilities.Service
                             case "Z":
                                 allowConsoleInteraction = false;
                                 done = true;
-                                Console.WriteLine("Running service in non-interactive mode (use CTRL-C to kill).");
-                                Console.WriteLine("To control connect using a service client.");
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_RunningNonInteractive);
+                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_RunningNonInteractive2);
                                 Console.WriteLine();
                                 break;
 
@@ -348,7 +348,7 @@ namespace WebApplications.Utilities.Service
             }
 
             // Create connection
-            Console.Title = "Running " + service.ServiceName;
+            Console.Title = ServiceResources.ConsoleConnection_RunAsync_RunningTitle + service.ServiceName;
             ConsoleConnection connection = new ConsoleConnection(defaultLogFormat, defaultLoggingLevels, token);
             Guid id = service.Connect(connection);
             // Combined cancellation tokens.
@@ -388,7 +388,7 @@ namespace WebApplications.Utilities.Service
             {
                 Log.Flush().Wait();
                 service.Disconnect(id);
-                Console.WriteLine("Press any key to exit...");
+                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_PressKeyToExit);
                 Console.ReadKey(true);
             }
         }

@@ -129,4 +129,10 @@
   <data name="Parameter_Null" xml:space="preserve">
     <value>A required parameter was set to null.</value>
   </data>
+  <data name="Err_ConnectedCommand_Received_MissingSequenceElements" xml:space="preserve">
+    <value>The command response was missing sequence elements.</value>
+  </data>
+  <data name="Wrn_ConnectedCommand_Received_DuplicateSequence" xml:space="preserve">
+    <value>Duplicate sequence element recieved. Will be ignored.</value>
+  </data>
 </root>

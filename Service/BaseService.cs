@@ -104,7 +104,7 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// The current process is running as a service.
         /// </summary>
-        private static readonly bool IsServiceProcess;
+        private static readonly bool _isServiceProcess;
 
         /// <summary>
         /// Gets an event log you can use to write notification of service command calls, such as Start and Stop, to the Application event log.
@@ -156,11 +156,12 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         static BaseService()
         {
-            IsServiceProcess = !Environment.UserInteractive;
+            _isServiceProcess = !Environment.UserInteractive;
 
             try
             {
                 WindowsIdentity identity = WindowsIdentity.GetCurrent();
+                Contract.Assert(identity != null);
                 WindowsPrincipal principal = new WindowsPrincipal(identity);
                 _isAdministrator = principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
@@ -194,7 +195,7 @@ namespace WebApplications.Utilities.Service
             CanHandleSessionChangeEvent = true;
             CanPauseAndContinue = true;
             CanShutdown = true;
-            IsService = IsServiceProcess &&
+            IsService = _isServiceProcess &&
                         ServiceUtils.ServiceIsInstalled(name) &&
                         ServiceUtils.GetServiceStatus(name) == ServiceControllerStatus.StartPending;
 
@@ -236,12 +237,14 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Whether the service is running as a service.
         /// </summary>
+        [PublicAPI]
         public readonly bool IsService;
 
         /// <summary>
         /// The display name.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public readonly string DisplayName;
 
         /// <summary>
@@ -263,11 +266,12 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
         /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
-        /// <param name="maximumRemoteConnection">The maximum remote connections.</param>
-        /// <returns>An awaitable task.</returns>
+        [PublicAPI]
         public void Run(bool promptInstall = true, bool allowConsole = true)
         {
+            // ReSharper disable MethodSupportsCancellation
             RunAsync(promptInstall, allowConsole).Wait();
+            // ReSharper restore MethodSupportsCancellation
         }
 
         /// <summary>
@@ -278,6 +282,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns>An awaitable task.</returns>
         [NotNull]
+        [PublicAPI]
         public abstract Task RunAsync(
             bool promptInstall = true,
             bool allowConsoleInteraction = true,
@@ -287,6 +292,7 @@ namespace WebApplications.Utilities.Service
         /// When implemented in a derived class, executes when a Start command is sent to the service by the Service Control Manager (SCM) or when the operating system starts (for a service that starts automatically). Specifies actions to take when the service starts.
         /// </summary>
         /// <param name="args">Data passed by the start command.</param>
+        [PublicAPI]
         protected virtual void DoStart([NotNull] string[] args)
         {
             Contract.Requires<RequiredContractException>(args != null, "Parameter_Null");
@@ -295,6 +301,7 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// When implemented in a derived class, executes when a Stop command is sent to the service by the Service Control Manager (SCM). Specifies actions to take when a service stops running.
         /// </summary>
+        [PublicAPI]
         protected virtual void DoStop()
         {
         }
@@ -302,6 +309,7 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// When implemented in a derived class, executes when a Pause command is sent to the service by the Service Control Manager (SCM). Specifies actions to take when a service pauses.
         /// </summary>
+        [PublicAPI]
         protected virtual void DoPause()
         {
         }
@@ -309,6 +317,7 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// When implemented in a derived class, <see cref="M:System.ServiceProcess.ServiceBase.OnContinue" /> runs when a Continue command is sent to the service by the Service Control Manager (SCM). Specifies actions to take when a service resumes normal functioning after being paused.
         /// </summary>
+        [PublicAPI]
         protected virtual void DoContinue()
         {
         }
@@ -316,6 +325,7 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// When implemented in a derived class, executes when the system is shutting down. Specifies what should occur immediately prior to the system shutting down.
         /// </summary>
+        [PublicAPI]
         protected virtual void DoShutdown()
         {
         }
@@ -324,6 +334,7 @@ namespace WebApplications.Utilities.Service
         /// When implemented in a derived class, <see cref="M:System.ServiceProcess.ServiceBase.OnCustomCommand(System.Int32)" /> executes when the Service Control Manager (SCM) passes a custom command to the service. Specifies actions to take when a command with the specified parameter value occurs.
         /// </summary>
         /// <param name="command">The command message sent to the service.</param>
+        [PublicAPI]
         protected virtual void DoCustomCommand(int command)
         {
         }
@@ -333,6 +344,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="powerStatus">A <see cref="T:System.ServiceProcess.PowerBroadcastStatus" /> that indicates a notification from the system about its power status.</param>
         /// <returns>When implemented in a derived class, the needs of your application determine what value to return. For example, if a QuerySuspend broadcast status is passed, you could cause your application to reject the query by returning false.</returns>
+        [PublicAPI]
         protected virtual bool DoPowerEvent(PowerBroadcastStatus powerStatus)
         {
             return true;
@@ -342,6 +354,7 @@ namespace WebApplications.Utilities.Service
         /// Executes when a change event is received from a Terminal Server session.
         /// </summary>
         /// <param name="changeDescription">A <see cref="T:System.ServiceProcess.SessionChangeDescription" /> structure that identifies the change type.</param>
+        [PublicAPI]
         protected virtual void DoSessionChange(SessionChangeDescription changeDescription)
         {
         }
@@ -354,28 +367,6 @@ namespace WebApplications.Utilities.Service
         /// A connection GUID.
         /// </returns>
         public abstract Guid Connect([NotNull] IConnection connection);
-
-        /// <summary>
-        /// Executes the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <param name="commandLine">The command line.</param>
-        /// <param name="formatProvider">The format provider.</param>
-        /// <returns>The result.</returns>
-        [NotNull]
-        private string Execute(
-            Guid id,
-            [CanBeNull] string commandLine,
-            [CanBeNull] IFormatProvider formatProvider = null)
-        {
-            if (string.IsNullOrWhiteSpace(commandLine))
-                return string.Empty;
-            using (StringWriter writer = new StringWriter(formatProvider))
-            {
-                Execute(id, commandLine, writer);
-                return writer.ToString();
-            }
-        }
 
         /// <summary>
         /// Executes the command line, and writes the result to the specified writer.
@@ -396,6 +387,7 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// Base implementation of a service.
     /// </summary>
+    [PublicAPI]
     public abstract partial class BaseService<TService> : BaseService
         where TService : BaseService<TService>
     {
@@ -596,8 +588,7 @@ namespace WebApplications.Utilities.Service
 
             if (assembly.IsDefined(typeof (GuidAttribute), false))
             {
-                GuidAttribute g =
-                    Attribute.GetCustomAttribute(assembly, typeof (GuidAttribute)) as GuidAttribute;
+                GuidAttribute g = Attribute.GetCustomAttribute(assembly, typeof (GuidAttribute)) as GuidAttribute;
                 if (g != null)
                     AssemblyGuid = g.Value;
             }
@@ -639,7 +630,7 @@ namespace WebApplications.Utilities.Service
             [CanBeNull] string displayName = null,
             [CanBeNull] string description = null,
             [CanBeNull] ServerConfig serverConfiguration = null,
-            IdentityReference identity = null)
+            [CanBeNull] IdentityReference identity = null)
             : base(
                 (string.IsNullOrWhiteSpace(name) || name.Length > 128) ? AssemblyTitle : name,
                 displayName,
@@ -668,9 +659,10 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
         /// <param name="allowConsoleInteraction">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
-        /// <param name="maximumRemoteConnection">The maximum remote connection.</param>
         /// <param name="token">The token.</param>
-        /// <returns>An awaitable task.</returns>
+        /// <returns>
+        /// An awaitable task.
+        /// </returns>
         public override Task RunAsync(
             bool promptInstall = true,
             bool allowConsoleInteraction = true,
@@ -689,11 +681,13 @@ namespace WebApplications.Utilities.Service
             lock (_lock)
             {
                 _lifeTimeTaskCompletionSource = new TaskCompletionSource<bool>();
+                // ReSharper disable AssignNullToNotNullAttribute
                 return ConsoleHelper.IsConsole
                     ? (Task) Task.WhenAny(
                         _lifeTimeTaskCompletionSource.Task,
                         ConsoleConnection.RunAsync(this, promptInstall, allowConsoleInteraction, token: token))
                     : _lifeTimeTaskCompletionSource.Task;
+                // ReSharper restore AssignNullToNotNullAttribute
             }
         }
 
@@ -999,7 +993,9 @@ namespace WebApplications.Utilities.Service
             }
             finally
             {
+                // ReSharper disable MethodSupportsCancellation
                 Log.Flush().Wait();
+                // ReSharper restore MethodSupportsCancellation
             }
         }
 
@@ -1070,7 +1066,9 @@ namespace WebApplications.Utilities.Service
             }
             finally
             {
+                // ReSharper disable MethodSupportsCancellation
                 Log.Flush().Wait();
+                // ReSharper restore MethodSupportsCancellation
             }
         }
 
