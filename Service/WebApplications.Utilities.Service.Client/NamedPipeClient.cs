@@ -218,16 +218,11 @@ namespace WebApplications.Utilities.Service.Client
                                         Response response = message as Response;
                                         if (response != null)
                                         {
-                                            CommandResponse commandResponse = response as CommandResponse;
-                                            int sequence = commandResponse == null
-                                                ? -1
-                                                : commandResponse.Sequence;
-
                                             ConnectedCommand connectedCommand;
-                                            if (sequence < 0
-                                                ? _commandRequests.TryRemove(response.ID, out connectedCommand)
-                                                : _commandRequests.TryGetValue(response.ID, out connectedCommand))
-                                                connectedCommand.Received(response, sequence);
+
+                                            if (_commandRequests.TryGetValue(response.ID, out connectedCommand) &&
+                                                connectedCommand.Received(response))
+                                                _commandRequests.TryRemove(response.ID, out connectedCommand);
                                         }
                                     }
                                 }
@@ -261,8 +256,9 @@ namespace WebApplications.Utilities.Service.Client
                             {
                                 onReceive(disconnectResponse);
                                 ConnectedCommand connectedCommand;
-                                if (_commandRequests.TryRemove(disconnectResponse.ID, out connectedCommand))
-                                    connectedCommand.Received(disconnectResponse, -1);
+                                if (_commandRequests.TryGetValue(disconnectResponse.ID, out connectedCommand) &&
+                                    connectedCommand.Received(disconnectResponse))
+                                    _commandRequests.TryRemove(disconnectResponse.ID, out connectedCommand);
                             }
                         }
                     }

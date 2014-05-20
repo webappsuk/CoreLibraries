@@ -447,7 +447,7 @@ namespace WebApplications.Utilities.Service
                 try
                 {
                     if (IsService)
-                        ServiceUtils.StopService(ServiceName);
+                        ServiceUtils.StartService(ServiceName);
                     else
                         OnStart(args);
 

@@ -192,6 +192,7 @@ namespace WebApplications.Utilities.Service
 
                         if (_sequenceId < 0) return;
                         if (sequence < 0) _sequenceId = sequence;
+                        else _sequenceId++;
                     }
                     Guid id = _request.ID;
                     NamedPipeConnection connection = _connection;

@@ -74,7 +74,7 @@ namespace WebApplications.Utilities.Service.Test
             writer.WriteLine("Running long running operation:");
             for (int l = 0; l < loops; l++)
             {
-                writer.WriteLine(string.Format("Loop {0} completed", l));
+                writer.WriteLine("Loop {0} completed", l);
                 Thread.Sleep(1000);
             }
             if (throwError)
