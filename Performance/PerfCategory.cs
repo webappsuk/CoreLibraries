@@ -35,6 +35,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Reflect;
@@ -110,17 +112,21 @@ namespace WebApplications.Utilities.Performance
         {
             try
             {
-                // Check we have access to the performance counters.
-                PerformanceCounterCategory.Exists("TestAccess", MachineName);
+                // Workaround: under numerous scenarios trying to access performance counters on startup hangs - we only give it 2 seconds maximum.
+                CancellationToken token = new CancellationTokenSource(2000).Token;
+                // ReSharper disable once AssignNullToNotNullAttribute
+                Task.Run(() => PerformanceCounterCategory.Exists("TestAccess", MachineName), token)
+                    .WithCancellation(token)
+                    .Wait();
                 HasAccess = true;
                 // ReSharper disable once AssignNullToNotNullAttribute
                 Trace.WriteLine(string.Format(Resources.PerformanceCounterHelper_Enabled, InstanceGuid));
             }
             catch
             {
+                HasAccess = false;
                 // ReSharper disable once AssignNullToNotNullAttribute
                 Trace.WriteLine(Resources.PerformanceCounterHelper_ProcessDoesNotHaveAccess);
-                HasAccess = false;
             }
         }
 

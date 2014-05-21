@@ -133,7 +133,7 @@
     <value>Performance counters are enabled - instance GUID '{0}'.</value>
   </data>
   <data name="PerformanceCounterHelper_ProcessDoesNotHaveAccess" xml:space="preserve">
-    <value>The current process identity does not have access to performance counters, disabling counters.</value>
+    <value>The current process identity does not have access to performance counters, or the counters are taking to long to respond, disabling counters.</value>
   </data>
   <data name="PerformanceCounterHelper_UnhandledExceptionOccurred" xml:space="preserve">
     <value>An unhandled error occurred whilst initialising the counter category '{0}'.</value>
