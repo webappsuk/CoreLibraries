@@ -19,6 +19,6 @@
   </metadata>
   <files>
     <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
-    <!--<file src="ServiceClient\bin\Release\*" target="tools\" />-->
+    <file src="ServiceClient\bin\Release\*.*" target="tools\" />
   </files>
 </package>

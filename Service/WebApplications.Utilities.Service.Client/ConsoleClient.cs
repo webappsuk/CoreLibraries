@@ -180,10 +180,30 @@ namespace WebApplications.Utilities.Service.Client
 
                     Console.Clear();
                     ConsoleTextWriter.Default.WriteLine("Connecting to {0}...", service.Name);
-                    client = await NamedPipeClient.Connect(description, service, OnReceive, token);
+
+                    try
+                    {
+                        client =
+                            await
+                                NamedPipeClient.Connect(
+                                    description,
+                                    service,
+                                    OnReceive,
+                                    CancellationTokenSource.CreateLinkedTokenSource(
+                                        token,
+                                        new CancellationTokenSource(10000).Token).Token);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        ConsoleTextWriter.Default.WriteLine("Timed out connecting to {0}.", service.Name);
+                        ConsoleTextWriter.Default.WriteLine("Press any key to continue...");
+                        client = null;
+                        service = null;
+                        Console.ReadKey(true);
+                    }
                 }
 
-                Console.Title = string.Format("{0} connected to {1}", description, service.Name);
+                Console.Title = string.Format("{0} connected to {1}", description, service.Name); 
                 _connected.WriteToConsole(
                     null,
                     new Dictionary<string, object>
