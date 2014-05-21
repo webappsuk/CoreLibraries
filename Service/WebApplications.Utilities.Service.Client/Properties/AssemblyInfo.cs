@@ -31,7 +31,7 @@ using WebApplications.Utilities;
 
 [assembly: Guid("d9ba8246-cb63-4393-bf94-5b9baac526b7")]
 [assembly: AssemblyTitle("WebApplications.Utilities.Service")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Supports communication with a service using named pipes.")]
 [assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("Web Applications UK Ltd")]
 [assembly: AssemblyProduct("Web Applications Service Utilities")]
