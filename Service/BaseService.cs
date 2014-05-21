@@ -126,15 +126,26 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         private readonly EventLog _eventLog;
 
-        private static readonly bool _isAdministrator;
-
         /// <summary>
         /// Determines whether this instance is an administrator.
         /// </summary>
         /// <returns><see langword="true" /> if this instance is administrator; otherwise, <see langword="false" />.</returns>
         public static bool IsAdministrator
         {
-            get { return _isAdministrator; }
+            get
+            {
+                try
+                {
+                    WindowsIdentity identity = WindowsIdentity.GetCurrent();
+                    Contract.Assert(identity != null);
+                    WindowsPrincipal principal = new WindowsPrincipal(identity);
+                    return principal.IsInRole(WindowsBuiltInRole.Administrator);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
         }
 
         /// <summary>
@@ -157,18 +168,6 @@ namespace WebApplications.Utilities.Service
         static BaseService()
         {
             _isServiceProcess = !Environment.UserInteractive;
-
-            try
-            {
-                WindowsIdentity identity = WindowsIdentity.GetCurrent();
-                Contract.Assert(identity != null);
-                WindowsPrincipal principal = new WindowsPrincipal(identity);
-                _isAdministrator = principal.IsInRole(WindowsBuiltInRole.Administrator);
-            }
-            catch
-            {
-                _isAdministrator = false;
-            }
         }
 
         /// <summary>

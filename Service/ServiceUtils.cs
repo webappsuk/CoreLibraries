@@ -146,7 +146,7 @@ namespace WebApplications.Utilities.Service
                 {
                     ManagementObject mo = mc.GetInstances()
                         .Cast<ManagementObject>()
-                        .FirstOrDefault(o => string.Equals(o.GetPropertyValue("Name").ToString(), "TestService"));
+                        .FirstOrDefault(o => string.Equals(o.GetPropertyValue("Name").ToString(), serviceName));
                     if (mo == null)
                         throw new ServiceException(
                             () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,
@@ -159,10 +159,12 @@ namespace WebApplications.Utilities.Service
                             servicePath);
                 }
             }
+            catch (ServiceException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
-                if (e is ServiceException)
-                    throw;
                 throw new ServiceException(
                     e,
                     () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,

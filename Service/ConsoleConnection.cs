@@ -157,6 +157,12 @@ namespace WebApplications.Utilities.Service
                         options.Remove("W");
                     }
 
+                    if (!BaseService.IsAdministrator)
+                    {
+                        options.Remove("I");
+                        options.Remove("U");
+                    }
+
                     if (ServiceUtils.ServiceIsInstalled(service.ServiceName))
                     {
                         ServiceControllerStatus state = ServiceUtils.GetServiceStatus(service.ServiceName);
