@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -61,7 +62,7 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The task was not completed.</para>
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public static void SetFromTask(
             [NotNull] this TaskCompletionSource<bool> tcs,
             [NotNull] Task task)
@@ -111,7 +112,7 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The task was not completed.</para>
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public static void SetFromTask<TResult>(
             [NotNull] this TaskCompletionSource<TResult> tcs,
             [NotNull] Task<TResult> task)
@@ -154,7 +155,7 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="task"/> is a <see langword="null"/>.
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public static Task WithAsyncCallback(
             [NotNull] this Task task,
             [CanBeNull] AsyncCallback callback,
@@ -184,7 +185,7 @@ namespace WebApplications.Utilities
         ///   The object to use as the underlying <see cref="Task&lt;TResult&gt;"/>'s state.
         /// </param>
         /// <returns>The passed in <paramref name="task"/>.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public static Task<TResult> WithAsyncCallback<TResult>(
             [NotNull] this Task<TResult> task,
             [CanBeNull] AsyncCallback callback,
@@ -214,7 +215,7 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   This is particularly vital for APM where the exception needs to propagate to the end call.
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         public static Task Safe([NotNull] this Func<Task> taskCreator)
         {
             try
@@ -244,7 +245,7 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   This is particularly vital for APM where the exception needs to propagate to the end call.
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         [NotNull]
         public static Task<TResult> Safe<TResult>([NotNull] this Func<Task<TResult>> taskCreator)
         {
@@ -276,6 +277,7 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
+        [PublicAPI]
         public static Task<TNewResult> After<TResult, TNewResult>(
             [CanBeNull] this Task<TResult> task,
             [NotNull] Func<Task<TResult>, TNewResult> continuation)
@@ -305,7 +307,7 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   An exception will be thrown if <paramref name="task"/> is ended prematurely by an exception.
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         public static Task<TNewResult> After<TResult, TNewResult>(
             [CanBeNull] this Task<TResult> task,
             [NotNull] Func<Task<TResult>, TNewResult> continuation,
@@ -365,6 +367,7 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
+        [PublicAPI]
         public static Task<TNewResult> AfterAll<TResult, TNewResult>(
             [CanBeNull] this IEnumerable<Task<TResult>> tasks,
             [NotNull] Func<IEnumerable<Task<TResult>>, TNewResult>
@@ -451,7 +454,7 @@ namespace WebApplications.Utilities
         ///   Useful for quickly passing a <see cref="Task"/>'s
         ///   <see cref="System.Threading.Tasks.TaskCreationOptions">creation options</see> to a continuation.
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         public static TaskContinuationOptions GetEquivalentContinuationOptions(this TaskCreationOptions creationOptions)
         {
             return (TaskContinuationOptions) creationOptions;
@@ -469,7 +472,7 @@ namespace WebApplications.Utilities
         /// <exception cref="System.Security.SecurityException">
         ///   The caller does not have the required permission.
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public static WaitHandle WaitAny([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
             ManualResetEvent newHandle = new ManualResetEvent(false);
@@ -521,7 +524,7 @@ namespace WebApplications.Utilities
         /// <exception cref="System.Security.SecurityException">
         ///   The caller does not have the required permission.
         /// </exception>
-        [UsedImplicitly]
+        [PublicAPI]
         public static WaitHandle WaitAll([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
             ManualResetEvent newHandle = new ManualResetEvent(false);
@@ -588,7 +591,7 @@ namespace WebApplications.Utilities
         ///   The <see cref="System.Threading.Tasks.Task&lt;TResult&gt;">Task&lt;TResult&gt;</see> created by
         ///   <see cref="System.Threading.Tasks.TaskCompletionSource&lt;TResult&gt;">TaskCompletionSource&lt;TResult&gt;</see>.
         /// </returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public static Task<TResult> FromAsync<TResult>(
             [NotNull] this IAsyncResult asyncResult,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -709,7 +712,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="handle">The handle to wait on.</param>
         /// <returns>The awaiter.</returns>
-        [UsedImplicitly]
+        [PublicAPI]
         public static TaskAwaiter GetAwaiter(this WaitHandle handle)
         {
             return handle.ToTask().GetAwaiter();
@@ -723,7 +726,7 @@ namespace WebApplications.Utilities
         /// <remarks>
         /// There is a (brief) time delay between when the handle is signaled and when the task is marked as completed.
         /// </remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         public static Task ToTask(this WaitHandle handle)
         {
             Contract.Ensures(Contract.Result<Task>() != null);
@@ -816,7 +819,7 @@ namespace WebApplications.Utilities
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(s => ((TaskCompletionSource<bool>) s).TrySetResult(true), tcs))
                 if (task != await Task.WhenAny(task, tcs.Task))
-                    throw new OperationCanceledException(cancellationToken);
+                    throw new TaskCanceledException(task);
             await task;
         }
 
@@ -862,8 +865,86 @@ namespace WebApplications.Utilities
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
             using (cancellationToken.Register(s => ((TaskCompletionSource<bool>) s).TrySetResult(true), tcs))
                 if (task != await Task.WhenAny(task, tcs.Task))
-                    throw new OperationCanceledException(cancellationToken);
+                    throw new TaskCanceledException(task);
             return await task;
+        }
+
+        /// <summary>
+        /// Adds a timeout to an existing <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <param name="token">The cancellation token.</param>
+        /// <param name="timeout">The timeout.</param>
+        /// <returns>A cancellation token that will be cancelled after the timeout period has passed.</returns>
+        [PublicAPI]
+        public static CancellationToken WithTimeout(this CancellationToken token, TimeSpan timeout)
+        {
+            if (timeout == Timeout.InfiniteTimeSpan)
+                return token;
+            if (timeout <= TimeSpan.Zero)
+                return TaskResult.CancelledToken;
+
+            return token.CanBeCanceled
+                ? CancellationTokenSource.CreateLinkedTokenSource(
+                    token,
+                    new CancellationTokenSource(timeout).Token).Token
+                : new CancellationTokenSource(timeout).Token;
+        }
+
+        /// <summary>
+        /// Adds a timeout to an existing <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="milliseconds">The timeout in milliseconds.</param>
+        /// <returns>A cancellation token that will be cancelled after the timeout period has passed.</returns>
+        [PublicAPI]
+        public static CancellationToken WithTimeout(this CancellationToken token, int milliseconds)
+        {
+            if (milliseconds == Timeout.Infinite)
+                return token;
+            if (milliseconds <= 0)
+                return TaskResult.CancelledToken;
+
+            return token.CanBeCanceled
+                ? CancellationTokenSource.CreateLinkedTokenSource(
+                    token,
+                    new CancellationTokenSource(milliseconds).Token).Token
+                : new CancellationTokenSource(milliseconds).Token;
+        }
+
+        /// <summary>
+        /// Creates a cancellation token that will be cancelled when either of the given tokens has been cancelled.
+        /// </summary>
+        /// <param name="token1">The first token.</param>
+        /// <param name="token2">The second token.</param>
+        /// <returns>A cancellation token that will be cancelled when either of the given tokens have been cancelled.</returns>
+        [PublicAPI]
+        public static CancellationToken CreateLinked(this CancellationToken token1, CancellationToken token2)
+        {
+            if (!token1.CanBeCanceled) return token2;
+            return token2.CanBeCanceled
+                ? CancellationTokenSource.CreateLinkedTokenSource(token1, token2).Token
+                : token1;
+        }
+
+        /// <summary>
+        /// Creates a cancellation token that will be cancelled when any of the given tokens have been cancelled.
+        /// </summary>
+        /// <param name="token">The first token.</param>
+        /// <param name="tokens">The any remaining tokens.</param>
+        /// <returns>A cancellation token that will be cancelled when any of the given tokens have been cancelled.</returns>
+        [PublicAPI]
+        public static CancellationToken CreateLinked(this CancellationToken token, [CanBeNull] params CancellationToken[] tokens)
+        {
+            if (tokens == null ||
+                tokens.Length < 1)
+                return token;
+
+            CancellationToken[] canBeCancelled = tokens.Union(new[] {token}).Where(t => t.CanBeCanceled).ToArray();
+            if (canBeCancelled.Length < 1)
+                return default(CancellationToken);
+            return canBeCancelled.Length < 2 
+                ? canBeCancelled[0] 
+                : CancellationTokenSource.CreateLinkedTokenSource(canBeCancelled).Token;
         }
 
         /// <summary>
