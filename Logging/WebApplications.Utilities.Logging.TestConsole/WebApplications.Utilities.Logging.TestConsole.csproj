@@ -117,12 +117,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Testing">
-      <HintPath>..\packages\WebApplications.Testing.5.0.5198.18897\lib\net45\WebApplications.Testing.dll</HintPath>
-    </Reference>
-    <Reference Include="WebApplications.Utilities, Version=5.0.5252.38160, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Testing, Version=5.0.5254.21834, Culture=neutral, PublicKeyToken=79e554fb3bf55370, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.5.0.5252.38160\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Testing.5.0.5254.21834\lib\net45\WebApplications.Testing.dll</HintPath>
+    </Reference>
+    <Reference Include="WebApplications.Utilities, Version=5.0.5254.22072, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.5.0.5254.22072\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
