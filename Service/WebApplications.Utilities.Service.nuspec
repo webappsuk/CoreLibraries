@@ -19,6 +19,8 @@
   </metadata>
   <files>
     <file src="bin\Release\CodeContracts\*.*" target="lib\net45\CodeContracts" />
-    <file src="ServiceClient\bin\Release\*.*" target="tools\" />
+    <file src="ServiceClient\bin\Release\ServiceClient.exe" target="lib\net45\" />
+    <file src="ServiceClient\bin\Release\ServiceClient.exe.config" target="lib\net45\" />
+    <file src="WebApplications.Utilities.Service.Client\bin\Release\WebApplications.Utilities.Service.Client.dll" target="lib\net45\" />
   </files>
 </package>
