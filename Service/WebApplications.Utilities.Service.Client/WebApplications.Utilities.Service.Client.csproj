@@ -139,13 +139,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.5.0.5252.38160\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.0.5254.22072\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Logging">
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5252.38277\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5254.22226\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Performance">
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.0.5252.38226\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.0.5254.22130\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -185,7 +187,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.0.5252.38226\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.0.5252.38226\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.0.5254.22130\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.0.5254.22130\tools\PerfSetup.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

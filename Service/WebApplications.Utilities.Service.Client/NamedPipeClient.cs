@@ -149,9 +149,7 @@ namespace WebApplications.Utilities.Service.Client
                         {
                             _state = PipeState.Open;
 
-                            token = token.CanBeCanceled
-                                ? CancellationTokenSource.CreateLinkedTokenSource(token, disposeToken).Token
-                                : disposeToken;
+                            token = token.CreateLinked(disposeToken);
 
                             // We need to support cancelling the connect.
                             await stream.Connect(token);
@@ -367,9 +365,8 @@ namespace WebApplications.Utilities.Service.Client
                 {
                     Contract.Assert(observer != null);
 
-                    token = token.CanBeCanceled
-                        ? CancellationTokenSource.CreateLinkedTokenSource(token, t).Token
-                        : t;
+                    token = token.CreateLinked(t);
+
                     ConnectedCommand cr = new ConnectedCommand(request, observer);
                     _commandRequests.TryAdd(request.ID, cr);
                     try

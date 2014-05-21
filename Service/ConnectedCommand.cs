@@ -95,9 +95,8 @@ namespace WebApplications.Utilities.Service
                 _connection = connection;
                 _request = request;
                 _cancellationTokenSource = new CancellationTokenSource();
-                CancellationToken flushToken = token.CanBeCanceled
-                    ? CancellationTokenSource.CreateLinkedTokenSource(token, _cancellationTokenSource.Token).Token
-                    : _cancellationTokenSource.Token;
+
+                CancellationToken flushToken = token.CreateLinked(_cancellationTokenSource.Token);
 
                 Task.Run(
                     async () =>

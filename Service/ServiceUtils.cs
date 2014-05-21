@@ -301,10 +301,8 @@ namespace WebApplications.Utilities.Service
             CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceController != null, "Parameter_Null");
-            CancellationToken timeoutToken = new CancellationTokenSource(TimeSpan.FromMinutes(1)).Token;
-            token = token.CanBeCanceled
-                ? CancellationTokenSource.CreateLinkedTokenSource(token, timeoutToken).Token
-                : timeoutToken;
+
+            token = token.WithTimeout(TimeSpan.FromMinutes(1));
 
             serviceController.Refresh();
             while (serviceController.Status != status)

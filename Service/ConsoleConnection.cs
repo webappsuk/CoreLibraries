@@ -352,10 +352,8 @@ namespace WebApplications.Utilities.Service
             ConsoleConnection connection = new ConsoleConnection(defaultLogFormat, defaultLoggingLevels, token);
             Guid id = service.Connect(connection);
             // Combined cancellation tokens.
-            CancellationToken t = token.CanBeCanceled
-                ? CancellationTokenSource.CreateLinkedTokenSource(token, connection._cancellationTokenSource.Token)
-                    .Token
-                : connection._cancellationTokenSource.Token;
+            CancellationToken t = token.CreateLinked(connection._cancellationTokenSource.Token);
+
             if (t.IsCancellationRequested) return;
             try
             {

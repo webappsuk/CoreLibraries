@@ -307,6 +307,9 @@ namespace WebApplications.Utilities.Service
         protected static readonly FormatBuilder AllPerformanceCategoriesFormat =
             new FormatBuilder()
                 .AppendForegroundColor(Color.White)
+                .AppendFormatLine("Instance GUID: {!fgcolor:Yellow}{guid}")
+                .AppendLine()
+                .AppendForegroundColor(Color.White)
                 .AppendLine("The following performance categories are loaded:")
                 .AppendLine()
                 .AppendForegroundColor(Color.Yellow)
@@ -912,11 +915,17 @@ namespace WebApplications.Utilities.Service
                         writer,
                         null,
                         (_, c) =>
-                            // ReSharper disable PossibleNullReferenceException
-                            string.Equals(c.Tag, "counters", StringComparison.CurrentCultureIgnoreCase)
-                                ? PerfCategory.All.OrderBy(pc => pc.CategoryName)
-                            // ReSharper restore PossibleNullReferenceException
-                                : Resolution.Unknown);
+                        {
+                            switch (c.Tag.ToLowerInvariant())
+                            {
+                                case "counters":
+                                    return PerfCategory.All.OrderBy(pc => pc.CategoryName);
+                                case "guid":
+                                    return PerfCategory.InstanceGuid;
+                                default:
+                                    return Resolution.Unknown;
+                            }
+                        });
                     return;
                 }
 
