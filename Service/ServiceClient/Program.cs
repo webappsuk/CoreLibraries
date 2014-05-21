@@ -26,8 +26,9 @@
 #endregion
 
 using JetBrains.Annotations;
+using WebApplications.Utilities.Service.Client;
 
-namespace WebApplications.Utilities.Service.Client.Test
+namespace WebApplications.Utilities.ServiceClient
 {
     /// <summary>
     /// Main entry point of the application.

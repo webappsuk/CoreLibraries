@@ -515,7 +515,7 @@ namespace WebApplications.Utilities.Service
                     Contract.Assert(splitArgs != null);
                     methodCall = Expression.Condition(
                         Expression.GreaterThan(Expression.ArrayLength(splitArgs), Expression.Constant(maximumArguments)),
-                        Expression.Constant(TaskResult.False, typeof (Task<bool>)),
+                        Expression.Constant(TaskResult.False, typeof(Task<bool>)),
                         methodCall);
                 }
             }
@@ -613,6 +613,7 @@ namespace WebApplications.Utilities.Service
         /// <returns>
         ///   <see langword="true" /> if succeeded, <see langword="false" /> otherwise.
         /// </returns>
+        [NotNull]
         public Task<bool> RunAsync(
             [NotNull] object instance,
             [NotNull] TextWriter writer,
@@ -624,6 +625,7 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(arguments != null, "Parameter_Null");
             Contract.Requires<RequiredContractException>(InstanceType.IsInstanceOfType(instance), "Bad_Instance");
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _execute(instance, writer, connectionId, arguments, token);
         }
 

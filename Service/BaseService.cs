@@ -592,7 +592,10 @@ namespace WebApplications.Utilities.Service
             {
                 GuidAttribute g = Attribute.GetCustomAttribute(assembly, typeof(GuidAttribute)) as GuidAttribute;
                 if (g != null)
+                {
+                    Contract.Assert(g.Value != null);
                     AssemblyGuid = g.Value;
+                }
             }
             if (string.IsNullOrWhiteSpace(AssemblyGuid))
             {
@@ -648,6 +651,7 @@ namespace WebApplications.Utilities.Service
                 _eventWaitHandleSecurity.AddAccessRule(
                     new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
 
+                Contract.Assert(ServiceName != null);
                 _state = IsService ? ServiceUtils.GetServiceStatus(ServiceName) : ServiceControllerStatus.Stopped;
             }
             catch (Exception e)
@@ -1180,6 +1184,7 @@ namespace WebApplications.Utilities.Service
             try
             {
                 if (await src.RunAsync(this, writer, id, commandLine, token)) return;
+                // ReSharper disable once AssignNullToNotNullAttribute
                 writer.WriteLine(ServiceResources.Err_Command_Failed, commandName);
             }
             catch (TaskCanceledException)

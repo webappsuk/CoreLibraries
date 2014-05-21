@@ -161,12 +161,13 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
+                if (e is ServiceException)
+                    throw;
                 throw new ServiceException(
                     e,
                     () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,
                     serviceName);
             }
-
 
             await StopService(serviceName, token);
 

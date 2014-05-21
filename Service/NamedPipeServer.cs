@@ -138,12 +138,14 @@ namespace WebApplications.Utilities.Service
             Service = service;
             MaximumConnections = configuration.MaximumConnections;
             if (!string.IsNullOrWhiteSpace(configuration.Name))
+                // ReSharper disable once AssignNullToNotNullAttribute
                 Name = configuration.Name;
             else
             {
                 StringBuilder builder = new StringBuilder();
                 builder.Append(Guid.NewGuid().ToString("D"))
                     .Append('_');
+                Contract.Assert(service.ServiceName != null);
                 foreach (char c in service.ServiceName)
                     builder.Append(char.IsLetterOrDigit(c) ? c : '_');
                 builder.Append(Common.NameSuffix);
@@ -182,7 +184,7 @@ namespace WebApplications.Utilities.Service
 
             // Create a connection, before adding it to the list and starting.
             NamedPipeConnection connection = new NamedPipeConnection(this);
-            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) {connection};
+            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) { connection };
             connection.Start();
             _logger = new NamedPipeServerLogger(this);
             Log.AddLogger(_logger);
@@ -209,7 +211,8 @@ namespace WebApplications.Utilities.Service
                 {
                     _connectionCheckTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
-                    if (!_namedPipeConnections.Any(c => c.State == PipeState.Open))
+                    // ReSharper disable once PossibleNullReferenceException
+                    if (_namedPipeConnections.All(c => c.State != PipeState.Open))
                         Add();
                 }
 

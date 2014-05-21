@@ -329,7 +329,18 @@ namespace WebApplications.Utilities.Service
         protected static readonly FormatBuilder PerformanceCatergoryNotFoundFormat =
             new FormatBuilder()
                 .AppendForegroundColor(Color.Red)
-                .AppendFormatLine("The command '{Name}' does not exist.")
+                .AppendFormatLine("The performance counter '{Name}' does not exist.")
+                .AppendLine()
+                .MakeReadOnly();
+
+        /// <summary>
+        /// The format to use when the category name given to the performance command does not exist.
+        /// </summary>
+        [NotNull]
+        protected static readonly FormatBuilder PerformanceDisabledFormat =
+            new FormatBuilder()
+                .AppendForegroundColor(Color.Red)
+                .AppendLine("Performance counters are disabled.")
                 .AppendLine()
                 .MakeReadOnly();
 
@@ -890,6 +901,9 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
+                if (!PerfCategory.HasAccess)
+                    PerformanceDisabledFormat.WriteTo(writer);
+
                 bool categoryOmitted = string.IsNullOrWhiteSpace(category);
 
                 PerfCategory cat = categoryOmitted

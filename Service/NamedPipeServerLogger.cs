@@ -53,6 +53,7 @@ namespace WebApplications.Utilities.Service
             /// </summary>
             /// <param name="server">The server.</param>
             public NamedPipeServerLogger([NotNull] NamedPipeServer server)
+                // ReSharper disable once AssignNullToNotNullAttribute
                 : base(server.Service.ServiceName, false, true, LoggingLevels.All)
             {
                 _server = server;
