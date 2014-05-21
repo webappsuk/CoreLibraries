@@ -1142,12 +1142,14 @@ namespace WebApplications.Utilities.Service
         public override async Task ExecuteAsync(Guid id, string commandLine, TextWriter writer, CancellationToken token = default(CancellationToken))
         {
             Connection connection;
-            if (!_connections.TryGetValue(id, out connection) ||
-                string.IsNullOrWhiteSpace(commandLine))
+            if (!_connections.TryGetValue(id, out connection))
             {
                 writer.WriteLine("Invalid connection specified.");
                 return;
             }
+
+            if (string.IsNullOrWhiteSpace(commandLine))
+                return;
 
             // Find the first split point, and grab the command
             commandLine = commandLine.TrimStart();
