@@ -189,9 +189,7 @@ namespace WebApplications.Utilities.Service.Client
                                     description,
                                     service,
                                     OnReceive,
-                                    CancellationTokenSource.CreateLinkedTokenSource(
-                                        token,
-                                        new CancellationTokenSource(10000).Token).Token);
+                                    token.WithTimeout(10000));
                     }
                     catch (TaskCanceledException)
                     {
