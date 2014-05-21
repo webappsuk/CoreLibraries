@@ -230,7 +230,7 @@ namespace WebApplications.Utilities.Service.Client
                             }
 
                             // If we're still connected, and we haven't received a disconnect response, try to send a disconnect request.
-                            if (stream.IsConnected && 
+                            if (stream.IsConnected &&
                                 disconnectResponse == null)
                                 try
                                 {
@@ -262,11 +262,12 @@ namespace WebApplications.Utilities.Service.Client
                     }
                     catch (IOException ioe)
                     {
-                        // Common exception caused by sudden disconnect, lower level
-                        Log.Add(
-                            ioe,
-                            LoggingLevel.Information,
-                            () => ClientResources.Err_NamedPipeClient_Failed);
+                        if (!token.IsCancellationRequested)
+                            // Common exception caused by sudden disconnect, lower level
+                            Log.Add(
+                                ioe,
+                                LoggingLevel.Information,
+                                () => ClientResources.Err_NamedPipeClient_Failed);
                     }
                     catch (Exception exception)
                     {
@@ -281,7 +282,7 @@ namespace WebApplications.Utilities.Service.Client
                                 ccs.TrySetException(exception);
 
                         // We only log if this wasn't a cancellation exception.
-                        if (tce == null)
+                        if (tce == null && !token.IsCancellationRequested)
                             Log.Add(
                                 exception,
                                 LoggingLevel.Error,
@@ -392,7 +393,7 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         [NotNull]
         private static readonly HashSet<string> _disconnectCommands = new HashSet<string>(
-            new[] {"Quit", "Exit", "Disconnect", "X"},
+            new[] { "Quit", "Exit", "Disconnect", "X" },
             StringComparer.CurrentCultureIgnoreCase);
 
         /// <summary>

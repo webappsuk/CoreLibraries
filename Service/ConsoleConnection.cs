@@ -348,7 +348,8 @@ namespace WebApplications.Utilities.Service
                     }
                     catch (Exception e)
                     {
-                        Log.Add(e);
+                        if (!token.IsCancellationRequested)
+                            Log.Add(e);
                     }
                 } while (!done);
             }
@@ -389,12 +390,13 @@ namespace WebApplications.Utilities.Service
                     }
                     catch (Exception e)
                     {
-                        new FormatBuilder()
-                            .AppendForegroundColor(ConsoleColor.Red)
-                            .Append("Error: ")
-                            .AppendLine(e.Message)
-                            .AppendResetForegroundColor()
-                            .WriteToConsole();
+                        if (!token.IsCancellationRequested)
+                            new FormatBuilder()
+                                .AppendForegroundColor(ConsoleColor.Red)
+                                .Append("Error: ")
+                                .AppendLine(e.Message)
+                                .AppendResetForegroundColor()
+                                .WriteToConsole();
                     }
 
                     // Let any async stuff done by the command have a bit of time, also throttle commands.

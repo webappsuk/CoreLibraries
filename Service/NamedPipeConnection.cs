@@ -250,18 +250,20 @@ namespace WebApplications.Utilities.Service
                         }
                         catch (IOException ioe)
                         {
-                            // Common exception caused by sudden disconnect, lower level
-                            Log.Add(
-                                ioe,
-                                LoggingLevel.Information,
-                                () => ServiceResources.Err_NamedPipeConnection_Failed);
+                            if (!token.IsCancellationRequested)
+                                // Common exception caused by sudden disconnect, lower level
+                                Log.Add(
+                                    ioe,
+                                    LoggingLevel.Information,
+                                    () => ServiceResources.Err_NamedPipeConnection_Failed);
                         }
                         catch (Exception exception)
                         {
-                            Log.Add(
-                                exception,
-                                LoggingLevel.Error,
-                                () => ServiceResources.Err_NamedPipeConnection_Failed);
+                            if (!token.IsCancellationRequested)
+                                Log.Add(
+                                    exception,
+                                    LoggingLevel.Error,
+                                    () => ServiceResources.Err_NamedPipeConnection_Failed);
                         }
                         finally
                         {

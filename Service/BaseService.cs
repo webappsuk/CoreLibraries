@@ -1191,7 +1191,8 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, () => ServiceResources.Err_Command_Exception, commandName);
+                if (!token.IsCancellationRequested)
+                    Log.Add(e, LoggingLevel.Error, () => ServiceResources.Err_Command_Exception, commandName);
                 throw;
             }
         }

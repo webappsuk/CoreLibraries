@@ -201,7 +201,7 @@ namespace WebApplications.Utilities.Service.Client
                     }
                 }
 
-                Console.Title = string.Format("{0} connected to {1}", description, service.Name); 
+                Console.Title = string.Format("{0} connected to {1}", description, service.Name);
                 _connected.WriteToConsole(
                     null,
                     new Dictionary<string, object>
@@ -244,7 +244,8 @@ namespace WebApplications.Utilities.Service.Client
             }
             catch (Exception e)
             {
-                Log.Add(e);
+                if (!token.IsCancellationRequested)
+                    Log.Add(e);
             }
             await Log.Flush(token);
             await Task.Delay(200, token);
