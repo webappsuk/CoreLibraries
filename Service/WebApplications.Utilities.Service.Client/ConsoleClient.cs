@@ -71,7 +71,6 @@ namespace WebApplications.Utilities.Service.Client
             .AppendResetForegroundColor()
             .MakeReadOnly();
 
-
         /// <summary>
         /// Runs the client asynchronously, optionally connecting to the service with the given pipe. 
         /// If no pipe is given, or the pipe is invalid, the user will be prompted to select a service to connect to.
@@ -262,8 +261,15 @@ namespace WebApplications.Utilities.Service.Client
             if (logResponse != null &&
                 logResponse.Logs != null)
             {
-                foreach (Log log in logResponse.Logs)
-                    log.WriteTo(ConsoleTextWriter.Default, Log.ShortFormat);
+                ConsoleTextWriter.Default.Context.Invoke(
+                    () =>
+                    {
+                        if (Console.CursorLeft != 0)
+                            ConsoleTextWriter.Default.WriteLine();
+                        foreach (Log log in logResponse.Logs)
+                            log.WriteTo(ConsoleTextWriter.Default, Log.ShortFormat);
+                    });
+
                 return;
             }
 

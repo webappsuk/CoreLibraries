@@ -250,7 +250,7 @@ namespace WebApplications.Utilities.Service
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_WaitInstall);
                                 while (!ServiceUtils.ServiceIsInstalled(service.ServiceName))
                                 {
-                                    await Task.Delay(250);
+                                    await Task.Delay(250, token);
                                     Console.Write('.');
                                 }
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
@@ -258,12 +258,12 @@ namespace WebApplications.Utilities.Service
                                 break;
 
                             case "U":
-                                await service.Uninstall(ConsoleTextWriter.Default);
+                                await service.Uninstall(ConsoleTextWriter.Default, token);
 
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_WaitUninstall);
                                 while (ServiceUtils.ServiceIsInstalled(service.ServiceName))
                                 {
-                                    await Task.Delay(250);
+                                    await Task.Delay(250, token);
                                     Console.Write('.');
                                 }
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
@@ -390,7 +390,7 @@ namespace WebApplications.Utilities.Service
                     }
                     catch (Exception e)
                     {
-                        if (!token.IsCancellationRequested)
+                        if (!t.IsCancellationRequested)
                             new FormatBuilder()
                                 .AppendForegroundColor(ConsoleColor.Red)
                                 .Append("Error: ")
