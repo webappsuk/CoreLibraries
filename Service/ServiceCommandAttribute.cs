@@ -27,8 +27,6 @@
 
 using System;
 using System.Diagnostics.Contracts;
-using System.IO;
-using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service
@@ -49,7 +47,7 @@ namespace WebApplications.Utilities.Service
         public readonly Type ResourceType;
 
         /// <summary>
-        /// The resource property for a comma-seperated list of names.
+        /// The resource property for a comma-separated list of names.
         /// </summary>
         [NotNull]
         [PublicAPI]

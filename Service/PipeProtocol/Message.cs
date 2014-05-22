@@ -138,8 +138,9 @@ namespace WebApplications.Utilities.Service.PipeProtocol
         /// Initializes a new instance of the <see cref="LogResponse"/> class.
         /// </summary>
         /// <param name="logs">The logs.</param>
-        public LogResponse(IEnumerable<Log> logs)
+        public LogResponse([NotNull] IEnumerable<Log> logs)
         {
+            Contract.Requires(logs != null);
             Logs = logs;
         }
     }
@@ -160,8 +161,9 @@ namespace WebApplications.Utilities.Service.PipeProtocol
         /// Initializes a new instance of the <see cref="ConnectRequest"/> class.
         /// </summary>
         /// <param name="description">The description.</param>
-        public ConnectRequest(string description)
+        public ConnectRequest([NotNull] string description)
         {
+            Contract.Requires(description != null);
             Description = description;
         }
     }

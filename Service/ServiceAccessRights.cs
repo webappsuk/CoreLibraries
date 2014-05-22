@@ -32,6 +32,7 @@ namespace WebApplications.Utilities.Service
     [Flags]
     internal enum ServiceAccessRights
     {
+        // ReSharper disable UnusedMember.Global
         QueryConfig = 0x1,
         ChangeConfig = 0x2,
         QueryStatus = 0x4,
@@ -47,5 +48,6 @@ namespace WebApplications.Utilities.Service
         AllAccess = (StandardRightsRequired | QueryConfig | ChangeConfig |
                      QueryStatus | EnumerateDependants | Start | Stop | PauseContinue |
                      Interrogate | UserDefinedControl)
+        // ReSharper restore UnusedMember.Global
     }
 }

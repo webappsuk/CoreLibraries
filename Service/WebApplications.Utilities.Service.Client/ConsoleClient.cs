@@ -155,13 +155,14 @@ namespace WebApplications.Utilities.Service.Client
                         NamedPipeServerInfo[] services = null;
                         await Log.Flush(token);
 
-                        ConsoleTextWriter.Default.WriteLine("Scanning for service... press any key to stop");
+                        ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_ScanningForService);
                         while (services == null ||
                                services.Length < 1)
                         {
                             services = NamedPipeClient.GetServices().ToArray();
                             if (Console.KeyAvailable)
                                 break;
+                            // ReSharper disable once PossibleNullReferenceException
                             await Task.Delay(500, token);
                             token.ThrowIfCancellationRequested();
                         }
@@ -169,8 +170,7 @@ namespace WebApplications.Utilities.Service.Client
                         if (services.Length > 0)
                             WriteServerList(services);
 
-                        ConsoleTextWriter.Default.WriteLine(
-                            "Please specify a valid service name or pipe to connect to; or press enter to use the first service found...");
+                        ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_EnterServiceName);
                         string serviceName = Console.ReadLine();
                         service = !string.IsNullOrWhiteSpace(serviceName)
                             ? NamedPipeClient.FindService(serviceName)
@@ -178,7 +178,8 @@ namespace WebApplications.Utilities.Service.Client
                     }
 
                     Console.Clear();
-                    ConsoleTextWriter.Default.WriteLine("Connecting to {0}...", service.Name);
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_ConnectingToService, service.Name);
 
                     try
                     {
@@ -192,15 +193,17 @@ namespace WebApplications.Utilities.Service.Client
                     }
                     catch (TaskCanceledException)
                     {
-                        ConsoleTextWriter.Default.WriteLine("Timed out connecting to {0}.", service.Name);
-                        ConsoleTextWriter.Default.WriteLine("Press any key to continue...");
+                        // ReSharper disable once AssignNullToNotNullAttribute
+                        ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_TimedOut, service.Name);
+                        ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_PressAnyKeyContinue);
                         client = null;
                         service = null;
                         Console.ReadKey(true);
                     }
                 }
 
-                Console.Title = string.Format("{0} connected to {1}", description, service.Name);
+                // ReSharper disable once AssignNullToNotNullAttribute
+                Console.Title = string.Format(ClientResources.ConsoleClient_RunAsync_ConnectedTitle, description, service.Name);
                 _connected.WriteToConsole(
                     null,
                     new Dictionary<string, object>
@@ -208,6 +211,7 @@ namespace WebApplications.Utilities.Service.Client
                         {"ServiceName", client.ServiceName}
                     });
 
+                // ReSharper disable once PossibleNullReferenceException
                 await Task.Delay(1100, token);
                 await Log.Flush(token);
 
@@ -223,6 +227,7 @@ namespace WebApplications.Utilities.Service.Client
                                 c => new FormatBuilder(c).WriteToConsole(),
                                 e =>
                                 {
+                                    Contract.Assert(e != null);
                                     if (!(e is TaskCanceledException))
                                         new FormatBuilder()
                                             .AppendForegroundColor(ConsoleColor.Red)
@@ -234,6 +239,7 @@ namespace WebApplications.Utilities.Service.Client
                                 token);
 
                     // Wait to allow any disconnects or logs to come through.
+                    // ReSharper disable once PossibleNullReferenceException
                     await Task.Delay(1100, token);
                     await Log.Flush(token);
                 }
@@ -247,8 +253,9 @@ namespace WebApplications.Utilities.Service.Client
                     Log.Add(e);
             }
             await Log.Flush(token);
+            // ReSharper disable once PossibleNullReferenceException
             await Task.Delay(200, token);
-            Console.WriteLine("Press any key to finish.");
+            Console.WriteLine(ClientResources.ConsoleClient_RunAsync_PressAnyKeyExit);
             Console.ReadKey(true);
         }
 
@@ -267,7 +274,10 @@ namespace WebApplications.Utilities.Service.Client
                         if (Console.CursorLeft != 0)
                             ConsoleTextWriter.Default.WriteLine();
                         foreach (Log log in logResponse.Logs)
+                        {
+                            Contract.Assert(log != null);
                             log.WriteTo(ConsoleTextWriter.Default, Log.ShortFormat);
+                        }
                     });
 
                 return;
@@ -288,6 +298,8 @@ namespace WebApplications.Utilities.Service.Client
                 null,
                 (_, c) =>
                 {
+                    Contract.Assert(c != null);
+                    Contract.Assert(c.Tag != null);
                     if (!string.Equals(c.Tag, "servers", StringComparison.CurrentCultureIgnoreCase))
                         return Resolution.Unknown;
                     return (servers != null) && (servers.Length > 0)
@@ -307,6 +319,8 @@ namespace WebApplications.Utilities.Service.Client
                 null,
                 (_, c) =>
                 {
+                    Contract.Assert(c != null);
+                    Contract.Assert(c.Tag != null);
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "time":

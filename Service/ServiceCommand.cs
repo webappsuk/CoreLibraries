@@ -80,20 +80,6 @@ namespace WebApplications.Utilities.Service
             new[] { typeof(string) });
 
         /// <summary>
-        /// The <see cref="MethodInfo"/> for <see cref="Rebase"/>.
-        /// </summary>
-        [NotNull]
-        private static readonly MethodInfo _rebase = typeof(ServiceCommand).GetMethod(
-            "Rebase",
-            BindingFlags.Static | BindingFlags.NonPublic,
-            null,
-            new[] { typeof(string[]), typeof(int) },
-            null);
-
-        [NotNull]
-        private static readonly string[] _emptyStringArray = new string[0];
-
-        /// <summary>
         /// The <see cref="MethodInfo"/> for <see cref="Enum.Parse(Type, string, bool)"/>.
         /// </summary>
         [NotNull]
@@ -106,6 +92,7 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         private static readonly MethodInfo _continueWith =
             typeof(Task).GetMethods()
+            // ReSharper disable PossibleNullReferenceException
                 .Where(m => string.Equals(m.Name, "ContinueWith"))
                 .Select(
                     m => new
@@ -118,6 +105,7 @@ namespace WebApplications.Utilities.Service
                     x => x.Params.Length == 4
                          && x.Args.Length == 1)
                 .Select(x => x.Method.MakeGenericMethod(typeof(bool)))
+            // ReSharper restore PossibleNullReferenceException
                 .First();
 
         /// <summary>
@@ -203,6 +191,7 @@ namespace WebApplications.Utilities.Service
             {
                 return _parameters.Keys.Where(
                     p => (p != _idParameter) &&
+                        // ReSharper disable once PossibleNullReferenceException
                          (p.ParameterType != typeof(TextWriter)) &&
                          (p.ParameterType != typeof(CancellationToken)));
             }
@@ -265,7 +254,7 @@ namespace WebApplications.Utilities.Service
             int extraParams = 0;
             bool hasParams = false;
 
-            // Populate the ID parameter and any parameters that arent specified by the user
+            // Populate the ID parameter and any parameters that aren't specified by the user
             for (int i = 0; i < inputs.Length; i++)
             {
                 ParameterInfo parameter = parameters[i];
@@ -337,11 +326,14 @@ namespace WebApplications.Utilities.Service
                 ParameterInfo parameter = null;
                 int p = 0;
                 for (; p < parameters.Length; p++)
+                {
+                    Contract.Assert(parameters[p] != null);
                     if (parameters[p].ParameterType == typeof(string))
                     {
                         parameter = parameters[p];
                         break;
                     }
+                }
 
                 if (parameter == null)
                     throw new ServiceException(() => ServiceResources.Err_ServiceCommand_Invalid_Command_Method, method);
@@ -360,11 +352,14 @@ namespace WebApplications.Utilities.Service
             else
             {
                 minimumArguments =
+                    // ReSharper disable once PossibleNullReferenceException
                     parameters.Select((p, i) => p.IsOptional ? i : int.MaxValue)
                         .Union(new[] { parameters.Length })
                         .Min() -
                     parameters.Count(
+                    // ReSharper disable PossibleNullReferenceException
                         p => !p.IsOptional &&
+                            // ReSharper restore PossibleNullReferenceException
                              (p.Name == attribute.IDParameter ||
                              _reservedParameterTypes.Contains(p.ParameterType)));
 
@@ -554,8 +549,10 @@ namespace WebApplications.Utilities.Service
             else
                 _names = names.Message
                     .Split(',')
+                    // ReSharper disable PossibleNullReferenceException
                     .Select(n => n.Trim())
                     .Where(n => n.Length > 0)
+                    // ReSharper restore PossibleNullReferenceException
                     .Distinct(StringComparer.CurrentCultureIgnoreCase)
                     .ToArray();
 
@@ -594,6 +591,7 @@ namespace WebApplications.Utilities.Service
                         Log.Add(
                             LoggingLevel.Warning,
                             () => ServiceResources.Wrn_No_Description_For_Parameter,
+                            // ReSharper disable once PossibleNullReferenceException
                             p.Name,
                             Name);
                         return ServiceResources.Cmd_Param_Description;
@@ -627,28 +625,6 @@ namespace WebApplications.Utilities.Service
 
             // ReSharper disable once AssignNullToNotNullAttribute
             return _execute(instance, writer, connectionId, arguments, token);
-        }
-
-        /// <summary>
-        /// Used to rebase an args array.
-        /// </summary>  
-        /// <param name="args">The arguments.</param>
-        /// <param name="skip">The skip.</param>
-        /// <returns>System.String[].</returns>
-        [NotNull]
-        [UsedImplicitly]
-        private static string[] Rebase([NotNull] string[] args, int skip)
-        {
-            Contract.Requires<RequiredContractException>(args != null, "Parameter_Null");
-
-            if (skip < 1)
-                return args;
-            if (skip >= args.Length)
-                return _emptyStringArray;
-
-            string[] newArgs = new string[args.Length - skip];
-            Array.Copy(args, skip, newArgs, 0, newArgs.Length);
-            return newArgs;
         }
 
         /// <summary>
@@ -689,6 +665,7 @@ namespace WebApplications.Utilities.Service
         /// </returns>
         public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
+            Contract.Assert(chunk.Tag != null);
             switch (chunk.Tag.ToLowerInvariant())
             {
                 case "name":

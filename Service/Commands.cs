@@ -107,7 +107,7 @@ namespace WebApplications.Utilities.Service
         [PublicAPI]
         [ServiceCommand(typeof(ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description")]
         public abstract Task<bool> StartService(
-            [NotNull] TextWriter writer, 
+            [NotNull] TextWriter writer,
             [CanBeNull, SCP(typeof(ServiceResources), "Cmd_Start_Args_Description")] string[] args,
             CancellationToken token = default (CancellationToken));
 
@@ -209,6 +209,7 @@ namespace WebApplications.Utilities.Service
             [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Performance_Category_Description")] string category = null);
 
         #region Formats
+        // TODO Move the strings to resources...?
         // ReSharper disable FormatStringProblem
         /// <summary>
         /// The format to use for outputting help for all commands.
@@ -344,7 +345,7 @@ namespace WebApplications.Utilities.Service
                 .AppendLine()
                 .MakeReadOnly();
 
-        // ReSharper restore FormatStringProblem, FormatStringProblem
+        // ReSharper restore FormatStringProblem
         #endregion
     }
 
@@ -930,9 +931,12 @@ namespace WebApplications.Utilities.Service
                         null,
                         (_, c) =>
                         {
+                            Contract.Assert(c != null);
+                            Contract.Assert(c.Tag != null);
                             switch (c.Tag.ToLowerInvariant())
                             {
                                 case "counters":
+                                    // ReSharper disable once PossibleNullReferenceException
                                     return PerfCategory.All.OrderBy(pc => pc.CategoryName);
                                 case "guid":
                                     return PerfCategory.InstanceGuid;

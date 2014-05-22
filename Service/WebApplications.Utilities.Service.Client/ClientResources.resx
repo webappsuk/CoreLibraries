@@ -135,4 +135,25 @@
   <data name="Wrn_ConnectedCommand_Received_DuplicateSequence" xml:space="preserve">
     <value>Duplicate sequence element recieved. Will be ignored.</value>
   </data>
+  <data name="ConsoleClient_RunAsync_PressAnyKeyExit" xml:space="preserve">
+    <value>Press any key to finish.</value>
+  </data>
+  <data name="ConsoleClient_RunAsync_ScanningForService" xml:space="preserve">
+    <value>Scanning for service... press any key to stop</value>
+  </data>
+  <data name="ConsoleClient_RunAsync_EnterServiceName" xml:space="preserve">
+    <value>Please specify a valid service name or pipe to connect to; or press enter to use the first service found...</value>
+  </data>
+  <data name="ConsoleClient_RunAsync_ConnectingToService" xml:space="preserve">
+    <value>Connecting to {0}...</value>
+  </data>
+  <data name="ConsoleClient_RunAsync_TimedOut" xml:space="preserve">
+    <value>Timed out connecting to {0}.</value>
+  </data>
+  <data name="ConsoleClient_RunAsync_PressAnyKeyContinue" xml:space="preserve">
+    <value>Press any key to continue...</value>
+  </data>
+  <data name="ConsoleClient_RunAsync_ConnectedTitle" xml:space="preserve">
+    <value>{0} connected to {1}</value>
+  </data>
 </root>

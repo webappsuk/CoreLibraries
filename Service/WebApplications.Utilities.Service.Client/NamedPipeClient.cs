@@ -32,7 +32,6 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
-using System.Net.Security;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Runtime.InteropServices;
@@ -127,12 +126,14 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="onReceive">The action to call on receipt of a message.</param>
         /// <param name="token">The token.</param>
         private NamedPipeClient(
-            string description,
+            [NotNull] string description,
             [NotNull] NamedPipeServerInfo server,
             [NotNull] Action<Message> onReceive,
             CancellationToken token = default(CancellationToken))
         {
+            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
             Contract.Requires<RequiredContractException>(server != null, "Parameter_Null");
+            Contract.Requires<RequiredContractException>(onReceive != null, "Parameter_Null");
             _server = server;
             _cancellationTokenSource = new CancellationTokenSource();
             CancellationToken disposeToken = _cancellationTokenSource.Token;
@@ -176,6 +177,9 @@ namespace WebApplications.Utilities.Service.Client
                                         // Read data in.
                                         byte[] data = await stream.ReadAsync(disposeToken);
 
+                                        if (data == null)
+                                            break;
+
                                         // Deserialize the incoming message.
                                         Message message = Message.Deserialize(data);
 
@@ -214,14 +218,16 @@ namespace WebApplications.Utilities.Service.Client
                                         onReceive(message);
 
                                         Response response = message as Response;
-                                        if (response != null)
-                                        {
-                                            ConnectedCommand connectedCommand;
+                                        if (response == null)
+                                            continue;
 
-                                            if (_commandRequests.TryGetValue(response.ID, out connectedCommand) &&
-                                                connectedCommand.Received(response))
-                                                _commandRequests.TryRemove(response.ID, out connectedCommand);
-                                        }
+                                        ConnectedCommand connectedCommand;
+                                        if (!_commandRequests.TryGetValue(response.ID, out connectedCommand))
+                                            continue;
+
+                                        Contract.Assert(connectedCommand != null);
+                                        if (connectedCommand.Received(response))
+                                            _commandRequests.TryRemove(response.ID, out connectedCommand);
                                     }
                                 }
                                 catch (TaskCanceledException)
@@ -241,7 +247,9 @@ namespace WebApplications.Utilities.Service.Client
                                             ? new CancellationTokenSource(500).Token
                                             : token);
                                 }
-                                catch (TaskCanceledException) { }
+                                catch (TaskCanceledException)
+                                {
+                                }
 
                             // Remove the stream.
                             _stream = null;
@@ -254,9 +262,12 @@ namespace WebApplications.Utilities.Service.Client
                             {
                                 onReceive(disconnectResponse);
                                 ConnectedCommand connectedCommand;
-                                if (_commandRequests.TryGetValue(disconnectResponse.ID, out connectedCommand) &&
-                                    connectedCommand.Received(disconnectResponse))
-                                    _commandRequests.TryRemove(disconnectResponse.ID, out connectedCommand);
+                                if (_commandRequests.TryGetValue(disconnectResponse.ID, out connectedCommand))
+                                {
+                                    Contract.Assert(connectedCommand != null);
+                                    if (connectedCommand.Received(disconnectResponse))
+                                        _commandRequests.TryRemove(disconnectResponse.ID, out connectedCommand);
+                                }
                             }
                         }
                     }
@@ -282,7 +293,8 @@ namespace WebApplications.Utilities.Service.Client
                                 ccs.TrySetException(exception);
 
                         // We only log if this wasn't a cancellation exception.
-                        if (tce == null && !token.IsCancellationRequested)
+                        if (tce == null &&
+                            !token.IsCancellationRequested)
                             Log.Add(
                                 exception,
                                 LoggingLevel.Error,
@@ -328,7 +340,7 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="onReceive">The action to call on receipt of a message.</param>
         /// <param name="token">The token.</param>
         /// <returns>A new <see cref="NamedPipeClient" /> that is connected to the given pipe.</returns>
-        [CanBeNull]
+        [NotNull]
         [PublicAPI]
         public static Task<NamedPipeClient> Connect(
             [NotNull] string description,
@@ -336,12 +348,15 @@ namespace WebApplications.Utilities.Service.Client
             [NotNull] Action<Message> onReceive,
             CancellationToken token = default(CancellationToken))
         {
+            Contract.Requires<RequiredContractException>(description != null, "Parameter_Null");
+            Contract.Requires<RequiredContractException>(onReceive != null, "Parameter_Null");
             if (server == null ||
                 !server.IsValid)
-                return null;
+                return TaskResult<NamedPipeClient>.Default;
 
             NamedPipeClient npc = new NamedPipeClient(description, server, onReceive, token);
             TaskCompletionSource<NamedPipeClient> ccs = npc._connectionCompletionSource;
+            // ReSharper disable once AssignNullToNotNullAttribute
             return (ccs != null ? ccs.Task : Task.FromResult(npc));
         }
 
@@ -356,9 +371,11 @@ namespace WebApplications.Utilities.Service.Client
             [NotNull] Request request,
             CancellationToken token = default(CancellationToken))
         {
-            if (_state != PipeState.Connected) return null;
             OverlappingPipeClientStream stream = _stream;
-            if (stream == null) return Observable.Empty<Response>();
+            if (_state != PipeState.Connected ||
+                stream == null)
+                // ReSharper disable once AssignNullToNotNullAttribute
+                return Observable.Empty<Response>();
 
             // ReSharper disable once AssignNullToNotNullAttribute
             return Observable.Create<Response>(
@@ -411,18 +428,22 @@ namespace WebApplications.Utilities.Service.Client
             if (_clientTask == null ||
                 State != PipeState.Connected ||
                 string.IsNullOrWhiteSpace(commandLine))
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return Observable.Empty<string>();
 
             // We intercept disconnect commands and convert to a proper disconnect request for a cleaner disconnect.
             // This isn't technically necessary, but it means that the connection requests the disconnect rather than
             // the server disconnecting the connection - which is how the command works.
             if (_disconnectCommands.Contains(commandLine.Trim()))
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return Send(new DisconnectRequest(), token)
                     .Select(c => string.Empty)
                     .IgnoreElements();
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Send(new CommandRequest(commandLine), token)
                 .Cast<CommandResponse>()
+                // ReSharper disable once PossibleNullReferenceException
                 .Select(r => r.Chunk)
                 .Where(c => !string.IsNullOrEmpty(c));
         }
@@ -470,11 +491,15 @@ namespace WebApplications.Utilities.Service.Client
             {
                 ConnectedCommand cc;
                 if (_commandRequests.TryRemove(id, out cc))
+                {
+                    Contract.Assert(cc != null);
                     cc.Dispose();
+                }
             }
         }
 
         #region Find files kernal methods
+        // ReSharper disable InconsistentNaming, FieldCanBeMadeReadOnly.Local, MemberCanBePrivate.Local
         [StructLayout(LayoutKind.Sequential)]
         private struct FILETIME
         {
@@ -509,6 +534,7 @@ namespace WebApplications.Utilities.Service.Client
 
         [DllImport("kernel32.dll")]
         private static extern bool FindClose(IntPtr hFindFile);
+        // ReSharper restore MemberCanBePrivate.Local, FieldCanBeMadeReadOnly.Local, InconsistentNaming
         #endregion
 
         /// <summary>
@@ -519,7 +545,7 @@ namespace WebApplications.Utilities.Service.Client
         public static IEnumerable<NamedPipeServerInfo> GetServices()
         {
             // Note: Directory.GetFiles() can fail if there are pipes on the system with invalid characters,
-            // to be safe we use the underlying kernal methods instead.
+            // to be safe we use the underlying kernel methods instead.
             IntPtr invalid = new IntPtr(-1);
             IntPtr handle = IntPtr.Zero;
             try
@@ -558,6 +584,7 @@ namespace WebApplications.Utilities.Service.Client
             return
                 GetServices()
                     .FirstOrDefault(
+                // ReSharper disable once PossibleNullReferenceException
                         n => string.Equals(serviceName, n.Name, StringComparison.CurrentCultureIgnoreCase) ||
                              string.Equals(serviceName, n.Pipe, StringComparison.CurrentCultureIgnoreCase));
         }

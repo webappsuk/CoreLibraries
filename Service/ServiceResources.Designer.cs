@@ -403,6 +403,33 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid user name!.
+        /// </summary>
+        internal static string ConsoleConnection_GetUserNamePassword_InvalidUserName {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_GetUserNamePassword_InvalidUserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password: .
+        /// </summary>
+        internal static string ConsoleConnection_GetUserNamePassword_Password {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_GetUserNamePassword_Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User name: .
+        /// </summary>
+        internal static string ConsoleConnection_GetUserNamePassword_Username {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_GetUserNamePassword_Username", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attempting to continue service....
         /// </summary>
         internal static string ConsoleConnection_RunAsync_AttemptingContinue {
@@ -457,6 +484,105 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Continue service..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionContinue {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionContinue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exit..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionExit {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionExit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install service..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionInstall {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pause service..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionPause {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionPause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restart service..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionRestart {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionRestart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run service from command line..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionRunCmd {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionRunCmd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run service from command line under new credentials..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionRunCmdNewCredentials {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionRunCmdNewCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run service without interaction..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionRunNoInteraction {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionRunNoInteraction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start service..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionStart {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop service..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionStop {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionStop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstall service..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionUninstall {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionUninstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Press any key to exit....
         /// </summary>
         internal static string ConsoleConnection_RunAsync_PressKeyToExit {
@@ -489,6 +615,15 @@ namespace WebApplications.Utilities.Service {
         internal static string ConsoleConnection_RunAsync_RunningTitle {
             get {
                 return ResourceManager.GetString("ConsoleConnection_RunAsync_RunningTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{0}&apos; service is installed and {1}..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_ServiceInstalledState {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_ServiceInstalledState", resourceCulture);
             }
         }
         

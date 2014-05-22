@@ -74,7 +74,7 @@ namespace WebApplications.Utilities.Service
             /// The escape chars
             /// </summary>
             [NotNull]
-            private readonly HashSet<char> _escapeChars = new HashSet<char>(new[] {'{', '}', '\\'});
+            private readonly HashSet<char> _escapeChars = new HashSet<char>(new[] { '{', '}', '\\' });
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ConnectedCommand" /> class.
@@ -105,6 +105,7 @@ namespace WebApplications.Utilities.Service
                         {
                             do
                             {
+                                // ReSharper disable once PossibleNullReferenceException
                                 await Task.Delay(250, flushToken);
                                 if (flushToken.IsCancellationRequested) return;
                                 await Flush(0, flushToken);
@@ -138,7 +139,7 @@ namespace WebApplications.Utilities.Service
                                 _builder.Append(exception.Message);
                                 await Flush(-2, token);
                             }
-                                // ReSharper disable once EmptyGeneralCatchClause
+                            // ReSharper disable once EmptyGeneralCatchClause
                             catch
                             {
                             }

@@ -474,4 +474,49 @@
   <data name="Err_ServiceCommand_CancellationTokenParameterWrongType" xml:space="preserve">
     <value>Cancellation token parameter should be of type CancellationToken, but was actually of type '{0}'</value>
   </data>
+  <data name="ConsoleConnection_RunAsync_ServiceInstalledState" xml:space="preserve">
+    <value>The '{0}' service is installed and {1}.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionInstall" xml:space="preserve">
+    <value>Install service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionUninstall" xml:space="preserve">
+    <value>Uninstall service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionStart" xml:space="preserve">
+    <value>Start service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionRestart" xml:space="preserve">
+    <value>Restart service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionStop" xml:space="preserve">
+    <value>Stop service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionPause" xml:space="preserve">
+    <value>Pause service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionContinue" xml:space="preserve">
+    <value>Continue service.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionRunCmd" xml:space="preserve">
+    <value>Run service from command line.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionRunCmdNewCredentials" xml:space="preserve">
+    <value>Run service from command line under new credentials.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionRunNoInteraction" xml:space="preserve">
+    <value>Run service without interaction.</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionExit" xml:space="preserve">
+    <value>Exit.</value>
+  </data>
+  <data name="ConsoleConnection_GetUserNamePassword_Username" xml:space="preserve">
+    <value>User name: </value>
+  </data>
+  <data name="ConsoleConnection_GetUserNamePassword_InvalidUserName" xml:space="preserve">
+    <value>Invalid user name!</value>
+  </data>
+  <data name="ConsoleConnection_GetUserNamePassword_Password" xml:space="preserve">
+    <value>Password: </value>
+  </data>
 </root>

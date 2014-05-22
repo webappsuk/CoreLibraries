@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Service
     public abstract partial class BaseService : ServiceBase
     {
         #region Performance Counters
-        // ReSharper disable MemberCanBePrivate.Global
+        // ReSharper disable MemberCanBePrivate.Global, IdentifierTypo
         [NotNull]
         internal static readonly PerfTimer PerfTimerStart = PerfCategory.GetOrAdd<PerfTimer>(
             "Service Start",
@@ -91,7 +91,7 @@ namespace WebApplications.Utilities.Service
             "Service Session Change",
             "Service session changed.");
 
-        // ReSharper restore MemberCanBePrivate.Global
+        // ReSharper restore MemberCanBePrivate.Global, IdentifierTypo
         #endregion
 
         /// <summary>
@@ -292,6 +292,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="args">Data passed by the start command.</param>
         [PublicAPI]
+        // ReSharper disable VirtualMemberNeverOverriden.Global
         protected virtual void DoStart([NotNull] string[] args)
         {
             Contract.Requires<RequiredContractException>(args != null, "Parameter_Null");
@@ -357,6 +358,7 @@ namespace WebApplications.Utilities.Service
         protected virtual void DoSessionChange(SessionChangeDescription changeDescription)
         {
         }
+        // ReSharper restore VirtualMemberNeverOverriden.Global
 
         /// <summary>
         /// Connects the specified connection.

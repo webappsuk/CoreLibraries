@@ -47,6 +47,7 @@ namespace WebApplications.Utilities.Service.Client
             /// The request.
             /// </summary>
             [NotNull]
+            [PublicAPI]
             public readonly Request Request;
 
             /// <summary>
@@ -55,7 +56,7 @@ namespace WebApplications.Utilities.Service.Client
             private IObserver<Response> _observer;
 
             /// <summary>
-            /// The completion handle signal competion.
+            /// The completion handle signal completion.
             /// </summary>
             private TaskCompletionSource<bool> _completionTask;
 
@@ -63,7 +64,7 @@ namespace WebApplications.Utilities.Service.Client
             /// Any responses received before they were expected.
             /// </summary>
             [NotNull]
-            private LinkedList<CommandResponse> _oooResponses = new LinkedList<CommandResponse>();
+            private readonly LinkedList<CommandResponse> _oooResponses = new LinkedList<CommandResponse>();
 
             /// <summary>
             /// The expected sequence number.
@@ -162,6 +163,7 @@ namespace WebApplications.Utilities.Service.Client
 
                             if (current == null)
                                 _oooResponses.AddLast(commandResponse);
+                            // ReSharper disable once PossibleNullReferenceException
                             else if (current.Value.Sequence < sequence)
                                 _oooResponses.AddAfter(current, commandResponse);
                             else
@@ -172,6 +174,7 @@ namespace WebApplications.Utilities.Service.Client
                             observer.OnNext(response);
                             _expectedSequence++;
                             while (_oooResponses.First != null &&
+                                // ReSharper disable once PossibleNullReferenceException
                                    _oooResponses.First.Value.Sequence == _expectedSequence)
                             {
                                 observer.OnNext(_oooResponses.First.Value);
@@ -210,6 +213,7 @@ namespace WebApplications.Utilities.Service.Client
                     {
                         observer.OnError(new TaskCanceledException());
                     }
+                    // ReSharper disable once EmptyGeneralCatchClause
                     catch
                     {
                     }

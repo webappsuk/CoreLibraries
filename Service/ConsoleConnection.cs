@@ -138,17 +138,17 @@ namespace WebApplications.Utilities.Service
 
                     Dictionary<string, string> options = new Dictionary<string, string>
                     {
-                        {"I", "Install service."},
-                        {"U", "Uninstall service."},
-                        {"S", "Start service."},
-                        {"R", "Restart service."},
-                        {"T", "Stop service."},
-                        {"P", "Pause service."},
-                        {"C", "Continue service."},
-                        {"Y", "Run service from command line."},
-                        {"W", "Run service from command line under new credentials."},
-                        {"Z", "Run service without interaction."},
-                        {"X", "Exit."}
+                        {"I", ServiceResources.ConsoleConnection_RunAsync_OptionInstall},
+                        {"U", ServiceResources.ConsoleConnection_RunAsync_OptionUninstall},
+                        {"S", ServiceResources.ConsoleConnection_RunAsync_OptionStart},
+                        {"R", ServiceResources.ConsoleConnection_RunAsync_OptionRestart},
+                        {"T", ServiceResources.ConsoleConnection_RunAsync_OptionStop},
+                        {"P", ServiceResources.ConsoleConnection_RunAsync_OptionPause},
+                        {"C", ServiceResources.ConsoleConnection_RunAsync_OptionContinue},
+                        {"Y", ServiceResources.ConsoleConnection_RunAsync_OptionRunCmd},
+                        {"W", ServiceResources.ConsoleConnection_RunAsync_OptionRunCmdNewCredentials},
+                        {"Z", ServiceResources.ConsoleConnection_RunAsync_OptionRunNoInteraction},
+                        {"X", ServiceResources.ConsoleConnection_RunAsync_OptionExit}
                     };
 
                     if (!allowConsoleInteraction)
@@ -168,7 +168,7 @@ namespace WebApplications.Utilities.Service
                         ServiceControllerStatus state = ServiceUtils.GetServiceStatus(service.ServiceName);
                         new FormatBuilder()
                             .AppendForegroundColor(ConsoleColor.White)
-                            .AppendFormatLine("The '{0}' service is installed and {1}.", service.ServiceName, state)
+                            .AppendFormatLine(ServiceResources.ConsoleConnection_RunAsync_ServiceInstalledState, service.ServiceName, state)
                             .AppendResetForegroundColor()
                             .WriteToConsole();
 
@@ -224,7 +224,8 @@ namespace WebApplications.Utilities.Service
 
                     _promptInstall.WriteToConsole(
                         null,
-                        (_, c) => !String.Equals(c.Tag, "options", StringComparison.CurrentCultureIgnoreCase)
+                        // ReSharper disable once PossibleNullReferenceException
+                        (_, c) => !string.Equals(c.Tag, "options", StringComparison.CurrentCultureIgnoreCase)
                             ? Resolution.Unknown
                             : options);
 
@@ -428,7 +429,7 @@ namespace WebApplications.Utilities.Service
             {
                 new FormatBuilder()
                     .AppendForegroundColor(ConsoleColor.Cyan)
-                    .Append("User name: ")
+                    .Append(ServiceResources.ConsoleConnection_GetUserNamePassword_Username)
                     .AppendResetForegroundColor()
                     .WriteToConsole();
                 userName = Console.ReadLine();
@@ -446,7 +447,7 @@ namespace WebApplications.Utilities.Service
                 {
                     new FormatBuilder()
                         .AppendForegroundColor(ConsoleColor.Red)
-                        .AppendLine("Invalid user name!")
+                        .AppendLine(ServiceResources.ConsoleConnection_GetUserNamePassword_InvalidUserName)
                         .AppendForegroundColor(ConsoleColor.Gray)
                         .AppendLine(ServiceResources.Cmd_Install_UserName_Description)
                         .AppendResetForegroundColor()
@@ -456,7 +457,7 @@ namespace WebApplications.Utilities.Service
 
                 new FormatBuilder()
                     .AppendForegroundColor(ConsoleColor.Cyan)
-                    .Append("Password: ")
+                    .Append(ServiceResources.ConsoleConnection_GetUserNamePassword_Password)
                     .AppendResetForegroundColor()
                     .WriteToConsole();
                 password = ConsoleHelper.ReadPassword();
@@ -504,6 +505,8 @@ namespace WebApplications.Utilities.Service
                 null,
                 (_, c) =>
                 {
+                    Contract.Assert(c != null);
+                    Contract.Assert(c.Tag != null);
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "time":

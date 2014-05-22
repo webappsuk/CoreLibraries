@@ -46,6 +46,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         private class NamedPipeServerLogger : LoggerBase
         {
+            [NotNull]
             private readonly NamedPipeServer _server;
 
             /// <summary>
@@ -85,6 +86,7 @@ namespace WebApplications.Utilities.Service
                 connections = _namedPipeConnections.ToArray();
 
             byte[] data = new LogResponse(logs).Serialize();
+            // ReSharper disable once PossibleNullReferenceException, AssignNullToNotNullAttribute
             return Task.WhenAll(connections.Select(c => c.Send(data, token)));
         }
     }

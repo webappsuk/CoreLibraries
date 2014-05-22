@@ -225,15 +225,16 @@ namespace WebApplications.Utilities.Service
         /// Removes the specified connection.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        private void Remove(NamedPipeConnection connection)
+        private void Remove([NotNull] NamedPipeConnection connection)
         {
+            Contract.Requires<RequiredContractException>(connection != null, "Parameter_Null");
             lock (_namedPipeConnections)
                 _namedPipeConnections.Remove(connection);
             Add();
         }
 
         /// <summary>
-        /// Starts a new listening connection, if there is capactiy.
+        /// Starts a new listening connection, if there is capacity.
         /// </summary>
         private void Add()
         {

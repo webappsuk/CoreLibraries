@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Service
     internal static class ServiceUtils
     {
         #region PInvoke
-        // ReSharper disable InconsistentNaming
+        // ReSharper disable InconsistentNaming, StringLiteralTypo, IdentifierTypo
         private const int SERVICE_WIN32_OWN_PROCESS = 0x00000010;
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -98,7 +98,7 @@ namespace WebApplications.Utilities.Service
             IntPtr hService,
             ServiceConfig dwInfoLevel,
             ref SERVICE_DESCRIPTION lpInfo);
-        // ReSharper restore InconsistentNaming
+        // ReSharper restore InconsistentNaming, StringLiteralTypo, IdentifierTypo
         #endregion
 
         /// <summary>
@@ -111,6 +111,7 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             return
                 ServiceController.GetServices()
+                // ReSharper disable once PossibleNullReferenceException
                     .Any(sc => string.Equals(sc.ServiceName, serviceName, StringComparison.CurrentCulture));
         }
 
@@ -119,7 +120,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
         /// <param name="token">The token.</param>
-        /// <returns>Task.</returns>
+        /// <returns>An awaitable task.</returns>
         /// <exception cref="System.ComponentModel.Win32Exception"></exception>
         /// <exception cref="System.ApplicationException">Service state unknown.
         /// or
@@ -146,11 +147,14 @@ namespace WebApplications.Utilities.Service
                 {
                     ManagementObject mo = mc.GetInstances()
                         .Cast<ManagementObject>()
+                        // ReSharper disable PossibleNullReferenceException
                         .FirstOrDefault(o => string.Equals(o.GetPropertyValue("Name").ToString(), serviceName));
+                    // ReSharper restore PossibleNullReferenceException
                     if (mo == null)
                         throw new ServiceException(
                             () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,
                             serviceName);
+                    // ReSharper disable once PossibleNullReferenceException
                     servicePath = mo.GetPropertyValue("PathName").ToString().Trim('"');
                     if (!File.Exists(servicePath))
                         throw new ServiceException(
@@ -296,7 +300,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="serviceController">The service controller.</param>
         /// <param name="status">The status.</param>
         /// <param name="token">The token.</param>
-        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        /// <returns>An awaitable task that returns <see langword="true"/> if the service status is equal to <paramref name="status"/>.</returns>
         [NotNull]
         private static async Task<bool> WaitForAsync(
             [NotNull] ServiceController serviceController,
@@ -324,7 +328,8 @@ namespace WebApplications.Utilities.Service
         /// <param name="serviceName">Name of the service.</param>
         /// <param name="args">The arguments.</param>
         /// <param name="token">The token.</param>
-        /// <returns>System.Threading.Tasks.Task.</returns>
+        /// <returns>An awaitable task that returns <see langword="true"/> if the service is running.</returns>
+        [NotNull]
         public static async Task<bool> StartService(
             [NotNull] string serviceName,
             [CanBeNull] string[] args = null,
@@ -374,7 +379,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
         /// <param name="token">The token.</param>
-        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        /// <returns>An awaitable task that returns <see langword="true"/> if the service is paused.</returns>
         [NotNull]
         public static async Task<bool> PauseService(
             [NotNull] string serviceName,
@@ -419,7 +424,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
         /// <param name="token">The token.</param>
-        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        /// <returns>An awaitable task that returns <see langword="true"/> if the service is running.</returns>
         [NotNull]
         public static async Task<bool> ContinueService(
             [NotNull] string serviceName,
@@ -460,7 +465,7 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         /// <param name="serviceName">Name of the service.</param>
         /// <param name="token">The token.</param>
-        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        /// <returns>An awaitable task that returns <see langword="true"/> if the service is stopped.</returns>
         [NotNull]
         public static async Task<bool> StopService(
             [NotNull] string serviceName,
@@ -510,7 +515,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="serviceName">Name of the service.</param>
         /// <param name="command">The command.</param>
         /// <param name="token">The token.</param>
-        /// <returns>Task&lt;System.Boolean&gt;.</returns>
+        /// <returns>An awaitable task that returns <see langword="true"/> if the command was run.</returns>
         [NotNull]
         public static async Task<bool> CommandService(
             [NotNull] string serviceName,

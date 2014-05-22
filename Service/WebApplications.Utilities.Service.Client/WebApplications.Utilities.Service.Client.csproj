@@ -153,7 +153,13 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Ensures client builds with same files as server uses for protocol. -->
-    <Compile Include="..\PipeProtocol\**">
+    <Compile Include="..\PipeProtocol\Common.cs">
+      <Link>PipeProtocol\Message.cs</Link>
+    </Compile>
+    <Compile Include="..\PipeProtocol\Message.cs">
+      <Link>PipeProtocol\Message.cs</Link>
+    </Compile>
+    <Compile Include="..\PipeProtocol\PipeState.cs">
       <Link>PipeProtocol\Message.cs</Link>
     </Compile>
     <Compile Include="ClientResources.Designer.cs">
