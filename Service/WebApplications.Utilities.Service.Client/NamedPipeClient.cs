@@ -410,7 +410,7 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         [NotNull]
         private static readonly HashSet<string> _disconnectCommands = new HashSet<string>(
-            new[] { "Quit", "Exit", "Disconnect", "X" },
+            new[] {"Quit", "Exit", "Disconnect", "X"},
             StringComparer.CurrentCultureIgnoreCase);
 
         /// <summary>
@@ -534,6 +534,7 @@ namespace WebApplications.Utilities.Service.Client
 
         [DllImport("kernel32.dll")]
         private static extern bool FindClose(IntPtr hFindFile);
+
         // ReSharper restore MemberCanBePrivate.Local, FieldCanBeMadeReadOnly.Local, InconsistentNaming
         #endregion
 
@@ -584,7 +585,7 @@ namespace WebApplications.Utilities.Service.Client
             return
                 GetServices()
                     .FirstOrDefault(
-                // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                         n => string.Equals(serviceName, n.Name, StringComparison.CurrentCultureIgnoreCase) ||
                              string.Equals(serviceName, n.Pipe, StringComparison.CurrentCultureIgnoreCase));
         }

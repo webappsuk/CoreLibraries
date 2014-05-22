@@ -168,7 +168,10 @@ namespace WebApplications.Utilities.Service
                         ServiceControllerStatus state = ServiceUtils.GetServiceStatus(service.ServiceName);
                         new FormatBuilder()
                             .AppendForegroundColor(ConsoleColor.White)
-                            .AppendFormatLine(ServiceResources.ConsoleConnection_RunAsync_ServiceInstalledState, service.ServiceName, state)
+                            .AppendFormatLine(
+                                ServiceResources.ConsoleConnection_RunAsync_ServiceInstalledState,
+                                service.ServiceName,
+                                state)
                             .AppendResetForegroundColor()
                             .WriteToConsole();
 

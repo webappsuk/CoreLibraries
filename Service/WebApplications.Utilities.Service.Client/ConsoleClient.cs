@@ -54,7 +54,7 @@ namespace WebApplications.Utilities.Service.Client
         private static readonly FormatBuilder _serverList = new FormatBuilder()
             .AppendForegroundColor(ConsoleColor.White)
             .AppendLine("Current matching pipes:")
-            .AppendLayout(indentSize: 25, tabStops: new[] { 7, 25 })
+            .AppendLayout(indentSize: 25, tabStops: new[] {7, 25})
             .AppendForegroundColor(ConsoleColor.Yellow)
             .AppendLine("Host\tName\tPipe")
             .AppendResetForegroundColor()
@@ -179,7 +179,9 @@ namespace WebApplications.Utilities.Service.Client
 
                     Console.Clear();
                     // ReSharper disable once AssignNullToNotNullAttribute
-                    ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_ConnectingToService, service.Name);
+                    ConsoleTextWriter.Default.WriteLine(
+                        ClientResources.ConsoleClient_RunAsync_ConnectingToService,
+                        service.Name);
 
                     try
                     {
@@ -194,7 +196,9 @@ namespace WebApplications.Utilities.Service.Client
                     catch (TaskCanceledException)
                     {
                         // ReSharper disable once AssignNullToNotNullAttribute
-                        ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_TimedOut, service.Name);
+                        ConsoleTextWriter.Default.WriteLine(
+                            ClientResources.ConsoleClient_RunAsync_TimedOut,
+                            service.Name);
                         ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_PressAnyKeyContinue);
                         client = null;
                         service = null;
@@ -203,7 +207,10 @@ namespace WebApplications.Utilities.Service.Client
                 }
 
                 // ReSharper disable once AssignNullToNotNullAttribute
-                Console.Title = string.Format(ClientResources.ConsoleClient_RunAsync_ConnectedTitle, description, service.Name);
+                Console.Title = string.Format(
+                    ClientResources.ConsoleClient_RunAsync_ConnectedTitle,
+                    description,
+                    service.Name);
                 _connected.WriteToConsole(
                     null,
                     new Dictionary<string, object>

@@ -98,6 +98,7 @@ namespace WebApplications.Utilities.Service
             IntPtr hService,
             ServiceConfig dwInfoLevel,
             ref SERVICE_DESCRIPTION lpInfo);
+
         // ReSharper restore InconsistentNaming, StringLiteralTypo, IdentifierTypo
         #endregion
 
@@ -111,7 +112,7 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             return
                 ServiceController.GetServices()
-                // ReSharper disable once PossibleNullReferenceException
+                    // ReSharper disable once PossibleNullReferenceException
                     .Any(sc => string.Equals(sc.ServiceName, serviceName, StringComparison.CurrentCulture));
         }
 
@@ -336,11 +337,15 @@ namespace WebApplications.Utilities.Service
             CancellationToken token = default(CancellationToken))
         {
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
-            if (args == null) args = new string[] { };
+            if (args == null) args = new string[] {};
             try
             {
-                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
+                new ServiceControllerPermission(
+                    ServiceControllerPermissionAccess.Control,
+                    Environment.MachineName,
+                    serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
+                    )
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -433,8 +438,12 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
+                new ServiceControllerPermission(
+                    ServiceControllerPermissionAccess.Control,
+                    Environment.MachineName,
+                    serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
+                    )
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -474,8 +483,12 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                new ServiceControllerPermission(ServiceControllerPermissionAccess.Control, Environment.MachineName, serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
+                new ServiceControllerPermission(
+                    ServiceControllerPermissionAccess.Control,
+                    Environment.MachineName,
+                    serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
+                    )
                     switch (serviceController.Status)
                     {
                         case ServiceControllerStatus.Running:
@@ -564,8 +577,12 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(serviceName != null, "Parameter_Null");
             try
             {
-                new ServiceControllerPermission(ServiceControllerPermissionAccess.Browse, Environment.MachineName, serviceName).Assert();
-                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName))
+                new ServiceControllerPermission(
+                    ServiceControllerPermissionAccess.Browse,
+                    Environment.MachineName,
+                    serviceName).Assert();
+                using (ServiceController serviceController = new ServiceController(serviceName, Environment.MachineName)
+                    )
                     return serviceController.Status;
             }
             catch (TaskCanceledException)

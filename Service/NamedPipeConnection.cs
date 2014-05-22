@@ -200,8 +200,9 @@ namespace WebApplications.Utilities.Service
                                                         () => ServiceResources.Not_NamedPipeConnection_Connection,
                                                         _connectionDescription);
 
-                                                    await Send(new ConnectResponse(request.ID, _server.Service.ServiceName),
-                                                            token);
+                                                    await Send(
+                                                        new ConnectResponse(request.ID, _server.Service.ServiceName),
+                                                        token);
                                                     continue;
                                                 }
 
@@ -225,7 +226,9 @@ namespace WebApplications.Utilities.Service
                                                             token));
                                             }
                                         }
-                                        catch (TaskCanceledException) { }
+                                        catch (TaskCanceledException)
+                                        {
+                                        }
 
                                         if (stream.IsConnected)
                                             try
@@ -237,7 +240,9 @@ namespace WebApplications.Utilities.Service
                                                         ? new CancellationTokenSource(500).Token
                                                         : token);
                                             }
-                                            catch (TaskCanceledException) { }
+                                            catch (TaskCanceledException)
+                                            {
+                                            }
                                     }
                                 }
 

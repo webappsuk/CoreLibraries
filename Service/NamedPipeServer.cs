@@ -184,7 +184,7 @@ namespace WebApplications.Utilities.Service
 
             // Create a connection, before adding it to the list and starting.
             NamedPipeConnection connection = new NamedPipeConnection(this);
-            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) { connection };
+            _namedPipeConnections = new List<NamedPipeConnection>(MaximumConnections) {connection};
             connection.Start();
             _logger = new NamedPipeServerLogger(this);
             Log.AddLogger(_logger);
