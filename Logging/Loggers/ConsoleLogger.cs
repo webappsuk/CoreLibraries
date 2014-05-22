@@ -65,5 +65,20 @@ namespace WebApplications.Utilities.Logging.Loggers
             Contract.Requires(ConsoleHelper.IsConsole);
             Format = format ?? Log.VerboseFormat;
         }
+
+        /// <summary>
+        /// Adds the specified logs to storage in batches.
+        /// </summary>
+        /// <param name="logs">The logs to add to storage.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>
+        /// Task.
+        /// </returns>
+        public override Task Add(IEnumerable<Log> logs, CancellationToken token = new CancellationToken())
+        {
+            if (Console.CursorLeft > 0)
+                ConsoleTextWriter.Default.WriteLine();
+            return base.Add(logs, token);
+        }
     }
 }
