@@ -125,6 +125,15 @@ namespace WebApplications.Utilities.Logging.Loggers
         }
 
         /// <summary>
+        /// Clears this instance.
+        /// </summary>
+        public void Clear()
+        {
+            lock (_lock)
+                _queue.Clear();
+        }
+
+        /// <summary>
         ///   The maximum number of log entries to store.
         /// </summary>
         public int MaximumLogEntries

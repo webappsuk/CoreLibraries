@@ -548,6 +548,15 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
+        /// Clears all cached logs.
+        /// </summary>
+        [PublicAPI]
+        public static void ClearCache()
+        {
+            _defaultMemoryLogger.Clear();
+        }
+
+        /// <summary>
         /// Gets all cached logs.
         /// </summary>
         /// <value>The query.</value>

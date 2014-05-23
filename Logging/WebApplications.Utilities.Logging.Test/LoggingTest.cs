@@ -94,6 +94,7 @@ namespace WebApplications.Utilities.Logging.Test
         public void TestInitialize()
         {
             Log.ValidLevels = LoggingLevels.All;
+            Log.ClearCache();
             Translation.DefaultCulture = Resources.Culture = CultureInfo.InvariantCulture;
         }
 
