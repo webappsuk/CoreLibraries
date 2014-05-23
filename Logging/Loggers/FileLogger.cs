@@ -575,7 +575,7 @@ namespace WebApplications.Utilities.Logging.Loggers
 #pragma warning restore 4014
 
                     int dedupe = 1;
-                    using (await _fileCreationLock.LockAsync(token))
+                    using (await _fileCreationLock.LockAsync(token).ConfigureAwait(false))
                     {
                         string fileName;
                         do
@@ -631,11 +631,11 @@ namespace WebApplications.Utilities.Logging.Loggers
                         Interlocked.CompareExchange(ref _logFile, logFile, null);
                     }
                 }
-                await logFile.Write(log, token);
+                await logFile.Write(log, token).ConfigureAwait(false);
             }
 
             if (AutoFlush && (logFile != null))
-                await logFile.FlushAsync(token);
+                await logFile.FlushAsync(token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -783,19 +783,19 @@ namespace WebApplications.Utilities.Logging.Loggers
                 {
                     case LogFileStyle.XML:
                         _fileStream.Seek(_xmlSeekOffset, SeekOrigin.End);
-                        await Write(logStr, token);
-                        await WriteLine("</Logs>", token);
+                        await Write(logStr, token).ConfigureAwait(false);
+                        await WriteLine("</Logs>", token).ConfigureAwait(false);
                         return;
                     case LogFileStyle.JSON:
                         _fileStream.Seek(_jsonSeekOffset, SeekOrigin.End);
                         if (Logs > 1)
-                            await WriteLine(",", token);
+                            await WriteLine(",", token).ConfigureAwait(false);
 
-                        await Write(logStr, token);
-                        await WriteLine("]", token);
+                        await Write(logStr, token).ConfigureAwait(false);
+                        await WriteLine("]", token).ConfigureAwait(false);
                         return;
                     default:
-                        await WriteLine(logStr, token);
+                        await WriteLine(logStr, token).ConfigureAwait(false);
                         return;
                 }
             }

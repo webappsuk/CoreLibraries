@@ -351,14 +351,8 @@
   <data name="Log_PerfCategory_Access_Denied" xml:space="preserve">
     <value>Performance counters cannot be accessed.</value>
   </data>
-  <data name="Log_PerfCategory_Enabled" xml:space="preserve">
-    <value>Performance counters are enabled and can be found with instance GUID '{0}'.</value>
-  </data>
-  <data name="Log_PerfCategory_Initialized" xml:space="preserve">
-    <value>Performance category '{0}' initialized.</value>
-  </data>
-  <data name="Log_PerfCategory_Missing" xml:space="preserve">
-    <value>Performance category '{0}' is missing.</value>
+  <data name="Log_PerfCategory_GUID" xml:space="preserve">
+    <value>Performance counters can be found with instance GUID '{0}'.</value>
   </data>
   <data name="Log_ToString_Invalid_Format" xml:space="preserve">
     <value>The '{0}' format is not valid for a log.  See the LogFormat enumeration for valid values.</value>

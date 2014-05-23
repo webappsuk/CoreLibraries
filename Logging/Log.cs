@@ -435,7 +435,7 @@ namespace WebApplications.Utilities.Logging
                         {
                             LoggingException le = e as LoggingException;
                             return le == null || ReferenceEquals(le, exception)
-                                ? new Log(culture, null, e, LoggingLevel.Error, resourceType, null, null, null).Guid.Guid
+                                ? new Log(culture, null, e, LoggingLevel.Error, resourceType, null, null, null).Add().Guid.Guid
                                 : le.Guid.Guid;
                         }).ToArray();
 
@@ -447,9 +447,6 @@ namespace WebApplications.Utilities.Logging
 
             // Increment performance counter.
             _perfCounterNewItem.Increment();
-
-            // Post log onto queue
-            ReLog();
         }
 
         #region Constructor Overloads
@@ -1872,22 +1869,18 @@ namespace WebApplications.Utilities.Logging
         }
 
         /// <summary>
-        /// Reposts a log to the logging queue.
+        /// Add this log to the logging queue.
         /// </summary>
-        /// <remarks>
-        /// <para>Logs are added to the queue automatically, this allows a log to be 'relogged',
-        /// i.e. reposted to the queue.  This should rarely be necessary but is useful for transferring logs between
-        /// stores, etc.</para>
-        /// <para>That said, this method should be used with extreme caution to avoid duplicate logging.</para>
-        /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ReLog()
+        [NotNull]
+        public Log Add()
         {
             // Post the log if the level is valid
             // We check here as exceptions always create a log (even if the level isn't valid).
             // It also reduces the race when the ValidLevels is changed.
             if (Level.IsValid(ValidLevels))
                 _buffer.Add(this);
+            return this;
         }
 
         /// <summary>

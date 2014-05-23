@@ -100,9 +100,10 @@ namespace WebApplications.Utilities.Logging.Test
         [TestMethod]
         public async Task TestMemoryLogger()
         {
-            FileLogger fileLogger = Log.GetLoggers<FileLogger>().First();
-            Assert.IsNotNull(fileLogger);
-            fileLogger.Format = "Verbose,Xml";
+            Log.CacheMaximum = 1000;
+            Log.CacheExpiry = TimeSpan.FromMinutes(1);
+            Log.ValidLevels = LoggingLevels.All;
+
             string message = "Test message " + Guid.NewGuid();
             LogContext context = new LogContext();
             context.Set("My data", 1);
@@ -132,7 +133,7 @@ namespace WebApplications.Utilities.Logging.Test
                 });
             Assert.IsNotNull(partialLog);
 
-            partialLog.ReLog();
+            partialLog.Add();
         }
 
         [TestMethod]
@@ -149,7 +150,7 @@ namespace WebApplications.Utilities.Logging.Test
                 });
             Assert.IsNotNull(partialLog);
 
-            partialLog.ReLog();
+            partialLog.Add();
         }
 
         [TestMethod]
@@ -170,10 +171,10 @@ namespace WebApplications.Utilities.Logging.Test
         }
 
         [TestMethod]
-        public void TestGet()
+        public async Task TestGet()
         {
             Log log = new Log(_logDictionary);
-            Log.Flush().Wait();
+            await Log.Flush();
 
             foreach (KeyValuePair<string, string> kvp in _logDictionary)
             {
@@ -234,7 +235,7 @@ namespace WebApplications.Utilities.Logging.Test
             catch (Exception e)
             { Log.Add(e, LoggingLevel.Information, "An exception occured!"); }
 
-            await Log.Flush();
+            await Log.Flush().ConfigureAwait(false);
         }
 
         [TestMethod]
@@ -250,9 +251,9 @@ namespace WebApplications.Utilities.Logging.Test
                     LoggingLevel.Information,
                     "Test Message {0} - {1}",
                     m,
-                    Guid.NewGuid());
+                    Guid.NewGuid()).Add();
 
-            await Log.Flush();
+            await Log.Flush().ConfigureAwait(false);
 
             CollectionAssert.AllItemsAreNotNull(logs);
             Assert.IsTrue(logs.All(l => l.MessageFormat == "Test Message {0} - {1}"), "Logs contain incorrect message format.");
@@ -292,9 +293,9 @@ namespace WebApplications.Utilities.Logging.Test
                     LoggingLevel.Information,
                     () => Resources.TestString,
                     m,
-                    Guid.NewGuid());
+                    Guid.NewGuid()).Add();
 
-            await Log.Flush();
+            await Log.Flush().ConfigureAwait(false);
 
             CollectionAssert.AllItemsAreNotNull(logs);
             Assert.IsTrue(logs.All(l => l.MessageFormat == Resources.TestString), "Logs contain incorrect message format.");
@@ -332,9 +333,10 @@ namespace WebApplications.Utilities.Logging.Test
                     LoggingLevel.Information,
                     () => Resources.TestString,
                     m,
-                    Guid.NewGuid());
+                    Guid.NewGuid())
+                    .Add();
 
-            await Log.Flush();
+            await Log.Flush().ConfigureAwait(false);
 
             CollectionAssert.AllItemsAreNotNull(logs);
             Assert.IsTrue(logs.All(l => l.MessageFormat == Resources.TestString), "Logs contain incorrect message format.");
@@ -375,7 +377,7 @@ namespace WebApplications.Utilities.Logging.Test
         {
             Contract.Assert(Resources.TestString != null);
 
-            Log log = new Log(() => Resources.TestString, "p0");
+            Log log = new Log(() => Resources.TestString, "p0").Add();
             Assert.AreEqual(typeof(Resources).FullName + ".TestString", log.ResourceProperty);
             Assert.AreEqual(string.Format(Resources.TestString, "p0"), log.Message);
         }
@@ -384,7 +386,7 @@ namespace WebApplications.Utilities.Logging.Test
         public void TestTranslations()
         {
             Contract.Assert(Resources.TestString != null);
-            Log log = new Log(() => Resources.TestString, "p0");
+            Log log = new Log(() => Resources.TestString, "p0").Add();
 
             var culture = Resources.Culture;
 
