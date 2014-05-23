@@ -61,6 +61,69 @@ namespace WebApplications.Utilities.Service.Client {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} connected to {1}.
+        /// </summary>
+        public static string ConsoleClient_RunAsync_ConnectedTitle {
+            get {
+                return ResourceManager.GetString("ConsoleClient_RunAsync_ConnectedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connecting to {0}....
+        /// </summary>
+        public static string ConsoleClient_RunAsync_ConnectingToService {
+            get {
+                return ResourceManager.GetString("ConsoleClient_RunAsync_ConnectingToService", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please specify a valid service name or pipe to connect to; or press enter to use the first service found....
+        /// </summary>
+        public static string ConsoleClient_RunAsync_EnterServiceName {
+            get {
+                return ResourceManager.GetString("ConsoleClient_RunAsync_EnterServiceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press any key to continue....
+        /// </summary>
+        public static string ConsoleClient_RunAsync_PressAnyKeyContinue {
+            get {
+                return ResourceManager.GetString("ConsoleClient_RunAsync_PressAnyKeyContinue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press any key to finish..
+        /// </summary>
+        public static string ConsoleClient_RunAsync_PressAnyKeyExit {
+            get {
+                return ResourceManager.GetString("ConsoleClient_RunAsync_PressAnyKeyExit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scanning for service... press any key to stop.
+        /// </summary>
+        public static string ConsoleClient_RunAsync_ScanningForService {
+            get {
+                return ResourceManager.GetString("ConsoleClient_RunAsync_ScanningForService", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timed out connecting to {0}..
+        /// </summary>
+        public static string ConsoleClient_RunAsync_TimedOut {
+            get {
+                return ResourceManager.GetString("ConsoleClient_RunAsync_TimedOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Contract failed. {0}.
         /// </summary>
         public static string Contract_Failed {

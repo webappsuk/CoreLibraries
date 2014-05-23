@@ -142,9 +142,9 @@
       <HintPath>..\packages\WebApplications.Utilities.5.0.5254.22072\lib\net45\WebApplications.Utilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5254.30896, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5255.17143, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5254.30896\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5255.17143\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Performance, Version=5.0.5254.30837, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -153,7 +153,13 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Ensures client builds with same files as server uses for protocol. -->
-    <Compile Include="..\PipeProtocol\**">
+    <Compile Include="..\PipeProtocol\Common.cs">
+      <Link>PipeProtocol\Message.cs</Link>
+    </Compile>
+    <Compile Include="..\PipeProtocol\Message.cs">
+      <Link>PipeProtocol\Message.cs</Link>
+    </Compile>
+    <Compile Include="..\PipeProtocol\PipeState.cs">
       <Link>PipeProtocol\Message.cs</Link>
     </Compile>
     <Compile Include="ClientResources.Designer.cs">

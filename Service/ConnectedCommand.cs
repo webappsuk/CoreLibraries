@@ -105,6 +105,7 @@ namespace WebApplications.Utilities.Service
                         {
                             do
                             {
+                                // ReSharper disable once PossibleNullReferenceException
                                 await Task.Delay(250, flushToken);
                                 if (flushToken.IsCancellationRequested) return;
                                 await Flush(0, flushToken);
@@ -128,7 +129,8 @@ namespace WebApplications.Utilities.Service
                         }
                         catch (Exception e)
                         {
-                            if (!(e is TaskCanceledException) && !(e is OperationCanceledException))
+                            if (!(e is TaskCanceledException) &&
+                                !(e is OperationCanceledException))
                                 exception = e;
                         }
                         if (exception != null)

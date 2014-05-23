@@ -53,7 +53,7 @@ namespace WebApplications.Utilities.Service
         [NotNull]
         protected static readonly Func<SessionChangeReason, int, SessionChangeDescription>
             CreateSessionChangeDescription =
-                typeof(SessionChangeDescription).ConstructorFunc<SessionChangeReason, int, SessionChangeDescription>();
+                typeof (SessionChangeDescription).ConstructorFunc<SessionChangeReason, int, SessionChangeDescription>();
 
         /// <summary>
         /// Provides command help.
@@ -62,11 +62,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="command">Name of the command.</param>
         /// <param name="parameter">The parameter.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Help_Names", "Cmd_Help_Description")]
         protected abstract void Help(
             [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Command_Description")] string command = null,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Command_Description")] string command = null,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Help_Parameter_Description")] string parameter = null);
 
         /// <summary>
         /// Install services.
@@ -77,11 +77,11 @@ namespace WebApplications.Utilities.Service
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Install_Names", "Cmd_Install_Description")]
         public abstract void Install(
             [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Install_UserName_Description")] string userName = null,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Install_Password_Description")] string password = null);
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Install_UserName_Description")] string userName = null,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Install_Password_Description")] string password = null);
 
         /// <summary>
         /// Uninstall services.
@@ -91,7 +91,7 @@ namespace WebApplications.Utilities.Service
         /// <returns></returns>
         [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Uninstall_Names", "Cmd_Uninstall_Description")]
         public abstract Task<bool> Uninstall(
             [NotNull] TextWriter writer,
             CancellationToken token = default(CancellationToken));
@@ -105,10 +105,10 @@ namespace WebApplications.Utilities.Service
         /// <returns></returns>
         [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Start_Names", "Cmd_Start_Description")]
         public abstract Task<bool> StartService(
-            [NotNull] TextWriter writer, 
-            [CanBeNull, SCP(typeof(ServiceResources), "Cmd_Start_Args_Description")] string[] args,
+            [NotNull] TextWriter writer,
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Start_Args_Description")] string[] args,
             CancellationToken token = default (CancellationToken));
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Stop_Names", "Cmd_Stop_Description")]
         public abstract Task<bool> StopService(
             [NotNull] TextWriter writer,
             CancellationToken token = default(CancellationToken));
@@ -130,7 +130,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Pause_Names", "Cmd_Pause_Description")]
         public abstract Task<bool> Pause(
             [NotNull] TextWriter writer,
             CancellationToken token = default(CancellationToken));
@@ -142,7 +142,7 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Continue_Names", "Cmd_Continue_Description")]
         public abstract Task<bool> Continue(
             [NotNull] TextWriter writer,
             CancellationToken token = default(CancellationToken));
@@ -151,7 +151,7 @@ namespace WebApplications.Utilities.Service
         /// Shuts down this instance.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Shutdown_Names", "Cmd_Shutdown_Description")]
         public abstract bool Shutdown([NotNull] TextWriter writer);
 
         /// <summary>
@@ -163,10 +163,10 @@ namespace WebApplications.Utilities.Service
         /// <returns></returns>
         [NotNull]
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_CustomCommand_Names", "Cmd_CustomCommand_Description")]
         public abstract Task<bool> CustomCommand(
             [NotNull] TextWriter writer,
-            [SCP(typeof(ServiceResources), "Cmd_CustomCommand_Command_Description")] int command,
+            [SCP(typeof (ServiceResources), "Cmd_CustomCommand_Command_Description")] int command,
             CancellationToken token = default (CancellationToken));
 
         /// <summary>
@@ -178,10 +178,10 @@ namespace WebApplications.Utilities.Service
         ///   <see langword="true" /> if failed, or the result of the call was <see langword="true" />; <see langword="false" /> otherwise.
         /// </returns>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_PowerEvent_Names", "Cmd_PowerEvent_Description")]
         public abstract bool PowerEvent(
             [NotNull] TextWriter writer,
-            [SCP(typeof(ServiceResources), "Cmd_PowerEvent_PowerStatus_Description")] PowerBroadcastStatus powerStatus);
+            [SCP(typeof (ServiceResources), "Cmd_PowerEvent_PowerStatus_Description")] PowerBroadcastStatus powerStatus);
 
         /// <summary>
         /// Sends the <see cref="SessionChangeDescription" /> to the service.
@@ -190,12 +190,12 @@ namespace WebApplications.Utilities.Service
         /// <param name="changeReason">The change reason.</param>
         /// <param name="sessionId">The session identifier.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description")]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_SessionChange_Names", "Cmd_SessionChange_Description")]
         public abstract void SessionChange(
             [NotNull] TextWriter writer,
-            [SCP(typeof(ServiceResources), "Cmd_SessionChange_ChangeReason_Description")] SessionChangeReason
+            [SCP(typeof (ServiceResources), "Cmd_SessionChange_ChangeReason_Description")] SessionChangeReason
                 changeReason,
-            [SCP(typeof(ServiceResources), "Cmd_SessionChange_SessionID_Description")] int sessionId);
+            [SCP(typeof (ServiceResources), "Cmd_SessionChange_SessionID_Description")] int sessionId);
 
         /// <summary>
         /// Gets the details of the performance counters loaded.
@@ -203,12 +203,13 @@ namespace WebApplications.Utilities.Service
         /// <param name="writer">The writer.</param>
         /// <param name="category">The category.</param>
         [PublicAPI]
-        [ServiceCommand(typeof(ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true)]
+        [ServiceCommand(typeof (ServiceResources), "Cmd_Performance_Names", "Cmd_Performance_Description", true)]
         public abstract void Performance(
             [NotNull] TextWriter writer,
-            [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Performance_Category_Description")] string category = null);
+            [CanBeNull] [SCP(typeof (ServiceResources), "Cmd_Performance_Category_Description")] string category = null);
 
         #region Formats
+        // TODO Move the strings to resources...?
         // ReSharper disable FormatStringProblem
         /// <summary>
         /// The format to use for outputting help for all commands.
@@ -344,7 +345,7 @@ namespace WebApplications.Utilities.Service
                 .AppendLine()
                 .MakeReadOnly();
 
-        // ReSharper restore FormatStringProblem, FormatStringProblem
+        // ReSharper restore FormatStringProblem
         #endregion
     }
 
@@ -393,9 +394,9 @@ namespace WebApplications.Utilities.Service
                     (_, c) =>
                         // ReSharper disable PossibleNullReferenceException
                         string.Equals(c.Tag, "commands", StringComparison.CurrentCultureIgnoreCase)
-                        // ReSharper disable once AssignNullToNotNullAttribute
+                            // ReSharper disable once AssignNullToNotNullAttribute
                             ? Commands.Values.Distinct().OrderBy(d => d.Name)
-                        // ReSharper restore PossibleNullReferenceException
+                            // ReSharper restore PossibleNullReferenceException
                             : Resolution.Unknown);
                 return;
             }
@@ -405,7 +406,7 @@ namespace WebApplications.Utilities.Service
                 parameter == null
                     ? null
                     : cmd.ArgumentParameters.FirstOrDefault(
-                // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                         p => string.Equals(p.Name, parameter, StringComparison.CurrentCultureIgnoreCase));
 
             // If the parameter name given does not exist, show an error
@@ -471,7 +472,10 @@ namespace WebApplications.Utilities.Service
         /// <param name="token">The token.</param>
         /// <returns></returns>
         [PublicAPI]
-        public override Task<bool> StartService(TextWriter writer, string[] args, CancellationToken token = default (CancellationToken))
+        public override Task<bool> StartService(
+            TextWriter writer,
+            string[] args,
+            CancellationToken token = default (CancellationToken))
         {
             if (args == null)
                 args = new string[0];
@@ -909,7 +913,7 @@ namespace WebApplications.Utilities.Service
                 PerfCategory cat = categoryOmitted
                     ? null
                     : PerfCategory.All.FirstOrDefault(
-                    // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                         p => string.Equals(p.CategoryName, category, StringComparison.CurrentCultureIgnoreCase));
 
                 if (!categoryOmitted &&
@@ -930,9 +934,12 @@ namespace WebApplications.Utilities.Service
                         null,
                         (_, c) =>
                         {
+                            Contract.Assert(c != null);
+                            Contract.Assert(c.Tag != null);
                             switch (c.Tag.ToLowerInvariant())
                             {
                                 case "counters":
+                                    // ReSharper disable once PossibleNullReferenceException
                                     return PerfCategory.All.OrderBy(pc => pc.CategoryName);
                                 case "guid":
                                     return PerfCategory.InstanceGuid;

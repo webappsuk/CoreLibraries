@@ -118,7 +118,11 @@ namespace WebApplications.Utilities.Service
             /// </summary>
             public void Start()
             {
-                CancellationToken token = _cancellationTokenSource.Token;
+                CancellationTokenSource cts = _cancellationTokenSource;
+                if (cts == null)
+                    return;
+
+                CancellationToken token = cts.Token;
                 _serverTask = Task.Run(
                     async () =>
                     {
@@ -196,10 +200,9 @@ namespace WebApplications.Utilities.Service
                                                         () => ServiceResources.Not_NamedPipeConnection_Connection,
                                                         _connectionDescription);
 
-                                                    await
-                                                        Send(
-                                                            new ConnectResponse(request.ID, _server.Service.ServiceName),
-                                                            token);
+                                                    await Send(
+                                                        new ConnectResponse(request.ID, _server.Service.ServiceName),
+                                                        token);
                                                     continue;
                                                 }
 
@@ -223,19 +226,23 @@ namespace WebApplications.Utilities.Service
                                                             token));
                                             }
                                         }
-                                        catch (TaskCanceledException) { }
+                                        catch (TaskCanceledException)
+                                        {
+                                        }
 
                                         if (stream.IsConnected)
                                             try
                                             {
-                                                // Try to send disconnect resposne.
+                                                // Try to send disconnect response.
                                                 await Send(
                                                     new DisconnectResponse(disconnectGuid),
                                                     token.IsCancellationRequested
                                                         ? new CancellationTokenSource(500).Token
                                                         : token);
                                             }
-                                            catch (TaskCanceledException) { }
+                                            catch (TaskCanceledException)
+                                            {
+                                            }
                                     }
                                 }
 

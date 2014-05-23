@@ -35,6 +35,7 @@ namespace WebApplications.Utilities.Service
     /// <summary>
     /// All exceptions thrown by the Service runner.
     /// </summary>
+    [PublicAPI]
     public class ServiceException : LoggingException
     {
         /// <summary>

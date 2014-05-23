@@ -39,9 +39,9 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     /// Base message class, used for communication between named pipe client and server.
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
-    [ProtoInclude(100, typeof(Request))]
-    [ProtoInclude(200, typeof(Response))]
-    [ProtoInclude(300, typeof(LogResponse))]
+    [ProtoInclude(100, typeof (Request))]
+    [ProtoInclude(200, typeof (Response))]
+    [ProtoInclude(300, typeof (LogResponse))]
     public abstract class Message
     {
         /// <summary>
@@ -77,9 +77,9 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     /// Base request message, sent by a client to request something from the server.
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
-    [ProtoInclude(100, typeof(CommandRequest))]
-    [ProtoInclude(200, typeof(ConnectRequest))]
-    [ProtoInclude(300, typeof(DisconnectRequest))]
+    [ProtoInclude(100, typeof (CommandRequest))]
+    [ProtoInclude(200, typeof (ConnectRequest))]
+    [ProtoInclude(300, typeof (DisconnectRequest))]
     public abstract class Request : Message
     {
         /// <summary>
@@ -101,9 +101,9 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     /// Base response message, sent by the server in response to requests from the client.
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
-    [ProtoInclude(100, typeof(CommandResponse))]
-    [ProtoInclude(200, typeof(ConnectResponse))]
-    [ProtoInclude(300, typeof(DisconnectResponse))]
+    [ProtoInclude(100, typeof (CommandResponse))]
+    [ProtoInclude(200, typeof (ConnectResponse))]
+    [ProtoInclude(300, typeof (DisconnectResponse))]
     public abstract class Response : Message
     {
         /// <summary>
@@ -138,8 +138,9 @@ namespace WebApplications.Utilities.Service.PipeProtocol
         /// Initializes a new instance of the <see cref="LogResponse"/> class.
         /// </summary>
         /// <param name="logs">The logs.</param>
-        public LogResponse(IEnumerable<Log> logs)
+        public LogResponse([NotNull] IEnumerable<Log> logs)
         {
+            Contract.Requires(logs != null);
             Logs = logs;
         }
     }
@@ -160,8 +161,9 @@ namespace WebApplications.Utilities.Service.PipeProtocol
         /// Initializes a new instance of the <see cref="ConnectRequest"/> class.
         /// </summary>
         /// <param name="description">The description.</param>
-        public ConnectRequest(string description)
+        public ConnectRequest([NotNull] string description)
         {
+            Contract.Requires(description != null);
             Description = description;
         }
     }

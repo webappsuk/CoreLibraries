@@ -40,7 +40,7 @@ namespace WebApplications.Utilities.ServiceClient
         /// Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        private static void Main([CanBeNull] string[] args)
+        private static void Main([CanBeNull][PublicAPI] string[] args)
         {
             ConsoleClient.Run("Test Client");
         }

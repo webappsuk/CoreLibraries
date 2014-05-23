@@ -29,6 +29,7 @@ namespace WebApplications.Utilities.Service
 {
     internal enum ServiceConfig
     {
+        // ReSharper disable UnusedMember.Global
         Description = 1,
         FailureActions = 2,
         DelayedAutoStartInfo = 3,
@@ -36,5 +37,6 @@ namespace WebApplications.Utilities.Service
         ServiceSidInfo = 5,
         RequiredPrivilegesInfo = 6,
         PreShutdownInfo = 7
+        // ReSharper restore UnusedMember.Global
     }
 }

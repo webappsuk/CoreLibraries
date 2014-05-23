@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using System.IO;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
@@ -57,11 +58,13 @@ namespace WebApplications.Utilities.Service.Client
         /// <summary>
         /// Whether this is a valid service pipe name.
         /// </summary>
+        [PublicAPI]
         public readonly bool IsValid;
 
         /// <summary>
         /// The unique identifier
         /// </summary>
+        [PublicAPI]
         public readonly Guid Guid;
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace WebApplications.Utilities.Service.Client
         internal NamedPipeServerInfo([CanBeNull] string pipe)
         {
             IsValid = false;
-            Pipe = pipe;
+            Pipe = pipe ?? string.Empty;
             Host = ".";
             Name = "Invalid";
             FullName = "Invalid";
@@ -149,6 +152,7 @@ namespace WebApplications.Utilities.Service.Client
         // ReSharper disable once CodeAnnotationAnalyzer
         public override object Resolve(FormatWriteContext context, FormatChunk chunk)
         {
+            Contract.Assert(chunk.Tag != null);
             switch (chunk.Tag.ToLowerInvariant())
             {
                 case "isvalid":
