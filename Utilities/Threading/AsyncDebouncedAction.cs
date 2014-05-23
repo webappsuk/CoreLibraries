@@ -123,7 +123,7 @@ namespace WebApplications.Utilities.Threading
             long requested = DateTime.UtcNow.Ticks;
 
             // Wait until the semaphore says we can go.
-            using (await _lock.LockAsync(token))
+            using (await _lock.LockAsync(token).ConfigureAwait(false))
             {
                 // If we're cancelled, or we were requested before the next run date we're done.
                 token.ThrowIfCancellationRequested();
@@ -132,7 +132,7 @@ namespace WebApplications.Utilities.Threading
                     return;
 
                 // Await on a task.
-                await _action(token);
+                await _action(token).ConfigureAwait(false);
 
                 // If we're cancelled we don't update our next run as we were unsuccessful.
                 token.ThrowIfCancellationRequested();

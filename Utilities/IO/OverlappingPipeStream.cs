@@ -120,7 +120,7 @@ namespace WebApplications.Utilities.IO
         [PublicAPI]
         public async Task<bool> WriteAsync([NotNull] byte[] data, CancellationToken token = default(CancellationToken))
         {
-            using (await _writeLock.LockAsync(token))
+            using (await _writeLock.LockAsync(token).ConfigureAwait(false))
             {
                 if (token.IsCancellationRequested) return false;
 
@@ -131,7 +131,7 @@ namespace WebApplications.Utilities.IO
                 try
                 {
                     // ReSharper disable once PossibleNullReferenceException
-                    await stream.WriteAsync(data, 0, data.Length, token);
+                    await stream.WriteAsync(data, 0, data.Length, token).ConfigureAwait(false);
                     return !token.IsCancellationRequested;
                 }
                 catch (TaskCanceledException)
@@ -162,7 +162,7 @@ namespace WebApplications.Utilities.IO
                 PipeStream stream = Stream;
                 if (stream == null) return null;
 
-                using (await _readLock.LockAsync(token))
+                using (await _readLock.LockAsync(token).ConfigureAwait(false))
                 {
                     ManualResetEvent dataReadyHandle = new ManualResetEvent(false);
 
@@ -213,7 +213,7 @@ namespace WebApplications.Utilities.IO
                                 case 0:
                                     // We have data so we can read it straight out
                                     // ReSharper disable once PossibleNullReferenceException
-                                    int bytesRead = await stream.ReadAsync(_buffer, 0, _buffer.Length, token);
+                                    int bytesRead = await stream.ReadAsync(_buffer, 0, _buffer.Length, token).ConfigureAwait(false);
                                     ms.Write(_buffer, 0, bytesRead);
 
                                     if (stream.ReadMode == PipeTransmissionMode.Byte ||
