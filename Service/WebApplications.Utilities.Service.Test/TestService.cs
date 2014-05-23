@@ -28,6 +28,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service.Test
@@ -65,21 +66,24 @@ namespace WebApplications.Utilities.Service.Test
         /// </summary>
         [PublicAPI]
         [ServiceCommand(typeof (TestResource), "Cmd_LongRun", "Cmd_LongRun_Description")]
-        public void StopService(
+        public async Task<bool> StopService(
             [NotNull] TextWriter writer,
             [ServiceCommandParameter(typeof (TestResource), "Cmd_LongRun_Loops_Description")] int loops = 10,
             [ServiceCommandParameter(typeof (TestResource), "Cmd_LongRun_ThrowError_Description")] bool throwError =
-                false)
+                false,
+            CancellationToken token = default(CancellationToken))
         {
             writer.WriteLine("Running long running operation:");
             for (int l = 0; l < loops; l++)
             {
                 writer.WriteLine("Loop {0} completed", l);
-                Thread.Sleep(1000);
+                await Task.Delay(1000, token);
+                token.ThrowIfCancellationRequested();
             }
             if (throwError)
                 throw new ApplicationException("Test exception");
             writer.WriteLine("Completed");
+            return true;
         }
     }
 }

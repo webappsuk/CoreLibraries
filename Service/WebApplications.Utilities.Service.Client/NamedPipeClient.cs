@@ -34,6 +34,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -222,6 +223,21 @@ namespace WebApplications.Utilities.Service.Client
                                             continue;
 
                                         ConnectedCommand connectedCommand;
+
+                                        // Check for cancellation responses.
+                                        CommandCancelResponse cancelResponse = response as CommandCancelResponse;
+                                        if (cancelResponse != null)
+                                        {
+                                            // Cancel the associated request
+                                            if (_commandRequests.TryGetValue(
+                                                cancelResponse.CancelledCommandId,
+                                                out connectedCommand))
+                                                connectedCommand.Cancel(cancelResponse);
+
+                                            // And fall through to complete the response...
+                                        }
+
+                                        // Find command the response is related to, and notify it of the response.
                                         if (!_commandRequests.TryGetValue(response.ID, out connectedCommand))
                                             continue;
 
@@ -367,7 +383,7 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="token">The token.</param>
         /// <returns>An observable of responses..</returns>
         [NotNull]
-        private IObservable<Response> Send(
+        public IObservable<Response> Send(
             [NotNull] Request request,
             CancellationToken token = default(CancellationToken))
         {
@@ -387,21 +403,25 @@ namespace WebApplications.Utilities.Service.Client
 
                     ConnectedCommand cr = new ConnectedCommand(request, observer);
                     _commandRequests.TryAdd(request.ID, cr);
+                    ExceptionDispatchInfo edi = null;
                     try
                     {
                         await stream.WriteAsync(request.Serialize(), token);
                         await cr.CompletionTask.WithCancellation(token);
                     }
-                    catch (TaskCanceledException)
-                    {
-                    }
-                    catch (OperationCanceledException)
-                    {
-                    }
-                    finally
-                    {
-                        _commandRequests.TryRemove(request.ID, out cr);
-                    }
+                    catch {}
+
+                    // If the command is not explicitly cancelled and is still running, and we've been cancelled
+                    // then ask the server to cancel.
+                    if (!cr.IsCancelled && !cr.IsCompleted && token.IsCancellationRequested)
+                        try
+                        {
+                            await CancelCommand(request.ID, Common.FireAndForgetToken);
+                        }
+                        catch (TaskCanceledException) { }
+                    
+                    // Remove the command request.
+                    _commandRequests.TryRemove(request.ID, out cr);
                 });
         }
 
@@ -425,23 +445,52 @@ namespace WebApplications.Utilities.Service.Client
             [CanBeNull] string commandLine,
             CancellationToken token = default (CancellationToken))
         {
+            Guid commandGuid;
+            return Execute(commandLine, out commandGuid, token);
+        }
+
+        /// <summary>
+        /// Executes the specified command line.
+        /// </summary>
+        /// <param name="commandLine">The command line.</param>
+        /// <param name="commandGuid">The command unique identifier.</param>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>
+        /// An awaitable task that contains the result of the execution.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public IObservable<string> Execute(
+            [CanBeNull] string commandLine,
+            out Guid commandGuid,
+            CancellationToken token = default (CancellationToken))
+        {
             if (_clientTask == null ||
                 State != PipeState.Connected ||
                 string.IsNullOrWhiteSpace(commandLine))
+            {
+                commandGuid = Guid.Empty;
                 // ReSharper disable once AssignNullToNotNullAttribute
                 return Observable.Empty<string>();
+            }
 
             // We intercept disconnect commands and convert to a proper disconnect request for a cleaner disconnect.
             // This isn't technically necessary, but it means that the connection requests the disconnect rather than
             // the server disconnecting the connection - which is how the command works.
             if (_disconnectCommands.Contains(commandLine.Trim()))
+            {
+                DisconnectRequest disconnect = new DisconnectRequest();
+                commandGuid = disconnect.ID;
                 // ReSharper disable once AssignNullToNotNullAttribute
-                return Send(new DisconnectRequest(), token)
+                return Send(disconnect, token)
                     .Select(c => string.Empty)
                     .IgnoreElements();
+            }
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            return Send(new CommandRequest(commandLine), token)
+            CommandRequest command = new CommandRequest(commandLine);
+            commandGuid = command.ID;
+            return Send(command, token)
                 .Cast<CommandResponse>()
                 // ReSharper disable once PossibleNullReferenceException
                 .Select(r => r.Chunk)
@@ -462,6 +511,27 @@ namespace WebApplications.Utilities.Service.Client
 
             // ReSharper disable once AssignNullToNotNullAttribute
             return Send(new DisconnectRequest(), token).ToTask(token);
+        }
+
+        /// <summary>
+        /// Cancels a command.
+        /// </summary>
+        /// <param name="commandGuid">The command unique identifier.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>
+        /// Task.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public Task CancelCommand(Guid commandGuid, CancellationToken token = default(CancellationToken))
+        {
+            if (_clientTask == null ||
+                State != PipeState.Connected || 
+                commandGuid == Guid.Empty)
+                return TaskResult<bool>.Default;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return Send(new CommandCancelRequest(commandGuid), token).ToTask(token);
         }
 
         /// <summary>

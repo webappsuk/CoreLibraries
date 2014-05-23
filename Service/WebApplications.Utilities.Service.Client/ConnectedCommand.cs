@@ -71,6 +71,8 @@ namespace WebApplications.Utilities.Service.Client
             /// </summary>
             private int _expectedSequence;
 
+            private bool _isCancelled;
+
             /// <summary>
             /// Gets the completion task.
             /// </summary>
@@ -101,6 +103,45 @@ namespace WebApplications.Utilities.Service.Client
             }
 
             /// <summary>
+            /// Gets a value indicating whether this instance is explicitly cancelled by the server.
+            /// </summary>
+            /// <value>
+            /// <see langword="true" /> if this instance is cancelled; otherwise, <see langword="false" />.
+            /// </value>
+            public bool IsCancelled
+            {
+                get { return _isCancelled; }
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether this instance is completed.
+            /// </summary>
+            /// <value>
+            /// <see langword="true" /> if this instance is completed; otherwise, <see langword="false" />.
+            /// </value>
+            public bool IsCompleted
+            {
+                get
+                {
+                    TaskCompletionSource<bool> tcs = _completionTask;
+                    return tcs == null ||
+                           tcs.Task.IsCompleted ||
+                           tcs.Task.IsFaulted ||
+                           tcs.Task.IsCanceled;
+                }
+            }
+
+            /// <summary>
+            /// Cancels the specified request.
+            /// </summary>
+            /// <param name="response">The response.</param>
+            public void Cancel(CommandCancelResponse response)
+            {
+                _isCancelled = true;
+                Dispose();
+            }
+
+            /// <summary>
             /// Received the specified connected command.
             /// </summary>
             /// <param name="response">The response.</param>
@@ -112,16 +153,15 @@ namespace WebApplications.Utilities.Service.Client
                 IObserver<Response> observer = _observer;
                 if (observer == null) return true;
                 bool complete = false;
+                Exception error = null;
                 try
                 {
                     lock (_oooResponses)
                     {
                         CommandResponse commandResponse = response as CommandResponse;
-
                         if (commandResponse == null)
                         {
                             observer.OnNext(response);
-                            observer.OnCompleted();
                             complete = true;
                             return true;
                         }
@@ -134,20 +174,19 @@ namespace WebApplications.Utilities.Service.Client
                                 complete = true;
                                 if (_oooResponses.Count > 0)
                                 {
-                                    // Suppress actual completion/error, as we
-                                    observer.OnError(
-                                        new LoggingException(
-                                            () => ClientResources.Err_ConnectedCommand_Received_MissingSequenceElements));
+                                    // Suppress actual completion/error, as we received out of order messages.
+                                    error =
+                                        new ApplicationException(
+                                            ClientResources.Err_ConnectedCommand_Received_MissingSequenceElements);
                                     return true;
                                 }
 
                                 if (sequence == -1)
                                 {
                                     observer.OnNext(response);
-                                    observer.OnCompleted();
                                 }
                                 else
-                                    observer.OnError(new LoggingException(((CommandResponse) response).Chunk));
+                                    error = new ApplicationException(((CommandResponse)response).Chunk);
                                 return true;
                             }
 
@@ -161,13 +200,13 @@ namespace WebApplications.Utilities.Service.Client
 
                             LinkedListNode<CommandResponse> current = _oooResponses.First;
                             while (current != null &&
-                                   // ReSharper disable once PossibleNullReferenceException
+                                // ReSharper disable once PossibleNullReferenceException
                                    current.Value.Sequence < sequence)
                                 current = current.Next;
 
                             if (current == null)
                                 _oooResponses.AddLast(commandResponse);
-                                // ReSharper disable once PossibleNullReferenceException
+                            // ReSharper disable once PossibleNullReferenceException
                             else if (current.Value.Sequence < sequence)
                                 _oooResponses.AddAfter(current, commandResponse);
                             else
@@ -178,7 +217,7 @@ namespace WebApplications.Utilities.Service.Client
                             observer.OnNext(response);
                             _expectedSequence++;
                             while (_oooResponses.First != null &&
-                                   // ReSharper disable once PossibleNullReferenceException
+                                // ReSharper disable once PossibleNullReferenceException
                                    _oooResponses.First.Value.Sequence == _expectedSequence)
                             {
                                 observer.OnNext(_oooResponses.First.Value);
@@ -199,6 +238,11 @@ namespace WebApplications.Utilities.Service.Client
                         _observer = null;
                         TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
                         if (cts != null) cts.TrySetResult(true);
+
+                        if (error != null)
+                            observer.OnError(error);
+                        else
+                            observer.OnCompleted();
                     }
                 }
                 return complete;
@@ -209,7 +253,9 @@ namespace WebApplications.Utilities.Service.Client
             /// </summary>
             public void Dispose()
             {
-                // TODO Observe the oooResponses?
+                TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
+                if (cts != null)
+                    cts.TrySetCanceled();
 
                 IObserver<Response> observer = Interlocked.Exchange(ref _observer, null);
                 if (observer != null)
@@ -217,14 +263,10 @@ namespace WebApplications.Utilities.Service.Client
                     {
                         observer.OnError(new TaskCanceledException());
                     }
-                        // ReSharper disable once EmptyGeneralCatchClause
+                    // ReSharper disable once EmptyGeneralCatchClause
                     catch
                     {
                     }
-
-                TaskCompletionSource<bool> cts = Interlocked.Exchange(ref _completionTask, null);
-                if (cts != null)
-                    cts.TrySetCanceled();
             }
         }
     }

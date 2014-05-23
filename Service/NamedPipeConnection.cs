@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
@@ -71,7 +72,7 @@ namespace WebApplications.Utilities.Service
             /// The currently executing commands.
             /// </summary>
             [NotNull]
-            private static readonly List<ConnectedCommand> _commands = new List<ConnectedCommand>();
+            private static readonly ConcurrentDictionary<Guid, ConnectedCommand> _commands = new ConcurrentDictionary<Guid, ConnectedCommand>();
 
             /// <summary>
             /// Initializes a new instance of the <see cref="NamedPipeConnection"/> class.
@@ -206,6 +207,31 @@ namespace WebApplications.Utilities.Service
                                                     continue;
                                                 }
 
+                                                CommandRequest commandRequest = request as CommandRequest;
+                                                if (commandRequest != null)
+                                                {
+                                                    if (!string.IsNullOrWhiteSpace(commandRequest.CommandLine))
+                                                        _commands.TryAdd(
+                                                            commandRequest.ID,
+                                                            new ConnectedCommand(
+                                                                _connectionGuid,
+                                                                _server.Service,
+                                                                this,
+                                                                commandRequest,
+                                                                token));
+                                                    continue;
+                                                }
+
+                                                CommandCancelRequest commandCancelRequest = request as CommandCancelRequest;
+                                                if (commandCancelRequest != null)
+                                                {
+                                                    ConnectedCommand cancelled;
+                                                    if (_commands.TryRemove(commandCancelRequest.CancelCommandId, out cancelled))
+                                                        // ReSharper disable once PossibleNullReferenceException
+                                                        cancelled.Cancel(commandCancelRequest);
+                                                    continue;
+                                                }
+
                                                 DisconnectRequest disconnectRequest = request as DisconnectRequest;
                                                 if (disconnectRequest != null)
                                                 {
@@ -214,16 +240,6 @@ namespace WebApplications.Utilities.Service
                                                     break;
                                                 }
 
-                                                CommandRequest commandRequest = request as CommandRequest;
-                                                if (commandRequest == null) continue;
-                                                if (!string.IsNullOrWhiteSpace(commandRequest.CommandLine))
-                                                    _commands.Add(
-                                                        new ConnectedCommand(
-                                                            _connectionGuid,
-                                                            _server.Service,
-                                                            this,
-                                                            commandRequest,
-                                                            token));
                                             }
                                         }
                                         catch (TaskCanceledException)
@@ -236,9 +252,7 @@ namespace WebApplications.Utilities.Service
                                                 // Try to send disconnect response.
                                                 await Send(
                                                     new DisconnectResponse(disconnectGuid),
-                                                    token.IsCancellationRequested
-                                                        ? new CancellationTokenSource(500).Token
-                                                        : token);
+                                                    Common.FireAndForgetToken);
                                             }
                                             catch (TaskCanceledException)
                                             {
@@ -329,8 +343,8 @@ namespace WebApplications.Utilities.Service
             /// <param name="connectedCommand">The connected command.</param>
             public void Remove([NotNull] ConnectedCommand connectedCommand)
             {
-                lock (_commands)
-                    _commands.Remove(connectedCommand);
+                ConnectedCommand removed;
+                _commands.TryRemove(connectedCommand.ID, out removed);
             }
 
             /// <summary>

@@ -33,15 +33,17 @@ using JetBrains.Annotations;
 using ProtoBuf;
 using WebApplications.Utilities.Logging;
 
+// TODO Split into individual files and add CommandCancelRequest
+
 namespace WebApplications.Utilities.Service.PipeProtocol
 {
     /// <summary>
     /// Base message class, used for communication between named pipe client and server.
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
-    [ProtoInclude(100, typeof (Request))]
-    [ProtoInclude(200, typeof (Response))]
-    [ProtoInclude(300, typeof (LogResponse))]
+    [ProtoInclude(100, typeof(Request))]
+    [ProtoInclude(200, typeof(Response))]
+    [ProtoInclude(300, typeof(LogResponse))]
     public abstract class Message
     {
         /// <summary>
@@ -77,9 +79,10 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     /// Base request message, sent by a client to request something from the server.
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
-    [ProtoInclude(100, typeof (CommandRequest))]
-    [ProtoInclude(200, typeof (ConnectRequest))]
-    [ProtoInclude(300, typeof (DisconnectRequest))]
+    [ProtoInclude(100, typeof(CommandRequest))]
+    [ProtoInclude(200, typeof(CommandCancelRequest))]
+    [ProtoInclude(300, typeof(ConnectRequest))]
+    [ProtoInclude(400, typeof(DisconnectRequest))]
     public abstract class Request : Message
     {
         /// <summary>
@@ -101,9 +104,10 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     /// Base response message, sent by the server in response to requests from the client.
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
-    [ProtoInclude(100, typeof (CommandResponse))]
-    [ProtoInclude(200, typeof (ConnectResponse))]
-    [ProtoInclude(300, typeof (DisconnectResponse))]
+    [ProtoInclude(100, typeof(CommandResponse))]
+    [ProtoInclude(200, typeof(CommandCancelResponse))]
+    [ProtoInclude(300, typeof(ConnectResponse))]
+    [ProtoInclude(400, typeof(DisconnectResponse))]
     public abstract class Response : Message
     {
         /// <summary>
@@ -240,6 +244,29 @@ namespace WebApplications.Utilities.Service.PipeProtocol
     }
 
     /// <summary>
+    /// Command request message, sent by a client.
+    /// </summary>
+    [ProtoContract(SkipConstructor = true)]
+    public class CommandCancelRequest : Request
+    {
+        /// <summary>
+        /// The command identifier for the command to cancel.
+        /// </summary>
+        [ProtoMember(1)]
+        public readonly Guid CancelCommandId;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandRequest" /> class.
+        /// </summary>
+        /// <param name="cancelCommandId">The command identifier for the command to cancel.</param>
+        public CommandCancelRequest(Guid cancelCommandId)
+            : base()
+        {
+            CancelCommandId = cancelCommandId;
+        }
+    }
+
+    /// <summary>
     /// Command response message, sent by the server in response to a <see cref="CommandRequest"/>.
     /// </summary>
     [ProtoContract(SkipConstructor = true)]
@@ -269,6 +296,30 @@ namespace WebApplications.Utilities.Service.PipeProtocol
             Contract.Requires(chunk != null);
             Sequence = sequence;
             Chunk = chunk;
+        }
+    }
+
+    /// <summary>
+    /// Command request message, sent by a client.
+    /// </summary>
+    [ProtoContract(SkipConstructor = true)]
+    public class CommandCancelResponse : Response
+    {
+        /// <summary>
+        /// The command identifier for the command that was cancelled.
+        /// </summary>
+        [ProtoMember(1)]
+        public readonly Guid CancelledCommandId;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandRequest" /> class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancelledCommandId">The command identifier for the command that was cancelled.</param>
+        public CommandCancelResponse(Guid id, Guid cancelledCommandId)
+            : base(id)
+        {
+            CancelledCommandId = cancelledCommandId;
         }
     }
 }
