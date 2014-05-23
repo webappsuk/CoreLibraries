@@ -37,6 +37,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
+// TODO Move to common code so it can be used from the client.
+
 namespace WebApplications.Utilities.Service
 {
     /// <summary>

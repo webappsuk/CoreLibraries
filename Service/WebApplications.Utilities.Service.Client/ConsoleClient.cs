@@ -229,21 +229,47 @@ namespace WebApplications.Utilities.Service.Client
                     string command = Console.ReadLine();
 
                     if (!string.IsNullOrWhiteSpace(command))
-                        client.Execute(command, token)
+                    {
+                        Guid commandGuid;
+                        bool completed = false;
+                        client.Execute(command, out commandGuid, token)
                             .Subscribe(
                                 c => new FormatBuilder(c).WriteToConsole(),
                                 e =>
                                 {
                                     Contract.Assert(e != null);
                                     if (!(e is TaskCanceledException))
+                                    {
                                         new FormatBuilder()
                                             .AppendForegroundColor(ConsoleColor.Red)
                                             .AppendLine(e.Message)
                                             .AppendResetForegroundColor()
                                             .WriteToConsole();
+                                    }
+                                    completed = true;
                                 },
-                                () => { },
+                                () =>
+                                {
+                                    completed = true;
+                                },
                                 token);
+
+                        if (commandGuid != Guid.Empty)
+                        {
+                            do
+                            {
+                                if (Console.KeyAvailable &&
+                                    Console.ReadKey(true).Key == ConsoleKey.Escape)
+                                {
+                                    // Cancel command
+                                    Console.Write("Cancelling command...");
+                                    await client.CancelCommand(commandGuid, token);
+                                    break;
+                                }
+                                await Task.Delay(100, token);
+                            } while (!completed);
+                        }
+                    }
 
                     // Wait to allow any disconnects or logs to come through.
                     // ReSharper disable once PossibleNullReferenceException
@@ -283,6 +309,7 @@ namespace WebApplications.Utilities.Service.Client
                         foreach (Log log in logResponse.Logs)
                         {
                             Contract.Assert(log != null);
+                            ConsoleTextWriter.Default.Write("-->");
                             log.WriteTo(ConsoleTextWriter.Default, Log.ShortFormat);
                         }
                     });

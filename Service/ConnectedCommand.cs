@@ -45,6 +45,9 @@ namespace WebApplications.Utilities.Service
     /// </summary>
     internal partial class NamedPipeServer
     {
+        /// <summary>
+        /// Holds a single executing command.
+        /// </summary>
         private class ConnectedCommand : TextWriter, IColoredTextWriter
         {
             /// <summary>
@@ -74,7 +77,17 @@ namespace WebApplications.Utilities.Service
             /// The escape chars
             /// </summary>
             [NotNull]
-            private readonly HashSet<char> _escapeChars = new HashSet<char>(new[] {'{', '}', '\\'});
+            private readonly HashSet<char> _escapeChars = new HashSet<char>(new[] { '{', '}', '\\' });
+
+            /// <summary>
+            /// The request identifier.
+            /// </summary>
+            public readonly Guid ID;
+
+            /// <summary>
+            /// The cancel request, if being cancelled as a result of a request.
+            /// </summary>
+            private CommandCancelRequest _cancelRequest;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ConnectedCommand" /> class.
@@ -95,8 +108,9 @@ namespace WebApplications.Utilities.Service
                 _connection = connection;
                 _request = request;
                 _cancellationTokenSource = new CancellationTokenSource();
+                ID = _request.ID;
 
-                CancellationToken flushToken = token.CreateLinked(_cancellationTokenSource.Token);
+                token = token.CreateLinked(_cancellationTokenSource.Token);
 
                 Task.Run(
                     async () =>
@@ -106,33 +120,57 @@ namespace WebApplications.Utilities.Service
                             do
                             {
                                 // ReSharper disable once PossibleNullReferenceException
-                                await Task.Delay(250, flushToken);
-                                if (flushToken.IsCancellationRequested) return;
-                                await Flush(0, flushToken);
+                                await Task.Delay(250, token);
+                                if (token.IsCancellationRequested) return;
+                                await Flush(0, token);
                             } while (true);
                         }
                         catch (TaskCanceledException)
                         {
                         }
                     },
-                    flushToken);
+                    token);
                 // Kick of task to run command.
                 Task.Run(
                     async () =>
                     {
                         Exception exception = null;
+                        bool cancelled = false;
                         try
                         {
                             await service.ExecuteAsync(ConnectionGuid, _request.CommandLine, this, token);
-                            token.ThrowIfCancellationRequested();
-                            await Flush(-1, token);
+                            if (!token.IsCancellationRequested)
+                                await Flush(-1, token);
+                            else
+                                cancelled = true;
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            cancelled = true;
                         }
                         catch (Exception e)
                         {
-                            if (!(e is TaskCanceledException) &&
-                                !(e is OperationCanceledException))
-                                exception = e;
+                            exception = e;
                         }
+
+                        if (cancelled)
+                        {
+                            using (await _flushLock.LockAsync(token))
+                            {
+                                try
+                                {
+                                    await
+                                        connection.Send(
+                                            new CommandCancelResponse(
+                                                _cancelRequest != null ? _cancelRequest.ID : Guid.Empty,
+                                                ID),
+                                            Common.FireAndForgetToken);
+                                }
+                                catch (OperationCanceledException) { }
+                                return;
+                            }
+                        }
+
                         if (exception != null)
                             try
                             {
@@ -140,10 +178,11 @@ namespace WebApplications.Utilities.Service
                                 _builder.Append(exception.Message);
                                 await Flush(-2, token);
                             }
-                                // ReSharper disable once EmptyGeneralCatchClause
+                            // ReSharper disable once EmptyGeneralCatchClause
                             catch
                             {
                             }
+
                         Dispose(true);
                     },
                     token);
@@ -157,6 +196,18 @@ namespace WebApplications.Utilities.Service
             {
                 Contract.Assert(_request.CommandLine != null);
                 return _request.CommandLine;
+            }
+
+            /// <summary>
+            /// Cancels the specified request.
+            /// </summary>
+            /// <param name="request">The request.</param>
+            public void Cancel(CommandCancelRequest request)
+            {
+                _cancelRequest = request;
+                CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+                if (cts != null)
+                    cts.Cancel();
             }
 
             /// <summary>
@@ -176,6 +227,9 @@ namespace WebApplications.Utilities.Service
                 base.Dispose(disposing);
             }
 
+            /// <summary>
+            /// The flush lock.
+            /// </summary>
             [NotNull]
             private readonly AsyncLock _flushLock = new AsyncLock();
 
@@ -204,10 +258,9 @@ namespace WebApplications.Utilities.Service
                         if (sequence < 0) _sequenceId = sequence;
                         else increment = true;
                     }
-                    Guid id = _request.ID;
                     NamedPipeConnection connection = _connection;
                     if (connection != null)
-                        await connection.Send(new CommandResponse(id, _sequenceId, chunk), token);
+                        await connection.Send(new CommandResponse(ID, _sequenceId, chunk), token);
                     if (increment)
                         lock (_builder)
                             _sequenceId++;

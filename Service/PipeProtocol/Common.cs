@@ -25,6 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Threading;
+
 namespace WebApplications.Utilities.Service.PipeProtocol
 {
     /// <summary>
@@ -36,5 +39,18 @@ namespace WebApplications.Utilities.Service.PipeProtocol
         /// The name suffix.
         /// </summary>
         public const string NameSuffix = "_WAUKService";
+
+        /// <summary>
+        /// The timeout used when sending 'fire and forget' messages.
+        /// </summary>
+        public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
+
+        /// <summary>
+        /// Gets the fire and forget token, which will cancel a send after <see cref="Timeout"/>.
+        /// </summary>
+        /// <value>
+        /// The fire and forget token.
+        /// </value>
+        public static CancellationToken FireAndForgetToken { get { return new CancellationTokenSource(Timeout).Token; } }
     }
 }
