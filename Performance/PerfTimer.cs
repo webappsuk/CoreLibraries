@@ -79,7 +79,6 @@ namespace WebApplications.Utilities.Performance
             : base(categoryName, _counterData)
         {
             Contract.Requires(categoryName != null);
-            if (!IsValid) return;
             // ReSharper disable PossibleNullReferenceException
             AddInfo("Count", "Total operations executed since the start of the process.", () => this.OperationCount);
             AddInfo("Rate", "The number of operations per second.", () => this.Rate);

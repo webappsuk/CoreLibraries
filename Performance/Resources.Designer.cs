@@ -88,6 +88,15 @@ namespace WebApplications.Utilities.Performance {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot add info to the &apos;{0}&apos; performance category, once the category has been initialized.  Trying to add &apos;{1}&apos; (&apos;{2}&apos;)..
+        /// </summary>
+        internal static string PerformanceCounterHelper_AddInfo_Post_Initialize {
+            get {
+                return ResourceManager.GetString("PerformanceCounterHelper_AddInfo_Post_Initialize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The performance counter category &apos;{0}&apos; does not exist, and must be created before it can be used..
         /// </summary>
         internal static string PerformanceCounterHelper_CategoryDoesNotExist {

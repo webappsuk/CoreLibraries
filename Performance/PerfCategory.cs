@@ -34,9 +34,11 @@ using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Reflect;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Performance
 {
@@ -49,7 +51,7 @@ namespace WebApplications.Utilities.Performance
         /// Holds all counters.
         /// </summary>
         [NotNull]
-        private static readonly ConcurrentDictionary<string, PerfCategory> _counters =
+        private static readonly ConcurrentDictionary<string, PerfCategory> _categories =
             new ConcurrentDictionary<string, PerfCategory>();
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace WebApplications.Utilities.Performance
         [PublicAPI]
         public static IEnumerable<PerfCategory> All
         {
-            get { return _counters.Values; }
+            get { return _categories.Values; }
         }
 
         /// <summary>
@@ -106,20 +108,34 @@ namespace WebApplications.Utilities.Performance
         /// Whether the counter is valid (exists and can be accessed).
         /// </summary>
         [PublicAPI]
-        public readonly bool IsValid;
+        public bool IsValid { get { return Counters != null; } }
 
+        [CanBeNull]
+        private PerformanceCounter[] _counters;
         /// <summary>
         /// The underlying counters.
         /// </summary>
-        [NotNull]
+        [CanBeNull]
         [PublicAPI]
-        protected readonly PerformanceCounter[] Counters;
+        protected PerformanceCounter[] Counters
+        {
+            get
+            {
+                Initialize();
+                return _counters;
+            }
+        }
+
+        private bool _initialized = false;
 
         /// <summary>
         /// The info dictionary, holds info by name.
         /// </summary>
         [NotNull]
         private readonly Dictionary<string, PerfCounterInfo> _infoDictionary = new Dictionary<string, PerfCounterInfo>();
+
+        [NotNull]
+        private readonly CounterCreationData[] _counterCreationData;
 
         /// <summary>
         /// Creates a performance counter instance.
@@ -132,69 +148,92 @@ namespace WebApplications.Utilities.Performance
             Contract.Requires(counters != null);
             CategoryName = categoryName;
 
-            CounterCreationData[] cArray = counters as CounterCreationData[] ?? counters.ToArray();
-            if (cArray.Length < 1)
-            {
-                IsValid = false;
-                return;
-            }
+            _counterCreationData = counters as CounterCreationData[] ?? counters.ToArray();
+        }
 
-            // Set up the performance counter(s)
-            try
+        /// <summary>
+        /// Initializes this instance on first use.
+        /// </summary>
+        private void Initialize()
+        {
+            if (_initialized) return;
+            lock (_counterCreationData)
             {
-                if (!PerformanceCounterCategory.Exists(CategoryName))
+                if (_initialized) return;
+
+                if (_counterCreationData.Length < 1)
                 {
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    Trace.WriteLine(
-                        string.Format(Resources.PerformanceCounterHelper_CategoryDoesNotExist, CategoryName));
-                    IsValid = false;
+                    _initialized = true;
                     return;
                 }
 
-                Counters = new PerformanceCounter[cArray.Length];
-                for (int c = 0; c < cArray.Length; c++)
+                // Set up the performance counter(s)
+                try
                 {
-                    CounterCreationData counter = cArray[c];
-                    Contract.Assert(counter != null);
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    if (!PerformanceCounterCategory.CounterExists(counter.CounterName, categoryName))
-                    {
-                        Trace.WriteLine(
-                            string.Format(
+                    if (!Task.Run(
+                        () =>
+                        {
+                            /*
+                             * This can take a very long time, so we give it 2s!
+                             */
+                            if (!PerformanceCounterCategory.Exists(CategoryName))
+                            {
                                 // ReSharper disable once AssignNullToNotNullAttribute
-                                Resources.PerformanceCounterHelper_CounterDoesNotExist,
-                                CategoryName,
-                                counter.CounterName));
-                        IsValid = false;
-                        return;
-                    }
-                    Counters[c] = new PerformanceCounter
-                    {
-                        CategoryName = categoryName,
-                        CounterName = counter.CounterName,
-                        MachineName = MachineName,
-                        InstanceLifetime = PerformanceCounterInstanceLifetime.Process,
-                        InstanceName = InstanceGuid,
-                        ReadOnly = false
-                    };
+                                Trace.WriteLine(
+                                    string.Format(Resources.PerformanceCounterHelper_CategoryDoesNotExist, CategoryName));
+                                return;
+                            }
 
-                    // Read the first value to 'start' the counters.
-                    Counters[c].SafeNextValue();
+                            PerformanceCounter[] counters = new PerformanceCounter[_counterCreationData.Length];
+                            for (int c = 0; c < _counterCreationData.Length; c++)
+                            {
+                                CounterCreationData counter = _counterCreationData[c];
+                                Contract.Assert(counter != null);
+                                // ReSharper disable once AssignNullToNotNullAttribute
+                                if (!PerformanceCounterCategory.CounterExists(counter.CounterName, CategoryName))
+                                {
+                                    Trace.WriteLine(
+                                        string.Format(
+                                            // ReSharper disable once AssignNullToNotNullAttribute
+                                            Resources.PerformanceCounterHelper_CounterDoesNotExist,
+                                            CategoryName,
+                                            counter.CounterName));
+                                    return;
+                                }
+                                counters[c] = new PerformanceCounter
+                                {
+                                    CategoryName = CategoryName,
+                                    CounterName = counter.CounterName,
+                                    MachineName = MachineName,
+                                    InstanceLifetime = PerformanceCounterInstanceLifetime.Process,
+                                    InstanceName = InstanceGuid,
+                                    ReadOnly = false
+                                };
+
+                                // Read the first value to 'start' the counters.
+                                counters[c].SafeNextValue();
+                            }
+                            _counters = counters;
+                        }).Wait(2000))
+                        _counters = null;
                 }
-                IsValid = true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                Trace.WriteLine(Resources.PerformanceCounterHelper_ProcessDoesNotHaveAccess);
-                IsValid = false;
-            }
-            catch
-            {
-                // ReSharper disable once AssignNullToNotNullAttribute
-                Trace.WriteLine(
-                    string.Format(Resources.PerformanceCounterHelper_UnhandledExceptionOccurred, CategoryName));
-                IsValid = false;
+                catch (UnauthorizedAccessException)
+                {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    Trace.WriteLine(Resources.PerformanceCounterHelper_ProcessDoesNotHaveAccess);
+                    _counters = null;
+                }
+                catch
+                {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    Trace.WriteLine(
+                        string.Format(Resources.PerformanceCounterHelper_UnhandledExceptionOccurred, CategoryName));
+                    _counters = null;
+                }
+                finally
+                {
+                    _initialized = true;
+                }
             }
         }
 
@@ -213,7 +252,17 @@ namespace WebApplications.Utilities.Performance
             Contract.Requires(name != null);
             Contract.Requires(help != null);
             Contract.Requires(getLatestValueFunc != null);
+            if (!_initialized)
             _infoDictionary.Add(name, new PerfCounterInfo<T>(name, help, getLatestValueFunc));
+            else
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        Resources.PerformanceCounterHelper_AddInfo_Post_Initialize,
+                        CategoryName,
+                        name,
+                        help));
+            }
         }
 
         /// <summary>
@@ -238,13 +287,13 @@ namespace WebApplications.Utilities.Performance
             // NOTE: Cant have Requires here as contract re-writing might change the method name and we need the name to be kept
             Contract.Assert(!string.IsNullOrWhiteSpace(categoryName));
             // ReSharper disable once AssignNullToNotNullAttribute
-            PerfCategoryType pct = _counterTypes.GetOrAdd(typeof (T), t => new PerfCategoryType(t));
+            PerfCategoryType pct = _counterTypes.GetOrAdd(typeof(T), t => new PerfCategoryType(t));
             Contract.Assert(pct != null);
             if (pct.Exception != null)
                 throw pct.Exception;
 
             // ReSharper disable once AssignNullToNotNullAttribute
-            return (T) _counters.GetOrAdd(categoryName, n => pct.Creator(n));
+            return (T)_categories.GetOrAdd(categoryName, n => pct.Creator(n));
         }
 
         /// <summary>
@@ -272,7 +321,7 @@ namespace WebApplications.Utilities.Performance
             where T : PerfCategory
         {
             Contract.Requires(categoryName != null);
-            return Exists(typeof (T), categoryName);
+            return Exists(typeof(T), categoryName);
         }
 
         /// <summary>
@@ -295,7 +344,7 @@ namespace WebApplications.Utilities.Performance
                 throw pct.Exception;
 
             return PerformanceCounterCategory.Exists(categoryName) &&
-                   // ReSharper disable once PossibleNullReferenceException,  AssignNullToNotNullAttribute
+                // ReSharper disable once PossibleNullReferenceException,  AssignNullToNotNullAttribute
                    pct.CreationData.All(c => PerformanceCounterCategory.CounterExists(c.CounterName, categoryName));
         }
 
@@ -335,13 +384,13 @@ namespace WebApplications.Utilities.Performance
             {
                 Contract.Requires(type != null);
                 Type = type;
-                if ((type == typeof (PerfCategory)) ||
-                    !type.DescendsFrom(typeof (PerfCategory)))
+                if ((type == typeof(PerfCategory)) ||
+                    !type.DescendsFrom(typeof(PerfCategory)))
                 {
                     Exception =
                         new InvalidOperationException(
                             string.Format(
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PerfCategoryType_Must_Descend_From_PerfCategory,
                                 type.FullName));
                     return;
@@ -357,7 +406,7 @@ namespace WebApplications.Utilities.Performance
                     Exception =
                         new InvalidOperationException(
                             string.Format(
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PerfCategoryType_Invalid_Constructor,
                                 type.FullName),
                             e);
@@ -370,11 +419,11 @@ namespace WebApplications.Utilities.Performance
                     CreationData = ExtendedType.Get(type)
                         .Fields
                         .Single(
-                            // ReSharper disable once PossibleNullReferenceException
+                        // ReSharper disable once PossibleNullReferenceException
                             f => f.Info.IsStatic &&
                                  f.Info.IsInitOnly &&
                                  f.ReturnType ==
-                                 typeof (CounterCreationData[]))
+                                 typeof(CounterCreationData[]))
                         .Getter<CounterCreationData[]>()();
                 }
                 catch (Exception e)
@@ -383,7 +432,7 @@ namespace WebApplications.Utilities.Performance
                     Exception =
                         new InvalidOperationException(
                             string.Format(
-                                // ReSharper disable once AssignNullToNotNullAttribute
+                        // ReSharper disable once AssignNullToNotNullAttribute
                                 Resources.PerfCategoryType_Missing_Static_Readonly_Field,
                                 type.FullName),
                             e);
@@ -485,7 +534,7 @@ namespace WebApplications.Utilities.Performance
         [NotNull]
         [PublicAPI]
         public static readonly FormatBuilder VerboseFormat =
-            new FormatBuilder(int.MaxValue, 22, tabStops: new[] {3, 20, 22})
+            new FormatBuilder(int.MaxValue, 22, tabStops: new[] { 3, 20, 22 })
                 .AppendForegroundColor(Color.Yellow)
                 .AppendFormat("{CategoryName}")
                 .AppendResetForegroundColor()

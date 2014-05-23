@@ -147,4 +147,7 @@
   <data name="PerfCategoryType_Missing_Static_Readonly_Field" xml:space="preserve">
     <value>The performance counter type '{0}' does not have a single readonly static field of type CounterCreationData[].</value>
   </data>
+  <data name="PerformanceCounterHelper_AddInfo_Post_Initialize" xml:space="preserve">
+    <value>Cannot add info to the '{0}' performance category, once the category has been initialized.  Trying to add '{1}' ('{2}').</value>
+  </data>
 </root>
