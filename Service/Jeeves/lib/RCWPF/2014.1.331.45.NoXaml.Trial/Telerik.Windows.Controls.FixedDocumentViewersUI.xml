@@ -1,0 +1,351 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Telerik.Windows.Controls.FixedDocumentViewersUI</name>
+    </assembly>
+    <members>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Converters.DoubleToPercentConverter">
+            <summary>
+            Represents double to string percent converter.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Converters.DoubleToPercentConverter.Convert(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Converters.DoubleToPercentConverter.ConvertBack(System.Object,System.Type,System.Object,System.Globalization.CultureInfo)">
+            <inheritdoc />
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Converters.ScaleModeToBooleanConverter">
+            <summary>
+            Represents scale mode to boolean converter.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox">
+            <summary>
+            Represents percent combo box.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.PercentValuesProperty">
+            <summary>
+            Identifies Telerik.Windows.Controls.FixedDocumentViewersUI.PercentValues property.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.RadPdfViewerProperty">
+            <summary>
+            Identifies Telerik.Windows.Controls.FixedDocumentViewersUI.RadPDFViewer property.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.ShowFitToWidthProperty">
+            <summary>
+            Identifies Telerik.Windows.Controls.FixedDocumentViewersUI.ShowFitToWidth property.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.ShowFitToPageProperty">
+            <summary>
+            Identifies Telerik.Windows.Controls.FixedDocumentViewersUI.ShowFitToPage property.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.ValueProperty">
+            <summary>
+            Identifies Telerik.Windows.Controls.FixedDocumentViewersUI.Value property.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox"/> class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.OnApplyTemplate">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.OnInitialized(System.EventArgs)">
+            <inheritdoc />
+        </member>
+        <member name="E:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.PercentValues">
+            <summary>
+            Gets or sets the percent values.
+            </summary>
+            <value>The percent values.</value>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.RadPdfViewer">
+            <summary>
+            Gets or sets the RAD PDF viewer.
+            </summary>
+            <value>The RAD PDF viewer.</value>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.ShowFitToWidth">
+            <summary>
+            Gets or sets the width of the show fit to.
+            </summary>
+            <value>The width of the show fit to.</value>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.ShowFitToPage">
+            <summary>
+            Gets or sets the show fit to page.
+            </summary>
+            <value>The show fit to page.</value>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.Value">
+            <summary>
+            Gets or sets the value.
+            </summary>
+            <value>The value.</value>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.AdditionalGroupIsDisplayed">
+            <summary>
+            Gets the additional group is displayed.
+            </summary>
+            <value>The additional group is displayed.</value>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.PercentComboBox.PercentItemsGroupIsDisplayed">
+            <summary>
+            Gets the percent items group is displayed.
+            </summary>
+            <value>The percent items group is displayed.</value>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.DefaultButtonService">
+            <summary>
+            Represents default button service.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.DefaultButtonService.DefaultButtonProperty">
+            <summary>
+            Dependency property for default button.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.DefaultButtonService.GetDefaultButton(System.Windows.UIElement)">
+            <summary>
+            Gets the default button.
+            </summary>
+            <param name="element">The element.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.DefaultButtonService.SetDefaultButton(System.Windows.DependencyObject,System.Windows.Controls.Button)">
+            <summary>
+            Sets the default button.
+            </summary>
+            <param name="element">The element.</param>
+            <param name="button">The button.</param>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.DialogCommandBase">
+            <summary>
+            Represents dialog command base.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.DialogCommandBase.Execute(System.Object)">
+            <summary>
+            Defines the method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command.  If the command does not require
+            data to be passed, this object can be set to null.</param>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.DialogCommandBase.OnCanExecuteChanged">
+            <summary>
+            Called when CanExecute is changed..
+            </summary>
+        </member>
+        <member name="E:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.DialogCommandBase.CanExecuteChanged">
+            <summary>
+            Occurs when changes occur that affect whether or not the command should
+            execute.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.FindCommandBase">
+            <summary>
+            Represents find command base.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.FindCommandBase.#ctor(Telerik.Windows.Controls.FixedDocumentViewerBase,Telerik.Windows.Documents.Fixed.Search.TextSearchOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.FindCommandBase"/> class.
+            </summary>
+            <param name="viewer">The viewer.</param>
+            <param name="textSearchOptions">The text search options.</param>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.FindCommandBase.HandlerSearchResult(Telerik.Windows.Documents.Fixed.Search.SearchResult)">
+            <summary>
+            Handlers the search result.
+            </summary>
+            <param name="result">The result.</param>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.Commands.FindNextCommand">
+            <summary>
+            Represents find next command. 
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.Commands.FindNextCommand.#ctor(Telerik.Windows.Controls.FixedDocumentViewerBase,Telerik.Windows.Documents.Fixed.Search.TextSearchOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.Commands.FindNextCommand"/> class.
+            </summary>
+            <param name="viewer">The viewer.</param>
+            <param name="textSearchOptions">The text search options.</param>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.Commands.FindNextCommand.Execute(System.Object)">
+            <summary>
+            Defines the method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command.  If the command does not require
+            data to be passed, this object can be set to null.</param>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.Commands.FindPreviousCommand">
+            <summary>
+            Represents find previous command.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.Commands.FindPreviousCommand.#ctor(Telerik.Windows.Controls.FixedDocumentViewerBase,Telerik.Windows.Documents.Fixed.Search.TextSearchOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.Commands.FindPreviousCommand"/> class.
+            </summary>
+            <param name="viewer">The viewer.</param>
+            <param name="textSearchOptions">The text search options.</param>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.Commands.FindPreviousCommand.Execute(System.Object)">
+            <summary>
+            Defines the method to be called when the command is invoked.
+            </summary>
+            <param name="parameter">Data used by the command.  If the command does not require
+            data to be passed, this object can be set to null.</param>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.FindDialog">
+            <summary>
+            Represents FindDialog.
+            </summary>
+            <summary>
+            FindDialog
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.FindDialog.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.FindDialog"/> class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.FindDialog.ShowDialog(Telerik.Windows.Documents.Fixed.UI.Dialogs.FindDialogContext)">
+            <summary>
+            Shows the dialog.
+            </summary>
+            <param name="context">The FindDialogContext.</param>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.FindDialog.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.ViewModels.DialogViewModelBase`1">
+            <summary>
+            Represents dialog view-model base class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.ViewModels.DialogViewModelBase`1.OnPropertyChanged(System.String)">
+            <summary>
+            Called when property is changed.
+            </summary>
+            <param name="propertyName">Name of the property.</param>
+        </member>
+        <member name="E:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.ViewModels.DialogViewModelBase`1.PropertyChanged">
+            <summary>
+            Occurs when a property value changes.
+            </summary>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.ViewModels.DialogViewModelBase`1.Context">
+            <summary>
+            Gets the context.
+            </summary>
+            <value>The context.</value>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.ViewModels.FindDialogViewModel">
+            <summary>
+            Represents find dialog view-model. 
+            </summary>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.ViewModels.FindDialogViewModel.FindNextCommand">
+            <summary>
+            Gets the find next command.
+            </summary>
+            <value>The find next command.</value>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.ViewModels.FindDialogViewModel.FindPreviousCommand">
+            <summary>
+            Gets the find previous command.
+            </summary>
+            <value>The find previous command.</value>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.Dialogs.ViewModels.FindDialogViewModel.TextSearchOptions">
+            <summary>
+            Gets or sets the text search options.
+            </summary>
+            <value>The text search options.</value>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Percent">
+            <summary>
+            Represents percent.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Percent.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Percent"/> class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Percent.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Controls.FixedDocumentViewersUI.Percent"/> class.
+            </summary>
+            <param name="value">The value.</param>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Percent.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Percent.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.Percent.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.Percent.Value">
+            <summary>
+            Gets or sets the value.
+            </summary>
+            <value>The value.</value>
+        </member>
+        <member name="T:Telerik.Windows.Controls.FixedDocumentViewersUI.RadRadioMenuGroupItem">
+            <summary>
+            Represents RadRadioMenuGroupItem.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Controls.FixedDocumentViewersUI.RadRadioMenuGroupItem.SelectedItemProperty">
+            <summary>
+            Identifies Telerik.Windows.Controls.FixedDocumentViewersUI.SelectedItem property.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.RadRadioMenuGroupItem.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Controls.FixedDocumentViewersUI.RadRadioMenuGroupItem"/> class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.RadRadioMenuGroupItem.PrepareContainerForItemOverride(System.Windows.DependencyObject,System.Object)">
+            <summary>
+            Prepares the specified element to display the specified item.
+            </summary>
+            <param name="element">Element used to display the specified item.</param>
+            <param name="item">Specified item.</param>
+        </member>
+        <member name="M:Telerik.Windows.Controls.FixedDocumentViewersUI.RadRadioMenuGroupItem.ClearContainerForItemOverride(System.Windows.DependencyObject,System.Object)">
+            <summary>
+            When overridden in a derived class, undoes the effects of the <see cref="M:System.Windows.Controls.ItemsControl.PrepareContainerForItemOverride(System.Windows.DependencyObject,System.Object)" />
+            method.
+            </summary>
+            <param name="element">The container element.</param>
+            <param name="item">The item.</param>
+        </member>
+        <member name="P:Telerik.Windows.Controls.FixedDocumentViewersUI.RadRadioMenuGroupItem.SelectedItem">
+            <summary>
+            Gets or sets the selected item.
+            </summary>
+            <value>The selected item.</value>
+        </member>
+    </members>
+</doc>

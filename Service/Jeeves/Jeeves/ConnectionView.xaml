@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="Jeeves.ConnectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:Jeeves.ViewModels"
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+             mc:Ignorable="d"
+             d:DesignHeight="700"
+             d:DesignWidth="1000"
+             d:DataContext="{Binding DesignConnection, Source={StaticResource Locator}}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="4*" />
+        </Grid.RowDefinitions>
+        <telerik:RadTimeline
+            Grid.Row="0"
+            x:Name="KingOfPopTimeline"
+            PeriodStart="{Binding StartDate, Mode=TwoWay}"
+            PeriodEnd="{Binding EndDate, Mode=TwoWay}"
+            VisiblePeriodStart="{Binding VisibleStartDate, Mode=TwoWay}"
+            VisiblePeriodEnd="{Binding VisibleEndDate, Mode=TwoWay}"
+            IsSelectionEnabled="True"
+            SelectionMode="{Binding TimelineSelectionMode}"
+            StartPath="StartDate"
+            DurationPath="Duration"
+            GroupPath="GroupName"
+            GroupExpandMode="Multiple"
+            VerticalScrollBarVisibility="Auto"
+            ItemsSource="{Binding Events}">
+            <telerik:RadTimeline.Intervals>
+                <telerik:YearInterval IntervalSpans="1,5" />
+                <telerik:MonthInterval IntervalSpans="1,6" />
+                <telerik:DayInterval />
+                <telerik:HourInterval />
+                <telerik:MinuteInterval />
+                <telerik:SecondInterval />
+                <telerik:MillisecondInterval />
+            </telerik:RadTimeline.Intervals>
+        </telerik:RadTimeline>
+    </Grid>
+</UserControl>

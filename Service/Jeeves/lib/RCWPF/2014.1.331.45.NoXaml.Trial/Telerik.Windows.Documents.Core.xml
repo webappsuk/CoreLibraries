@@ -1,0 +1,2233 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Telerik.Windows.Documents.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Telerik.Windows.Documents.Common.FormatProviders.BinaryFormatProviderBase`1">
+            <summary>
+            Represents base type for binary format provider.
+            </summary>
+            <typeparam name="T">The type of the document.</typeparam>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Common.FormatProviders.FormatProviderBase`1">
+            <summary>
+            Represents base binary format provider.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Common.FormatProviders.IFormatProvider`1">
+            <summary>
+            Represents interface for format provider.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.IFormatProvider`1.Import(System.IO.Stream)">
+            <summary>
+            Imports the specified input.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>The imported document.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.IFormatProvider`1.Export(`0,System.IO.Stream)">
+            <summary>
+            Exports the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="output">The output.</param>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.FormatProviders.IFormatProvider`1.SupportedExtensions">
+            <summary>
+            Gets the supported extensions.
+            </summary>
+            <value>The supported extensions.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.FormatProviders.IFormatProvider`1.CanImport">
+            <summary>
+            Gets a value indicating whether can import.
+            </summary>
+            <value>The value indicating whether can import.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.FormatProviders.IFormatProvider`1.CanExport">
+            <summary>
+            Gets a value indicating whether can export.
+            </summary>
+            <value>The value indicating whether can export.</value>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.FormatProviderBase`1.Import(System.IO.Stream)">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.FormatProviderBase`1.Export(`0,System.IO.Stream)">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.FormatProviderBase`1.ImportOverride(System.IO.Stream)">
+            <summary>
+            Imports the specified input.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>The imported document.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.FormatProviderBase`1.ExportOverride(`0,System.IO.Stream)">
+            <summary>
+            Exports the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <param name="output">The output.</param>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.FormatProviders.FormatProviderBase`1.SupportedExtensions">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.FormatProviders.FormatProviderBase`1.CanImport">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.FormatProviders.FormatProviderBase`1.CanExport">
+            <inheritdoc />
+        </member>
+        <member name="T:Telerik.Windows.Documents.Common.FormatProviders.IBinaryFormatProvider`1">
+            <summary>
+            Represents binary format provider.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.IBinaryFormatProvider`1.Import(System.Byte[])">
+            <summary>
+            Imports the specified input.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>The document.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.IBinaryFormatProvider`1.Export(`0)">
+            <summary>
+            Exports the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <returns>The result byte array.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.BinaryFormatProviderBase`1.Import(System.Byte[])">
+            <summary>
+            Imports the specified input.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>The document.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.BinaryFormatProviderBase`1.Export(`0)">
+            <summary>
+            Exports the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <returns>The result byte array.</returns>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Common.FormatProviders.ITextBasedFormatProvider`1">
+            <summary>
+            Represents interface for text base format provider.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.ITextBasedFormatProvider`1.Import(System.String)">
+            <summary>
+            Imports the specified input.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>The document.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.ITextBasedFormatProvider`1.Export(`0)">
+            <summary>
+            Exports the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <returns>The result string.</returns>
+        </member>
+        <member name="T:Telerik.Windows.Documents.FormatProviders.OpenXml.Export.OpenXmlExportSettings">
+            <summary>
+            Represents OpenXml export settings.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.FormatProviders.OpenXml.OpenXmlImportSettings">
+            <summary>
+            Represents OpenXml import settings.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.Data.IStackCollectionElement">
+            <summary>
+            Represents StackCollection element.
+            </summary>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Data.IStackCollectionElement.Name">
+            <summary>
+            Gets the name of the element.
+            </summary>
+            <value>The name.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Common.FormatProviders.TextBasedFormatProviderBase`1">
+            <summary>
+            Represents base class for text base format provider.
+            </summary>
+            <typeparam name="T">The type of the T.</typeparam>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.TextBasedFormatProviderBase`1.Import(System.String)">
+            <summary>
+            Imports the specified input.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>The result document.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.FormatProviders.TextBasedFormatProviderBase`1.Export(`0)">
+            <summary>
+            Exports the specified document.
+            </summary>
+            <param name="document">The document.</param>
+            <returns>The result string.</returns>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Core.INamedObject">
+            <summary>
+            Represents named objects. 
+            </summary>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Core.INamedObject.Name">
+            <summary>
+            Gets the name.
+            </summary>
+            <value>The name.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Core.NamedObjectBase">
+            <summary>
+            Provides the base class from which the classes that represent named objects are derived
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Core.NamedObjectBase.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Core.NamedObjectBase"/> class.
+            </summary>
+            <param name="name">The name.</param>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Core.NamedObjectBase.Name">
+            <summary>
+            Gets the name value.
+            </summary>
+            <value>The name value.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Utilities.ThemableColorTypeConverter">
+            <summary>
+            A converter for the ThemableColor class. 
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Utilities.ThemableColorTypeConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Returns whether this converter can convert an object of the given type
+            to the type of this converter, using the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext" />
+            that provides a format context.</param>
+            <param name="sourceType">A <see cref="T:System.Type" /> that represents the type
+            you want to convert from.</param>
+            <returns>
+            true if this converter can perform the conversion; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Utilities.ThemableColorTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Returns whether this converter can convert the object to the specified
+            type, using the specified context.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext" />
+            that provides a format context.</param>
+            <param name="destinationType">A <see cref="T:System.Type" /> that represents the
+            type you want to convert to.</param>
+            <returns>
+            true if this converter can perform the conversion; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Utilities.ThemableColorTypeConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
+            <summary>
+            Converts the given object to the type of this converter, using the specified
+            context and culture information.
+            </summary>
+            <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext" />
+            that provides a format context.</param>
+            <param name="culture">The <see cref="T:System.Globalization.CultureInfo" /> to
+            use as the current culture.</param>
+            <param name="value">The <see cref="T:System.Object" /> to convert.</param>
+            <exception cref="T:System.NotSupportedException">The conversion cannot be performed.
+            </exception>
+            <returns>
+            An <see cref="T:System.Object" /> that represents the converted value.
+            </returns>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Model.Drawing.Shapes.Image">
+            <summary>
+            Represents image element.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase">
+            <summary>
+            Represents shape base element.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase"/> class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.#ctor(Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase"/> class by copying an Image instance.
+            </summary>
+            <param name="other">The other image.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.SetWidth(System.Boolean,System.Double)">
+            <summary>
+            Sets the width of the shape.
+            </summary>
+            <param name="respectLockAspectRatio">A value indicating whether the aspect ratio lock should be respected.</param>
+            <param name="width">The new width.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.SetHeight(System.Boolean,System.Double)">
+            <summary>
+            Sets the height of the shape.
+            </summary>
+            <param name="respectLockAspectRatio">A value indicating whether the aspect ratio lock should be respected.</param>
+            <param name="height">The new height.</param>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.Name">
+            <summary>
+            Gets or sets the name.
+            </summary>
+            <value>The name.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.Width">
+            <summary>
+            Gets or sets the width.
+            </summary>
+            <value>The width.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.Height">
+            <summary>
+            Gets or sets the height.
+            </summary>
+            <value>The height.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.Size">
+            <summary>
+            Gets or sets the size.
+            </summary>
+            <value>The size.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.IsVerticallyFlipped">
+            <summary>
+            Gets or sets the value indicating if the shape is vertically flipped.
+            </summary>
+            <value>The value indicating if the shape is vertically flipped.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.IsHorizontallyFlipped">
+            <summary>
+            Gets or sets the value indicating if the shape is horizontally flipped.
+            </summary>
+            <value>The value indicating if the shape is horizontally flipped.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.RotationAngle">
+            <summary>
+            Gets or sets the rotation angle.
+            </summary>
+            <value>The rotation angle.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.ShapeBase.LockAspectRatio">
+            <summary>
+            Gets or sets the value indicating whether the aspect ratio between the width and height should remain constant.
+            </summary>
+            <value>The value indicating whether the aspect ratio between the width and height should remain constant.</value>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Model.Drawing.Shapes.Image.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Model.Drawing.Shapes.Image"/> class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Model.Drawing.Shapes.Image.#ctor(Telerik.Windows.Documents.Model.Drawing.Shapes.Image)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Model.Drawing.Shapes.Image"/> class.
+            </summary>
+            <param name="other">The other image.</param>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.Image.ImageSource">
+            <summary>
+            Gets or sets the image source.
+            </summary>
+            <value>The image source.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Model.Drawing.Shapes.Image.PreferRelativeToOriginalResize">
+            <summary>
+            Gets or sets the value indicating whether the scale resizing should be relative to the original or the current size of the image.
+            </summary>
+            <value>The value indicating whether the scale resizing should be relative to the original or the current size of the image.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Model.ColorShadeType">
+            <summary>
+            Defines the types of color shade.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Model.ColorShadeType.Shade1">
+            <summary>
+            Represents shade 1 shade type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Model.ColorShadeType.Shade2">
+            <summary>
+            Represents shade 2 shade type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Model.ColorShadeType.Shade3">
+            <summary>
+            Represents shade 3 shade type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Model.ColorShadeType.Shade4">
+            <summary>
+            Represents shade 4 shade type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Model.ColorShadeType.Shade5">
+            <summary>
+            Represents shade 5 shade type.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme">
+            <summary>
+            Represents a theme.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme.#ctor(System.String,Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme,Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontScheme)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme"/> class.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="colorScheme">The color scheme.</param>
+            <param name="fontScheme">The font scheme.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme.ColorScheme">
+            <summary>
+            Gets the color scheme.
+            </summary>
+            <value>The color scheme.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme.FontScheme">
+            <summary>
+            Gets the font scheme.
+            </summary>
+            <value>The font scheme.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Model.FontLanguageType">
+            <summary>
+            Describes the types of font languages.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Model.FontLanguageType.Latin">
+            <summary>
+            Represents latin font language type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Model.FontLanguageType.EastAsian">
+            <summary>
+            Represents east asian font language type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Model.FontLanguageType.ComplexScript">
+            <summary>
+            Represents complex script font language type.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.IThemableObject`1">
+            <summary>
+            Defines the members of an object which is part of a theme.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.IThemableObject`1.GetActualValue(Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme)">
+            <summary>
+            Gets the actual value.
+            </summary>
+            <param name="theme">The theme.</param>
+            <returns>The actual value.</returns>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.IThemableObject`1.IsFromTheme">
+            <summary>
+            Gets the value indicating if the instance is from a theme.
+            </summary>
+            <value>The value indicating if the instance is from a theme.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.IThemableObject`1.LocalValue">
+            <summary>
+            Gets the local value.
+            </summary>
+            <value>The local value.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.PredefinedThemeSchemes">
+            <summary>
+            Describes the color and font schemes for the predefined document themes.
+            </summary>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.PredefinedThemeSchemes.DefaultTheme">
+            <summary>
+            The default document theme.
+            </summary>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.PredefinedThemeSchemes.ColorSchemes">
+            <summary>
+            Predefined color schemes.
+            </summary>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.PredefinedThemeSchemes.FontSchemes">
+            <summary>
+            Predefined font schemes.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor">
+            <summary>
+            Represents a color which can be used in a theme.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.#ctor(System.Windows.Media.Color)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor"/> class.
+            </summary>
+            <param name="color">The color.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.#ctor(System.Windows.Media.Color,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor"/> class.
+            </summary>
+            <param name="color">The color.</param>
+            <param name="isAutomatic">The is automatic.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.#ctor(Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType,System.Nullable{Telerik.Windows.Documents.Spreadsheet.Model.ColorShadeType})">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor"/> class.
+            </summary>
+            <param name="themeColorType">The theme color type.</param>
+            <param name="colorShadeType">The color shade type.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.#ctor(Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor"/> class.
+            </summary>
+            <param name="themeColorType">Theme color type.</param>
+            <param name="tintAndShade">The tint and shade.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.FromArgb(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates new themable color from Argb.
+            </summary>
+            <param name="alfa">The alfa.</param>
+            <param name="red">The red.</param>
+            <param name="green">The green.</param>
+            <param name="blue">The blue.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.op_Equality(Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor,Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor)">
+            <summary>
+            Compares two themable colors.
+            </summary>
+            <param name="first">The first themable color.</param>
+            <param name="second">The second themable color.</param>
+            <returns>If the two themable colors are equal.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.op_Inequality(Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor,Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor)">
+            <summary>
+            Compares two themable colors.
+            </summary>
+            <param name="first">The first themable color.</param>
+            <param name="second">The second themable color.</param>
+            <returns>If the two themable colors are equal.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.op_Explicit(System.Windows.Media.Color)~Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor">
+            <summary>
+            Explicitly cast color to themable color.
+            </summary>
+            <param name="value">The color.</param>
+            <returns>Themable color.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.GetActualValue(Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme)">
+            <summary>
+            Gets the actual value.
+            </summary>
+            <param name="theme">The theme.</param>
+            <returns>The actual value.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.GetActualValue(Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme)">
+            <summary>
+            Gets the actual value.
+            </summary>
+            <param name="colorScheme">The color scheme.</param>
+            <returns>The actual color.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" /> is equal
+            to the current <see cref="T:System.Object" />.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object" /> to compare with the current
+            <see cref="T:System.Object" />.</param>
+            <returns>
+            True if the specified <see cref="T:System.Object" /> is equal to the
+            current <see cref="T:System.Object" />; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.GetHashCode">
+            <summary>
+            Serves as a hash function for a particular type.
+            </summary>
+            <returns>A hash code for the current <see cref="T:System.Object" />.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.ToString">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.LocalValue">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.IsAutomatic">
+            <summary>
+            Gets the value indicating if the color automatic. Automatic colors may be modified by a consumer as appropriate.
+            </summary>
+            <value>Value indicating if the color is automatic.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.ThemeColorType">
+            <summary>
+            Gets the theme color type.
+            </summary>
+            <value>The theme color type.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.ColorShadeType">
+            <summary>
+            Gets the color shade type.
+            </summary>
+            <value>The color shade type.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.TintAndShade">
+            <summary>
+            Gets the tint and shade.
+            </summary>
+            <value>The tint and shade.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Model.ThemableColor.IsFromTheme">
+            <summary>
+            Gets the value indicating if the instance is from a theme.
+            </summary>
+            <value>The value indicating if the instance is from a theme.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily">
+            <summary>
+            Represents a font family which can be used in a theme.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.#ctor(System.Windows.Media.FontFamily)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily"/> class.
+            </summary>
+            <param name="fontFamily">The font family.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily"/> class.
+            </summary>
+            <param name="familyName">Name of the family.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.#ctor(Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily"/> class.
+            </summary>
+            <param name="themeFontType">Type of the theme font.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.op_Equality(Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily,Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily)">
+            <summary>
+            Compares two themable font families.
+            </summary>
+            <param name="first">The first themable font family.</param>
+            <param name="second">The second themable font family.</param>
+            <returns>If the two themable font families are equal.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.op_Inequality(Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily,Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily)">
+            <summary>
+            Compares two themable font families.
+            </summary>
+            <param name="first">The first themable font family.</param>
+            <param name="second">The second themable font family.</param>
+            <returns>If the two themable font families are not equal.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.op_Explicit(System.Windows.Media.FontFamily)~Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily">
+            <summary>
+            Casts explicitly FontFamily object to themable font family.
+            </summary>
+            <param name="value">The font family.</param>
+            <returns>Themable font family.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.GetActualValue(Telerik.Windows.Documents.Spreadsheet.Theming.DocumentTheme)">
+            <summary>
+            Gets the actual value.
+            </summary>
+            <param name="theme">The theme.</param>
+            <returns>The actual value.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.ToString">
+            <summary>
+            Returns a <see cref="T:System.String" /> that represents the current
+            <see cref="T:System.Object" />.
+            </summary>
+            <returns>
+            A <see cref="T:System.String" /> that represents the current <see cref="T:System.Object" />.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" /> is equal
+            to the current <see cref="T:System.Object" />.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object" /> to compare with the current
+            <see cref="T:System.Object" />.</param>
+            <returns>
+            True if the specified <see cref="T:System.Object" /> is equal to the
+            current <see cref="T:System.Object" />; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.GetHashCode">
+            <summary>
+            Serves as a hash function for a particular type.
+            </summary>
+            <returns>A hash code for the current <see cref="T:System.Object" />.</returns>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.LocalValue">
+            <summary>
+            Gets the local value.
+            </summary>
+            <value>The local value.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.ThemeFontType">
+            <summary>
+            Gets the theme font type.
+            </summary>
+            <value>The theme font type.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Model.ThemableFontFamily.IsFromTheme">
+            <summary>
+            Gets the value indicating if the instance is from a theme.
+            </summary>
+            <value>The value indicating if the instance is from a theme.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColor">
+            <summary>
+            Represents a color in a theme.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColor.#ctor(System.Windows.Media.Color,Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColor"/> class.
+            </summary>
+            <param name="color">The color.</param>
+            <param name="themeColorType">Type of the theme color.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColor.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" /> is equal
+            to the current <see cref="T:System.Object" />.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object" /> to compare with the current
+            <see cref="T:System.Object" />.</param>
+            <returns>
+            true if the specified <see cref="T:System.Object" /> is equal to the
+            current <see cref="T:System.Object" />; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColor.GetHashCode">
+            <summary>
+            Serves as a hash function for a particular type.
+            </summary>
+            <returns>A hash code for the current <see cref="T:System.Object" />.</returns>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColor.ThemeColorType">
+            <summary>
+            Gets the type of the theme color.
+            </summary>
+            <value>The type of the theme color.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColor.Color">
+            <summary>
+            Gets the color.
+            </summary>
+            <value>The color.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme">
+            <summary>
+            Represents the color scheme of a theme.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme.#ctor(System.String,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color,System.Windows.Media.Color)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme"/> class.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="background1">The first background.</param>
+            <param name="text1">The first text color.</param>
+            <param name="background2">The second background.</param>
+            <param name="text2">The second text color.</param>
+            <param name="accent1">The first accent.</param>
+            <param name="accent2">The second accent.</param>
+            <param name="accent3">The third accent.</param>
+            <param name="accent4">The fourth accent.</param>
+            <param name="accent5">The fifth accent.</param>
+            <param name="accent6">The sixth accent.</param>
+            <param name="hyperlink">The hyperlink color.</param>
+            <param name="followedHyperlink">The followed hyperlink color.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme.GetTintAndShade(Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType,Telerik.Windows.Documents.Spreadsheet.Model.ColorShadeType)">
+            <summary>
+            Gets the tint and shade.
+            </summary>
+            <param name="themeColorType">Type of the theme color.</param>
+            <param name="colorShadeType">Type of the color shade.</param>
+            <returns>The tint and shade value.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme.GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorScheme.Item(Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType)">
+            <summary>
+            Gets the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColor"/> with the specified color type.
+            </summary>
+            <value>The theme color.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType">
+            <summary>
+            Defines the types of theme colors.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Background1">
+            <summary>
+            Represents Background1 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Text1">
+            <summary>
+            Represents Text1 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Background2">
+            <summary>
+            Represents Background2 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Text2">
+            <summary>
+            Represents Text2 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Accent1">
+            <summary>
+            Represents Accent1 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Accent2">
+            <summary>
+            Represents Accent2 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Accent3">
+            <summary>
+            Represents Accent3 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Accent4">
+            <summary>
+            Represents Accent4 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Accent5">
+            <summary>
+            Represents Accent5 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Accent6">
+            <summary>
+            Represents Accent6 theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.Hyperlink">
+            <summary>
+            Represents Hyperlink theme color type.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeColorType.FollowedHyperlink">
+            <summary>
+            Represents FollowedHyperlink theme color type.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont">
+            <summary>
+            Represents the font in a theme.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont.#ctor(System.Windows.Media.FontFamily,Telerik.Windows.Documents.Spreadsheet.Model.FontLanguageType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont"/> class.
+            </summary>
+            <param name="fontFamily">The font family.</param>
+            <param name="fontLanguageType">The type of font language.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont.#ctor(System.String,Telerik.Windows.Documents.Spreadsheet.Model.FontLanguageType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont"/> class.
+            </summary>
+            <param name="fontName">Name of the font.</param>
+            <param name="fontLanguageType">Type of the font language.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont.FontFamily">
+            <summary>
+            Gets the font family.
+            </summary>
+            <value>The font family.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont.FontLanguageType">
+            <summary>
+            Gets the type of the font language.
+            </summary>
+            <value>The type of font language.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFonts">
+            <summary>
+            A collection of fonts for a theme, each corresponding to a language type.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFonts.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFonts"/> class.
+            </summary>
+            <param name="latinFontName">Name of the latin font.</param>
+            <param name="eastAsianFontName">Name of the east asian font.</param>
+            <param name="complexScriptFontName">Name of the complex script font.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFonts.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" /> is equal
+            to the current <see cref="T:System.Object" />.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object" /> to compare with the current
+            <see cref="T:System.Object" />.</param>
+            <returns>
+            true if the specified <see cref="T:System.Object" /> is equal to the
+            current <see cref="T:System.Object" />; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFonts.GetHashCode">
+            <summary>
+            Serves as a hash function for a particular type.
+            </summary>
+            <returns>A hash code for the current <see cref="T:System.Object" />.</returns>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFonts.Item(Telerik.Windows.Documents.Spreadsheet.Model.FontLanguageType)">
+            <summary>
+            Gets the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFont"/> with the specified font language type.
+            </summary>
+            <value>The theme font.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontScheme">
+            <summary>
+            Represents the font scheme of a theme.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontScheme.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontScheme"/> class.
+            </summary>
+            <param name="name">The name.</param>
+            <param name="latinMajorFontName">Name of the latin headings font.</param>
+            <param name="latinMinorFontName">Name of the latin body font.</param>
+            <param name="eastAsianMajorFontName">Name of the east asian headings font.</param>
+            <param name="eastAsianMinorFontName">Name of the east asian body font.</param>
+            <param name="complexScriptMajorFontName">Name of the complex script headings font.</param>
+            <param name="complexScriptMinorFontName">Name of the complex script body font.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontScheme.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontScheme.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontScheme.Item(Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontType)">
+            <summary>
+            Gets the <see cref="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFonts"/> with the specified font type.
+            </summary>
+            <value>The theme fonts.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontType">
+            <summary>
+            Describes the types of theme fonts.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontType.Minor">
+            <summary>
+            The font of the body of the document.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Spreadsheet.Theming.ThemeFontType.Major">
+            <summary>
+            The font of the headings of the document.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.IDigest.GetDigestSize">
+             return the size, in bytes, of the digest produced by this message digest.
+            
+             @return the size, in bytes, of the digest produced by this message digest.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.IDigest.GetByteLength">
+             return the size, in bytes, of the internal buffer used by this digest.
+            
+             @return the size, in bytes, of the internal buffer used by this digest.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.IDigest.Update(System.Byte)">
+             update the message digest with a single byte.
+            
+             @param inByte the input byte to be entered.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.IDigest.BlockUpdate(System.Byte[],System.Int32,System.Int32)">
+             update the message digest with a block of bytes.
+            
+             @param input the byte array containing the data.
+             @param inOff the offset into the byte array where the data starts.
+             @param len the length of the data.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.IDigest.DoFinal(System.Byte[],System.Int32)">
+             Close the digest, producing the final digest value. The doFinal
+             call leaves the digest reset.
+            
+             @param output the array the digest is to be copied into.
+             @param outOff the offset into the out array the digest is to start at.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.IDigest.Reset">
+            reset the digest back to it's initial state.
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.Model.Protection.IDigest.AlgorithmName">
+             return the algorithm name
+            
+             @return the algorithm name
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.HexEncoder.Encode(System.Byte[],System.Int32,System.Int32,System.IO.Stream)">
+             encode the input data producing a Hex output stream.
+            
+             @return the number of bytes produced.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.HexEncoder.Decode(System.Byte[],System.Int32,System.Int32,System.IO.Stream)">
+             decode the Hex encoded byte data writing it to the given output stream,
+             whitespace characters will be ignored.
+            
+             @return the number of bytes produced.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.HexEncoder.DecodeString(System.String,System.IO.Stream)">
+             decode the Hex encoded string data writing it to the given output stream,
+             whitespace characters will be ignored.
+            
+             @return the number of bytes produced.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.LongDigest.#ctor">
+            Constructor for variable length word
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.LongDigest.#ctor(Telerik.Windows.Documents.Common.Model.Protection.LongDigest)">
+            Copy constructor.  We are using copy constructors in place
+            of the object.Clone() interface as this interface is not
+            supported by J2ME.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.LongDigest.AdjustByteCounts">
+            adjust the byte counts so that byteCount2 represents the
+            upper long (less 3 bits) word of the byte count.
+        </member>
+        <member name="T:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData">
+            <summary>
+            Contains all data requried to set and remove protection.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.TryRemoveProtection(System.String)">
+            <summary>
+            Tries the remove protection.
+            </summary>
+            <param name="input">The input.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.EnforceProtection(System.String)">
+            <summary>
+            Enforces protection.
+            </summary>
+            <param name="input">The input.</param>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.Enforced">
+            <summary>
+            Gets or sets the enforced.
+            </summary>
+            <value>The enforced.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.AlgorithmName">
+            <summary>
+            Gets or sets the name of the algorithm.
+            </summary>
+            <value>The name of the algorithm.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.Hash">
+            <summary>
+            Gets or sets the hash.
+            </summary>
+            <value>The hash.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.Salt">
+            <summary>
+            Gets or sets the salt.
+            </summary>
+            <value>The salt.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.SpinCount">
+            <summary>
+            Gets or sets the spin count.
+            </summary>
+            <value>The spin count.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.Password">
+            <summary>
+            Gets or sets the password.
+            </summary>
+            <value>The password.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.IsUsingLegacyProtectionScheme">
+            <summary>
+            Indicates whether the data is produced using legacy protection scheme.
+            </summary>
+            <value>The is using legacy protection scheme.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Common.Model.Protection.ProtectionData.RequiresUserPassword">
+            <summary>
+            Indicates whether a user password is required to remove protection.
+            </summary>
+            <value>The requires user password.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Common.Model.Protection.ProtectionHelper">
+            <summary>
+            Contains helper methods for generating protection salt and hash values.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.ProtectionHelper.GenerateSaltBase64">
+            <summary>
+            Generates base64 salt.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.ProtectionHelper.GenerateHashBase64(System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Generates base64 hash.
+            </summary>
+            <param name="salt">The salt.</param>
+            <param name="password">The password.</param>
+            <param name="algorithmName">Name of the algorithm.</param>
+            <param name="spinCount">The spin count.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.ProtectionHelper.GeneratePasswordLegacyScheme(System.String)">
+            <summary>
+            Generates the password using OOXML legacy scheme.
+            </summary>
+            <param name="password">The password.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.RIPEMD160.#ctor">
+            Standard constructor
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.RIPEMD160.#ctor(Telerik.Windows.Documents.Common.Model.Protection.RIPEMD160)">
+            Copy constructor.  This will copy the state of the provided
+            message digest.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.RIPEMD160.Reset">
+            reset the chaining variables to the IV values.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.SHA384.#ctor(Telerik.Windows.Documents.Common.Model.Protection.SHA384)">
+            Copy constructor.  This will copy the state of the provided
+            message digest.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.SHA384.Reset">
+            reset the chaining variables
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.SHA512.#ctor(Telerik.Windows.Documents.Common.Model.Protection.SHA512)">
+            Copy constructor.  This will copy the state of the provided
+            message digest.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.SHA512.Reset">
+            reset the chaining variables
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.Whirlpool.#ctor(Telerik.Windows.Documents.Common.Model.Protection.Whirlpool)">
+            Copy constructor. This will copy the state of the provided message
+            digest.
+        </member>
+        <member name="M:Telerik.Windows.Documents.Common.Model.Protection.Whirlpool.Reset">
+            Reset the chaining variables
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2">
+            <summary>
+            Provides based functionality for collections of document elements.
+            </summary>
+            <typeparam name="T">The type of the document elements which should be added to the collection.</typeparam>
+            <typeparam name="TOwner">The type of the owner of the collection.</typeparam>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>
+            A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can
+            be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.IndexOf(`0)">
+            <summary>
+            Determines the index of a specific element in the collection.
+            </summary>
+            <param name="item">The element to locate in the collection.</param>
+            <returns>
+            The index of <paramref name="item" /> if found in the list; otherwise, -1.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.Insert(System.Int32,`0)">
+            <summary>
+            Inserts an element to the collection at the specified index.
+            </summary>
+            <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+            <param name="item">The element to insert into the collection.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.RemoveAt(System.Int32)">
+            <summary>
+            Removes the element at the specified index.
+            </summary>
+            <param name="index">The zero-based index of the item to remove.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.Clear">
+            <summary>
+            Removes all items from the collection.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.Contains(`0)">
+            <summary>
+            Determines whether the collection contains a specific element.
+            </summary>
+            <param name="item">The element to locate in the collection.</param>
+            <returns>
+            <c>true</c> if <paramref name="item" /> is found in the collection; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies the elements of the collection to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+            </summary>
+            <param name="array">The array.</param>
+            <param name="arrayIndex">Index of the array.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.Remove(`0)">
+            <summary>
+            Removes the first occurrence of a specific object from the collection.
+            </summary>
+            <param name="item">The object to remove from the collection.</param>
+            <returns>
+            <c>true</c> if <paramref name="item" /> was successfully removed from the collection; otherwise, <c>false</c>. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>
+            An <see cref="T:System.Collections.IEnumerator" /> object that can be
+            used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.Add(`0)">
+            <summary>
+            Adds an item to the collection.
+            </summary>
+            <param name="item">The element to add to the collection.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.VerifyDocumentElementOnInsert(`0)">
+            <summary>
+            Verifies the validity of the document element before it is inserted in the collection. 
+            </summary>
+            <param name="item">The item.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.SetParent(`0,`1)">
+            <summary>
+            Sets the parent of the document element.
+            </summary>
+            <param name="item">The document element.</param>
+            <param name="parent">The parent which should be set to the document element.</param>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.Count">
+            <summary>
+            Gets the number of elements contained in the collection.
+            </summary>
+            <returns>The number of elements contained in the collection.</returns>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.System#Collections#Generic#ICollection{T}#IsReadOnly">
+            <summary>
+            Gets a value indicating whether the collection is read-only.
+            </summary>
+            <returns><c>true</c> if the collection is read-only; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.Owner">
+            <summary>
+            Gets the element holding the collection.
+            </summary>
+            <value>The owner element.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Data.DocumentElementCollectionBase`2.Item(System.Int32)">
+            <summary>
+            Gets or sets the element at the specified index.
+            </summary>
+            <param name="index">The index.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.Data.StackCollection`1">
+            <summary>
+            Represents Stack collection.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.#ctor">
+            <summary>
+            Initializes a new instance of the StackCollection class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.GetElementByName(System.String)">
+            <summary>
+            Gets the name of the element by.
+            </summary>
+            <param name="elementName">Name of the element.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.Add(`0)">
+            <summary>
+            Adds the specified item.
+            </summary>
+            <param name="item">The item.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.AddBefore(System.String,`0)">
+            <summary>
+            Adds the before.
+            </summary>
+            <param name="presentedElementName">Name of the presented element.</param>
+            <param name="layer">The layer.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.AddAfter(System.String,`0)">
+            <summary>
+            Adds the after.
+            </summary>
+            <param name="presentedElementName">Name of the presented element.</param>
+            <param name="element">The element.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.AddFirst(`0)">
+            <summary>
+            Adds the first.
+            </summary>
+            <param name="element">The element.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.AddLast(`0)">
+            <summary>
+            Adds the last.
+            </summary>
+            <param name="element">The element.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.Contains(`0)">
+            <summary>
+            Determines whether [contains] [the specified item].
+            </summary>
+            <param name="item">The item.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.Contains(System.String)">
+            <summary>
+            Determines whether [contains] [the specified element name].
+            </summary>
+            <param name="elementName">Name of the element.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.Remove(`0)">
+            <summary>
+            Removes the specified item.
+            </summary>
+            <param name="item">The item.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.Remove(System.String)">
+            <summary>
+            Removes the specified element name.
+            </summary>
+            <param name="elementName">Name of the element.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.CopyTo(`0[],System.Int32)">
+            <summary>
+            Copies to.
+            </summary>
+            <param name="array">The array.</param>
+            <param name="arrayIndex">Index of the array.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.Clear">
+            <summary>
+            Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+            </summary>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" />
+            is read-only. </exception>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through the collection.
+            </summary>
+            <returns>
+            A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can
+            be used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Data.StackCollection`1.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator that iterates through a collection.
+            </summary>
+            <returns>
+            An <see cref="T:System.Collections.IEnumerator" /> object that can be
+            used to iterate through the collection.
+            </returns>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Data.StackCollection`1.Count">
+            <summary>
+            Gets the number of elements contained in the collection.
+            </summary>
+            <returns>The number of elements contained in the collection.
+            </returns>
+            <value></value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Data.StackCollection`1.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" />
+            is read-only.
+            </summary>
+            <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" />
+            is read-only; otherwise, false.</returns>
+            <value></value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Exceptions.NotSupportedFeatureException">
+            <summary>
+            Represents a not supported feature exception.
+            </summary> 
+        </member>
+        <member name="M:Telerik.Windows.Documents.Exceptions.NotSupportedFeatureException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Exceptions.NotSupportedFeatureException"/> class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Exceptions.NotSupportedFeatureException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Exceptions.NotSupportedFeatureException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Exceptions.NotSupportedFeatureException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Exceptions.NotSupportedFeatureException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="cause">The cause.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Exceptions.NotSupportedFeatureException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Exceptions.NotSupportedFeatureException"/> class.
+            </summary>
+            <param name="info">The info.</param>
+            <param name="context">The context.</param>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Exceptions.NotSupportedScanDecoderException">
+            <summary>
+            Represents not supported scan decoder exception.
+            </summary> 
+        </member>
+        <member name="M:Telerik.Windows.Documents.Exceptions.NotSupportedScanDecoderException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Exceptions.NotSupportedScanDecoderException"/> class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Exceptions.NotSupportedScanDecoderException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Exceptions.NotSupportedScanDecoderException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Exceptions.NotSupportedScanDecoderException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Exceptions.NotSupportedScanDecoderException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="cause">The cause.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Exceptions.NotSupportedScanDecoderException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Exceptions.NotSupportedScanDecoderException"/> class.
+            </summary>
+            <param name="info">The info.</param>
+            <param name="context">The context.</param>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.Input.PointerHandlers.PointerHandlersControllerBase">
+            <summary>
+            Represents pointer handlers controller base class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Input.PointerHandlers.PointerHandlersControllerBase.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Core.Input.PointerHandlers.PointerHandlersControllerBase"/> class.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Media.ImageSource">
+            <summary>
+            Encapsulates data needed for creation of an image
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.ImageSource.#ctor(System.IO.Stream,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Media.ImageSource"/> class.
+            </summary>
+            <param name="stream">The stream which represents the image.</param>
+            <param name="extension">The format of the image.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.ImageSource.#ctor(System.Byte[],System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Media.ImageSource"/> class.
+            </summary>
+            <param name="data">Byte array containing representation of the image source.</param>
+            <param name="extension">The image file extension.</param>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Media.ImageSource.Extension">
+            <summary>
+            Gets the image file extension.
+            </summary>
+            <value>The image file extension.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Media.ImageSource.Data">
+            <summary>
+            Gets the byte array representation of the image source.
+            </summary>
+            <value>The byte array representation of the image source.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Model.PageOrientation">
+            <summary>
+            Specifies page orientation.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PageOrientation.Rotate0">
+            <summary> 
+            Portrait page orientation.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PageOrientation.Rotate90">
+            <summary> 
+            Landscape page orientation.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PageOrientation.Rotate180">
+            <summary> 
+            Page is rotated 180 degrees.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PageOrientation.Rotate270">
+            <summary> 
+            Page is rotated 270 degrees
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PageOrientation.Portrait">
+            <summary> 
+            Portrait page orientation.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PageOrientation.Landscape">
+            <summary> 
+            Landscape page orientation.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Model.PaperTypeConverter">
+            <summary>
+            Provides methods for converting from standard PaperTypes to Size
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Model.PaperTypeConverter.ToSize(Telerik.Windows.Documents.Model.PaperTypes)">
+            <summary>
+            Converts the specified PaperType enumeration to a pair of pixel values in Size.
+            </summary>
+            <param name="type">PaperType</param>
+            <returns></returns>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Model.PaperTypes">
+            <summary>
+            Provides enumeration for the most commonly used paper sizes.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.A0">
+            <summary>
+            Identifies a paper sheet size of 33.1 inches x 46.8 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.A1">
+            <summary>
+            Identifies a paper sheet size of 23.4 inches x 33.1 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.A2">
+            <summary>
+            Identifies a paper sheet size of 16.5 inches x 23.4 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.A3">
+            <summary>
+            Identifies a paper sheet size of 11.7 inches x 16.5 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.A4">
+            <summary>
+            Identifies a paper sheet size of 8.3 inches x 11.7 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.A5">
+            <summary>
+            Identifies a paper sheet size of 5.8 inches x 8.3 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.RA0">
+            <summary>
+            Identifies a paper sheet size of 33.9 inches x 48 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.RA1">
+            <summary>
+            Identifies a paper sheet size of 24 inches x 33.9 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.RA2">
+            <summary>
+            Identifies a paper sheet size of 16.9 inches x 24 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.RA3">
+            <summary>
+            Identifies a paper sheet size of 12 inches x 16.9 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.RA4">
+            <summary>
+            Identifies a paper sheet size of 8.5 inches x 12 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.RA5">
+            <summary>
+            Identifies a paper sheet size of 4.8 inches x 8.5 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.B0">
+            <summary>
+            Identifies a paper sheet size of 39.4 inches x 55.7 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.B1">
+            <summary>
+            Identifies a paper sheet size of 27.8 inches x 39.4 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.B2">
+            <summary>
+            Identifies a paper sheet size of 59.1 inches x 19.7 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.B3">
+            <summary>
+            Identifies a paper sheet size of 13.9 inches x 19.7 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.B4">
+            <summary>
+            Identifies a paper sheet size of 10.1 inches x 14.3 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.B5">
+            <summary>
+            Identifies a paper sheet size of 7.2 inches x 10.1 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Quarto">
+            <summary>
+            Identifies a paper sheet size of 8 inches x 10 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Foolscap">
+            <summary>
+            Identifies a paper sheet size of 8 inches x 13 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Executive">
+            <summary>
+            Identifies a paper sheet size of 7.5 inches x 10 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.GovernmentLetter">
+            <summary>
+            Identifies a paper sheet size of 10.5 inches x 8 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Letter">
+            <summary>
+            Identifies a paper sheet size of 8.5 inches x 11 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Legal">
+            <summary>
+            Identifies a paper sheet size of 8.5 inches x 14 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Ledger">
+            <summary>
+            Identifies a paper sheet size of 17 inches x 11 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Tabloid">
+            <summary>
+            Identifies a paper sheet size of 11 inches x 17 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Post">
+            <summary>
+            Identifies a paper sheet size of 15.6 inches x 19.2 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Crown">
+            <summary>
+            Identifies a paper sheet size of 20 inches x 15 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.LargePost">
+            <summary>
+            Identifies a paper sheet size of 16.5 inches x 21 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Demy">
+            <summary>
+            Identifies a paper sheet size of 17.5 inches x 22 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Medium">
+            <summary>
+            Identifies a paper sheet size of 18 inches x 23 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Royal">
+            <summary>
+            Identifies a paper sheet size of 20 inches x 25 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Elephant">
+            <summary>
+            Identifies a paper sheet size of 21.7 inches x 28 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.DoubleDemy">
+            <summary>
+            Identifies a paper sheet size of 23.5 inches x 35 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.QuadDemy">
+            <summary>
+            Identifies a paper sheet size of 35 inches x 45 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.STMT">
+            <summary>
+            Identifies a paper sheet size of 5.5 inches x 8.5 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Folio">
+            <summary>
+            Identifies a paper sheet size of 8.5 inches x 13 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Statement">
+            <summary>
+            Identifies a paper sheet size of 5.5 inches x 8.5 inches.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Model.PaperTypes.Size10x14">
+            <summary>
+            Identifies a paper sheet size of 10 inches x 14 inches.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Media.Unit">
+            <summary>
+            Contains methods for converting DPI(Device Independent Pixels) to other unit types.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToPoint(System.Double)">
+            <summary>
+            Converts dips to points.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>Points.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToPointI(System.Double)">
+            <summary>
+            Converts dips to points.
+            </summary>
+            <param name="pixels">Pixels.</param>
+            <returns>Points.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToPica(System.Double)">
+            <summary>
+            Converts dips to picas.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>Picas.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToCm(System.Double)">
+            <summary>
+            Converts dips to centimeters.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>Centimeters.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToMm(System.Double)">
+            <summary>
+            Converts dips to millimeters.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>Millimeters.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToInch(System.Double)">
+            <summary>
+            Converts dips to inches.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>Inches.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToTwip(System.Double)">
+            <summary>
+            Converts dips to twips.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>Twips.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToEmu(System.Double)">
+            <summary>
+            Converts dips to EMUs.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>EMUs.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToEmuI(System.Double)">
+            <summary>
+            Converts dips to EMUs.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>EMUs.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToTwipI(System.Double)">
+            <summary>
+            Converts dips to twips.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>Twips.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToTwipF(System.Double)">
+            <summary>
+            Converts dips to twips.
+            </summary>
+            <param name="value">Pixels.</param>
+            <returns>Twips.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.TwipToDipF(System.Double)">
+            <summary>
+            Converts twips to dips.
+            </summary>
+            <param name="value">Twips.</param>
+            <returns>Dips.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.TwipToDipI(System.Double)">
+            <summary>
+            Converts twips to dips.
+            </summary>
+            <param name="value">Twips.</param>
+            <returns>Dips.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.DipToUnit(System.Double,Telerik.Windows.Documents.Media.UnitType)">
+            <summary>
+            Converts DIPs to units.
+            </summary>
+            <param name="value">Pixels.</param>
+            <param name="type">UnitType.</param>
+            <returns>Units.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.PointToDip(System.Double)">
+            <summary>
+            Converts to points dips.
+            </summary>
+            <param name="value">Points.</param>
+            <returns>Pixels.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.PicaToDip(System.Double)">
+            <summary>
+            Converts to points dips.
+            </summary>
+            <param name="value">Picas.</param>
+            <returns>Pixels.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.EmuToDip(System.Double)">
+            <summary>
+            Converts EMUs to dips.
+            </summary>
+            <param name="value">EMUs.</param>
+            <returns>Pixels.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.CmToDip(System.Double)">
+            <summary>
+            Converts centimeters to dips.
+            </summary>
+            <param name="value">Centimeters.</param>
+            <returns>Pixels.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.MmToDip(System.Double)">
+            <summary>
+            Converts millimeters to dips.
+            </summary>
+            <param name="value">Millimeters.</param>
+            <returns>Pixels.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.InchToDip(System.Double)">
+            <summary>
+            Converts inches to dips.
+            </summary>
+            <param name="value">Inches.</param>
+            <returns>Pixels.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.TwipToDip(System.Double)">
+            <summary>
+            Converts twips to dips.
+            </summary>
+            <param name="value">Twips.</param>
+            <returns>Pixels.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Media.Unit.UnitToDip(System.Double,Telerik.Windows.Documents.Media.UnitType)">
+            <summary>
+            Converts Units to dips.
+            </summary>
+            <param name="value">Units.</param>
+            <param name="type">UnitType.</param>
+            <returns>Pixels.</returns>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Media.UnitType">
+            <summary>
+            Defines different unit types.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Media.UnitType.Dip">
+            <summary> Device independent pixel.</summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Media.UnitType.Point">
+            <summary> Point.</summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Media.UnitType.Pica">
+            <summary> Pica.</summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Media.UnitType.Inch">
+            <summary> Inch.</summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Media.UnitType.Mm">
+            <summary> Millimeter.</summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Media.UnitType.Cm">
+            <summary> Centimeter.</summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Media.UnitType.Twip">
+            <summary> Twip - twentieth of a point.</summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Media.UnitType.Emu">
+            <summary> EMU - English Metric Unit.</summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Primitives.Padding">
+            <summary>
+            Represents padding or margin information.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Primitives.Padding.Empty">
+            <summary>
+            An empty padding.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Primitives.Padding.#ctor(System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Primitives.Padding"/> class and sets all paddings to a given value.
+            </summary>
+            <param name="all">The value.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Primitives.Padding.#ctor(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Primitives.Padding"/> class.
+            </summary>
+            <param name="left">The left padding.</param>
+            <param name="top">The top padding.</param>
+            <param name="right">The right padding.</param>
+            <param name="bottom">The bottom padding.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Primitives.Padding.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" /> is equal
+            to the current <see cref="T:System.Object" />.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object" /> to compare with the current
+            <see cref="T:System.Object" />.</param>
+            <returns>
+            Returns true if the specified <see cref="T:System.Object" /> is equal to the
+            current <see cref="T:System.Object" />; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Primitives.Padding.GetHashCode">
+            <summary>
+            Serves as a hash function for a particular type.
+            </summary>
+            <returns>A hash code for the current <see cref="T:System.Object" />.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Primitives.Padding.op_Equality(Telerik.Windows.Documents.Primitives.Padding,Telerik.Windows.Documents.Primitives.Padding)">
+            <summary>
+            Determines whether the specified paddings are equal.
+            </summary>
+            <returns>True if the paddings are equal.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Primitives.Padding.op_Inequality(Telerik.Windows.Documents.Primitives.Padding,Telerik.Windows.Documents.Primitives.Padding)">
+            <summary>
+            Determines whether the specified paddings are different.
+            </summary>
+            <returns>True if the paddings are different.</returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Primitives.Padding.ToString">
+            <inheritdoc />
+        </member>
+        <member name="P:Telerik.Windows.Documents.Primitives.Padding.Top">
+            <summary>
+            Gets the top padding.
+            </summary>
+            <value>The top padding.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Primitives.Padding.Bottom">
+            <summary>
+            Gets the bottom padding.
+            </summary>
+            <value>The bottom padding.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Primitives.Padding.Left">
+            <summary>
+            Gets the left padding.
+            </summary>
+            <value>The left padding.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Primitives.Padding.Right">
+            <summary>
+            Gets the right padding.
+            </summary>
+            <value>The right padding.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.Fonts.FontProperties">
+            <summary>
+            Represents fonts properties class.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Fonts.FontProperties.#ctor(System.Windows.Media.FontFamily,System.Windows.FontStyle,System.Windows.FontWeight)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Core.Fonts.FontProperties"/> class.
+            </summary>
+            <param name="fontFamily">The font family.</param>
+            <param name="fontStyle">The font style.</param>
+            <param name="fontWeight">The font weight.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Fonts.FontProperties.#ctor(System.Windows.Media.FontFamily)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Core.Fonts.FontProperties"/> class.
+            </summary>
+            <param name="fontFamily">The font family.</param>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Fonts.FontProperties.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object" /> is equal
+            to the current <see cref="T:System.Object" />.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object" /> to compare with the current
+            <see cref="T:System.Object" />.</param>
+            <returns>
+            true if the specified <see cref="T:System.Object" /> is equal to the
+            current <see cref="T:System.Object" />; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.Fonts.FontProperties.GetHashCode">
+            <summary>
+            Serves as a hash function for a particular type.
+            </summary>
+            <returns>A hash code for the current <see cref="T:System.Object" />.</returns>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Fonts.FontProperties.FontFamilyName">
+            <summary>
+            Gets font family name.
+            </summary>
+            <value>The name of the font family.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Fonts.FontProperties.FontWeight">
+            <summary>
+            Gets the font weight.
+            </summary>
+            <value>The font weight.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Fonts.FontProperties.FontStyle">
+            <summary>
+            Gets the font style.
+            </summary>
+            <value>The font style.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Fonts.FontProperties.FontFamily">
+            <summary>
+            Gets the font family.
+            </summary>
+            <value>The font family.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.Fonts.FontProperties.IsMonoSpaced">
+            <summary>
+            Gets if font is mono spaced.
+            </summary>
+            <value>The is mono spaced.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.TextMeasurer.SubStringPosition">
+            <summary>
+            Represents sub string position enum. This position is used when RTL text is measured.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Core.TextMeasurer.SubStringPosition.None">
+            <summary>
+            Represents the default substring position.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Core.TextMeasurer.SubStringPosition.Start">
+            <summary>
+            Represents position in start of string.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Core.TextMeasurer.SubStringPosition.Middle">
+            <summary>
+            Represents position in middle of string.
+            </summary>
+        </member>
+        <member name="F:Telerik.Windows.Documents.Core.TextMeasurer.SubStringPosition.End">
+            <summary>
+            Represents position in end of string.
+            </summary>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.TextMeasurer.ITextMeasurer">
+            <summary>
+            Represents base text measurer interface.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.TextMeasurer.ITextMeasurer.MeasureText(Telerik.Windows.Documents.Core.TextMeasurer.TextProperties,Telerik.Windows.Documents.Core.Fonts.FontProperties)">
+            <summary>
+            Measures the text.
+            </summary>
+            <param name="textProperties">The text properties.</param>
+            <param name="fontProperties">The font properties.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.TextMeasurer.RadTextMeasurer">
+            <summary>
+            Represents text measurer that can be used in multi-threaded applications.
+            </summary>
+            <summary>
+            Represents text measurer that can be used in multi-threaded applications.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.TextMeasurer.RadTextMeasurer.MeasureText(Telerik.Windows.Documents.Core.TextMeasurer.TextProperties,Telerik.Windows.Documents.Core.Fonts.FontProperties)">
+            <summary>
+            Measures the text.
+            </summary>
+            <param name="textProperties"></param>
+            <param name="fontProperties">The font properties.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.TextMeasurer.RadTextMeasurer.MeasureTextWithWrapping(Telerik.Windows.Documents.Core.TextMeasurer.TextProperties,Telerik.Windows.Documents.Core.Fonts.FontProperties,System.Double)">
+            <summary>
+            Measures the text with wrapping.
+            </summary>
+            <param name="textProperties">The text properties.</param>
+            <param name="fontProperties">The font properties.</param>
+            <param name="wrappingWidth">Width of the wrapping.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.TextMeasurer.TextProperties">
+            <summary>
+            Represents text properties.
+            </summary>
+        </member>
+        <member name="M:Telerik.Windows.Documents.Core.TextMeasurer.TextProperties.#ctor(System.String,System.Double,Telerik.Windows.Documents.Core.TextMeasurer.SubStringPosition)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Telerik.Windows.Documents.Core.TextMeasurer.TextProperties"/> class.
+            </summary>
+            <param name="text">The text.</param>
+            <param name="size">The size.</param>
+            <param name="subStringPosition">The sub string position.</param>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.TextMeasurer.TextProperties.SubStringPosition">
+            <summary>
+            Gets the sub string position.
+            </summary>
+            <value>The sub string position.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.TextMeasurer.TextProperties.Size">
+            <summary>
+            Gets the size.
+            </summary>
+            <value>The size.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.TextMeasurer.TextProperties.Text">
+            <summary>
+            Gets the text.
+            </summary>
+            <value>The text.</value>
+        </member>
+        <member name="T:Telerik.Windows.Documents.Core.TextMeasurer.TextMeasurementInfo">
+            <summary>
+            Represents text measurement info class.
+            </summary>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.TextMeasurer.TextMeasurementInfo.Empty">
+            <summary>
+            Gets empty text measurement info.
+            </summary>
+            <value>Empty text measurement info.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.TextMeasurer.TextMeasurementInfo.Size">
+            <summary>
+            Gets or sets the size.
+            </summary>
+            <value>The size.</value>
+        </member>
+        <member name="P:Telerik.Windows.Documents.Core.TextMeasurer.TextMeasurementInfo.BaselineOffset">
+            <summary>
+            Gets or sets the baseline offset.
+            </summary>
+            <value>The baseline offset.</value>
+        </member>
+    </members>
+</doc>
