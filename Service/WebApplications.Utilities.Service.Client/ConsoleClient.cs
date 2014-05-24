@@ -153,7 +153,7 @@ namespace WebApplications.Utilities.Service.Client
                     {
                         Console.Clear();
                         NamedPipeServerInfo[] services = null;
-                        await Log.Flush(token);
+                        await Log.Flush(token).ConfigureAwait(false);
 
                         ConsoleTextWriter.Default.WriteLine(ClientResources.ConsoleClient_RunAsync_ScanningForService);
                         while (services == null ||
@@ -163,7 +163,7 @@ namespace WebApplications.Utilities.Service.Client
                             if (Console.KeyAvailable)
                                 break;
                             // ReSharper disable once PossibleNullReferenceException
-                            await Task.Delay(500, token);
+                            await Task.Delay(500, token).ConfigureAwait(false);
                             token.ThrowIfCancellationRequested();
                         }
 
@@ -191,7 +191,8 @@ namespace WebApplications.Utilities.Service.Client
                                     description,
                                     service,
                                     OnReceive,
-                                    token.WithTimeout(10000));
+                                    token.WithTimeout(10000))
+                                    .ConfigureAwait(false);
                     }
                     catch (TaskCanceledException)
                     {
@@ -219,8 +220,8 @@ namespace WebApplications.Utilities.Service.Client
                     });
 
                 // ReSharper disable once PossibleNullReferenceException
-                await Task.Delay(1100, token);
-                await Log.Flush(token);
+                await Task.Delay(1100, token).ConfigureAwait(false);
+                await Log.Flush(token).ConfigureAwait(false);
 
                 while (client.State != PipeState.Closed)
                 {
@@ -263,18 +264,18 @@ namespace WebApplications.Utilities.Service.Client
                                 {
                                     // Cancel command
                                     Console.Write("Cancelling command...");
-                                    await client.CancelCommand(commandGuid, token);
+                                    await client.CancelCommand(commandGuid, token).ConfigureAwait(false);
                                     break;
                                 }
-                                await Task.Delay(100, token);
+                                await Task.Delay(100, token).ConfigureAwait(false);
                             } while (!completed);
                         }
                     }
 
                     // Wait to allow any disconnects or logs to come through.
                     // ReSharper disable once PossibleNullReferenceException
-                    await Task.Delay(1100, token);
-                    await Log.Flush(token);
+                    await Task.Delay(1100, token).ConfigureAwait(false);
+                    await Log.Flush(token).ConfigureAwait(false);
                 }
             }
             catch (TaskCanceledException)
@@ -285,9 +286,9 @@ namespace WebApplications.Utilities.Service.Client
                 if (!token.IsCancellationRequested)
                     Log.Add(e);
             }
-            await Log.Flush(token);
+            await Log.Flush(token).ConfigureAwait(false);
             // ReSharper disable once PossibleNullReferenceException
-            await Task.Delay(200, token);
+            await Task.Delay(200, token).ConfigureAwait(false);
             Console.WriteLine(ClientResources.ConsoleClient_RunAsync_PressAnyKeyExit);
             Console.ReadKey(true);
         }

@@ -110,7 +110,7 @@ namespace WebApplications.Utilities.Service
                 if (_state != PipeState.Connected) return false;
                 OverlappingPipeServerStream stream = _stream;
                 if (stream == null) return false;
-                await stream.WriteAsync(data, token);
+                await stream.WriteAsync(data, token).ConfigureAwait(false);
                 return true;
             }
 
@@ -145,7 +145,7 @@ namespace WebApplications.Utilities.Service
                                 _state = PipeState.Open;
 
                                 // Wait for connection
-                                await stream.Connect(token);
+                                await stream.Connect(token).ConfigureAwait(false);
 
                                 if (!token.IsCancellationRequested)
                                 {
@@ -171,7 +171,7 @@ namespace WebApplications.Utilities.Service
                                                    _connectionGuid != Guid.Empty)
                                             {
                                                 // Read data in.
-                                                byte[] data = await stream.ReadAsync(token);
+                                                byte[] data = await stream.ReadAsync(token).ConfigureAwait(false);
                                                 if (data == null ||
                                                     token.IsCancellationRequested ||
                                                     _server.Service.State == ServiceControllerStatus.Stopped ||
@@ -203,7 +203,8 @@ namespace WebApplications.Utilities.Service
 
                                                     await Send(
                                                         new ConnectResponse(request.ID, _server.Service.ServiceName),
-                                                        token);
+                                                        token)
+                                                        .ConfigureAwait(false);
                                                     continue;
                                                 }
 
@@ -252,7 +253,8 @@ namespace WebApplications.Utilities.Service
                                                 // Try to send disconnect response.
                                                 await Send(
                                                     new DisconnectResponse(disconnectGuid),
-                                                    Common.FireAndForgetToken);
+                                                    Common.FireAndForgetToken)
+                                                    .ConfigureAwait(false);
                                             }
                                             catch (TaskCanceledException)
                                             {

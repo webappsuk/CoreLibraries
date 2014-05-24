@@ -1194,7 +1194,7 @@ namespace WebApplications.Utilities.Service
             Contract.Assert(src != null);
             try
             {
-                if (await src.RunAsync(this, writer, id, commandLine, token)) return;
+                if (await src.RunAsync(this, writer, id, commandLine, token).ConfigureAwait(false)) return;
                 // ReSharper disable once AssignNullToNotNullAttribute
                 writer.WriteLine(ServiceResources.Err_Command_Failed, commandName);
             }

@@ -77,7 +77,7 @@ namespace WebApplications.Utilities.Service.Test
             for (int l = 0; l < loops; l++)
             {
                 writer.WriteLine("Loop {0} completed", l);
-                await Task.Delay(1000, token);
+                await Task.Delay(1000, token).ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
             }
             if (throwError)

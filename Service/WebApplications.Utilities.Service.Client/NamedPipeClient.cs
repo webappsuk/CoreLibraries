@@ -154,7 +154,7 @@ namespace WebApplications.Utilities.Service.Client
                             token = token.CreateLinked(disposeToken);
 
                             // We need to support cancelling the connect.
-                            await stream.Connect(token);
+                            await stream.Connect(token).ConfigureAwait(false);
 
                             ConnectResponse connectResponse = null;
                             DisconnectResponse disconnectResponse = null;
@@ -167,7 +167,7 @@ namespace WebApplications.Utilities.Service.Client
 
                                 // Kick off a connect request, but don't wait for it's result as we're the task that will receive it!
                                 ConnectRequest connectRequest = new ConnectRequest(description);
-                                await stream.WriteAsync(connectRequest.Serialize(), token);
+                                await stream.WriteAsync(connectRequest.Serialize(), token).ConfigureAwait(false);
 
                                 // Keep going as long as we're connected.
                                 try
@@ -176,7 +176,7 @@ namespace WebApplications.Utilities.Service.Client
                                            !disposeToken.IsCancellationRequested)
                                     {
                                         // Read data in.
-                                        byte[] data = await stream.ReadAsync(disposeToken);
+                                        byte[] data = await stream.ReadAsync(disposeToken).ConfigureAwait(false);
 
                                         if (data == null)
                                             break;
@@ -261,7 +261,9 @@ namespace WebApplications.Utilities.Service.Client
                                         new DisconnectRequest(),
                                         token.IsCancellationRequested
                                             ? new CancellationTokenSource(500).Token
-                                            : token);
+                                            : token)
+                                        .ToTask(token)
+                                        .ConfigureAwait(false);
                                 }
                                 catch (TaskCanceledException)
                                 {
@@ -406,8 +408,8 @@ namespace WebApplications.Utilities.Service.Client
                     ExceptionDispatchInfo edi = null;
                     try
                     {
-                        await stream.WriteAsync(request.Serialize(), token);
-                        await cr.CompletionTask.WithCancellation(token);
+                        await stream.WriteAsync(request.Serialize(), token).ConfigureAwait(false);
+                        await cr.CompletionTask.WithCancellation(token).ConfigureAwait(false);
                     }
                     catch {}
 
@@ -416,7 +418,7 @@ namespace WebApplications.Utilities.Service.Client
                     if (!cr.IsCancelled && !cr.IsCompleted && token.IsCancellationRequested)
                         try
                         {
-                            await CancelCommand(request.ID, Common.FireAndForgetToken);
+                            await CancelCommand(request.ID, Common.FireAndForgetToken).ConfigureAwait(false);
                         }
                         catch (TaskCanceledException) { }
                     

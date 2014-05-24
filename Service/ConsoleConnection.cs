@@ -125,7 +125,7 @@ namespace WebApplications.Utilities.Service
             Console.Clear();
             Log.SetTrace(validLevels: LoggingLevels.None);
             Log.SetConsole(defaultLogFormat ?? Log.ShortFormat, defaultLoggingLevels);
-            await Log.Flush(token);
+            await Log.Flush(token).ConfigureAwait(false);
 
             if (promptInstall)
             {
@@ -254,7 +254,7 @@ namespace WebApplications.Utilities.Service
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_WaitInstall);
                                 while (!ServiceUtils.ServiceIsInstalled(service.ServiceName))
                                 {
-                                    await Task.Delay(250, token);
+                                    await Task.Delay(250, token).ConfigureAwait(false);
                                     Console.Write('.');
                                 }
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
@@ -262,12 +262,12 @@ namespace WebApplications.Utilities.Service
                                 break;
 
                             case "U":
-                                await service.Uninstall(ConsoleTextWriter.Default, token);
+                                await service.Uninstall(ConsoleTextWriter.Default, token).ConfigureAwait(false);
 
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_WaitUninstall);
                                 while (ServiceUtils.ServiceIsInstalled(service.ServiceName))
                                 {
-                                    await Task.Delay(250, token);
+                                    await Task.Delay(250, token).ConfigureAwait(false);
                                     Console.Write('.');
                                 }
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
@@ -276,38 +276,38 @@ namespace WebApplications.Utilities.Service
 
                             case "R":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStop);
-                                await ServiceUtils.StopService(service.ServiceName, token);
+                                await ServiceUtils.StopService(service.ServiceName, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStart);
-                                await ServiceUtils.StartService(service.ServiceName, null, token);
+                                await ServiceUtils.StartService(service.ServiceName, null, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "S":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStart);
-                                await ServiceUtils.StartService(service.ServiceName, null, token);
+                                await ServiceUtils.StartService(service.ServiceName, null, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "T":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStop);
-                                await ServiceUtils.StopService(service.ServiceName, token);
+                                await ServiceUtils.StopService(service.ServiceName, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "P":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingPause);
-                                await ServiceUtils.PauseService(service.ServiceName, token);
+                                await ServiceUtils.PauseService(service.ServiceName, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 break;
 
                             case "C":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingContinue);
-                                await ServiceUtils.ContinueService(service.ServiceName, token);
+                                await ServiceUtils.ContinueService(service.ServiceName, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
@@ -331,7 +331,8 @@ namespace WebApplications.Utilities.Service
                                             allowConsoleInteraction,
                                             defaultLogFormat,
                                             defaultLoggingLevels,
-                                            token);
+                                            token)
+                                            .ConfigureAwait(false);
                                 return;
 
                             case "Z":
@@ -371,7 +372,7 @@ namespace WebApplications.Utilities.Service
                 if (!allowConsoleInteraction)
                 {
                     // Start the service
-                    await service.StartService(ConsoleTextWriter.Default, null, t);
+                    await service.StartService(ConsoleTextWriter.Default, null, t).ConfigureAwait(false);
                     // Wait to be cancelled as nothing to do.
                     await t.WaitHandle;
                     return;
@@ -379,14 +380,14 @@ namespace WebApplications.Utilities.Service
                 do
                 {
                     // Flush logs
-                    await Log.Flush(t);
+                    await Log.Flush(t).ConfigureAwait(false);
 
                     if (t.IsCancellationRequested) break;
 
                     WritePrompt(service);
                     try
                     {
-                        await service.ExecuteAsync(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default, t);
+                        await service.ExecuteAsync(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default, t).ConfigureAwait(false);
                     }
                     catch (TaskCanceledException)
                     {
@@ -404,7 +405,7 @@ namespace WebApplications.Utilities.Service
                     }
 
                     // Let any async stuff done by the command have a bit of time, also throttle commands.
-                    await Task.Delay(500, t);
+                    await Task.Delay(500, t).ConfigureAwait(false);
                 } while (!t.IsCancellationRequested);
             }
             catch (TaskCanceledException)

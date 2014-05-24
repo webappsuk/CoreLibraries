@@ -178,7 +178,7 @@ namespace WebApplications.Utilities.Service
                     serviceName);
             }
 
-            await StopService(serviceName, token);
+            await StopService(serviceName, token).ConfigureAwait(false);
 
             IntPtr scm = OpenSCManager(ScmAccessRights.AllAccess);
             try
@@ -318,7 +318,7 @@ namespace WebApplications.Utilities.Service
             while (serviceController.Status != status)
             {
                 // ReSharper disable once PossibleNullReferenceException
-                await Task.Delay(250, token);
+                await Task.Delay(250, token).ConfigureAwait(false);
                 if (token.IsCancellationRequested) return false;
                 serviceController.Refresh();
             }
@@ -354,23 +354,23 @@ namespace WebApplications.Utilities.Service
                             return true;
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
                         case ServiceControllerStatus.Paused:
                             serviceController.Continue();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
                         case ServiceControllerStatus.PausePending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token))
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false))
                                 return false;
                             serviceController.Continue();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
                         case ServiceControllerStatus.Stopped:
                             serviceController.Start(args);
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
                         case ServiceControllerStatus.StopPending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token))
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false))
                                 return false;
                             serviceController.Start(args);
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
                         default:
                             return false;
                     }
@@ -405,17 +405,17 @@ namespace WebApplications.Utilities.Service
                     {
                         case ServiceControllerStatus.Running:
                             serviceController.Pause();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false);
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token))
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false))
                                 return false;
                             serviceController.Pause();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false);
                         case ServiceControllerStatus.Paused:
                             return true;
                         case ServiceControllerStatus.PausePending:
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false);
                         default:
                             return false;
                     }
@@ -452,15 +452,15 @@ namespace WebApplications.Utilities.Service
                             return true;
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
                         case ServiceControllerStatus.Paused:
                             serviceController.Continue();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
                         case ServiceControllerStatus.PausePending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token))
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false))
                                 return false;
                             serviceController.Continue();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false);
                         default:
                             return false;
                     }
@@ -495,25 +495,25 @@ namespace WebApplications.Utilities.Service
                     {
                         case ServiceControllerStatus.Running:
                             serviceController.Stop();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token))
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false))
                                 return false;
                             serviceController.Stop();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
                         case ServiceControllerStatus.Paused:
                             serviceController.Stop();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
                         case ServiceControllerStatus.PausePending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token))
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Paused, token).ConfigureAwait(false))
                                 return false;
                             serviceController.Stop();
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
                         case ServiceControllerStatus.Stopped:
                             return true;
                         case ServiceControllerStatus.StopPending:
-                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token);
+                            return await WaitForAsync(serviceController, ServiceControllerStatus.Stopped, token).ConfigureAwait(false);
                         default:
                             return false;
                     }
@@ -550,14 +550,14 @@ namespace WebApplications.Utilities.Service
                     {
                         case ServiceControllerStatus.Running:
                             // ReSharper disable once AccessToDisposedClosure, PossibleNullReferenceException
-                            await Task.Run(() => serviceController.ExecuteCommand(command), token);
+                            await Task.Run(() => serviceController.ExecuteCommand(command), token).ConfigureAwait(false);
                             return !token.IsCancellationRequested;
                         case ServiceControllerStatus.ContinuePending:
                         case ServiceControllerStatus.StartPending:
-                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token))
+                            if (!await WaitForAsync(serviceController, ServiceControllerStatus.Running, token).ConfigureAwait(false))
                                 return false;
                             // ReSharper disable once AccessToDisposedClosure, PossibleNullReferenceException
-                            await Task.Run(() => serviceController.ExecuteCommand(command), token);
+                            await Task.Run(() => serviceController.ExecuteCommand(command), token).ConfigureAwait(false);
                             return !token.IsCancellationRequested;
                         default:
                             return false;

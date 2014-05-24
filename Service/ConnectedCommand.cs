@@ -120,9 +120,9 @@ namespace WebApplications.Utilities.Service
                             do
                             {
                                 // ReSharper disable once PossibleNullReferenceException
-                                await Task.Delay(250, token);
+                                await Task.Delay(250, token).ConfigureAwait(false);
                                 if (token.IsCancellationRequested) return;
-                                await Flush(0, token);
+                                await Flush(0, token).ConfigureAwait(false);
                             } while (true);
                         }
                         catch (TaskCanceledException)
@@ -138,9 +138,9 @@ namespace WebApplications.Utilities.Service
                         bool cancelled = false;
                         try
                         {
-                            await service.ExecuteAsync(ConnectionGuid, _request.CommandLine, this, token);
+                            await service.ExecuteAsync(ConnectionGuid, _request.CommandLine, this, token).ConfigureAwait(false);
                             if (!token.IsCancellationRequested)
-                                await Flush(-1, token);
+                                await Flush(-1, token).ConfigureAwait(false);
                             else
                                 cancelled = true;
                         }
@@ -155,7 +155,7 @@ namespace WebApplications.Utilities.Service
 
                         if (cancelled)
                         {
-                            using (await _flushLock.LockAsync(token))
+                            using (await _flushLock.LockAsync(token).ConfigureAwait(false))
                             {
                                 try
                                 {
@@ -164,7 +164,8 @@ namespace WebApplications.Utilities.Service
                                             new CommandCancelResponse(
                                                 _cancelRequest != null ? _cancelRequest.ID : Guid.Empty,
                                                 ID),
-                                            Common.FireAndForgetToken);
+                                            Common.FireAndForgetToken)
+                                            .ConfigureAwait(false);
                                 }
                                 catch (OperationCanceledException) { }
                                 return;
@@ -174,9 +175,9 @@ namespace WebApplications.Utilities.Service
                         if (exception != null)
                             try
                             {
-                                await Flush(0, token);
+                                await Flush(0, token).ConfigureAwait(false);
                                 _builder.Append(exception.Message);
-                                await Flush(-2, token);
+                                await Flush(-2, token).ConfigureAwait(false);
                             }
                             // ReSharper disable once EmptyGeneralCatchClause
                             catch
@@ -242,7 +243,7 @@ namespace WebApplications.Utilities.Service
             [NotNull]
             private async Task Flush(int sequence, CancellationToken token = default(CancellationToken))
             {
-                using (await _flushLock.LockAsync(token))
+                using (await _flushLock.LockAsync(token).ConfigureAwait(false))
                 {
                     string chunk;
                     bool increment = false;
@@ -260,7 +261,7 @@ namespace WebApplications.Utilities.Service
                     }
                     NamedPipeConnection connection = _connection;
                     if (connection != null)
-                        await connection.Send(new CommandResponse(ID, _sequenceId, chunk), token);
+                        await connection.Send(new CommandResponse(ID, _sequenceId, chunk), token).ConfigureAwait(false);
                     if (increment)
                         lock (_builder)
                             _sequenceId++;

@@ -333,18 +333,7 @@ namespace WebApplications.Utilities.Service
                 .AppendFormatLine("The performance counter '{Name}' does not exist.")
                 .AppendLine()
                 .MakeReadOnly();
-
-        /// <summary>
-        /// The format to use when the category name given to the performance command does not exist.
-        /// </summary>
-        [NotNull]
-        protected static readonly FormatBuilder PerformanceDisabledFormat =
-            new FormatBuilder()
-                .AppendForegroundColor(Color.Red)
-                .AppendLine("Performance counters are disabled.")
-                .AppendLine()
-                .MakeReadOnly();
-
+        
         // ReSharper restore FormatStringProblem
         #endregion
     }
@@ -885,7 +874,7 @@ namespace WebApplications.Utilities.Service
             Stopwatch s = Stopwatch.StartNew();
 
             Contract.Assert(ServiceName != null);
-            await ServiceUtils.Uninstall(ServiceName, token);
+            await ServiceUtils.Uninstall(ServiceName, token).ConfigureAwait(false);
 
             writer.WriteLine(
                 // ReSharper disable once AssignNullToNotNullAttribute
@@ -905,9 +894,6 @@ namespace WebApplications.Utilities.Service
         {
             lock (_lock)
             {
-                if (!PerfCategory.HasAccess)
-                    PerformanceDisabledFormat.WriteTo(writer);
-
                 bool categoryOmitted = string.IsNullOrWhiteSpace(category);
 
                 PerfCategory cat = categoryOmitted
