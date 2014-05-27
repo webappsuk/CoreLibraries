@@ -493,7 +493,8 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {!fgcolor:Teal}{time:{Value:HH:mm:ss.ffff}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}.
+        ///   Looks up a localized string similar to {!fgcolor:Teal}{time:{Value:HH:mm:ss.ffff}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}
+        ///.
         /// </summary>
         internal static string LogFormat_Short {
             get {

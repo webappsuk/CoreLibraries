@@ -376,7 +376,8 @@
     <value>The specified SQL timeout ({0}) was less than 1s.</value>
   </data>
   <data name="LogFormat_Short" xml:space="preserve">
-    <value>{!fgcolor:Teal}{time:{Value:HH:mm:ss.ffff}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}</value>
+    <value>{!fgcolor:Teal}{time:{Value:HH:mm:ss.ffff}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}
+</value>
   </data>
   <data name="LogFormat_Verbose" xml:space="preserve">
     <value>{!fgcolor:LogLevel}{!header}{!layout:aCentre}{level:{Value}}{!fgcolor}{!layout}{message:
