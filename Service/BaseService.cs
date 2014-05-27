@@ -44,6 +44,8 @@ using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Logging.Loggers;
 using WebApplications.Utilities.Performance;
+using WebApplications.Utilities.Service.Common;
+using WebApplications.Utilities.Service.Common.Control;
 using WebApplications.Utilities.Threading;
 using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
@@ -195,8 +197,8 @@ namespace WebApplications.Utilities.Service
             CanPauseAndContinue = true;
             CanShutdown = true;
             IsService = _isServiceProcess &&
-                        ServiceUtils.ServiceIsInstalled(name) &&
-                        ServiceUtils.GetServiceStatus(name) == ServiceControllerStatus.StartPending;
+                        Controller.ServiceIsInstalled(name) &&
+                        Controller.GetServiceStatus(name) == ServiceControllerStatus.StartPending;
 
             // Create event log.
             EventLogger eventLogger = Log.GetLoggers<EventLogger>().FirstOrDefault();
@@ -658,7 +660,7 @@ namespace WebApplications.Utilities.Service
                     new EventWaitHandleAccessRule(identity, EventWaitHandleRights.FullControl, AccessControlType.Allow));
 
                 Contract.Assert(ServiceName != null);
-                _state = IsService ? ServiceUtils.GetServiceStatus(ServiceName) : ServiceControllerStatus.Stopped;
+                _state = IsService ? Controller.GetServiceStatus(ServiceName) : ServiceControllerStatus.Stopped;
             }
             catch (Exception e)
             {

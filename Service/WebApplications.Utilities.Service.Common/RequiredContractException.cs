@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -25,46 +25,34 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Service.Common;
+using WebApplications.Utilities.Logging;
 
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common
 {
     /// <summary>
-    /// Add to a parameter of a command indicated by a <see cref="ServiceCommandAttribute"/> to add a description for the parameter.
+    /// Exception thrown by requires contracts.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
-    [Serializable]
-    [PublicAPI]
-    public class ServiceCommandParameterAttribute : Attribute
+    public class RequiredContractException : ContractException<CommonResources>
     {
         /// <summary>
-        /// The resource type.
+        /// Initializes a new instance of the <see cref="RequiredContractException"/> class.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly Type ResourceType;
-
-        /// <summary>
-        /// The resource property for the description.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly string DescriptionProperty;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceCommandParameterAttribute"/> class.
-        /// </summary>
-        /// <param name="resourceType">Type of the resource.</param>
-        /// <param name="descriptionProperty">The description property.</param>
-        public ServiceCommandParameterAttribute([NotNull] Type resourceType, [NotNull] string descriptionProperty)
+        /// <param name="conditions">The conditions.</param>
+        internal RequiredContractException([CanBeNull] string conditions)
+            : base(conditions)
         {
-            Contract.Requires<RequiredContractException>(resourceType != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(descriptionProperty != null, "Parameter_Null");
-            ResourceType = resourceType;
-            DescriptionProperty = descriptionProperty;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RequiredContractException"/> class.
+        /// </summary>
+        /// <param name="conditions">The conditions.</param>
+        /// <param name="resourceProperty">The resource property.</param>
+        // ReSharper disable once CodeAnnotationAnalyzer
+        internal RequiredContractException([CanBeNull] string conditions, [NotNull] string resourceProperty)
+            : base(conditions, resourceProperty)
+        {
         }
     }
 }

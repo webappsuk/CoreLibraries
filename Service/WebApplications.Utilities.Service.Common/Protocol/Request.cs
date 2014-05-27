@@ -26,28 +26,32 @@
 #endregion
 
 using System;
+using ProtoBuf;
 
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common.Protocol
 {
-    [Flags]
-    internal enum ServiceAccessRights
+    /// <summary>
+    /// Base request message, sent by a client to request something from the server.
+    /// </summary>
+    [ProtoContract(SkipConstructor = true)]
+    [ProtoInclude(100, typeof (CommandRequest))]
+    [ProtoInclude(200, typeof (CommandCancelRequest))]
+    [ProtoInclude(300, typeof (ConnectRequest))]
+    [ProtoInclude(400, typeof (DisconnectRequest))]
+    public abstract class Request : Message
     {
-        // ReSharper disable UnusedMember.Global
-        QueryConfig = 0x1,
-        ChangeConfig = 0x2,
-        QueryStatus = 0x4,
-        EnumerateDependants = 0x8,
-        Start = 0x10,
-        Stop = 0x20,
-        PauseContinue = 0x40,
-        Interrogate = 0x80,
-        UserDefinedControl = 0x100,
-        Delete = 0x00010000,
-        StandardRightsRequired = 0xF0000,
+        /// <summary>
+        /// The request identifier.
+        /// </summary>
+        [ProtoMember(1)]
+        public readonly Guid ID;
 
-        AllAccess = (StandardRightsRequired | QueryConfig | ChangeConfig |
-                     QueryStatus | EnumerateDependants | Start | Stop | PauseContinue |
-                     Interrogate | UserDefinedControl)
-        // ReSharper restore UnusedMember.Global
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Request"/> class.
+        /// </summary>
+        protected Request()
+        {
+            ID = Guid.NewGuid();
+        }
     }
 }

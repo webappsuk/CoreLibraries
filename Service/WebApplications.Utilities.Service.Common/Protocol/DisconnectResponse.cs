@@ -26,45 +26,23 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
-using WebApplications.Utilities.Service.Common;
+using ProtoBuf;
 
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common.Protocol
 {
     /// <summary>
-    /// Add to a parameter of a command indicated by a <see cref="ServiceCommandAttribute"/> to add a description for the parameter.
+    /// Disconnect response message, sent by the server when a client is being disconnected.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
-    [Serializable]
-    [PublicAPI]
-    public class ServiceCommandParameterAttribute : Attribute
+    [ProtoContract(SkipConstructor = true)]
+    public class DisconnectResponse : Response
     {
         /// <summary>
-        /// The resource type.
+        /// Initializes a new instance of the <see cref="DisconnectResponse"/> class.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly Type ResourceType;
-
-        /// <summary>
-        /// The resource property for the description.
-        /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly string DescriptionProperty;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceCommandParameterAttribute"/> class.
-        /// </summary>
-        /// <param name="resourceType">Type of the resource.</param>
-        /// <param name="descriptionProperty">The description property.</param>
-        public ServiceCommandParameterAttribute([NotNull] Type resourceType, [NotNull] string descriptionProperty)
+        /// <param name="id">The identifier.</param>
+        public DisconnectResponse(Guid id)
+            : base(id)
         {
-            Contract.Requires<RequiredContractException>(resourceType != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(descriptionProperty != null, "Parameter_Null");
-            ResourceType = resourceType;
-            DescriptionProperty = descriptionProperty;
         }
     }
 }

@@ -38,6 +38,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Performance;
+using WebApplications.Utilities.Service.Common.Control;
 using SCP = WebApplications.Utilities.Service.ServiceCommandParameterAttribute;
 
 namespace WebApplications.Utilities.Service
@@ -473,7 +474,7 @@ namespace WebApplications.Utilities.Service
             {
                 Contract.Assert(ServiceName != null);
                 if (IsService)
-                    return ServiceUtils.StartService(ServiceName, token: token);
+                    return Controller.StartService(ServiceName, token: token);
 
                 switch (_state)
                 {
@@ -509,7 +510,7 @@ namespace WebApplications.Utilities.Service
             {
                 Contract.Assert(ServiceName != null);
                 if (IsService)
-                    return ServiceUtils.StopService(ServiceName, token);
+                    return Controller.StopService(ServiceName, token);
 
                 switch (_state)
                 {
@@ -544,7 +545,7 @@ namespace WebApplications.Utilities.Service
             {
                 Contract.Assert(ServiceName != null);
                 if (IsService)
-                    return ServiceUtils.PauseService(ServiceName, token);
+                    return Controller.PauseService(ServiceName, token);
 
                 if (State != ServiceControllerStatus.Running)
                 {
@@ -578,7 +579,7 @@ namespace WebApplications.Utilities.Service
             {
                 Contract.Assert(ServiceName != null);
                 if (IsService)
-                    return ServiceUtils.ContinueService(ServiceName, token);
+                    return Controller.ContinueService(ServiceName, token);
 
                 if (State != ServiceControllerStatus.Paused)
                 {
@@ -653,7 +654,7 @@ namespace WebApplications.Utilities.Service
             {
                 Contract.Assert(ServiceName != null);
                 if (IsService)
-                    return ServiceUtils.CommandService(ServiceName, command, token);
+                    return Controller.CommandService(ServiceName, command, token);
 
                 OnCustomCommand(command);
 
@@ -831,7 +832,7 @@ namespace WebApplications.Utilities.Service
                 fileName = Path.Combine(installDirectory, Path.GetFileName(fileName));
 
                 Contract.Assert(ServiceName != null);
-                ServiceUtils.Install(ServiceName, DisplayName, AssemblyDescription, fileName, userName, password);
+                Controller.Install(ServiceName, DisplayName, AssemblyDescription, fileName, userName, password);
                 writer.WriteLine(
                     // ReSharper disable once AssignNullToNotNullAttribute
                     ServiceResources.Inf_ServiceRunner_Installed,
@@ -874,7 +875,7 @@ namespace WebApplications.Utilities.Service
             Stopwatch s = Stopwatch.StartNew();
 
             Contract.Assert(ServiceName != null);
-            await ServiceUtils.Uninstall(ServiceName, token).ConfigureAwait(false);
+            await Controller.Uninstall(ServiceName, token).ConfigureAwait(false);
 
             writer.WriteLine(
                 // ReSharper disable once AssignNullToNotNullAttribute

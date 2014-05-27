@@ -25,18 +25,33 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-namespace WebApplications.Utilities.Service
+using System;
+using JetBrains.Annotations;
+using ProtoBuf;
+
+namespace WebApplications.Utilities.Service.Common.Protocol
 {
-    internal enum ServiceConfig
+    /// <summary>
+    /// Connection response message, sent by the server when a client has connected.
+    /// </summary>
+    [ProtoContract(SkipConstructor = true)]
+    public class ConnectResponse : Response
     {
-        // ReSharper disable UnusedMember.Global
-        Description = 1,
-        FailureActions = 2,
-        DelayedAutoStartInfo = 3,
-        FailureActionsFlag = 4,
-        ServiceSidInfo = 5,
-        RequiredPrivilegesInfo = 6,
-        PreShutdownInfo = 7
-        // ReSharper restore UnusedMember.Global
+        /// <summary>
+        /// The service name.
+        /// </summary>
+        [ProtoMember(1)]
+        public readonly string ServiceName;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectResponse"/> class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="serviceName">Name of the service.</param>
+        public ConnectResponse(Guid id, [CanBeNull] string serviceName)
+            : base(id)
+        {
+            ServiceName = serviceName;
+        }
     }
 }

@@ -30,7 +30,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
-using WebApplications.Utilities.Service.PipeProtocol;
+using WebApplications.Utilities.Service.Common;
 
 namespace WebApplications.Utilities.Service.Client
 {
@@ -107,7 +107,7 @@ namespace WebApplications.Utilities.Service.Client
             Name = "Invalid";
             FullName = "Invalid";
             if (string.IsNullOrWhiteSpace(pipe) ||
-                !pipe.EndsWith(Common.NameSuffix))
+                !pipe.EndsWith(Constants.NameSuffix))
                 return;
 
             string directory = Path.GetDirectoryName(pipe);
@@ -125,7 +125,7 @@ namespace WebApplications.Utilities.Service.Client
 
             Host = host;
 
-            int nsl = Common.NameSuffix.Length;
+            int nsl = Constants.NameSuffix.Length;
             string name = Path.GetFileName(pipe);
             FullName = name;
             if (name.Length < 38 + nsl)

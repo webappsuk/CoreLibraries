@@ -26,31 +26,21 @@
 #endregion
 
 using System;
-using System.Threading;
 
-namespace WebApplications.Utilities.Service.PipeProtocol
+namespace WebApplications.Utilities.Service.Common.Control
 {
-    /// <summary>
-    /// Common code for named pipes.
-    /// </summary>
-    public static class Common
+    [Flags]
+    internal enum ScmAccessRights
     {
-        /// <summary>
-        /// The name suffix.
-        /// </summary>
-        public const string NameSuffix = "_WAUKService";
+        Connect = 0x0001,
+        CreateService = 0x0002,
+        EnumerateService = 0x0004,
+        Lock = 0x0008,
+        QueryLockStatus = 0x0010,
+        ModifyBootConfig = 0x0020,
+        StandardRightsRequired = 0xF0000,
 
-        /// <summary>
-        /// The timeout used when sending 'fire and forget' messages.
-        /// </summary>
-        public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
-
-        /// <summary>
-        /// Gets the fire and forget token, which will cancel a send after <see cref="Timeout"/>.
-        /// </summary>
-        /// <value>
-        /// The fire and forget token.
-        /// </value>
-        public static CancellationToken FireAndForgetToken { get { return new CancellationTokenSource(Timeout).Token; } }
+        AllAccess = (StandardRightsRequired | Connect | CreateService |
+                     EnumerateService | Lock | QueryLockStatus | ModifyBootConfig)
     }
 }

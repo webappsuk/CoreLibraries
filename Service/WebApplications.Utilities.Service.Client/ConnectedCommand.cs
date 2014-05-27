@@ -32,7 +32,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Service.PipeProtocol;
+using WebApplications.Utilities.Service.Common;
+using WebApplications.Utilities.Service.Common.Protocol;
 
 namespace WebApplications.Utilities.Service.Client
 {

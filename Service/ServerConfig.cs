@@ -30,6 +30,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Security.Principal;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Service.Common;
 
 namespace WebApplications.Utilities.Service
 {

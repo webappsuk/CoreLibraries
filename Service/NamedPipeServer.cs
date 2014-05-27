@@ -37,7 +37,7 @@ using System.Text;
 using System.Threading;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Service.PipeProtocol;
+using WebApplications.Utilities.Service.Common;
 
 namespace WebApplications.Utilities.Service
 {
@@ -148,7 +148,7 @@ namespace WebApplications.Utilities.Service
                 Contract.Assert(service.ServiceName != null);
                 foreach (char c in service.ServiceName)
                     builder.Append(char.IsLetterOrDigit(c) ? c : '_');
-                builder.Append(Common.NameSuffix);
+                builder.Append(Constants.NameSuffix);
                 Name = builder.ToString();
             }
 

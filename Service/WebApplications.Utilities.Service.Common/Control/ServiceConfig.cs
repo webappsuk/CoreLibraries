@@ -25,22 +25,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common.Control
 {
-    [Flags]
-    internal enum ScmAccessRights
+    internal enum ServiceConfig
     {
-        Connect = 0x0001,
-        CreateService = 0x0002,
-        EnumerateService = 0x0004,
-        Lock = 0x0008,
-        QueryLockStatus = 0x0010,
-        ModifyBootConfig = 0x0020,
-        StandardRightsRequired = 0xF0000,
-
-        AllAccess = (StandardRightsRequired | Connect | CreateService |
-                     EnumerateService | Lock | QueryLockStatus | ModifyBootConfig)
+        // ReSharper disable UnusedMember.Global
+        Description = 1,
+        FailureActions = 2,
+        DelayedAutoStartInfo = 3,
+        FailureActionsFlag = 4,
+        ServiceSidInfo = 5,
+        RequiredPrivilegesInfo = 6,
+        PreShutdownInfo = 7
+        // ReSharper restore UnusedMember.Global
     }
 }

@@ -35,6 +35,8 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Service.Common;
+using WebApplications.Utilities.Service.Common.Control;
 
 namespace WebApplications.Utilities.Service
 {
@@ -163,9 +165,9 @@ namespace WebApplications.Utilities.Service
                         options.Remove("U");
                     }
 
-                    if (ServiceUtils.ServiceIsInstalled(service.ServiceName))
+                    if (Controller.ServiceIsInstalled(service.ServiceName))
                     {
-                        ServiceControllerStatus state = ServiceUtils.GetServiceStatus(service.ServiceName);
+                        ServiceControllerStatus state = Controller.GetServiceStatus(service.ServiceName);
                         new FormatBuilder()
                             .AppendForegroundColor(ConsoleColor.White)
                             .AppendFormatLine(
@@ -252,7 +254,7 @@ namespace WebApplications.Utilities.Service
                                 service.Install(ConsoleTextWriter.Default, userName, password);
 
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_WaitInstall);
-                                while (!ServiceUtils.ServiceIsInstalled(service.ServiceName))
+                                while (!Controller.ServiceIsInstalled(service.ServiceName))
                                 {
                                     await Task.Delay(250, token).ConfigureAwait(false);
                                     Console.Write('.');
@@ -265,7 +267,7 @@ namespace WebApplications.Utilities.Service
                                 await service.Uninstall(ConsoleTextWriter.Default, token).ConfigureAwait(false);
 
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_WaitUninstall);
-                                while (ServiceUtils.ServiceIsInstalled(service.ServiceName))
+                                while (Controller.ServiceIsInstalled(service.ServiceName))
                                 {
                                     await Task.Delay(250, token).ConfigureAwait(false);
                                     Console.Write('.');
@@ -276,38 +278,38 @@ namespace WebApplications.Utilities.Service
 
                             case "R":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStop);
-                                await ServiceUtils.StopService(service.ServiceName, token).ConfigureAwait(false);
+                                await Controller.StopService(service.ServiceName, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStart);
-                                await ServiceUtils.StartService(service.ServiceName, null, token).ConfigureAwait(false);
+                                await Controller.StartService(service.ServiceName, null, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "S":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStart);
-                                await ServiceUtils.StartService(service.ServiceName, null, token).ConfigureAwait(false);
+                                await Controller.StartService(service.ServiceName, null, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "T":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStop);
-                                await ServiceUtils.StopService(service.ServiceName, token).ConfigureAwait(false);
+                                await Controller.StopService(service.ServiceName, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;
 
                             case "P":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingPause);
-                                await ServiceUtils.PauseService(service.ServiceName, token).ConfigureAwait(false);
+                                await Controller.PauseService(service.ServiceName, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 break;
 
                             case "C":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingContinue);
-                                await ServiceUtils.ContinueService(service.ServiceName, token).ConfigureAwait(false);
+                                await Controller.ContinueService(service.ServiceName, token).ConfigureAwait(false);
                                 Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
                                 Console.WriteLine();
                                 break;

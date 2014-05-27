@@ -1,4 +1,4 @@
-#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -25,34 +25,19 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using JetBrains.Annotations;
-using WebApplications.Utilities.Logging;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using WebApplications.Utilities;
 
-namespace WebApplications.Utilities.Service.Client
-{
-    /// <summary>
-    /// Exception thrown by requires contracts.
-    /// </summary>
-    public class RequiredContractException : ContractException<ClientResources>
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RequiredContractException"/> class.
-        /// </summary>
-        /// <param name="conditions">The conditions.</param>
-        internal RequiredContractException([CanBeNull] string conditions)
-            : base(conditions)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RequiredContractException"/> class.
-        /// </summary>
-        /// <param name="conditions">The conditions.</param>
-        /// <param name="resourceProperty">The resource property.</param>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        internal RequiredContractException([CanBeNull] string conditions, [NotNull] string resourceProperty)
-            : base(conditions, resourceProperty)
-        {
-        }
-    }
-}
+[assembly: Guid("7a0d2b98-f018-41d5-a229-f0e72e567b29")]
+[assembly: AssemblyTitle("WebApplications.Utilities.Service.Common")]
+[assembly: AssemblyDescription("Common code used by the Service and Client to communicate.")]
+[assembly: AssemblyConfiguration("Release")]
+[assembly: AssemblyCompany("Web Applications UK Ltd")]
+[assembly: AssemblyProduct("Web Applications Service Utilities")]
+[assembly: AssemblyCopyright("Copyright © Web Applications UK Ltd, 2006-2014")]
+[assembly: AssemblyTrademark("Web Applications")]
+[assembly: AssemblyCulture("")]
+[assembly: ComVisible(false)]
+[assembly: AssemblyVersion("5.0.*")]
+[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

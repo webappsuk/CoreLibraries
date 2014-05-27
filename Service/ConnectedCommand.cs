@@ -35,7 +35,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Formatting;
-using WebApplications.Utilities.Service.PipeProtocol;
+using WebApplications.Utilities.Service.Common;
+using WebApplications.Utilities.Service.Common.Protocol;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service
@@ -164,7 +165,7 @@ namespace WebApplications.Utilities.Service
                                             new CommandCancelResponse(
                                                 _cancelRequest != null ? _cancelRequest.ID : Guid.Empty,
                                                 ID),
-                                            Common.FireAndForgetToken)
+                                            Constants.FireAndForgetToken)
                                             .ConfigureAwait(false);
                                 }
                                 catch (OperationCanceledException) { }

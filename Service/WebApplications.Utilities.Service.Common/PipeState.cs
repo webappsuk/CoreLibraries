@@ -25,46 +25,36 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
-using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
-using WebApplications.Utilities.Service.Common;
-
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common
 {
     /// <summary>
-    /// Add to a parameter of a command indicated by a <see cref="ServiceCommandAttribute"/> to add a description for the parameter.
+    /// The PipeState enumerates possible states for a named pipe.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
-    [Serializable]
-    [PublicAPI]
-    public class ServiceCommandParameterAttribute : Attribute
+    public enum PipeState
     {
         /// <summary>
-        /// The resource type.
+        /// The connection is starting up.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly Type ResourceType;
+        Starting,
 
         /// <summary>
-        /// The resource property for the description.
+        /// The connection is open.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly string DescriptionProperty;
+        Open,
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceCommandParameterAttribute"/> class.
+        /// The connection is connected but we need a connect message.
         /// </summary>
-        /// <param name="resourceType">Type of the resource.</param>
-        /// <param name="descriptionProperty">The description property.</param>
-        public ServiceCommandParameterAttribute([NotNull] Type resourceType, [NotNull] string descriptionProperty)
-        {
-            Contract.Requires<RequiredContractException>(resourceType != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(descriptionProperty != null, "Parameter_Null");
-            ResourceType = resourceType;
-            DescriptionProperty = descriptionProperty;
-        }
+        AwaitingConnect,
+
+        /// <summary>
+        /// The connection is connected.
+        /// </summary>
+        Connected,
+
+        /// <summary>
+        /// The connection is closed.
+        /// </summary>
+        Closed
     }
 }

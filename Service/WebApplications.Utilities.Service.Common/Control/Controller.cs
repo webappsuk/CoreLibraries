@@ -37,15 +37,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
-// TODO Move to common code so it can be used from the client.
-
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common.Control
 {
     /// <summary>
     /// Handles manipulation of services.
     /// </summary>
-    /// <remarks>See http://stackoverflow.com/questions/358700/how-to-install-a-windows-service-programmatically-in-c</remarks>
-    internal static class ServiceUtils
+    public static class Controller
     {
         #region PInvoke
         // ReSharper disable InconsistentNaming, StringLiteralTypo, IdentifierTypo
@@ -154,27 +151,27 @@ namespace WebApplications.Utilities.Service
                         .FirstOrDefault(o => string.Equals(o.GetPropertyValue("Name").ToString(), serviceName));
                     // ReSharper restore PossibleNullReferenceException
                     if (mo == null)
-                        throw new ServiceException(
-                            () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,
+                        throw new CommonServiceException(
+                            () => CommonResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,
                             serviceName);
                     // ReSharper disable once PossibleNullReferenceException
                     servicePath = mo.GetPropertyValue("PathName").ToString().Trim('"');
                     if (!File.Exists(servicePath))
-                        throw new ServiceException(
-                            () => ServiceResources.Err_ServiceUtils_Uninstall_ServiceLocationDoesntExist,
+                        throw new CommonServiceException(
+                            () => CommonResources.Err_ServiceUtils_Uninstall_ServiceLocationDoesntExist,
                             serviceName,
                             servicePath);
                 }
             }
-            catch (ServiceException)
+            catch (CommonServiceException)
             {
                 throw;
             }
             catch (Exception e)
             {
-                throw new ServiceException(
+                throw new CommonServiceException(
                     e,
-                    () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,
+                    () => CommonResources.Err_ServiceUtils_Uninstall_CouldNotFindLocation,
                     serviceName);
             }
 
@@ -185,17 +182,17 @@ namespace WebApplications.Utilities.Service
             {
                 IntPtr service = OpenService(scm, serviceName, ServiceAccessRights.AllAccess);
                 if (service == IntPtr.Zero)
-                    throw new ServiceException(
+                    throw new CommonServiceException(
                         new Win32Exception(),
-                        () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotOpenService,
+                        () => CommonResources.Err_ServiceUtils_Uninstall_CouldNotOpenService,
                         serviceName);
 
                 try
                 {
                     if (!DeleteService(service))
-                        throw new ServiceException(
+                        throw new CommonServiceException(
                             new Win32Exception(),
-                            () => ServiceResources.Err_ServiceUtils_Uninstall_CouldNotUninstallService,
+                            () => CommonResources.Err_ServiceUtils_Uninstall_CouldNotUninstallService,
                             serviceName);
                 }
                 finally
@@ -261,9 +258,9 @@ namespace WebApplications.Utilities.Service
                     password);
 
                 if (service == IntPtr.Zero)
-                    throw new ServiceException(
+                    throw new CommonServiceException(
                         new Win32Exception(),
-                        () => ServiceResources.Err_ServiceUtils_Install_CouldNotInstallService,
+                        () => CommonResources.Err_ServiceUtils_Install_CouldNotInstallService,
                         serviceName);
                 try
                 {
@@ -276,9 +273,9 @@ namespace WebApplications.Utilities.Service
                     {
                         bool flag = ChangeServiceConfig2(service, ServiceConfig.Description, ref sd);
                         if (!flag)
-                            throw new ServiceException(
+                            throw new CommonServiceException(
                                 new Win32Exception(),
-                                () => ServiceResources.Err_ServiceUtils_Install_CouldNotSetDescription,
+                                () => CommonResources.Err_ServiceUtils_Install_CouldNotSetDescription,
                                 serviceName);
                     }
                     finally
@@ -604,9 +601,9 @@ namespace WebApplications.Utilities.Service
         {
             IntPtr scm = OpenSCManager(null, null, rights);
             if (scm == IntPtr.Zero)
-                throw new ServiceException(
+                throw new CommonServiceException(
                     new Win32Exception(),
-                    () => ServiceResources.Err_ServiceUtils_OpenSCManager_CouldNotOpenManager);
+                    () => CommonResources.Err_ServiceUtils_OpenSCManager_CouldNotOpenManager);
 
             return scm;
         }

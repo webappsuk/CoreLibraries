@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -26,45 +26,31 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
-using WebApplications.Utilities.Service.Common;
+using ProtoBuf;
 
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common.Protocol
 {
     /// <summary>
-    /// Add to a parameter of a command indicated by a <see cref="ServiceCommandAttribute"/> to add a description for the parameter.
+    /// Command request message, sent by a client.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
-    [Serializable]
-    [PublicAPI]
-    public class ServiceCommandParameterAttribute : Attribute
+    [ProtoContract(SkipConstructor = true)]
+    public class CommandCancelResponse : Response
     {
         /// <summary>
-        /// The resource type.
+        /// The command identifier for the command that was cancelled.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly Type ResourceType;
+        [ProtoMember(1)]
+        public readonly Guid CancelledCommandId;
 
         /// <summary>
-        /// The resource property for the description.
+        /// Initializes a new instance of the <see cref="CommandRequest" /> class.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly string DescriptionProperty;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceCommandParameterAttribute"/> class.
-        /// </summary>
-        /// <param name="resourceType">Type of the resource.</param>
-        /// <param name="descriptionProperty">The description property.</param>
-        public ServiceCommandParameterAttribute([NotNull] Type resourceType, [NotNull] string descriptionProperty)
+        /// <param name="id">The identifier.</param>
+        /// <param name="cancelledCommandId">The command identifier for the command that was cancelled.</param>
+        public CommandCancelResponse(Guid id, Guid cancelledCommandId)
+            : base(id)
         {
-            Contract.Requires<RequiredContractException>(resourceType != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(descriptionProperty != null, "Parameter_Null");
-            ResourceType = resourceType;
-            DescriptionProperty = descriptionProperty;
+            CancelledCommandId = cancelledCommandId;
         }
     }
 }

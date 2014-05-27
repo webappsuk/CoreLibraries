@@ -25,16 +25,34 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-namespace WebApplications.Utilities.Service
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
+using ProtoBuf;
+using WebApplications.Utilities.Logging;
+
+namespace WebApplications.Utilities.Service.Common.Protocol
 {
-    internal enum ServiceBootFlag
+    /// <summary>
+    /// Log response message, sent by the server when <see cref="Log">logs</see> are added.
+    /// </summary>
+    [ProtoContract(SkipConstructor = true)]
+    public class LogResponse : Message
     {
-        // ReSharper disable UnusedMember.Global
-        Start = 0x00000000,
-        SystemStart = 0x00000001,
-        AutoStart = 0x00000002,
-        DemandStart = 0x00000003,
-        Disabled = 0x00000004
-        // ReSharper restore UnusedMember.Global
+        /// <summary>
+        /// The logs.
+        /// </summary>
+        [ProtoMember(1, OverwriteList = true)]
+        public readonly IEnumerable<Log> Logs;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogResponse"/> class.
+        /// </summary>
+        /// <param name="logs">The logs.</param>
+        public LogResponse([NotNull] IEnumerable<Log> logs)
+        {
+            Contract.Requires(logs != null);
+            Logs = logs;
+        }
     }
 }

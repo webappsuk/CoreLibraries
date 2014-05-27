@@ -117,17 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Contract_Failed" xml:space="preserve">
-    <value>Contract failed. {0}</value>
-  </data>
   <data name="Err_NamedPipeClient_Failed" xml:space="preserve">
     <value>A fatal error occurred on the current named pipe client, closing.</value>
   </data>
   <data name="Not_NamedPipeClient_Connection" xml:space="preserve">
     <value>The client has connected to the service '{0}'.</value>
-  </data>
-  <data name="Parameter_Null" xml:space="preserve">
-    <value>A required parameter was set to null.</value>
   </data>
   <data name="Err_ConnectedCommand_Received_MissingSequenceElements" xml:space="preserve">
     <value>The command response was missing sequence elements.</value>

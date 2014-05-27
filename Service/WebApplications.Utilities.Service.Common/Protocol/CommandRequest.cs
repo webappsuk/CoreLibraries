@@ -25,63 +25,32 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Diagnostics.Contracts;
-using System.Threading;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Service.Common;
+using ProtoBuf;
 
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common.Protocol
 {
     /// <summary>
-    /// Base implementation of a service.
+    /// Command request message, sent by a client.
     /// </summary>
-    public abstract partial class BaseService<TService>
+    [ProtoContract(SkipConstructor = true)]
+    public class CommandRequest : Request
     {
-        private class Connection : IDisposable
+        /// <summary>
+        /// The command line to execute.
+        /// </summary>
+        [ProtoMember(1)]
+        public readonly string CommandLine;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandRequest"/> class.
+        /// </summary>
+        /// <param name="commandLine">The command line to execute.</param>
+        public CommandRequest([NotNull] string commandLine)
         {
-            /// <summary>
-            /// The identifier.
-            /// </summary>
-            [PublicAPI]
-            public readonly Guid ID;
-
-            /// <summary>
-            /// The connection
-            /// </summary>
-            [NotNull]
-            private IConnection _connection;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Connection" /> class.
-            /// </summary>
-            /// <param name="id">The identifier.</param>
-            /// <param name="connection">The connection.</param>
-            public Connection(Guid id, [NotNull] IConnection connection)
-            {
-                Contract.Requires<RequiredContractException>(connection != null, "Parameter_Null");
-                ID = id;
-                _connection = connection;
-            }
-
-            /// <summary>
-            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            /// </summary>
-            public void Dispose()
-            {
-                IConnection con = Interlocked.Exchange(ref _connection, null);
-                if (con == null) return;
-
-                try
-                {
-                    con.OnDisconnect();
-                }
-                    // ReSharper disable once EmptyGeneralCatchClause
-                catch
-                {
-                    // Suppress any more errors.
-                }
-            }
+            Contract.Requires(commandLine != null);
+            CommandLine = commandLine;
         }
     }
 }

@@ -36,7 +36,8 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.IO;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Service.PipeProtocol;
+using WebApplications.Utilities.Service.Common;
+using WebApplications.Utilities.Service.Common.Protocol;
 
 namespace WebApplications.Utilities.Service
 {
@@ -253,7 +254,7 @@ namespace WebApplications.Utilities.Service
                                                 // Try to send disconnect response.
                                                 await Send(
                                                     new DisconnectResponse(disconnectGuid),
-                                                    Common.FireAndForgetToken)
+                                                    Constants.FireAndForgetToken)
                                                     .ConfigureAwait(false);
                                             }
                                             catch (TaskCanceledException)

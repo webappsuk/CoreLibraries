@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -26,45 +26,33 @@
 #endregion
 
 using System;
-using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
-using WebApplications.Utilities.Service.Common;
+using ProtoBuf;
 
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common.Protocol
 {
     /// <summary>
-    /// Add to a parameter of a command indicated by a <see cref="ServiceCommandAttribute"/> to add a description for the parameter.
+    /// Base response message, sent by the server in response to requests from the client.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
-    [Serializable]
-    [PublicAPI]
-    public class ServiceCommandParameterAttribute : Attribute
+    [ProtoContract(SkipConstructor = true)]
+    [ProtoInclude(100, typeof (CommandResponse))]
+    [ProtoInclude(200, typeof (CommandCancelResponse))]
+    [ProtoInclude(300, typeof (ConnectResponse))]
+    [ProtoInclude(400, typeof (DisconnectResponse))]
+    public abstract class Response : Message
     {
         /// <summary>
-        /// The resource type.
+        /// The identifier of the <see cref="Request"/> this is a response to.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly Type ResourceType;
+        [ProtoMember(1)]
+        public readonly Guid ID;
 
         /// <summary>
-        /// The resource property for the description.
+        /// Initializes a new instance of the <see cref="Response"/> class.
         /// </summary>
-        [NotNull]
-        [PublicAPI]
-        public readonly string DescriptionProperty;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceCommandParameterAttribute"/> class.
-        /// </summary>
-        /// <param name="resourceType">Type of the resource.</param>
-        /// <param name="descriptionProperty">The description property.</param>
-        public ServiceCommandParameterAttribute([NotNull] Type resourceType, [NotNull] string descriptionProperty)
+        /// <param name="id">The identifier of the <see cref="Request"/> this is a response to.</param>
+        protected Response(Guid id)
         {
-            Contract.Requires<RequiredContractException>(resourceType != null, "Parameter_Null");
-            Contract.Requires<RequiredContractException>(descriptionProperty != null, "Parameter_Null");
-            ResourceType = resourceType;
-            DescriptionProperty = descriptionProperty;
+            ID = id;
         }
     }
 }

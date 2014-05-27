@@ -25,15 +25,32 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-namespace WebApplications.Utilities.Service
+using System;
+using System.Threading;
+
+namespace WebApplications.Utilities.Service.Common
 {
-    internal enum ServiceError
+    /// <summary>
+    /// Common code for named pipes.
+    /// </summary>
+    public static class Constants
     {
-        // ReSharper disable UnusedMember.Global
-        Ignore = 0x00000000,
-        Normal = 0x00000001,
-        Severe = 0x00000002,
-        Critical = 0x00000003
-        // ReSharper restore UnusedMember.Global
+        /// <summary>
+        /// The name suffix.
+        /// </summary>
+        public const string NameSuffix = "_WAUKService";
+
+        /// <summary>
+        /// The timeout used when sending 'fire and forget' messages.
+        /// </summary>
+        public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
+
+        /// <summary>
+        /// Gets the fire and forget token, which will cancel a send after <see cref="Timeout"/>.
+        /// </summary>
+        /// <value>
+        /// The fire and forget token.
+        /// </value>
+        public static CancellationToken FireAndForgetToken { get { return new CancellationTokenSource(Timeout).Token; } }
     }
 }

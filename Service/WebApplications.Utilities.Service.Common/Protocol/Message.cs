@@ -25,63 +25,48 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Diagnostics.Contracts;
-using System.Threading;
+using System.IO;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Service.Common;
+using ProtoBuf;
 
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common.Protocol
 {
     /// <summary>
-    /// Base implementation of a service.
+    /// Base message class, used for communication between named pipe client and server.
     /// </summary>
-    public abstract partial class BaseService<TService>
+    [ProtoContract(SkipConstructor = true)]
+    [ProtoInclude(100, typeof (Request))]
+    [ProtoInclude(200, typeof (Response))]
+    [ProtoInclude(300, typeof (LogResponse))]
+    public abstract class Message
     {
-        private class Connection : IDisposable
+        /// <summary>
+        /// Gets the serialized form of a message.
+        /// </summary>
+        /// <returns>System.Byte[].</returns>
+        [NotNull]
+        public byte[] Serialize()
         {
-            /// <summary>
-            /// The identifier.
-            /// </summary>
-            [PublicAPI]
-            public readonly Guid ID;
-
-            /// <summary>
-            /// The connection
-            /// </summary>
-            [NotNull]
-            private IConnection _connection;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Connection" /> class.
-            /// </summary>
-            /// <param name="id">The identifier.</param>
-            /// <param name="connection">The connection.</param>
-            public Connection(Guid id, [NotNull] IConnection connection)
+            using (MemoryStream ms = new MemoryStream())
             {
-                Contract.Requires<RequiredContractException>(connection != null, "Parameter_Null");
-                ID = id;
-                _connection = connection;
+                Serializer.Serialize(ms, this);
+                return ms.ToArray();
             }
+        }
 
-            /// <summary>
-            /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-            /// </summary>
-            public void Dispose()
-            {
-                IConnection con = Interlocked.Exchange(ref _connection, null);
-                if (con == null) return;
-
-                try
-                {
-                    con.OnDisconnect();
-                }
-                    // ReSharper disable once EmptyGeneralCatchClause
-                catch
-                {
-                    // Suppress any more errors.
-                }
-            }
+        /// <summary>
+        /// Deserializes the specified data to a message.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>Message.</returns>
+        [NotNull]
+        public static Message Deserialize([NotNull] byte[] data)
+        {
+            Contract.Requires(data != null);
+            using (MemoryStream ms = new MemoryStream(data))
+                // ReSharper disable once AssignNullToNotNullAttribute
+                return Serializer.Deserialize<Message>(ms);
         }
     }
 }

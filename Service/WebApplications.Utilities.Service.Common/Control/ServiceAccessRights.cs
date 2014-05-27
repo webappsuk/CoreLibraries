@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -25,36 +25,29 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-namespace WebApplications.Utilities.Service.PipeProtocol
+using System;
+
+namespace WebApplications.Utilities.Service.Common.Control
 {
-    /// <summary>
-    /// The PipeState indicates whether the connection
-    /// </summary>
-    public enum PipeState
+    [Flags]
+    internal enum ServiceAccessRights
     {
-        /// <summary>
-        /// The connection is starting up.
-        /// </summary>
-        Starting,
+        // ReSharper disable UnusedMember.Global
+        QueryConfig = 0x1,
+        ChangeConfig = 0x2,
+        QueryStatus = 0x4,
+        EnumerateDependants = 0x8,
+        Start = 0x10,
+        Stop = 0x20,
+        PauseContinue = 0x40,
+        Interrogate = 0x80,
+        UserDefinedControl = 0x100,
+        Delete = 0x00010000,
+        StandardRightsRequired = 0xF0000,
 
-        /// <summary>
-        /// The connection is open.
-        /// </summary>
-        Open,
-
-        /// <summary>
-        /// The connection is connected but we need a connect message.
-        /// </summary>
-        AwaitingConnect,
-
-        /// <summary>
-        /// The connection is connected.
-        /// </summary>
-        Connected,
-
-        /// <summary>
-        /// The connection is closed.
-        /// </summary>
-        Closed
+        AllAccess = (StandardRightsRequired | QueryConfig | ChangeConfig |
+                     QueryStatus | EnumerateDependants | Start | Stop | PauseContinue |
+                     Interrogate | UserDefinedControl)
+        // ReSharper restore UnusedMember.Global
     }
 }

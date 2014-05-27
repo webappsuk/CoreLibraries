@@ -1,4 +1,4 @@
-#region � Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+﻿#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -25,34 +25,43 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Logging;
+using ProtoBuf;
 
-namespace WebApplications.Utilities.Service
+namespace WebApplications.Utilities.Service.Common.Protocol
 {
     /// <summary>
-    /// Exception thrown by requires contracts.
+    /// Command response message, sent by the server in response to a <see cref="CommandRequest"/>.
     /// </summary>
-    public class RequiredContractException : ContractException<ContractResources>
+    [ProtoContract(SkipConstructor = true)]
+    public class CommandResponse : Response
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RequiredContractException"/> class.
+        /// The sequence starts at 0 and continues until the final chunk which is set at -1 for completed, or -2 for error.
         /// </summary>
-        /// <param name="conditions">The conditions.</param>
-        internal RequiredContractException([CanBeNull] string conditions)
-            : base(conditions)
-        {
-        }
+        [ProtoMember(1)]
+        public readonly int Sequence;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RequiredContractException"/> class.
+        /// The response chunk.
         /// </summary>
-        /// <param name="conditions">The conditions.</param>
-        /// <param name="resourceProperty">The resource property.</param>
-        // ReSharper disable once CodeAnnotationAnalyzer
-        internal RequiredContractException([CanBeNull] string conditions, [NotNull] string resourceProperty)
-            : base(conditions, resourceProperty)
+        [ProtoMember(2)]
+        public readonly string Chunk;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandResponse" /> class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="sequence">The sequence.</param>
+        /// <param name="chunk">The chunk.</param>
+        public CommandResponse(Guid id, int sequence, [NotNull] string chunk)
+            : base(id)
         {
+            Contract.Requires(chunk != null);
+            Sequence = sequence;
+            Chunk = chunk;
         }
     }
 }

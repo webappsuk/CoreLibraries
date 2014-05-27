@@ -123,6 +123,27 @@
   <data name="Contract_Failed" xml:space="preserve">
     <value>Contract failed. {0}</value>
   </data>
+  <data name="Err_ServiceUtils_Install_CouldNotInstallService" xml:space="preserve">
+    <value>Could not install the '{0}' service.</value>
+  </data>
+  <data name="Err_ServiceUtils_Install_CouldNotSetDescription" xml:space="preserve">
+    <value>Could not set the description of the '{0}' service.</value>
+  </data>
+  <data name="Err_ServiceUtils_OpenSCManager_CouldNotOpenManager" xml:space="preserve">
+    <value>Could not open the service control manager.</value>
+  </data>
+  <data name="Err_ServiceUtils_Uninstall_CouldNotFindLocation" xml:space="preserve">
+    <value>Could not find the location of the '{0}' service.</value>
+  </data>
+  <data name="Err_ServiceUtils_Uninstall_CouldNotOpenService" xml:space="preserve">
+    <value>Could not open the '{0}' service.</value>
+  </data>
+  <data name="Err_ServiceUtils_Uninstall_CouldNotUninstallService" xml:space="preserve">
+    <value>Could not uninstall the '{0}' service.</value>
+  </data>
+  <data name="Err_ServiceUtils_Uninstall_ServiceLocationDoesntExist" xml:space="preserve">
+    <value>The '{0}' service location '{1}' doesn not exist.</value>
+  </data>
   <data name="Method_Generic" xml:space="preserve">
     <value>The service runner does not accept generic methods.</value>
   </data>

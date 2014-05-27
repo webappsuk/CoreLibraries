@@ -41,7 +41,8 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.IO;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Service.PipeProtocol;
+using WebApplications.Utilities.Service.Common;
+using WebApplications.Utilities.Service.Common.Protocol;
 
 namespace WebApplications.Utilities.Service.Client
 {
@@ -418,7 +419,7 @@ namespace WebApplications.Utilities.Service.Client
                     if (!cr.IsCancelled && !cr.IsCompleted && token.IsCancellationRequested)
                         try
                         {
-                            await CancelCommand(request.ID, Common.FireAndForgetToken).ConfigureAwait(false);
+                            await CancelCommand(request.ID, Constants.FireAndForgetToken).ConfigureAwait(false);
                         }
                         catch (TaskCanceledException) { }
                     
