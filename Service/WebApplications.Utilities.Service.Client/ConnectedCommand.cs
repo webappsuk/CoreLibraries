@@ -126,6 +126,7 @@ namespace WebApplications.Utilities.Service.Client
                 {
                     TaskCompletionSource<bool> tcs = _completionTask;
                     return tcs == null ||
+                        // ReSharper disable once PossibleNullReferenceException
                            tcs.Task.IsCompleted ||
                            tcs.Task.IsFaulted ||
                            tcs.Task.IsCanceled;
@@ -136,8 +137,13 @@ namespace WebApplications.Utilities.Service.Client
             /// Cancels the specified request.
             /// </summary>
             /// <param name="response">The response.</param>
-            public void Cancel(CommandCancelResponse response)
+            // ReSharper disable once UnusedParameter.Local
+            public void Cancel([NotNull] CommandCancelResponse response)
             {
+                Contract.Requires<RequiredContractException>(response != null, "Parameter_Null");
+                Contract.Requires<RequiredContractException>(
+                    response.CancelledCommandId == Request.ID,
+                    "Cancel_IDMismatch");
                 _isCancelled = true;
                 Dispose();
             }

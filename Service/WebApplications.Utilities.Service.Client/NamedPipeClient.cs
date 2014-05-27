@@ -387,6 +387,7 @@ namespace WebApplications.Utilities.Service.Client
         /// <param name="token">The token.</param>
         /// <returns>An observable of responses..</returns>
         [NotNull]
+        [PublicAPI]
         public IObservable<Response> Send(
             [NotNull] Request request,
             CancellationToken token = default(CancellationToken))

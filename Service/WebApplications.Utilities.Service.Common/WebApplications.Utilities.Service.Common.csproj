@@ -148,17 +148,17 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Utilities">
-      <HintPath>..\packages\WebApplications.Utilities.5.0.5256.39344\lib\net45\WebApplications.Utilities.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WebApplications.Utilities, Version=5.0.5260.21744, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.5.0.5260.21744\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Logging">
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5256.42776\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WebApplications.Utilities.Logging, Version=5.1.5260.25266, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5260.25266\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities.Performance">
-      <HintPath>..\packages\WebApplications.Utilities.Performance.5.0.5256.42731\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WebApplications.Utilities.Performance, Version=5.0.5260.22139, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebApplications.Utilities.Performance.5.0.5260.22139\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -210,7 +210,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <Import Project="..\packages\WebApplications.Utilities.Performance.5.0.5256.42731\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.0.5256.42731\tools\PerfSetup.targets')" />
+  <Import Project="..\packages\WebApplications.Utilities.Performance.5.0.5260.22139\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('..\packages\WebApplications.Utilities.Performance.5.0.5260.22139\tools\PerfSetup.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

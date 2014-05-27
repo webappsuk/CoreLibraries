@@ -55,7 +55,7 @@ namespace WebApplications.Utilities.Service.Client
         private static readonly FormatBuilder _serverList = new FormatBuilder()
             .AppendForegroundColor(ConsoleColor.White)
             .AppendLine("Current matching pipes:")
-            .AppendLayout(indentSize: 25, tabStops: new[] {7, 25})
+            .AppendLayout(indentSize: 25, tabStops: new[] { 7, 25 })
             .AppendForegroundColor(ConsoleColor.Yellow)
             .AppendLine("Host\tName\tPipe")
             .AppendResetForegroundColor()
@@ -264,10 +264,11 @@ namespace WebApplications.Utilities.Service.Client
                                     Console.ReadKey(true).Key == ConsoleKey.Escape)
                                 {
                                     // Cancel command
-                                    Console.Write("Cancelling command...");
+                                    ConsoleTextWriter.Default.Write(ClientResources.ConsoleClient_RunAsync_Cancelling);
                                     await client.CancelCommand(commandGuid, token).ConfigureAwait(false);
                                     break;
                                 }
+                                // ReSharper disable once PossibleNullReferenceException
                                 await Task.Delay(100, token).ConfigureAwait(false);
                             } while (!completed);
                         }

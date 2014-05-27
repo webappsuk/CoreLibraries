@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Service
 
         private NamedPipeServerLogger _logger;
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.

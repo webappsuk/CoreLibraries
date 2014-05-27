@@ -27,6 +27,7 @@
 
 using System;
 using System.Threading;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Service.Common
 {
@@ -38,11 +39,13 @@ namespace WebApplications.Utilities.Service.Common
         /// <summary>
         /// The name suffix.
         /// </summary>
+        [PublicAPI]
         public const string NameSuffix = "_WAUKService";
 
         /// <summary>
         /// The timeout used when sending 'fire and forget' messages.
         /// </summary>
+        [PublicAPI]
         public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
 
         /// <summary>
@@ -51,6 +54,7 @@ namespace WebApplications.Utilities.Service.Common
         /// <value>
         /// The fire and forget token.
         /// </value>
+        [PublicAPI]
         public static CancellationToken FireAndForgetToken { get { return new CancellationTokenSource(Timeout).Token; } }
     }
 }

@@ -45,15 +45,23 @@ namespace WebApplications.Utilities.Service
     /// </summary>
     public class ConsoleConnection : IDisposable, IConnection
     {
+        /// <summary>
+        /// The command prompt format.
+        /// </summary>
         [NotNull]
-        private static readonly FormatBuilder _promptBuilder = new FormatBuilder()
-            .AppendForegroundColor(ConsoleColor.Cyan)
-            .AppendFormat("[{Time:hh:mm:ss.ffff}] ")
-            .AppendForegroundColor(ConsoleColor.Yellow)
-            .AppendFormat("{State}")
-            .AppendResetForegroundColor()
-            .Append(" > ")
-            .MakeReadOnly();
+        private static readonly FormatBuilder _promptBuilder = new FormatBuilder(ServiceResources.ConsoleConnection_PromptFormat, true);
+
+        /// <summary>
+        /// The installation prompt.
+        /// </summary>
+        [NotNull]
+        private static readonly FormatBuilder _promptInstall = new FormatBuilder(ServiceResources.ConsoleConnection_InstallPromptFormat, true);
+
+        /// <summary>
+        /// The error format
+        /// </summary>
+        [NotNull]
+        private static readonly FormatBuilder _errorFormat = new FormatBuilder(ServiceResources.ConsoleConnection_ErrorFormat, true);
 
         /// <summary>
         /// The task completion source
@@ -89,18 +97,6 @@ namespace WebApplications.Utilities.Service
                 ? CancellationTokenSource.CreateLinkedTokenSource(token)
                 : new CancellationTokenSource();
         }
-
-        /// <summary>
-        /// The installation prompt.
-        /// </summary>
-        [NotNull]
-        private static readonly FormatBuilder _promptInstall = new FormatBuilder()
-            .AppendForegroundColor(ConsoleColor.Yellow)
-            .AppendLine("Select one of :")
-            .AppendLayout(indentSize: 3, firstLineIndentSize: 5)
-            .AppendFormatLine("{Options:{<items>:\r\n{!fgcolor:Cyan}{Key}\t{!fgcolor:White}{Value}}}")
-            .AppendPopLayout()
-            .MakeReadOnly();
 
         /// <summary>
         /// Runs the specified service using the command console as a user interface.
@@ -259,7 +255,7 @@ namespace WebApplications.Utilities.Service
                                     await Task.Delay(250, token).ConfigureAwait(false);
                                     Console.Write('.');
                                 }
-                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
+                                Console.WriteLine(ServiceResources.Done);
                                 Console.WriteLine();
                                 break;
 
@@ -272,45 +268,45 @@ namespace WebApplications.Utilities.Service
                                     await Task.Delay(250, token).ConfigureAwait(false);
                                     Console.Write('.');
                                 }
-                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
+                                Console.WriteLine(ServiceResources.Done);
                                 Console.WriteLine();
                                 break;
 
                             case "R":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStop);
                                 await Controller.StopService(service.ServiceName, token).ConfigureAwait(false);
-                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
+                                Console.WriteLine(ServiceResources.Done);
                                 Console.WriteLine();
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStart);
                                 await Controller.StartService(service.ServiceName, null, token).ConfigureAwait(false);
-                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
+                                Console.WriteLine(ServiceResources.Done);
                                 Console.WriteLine();
                                 break;
 
                             case "S":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStart);
                                 await Controller.StartService(service.ServiceName, null, token).ConfigureAwait(false);
-                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
+                                Console.WriteLine(ServiceResources.Done);
                                 Console.WriteLine();
                                 break;
 
                             case "T":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingStop);
                                 await Controller.StopService(service.ServiceName, token).ConfigureAwait(false);
-                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
+                                Console.WriteLine(ServiceResources.Done);
                                 Console.WriteLine();
                                 break;
 
                             case "P":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingPause);
                                 await Controller.PauseService(service.ServiceName, token).ConfigureAwait(false);
-                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
+                                Console.WriteLine(ServiceResources.Done);
                                 break;
 
                             case "C":
                                 Console.Write(ServiceResources.ConsoleConnection_RunAsync_AttemptingContinue);
                                 await Controller.ContinueService(service.ServiceName, token).ConfigureAwait(false);
-                                Console.WriteLine(ServiceResources.ConsoleConnection_RunAsync_Done);
+                                Console.WriteLine(ServiceResources.Done);
                                 Console.WriteLine();
                                 break;
 
@@ -397,7 +393,7 @@ namespace WebApplications.Utilities.Service
 
                             CancellationToken commandToken = t.CreateLinked(commandCancellationSource.Token);
 
-                            // ReSharper disable once CSharpWarnings::CS4014
+#pragma warning disable 4014
                             service.ExecuteAsync(id, commandLine, ConsoleTextWriter.Default, commandToken)
                                 .ContinueWith(
                                     task =>
@@ -406,20 +402,18 @@ namespace WebApplications.Utilities.Service
 
                                         completed = true;
 
-                                        if (task.IsCompleted || task.IsCanceled)
+                                        if (task.IsCompleted ||
+                                            task.IsCanceled)
                                             return;
 
                                         if (task.IsFaulted)
                                         {
                                             Contract.Assert(task.Exception != null);
-                                            new FormatBuilder()
-                                                .AppendForegroundColor(ConsoleColor.Red)
-                                                .Append("Error: ")
-                                                .AppendLine(task.Exception.Message)
-                                                .AppendResetForegroundColor()
-                                                .WriteToConsole();
+                                            _errorFormat.WriteToConsoleInstance(null, task.Exception);
                                         }
-                                    }, TaskContinuationOptions.ExecuteSynchronously);
+                                    },
+                                    TaskContinuationOptions.ExecuteSynchronously);
+#pragma warning restore 4014
 
                             while (!completed)
                             {
@@ -428,7 +422,7 @@ namespace WebApplications.Utilities.Service
                                     Console.ReadKey(true).Key == ConsoleKey.Escape)
                                 {
                                     // Cancel command
-                                    Console.Write("Cancelling command...");
+                                    Console.Write(ServiceResources.ConsoleConnection_RunAsync_Cancelling);
                                     commandCancellationSource.Cancel();
                                     break;
                                 }
@@ -443,12 +437,7 @@ namespace WebApplications.Utilities.Service
                     catch (Exception e)
                     {
                         if (!t.IsCancellationRequested)
-                            new FormatBuilder()
-                                .AppendForegroundColor(ConsoleColor.Red)
-                                .Append("Error: ")
-                                .AppendLine(e.Message)
-                                .AppendResetForegroundColor()
-                                .WriteToConsole();
+                            _errorFormat.WriteToConsoleInstance(null, e);
                     }
 
                     // Let any async stuff done by the command have a bit of time, also throttle commands.

@@ -32,7 +32,6 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Logging.Loggers;
-using WebApplications.Utilities.Service.Common;
 using WebApplications.Utilities.Service.Common.Protocol;
 
 namespace WebApplications.Utilities.Service

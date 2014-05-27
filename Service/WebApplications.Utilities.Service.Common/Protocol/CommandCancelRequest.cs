@@ -47,7 +47,6 @@ namespace WebApplications.Utilities.Service.Common.Protocol
         /// </summary>
         /// <param name="cancelCommandId">The command identifier for the command to cancel.</param>
         public CommandCancelRequest(Guid cancelCommandId)
-            : base()
         {
             CancelCommandId = cancelCommandId;
         }

@@ -417,7 +417,7 @@
   <data name="ConsoleConnection_RunAsync_WaitInstall" xml:space="preserve">
     <value>Waiting for service to be detected...</value>
   </data>
-  <data name="ConsoleConnection_RunAsync_Done" xml:space="preserve">
+  <data name="Done" xml:space="preserve">
     <value>Done.</value>
   </data>
   <data name="ConsoleConnection_RunAsync_WaitUninstall" xml:space="preserve">
@@ -497,5 +497,87 @@
   </data>
   <data name="ConsoleConnection_GetUserNamePassword_Password" xml:space="preserve">
     <value>Password: </value>
+  </data>
+  <data name="Commands_AllCommandsHelpFormat" xml:space="preserve">
+    <value>{!fgcolor:White}The following commands are available:
+{!fgcolor}
+{commands:{&lt;items&gt;:{&lt;item&gt;:{!fgcolor:Lime}{Name}{AltNames:{!fgcolor:Green} [{&lt;items&gt;:{&lt;item&gt;}}{&lt;join&gt;:|}]}{!fgcolor}
+{!layout:f4;i4}{Parameters:{&lt;items&gt;:{&lt;item&gt;:{!fgcolor:White}{Name}{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}{Params:{Params}...}
+}}}{!layout}{!layout:f8;i8}{Description}{!layout}}}{&lt;join&gt;:
+}}
+
+Type 'help {!fgcolor:Lime}&lt;command&gt;{!fgcolor}' for more information on a specific command.</value>
+  </data>
+  <data name="Commands_CommandHelpFormat" xml:space="preserve">
+    <value>{!layout:f0}{!fgcolor:White}Help for the {!fgcolor:Lime}'{Command:{Name}}'{!fgcolor:White} command.{!fgcolor}{!layout}
+{Command:{AltNames:{!layout:f0}Alternate names:
+{!layout}{!fgcolor:White}{&lt;items&gt;:{&lt;item&gt;}}{&lt;join&gt;:, }{!fgcolor}
+}}
+{!layout:f0}Description: 
+{!layout}{Command:{Description}}
+
+{Command:{Parameters:{!layout:f0}Parameters:{!layout}
+{&lt;items&gt;:{&lt;item&gt;:{!fgcolor:White}{Name}{DefaultValue:{!fgcolor:Silver}={DefaultValue}}{!fgcolor}{Params:{Params}...}{Description:
+{!layout:f8;i10}{Description}{!layout}}
+}}
+{!layout:f0}Type 'help {!fgcolor:Lime}{Command:{Name}} {!fgcolor:White}&lt;parameter&gt;{!fgcolor}' for more information on a specific parameter of the command.
+}}</value>
+  </data>
+  <data name="Commands_ParameterHelpFormat" xml:space="preserve">
+    <value>{!layout:f0}{!fgcolor:White}Help for the {!fgcolor:Lime}'{Parameter:{Name}}'{!fgcolor:White} parameter for the {!fgcolor:Lime}'{Command:{Name}}'{!fgcolor:White} command.{!fgcolor}{!layout}
+{Parameter:{DefaultValue:{!layout:f0}Default value:{!layout}{!fgcolor:White}{DefaultValue}{!fgcolor}
+}}
+{!layout:f0}Description:
+{!layout}{Parameter:{Description}}</value>
+  </data>
+  <data name="Command_AllPerformanceCategoriesFormat" xml:space="preserve">
+    <value>{!fgcolor:White}Instance GUID: {!fgcolor:Yellow}{guid}
+
+{!fgcolor:White}The following performance categories are loaded:
+
+{!fgcolor:Yellow}{counters:{&lt;items&gt;:{&lt;item&gt;:{CategoryName}}}{&lt;join&gt;:
+}}
+{!fgcolor}
+Type 'perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}' for more details of a specific counter.</value>
+  </data>
+  <data name="Command_Help_CommandNotFoundFormat" xml:space="preserve">
+    <value>{!fgcolor:Red}The command '{Name}' does not exist.</value>
+  </data>
+  <data name="Command_Help_CommandParameterNotFoundFormat" xml:space="preserve">
+    <value>{!fgcolor:Red}The parameter '{ParamName}' does not exist on the '{CommandName}' command.</value>
+  </data>
+  <data name="Command_Performance_CatergoryNotFoundFormat" xml:space="preserve">
+    <value>{!fgcolor:Red}The performance counter '{Name}' does not exist.</value>
+  </data>
+  <data name="BaseService_Help_NoCommands" xml:space="preserve">
+    <value>There are no commands registered</value>
+  </data>
+  <data name="BaseService_Install_InvalidUserName" xml:space="preserve">
+    <value>Invalid user name!</value>
+  </data>
+  <data name="BaseService_Install_InvalidPassword" xml:space="preserve">
+    <value>Invalid password!</value>
+  </data>
+  <data name="BaseService_Install_vshostProcess" xml:space="preserve">
+    <value>Process running in vshost, using '{0}' instead.</value>
+  </data>
+  <data name="BaseService_Install_CopyingService" xml:space="preserve">
+    <value>Copying service to {0}...</value>
+  </data>
+  <data name="ConsoleConnection_InstallPromptFormat" xml:space="preserve">
+    <value>{!fgcolor:Yellow}Select one of :
+{!layout:i3;f5}{Options:{&lt;items&gt;:
+{!fgcolor:Cyan}{Key}	{!fgcolor:White}{Value}}}
+{!layout}</value>
+  </data>
+  <data name="ConsoleConnection_PromptFormat" xml:space="preserve">
+    <value>{!fgcolor:Cyan}[{Time:hh:mm:ss.ffff}] {!fgcolor:Yellow}{State}{!fgcolor} &gt;</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_Cancelling" xml:space="preserve">
+    <value>Cancelling command...</value>
+  </data>
+  <data name="ConsoleConnection_ErrorFormat" xml:space="preserve">
+    <value>{!fgcolor:Red}Error: {Message}
+{!fgcolor}</value>
   </data>
 </root>

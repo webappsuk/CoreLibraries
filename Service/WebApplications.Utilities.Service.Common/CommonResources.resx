@@ -120,6 +120,9 @@
   <data name="Bad_Instance" xml:space="preserve">
     <value>The service runner command was based an instance of the wrong type.</value>
   </data>
+  <data name="Cancel_IDMismatch" xml:space="preserve">
+    <value>The cancel response command ID does not match the ID of the command being cancelled.</value>
+  </data>
   <data name="Contract_Failed" xml:space="preserve">
     <value>Contract failed. {0}</value>
   </data>

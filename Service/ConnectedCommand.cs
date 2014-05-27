@@ -204,8 +204,9 @@ namespace WebApplications.Utilities.Service
             /// Cancels the specified request.
             /// </summary>
             /// <param name="request">The request.</param>
-            public void Cancel(CommandCancelRequest request)
+            public void Cancel([NotNull] CommandCancelRequest request)
             {
+                Contract.Requires<RequiredContractException>(request != null, "Parameter_Null");
                 _cancelRequest = request;
                 CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
                 if (cts != null)

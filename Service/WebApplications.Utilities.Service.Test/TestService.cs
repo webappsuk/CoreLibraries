@@ -46,7 +46,7 @@ namespace WebApplications.Utilities.Service.Test
         /// <param name="id">The identifier.</param>
         /// <param name="optional">The optional.</param>
         [PublicAPI]
-        [ServiceCommand(typeof (TestServiceResources), "Cmd_TestCommand_Names", "Cmd_TestCommand_Description",
+        [ServiceCommand(typeof(TestServiceResources), "Cmd_TestCommand_Names", "Cmd_TestCommand_Description",
             idParameter: "id")]
         public void TestCommand(
             [NotNull] TextWriter writer,
@@ -65,11 +65,11 @@ namespace WebApplications.Utilities.Service.Test
         /// Stops this instance.
         /// </summary>
         [PublicAPI]
-        [ServiceCommand(typeof (TestResource), "Cmd_LongRun", "Cmd_LongRun_Description")]
+        [ServiceCommand(typeof(TestResource), "Cmd_LongRun", "Cmd_LongRun_Description")]
         public async Task<bool> StopService(
             [NotNull] TextWriter writer,
-            [ServiceCommandParameter(typeof (TestResource), "Cmd_LongRun_Loops_Description")] int loops = 10,
-            [ServiceCommandParameter(typeof (TestResource), "Cmd_LongRun_ThrowError_Description")] bool throwError =
+            [ServiceCommandParameter(typeof(TestResource), "Cmd_LongRun_Loops_Description")] int loops = 10,
+            [ServiceCommandParameter(typeof(TestResource), "Cmd_LongRun_ThrowError_Description")] bool throwError =
                 false,
             CancellationToken token = default(CancellationToken))
         {
@@ -77,6 +77,7 @@ namespace WebApplications.Utilities.Service.Test
             for (int l = 0; l < loops; l++)
             {
                 writer.WriteLine("Loop {0} completed", l);
+                // ReSharper disable once PossibleNullReferenceException
                 await Task.Delay(1000, token).ConfigureAwait(false);
                 token.ThrowIfCancellationRequested();
             }

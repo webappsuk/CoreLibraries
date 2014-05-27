@@ -150,4 +150,7 @@
   <data name="ConsoleClient_RunAsync_ConnectedTitle" xml:space="preserve">
     <value>{0} connected to {1}</value>
   </data>
+  <data name="ConsoleClient_RunAsync_Cancelling" xml:space="preserve">
+    <value>Cancelling command...</value>
+  </data>
 </root>
