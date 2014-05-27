@@ -521,6 +521,7 @@ Type 'help {!fgcolor:Lime}&lt;command&gt;{!fgcolor}' for more information on a s
 {!layout:f8;i10}{Description}{!layout}}
 }}
 {!layout:f0}Type 'help {!fgcolor:Lime}{Command:{Name}} {!fgcolor:White}&lt;parameter&gt;{!fgcolor}' for more information on a specific parameter of the command.
+
 }}</value>
   </data>
   <data name="Commands_ParameterHelpFormat" xml:space="preserve">
@@ -528,7 +529,8 @@ Type 'help {!fgcolor:Lime}&lt;command&gt;{!fgcolor}' for more information on a s
 {Parameter:{DefaultValue:{!layout:f0}Default value:{!layout}{!fgcolor:White}{DefaultValue}{!fgcolor}
 }}
 {!layout:f0}Description:
-{!layout}{Parameter:{Description}}</value>
+{!layout}{Parameter:{Description}}
+</value>
   </data>
   <data name="Command_AllPerformanceCategoriesFormat" xml:space="preserve">
     <value>{!fgcolor:White}Instance GUID: {!fgcolor:Yellow}{guid}
@@ -538,16 +540,20 @@ Type 'help {!fgcolor:Lime}&lt;command&gt;{!fgcolor}' for more information on a s
 {!fgcolor:Yellow}{counters:{&lt;items&gt;:{&lt;item&gt;:{CategoryName}}}{&lt;join&gt;:
 }}
 {!fgcolor}
-Type 'perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}' for more details of a specific counter.</value>
+Type 'perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}' for more details of a specific counter.
+</value>
   </data>
   <data name="Command_Help_CommandNotFoundFormat" xml:space="preserve">
-    <value>{!fgcolor:Red}The command '{Name}' does not exist.</value>
+    <value>{!fgcolor:Red}The command '{Name}' does not exist.
+</value>
   </data>
   <data name="Command_Help_CommandParameterNotFoundFormat" xml:space="preserve">
-    <value>{!fgcolor:Red}The parameter '{ParamName}' does not exist on the '{CommandName}' command.</value>
+    <value>{!fgcolor:Red}The parameter '{ParamName}' does not exist on the '{CommandName}' command.
+</value>
   </data>
   <data name="Command_Performance_CatergoryNotFoundFormat" xml:space="preserve">
-    <value>{!fgcolor:Red}The performance counter '{Name}' does not exist.</value>
+    <value>{!fgcolor:Red}The performance counter '{Name}' does not exist.
+</value>
   </data>
   <data name="BaseService_Help_NoCommands" xml:space="preserve">
     <value>There are no commands registered</value>
@@ -568,10 +574,11 @@ Type 'perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}' for more details of a sp
     <value>{!fgcolor:Yellow}Select one of :
 {!layout:i3;f5}{Options:{&lt;items&gt;:
 {!fgcolor:Cyan}{Key}	{!fgcolor:White}{Value}}}
-{!layout}</value>
+{!layout}
+</value>
   </data>
   <data name="ConsoleConnection_PromptFormat" xml:space="preserve">
-    <value>{!fgcolor:Cyan}[{Time:hh:mm:ss.ffff}] {!fgcolor:Yellow}{State}{!fgcolor} &gt;</value>
+    <value>{!fgcolor:Cyan}[{Time:hh:mm:ss.ffff}] {!fgcolor:Yellow}{State}{!fgcolor} &gt; </value>
   </data>
   <data name="ConsoleConnection_RunAsync_Cancelling" xml:space="preserve">
     <value>Cancelling command...</value>

@@ -455,7 +455,8 @@ namespace WebApplications.Utilities.Service {
         ///{!fgcolor:Yellow}{counters:{&lt;items&gt;:{&lt;item&gt;:{CategoryName}}}{&lt;join&gt;:
         ///}}
         ///{!fgcolor}
-        ///Type &apos;perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}&apos; for more details of a specific counter..
+        ///Type &apos;perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}&apos; for more details of a specific counter.
+        ///.
         /// </summary>
         internal static string Command_AllPerformanceCategoriesFormat {
             get {
@@ -464,7 +465,8 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {!fgcolor:Red}The command &apos;{Name}&apos; does not exist..
+        ///   Looks up a localized string similar to {!fgcolor:Red}The command &apos;{Name}&apos; does not exist.
+        ///.
         /// </summary>
         internal static string Command_Help_CommandNotFoundFormat {
             get {
@@ -473,7 +475,8 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {!fgcolor:Red}The parameter &apos;{ParamName}&apos; does not exist on the &apos;{CommandName}&apos; command..
+        ///   Looks up a localized string similar to {!fgcolor:Red}The parameter &apos;{ParamName}&apos; does not exist on the &apos;{CommandName}&apos; command.
+        ///.
         /// </summary>
         internal static string Command_Help_CommandParameterNotFoundFormat {
             get {
@@ -482,7 +485,8 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {!fgcolor:Red}The performance counter &apos;{Name}&apos; does not exist..
+        ///   Looks up a localized string similar to {!fgcolor:Red}The performance counter &apos;{Name}&apos; does not exist.
+        ///.
         /// </summary>
         internal static string Command_Performance_CatergoryNotFoundFormat {
             get {
@@ -529,7 +533,8 @@ namespace WebApplications.Utilities.Service {
         ///{Parameter:{DefaultValue:{!layout:f0}Default value:{!layout}{!fgcolor:White}{DefaultValue}{!fgcolor}
         ///}}
         ///{!layout:f0}Description:
-        ///{!layout}{Parameter:{Description}}.
+        ///{!layout}{Parameter:{Description}}
+        ///.
         /// </summary>
         internal static string Commands_ParameterHelpFormat {
             get {
@@ -578,7 +583,8 @@ namespace WebApplications.Utilities.Service {
         ///   Looks up a localized string similar to {!fgcolor:Yellow}Select one of :
         ///{!layout:i3;f5}{Options:{&lt;items&gt;:
         ///{!fgcolor:Cyan}{Key}	{!fgcolor:White}{Value}}}
-        ///{!layout}.
+        ///{!layout}
+        ///.
         /// </summary>
         internal static string ConsoleConnection_InstallPromptFormat {
             get {
@@ -587,7 +593,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {!fgcolor:Cyan}[{Time:hh:mm:ss.ffff}] {!fgcolor:Yellow}{State}{!fgcolor} &gt;.
+        ///   Looks up a localized string similar to {!fgcolor:Cyan}[{Time:hh:mm:ss.ffff}] {!fgcolor:Yellow}{State}{!fgcolor} &gt; .
         /// </summary>
         internal static string ConsoleConnection_PromptFormat {
             get {
