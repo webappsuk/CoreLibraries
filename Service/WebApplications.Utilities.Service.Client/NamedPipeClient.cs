@@ -406,7 +406,6 @@ namespace WebApplications.Utilities.Service.Client
 
                     ConnectedCommand cr = new ConnectedCommand(request, observer);
                     _commandRequests.TryAdd(request.ID, cr);
-                    ExceptionDispatchInfo edi = null;
                     try
                     {
                         await stream.WriteAsync(request.Serialize(), token).ConfigureAwait(false);
