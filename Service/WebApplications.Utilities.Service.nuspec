@@ -14,7 +14,6 @@
     <references>
       <group targetFramework="net45">
         <reference file="WebApplications.Utilities.Service.dll" />
-        <reference file="WebApplications.Utilities.Service.Common.dll" />
       </group>
     </references>
   </metadata>
@@ -23,5 +22,6 @@
     <file src="ServiceClient\bin\Release\ServiceClient.exe" target="lib\net45\" />
     <file src="ServiceClient\bin\Release\ServiceClient.exe.config" target="lib\net45\" />
     <file src="WebApplications.Utilities.Service.Client\bin\Release\WebApplications.Utilities.Service.Client.dll" target="lib\net45\" />
+    <file src="WebApplications.Utilities.Service.Common\bin\Release\WebApplications.Utilities.Service.Common.dll" target="lib\net45\" />
   </files>
 </package>
