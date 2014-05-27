@@ -152,13 +152,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebApplications.Utilities">
-      <HintPath>packages\WebApplications.Utilities.5.0.5256.39344\lib\net45\WebApplications.Utilities.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="WebApplications.Utilities.Performance, Version=5.0.5256.42731, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.0.5260.21744, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\WebApplications.Utilities.Performance.5.0.5256.42731\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
+      <HintPath>packages\WebApplications.Utilities.5.0.5260.21744\lib\net45\WebApplications.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="WebApplications.Utilities.Performance, Version=5.0.5260.22139, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\WebApplications.Utilities.Performance.5.0.5260.22139\lib\net45\WebApplications.Utilities.Performance.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -216,7 +216,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
-  <Import Project="packages\WebApplications.Utilities.Performance.5.0.5256.42731\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('packages\WebApplications.Utilities.Performance.5.0.5256.42731\tools\PerfSetup.targets')" />
+  <Import Project="packages\WebApplications.Utilities.Performance.5.0.5260.22139\tools\PerfSetup.targets" Condition="$(DefineConstants.Contains('PerfSetup')) AND Exists('packages\WebApplications.Utilities.Performance.5.0.5260.22139\tools\PerfSetup.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
