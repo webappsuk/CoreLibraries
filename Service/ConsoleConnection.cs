@@ -389,7 +389,52 @@ namespace WebApplications.Utilities.Service
                     WritePrompt(service);
                     try
                     {
-                        await service.ExecuteAsync(id, await Console.In.ReadLineAsync(), ConsoleTextWriter.Default, t).ConfigureAwait(false);
+                        string commandLine = await Console.In.ReadLineAsync();
+                        if (!string.IsNullOrWhiteSpace(commandLine))
+                        {
+                            bool completed = false;
+                            CancellationTokenSource commandCancellationSource = new CancellationTokenSource();
+
+                            CancellationToken commandToken = t.CreateLinked(commandCancellationSource.Token);
+
+                            // ReSharper disable once CSharpWarnings::CS4014
+                            service.ExecuteAsync(id, commandLine, ConsoleTextWriter.Default, commandToken)
+                                .ContinueWith(
+                                    task =>
+                                    {
+                                        Contract.Assert(task != null);
+
+                                        completed = true;
+
+                                        if (task.IsCompleted || task.IsCanceled)
+                                            return;
+
+                                        if (task.IsFaulted)
+                                        {
+                                            Contract.Assert(task.Exception != null);
+                                            new FormatBuilder()
+                                                .AppendForegroundColor(ConsoleColor.Red)
+                                                .Append("Error: ")
+                                                .AppendLine(task.Exception.Message)
+                                                .AppendResetForegroundColor()
+                                                .WriteToConsole();
+                                        }
+                                    }, TaskContinuationOptions.ExecuteSynchronously);
+
+                            while (!completed)
+                            {
+                                if (!commandCancellationSource.IsCancellationRequested &&
+                                    Console.KeyAvailable &&
+                                    Console.ReadKey(true).Key == ConsoleKey.Escape)
+                                {
+                                    // Cancel command
+                                    Console.Write("Cancelling command...");
+                                    commandCancellationSource.Cancel();
+                                    break;
+                                }
+                                await Task.Delay(100, token).ConfigureAwait(false);
+                            }
+                        }
                     }
                     catch (TaskCanceledException)
                     {

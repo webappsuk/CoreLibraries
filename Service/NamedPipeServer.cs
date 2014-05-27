@@ -118,6 +118,8 @@ namespace WebApplications.Utilities.Service
 
         private NamedPipeServerLogger _logger;
 
+        private bool _disposed = false;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NamedPipeServer" /> class.
         /// </summary>
@@ -230,7 +232,9 @@ namespace WebApplications.Utilities.Service
             Contract.Requires<RequiredContractException>(connection != null, "Parameter_Null");
             lock (_namedPipeConnections)
                 _namedPipeConnections.Remove(connection);
-            Add();
+
+            if (!_disposed)
+                Add();
         }
 
         /// <summary>
@@ -244,7 +248,7 @@ namespace WebApplications.Utilities.Service
                 // ReSharper disable once PossibleNullReferenceException
                 _namedPipeConnections.RemoveAll(c => c.State == PipeState.Closed);
 
-                if (_namedPipeConnections.Count >= MaximumConnections) return;
+                if (_namedPipeConnections.Count >= MaximumConnections || _disposed) return;
 
                 // Create a new connection.
                 NamedPipeConnection connection = new NamedPipeConnection(this);
@@ -260,6 +264,8 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         public void Dispose()
         {
+            _disposed = true;
+
             Timer timer = Interlocked.Exchange(ref _connectionCheckTimer, null);
             if (timer != null)
             {

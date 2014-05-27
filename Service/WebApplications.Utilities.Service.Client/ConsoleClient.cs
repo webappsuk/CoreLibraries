@@ -311,7 +311,6 @@ namespace WebApplications.Utilities.Service.Client
                         foreach (Log log in logResponse.Logs)
                         {
                             Contract.Assert(log != null);
-                            ConsoleTextWriter.Default.Write("-->");
                             log.WriteTo(ConsoleTextWriter.Default, Log.ShortFormat);
                         }
                     });

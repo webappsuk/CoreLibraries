@@ -34,7 +34,6 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
-using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -233,6 +232,7 @@ namespace WebApplications.Utilities.Service.Client
                                             if (_commandRequests.TryGetValue(
                                                 cancelResponse.CancelledCommandId,
                                                 out connectedCommand))
+                                                // ReSharper disable once PossibleNullReferenceException
                                                 connectedCommand.Cancel(cancelResponse);
 
                                             // And fall through to complete the response...
@@ -258,6 +258,7 @@ namespace WebApplications.Utilities.Service.Client
                                 try
                                 {
                                     // Try to send disconnect request.
+                                    // ReSharper disable once PossibleNullReferenceException
                                     await Send(
                                         new DisconnectRequest(),
                                         token.IsCancellationRequested
@@ -411,7 +412,8 @@ namespace WebApplications.Utilities.Service.Client
                         await stream.WriteAsync(request.Serialize(), token).ConfigureAwait(false);
                         await cr.CompletionTask.WithCancellation(token).ConfigureAwait(false);
                     }
-                    catch {}
+                    // ReSharper disable once EmptyGeneralCatchClause
+                    catch { }
 
                     // If the command is not explicitly cancelled and is still running, and we've been cancelled
                     // then ask the server to cancel.
@@ -421,7 +423,7 @@ namespace WebApplications.Utilities.Service.Client
                             await CancelCommand(request.ID, Constants.FireAndForgetToken).ConfigureAwait(false);
                         }
                         catch (TaskCanceledException) { }
-                    
+
                     // Remove the command request.
                     _commandRequests.TryRemove(request.ID, out cr);
                 });
@@ -432,7 +434,7 @@ namespace WebApplications.Utilities.Service.Client
         /// </summary>
         [NotNull]
         private static readonly HashSet<string> _disconnectCommands = new HashSet<string>(
-            new[] {"Quit", "Exit", "Disconnect", "X"},
+            new[] { "Quit", "Exit", "Disconnect", "X" },
             StringComparer.CurrentCultureIgnoreCase);
 
         /// <summary>
@@ -492,6 +494,7 @@ namespace WebApplications.Utilities.Service.Client
             // ReSharper disable once AssignNullToNotNullAttribute
             CommandRequest command = new CommandRequest(commandLine);
             commandGuid = command.ID;
+            // ReSharper disable once AssignNullToNotNullAttribute
             return Send(command, token)
                 .Cast<CommandResponse>()
                 // ReSharper disable once PossibleNullReferenceException
@@ -528,7 +531,7 @@ namespace WebApplications.Utilities.Service.Client
         public Task CancelCommand(Guid commandGuid, CancellationToken token = default(CancellationToken))
         {
             if (_clientTask == null ||
-                State != PipeState.Connected || 
+                State != PipeState.Connected ||
                 commandGuid == Guid.Empty)
                 return TaskResult<bool>.Default;
 
@@ -657,7 +660,7 @@ namespace WebApplications.Utilities.Service.Client
             return
                 GetServices()
                     .FirstOrDefault(
-                        // ReSharper disable once PossibleNullReferenceException
+                // ReSharper disable once PossibleNullReferenceException
                         n => string.Equals(serviceName, n.Name, StringComparison.CurrentCultureIgnoreCase) ||
                              string.Equals(serviceName, n.Pipe, StringComparison.CurrentCultureIgnoreCase));
         }
