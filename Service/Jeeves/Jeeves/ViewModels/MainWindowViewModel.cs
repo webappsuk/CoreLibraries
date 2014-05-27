@@ -24,11 +24,11 @@ namespace Jeeves.ViewModels
         {
             if (IsInDesignMode)
             {
-                _connections.Add(new ConnectionViewModel());
+                _connections.Add(new ConnectionViewModel(null));
             }
             else
             {
-                _connections.Add(new ConnectionViewModel(new Connection("Test Service", @"\\.\pipe\Test_Service")));
+                _connections.Add(new ConnectionViewModel(null));
             }
         }
     }

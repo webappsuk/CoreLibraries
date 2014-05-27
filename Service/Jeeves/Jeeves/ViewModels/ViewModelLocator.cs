@@ -33,10 +33,9 @@ namespace Jeeves.ViewModels
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            if (ViewModelBase.IsInDesignModeStatic)
+            if (true)//(ViewModelBase.IsInDesignModeStatic)
             {
                 // Create design time view services and models
-                SimpleIoc.Default.Register<ConnectionViewModel>();
             }
             else
             {
@@ -58,7 +57,8 @@ namespace Jeeves.ViewModels
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<ConnectionViewModel>();
+                //return ServiceLocator.Current.GetInstance<ConnectionViewModel>();
+                return new ConnectionViewModel(null);
             }
         }
         

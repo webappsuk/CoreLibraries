@@ -115,15 +115,14 @@ namespace Jeeves.ViewModels
             }
         }
 
-        public ConnectionViewModel()
-            : this(new Connection("Test Service", @"\\.\pipe\Test_Service"))
-        {
-            if (!IsInDesignMode)
-                throw new InvalidOperationException("This constructor is only intended for use at design time.");
-        }
-
         public ConnectionViewModel(Connection connection)
         {
+            if (connection == null)
+            {
+                /*if (!IsInDesignMode)
+                    throw new InvalidOperationException("This constructor is only intended for use at design time.");*/
+                connection = new Connection("Test Service", @"\\.\pipe\Test_Service");
+            }
             _connection = connection;
             EndDate = DateTime.Now;
             StartDate = EndDate - TimeSpan.FromMinutes(1);

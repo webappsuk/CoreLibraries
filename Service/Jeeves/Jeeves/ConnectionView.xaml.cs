@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Telerik.Windows.Controls;
+using Telerik.Windows.Controls.Timeline;
 
 namespace Jeeves
 {
@@ -23,6 +25,14 @@ namespace Jeeves
         public ConnectionView()
         {
             InitializeComponent();
+        }
+
+        private void TimeLine_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            TimeLine.FindChildByType<TimelineAnnotationsPanel>()
+                .ChildrenOfType<Border>()
+                .First()
+                .Visibility = Visibility.Collapsed;
         }
     }
 }

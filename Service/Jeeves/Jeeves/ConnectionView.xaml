@@ -9,36 +9,206 @@
              d:DesignHeight="700"
              d:DesignWidth="1000"
              d:DataContext="{Binding DesignConnection, Source={StaticResource Locator}}">
+    <UserControl.Resources>
+        <Style x:Key="TimeBarStyle" TargetType="telerik:RadTimeBar" BasedOn="{StaticResource RadTimeBarStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="telerik:RadTimeBar">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="19"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Border
+                                        Grid.Row="0"
+                                        Height="4"
+                                        VerticalAlignment="Bottom"
+                                        BorderBrush="{StaticResource TimeBar_Button_Bottom_BorderBrush}"
+                                        BorderThickness="{StaticResource TimeBar_Button_Bottom_Thickness}"
+                                        Background="{StaticResource TimeBar_Button_Bottom_Background}"/>
+                                    <Border Grid.Row="1" Grid.RowSpan="2" Background="{TemplateBinding Background}"/>
+                                    <telerik:TimeSpecialSlotContainer x:Name="PART_TimeSpecialSlotContainer" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding Path=SpecialSlots, RelativeSource={RelativeSource TemplatedParent}}">
+                                        <telerik:TimeSpecialSlotContainer.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <telerik:TimeBarPanel Slider="{Binding ElementName=PART_Slider}"/>
+                                            </ItemsPanelTemplate>
+                                        </telerik:TimeSpecialSlotContainer.ItemsPanel>
+                                        <telerik:TimeSpecialSlotContainer.Template>
+                                            <ControlTemplate>
+                                                <ItemsPresenter/>
+                                            </ControlTemplate>
+                                        </telerik:TimeSpecialSlotContainer.Template>
+                                    </telerik:TimeSpecialSlotContainer>
+                                    <telerik:TimeBarContentPanel
+                                        Slider="{Binding ElementName=PART_Slider}"
+                                        SliderMinimum="{Binding ElementName=PART_Slider, Path=Minimum, Mode=TwoWay}"
+                                        SliderMaximum="{Binding ElementName=PART_Slider, Path=Maximum, Mode=TwoWay}"
+                                        Grid.Row="2"
+                                        Margin="0 2 0 0">
+                                        <ContentPresenter/>
+                                    </telerik:TimeBarContentPanel>
+                                    <telerik:GroupContainer x:Name="PART_GroupContainer"
+                                        Grid.Row="1"
+                                        Selection="{Binding Path=Selection, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                        ItemsSource="{TemplateBinding IntervalGroups}"
+                                        ItemHeaderStyle="{TemplateBinding GroupPeriodHeaderStyle}">
+                                        <telerik:GroupContainer.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <telerik:LabelMeasurementPanel Slider="{Binding ElementName=PART_Slider}"/>
+                                            </ItemsPanelTemplate>
+                                        </telerik:GroupContainer.ItemsPanel>
+                                        <telerik:GroupContainer.Template>
+                                            <ControlTemplate>
+                                                <ItemsPresenter/>
+                                            </ControlTemplate>
+                                        </telerik:GroupContainer.Template>
+                                    </telerik:GroupContainer>
+                                    <telerik:ItemContainer x:Name="PART_ItemContainer"
+                                        Grid.Row="0"
+                                        Selection="{Binding Path=Selection, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                        ItemsSource="{TemplateBinding IntervalItems}"
+                                        ItemHeaderStyle="{TemplateBinding PeriodHeaderStyle}">
+                                        <!-- 
+                                        Removing the rowspan makes the contents selectable.
+                                        Grid.RowSpan="3"
+                                        -->
+                                        <telerik:ItemContainer.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <telerik:LabelMeasurementPanel Slider="{Binding ElementName=PART_Slider}"/>
+                                            </ItemsPanelTemplate>
+                                        </telerik:ItemContainer.ItemsPanel>
+                                        <telerik:ItemContainer.Template>
+                                            <ControlTemplate>
+                                                <ItemsPresenter/>
+                                            </ControlTemplate>
+                                        </telerik:ItemContainer.Template>
+                                    </telerik:ItemContainer>
+                                    <telerik:TimeBarStackPanel
+                                        Grid.Row="1"
+                                        Grid.RowSpan="2"
+                                        Slider="{Binding ElementName=PART_Slider}"
+                                        SliderMinimum="{Binding ElementName=PART_Slider, Path=Minimum, Mode=TwoWay}"
+                                        SliderMaximum="{Binding ElementName=PART_Slider, Path=Maximum, Mode=TwoWay}">
+                                        <telerik:ShadeControl StartDate="{TemplateBinding PeriodStart}" EndDate="{Binding ElementName=PART_SelectionThumb, Path=StartDate}"/>
+                                        <telerik:SelectionThumb x:Name="PART_SelectionThumb"
+                                            Canvas.ZIndex="2"
+                                            PeriodStart="{TemplateBinding PeriodStart}"
+                                            PeriodEnd="{TemplateBinding PeriodEnd}"
+                                            VisiblePeriodRange="{Binding Path=ActualVisiblePeriodRange, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                            IsSnapToIntervalEnabled="{TemplateBinding IsSnapToIntervalEnabled}"
+                                            IntervalGroups="{TemplateBinding IntervalGroups}"
+                                            IntervalItems="{TemplateBinding IntervalItems}"
+                                            MinSelectionRange="{TemplateBinding MinSelectionRange}"
+                                            MaxSelectionRange="{TemplateBinding MaxSelectionRange}"
+                                            TitleFormatString="{TemplateBinding SelectionTitleFormatString}"
+                                            Selection="{Binding Path=Selection, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                            StartDate="{Binding Path=ActualSelectionStart, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                            EndDate="{Binding Path=ActualSelectionEnd, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                            SelectionPreviewControl="{Binding ElementName=PART_SelectionThumbPreview}"
+                                            Style="{TemplateBinding SelectionThumbStyle}"/>
+                                        <telerik:ShadeControl StartDate="{Binding ElementName=PART_SelectionThumb, Path=EndDate}" EndDate="{TemplateBinding PeriodEnd}"/>
+                                    </telerik:TimeBarStackPanel>
+                                    <telerik:TimeBarPanel
+                                        Grid.Row="1"
+                                        Grid.RowSpan="2"
+                                        Slider="{Binding ElementName=PART_Slider}"
+                                        SliderMinimum="{Binding ElementName=PART_Slider, Path=Minimum, Mode=TwoWay}"
+                                        SliderMaximum="{Binding ElementName=PART_Slider, Path=Maximum, Mode=TwoWay}">
+                                        <telerik:SelectionThumbPreview x:Name="PART_SelectionThumbPreview"/>
+                                    </telerik:TimeBarPanel>
+                                </Grid>
+                                <telerik:SelectionVisibilityIndicator
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Left"
+                                    Style="{TemplateBinding SelectionVisibilityIndicatorStyle}"
+                                    Visibility="{TemplateBinding LeftSelectionIndicatorVisibility}"
+                                    VisibilityListener="{TemplateBinding LeftSelectionIndicatorVisibility}">
+                                    <telerik:SelectionVisibilityIndicator.RenderTransform>
+                                        <RotateTransform CenterX="8" CenterY="8" Angle="180"/>
+                                    </telerik:SelectionVisibilityIndicator.RenderTransform>
+                                </telerik:SelectionVisibilityIndicator>
+                                <telerik:SelectionVisibilityIndicator
+                                    Grid.Row="0"
+                                    HorizontalAlignment="Right"
+                                    Style="{TemplateBinding SelectionVisibilityIndicatorStyle}"
+                                    Visibility="{TemplateBinding RightSelectionIndicatorVisibility}"
+                                    VisibilityListener="{TemplateBinding RightSelectionIndicatorVisibility}"/>
+                                <telerik:RadSlider x:Name="PART_Slider"
+                                    Grid.Row="1"
+                                    Style="{TemplateBinding SliderStyle}"
+                                    Minimum="{Binding Path=PeriodStart, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource dateConverter}}"
+                                    Maximum="{Binding Path=PeriodEnd, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource dateConverter}}"
+                                    MinimumRangeSpan="{Binding Path=ActualMinZoomRange, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource timespanConverter}}"
+                                    MaximumRangeSpan="{Binding Path=MaxZoomRange, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource timeSpanToMaximumRangeSpanConverter}}"
+                                    Selection="{Binding Path=ActualVisiblePeriodRange, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, Converter={StaticResource selectionRangeConverter}}"
+                                    SmallChange="{Binding Path=SmallChange, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource timespanConverter}}"
+                                    LargeChange="{Binding Path=LargeChange, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource timespanConverter}}"
+                                    ThumbVisibility="{Binding Path=ScrollMode, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource scrollModeToThumbVisibilityConverter}}"
+                                    Visibility="{Binding Path=ScrollMode, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource scrollModeToVisibilityConverter}}"
+                                    IsCoercionSuppressed="True"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="4*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <telerik:RadTimeline
-            Grid.Row="0"
-            x:Name="KingOfPopTimeline"
-            PeriodStart="{Binding StartDate, Mode=TwoWay}"
-            PeriodEnd="{Binding EndDate, Mode=TwoWay}"
-            VisiblePeriodStart="{Binding VisibleStartDate, Mode=TwoWay}"
-            VisiblePeriodEnd="{Binding VisibleEndDate, Mode=TwoWay}"
-            IsSelectionEnabled="True"
-            SelectionMode="{Binding TimelineSelectionMode}"
-            StartPath="StartDate"
-            DurationPath="Duration"
-            GroupPath="GroupName"
-            GroupExpandMode="Multiple"
-            VerticalScrollBarVisibility="Auto"
-            ItemsSource="{Binding Events}">
-            <telerik:RadTimeline.Intervals>
-                <telerik:YearInterval IntervalSpans="1,5" />
-                <telerik:MonthInterval IntervalSpans="1,6" />
-                <telerik:DayInterval />
-                <telerik:HourInterval />
-                <telerik:MinuteInterval />
-                <telerik:SecondInterval />
-                <telerik:MillisecondInterval />
-            </telerik:RadTimeline.Intervals>
-        </telerik:RadTimeline>
-    </Grid>
+            <telerik:RadTimeBar
+                    x:Name="TimeBar"
+                    VerticalAlignment="Top" 
+                    Height="140"
+                    PeriodStart="{Binding StartDate, Mode=TwoWay}"
+                    PeriodEnd="{Binding EndDate, Mode=TwoWay}"
+                    VisiblePeriodStart="{Binding VisibleStartDate, Mode=TwoWay}"
+                    VisiblePeriodEnd="{Binding VisibleEndDate, Mode=TwoWay}"
+                    Style="{StaticResource TimeBarStyle}">
+                <telerik:RadTimeBar.Intervals>
+                    <telerik:DayInterval />
+                    <telerik:HourInterval />
+                    <telerik:MinuteInterval />
+                    <telerik:SecondInterval />
+                    <telerik:MillisecondInterval />
+                </telerik:RadTimeBar.Intervals>
+                <StackPanel
+                Orientation="Vertical">
+                    <telerik:RadTimeline
+                    x:Name="TimeLine"
+                    VerticalAlignment="Top" 
+                    Height="80"
+                    PeriodStart="{Binding StartDate}"
+                    PeriodEnd="{Binding EndDate}"
+                    IsSelectionEnabled="True"
+                    SelectionMode="{Binding TimelineSelectionMode}"
+                    StartPath="StartDate"
+                    DurationPath="Duration"
+                    ScrollMode="None"
+                    VerticalScrollBarVisibility="Auto"
+                    ItemsSource="{Binding Events}"
+                    Loaded="TimeLine_OnLoaded"/>
+                    <!-- GroupPath="GroupName"
+                 GroupExpandMode="Multiple"-->
+
+                    <telerik:RadLinearSparkline
+                    VerticalAlignment="Top" 
+                    Margin="0,3" 
+                    LineStroke="#FF767676" 
+                    Height="40"
+                    XValuePath="Date" 
+                    YValuePath="Value" />
+                    <!-- ItemSource="" -->
+                </StackPanel>
+            </telerik:RadTimeBar>
+        </Grid>
 </UserControl>
