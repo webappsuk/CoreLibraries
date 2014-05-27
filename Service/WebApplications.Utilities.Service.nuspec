@@ -14,6 +14,7 @@
     <references>
       <group targetFramework="net45">
         <reference file="WebApplications.Utilities.Service.dll" />
+        <reference file="WebApplications.Utilities.Service.Common.dll" />
       </group>
     </references>
   </metadata>
