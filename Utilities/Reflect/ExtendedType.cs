@@ -332,6 +332,7 @@ namespace WebApplications.Utilities.Reflect
         /// Gets the fields.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<Field> Fields
         {
             get
@@ -342,9 +343,30 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
+        /// Gets all the fields, including from base types.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<Field> AllFields
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                ExtendedType type = this;
+                while (type != null)
+                {
+                    foreach (Field field in type.Fields)
+                        yield return field;
+                    type = type.BaseType;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the indexers.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<Indexer> Indexers
         {
             get
@@ -355,9 +377,30 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
+        /// Gets all the indexers, including from base types.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<Indexer> AllIndexers
+        {
+            get
+            {
+                if (_loaded) LoadMembers();
+                ExtendedType type = this;
+                while (type != null)
+                {
+                    foreach (Indexer indexer in type.Indexers)
+                        yield return indexer;
+                    type = type.BaseType;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the properties (doesn't include <see cref="Indexers"/>).
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<Property> Properties
         {
             get
@@ -368,9 +411,30 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
+        /// Gets all the properties, including from base types (doesn't include <see cref="Indexers"/>).
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<Property> AllProperties
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                ExtendedType type = this;
+                while (type != null)
+                {
+                    foreach (Property property in type.Properties)
+                        yield return property;
+                    type = type.BaseType;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the events.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<Event> Events
         {
             get
@@ -381,9 +445,30 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
+        /// Gets all the events, including from base types.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<Event> AllEvents
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                ExtendedType type = this;
+                while (type != null)
+                {
+                    foreach (Event @event in type.Events)
+                        yield return @event;
+                    type = type.BaseType;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets all the methods.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<Method> Methods
         {
             get
@@ -394,16 +479,38 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
+        /// Gets all the methods, including from base types.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<Method> AllMethods
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                ExtendedType type = this;
+                while (type != null)
+                {
+                    foreach (Method method in type.Methods)
+                        yield return method;
+                    type = type.BaseType;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the static constructor, if any.
         /// </summary>
         /// <value>The static constructor if found; otherwise <see langword="null"/>.</value>
         /// <remarks>The static constructor is a special case and does not appear directly in overloads.</remarks>
+        [PublicAPI]
         public Constructor StaticConstructor { get; private set; }
 
         /// <summary>
         /// Gets the constructors.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<Constructor> Constructors
         {
             get
@@ -414,18 +521,59 @@ namespace WebApplications.Utilities.Reflect
         }
 
         /// <summary>
+        /// Gets all the constructors, including from base types.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<Constructor> AllConstructors
+        {
+            get
+            {
+                if (!_loaded) LoadMembers();
+                ExtendedType type = this;
+                while (type != null)
+                {
+                    foreach (Constructor ctor in type.Constructors)
+                        yield return ctor;
+                    type = type.BaseType;
+                }
+            }
+        }
+
+        /// <summary>
         /// All the customer attributes on the type.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<Attribute> CustomAttributes
         {
             get { return _customAttributes.Value ?? Enumerable.Empty<Attribute>(); }
         }
 
         /// <summary>
+        /// All the customer attributes on the type and base types.
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public IEnumerable<Attribute> AllCustomAttributes
+        {
+            get
+            {
+                ExtendedType type = this;
+                while (type != null)
+                {
+                    foreach (Attribute att in type.CustomAttributes)
+                        yield return att;
+                    type = type.BaseType;
+                }
+            }
+        }
+
+        /// <summary>
         /// If this type has a default member (indexer), indicates its name.
         /// </summary>
         [CanBeNull]
+        [PublicAPI]
         public string DefaultMember
         {
             get { return _defaultMember.Value; }
@@ -436,6 +584,7 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <remarks>This is modelled after the Type.SigToString internal method.</remarks>
         [NotNull]
+        [PublicAPI]
         public string Signature
         {
             get { return _signature.Value ?? Type.FullName ?? Type.Name; }
@@ -444,6 +593,7 @@ namespace WebApplications.Utilities.Reflect
         /// <summary>
         /// Gets the simple full name for the type.
         /// </summary>
+        [PublicAPI]
         public string SimpleFullName
         {
             get { return _simpleFullName.Value ?? Type.FullName ?? Type.Name; }
@@ -453,6 +603,7 @@ namespace WebApplications.Utilities.Reflect
         /// The generic arguments.
         /// </summary>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<GenericArgument> GenericArguments
         {
             get { return _genericArguments.Value; }
@@ -463,6 +614,7 @@ namespace WebApplications.Utilities.Reflect
         /// otherwise returns <see cref="Type"/>.
         /// </summary>
         /// <value>The type of the non nullable type.</value>
+        [PublicAPI]
         public Type NonNullableType
         {
             get { return _nonNullableType.Value; }
@@ -472,6 +624,7 @@ namespace WebApplications.Utilities.Reflect
         /// Gets a value indicating whether this type is a nullable type (i.e. <see cref="Nullable{T}"/>).
         /// </summary>
         /// <value><see langword="true" /> if this type is nullable type; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
         public bool IsNullableType
         {
             get { return Type != _nonNullableType.Value; }
@@ -481,6 +634,7 @@ namespace WebApplications.Utilities.Reflect
         /// Gets a value indicating whether this type is convertible.
         /// </summary>
         /// <value><see langword="true" /> if this instance is convertible; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
         public bool IsConvertible
         {
             get { return _isConvertible.Value; }
@@ -491,6 +645,7 @@ namespace WebApplications.Utilities.Reflect
         /// </summary>
         /// <value>The interfaces.</value>
         [NotNull]
+        [PublicAPI]
         public IEnumerable<Type> Interfaces
         {
             get { return _interfaces.Value.Values; }
@@ -502,6 +657,7 @@ namespace WebApplications.Utilities.Reflect
         /// <param name="type">The type.</param>
         /// <returns>The type as an extended type.</returns>
         [NotNull]
+        [PublicAPI]
         public static ExtendedType Get([NotNull] Type type)
         {
             return _extendedTypes.GetOrAdd(type, t => new ExtendedType(t));

@@ -80,6 +80,11 @@ namespace WebApplications.Utilities.Test
             }
         }
 
+        public class TestDerivedClass : TestClass
+        {
+            public bool DerivedClassField;
+        }
+
         [TestMethod]
         public void TestCast()
         {
@@ -322,6 +327,18 @@ namespace WebApplications.Utilities.Test
             Assert.AreEqual(2, accessor.Count);
             Assert.IsTrue(accessor.ContainsKey("Key"));
             Assert.IsTrue(accessor.ContainsKey("Value"));
+        }
+
+        [TestMethod]
+        public void TestDerivedIncludesBase()
+        {
+            TestDerivedClass tc = new TestDerivedClass();
+            Accessor<TestDerivedClass> tca = tc;
+            Assert.IsTrue(tca.ContainsKey("DerivedClassField"));
+            Assert.IsTrue(tca.ContainsKey("PublicReadonlyField"));
+            Assert.IsTrue(tca.ContainsKey("PublicField"));
+            Assert.IsTrue(tca.ContainsKey("PublicAutoProperty"));
+            Assert.IsTrue(tca.ContainsKey("PublicGetterProperty"));
         }
     }
 }

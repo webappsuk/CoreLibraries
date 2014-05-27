@@ -87,10 +87,10 @@ namespace WebApplications.Utilities.Test.Formatting
 
 
         [TestMethod]
-        public void TestFormatBuilderToStringWhitespaceAndALign()
+        public void TestFormatBuilderToStringWhitespaceAndAlign()
         {
             // Create a format builder with limited width and special characters.
-            FormatBuilder f = new FormatBuilder("{tag}\t\twith tabs\r\nand new lines.", 5);
+            FormatBuilder f = new FormatBuilder(5, format: "{tag}\t\twith tabs\r\nand new lines.");
             Assert.AreEqual("{tag}\t\twith tabs\r\nand new lines.", f.ToString("f"));
         }
 
