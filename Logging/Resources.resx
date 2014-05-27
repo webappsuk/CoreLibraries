@@ -375,4 +375,19 @@
   <data name="Sqllogger_TimeoutLessThanOneSecond" xml:space="preserve">
     <value>The specified SQL timeout ({0}) was less than 1s.</value>
   </data>
+  <data name="LogFormat_Short" xml:space="preserve">
+    <value>{!fgcolor:Teal}{time:{Value:HH:mm:ss.ffff}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}</value>
+  </data>
+  <data name="LogFormat_Verbose" xml:space="preserve">
+    <value>{!fgcolor:LogLevel}{!header}{!layout:aCentre}{level:{Value}}{!fgcolor}{!layout}{message:
+{!fgcolor:Teal}{Key}{!fgcolor}	: {!fgcolor:White}{Value}{!fgcolor}}{time}{guid}{thread:
+{!fgcolor:Teal}{Key}{!fgcolor}	: {Value}{threadid: ({Value})}}{exception}{innerexception}{sproc}{context}{stack:
+{!fgcolor:Gray}{!header:-}{!layout:aCentre}{!fgcolor:Teal}{Key}{!fgcolor}{!layout:i6;f3;aLeft}
+{!fgcolor:Gray}{Value}{!fgcolor}{!layout}}
+{!fgcolor:LogLevel}{!header}{!fgcolor}</value>
+  </data>
+  <data name="LogFormat_XML" xml:space="preserve">
+    <value>&lt;Log&gt;
+{!layout:f4}{message:{xml}}{level:{xml}}{time:{xml}}{guid:{xml}}{thread:{xml}}{threadid:{xml}}{exception:{xml}}{innerexception:{xml}}{sproc:{xml}}{context:{xml}}{stack:{xml}}{!layout}&lt;/Log&gt;</value>
+  </data>
 </root>
