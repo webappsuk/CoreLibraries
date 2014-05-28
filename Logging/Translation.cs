@@ -109,14 +109,8 @@ namespace WebApplications.Utilities.Logging
                 {
                     try
                     {
-                        PropertyInfo resourceInfo = type.GetProperty(
-                            "ResourceManager",
-                            BindingFlags.GetProperty | BindingFlags.NonPublic | BindingFlags.Public |
-                            BindingFlags.Static);
-
-                        return resourceInfo == null
-                            ? null
-                            : resourceInfo.GetValue(null) as ResourceManager;
+                        // Use a merged resource manager
+                        return new MergedResourceManager(type);
                     }
                     catch (Exception e)
                     {

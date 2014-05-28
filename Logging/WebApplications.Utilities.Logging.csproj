@@ -186,6 +186,7 @@
     <Compile Include="Loggers\MemoryLogger.cs" />
     <Compile Include="LoggerInfo.cs" />
     <Compile Include="LogStatic.cs" />
+    <Compile Include="MergedResourceManager.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Loggers\TraceLogger.cs" />
