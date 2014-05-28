@@ -156,7 +156,8 @@
       <HintPath>..\packages\WebApplications.Utilities.5.0.5260.21744\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="WebApplications.Utilities.Logging">
-      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5261.28501\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.Logging.5.1.5261.29427\lib\net45\WebApplications.Utilities.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WebApplications.Utilities.Performance, Version=5.0.5260.22139, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
