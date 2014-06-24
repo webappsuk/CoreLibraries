@@ -56,6 +56,7 @@ namespace WebApplications.Utilities
     /// <summary>
     ///   Useful extension methods
     /// </summary>
+    [PublicAPI]
     public static class UtilityExtensions
     {
         /// <summary>
@@ -341,7 +342,7 @@ namespace WebApplications.Utilities
             decimal d;
             unchecked
             {
-                d = (decimal)number;   
+                d = (decimal)number;
             }
             // Get the approximate number after the point.
             bool first = true;
@@ -1983,7 +1984,7 @@ namespace WebApplications.Utilities
         /// <param name="enumerable">The enumerable.</param>
         /// <param name="equalityComparer">The equality comparer.</param>
         /// <returns><see langword="true" /> if all the elements of the enumerable are distinct, <see langword="false" /> otherwise.</returns>
-        /// <remarks>TODO move into core library.</remarks>
+        [PublicAPI]
         public static bool AreDistinct<T>(
             [NotNull] this IEnumerable<T> enumerable,
             [CanBeNull] IEqualityComparer<T> equalityComparer = null)
@@ -1991,6 +1992,74 @@ namespace WebApplications.Utilities
             Contract.Requires(enumerable != null);
             ICollection<T> collection = (enumerable as ICollection<T>) ?? enumerable.ToArray();
             return collection.Count == collection.Distinct(equalityComparer ?? EqualityComparer<T>.Default).Count();
+        }
+
+        /// <summary>
+        /// Adds a key/value pair to the <see cref="Dictionary{TKey,TValue}" /> by using the specified function, if the key does not already exist.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
+        /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
+        /// <param name="dict">The dictionary to add the element to.</param>
+        /// <param name="key">The key of the element to add.</param>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static TValue GetOrAdd<TKey, TValue>(
+            [NotNull] this Dictionary<TKey, TValue> dict,
+            [NotNull] TKey key,
+            [CanBeNull] TValue value)
+        {
+            Contract.Requires(dict != null);
+            Contract.Requires(!ReferenceEquals(key, null));
+            TValue val;
+            if (!dict.TryGetValue(key, out val))
+                dict.Add(key, val = value);
+            return val;
+        }
+
+        /// <summary>
+        /// Adds a key/value pair to the <see cref="Dictionary{TKey,TValue}"/> by using the specified function, if the key does not already exist.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
+        /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
+        /// <param name="dict">The dictionary to add the element to.</param>
+        /// <param name="key">The key of the element to add.</param>
+        /// <param name="valueFactory">The function used to generate a value for the key.</param>
+        /// <returns></returns>
+        [CanBeNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [PublicAPI]
+        public static TValue GetOrAdd<TKey, TValue>(
+            [NotNull] this Dictionary<TKey, TValue> dict,
+            [NotNull] TKey key,
+            [NotNull] Func<TKey, TValue> valueFactory)
+        {
+            Contract.Requires(dict != null);
+            Contract.Requires(!ReferenceEquals(key, null));
+            Contract.Requires(valueFactory != null);
+            TValue val;
+            if (!dict.TryGetValue(key, out val))
+                dict.Add(key, val = valueFactory(key));
+            return val;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Dictionary{TKey,TValue}"/> from an <see cref="IEnumerable{KeyValuePair}"/>
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="source">An <see cref="IEnumerable{KeyValuePair}"/> to create a <see cref="Dictionary{TKey,TValue}"/> from.</param>
+        /// <param name="comparer">An <see cref="IEqualityComparer{TKey}"/> to compare keys.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(
+            [NotNull] this IEnumerable<KeyValuePair<TKey, TValue>> source,
+            [CanBeNull] IEqualityComparer<TKey> comparer = null)
+        {
+            Contract.Requires(source != null);
+            return source.ToDictionary(kvp => kvp.Key, kvp => kvp.Value, comparer);
         }
 
         #region StdDev
@@ -3148,6 +3217,850 @@ namespace WebApplications.Utilities
             return b == null
                 ? Expression.Block(new[] { block }.Concat(expressions))
                 : Expression.Block(b.Variables, b.Expressions.Concat(expressions));
+        }
+
+        #region GetFuncExpression overloads
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>Expression{Func{``0}}.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<TResult>> GetFuncExpression<TResult>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 0);
+            if (expression.ReturnType == typeof(TResult))
+                return (Expression<Func<TResult>>)expression;
+            return Expression.Lambda<Func<TResult>>(
+                Expression.Convert(expression.Body, typeof(TResult)),
+                expression.Parameters);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>Expression{Func{``0``1}}.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<T1, TResult>> GetFuncExpression<T1, TResult>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 1);
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            Expression body = expression.Inline(i1);
+
+            if (expression.ReturnType != typeof(TResult))
+                body = Expression.Convert(body, typeof(TResult));
+
+            return Expression.Lambda<Func<T1, TResult>>(body, p1);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>
+        /// Expression{Func{``0``1``2}}.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<T1, T2, TResult>> GetFuncExpression<T1, T2, TResult>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 2);
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            Expression body = expression.Inline(i1, i2);
+
+            if (expression.ReturnType != typeof(TResult))
+                body = Expression.Convert(body, typeof(TResult));
+
+            return Expression.Lambda<Func<T1, T2, TResult>>(body, p1, p2);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>
+        /// Expression{Func{``0``1``2``3}}.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<T1, T2, T3, TResult>> GetFuncExpression<T1, T2, T3, TResult>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 3);
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            Expression body = expression.Inline(i1, i2, i3);
+
+            if (expression.ReturnType != typeof(TResult))
+                body = Expression.Convert(body, typeof(TResult));
+
+            return Expression.Lambda<Func<T1, T2, T3, TResult>>(body, p1, p2, p3);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>
+        /// Expression{Func{``0``1``2``3``4}}.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<T1, T2, T3, T4, TResult>> GetFuncExpression<T1, T2, T3, T4, TResult>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 4);
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            Expression body = expression.Inline(i1, i2, i3, i4);
+
+            if (expression.ReturnType != typeof(TResult))
+                body = Expression.Convert(body, typeof(TResult));
+
+            return Expression.Lambda<Func<T1, T2, T3, T4, TResult>>(body, p1, p2, p3, p4);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <typeparam name="T5">The type of the t5.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>
+        /// Expression{Func{``0``1``2``3``4``5}}.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<T1, T2, T3, T4, T5, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, TResult>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 5);
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            ParameterExpression p5 = Expression.Parameter(typeof(T5));
+            Expression i5 = p5.Type != typeof(T5)
+                ? Expression.Convert(p5, typeof(T5))
+                : (Expression)p5;
+
+            Expression body = expression.Inline(i1, i2, i3, i4, i5);
+
+            if (expression.ReturnType != typeof(TResult))
+                body = Expression.Convert(body, typeof(TResult));
+
+            return Expression.Lambda<Func<T1, T2, T3, T4, T5, TResult>>(body, p1, p2, p3, p4, p5);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <typeparam name="T5">The type of the t5.</typeparam>
+        /// <typeparam name="T6">The type of the t6.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>
+        /// Expression{Func{``0``1``2``3``4``5``6}}.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<T1, T2, T3, T4, T5, T6, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, TResult>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 6);
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            ParameterExpression p5 = Expression.Parameter(typeof(T5));
+            Expression i5 = p5.Type != typeof(T5)
+                ? Expression.Convert(p5, typeof(T5))
+                : (Expression)p5;
+
+            ParameterExpression p6 = Expression.Parameter(typeof(T6));
+            Expression i6 = p6.Type != typeof(T6)
+                ? Expression.Convert(p6, typeof(T6))
+                : (Expression)p6;
+
+            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6);
+
+            if (expression.ReturnType != typeof(TResult))
+                body = Expression.Convert(body, typeof(TResult));
+
+            return Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, TResult>>(body, p1, p2, p3, p4, p5, p6);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <typeparam name="T5">The type of the t5.</typeparam>
+        /// <typeparam name="T6">The type of the t6.</typeparam>
+        /// <typeparam name="T7">The type of the t7.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>
+        /// Expression{Func{``0``1``2``3``4``5``6``7}}.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, TResult>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 7);
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            ParameterExpression p5 = Expression.Parameter(typeof(T5));
+            Expression i5 = p5.Type != typeof(T5)
+                ? Expression.Convert(p5, typeof(T5))
+                : (Expression)p5;
+
+            ParameterExpression p6 = Expression.Parameter(typeof(T6));
+            Expression i6 = p6.Type != typeof(T6)
+                ? Expression.Convert(p6, typeof(T6))
+                : (Expression)p6;
+
+            ParameterExpression p7 = Expression.Parameter(typeof(T7));
+            Expression i7 = p7.Type != typeof(T7)
+                ? Expression.Convert(p7, typeof(T7))
+                : (Expression)p7;
+
+            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7);
+
+            if (expression.ReturnType != typeof(TResult))
+                body = Expression.Convert(body, typeof(TResult));
+
+            return Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, TResult>>(body, p1, p2, p3, p4, p5, p6, p7);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed function.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <typeparam name="T5">The type of the t5.</typeparam>
+        /// <typeparam name="T6">The type of the t6.</typeparam>
+        /// <typeparam name="T7">The type of the t7.</typeparam>
+        /// <typeparam name="T8">The type of the t8.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        /// <returns>
+        /// Expression{Func{``0``1``2``3``4``5``6``7``8}}.
+        /// </returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>> GetFuncExpression<T1, T2, T3, T4, T5, T6, T7, T8, TResult>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 8);
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            ParameterExpression p5 = Expression.Parameter(typeof(T5));
+            Expression i5 = p5.Type != typeof(T5)
+                ? Expression.Convert(p5, typeof(T5))
+                : (Expression)p5;
+
+            ParameterExpression p6 = Expression.Parameter(typeof(T6));
+            Expression i6 = p6.Type != typeof(T6)
+                ? Expression.Convert(p6, typeof(T6))
+                : (Expression)p6;
+
+            ParameterExpression p7 = Expression.Parameter(typeof(T7));
+            Expression i7 = p7.Type != typeof(T7)
+                ? Expression.Convert(p7, typeof(T7))
+                : (Expression)p7;
+
+            ParameterExpression p8 = Expression.Parameter(typeof(T8));
+            Expression i8 = p8.Type != typeof(T8)
+                ? Expression.Convert(p8, typeof(T8))
+                : (Expression)p8;
+
+            Expression body = expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8);
+
+            if (expression.ReturnType != typeof(TResult))
+                body = Expression.Convert(body, typeof(TResult));
+
+            return Expression.Lambda<Func<T1, T2, T3, T4, T5, T6, T7, T8, TResult>>(body, p1, p2, p3, p4, p5, p6, p7, p8);
+        }
+        #endregion
+
+        #region GetActionExpression overloads
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary>
+        /// <param name="expression">The lambda expression.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action> GetActionExpression([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 0);
+            Contract.Requires(expression.ReturnType == typeof(void));
+
+            return (Expression<Action>)expression;
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action<T1>> GetActionExpression<T1>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 1);
+            Contract.Requires(expression.ReturnType == typeof(void));
+
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            return Expression.Lambda<Action<T1>>(expression.Inline(i1), p1);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action<T1, T2>> GetActionExpression<T1, T2>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 2);
+            Contract.Requires(expression.ReturnType == typeof(void));
+
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            return Expression.Lambda<Action<T1, T2>>(expression.Inline(i1, i2), p1, p2);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action<T1, T2, T3>> GetActionExpression<T1, T2, T3>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 3);
+            Contract.Requires(expression.ReturnType == typeof(void));
+
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            return Expression.Lambda<Action<T1, T2, T3>>(expression.Inline(i1, i2, i3), p1, p2, p3);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action<T1, T2, T3, T4>> GetActionExpression<T1, T2, T3, T4>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 4);
+            Contract.Requires(expression.ReturnType == typeof(void));
+
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            return Expression.Lambda<Action<T1, T2, T3, T4>>(expression.Inline(i1, i2, i3, i4), p1, p2, p3, p4);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <typeparam name="T5">The type of the t5.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action<T1, T2, T3, T4, T5>> GetActionExpression<T1, T2, T3, T4, T5>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 5);
+            Contract.Requires(expression.ReturnType == typeof(void));
+
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            ParameterExpression p5 = Expression.Parameter(typeof(T5));
+            Expression i5 = p5.Type != typeof(T5)
+                ? Expression.Convert(p5, typeof(T5))
+                : (Expression)p5;
+
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5>>(expression.Inline(i1, i2, i3, i4, i5), p1, p2, p3, p4, p5);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <typeparam name="T5">The type of the t5.</typeparam>
+        /// <typeparam name="T6">The type of the t6.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action<T1, T2, T3, T4, T5, T6>> GetActionExpression<T1, T2, T3, T4, T5, T6>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 6);
+            Contract.Requires(expression.ReturnType == typeof(void));
+
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            ParameterExpression p5 = Expression.Parameter(typeof(T5));
+            Expression i5 = p5.Type != typeof(T5)
+                ? Expression.Convert(p5, typeof(T5))
+                : (Expression)p5;
+
+            ParameterExpression p6 = Expression.Parameter(typeof(T6));
+            Expression i6 = p6.Type != typeof(T6)
+                ? Expression.Convert(p6, typeof(T6))
+                : (Expression)p6;
+
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6>>(expression.Inline(i1, i2, i3, i4, i5, i6), p1, p2, p3, p4, p5, p6);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <typeparam name="T5">The type of the t5.</typeparam>
+        /// <typeparam name="T6">The type of the t6.</typeparam>
+        /// <typeparam name="T7">The type of the t7.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action<T1, T2, T3, T4, T5, T6, T7>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 7);
+            Contract.Requires(expression.ReturnType == typeof(void));
+
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            ParameterExpression p5 = Expression.Parameter(typeof(T5));
+            Expression i5 = p5.Type != typeof(T5)
+                ? Expression.Convert(p5, typeof(T5))
+                : (Expression)p5;
+
+            ParameterExpression p6 = Expression.Parameter(typeof(T6));
+            Expression i6 = p6.Type != typeof(T6)
+                ? Expression.Convert(p6, typeof(T6))
+                : (Expression)p6;
+
+            ParameterExpression p7 = Expression.Parameter(typeof(T7));
+            Expression i7 = p7.Type != typeof(T7)
+                ? Expression.Convert(p7, typeof(T7))
+                : (Expression)p7;
+
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7), p1, p2, p3, p4, p5, p6, p7);
+        }
+
+        /// <summary>
+        /// Gets the lambda expression as a strongly typed action.
+        /// </summary>
+        /// <typeparam name="T1">The type of the t1.</typeparam>
+        /// <typeparam name="T2">The type of the t2.</typeparam>
+        /// <typeparam name="T3">The type of the t3.</typeparam>
+        /// <typeparam name="T4">The type of the t4.</typeparam>
+        /// <typeparam name="T5">The type of the t5.</typeparam>
+        /// <typeparam name="T6">The type of the t6.</typeparam>
+        /// <typeparam name="T7">The type of the t7.</typeparam>
+        /// <typeparam name="T8">The type of the t8.</typeparam>
+        /// <param name="expression">The lambda expression.</param>
+        [NotNull]
+        [PublicAPI]
+        public static Expression<Action<T1, T2, T3, T4, T5, T6, T7, T8>> GetActionExpression<T1, T2, T3, T4, T5, T6, T7, T8>([NotNull] this LambdaExpression expression)
+        {
+            Contract.Requires(expression.Parameters.Count == 8);
+            Contract.Requires(expression.ReturnType == typeof(void));
+
+            ParameterExpression p1 = Expression.Parameter(typeof(T1));
+            Expression i1 = p1.Type != typeof(T1)
+                ? Expression.Convert(p1, typeof(T1))
+                : (Expression)p1;
+
+            ParameterExpression p2 = Expression.Parameter(typeof(T2));
+            Expression i2 = p2.Type != typeof(T2)
+                ? Expression.Convert(p2, typeof(T2))
+                : (Expression)p2;
+
+            ParameterExpression p3 = Expression.Parameter(typeof(T3));
+            Expression i3 = p3.Type != typeof(T3)
+                ? Expression.Convert(p3, typeof(T3))
+                : (Expression)p3;
+
+            ParameterExpression p4 = Expression.Parameter(typeof(T4));
+            Expression i4 = p4.Type != typeof(T4)
+                ? Expression.Convert(p4, typeof(T4))
+                : (Expression)p4;
+
+            ParameterExpression p5 = Expression.Parameter(typeof(T5));
+            Expression i5 = p5.Type != typeof(T5)
+                ? Expression.Convert(p5, typeof(T5))
+                : (Expression)p5;
+
+            ParameterExpression p6 = Expression.Parameter(typeof(T6));
+            Expression i6 = p6.Type != typeof(T6)
+                ? Expression.Convert(p6, typeof(T6))
+                : (Expression)p6;
+
+            ParameterExpression p7 = Expression.Parameter(typeof(T7));
+            Expression i7 = p7.Type != typeof(T7)
+                ? Expression.Convert(p7, typeof(T7))
+                : (Expression)p7;
+
+            ParameterExpression p8 = Expression.Parameter(typeof(T8));
+            Expression i8 = p8.Type != typeof(T8)
+                ? Expression.Convert(p8, typeof(T8))
+                : (Expression)p8;
+
+            return Expression.Lambda<Action<T1, T2, T3, T4, T5, T6, T7, T8>>(expression.Inline(i1, i2, i3, i4, i5, i6, i7, i8), p1, p2, p3, p4, p5, p6, p7, p8);
+        }
+        #endregion
+
+        /// <summary>
+        /// Takes a lambda expression and returns new expression where the parameters have been replaced by the specified
+        /// expressions, effectively inlining the expression.
+        /// </summary>
+        /// <param name="expression">The expression.</param>
+        /// <param name="parameters">The replacement parameters.</param>
+        /// <returns>Expression.</returns>
+        [NotNull]
+        [PublicAPI]
+        public static Expression Inline(
+            [NotNull] this LambdaExpression expression,
+            [NotNull] params Expression[] parameters)
+        {
+            return new ParameterReplacerVisitor(expression, parameters).Visit();
+        }
+
+        /// <summary>
+        /// Replaces the parameters of a lambda expression.
+        /// </summary>
+        private class ParameterReplacerVisitor : ExpressionVisitor
+        {
+            /// <summary>
+            /// The lambda
+            /// </summary>
+            [NotNull]
+            private readonly LambdaExpression _lambda;
+
+            /// <summary>
+            /// The replacements
+            /// </summary>
+            [NotNull]
+            private readonly IReadOnlyDictionary<ParameterExpression, Expression> _replacements;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ParameterReplacerVisitor" /> class.
+            /// </summary>
+            /// <param name="expression">The expression.</param>
+            /// <param name="parameters">The parameters.</param>
+            public ParameterReplacerVisitor(
+                [NotNull] LambdaExpression expression,
+                [NotNull] params Expression[] parameters)
+            {
+                Contract.Requires(expression != null, "Parameter_Null");
+                Contract.Requires(parameters != null, "Parameter_Null");
+                _lambda = expression;
+                int pcount = _lambda.Parameters.Count;
+
+                if (pcount != parameters.Length)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        "parameters",
+                        string.Format(
+                            "The number of parameter replacement expressions '{0}' does not match the number of parameters in the lambda expression '{1}'.",
+                        //TODO Translate?
+                            parameters.Length,
+                            pcount));
+                }
+
+                Dictionary<ParameterExpression, Expression> replacements =
+                    new Dictionary<ParameterExpression, Expression>(pcount);
+                for (int i = 0; i < pcount; i++)
+                {
+                    ParameterExpression originalParameter = _lambda.Parameters[i];
+                    Expression newParameter = parameters[i];
+                    // ReSharper disable PossibleNullReferenceException
+                    if (originalParameter.Type != newParameter.Type)
+                        // ReSharper restore PossibleNullReferenceException
+                        newParameter = newParameter.Convert(originalParameter.Type);
+
+                    replacements.Add(originalParameter, newParameter);
+                }
+                _replacements = replacements;
+            }
+
+            /// <summary>
+            /// Visits this instance.
+            /// </summary>
+            /// <returns>Expression.</returns>
+            [NotNull]
+            internal Expression Visit()
+            {
+                // ReSharper disable once AssignNullToNotNullAttribute
+                return Visit(_lambda.Body);
+            }
+
+            /// <summary>
+            /// Visits the <see cref="T:System.Linq.Expressions.ParameterExpression" />.
+            /// </summary>
+            /// <param name="node">The expression to visit.</param>
+            /// <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+            protected override Expression VisitParameter(ParameterExpression node)
+            {
+                Expression replacement;
+                // ReSharper disable once AssignNullToNotNullAttribute
+                return _replacements.TryGetValue(node, out replacement) ? replacement : node;
+            }
         }
 
         /// <summary>

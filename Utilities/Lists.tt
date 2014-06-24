@@ -126,36 +126,28 @@ namespace WebApplications.Utilities
 				if (i<2) continue;
 	#>
 
-	#region Queue with <#= i #> items.
+	#region List with <#= i #> items.
     /// <summary>
-    /// A Queue of <see cref="Tuple{<#= typeParams #>}"/>.
+    /// A List of <see cref="Tuple{<#= typeParams #>}"/>.
     /// </summary><#= typeComments #>
-    [UsedImplicitly]
-    public class Queue<<#= typeParams #>> : Queue<Tuple<<#= t #>>>, IEnumerable<<#= typeParams #>>
+    [PublicAPI]
+    public class List<<#= typeParams #>> : List<Tuple<<#= t #>>>, IEnumerable<<#= typeParams #>>
     {
         /// <summary>
         /// Inserts an object at the beginning of the <see cref="Queue{<#= typeParams #>}" />.
         /// </summary><#= paramsComments #>
-        public void Enqueue(<#= paramsWithType #>)
+        public void Add(<#= paramsWithType #>)
         {
-            Enqueue(new Tuple<<#= t #>>(<#= paramsWithoutType #>));
+            Add(new Tuple<<#= t #>>(<#= paramsWithoutType #>));
         }
-	    
+        
         /// <summary>
         /// Removes and returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/>.
-        /// </summary><#= paramsComments #>
-        public void Dequeue(<#= outParamsWithType #>)
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param><#= paramsComments #>
+        public void Get(int index, <#= outParamsWithType #>)
         {
-            Tuple<<#= t #>> tuple = Dequeue();
-            Contract.Assert(tuple != null);<#= assignments #>
-        }
-	    
-        /// <summary>
-        /// Returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/> without removing it.
-        /// </summary><#= paramsComments #>
-        public void Peek(<#= outParamsWithType #>)
-        {
-            Tuple<<#= t #>> tuple = Peek();
+            Tuple<<#= t #>> tuple = this[index];
             Contract.Assert(tuple != null);<#= assignments #>
         }
     }

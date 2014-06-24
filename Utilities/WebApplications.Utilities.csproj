@@ -227,15 +227,26 @@
     <Compile Include="Formatting\ResolveDelegate.cs" />
     <Compile Include="Formatting\SerialTextWriter.cs" />
     <Compile Include="Formatting\TraceTextWriter.cs" />
+    <Compile Include="IEnumerables.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IEnumerables.tt</DependentUpon>
+    </Compile>
     <Compile Include="Impersonator.cs" />
     <Compile Include="IO\OverlappingPipeClientStream.cs" />
     <Compile Include="IO\OverlappingPipeServerStream.cs" />
     <Compile Include="IO\OverlappingPipeStream.cs" />
+    <Compile Include="Lists.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Lists.tt</DependentUpon>
+    </Compile>
     <Compile Include="Queue.cs">
       <DependentUpon>Queue.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="ReferenceComparer.cs" />
     <Compile Include="Stacks.cs">
       <DependentUpon>Stacks.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -357,6 +368,14 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="IEnumerables.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IEnumerables.cs</LastGenOutput>
+    </None>
+    <None Include="Lists.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Lists.cs</LastGenOutput>
+    </None>
     <None Include="Queue.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Queue.cs</LastGenOutput>
@@ -386,7 +405,6 @@
   <ItemGroup>
     <None Include="License.htm" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
