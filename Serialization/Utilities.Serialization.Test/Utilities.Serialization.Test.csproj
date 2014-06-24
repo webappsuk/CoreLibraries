@@ -125,9 +125,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WebApplications.Testing.5.0.5254.21834\lib\net45\WebApplications.Testing.dll</HintPath>
     </Reference>
-    <Reference Include="WebApplications.Utilities, Version=5.0.5260.21744, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
+    <Reference Include="WebApplications.Utilities, Version=5.0.5288.24383, Culture=neutral, PublicKeyToken=35eae54bdace0802, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebApplications.Utilities.5.0.5260.21744\lib\net45\WebApplications.Utilities.dll</HintPath>
+      <HintPath>..\packages\WebApplications.Utilities.5.0.5288.24383\lib\net45\WebApplications.Utilities.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
