@@ -266,20 +266,20 @@ namespace WebApplications.Utilities.Formatting
         /// Writes a string followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The string to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-        void WriteLine(String value);
+        void WriteLine([NotNull] String value);
 
         /// <summary>
         /// Writes the text representation of an object by calling the ToString method on that object, followed by a line terminator to the text string or stream.
         /// </summary>
         /// <param name="value">The object to write. If <paramref name="value" /> is null, only the line terminator is written.</param>
-        void WriteLine(Object value);
+        void WriteLine([NotNull] Object value);
 
         /// <summary>
         /// Writes a formatted string and a new line to the text string or stream, using the same semantics as the <see cref="M:System.String.Format(System.String,System.Object)" /> method.
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The object to format and write.</param>
-        void WriteLine(String format, Object arg0);
+        void WriteLine([NotNull] String format, [NotNull] Object arg0);
 
         /// <summary>
         /// Writes a formatted string and a new line to the text string or stream, using the same semantics as the <see cref="M:System.String.Format(System.String,System.Object,System.Object)" /> method.
@@ -287,7 +287,7 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
-        void WriteLine(String format, Object arg0, Object arg1);
+        void WriteLine([NotNull] String format, [NotNull] Object arg0, [NotNull] Object arg1);
 
         /// <summary>
         /// Writes out a formatted string and a new line, using the same semantics as <see cref="M:System.String.Format(System.String,System.Object)" />.
@@ -296,21 +296,21 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="arg0">The first object to format and write.</param>
         /// <param name="arg1">The second object to format and write.</param>
         /// <param name="arg2">The third object to format and write.</param>
-        void WriteLine(String format, Object arg0, Object arg1, Object arg2);
+        void WriteLine([NotNull] String format, [NotNull] Object arg0, [NotNull] Object arg1, [NotNull] Object arg2);
 
         /// <summary>
         /// Writes out a formatted string and a new line, using the same semantics as <see cref="M:System.String.Format(System.String,System.Object)" />.
         /// </summary>
         /// <param name="format">A composite format string (see Remarks).</param>
         /// <param name="arg">An object array that contains zero or more objects to format and write.</param>
-        void WriteLine(String format, params Object[] arg);
+        void WriteLine([NotNull] String format, [NotNull] params Object[] arg);
 
         /// <summary>
         /// Writes a character to the text string or stream asynchronously.
         /// </summary>
         /// <param name="value">The character to write to the text stream.</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
-        [ComVisible(false)]
+        [NotNull,ComVisible(false)]
         Task WriteAsync(char value);
 
         /// <summary>
@@ -318,8 +318,8 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="value">The string to write. If <paramref name="value" /> is null, nothing is written to the text stream.</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
-        [ComVisible(false)]
-        Task WriteAsync(String value);
+        [NotNull,ComVisible(false)]
+        Task WriteAsync([NotNull] String value);
 
         /// <summary>
         /// Writes a subarray of characters to the text string or stream asynchronously.
@@ -328,15 +328,15 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
         /// <param name="count">The number of characters to write.</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
-        [ComVisible(false)]
-        Task WriteAsync(char[] buffer, int index, int count);
+        [NotNull,ComVisible(false)]
+        Task WriteAsync([NotNull] char[] buffer, int index, int count);
 
         /// <summary>
         /// Writes a character followed by a line terminator asynchronously to the text string or stream.
         /// </summary>
         /// <param name="value">The character to write to the text stream.</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
-        [ComVisible(false)]
+        [NotNull,ComVisible(false)]
         Task WriteLineAsync(char value);
 
         /// <summary>
@@ -344,8 +344,8 @@ namespace WebApplications.Utilities.Formatting
         /// </summary>
         /// <param name="value">The string to write. If the value is null, only a line terminator is written.</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
-        [ComVisible(false)]
-        Task WriteLineAsync(String value);
+        [NotNull,ComVisible(false)]
+        Task WriteLineAsync([NotNull] String value);
 
         /// <summary>
         /// Writes a subarray of characters followed by a line terminator asynchronously to the text string or stream.
@@ -354,17 +354,15 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="index">The character position in the buffer at which to start retrieving data.</param>
         /// <param name="count">The number of characters to write.</param>
         /// <returns>A task that represents the asynchronous write operation.</returns>
-        [ComVisible(false)]
-        Task WriteLineAsync(char[] buffer, int index, int count);
+        [NotNull,ComVisible(false)]
+        Task WriteLineAsync([NotNull] char[] buffer, int index, int count);
 
         /// <summary>
         /// Asynchronously clears all buffers for the current writer and causes any buffered data to be written to the underlying device.
         /// </summary>
         /// <returns>A task that represents the asynchronous flush operation.</returns>
-        [ComVisible(false)]
+        [NotNull,ComVisible(false)]
         Task FlushAsync();
-
-        void Dispose();
 
         /// <summary>
         /// Writes a line terminator asynchronously to the text string or stream.

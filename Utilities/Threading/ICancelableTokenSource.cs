@@ -39,28 +39,35 @@ namespace WebApplications.Utilities.Threading
         /// <summary>
         /// Communicates a request for cancellation.
         /// </summary>
-        /// <exception cref="T:System.ObjectDisposedException">This <see cref="T:System.Threading.CancellationTokenSource"/> has been disposed.</exception><exception cref="T:System.AggregateException">An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <see cref="T:System.Threading.CancellationToken"/>.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">This <see cref="T:System.Threading.CancellationTokenSource"/> has been disposed.</exception>
+        /// <exception cref="T:System.AggregateException">An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <see cref="T:System.Threading.CancellationToken"/>.</exception>
         [PublicAPI]
         void Cancel();
 
         /// <summary>
         /// Communicates a request for cancellation, and specifies whether remaining callbacks and cancelable operations should be processed.
         /// </summary>
-        /// <param name="throwOnFirstException">true if exceptions should immediately propagate; otherwise, false.</param><exception cref="T:System.ObjectDisposedException">This <see cref="T:System.Threading.CancellationTokenSource"/> has been disposed.</exception><exception cref="T:System.AggregateException">An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <see cref="T:System.Threading.CancellationToken"/>.</exception>
+        /// <param name="throwOnFirstException">true if exceptions should immediately propagate; otherwise, false.</param>
+        /// <exception cref="T:System.ObjectDisposedException">This <see cref="T:System.Threading.CancellationTokenSource"/> has been disposed.</exception>
+        /// <exception cref="T:System.AggregateException">An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <see cref="T:System.Threading.CancellationToken"/>.</exception>
         [PublicAPI]
         void Cancel(bool throwOnFirstException);
 
         /// <summary>
         /// Schedules a cancel operation on this <see cref="T:System.Threading.CancellationTokenSource"/> after the specified time span.
         /// </summary>
-        /// <param name="delay">The time span to wait before canceling this <see cref="T:System.Threading.CancellationTokenSource"/>.</param><exception cref="T:System.ObjectDisposedException">The exception thrown when this <see cref="T:System.Threading.CancellationTokenSource"/> has been disposed.</exception><exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when <paramref name="delay"/> is less than -1 or greater than Int32.MaxValue.</exception>
+        /// <param name="delay">The time span to wait before canceling this <see cref="T:System.Threading.CancellationTokenSource"/>.</param>
+        /// <exception cref="T:System.ObjectDisposedException">The exception thrown when this <see cref="T:System.Threading.CancellationTokenSource"/> has been disposed.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when <paramref name="delay"/> is less than -1 or greater than Int32.MaxValue.</exception>
         [PublicAPI]
         void CancelAfter(TimeSpan delay);
 
         /// <summary>
         /// Schedules a cancel operation on this <see cref="T:System.Threading.CancellationTokenSource"/> after the specified number of milliseconds.
         /// </summary>
-        /// <param name="millisecondsDelay">The time span to wait before canceling this <see cref="T:System.Threading.CancellationTokenSource"/>.</param><exception cref="T:System.ObjectDisposedException">The exception thrown when this <see cref="T:System.Threading.CancellationTokenSource"/> has been disposed.</exception><exception cref="T:System.ArgumentOutOfRangeException">The exception thrown when <paramref name="millisecondsDelay"/> is less than -1.</exception>
+        /// <param name="millisecondsDelay">The time span to wait before canceling this <see cref="T:System.Threading.CancellationTokenSource"/>.</param>
+        /// <exception cref="T:System.ObjectDisposedException">The exception thrown when this <see cref="T:System.Threading.CancellationTokenSource"/> has been disposed.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception thrown when <paramref name="millisecondsDelay"/> is less than -1.</exception>
         [PublicAPI]
         void CancelAfter(int millisecondsDelay);
     }

@@ -144,7 +144,6 @@ namespace WebApplications.Utilities.Formatting
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         public void Add(KeyValuePair<string, TValue> item)
         {
-            Contract.Requires(item.Key != null);
             // ReSharper disable once AssignNullToNotNullAttribute
             Add(item.Key, item.Value);
         }

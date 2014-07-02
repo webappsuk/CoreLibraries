@@ -43,6 +43,9 @@ namespace WebApplications.Utilities.Test.Extensions
     [TestClass]
     public class MiscellaneousExtensionsTests : UtilitiesTestBase
     {
+        // ReSharper disable InconsistentNaming
+#pragma warning disable 618
+
         [TestMethod]
         public void EpochStart_Value_IsUnixEpoch()
         {

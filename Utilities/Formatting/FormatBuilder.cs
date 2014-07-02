@@ -90,7 +90,7 @@ namespace WebApplications.Utilities.Formatting
         /// </value>
         [NotNull]
         [PublicAPI]
-        public Layout InitialLayout { get; protected set; }
+        public Layout InitialLayout { get; set; }
 
         #region Constructor overloads
         /// <summary>

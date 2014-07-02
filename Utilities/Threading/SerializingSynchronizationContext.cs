@@ -55,8 +55,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="state">The object passed to the delegate.</param>
         public override void Post(SendOrPostCallback callback, [NotNull] object state)
         {
-            Contract.Requires(callback != null);
-            Contract.Requires(state != null);
             _queue.Enqueue(new CallbackInfo(callback, state));
 
             bool lockTaken = false;
@@ -83,7 +81,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="state">The object passed to the delegate.</param>
         public override void Send(SendOrPostCallback callback, [CanBeNull] object state)
         {
-            Contract.Requires(callback != null);
             lock (_lock)
             {
                 SynchronizationContext outer = Current;

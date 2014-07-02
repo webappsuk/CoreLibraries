@@ -71,7 +71,6 @@ namespace WebApplications.Utilities.Threading
         /// <param name="action">The action.</param>
         public void OnCompleted([NotNull] Action action)
         {
-            Contract.Requires(action != null);
             _context.Post(_executor, action);
         }
 

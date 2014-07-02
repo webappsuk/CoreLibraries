@@ -1037,6 +1037,21 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Gets an <see cref="ICancelableTokenSource" /> for a <see cref="CancellationToken" />.
+        /// </summary>
+        /// <param name="cts">The CTS.</param>
+        /// <returns>
+        /// A token source that can be cancelled and will be cancelled if the <paramref name="cts" /> is cancelled.
+        /// </returns>
+        [PublicAPI]
+        [NotNull]
+        public static ICancelableTokenSource ToCancelable([NotNull] this CancellationTokenSource cts)
+        {
+            Contract.Requires(cts != null);
+            return new WrappedTokenSource(cts);
+        }
+
+        /// <summary>
         /// Gets an <see cref="ITokenSource"/> for the <paramref name="token"/>.
         /// </summary>
         /// <param name="token">The token.</param>
@@ -1045,9 +1060,22 @@ namespace WebApplications.Utilities
         [NotNull]
         public static ITokenSource ToTokenSource(this CancellationToken token)
         {
-            return token.CanBeCanceled 
-                ? new TokenSource(token) 
+            return token.CanBeCanceled
+                ? new TokenSource(token)
                 : TokenSource.None;
+        }
+
+        /// <summary>
+        /// Gets an <see cref="ITokenSource" /> for the <paramref name="token" />.
+        /// </summary>
+        /// <param name="cts">The CTS.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        [NotNull]
+        public static ITokenSource ToTokenSource([NotNull] this CancellationTokenSource cts)
+        {
+            Contract.Requires(cts != null);
+            return new WrappedTokenSource(cts);
         }
 
         /// <summary>
