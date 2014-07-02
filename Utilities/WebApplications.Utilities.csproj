@@ -313,7 +313,9 @@
     <Compile Include="Enumerations\TriState.cs" />
     <Compile Include="EqualityBuilder.cs" />
     <Compile Include="TaskResult.cs" />
+    <Compile Include="Threading\ICancelableTokenSource.cs" />
     <Compile Include="Threading\ITokenSource.cs" />
+    <Compile Include="Threading\TimedTokenSource.cs" />
     <Compile Include="Threading\PauseToken.cs" />
     <Compile Include="Threading\PauseTokenSource.cs" />
     <Compile Include="Threading\AsyncDebouncedAction.cs" />
@@ -324,6 +326,7 @@
     <Compile Include="Threading\SerializingSynchronizationContext.cs" />
     <Compile Include="Threading\SynchronizationContextAwaiter.cs" />
     <Compile Include="Threading\SynchronizedQueue.cs" />
+    <Compile Include="Threading\CancelableTokenSource.cs" />
     <Compile Include="Threading\TokenSource.cs" />
     <Compile Include="Threading\WrappedTokenSource.cs" />
     <Compile Include="UtilityExtensions.cs" />

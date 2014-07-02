@@ -25,59 +25,40 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Threading
 {
-    internal class TokenSource : ITokenSource
+    /// <summary>
+    /// An <see cref="ITokenSource"/> implementation that is based on <see cref="CancellationTokenSource"/>.
+    /// </summary>
+    [PublicAPI]
+    public class CancelableTokenSource : CancellationTokenSource, ICancelableTokenSource
     {
-        [NotNull]
-        public static readonly ITokenSource Cancelled = new TokenSource(TaskResult.CancelledToken);
-
-        [NotNull]
-        public static readonly ITokenSource None = new TokenSource(CancellationToken.None);
-
         /// <summary>
-        /// The token
+        /// Initializes a new instance of the <see cref="CancelableTokenSource"/> class.
         /// </summary>
-        private readonly CancellationToken _token;
-
-        /// <summary>
-        /// Gets the <see cref="CancellationToken" /> associated with this <see cref="ITokenSource" />.
-        /// </summary>
-        /// <value>
-        /// The <see cref="CancellationToken" /> associated with this <see cref="ITokenSource" />.
-        /// </value>
-        public CancellationToken Token
+        public CancelableTokenSource()
         {
-            get { return _token; }
         }
 
         /// <summary>
-        /// Gets whether cancellation has been requested for this token source.
+        /// Initializes a new instance of the <see cref="CancelableTokenSource"/> class.
         /// </summary>
-        /// <value>
-        /// Whether cancellation has been requested for this token source.
-        /// </value>
-        public bool IsCancellationRequested
+        /// <param name="timeout">The timeout.</param>
+        public CancelableTokenSource(TimeSpan timeout)
+            : base(timeout)
         {
-            get { return _token.IsCancellationRequested; }
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TokenSource"/> class.
+        /// Initializes a new instance of the <see cref="CancelableTokenSource"/> class.
         /// </summary>
-        /// <param name="token">The token.</param>
-        public TokenSource(CancellationToken token)
-        {
-            _token = token;
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
+        /// <param name="timeout">The timeout.</param>
+        public CancelableTokenSource(int timeout)
+            : base(timeout)
         {
         }
     }

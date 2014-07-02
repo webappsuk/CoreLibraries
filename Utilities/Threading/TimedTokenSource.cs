@@ -27,17 +27,20 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Threading;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Threading
 {
-    /// <summary>
-    /// An <see cref="ITokenSource"/> that wraps other sources.
-    /// </summary>
-    [PublicAPI]
-    internal class WrappedTokenSource : ICancelableTokenSource
+    internal class TimedTokenSource : ICancelableTokenSource
     {
+        /// <summary>
+        /// The timeout source
+        /// </summary>
+        [CanBeNull]
+        private CancellationTokenSource _timeoutSource;
+
         /// <summary>
         /// The _sources
         /// </summary>
@@ -75,35 +78,65 @@ namespace WebApplications.Utilities.Threading
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WrappedTokenSource"/> class from a single cancellation token source.
+        /// Initializes a new instance of the <see cref="TimedTokenSource"/> class.
         /// </summary>
-        /// <param name="source">The source.</param>
-        public WrappedTokenSource([NotNull] CancellationTokenSource source)
+        /// <param name="milliseconds">The milliseconds.</param>
+        /// <param name="token">The token.</param>
+        public TimedTokenSource(int milliseconds, CancellationToken token)
         {
-            Contract.Requires(source != null);
-            _source = source;
+            Contract.Requires(token.CanBeCanceled);
+
+            _timeoutSource = new CancellationTokenSource(milliseconds);
+            _source = CancellationTokenSource.CreateLinkedTokenSource(
+                token,
+                _timeoutSource.Token);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WrappedTokenSource" /> class from a token and multiple cancellation token sources.
+        /// Initializes a new instance of the <see cref="TimedTokenSource"/> class.
         /// </summary>
-        /// <param name="token1">The token1.</param>
-        /// <param name="token2">The token2.</param>
-        public WrappedTokenSource(CancellationToken token1, CancellationToken token2)
+        /// <param name="timeout">The timeout.</param>
+        /// <param name="token">The token.</param>
+        public TimedTokenSource(TimeSpan timeout, CancellationToken token)
         {
-            _source = CancellationTokenSource.CreateLinkedTokenSource(token1, token2);
+            Contract.Requires(token.CanBeCanceled);
+
+            _timeoutSource = new CancellationTokenSource(timeout);
+            _source = CancellationTokenSource.CreateLinkedTokenSource(
+                token,
+                _timeoutSource.Token);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WrappedTokenSource" /> class from a token and multiple cancellation token sources.
+        /// Initializes a new instance of the <see cref="TimedTokenSource"/> class.
         /// </summary>
+        /// <param name="milliseconds">The milliseconds.</param>
         /// <param name="tokens">The tokens.</param>
-        public WrappedTokenSource([NotNull] params CancellationToken[] tokens)
+        public TimedTokenSource(int milliseconds, [NotNull] params CancellationToken[] tokens)
         {
             Contract.Requires(tokens != null);
             Contract.Requires(tokens.Length > 0);
+            Contract.Requires(tokens.Any(t => t.CanBeCanceled));
 
-            _source = CancellationTokenSource.CreateLinkedTokenSource(tokens);
+            _timeoutSource = new CancellationTokenSource(milliseconds);
+            _source = CancellationTokenSource.CreateLinkedTokenSource(
+                tokens.Union(new[] {_timeoutSource.Token}).ToArray());
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TimedTokenSource"/> class.
+        /// </summary>
+        /// <param name="timeout">The timeout.</param>
+        /// <param name="tokens">The tokens.</param>
+        public TimedTokenSource(TimeSpan timeout, [NotNull] params CancellationToken[] tokens)
+        {
+            Contract.Requires(tokens != null);
+            Contract.Requires(tokens.Length > 0);
+            Contract.Requires(tokens.Any(t => t.CanBeCanceled));
+
+            _timeoutSource = new CancellationTokenSource(timeout);
+            _source = CancellationTokenSource.CreateLinkedTokenSource(
+                tokens.Union(new[] {_timeoutSource.Token}).ToArray());
         }
 
         /// <summary>
@@ -155,6 +188,9 @@ namespace WebApplications.Utilities.Threading
         public void Dispose()
         {
             CancellationTokenSource source = Interlocked.Exchange(ref _source, null);
+            if (source != null)
+                source.Dispose();
+            source = Interlocked.Exchange(ref _timeoutSource, null);
             if (source != null)
                 source.Dispose();
         }

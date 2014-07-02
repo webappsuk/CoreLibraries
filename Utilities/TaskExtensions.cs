@@ -66,8 +66,8 @@ namespace WebApplications.Utilities
             [NotNull] this TaskCompletionSource<bool> tcs,
             [NotNull] Task task)
         {
-            if (tcs == null) throw new ArgumentNullException("tcs");
-            if (task == null) throw new ArgumentNullException("task");
+            Contract.Requires(tcs != null);
+            Contract.Requires(task != null);
 
             switch (task.Status)
             {
@@ -116,8 +116,8 @@ namespace WebApplications.Utilities
             [NotNull] this TaskCompletionSource<TResult> tcs,
             [NotNull] Task<TResult> task)
         {
-            if (tcs == null) throw new ArgumentNullException("tcs");
-            if (task == null) throw new ArgumentNullException("task");
+            Contract.Requires(tcs != null);
+            Contract.Requires(task != null);
 
             switch (task.Status)
             {
@@ -154,13 +154,13 @@ namespace WebApplications.Utilities
         /// <exception cref="ArgumentNullException">
         ///   <paramref name="task"/> is a <see langword="null"/>.
         /// </exception>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static Task WithAsyncCallback(
             [NotNull] this Task task,
             [CanBeNull] AsyncCallback callback,
             [CanBeNull] object state)
         {
-            if (task == null) throw new ArgumentNullException("task");
+            Contract.Requires(task != null);
 
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>(state);
             task.ContinueWith(
@@ -170,6 +170,7 @@ namespace WebApplications.Utilities
                     if (callback != null) callback(tcs.Task);
                 });
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return tcs.Task;
         }
 
@@ -184,12 +185,14 @@ namespace WebApplications.Utilities
         ///   The object to use as the underlying <see cref="Task&lt;TResult&gt;"/>'s state.
         /// </param>
         /// <returns>The passed in <paramref name="task"/>.</returns>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static Task<TResult> WithAsyncCallback<TResult>(
             [NotNull] this Task<TResult> task,
             [CanBeNull] AsyncCallback callback,
             [CanBeNull] object state)
         {
+            Contract.Requires(task != null);
+
             TaskCompletionSource<TResult> tcs = new TaskCompletionSource<TResult>(state);
             task.ContinueWith(
                 _ =>
@@ -198,6 +201,7 @@ namespace WebApplications.Utilities
                     if (callback != null) callback(tcs.Task);
                 });
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return tcs.Task;
         }
 
@@ -214,11 +218,15 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   This is particularly vital for APM where the exception needs to propagate to the end call.
         /// </remarks>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static Task Safe([NotNull] this Func<Task> taskCreator)
         {
+            Contract.Requires(taskCreator != null);
+            Contract.Ensures(Contract.Result<Task>() != null);
+
             try
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return taskCreator();
             }
             catch (Exception e)
@@ -249,8 +257,11 @@ namespace WebApplications.Utilities
         public static Task<TResult> Safe<TResult>([NotNull] this Func<Task<TResult>> taskCreator)
         {
             Contract.Requires(taskCreator != null);
+            Contract.Ensures(Contract.Result<Task<TResult>>() != null);
+
             try
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return taskCreator();
             }
             catch (Exception e)
@@ -276,11 +287,14 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static Task<TNewResult> After<TResult, TNewResult>(
             [CanBeNull] this Task<TResult> task,
             [NotNull] Func<Task<TResult>, TNewResult> continuation)
         {
+            Contract.Requires(continuation != null);
+
+            // ReSharper disable once PossibleNullReferenceException
             return After(task, continuation, Task<TNewResult>.Factory.CreationOptions);
         }
 
@@ -306,14 +320,17 @@ namespace WebApplications.Utilities
         /// <remarks>
         ///   An exception will be thrown if <paramref name="task"/> is ended prematurely by an exception.
         /// </remarks>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static Task<TNewResult> After<TResult, TNewResult>(
             [CanBeNull] this Task<TResult> task,
             [NotNull] Func<Task<TResult>, TNewResult> continuation,
             TaskCreationOptions creationOptions)
         {
+            Contract.Requires(continuation != null);
+
             // If the antecedent task is null just start the continuation (but pass in null).
             if ((task == null))
+                // ReSharper disable once PossibleNullReferenceException
                 return Task.Factory.StartNew(() => continuation(null), creationOptions);
 
             // Create a continuation.
@@ -366,20 +383,23 @@ namespace WebApplications.Utilities
         ///   <para>-or-</para>
         ///   <para>The antecedent task was in an invalid state.</para>
         /// </exception>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static Task<TNewResult> AfterAll<TResult, TNewResult>(
-            [CanBeNull] this IEnumerable<Task<TResult>> tasks,
-            [NotNull] Func<IEnumerable<Task<TResult>>, TNewResult>
-                continuation,
+            [CanBeNull, InstantHandle] this IEnumerable<Task<TResult>> tasks,
+            [NotNull] Func<IEnumerable<Task<TResult>>, TNewResult> continuation,
             TaskCreationOptions creationOptions)
         {
+            Contract.Requires(continuation != null);
+
             if (tasks == null) tasks = Enumerable.Empty<Task<TResult>>();
             Task<TResult>[] taskArray = tasks.ToArray();
 
             // If there are no tasks to wait for start a new task.
             if (taskArray.Length < 1)
-                return Task.Factory.StartNew(() => continuation(tasks), creationOptions);
+                // ReSharper disable once PossibleNullReferenceException
+                return Task.Factory.StartNew(() => continuation(taskArray), creationOptions);
 
+            // ReSharper disable once PossibleNullReferenceException
             return Task<TNewResult>.Factory.ContinueWhenAll(
                 taskArray,
                 antecedents =>
@@ -456,7 +476,7 @@ namespace WebApplications.Utilities
         [PublicAPI]
         public static TaskContinuationOptions GetEquivalentContinuationOptions(this TaskCreationOptions creationOptions)
         {
-            return (TaskContinuationOptions) creationOptions;
+            return (TaskContinuationOptions)creationOptions;
         }
 
         /// <summary>
@@ -471,9 +491,12 @@ namespace WebApplications.Utilities
         /// <exception cref="System.Security.SecurityException">
         ///   The caller does not have the required permission.
         /// </exception>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static WaitHandle WaitAny([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
+            Contract.Requires(handle != null);
+            Contract.Requires(handles != null);
+
             ManualResetEvent newHandle = new ManualResetEvent(false);
             int handleCount = handles.Length;
             RegisteredWaitHandle[] waitHandles = new RegisteredWaitHandle[handleCount + 1];
@@ -502,6 +525,7 @@ namespace WebApplications.Utilities
                     delegate
                     {
                         foreach (RegisteredWaitHandle waiter in waitHandles)
+                            // ReSharper disable once PossibleNullReferenceException
                             waiter.Unregister(null);
                     },
                     null,
@@ -523,9 +547,12 @@ namespace WebApplications.Utilities
         /// <exception cref="System.Security.SecurityException">
         ///   The caller does not have the required permission.
         /// </exception>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static WaitHandle WaitAll([NotNull] this WaitHandle handle, [NotNull] params WaitHandle[] handles)
         {
+            Contract.Requires(handle != null);
+            Contract.Requires(handles != null);
+
             ManualResetEvent newHandle = new ManualResetEvent(false);
 
             // Create a queue from the handles.
@@ -590,7 +617,7 @@ namespace WebApplications.Utilities
         ///   The <see cref="System.Threading.Tasks.Task&lt;TResult&gt;">Task&lt;TResult&gt;</see> created by
         ///   <see cref="System.Threading.Tasks.TaskCompletionSource&lt;TResult&gt;">TaskCompletionSource&lt;TResult&gt;</see>.
         /// </returns>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static Task<TResult> FromAsync<TResult>(
             [NotNull] this IAsyncResult asyncResult,
             [NotNull] Func<IAsyncResult, TResult> endMethod,
@@ -599,10 +626,14 @@ namespace WebApplications.Utilities
             [CanBeNull] TaskScheduler scheduler = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            bool cancellable = cancellationToken != CancellationToken.None;
+            Contract.Requires(asyncResult != null);
+            Contract.Requires(endMethod != null);
+
+            bool cancelable = cancellationToken.CanBeCanceled;
 
             if (scheduler == null)
                 scheduler = TaskScheduler.Default;
+            Contract.Assert(scheduler != null);
 
             // Create a task completion source.
             TaskCompletionSource<TResult> tcs = new TaskCompletionSource<TResult>();
@@ -656,12 +687,14 @@ namespace WebApplications.Utilities
             {
                 // We're not complete so get the wait handle.
                 WaitHandle waitHandle = asyncResult.AsyncWaitHandle;
+                Contract.Assert(waitHandle != null);
 
                 // If we have a cancellation token combine wait handles.
-                if (cancellable)
+                if (cancelable)
                     waitHandle = waitHandle.WaitAny(cancellationToken.WaitHandle);
 
                 // Register wait for result.
+                // ReSharper disable once UnusedVariable
                 RegisteredWaitHandle endTaskWaiter = ThreadPool.RegisterWaitForSingleObject(
                     waitHandle,
                     (state, timeout) =>
@@ -703,6 +736,7 @@ namespace WebApplications.Utilities
             }
 
             // Return the task completion source's task.
+            // ReSharper disable once AssignNullToNotNullAttribute
             return tcs.Task;
         }
 
@@ -712,8 +746,9 @@ namespace WebApplications.Utilities
         /// <param name="handle">The handle to wait on.</param>
         /// <returns>The awaiter.</returns>
         [PublicAPI]
-        public static TaskAwaiter GetAwaiter(this WaitHandle handle)
+        public static TaskAwaiter GetAwaiter([NotNull] this WaitHandle handle)
         {
+            Contract.Requires(handle != null);
             return handle.ToTask().GetAwaiter();
         }
 
@@ -725,9 +760,10 @@ namespace WebApplications.Utilities
         /// <remarks>
         /// There is a (brief) time delay between when the handle is signaled and when the task is marked as completed.
         /// </remarks>
-        [PublicAPI]
-        public static Task ToTask(this WaitHandle handle)
+        [NotNull, PublicAPI]
+        public static Task ToTask([NotNull] this WaitHandle handle)
         {
+            Contract.Requires(handle != null);
             Contract.Ensures(Contract.Result<Task>() != null);
 
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
@@ -735,6 +771,7 @@ namespace WebApplications.Utilities
             lock (localVariableInitLock)
             {
                 RegisteredWaitHandle callbackHandle = null;
+                // ReSharper disable once RedundantAssignment
                 callbackHandle = ThreadPool.RegisterWaitForSingleObject(
                     handle,
                     (state, timedOut) =>
@@ -744,14 +781,18 @@ namespace WebApplications.Utilities
                         // We take a lock here to make sure the outer method has completed setting the local variable callbackHandle.
                         lock (localVariableInitLock)
                         {
+                            // ReSharper disable AccessToModifiedClosure
+                            Contract.Assert(callbackHandle != null);
                             callbackHandle.Unregister(null);
+                            // ReSharper restore AccessToModifiedClosure
                         }
                     },
                     null,
                     Timeout.Infinite,
-                    executeOnlyOnce: true);
+                    true);
             }
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return tcs.Task;
         }
 
@@ -760,11 +801,14 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static Task ToTask([NotNull] this Exception exception)
         {
+            Contract.Requires(exception != null);
+
             TaskCompletionSource<Exception> source = new TaskCompletionSource<Exception>();
             source.SetException(exception);
+            // ReSharper disable once AssignNullToNotNullAttribute
             return source.Task;
         }
 
@@ -774,16 +818,19 @@ namespace WebApplications.Utilities
         /// <typeparam name="TResult">The type of the T result.</typeparam>
         /// <param name="exception">The exception.</param>
         /// <returns>A task.</returns>
-        [PublicAPI]
+        [NotNull, PublicAPI]
         public static Task<TResult> ToTask<TResult>([NotNull] this Exception exception)
         {
+            Contract.Requires(exception != null);
+
             TaskCompletionSource<TResult> source = new TaskCompletionSource<TResult>();
             source.SetException(exception);
+            // ReSharper disable once AssignNullToNotNullAttribute
             return source.Task;
         }
 
         /// <summary>
-        /// Adds cancellation support to a task that is otherwise not cancellable.
+        /// Adds cancellation support to a task that is otherwise not cancelable.
         /// </summary>
         /// <param name="task">The task.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
@@ -796,34 +843,37 @@ namespace WebApplications.Utilities
         public static Task WithCancellation([NotNull] this Task task, CancellationToken cancellationToken)
         {
             Contract.Requires(task != null);
+
             if (task.IsCompleted ||
                 !cancellationToken.CanBeCanceled)
                 return task;
 
             return cancellationToken.IsCancellationRequested
-                ? new Task(() => { }, cancellationToken)
+                ? TaskResult.Cancelled
                 : WithCancellationInternal(task, cancellationToken);
         }
 
         /// <summary>
-        /// Adds cancellation support to a task that is otherwise not cancellable.
+        /// Adds cancellation support to a task that is otherwise not cancelable.
         /// </summary>
         /// <param name="task">The task.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        /// <exception cref="System.OperationCanceledException"></exception>
+        /// <exception cref="TaskCanceledException"></exception>
         [NotNull]
         private static async Task WithCancellationInternal([NotNull] Task task, CancellationToken cancellationToken)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>) s).TrySetResult(true), tcs))
+            // ReSharper disable PossibleNullReferenceException
+            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
                 if (task != await Task.WhenAny(task, tcs.Task).ConfigureAwait(false))
+                    // ReSharper restore PossibleNullReferenceException
                     throw new TaskCanceledException(task);
             await task.ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Adds cancellation support to a task that is otherwise not cancellable.
+        /// Adds cancellation support to a task that is otherwise not cancelable.
         /// </summary>
         /// <typeparam name="T">The task result.</typeparam>
         /// <param name="task">The task.</param>
@@ -839,31 +889,34 @@ namespace WebApplications.Utilities
         public static Task<T> WithCancellation<T>([NotNull] this Task<T> task, CancellationToken cancellationToken)
         {
             Contract.Requires(task != null);
+
             if (task.IsCompleted ||
                 !cancellationToken.CanBeCanceled)
                 return task;
 
             return cancellationToken.IsCancellationRequested
-                ? new Task<T>(() => default(T), cancellationToken)
+                ? TaskResult<T>.Cancelled
                 : WithCancellationInternal(task, cancellationToken);
         }
 
         /// <summary>
-        /// Adds cancellation support to a task that is otherwise not cancellable.
+        /// Adds cancellation support to a task that is otherwise not cancelable.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="task">The task.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        /// <exception cref="System.OperationCanceledException"></exception>
+        /// <exception cref="TaskCanceledException"></exception>
         [NotNull]
         private static async Task<T> WithCancellationInternal<T>(
             [NotNull] Task<T> task,
             CancellationToken cancellationToken)
         {
             TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>) s).TrySetResult(true), tcs))
+            // ReSharper disable PossibleNullReferenceException
+            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
                 if (task != await Task.WhenAny(task, tcs.Task).ConfigureAwait(false))
+                    // ReSharper restore PossibleNullReferenceException
                     throw new TaskCanceledException(task);
             return await task.ConfigureAwait(false);
         }
@@ -879,18 +932,15 @@ namespace WebApplications.Utilities
         public static ITokenSource WithTimeout(this CancellationToken token, TimeSpan timeout)
         {
             if (timeout == Timeout.InfiniteTimeSpan)
-                return new WrappedTokenSource(token);
+                return new TokenSource(token);
             if (timeout <= TimeSpan.Zero ||
                 token.IsCancellationRequested)
                 return TokenSource.Cancelled;
 
             if (!token.CanBeCanceled)
-                return new TokenSource(timeout);
+                return new CancelableTokenSource(timeout);
 
-            CancellationTokenSource ts = new CancellationTokenSource(timeout);
-            CancellationTokenSource ls = CancellationTokenSource.CreateLinkedTokenSource(token, ts.Token);
-
-            return new WrappedTokenSource(ls.Token, ts, ls);
+            return new TimedTokenSource(timeout, token);
         }
 
         /// <summary>
@@ -904,18 +954,15 @@ namespace WebApplications.Utilities
         public static ITokenSource WithTimeout(this CancellationToken token, int milliseconds)
         {
             if (milliseconds == Timeout.Infinite)
-                return new WrappedTokenSource(token);
+                return new TokenSource(token);
             if (milliseconds <= 0 ||
                 token.IsCancellationRequested)
                 return TokenSource.Cancelled;
 
             if (!token.CanBeCanceled)
-                return new TokenSource(milliseconds);
+                return new CancelableTokenSource(milliseconds);
 
-            CancellationTokenSource ts = new CancellationTokenSource(milliseconds);
-            CancellationTokenSource ls = CancellationTokenSource.CreateLinkedTokenSource(token, ts.Token);
-
-            return new WrappedTokenSource(ls.Token, ts, ls);
+            return new TimedTokenSource(milliseconds, token);
         }
 
         /// <summary>
@@ -932,10 +979,15 @@ namespace WebApplications.Utilities
                 token2.IsCancellationRequested)
                 return TokenSource.Cancelled;
 
-            if (!token1.CanBeCanceled) return new WrappedTokenSource(token2);
-            if (!token2.CanBeCanceled) return new WrappedTokenSource(token1);
+            if (!token1.CanBeCanceled)
+                return !token2.CanBeCanceled
+                    ? TokenSource.None
+                    : new TokenSource(token2);
 
-            return new WrappedTokenSource(CancellationTokenSource.CreateLinkedTokenSource(token1, token2));
+            if (!token2.CanBeCanceled) 
+                return new TokenSource(token1);
+
+            return new WrappedTokenSource(token1, token2);
         }
 
         /// <summary>
@@ -955,10 +1007,10 @@ namespace WebApplications.Utilities
                 return token.IsCancellationRequested
                     ? TokenSource.Cancelled
                     : (token.CanBeCanceled
-                        ? new WrappedTokenSource(token)
+                        ? new TokenSource(token)
                         : TokenSource.None);
 
-            CancellationToken[] canBeCancelled = tokens.Union(new[] {token}).Where(t => t.CanBeCanceled).ToArray();
+            CancellationToken[] canBeCancelled = tokens.Union(new[] { token }).Where(t => t.CanBeCanceled).ToArray();
             if (canBeCancelled.Length < 1)
                 return TokenSource.None;
 
@@ -966,8 +1018,36 @@ namespace WebApplications.Utilities
                 return TokenSource.Cancelled;
 
             return canBeCancelled.Length < 2
-                ? new WrappedTokenSource(canBeCancelled[0])
-                : new WrappedTokenSource(CancellationTokenSource.CreateLinkedTokenSource(canBeCancelled));
+                ? (ITokenSource)new TokenSource(canBeCancelled[0])
+                : new WrappedTokenSource(canBeCancelled);
+        }
+
+        /// <summary>
+        /// Gets an <see cref="ICancelableTokenSource"/> for a <see cref="CancellationToken"/>.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns>A token source that can be cancelled and will be cancelled if the <paramref name="token"/> is cancelled.</returns>
+        [PublicAPI]
+        [NotNull]
+        public static ICancelableTokenSource ToCancelable(this CancellationToken token)
+        {
+            return token.CanBeCanceled
+                ? (ICancelableTokenSource)new WrappedTokenSource(token)
+                : new CancelableTokenSource();
+        }
+
+        /// <summary>
+        /// Gets an <see cref="ITokenSource"/> for the <paramref name="token"/>.
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <returns></returns>
+        [PublicAPI]
+        [NotNull]
+        public static ITokenSource ToTokenSource(this CancellationToken token)
+        {
+            return token.CanBeCanceled 
+                ? new TokenSource(token) 
+                : TokenSource.None;
         }
 
         /// <summary>

@@ -96,9 +96,6 @@ namespace WebApplications.Utilities
         /// </summary>
         static TaskResult()
         {
-            TaskCompletionSource<bool> cancelledSource = new TaskCompletionSource<bool>();
-            cancelledSource.SetCanceled();
-
             // ReSharper disable AssignNullToNotNullAttribute
             True = Task.FromResult(true);
             Completed = True;
@@ -106,7 +103,7 @@ namespace WebApplications.Utilities
             Zero = Task.FromResult(0);
             MinInt = Task.FromResult(int.MinValue);
             MaxInt = Task.FromResult(int.MaxValue);
-            Cancelled = cancelledSource.Task;
+            Cancelled = TaskResult<object>.Cancelled;
             // ReSharper restore AssignNullToNotNullAttribute
 
             CancelledToken = new CancellationToken(true);
@@ -127,12 +124,23 @@ namespace WebApplications.Utilities
         public static readonly Task<T> Default;
 
         /// <summary>
+        /// The cancelled result
+        /// </summary>
+        [NotNull]
+        [PublicAPI]
+        public static readonly Task<T> Cancelled;
+
+        /// <summary>
         /// Initializes static members of the <see cref="TaskResult{T}"/> class.
         /// </summary>
         static TaskResult()
         {
+            TaskCompletionSource<T> cancelledSource = new TaskCompletionSource<T>();
+            cancelledSource.SetCanceled();
+
             // ReSharper disable AssignNullToNotNullAttribute
             Default = Task.FromResult(default(T));
+            Cancelled = cancelledSource.Task;
             // ReSharper restore AssignNullToNotNullAttribute
         }
     }

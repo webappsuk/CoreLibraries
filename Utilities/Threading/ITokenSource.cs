@@ -45,5 +45,12 @@ namespace WebApplications.Utilities.Threading
         /// </value>
         [PublicAPI]
         CancellationToken Token { get; }
+
+        /// <summary>
+        /// Gets whether cancellation has been requested for this token source.
+        /// </summary>
+        /// <value>Whether cancellation has been requested for this token source.</value>
+        [PublicAPI]
+        bool IsCancellationRequested { get; }
     }
 }
