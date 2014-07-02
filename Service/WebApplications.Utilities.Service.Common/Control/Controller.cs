@@ -36,6 +36,7 @@ using System.ServiceProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service.Common.Control
 {
@@ -309,15 +310,19 @@ namespace WebApplications.Utilities.Service.Common.Control
         {
             Contract.Requires<RequiredContractException>(serviceController != null, "Parameter_Null");
 
-            token = token.WithTimeout(TimeSpan.FromMinutes(1));
-
-            serviceController.Refresh();
-            while (serviceController.Status != status)
+            // TODO Remove constant timeout
+            using (ITokenSource tokenSource = token.WithTimeout(TimeSpan.FromMinutes(1)))
             {
-                // ReSharper disable once PossibleNullReferenceException
-                await Task.Delay(250, token).ConfigureAwait(false);
-                if (token.IsCancellationRequested) return false;
+                token = tokenSource.Token;
+
                 serviceController.Refresh();
+                while (serviceController.Status != status)
+                {
+                    // ReSharper disable once PossibleNullReferenceException
+                    await Task.Delay(250, token).ConfigureAwait(false);
+                    if (token.IsCancellationRequested) return false;
+                    serviceController.Refresh();
+                }
             }
             return true;
         }

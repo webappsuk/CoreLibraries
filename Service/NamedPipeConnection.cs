@@ -251,10 +251,11 @@ namespace WebApplications.Utilities.Service
                                             try
                                             {
                                                 // Try to send disconnect response.
-                                                await Send(
-                                                    new DisconnectResponse(disconnectGuid),
-                                                    Constants.FireAndForgetToken)
-                                                    .ConfigureAwait(false);
+                                                using (CancellationTokenSource dts = Constants.FireAndForgetTokenSource)
+                                                    await Send(
+                                                        new DisconnectResponse(disconnectGuid),
+                                                        dts.Token)
+                                                        .ConfigureAwait(false);
                                             }
                                             catch (TaskCanceledException)
                                             {

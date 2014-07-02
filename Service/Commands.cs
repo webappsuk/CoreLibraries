@@ -209,7 +209,6 @@ namespace WebApplications.Utilities.Service
             [CanBeNull] [SCP(typeof(ServiceResources), "Cmd_Performance_Category_Description")] string category = null);
 
         #region Formats
-        // TODO Move the strings to resources...?
         // ReSharper disable FormatStringProblem
         /// <summary>
         /// The format to use for outputting help for all commands.

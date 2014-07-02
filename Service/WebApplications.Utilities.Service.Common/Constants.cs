@@ -54,7 +54,7 @@ namespace WebApplications.Utilities.Service.Common
         /// <value>
         /// The fire and forget token.
         /// </value>
-        [PublicAPI]
-        public static CancellationToken FireAndForgetToken { get { return new CancellationTokenSource(Timeout).Token; } }
+        [NotNull,PublicAPI]
+        public static CancellationTokenSource FireAndForgetTokenSource { get { return new CancellationTokenSource(Timeout); } }
     }
 }

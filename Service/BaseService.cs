@@ -979,7 +979,10 @@ namespace WebApplications.Utilities.Service
                     DoShutdown();
                     CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
                     if (cts != null)
+                    {
                         cts.Cancel();
+                        cts.Dispose();
+                    }
                     _pauseTokenSource.IsPaused = true;
 
                     // Disconnect all connected user interfaces
@@ -1247,6 +1250,10 @@ namespace WebApplications.Utilities.Service
                     _namedPipeServer.Dispose();
                     _namedPipeServer = null;
                 }
+
+                CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+                if (cts != null)
+                    cts.Dispose();
 
                 if (_runEventWaitHandle != null)
                 {

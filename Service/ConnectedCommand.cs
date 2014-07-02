@@ -61,7 +61,7 @@ namespace WebApplications.Utilities.Service
             [NotNull]
             private readonly CommandRequest _request;
 
-            private CancellationTokenSource _cancellationTokenSource;
+            private ICancelableTokenSource _cancellationTokenSource;
 
             /// <summary>
             /// The sequence identifier.
@@ -108,10 +108,10 @@ namespace WebApplications.Utilities.Service
                 ConnectionGuid = connectionGuid;
                 _connection = connection;
                 _request = request;
-                _cancellationTokenSource = new CancellationTokenSource();
+                _cancellationTokenSource = token.ToCancelable();
                 ID = _request.ID;
 
-                token = token.CreateLinked(_cancellationTokenSource.Token);
+                token = _cancellationTokenSource.Token;
 
                 Task.Run(
                     async () =>
@@ -160,12 +160,12 @@ namespace WebApplications.Utilities.Service
                             {
                                 try
                                 {
-                                    await
-                                        connection.Send(
+                                    using (CancellationTokenSource cts = Constants.FireAndForgetTokenSource)
+                                        await connection.Send(
                                             new CommandCancelResponse(
                                                 _cancelRequest != null ? _cancelRequest.ID : Guid.Empty,
                                                 ID),
-                                            Constants.FireAndForgetToken)
+                                            cts.Token)
                                             .ConfigureAwait(false);
                                 }
                                 catch (OperationCanceledException) { }
@@ -208,9 +208,12 @@ namespace WebApplications.Utilities.Service
             {
                 Contract.Requires<RequiredContractException>(request != null, "Parameter_Null");
                 _cancelRequest = request;
-                CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+                ICancelableTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
                 if (cts != null)
+                {
                     cts.Cancel();
+                    cts.Dispose();
+                }
             }
 
             /// <summary>
@@ -219,9 +222,12 @@ namespace WebApplications.Utilities.Service
             /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
             protected override void Dispose(bool disposing)
             {
-                CancellationTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
+                ICancelableTokenSource cts = Interlocked.Exchange(ref _cancellationTokenSource, null);
                 if (cts != null)
+                {
                     cts.Cancel();
+                    cts.Dispose();
+                }
 
                 NamedPipeConnection connection = Interlocked.Exchange(ref _connection, null);
                 if (connection != null)

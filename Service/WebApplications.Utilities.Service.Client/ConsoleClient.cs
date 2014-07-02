@@ -36,6 +36,7 @@ using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Service.Common;
 using WebApplications.Utilities.Service.Common.Protocol;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service.Client
 {
@@ -186,14 +187,16 @@ namespace WebApplications.Utilities.Service.Client
 
                     try
                     {
-                        client =
-                            await
-                                NamedPipeClient.Connect(
-                                    description,
-                                    service,
-                                    OnReceive,
-                                    token.WithTimeout(10000))
-                                    .ConfigureAwait(false);
+                        // TODO Remove constant timeout
+                        using (ITokenSource tokenSource = token.WithTimeout(10000))
+                            client =
+                                await
+                                    NamedPipeClient.Connect(
+                                        description,
+                                        service,
+                                        OnReceive,
+                                        tokenSource.Token)
+                                        .ConfigureAwait(false);
                     }
                     catch (TaskCanceledException)
                     {

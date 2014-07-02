@@ -42,6 +42,7 @@ using WebApplications.Utilities.IO;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Service.Common;
 using WebApplications.Utilities.Service.Common.Protocol;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service.Client
 {
@@ -136,13 +137,16 @@ namespace WebApplications.Utilities.Service.Client
             Contract.Requires<RequiredContractException>(server != null, "Parameter_Null");
             Contract.Requires<RequiredContractException>(onReceive != null, "Parameter_Null");
             _server = server;
+
             _cancellationTokenSource = new CancellationTokenSource();
             CancellationToken disposeToken = _cancellationTokenSource.Token;
+
             _clientTask = Task.Run(
                 async () =>
                 {
                     try
                     {
+                        using (ITokenSource tokenSource = token.CreateLinked(disposeToken))
                         using (
                             OverlappingPipeClientStream stream = new OverlappingPipeClientStream(
                                 _server.Host,
@@ -151,7 +155,7 @@ namespace WebApplications.Utilities.Service.Client
                         {
                             _state = PipeState.Open;
 
-                            token = token.CreateLinked(disposeToken);
+                            token = tokenSource.Token;
 
                             // We need to support cancelling the connect.
                             await stream.Connect(token).ConfigureAwait(false);
@@ -255,21 +259,31 @@ namespace WebApplications.Utilities.Service.Client
                             // If we're still connected, and we haven't received a disconnect response, try to send a disconnect request.
                             if (stream.IsConnected &&
                                 disconnectResponse == null)
+                            {
+                                CancellationTokenSource cts = token.IsCancellationRequested
+                                    ? new CancellationTokenSource(500)
+                                    : null;
                                 try
                                 {
+                                    CancellationToken t = cts != null
+                                        ? cts.Token
+                                        : token;
+
                                     // Try to send disconnect request.
                                     // ReSharper disable once PossibleNullReferenceException
-                                    await Send(
-                                        new DisconnectRequest(),
-                                        token.IsCancellationRequested
-                                            ? new CancellationTokenSource(500).Token
-                                            : token)
-                                        .ToTask(token)
+                                    await Send(new DisconnectRequest(), t)
+                                        .ToTask(t)
                                         .ConfigureAwait(false);
                                 }
                                 catch (TaskCanceledException)
                                 {
                                 }
+                                finally
+                                {
+                                    if (cts != null)
+                                        cts.Dispose();
+                                }
+                            }
 
                             // Remove the stream.
                             _stream = null;
@@ -404,29 +418,33 @@ namespace WebApplications.Utilities.Service.Client
                 {
                     Contract.Assert(observer != null);
 
-                    token = token.CreateLinked(t);
-
-                    ConnectedCommand cr = new ConnectedCommand(request, observer);
-                    _commandRequests.TryAdd(request.ID, cr);
-                    try
+                    using (ITokenSource tokenSource = token.CreateLinked(t))
                     {
-                        await stream.WriteAsync(request.Serialize(), token).ConfigureAwait(false);
-                        await cr.CompletionTask.WithCancellation(token).ConfigureAwait(false);
-                    }
-                    // ReSharper disable once EmptyGeneralCatchClause
-                    catch { }
+                        token = tokenSource.Token;
 
-                    // If the command is not explicitly cancelled and is still running, and we've been cancelled
-                    // then ask the server to cancel.
-                    if (!cr.IsCancelled && !cr.IsCompleted && token.IsCancellationRequested)
+                        ConnectedCommand cr = new ConnectedCommand(request, observer);
+                        _commandRequests.TryAdd(request.ID, cr);
                         try
                         {
-                            await CancelCommand(request.ID, Constants.FireAndForgetToken).ConfigureAwait(false);
+                            await stream.WriteAsync(request.Serialize(), token).ConfigureAwait(false);
+                            await cr.CompletionTask.WithCancellation(token).ConfigureAwait(false);
                         }
-                        catch (TaskCanceledException) { }
+                            // ReSharper disable once EmptyGeneralCatchClause
+                        catch { }
 
-                    // Remove the command request.
-                    _commandRequests.TryRemove(request.ID, out cr);
+                        // If the command is not explicitly cancelled and is still running, and we've been cancelled
+                        // then ask the server to cancel.
+                        if (!cr.IsCancelled && !cr.IsCompleted && token.IsCancellationRequested)
+                            try
+                            {
+                                using (CancellationTokenSource cts = Constants.FireAndForgetTokenSource)
+                                    await CancelCommand(request.ID, cts.Token).ConfigureAwait(false);
+                            }
+                            catch (TaskCanceledException) { }
+
+                        // Remove the command request.
+                        _commandRequests.TryRemove(request.ID, out cr);
+                    }
                 });
         }
 

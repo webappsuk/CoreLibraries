@@ -37,6 +37,7 @@ using WebApplications.Utilities.Formatting;
 using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Service.Common;
 using WebApplications.Utilities.Service.Common.Control;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Service
 {
@@ -361,12 +362,15 @@ namespace WebApplications.Utilities.Service
             Console.Title = ServiceResources.ConsoleConnection_RunAsync_RunningTitle + service.ServiceName;
             ConsoleConnection connection = new ConsoleConnection(defaultLogFormat, defaultLoggingLevels, token);
             Guid id = service.Connect(connection);
-            // Combined cancellation tokens.
-            CancellationToken t = token.CreateLinked(connection._cancellationTokenSource.Token);
 
-            if (t.IsCancellationRequested) return;
+            // Combined cancellation tokens.
+            ITokenSource tSource = token.CreateLinked(connection._cancellationTokenSource.Token);
             try
             {
+                CancellationToken t = tSource.Token;
+
+                if (t.IsCancellationRequested) return;
+
                 if (!allowConsoleInteraction)
                 {
                     // Start the service
@@ -389,9 +393,8 @@ namespace WebApplications.Utilities.Service
                         if (!string.IsNullOrWhiteSpace(commandLine))
                         {
                             bool completed = false;
-                            CancellationTokenSource commandCancellationSource = new CancellationTokenSource();
-
-                            CancellationToken commandToken = t.CreateLinked(commandCancellationSource.Token);
+                            ICancelableTokenSource commandCancellationSource = t.ToCancelable();
+                            CancellationToken commandToken = commandCancellationSource.Token;
 
 #pragma warning disable 4014
                             service.ExecuteAsync(id, commandLine, ConsoleTextWriter.Default, commandToken)
@@ -449,6 +452,8 @@ namespace WebApplications.Utilities.Service
             }
             finally
             {
+                tSource.Dispose();
+
                 // ReSharper disable MethodSupportsCancellation
                 Log.Flush().Wait();
                 // ReSharper restore MethodSupportsCancellation
