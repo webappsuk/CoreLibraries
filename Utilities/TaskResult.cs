@@ -98,8 +98,6 @@ namespace WebApplications.Utilities
         {
             TaskCompletionSource<bool> cancelledSource = new TaskCompletionSource<bool>();
             cancelledSource.SetCanceled();
-            CancellationTokenSource cancelledTokenSource = new CancellationTokenSource();
-            cancelledTokenSource.Cancel();
 
             // ReSharper disable AssignNullToNotNullAttribute
             True = Task.FromResult(true);
@@ -111,7 +109,7 @@ namespace WebApplications.Utilities
             Cancelled = cancelledSource.Task;
             // ReSharper restore AssignNullToNotNullAttribute
 
-            CancelledToken = cancelledTokenSource.Token;
+            CancelledToken = new CancellationToken(true);
         }
     }
 

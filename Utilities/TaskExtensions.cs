@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -874,20 +873,24 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="token">The cancellation token.</param>
         /// <param name="timeout">The timeout.</param>
-        /// <returns>A cancellation token that will be cancelled after the timeout period has passed.</returns>
+        /// <returns>A token source that will be cancelled after the timeout period has passed.</returns>
         [PublicAPI]
-        public static CancellationToken WithTimeout(this CancellationToken token, TimeSpan timeout)
+        [NotNull]
+        public static ITokenSource WithTimeout(this CancellationToken token, TimeSpan timeout)
         {
             if (timeout == Timeout.InfiniteTimeSpan)
-                return token;
-            if (timeout <= TimeSpan.Zero)
-                return TaskResult.CancelledToken;
+                return new WrappedTokenSource(token);
+            if (timeout <= TimeSpan.Zero ||
+                token.IsCancellationRequested)
+                return TokenSource.Cancelled;
 
-            return token.CanBeCanceled
-                ? CancellationTokenSource.CreateLinkedTokenSource(
-                    token,
-                    new CancellationTokenSource(timeout).Token).Token
-                : new CancellationTokenSource(timeout).Token;
+            if (!token.CanBeCanceled)
+                return new TokenSource(timeout);
+
+            CancellationTokenSource ts = new CancellationTokenSource(timeout);
+            CancellationTokenSource ls = CancellationTokenSource.CreateLinkedTokenSource(token, ts.Token);
+
+            return new WrappedTokenSource(ls.Token, ts, ls);
         }
 
         /// <summary>
@@ -895,56 +898,76 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="token">The token.</param>
         /// <param name="milliseconds">The timeout in milliseconds.</param>
-        /// <returns>A cancellation token that will be cancelled after the timeout period has passed.</returns>
+        /// <returns>A token source that will be cancelled after the timeout period has passed.</returns>
         [PublicAPI]
-        public static CancellationToken WithTimeout(this CancellationToken token, int milliseconds)
+        [NotNull]
+        public static ITokenSource WithTimeout(this CancellationToken token, int milliseconds)
         {
             if (milliseconds == Timeout.Infinite)
-                return token;
-            if (milliseconds <= 0)
-                return TaskResult.CancelledToken;
+                return new WrappedTokenSource(token);
+            if (milliseconds <= 0 ||
+                token.IsCancellationRequested)
+                return TokenSource.Cancelled;
 
-            return token.CanBeCanceled
-                ? CancellationTokenSource.CreateLinkedTokenSource(
-                    token,
-                    new CancellationTokenSource(milliseconds).Token).Token
-                : new CancellationTokenSource(milliseconds).Token;
+            if (!token.CanBeCanceled)
+                return new TokenSource(milliseconds);
+
+            CancellationTokenSource ts = new CancellationTokenSource(milliseconds);
+            CancellationTokenSource ls = CancellationTokenSource.CreateLinkedTokenSource(token, ts.Token);
+
+            return new WrappedTokenSource(ls.Token, ts, ls);
         }
 
         /// <summary>
-        /// Creates a cancellation token that will be cancelled when either of the given tokens has been cancelled.
+        /// Creates a token source that will be cancelled when either of the given tokens has been cancelled.
         /// </summary>
         /// <param name="token1">The first token.</param>
         /// <param name="token2">The second token.</param>
-        /// <returns>A cancellation token that will be cancelled when either of the given tokens have been cancelled.</returns>
+        /// <returns>A token source that will be cancelled when either of the given tokens have been cancelled.</returns>
         [PublicAPI]
-        public static CancellationToken CreateLinked(this CancellationToken token1, CancellationToken token2)
+        [NotNull]
+        public static ITokenSource CreateLinked(this CancellationToken token1, CancellationToken token2)
         {
-            if (!token1.CanBeCanceled) return token2;
-            return token2.CanBeCanceled
-                ? CancellationTokenSource.CreateLinkedTokenSource(token1, token2).Token
-                : token1;
+            if (token1.IsCancellationRequested ||
+                token2.IsCancellationRequested)
+                return TokenSource.Cancelled;
+
+            if (!token1.CanBeCanceled) return new WrappedTokenSource(token2);
+            if (!token2.CanBeCanceled) return new WrappedTokenSource(token1);
+
+            return new WrappedTokenSource(CancellationTokenSource.CreateLinkedTokenSource(token1, token2));
         }
 
         /// <summary>
-        /// Creates a cancellation token that will be cancelled when any of the given tokens have been cancelled.
+        /// Creates a token source that will be cancelled when any of the given tokens have been cancelled.
         /// </summary>
         /// <param name="token">The first token.</param>
         /// <param name="tokens">The any remaining tokens.</param>
-        /// <returns>A cancellation token that will be cancelled when any of the given tokens have been cancelled.</returns>
+        /// <returns>A token source that will be cancelled when any of the given tokens have been cancelled.</returns>
         [PublicAPI]
-        public static CancellationToken CreateLinked(this CancellationToken token, [CanBeNull] params CancellationToken[] tokens)
+        [NotNull]
+        public static ITokenSource CreateLinked(
+            this CancellationToken token,
+            [CanBeNull] params CancellationToken[] tokens)
         {
             if (tokens == null ||
                 tokens.Length < 1)
-                return token;
+                return token.IsCancellationRequested
+                    ? TokenSource.Cancelled
+                    : (token.CanBeCanceled
+                        ? new WrappedTokenSource(token)
+                        : TokenSource.None);
 
             CancellationToken[] canBeCancelled = tokens.Union(new[] {token}).Where(t => t.CanBeCanceled).ToArray();
             if (canBeCancelled.Length < 1)
-                return default(CancellationToken);
-            return canBeCancelled.Length < 2 
-                ? canBeCancelled[0] 
-                : CancellationTokenSource.CreateLinkedTokenSource(canBeCancelled).Token;
+                return TokenSource.None;
+
+            if (canBeCancelled.Any(t => t.IsCancellationRequested))
+                return TokenSource.Cancelled;
+
+            return canBeCancelled.Length < 2
+                ? new WrappedTokenSource(canBeCancelled[0])
+                : new WrappedTokenSource(CancellationTokenSource.CreateLinkedTokenSource(canBeCancelled));
         }
 
         /// <summary>
