@@ -701,7 +701,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Run service from command line..
+        ///   Looks up a localized string similar to Run service from command line with interaction..
         /// </summary>
         internal static string ConsoleConnection_RunAsync_OptionRunCmd {
             get {
@@ -710,7 +710,7 @@ namespace WebApplications.Utilities.Service {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Run service from command line under new credentials..
+        ///   Looks up a localized string similar to Change current credentials..
         /// </summary>
         internal static string ConsoleConnection_RunAsync_OptionRunCmdNewCredentials {
             get {
@@ -733,6 +733,15 @@ namespace WebApplications.Utilities.Service {
         internal static string ConsoleConnection_RunAsync_OptionStart {
             get {
                 return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run service from command line with interaction and start the service..
+        /// </summary>
+        internal static string ConsoleConnection_RunAsync_OptionStartCmd {
+            get {
+                return ResourceManager.GetString("ConsoleConnection_RunAsync_OptionStartCmd", resourceCulture);
             }
         }
         

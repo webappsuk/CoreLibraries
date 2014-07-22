@@ -478,10 +478,10 @@
     <value>Continue service.</value>
   </data>
   <data name="ConsoleConnection_RunAsync_OptionRunCmd" xml:space="preserve">
-    <value>Run service from command line.</value>
+    <value>Run service from command line with interaction.</value>
   </data>
   <data name="ConsoleConnection_RunAsync_OptionRunCmdNewCredentials" xml:space="preserve">
-    <value>Run service from command line under new credentials.</value>
+    <value>Change current credentials.</value>
   </data>
   <data name="ConsoleConnection_RunAsync_OptionRunNoInteraction" xml:space="preserve">
     <value>Run service without interaction.</value>
@@ -586,5 +586,8 @@ Type 'perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}' for more details of a sp
   <data name="ConsoleConnection_ErrorFormat" xml:space="preserve">
     <value>{!fgcolor:Red}Error: {Message}
 {!fgcolor}</value>
+  </data>
+  <data name="ConsoleConnection_RunAsync_OptionStartCmd" xml:space="preserve">
+    <value>Run service from command line with interaction and start the service.</value>
   </data>
 </root>

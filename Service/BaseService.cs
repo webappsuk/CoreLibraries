@@ -265,28 +265,27 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
-        /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
-        /// <param name="allowConsole">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="runMode">The run mode.</param>
         [PublicAPI]
-        public void Run(bool promptInstall = true, bool allowConsole = true)
+        public void Run(RunMode runMode = RunMode.Default)
         {
             // ReSharper disable MethodSupportsCancellation
-            RunAsync(promptInstall, allowConsole).Wait();
+            RunAsync(runMode).Wait();
             // ReSharper restore MethodSupportsCancellation
         }
 
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
-        /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
-        /// <param name="allowConsoleInteraction">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="runMode">The run mode.</param>
         /// <param name="token">The token.</param>
-        /// <returns>An awaitable task.</returns>
+        /// <returns>
+        /// An awaitable task.
+        /// </returns>
         [NotNull]
         [PublicAPI]
         public abstract Task RunAsync(
-            bool promptInstall = true,
-            bool allowConsoleInteraction = true,
+            RunMode runMode = RunMode.Default,
             CancellationToken token = default(CancellationToken));
 
         /// <summary>
@@ -671,15 +670,13 @@ namespace WebApplications.Utilities.Service
         /// <summary>
         /// Runs the service, either as a service or as a console application.
         /// </summary>
-        /// <param name="promptInstall">if set to <see langword="true" /> provides installation options.</param>
-        /// <param name="allowConsoleInteraction">if set to <see langword="true" /> allows console interaction whilst running in a console window.</param>
+        /// <param name="runMode">The run mode.</param>
         /// <param name="token">The token.</param>
         /// <returns>
         /// An awaitable task.
         /// </returns>
         public override Task RunAsync(
-            bool promptInstall = true,
-            bool allowConsoleInteraction = true,
+            RunMode runMode = RunMode.Default,
             CancellationToken token = default(CancellationToken))
         {
             if (!IsAdministrator)
@@ -699,7 +696,7 @@ namespace WebApplications.Utilities.Service
                 return ConsoleHelper.IsConsole
                     ? (Task) Task.WhenAny(
                         _lifeTimeTaskCompletionSource.Task,
-                        ConsoleConnection.RunAsync(this, promptInstall, allowConsoleInteraction, token: token))
+                        ConsoleConnection.RunAsync(this, runMode, token: token))
                     : _lifeTimeTaskCompletionSource.Task;
                 // ReSharper restore AssignNullToNotNullAttribute
             }
@@ -801,6 +798,7 @@ namespace WebApplications.Utilities.Service
             catch (Exception e)
             {
                 Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnStart_FatalError);
+                _state = ServiceControllerStatus.Stopped;
                 throw;
             }
         }
@@ -856,7 +854,6 @@ namespace WebApplications.Utilities.Service
                             _runEventWaitHandle.Dispose();
                             _runEventWaitHandle = null;
                         }
-                        _state = ServiceControllerStatus.Stopped;
                     }
                     Log.Add(
                         LoggingLevel.Information,
@@ -870,6 +867,11 @@ namespace WebApplications.Utilities.Service
                 Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnStop_FatalError);
                 throw;
             }
+            finally
+            {
+                // We enter stopped state even if we error.
+                _state = ServiceControllerStatus.Stopped;
+            }
         }
 
         /// <summary>
@@ -877,6 +879,8 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnPause()
         {
+            // TODO Review failure functionality based on what happens with real service manager!
+            ServiceControllerStatus lastState = _state;
             if (IsService)
                 RequestAdditionalTime(5000);
             try
@@ -909,6 +913,7 @@ namespace WebApplications.Utilities.Service
             catch (Exception e)
             {
                 Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnPause_FatalError);
+                _state = lastState;
                 throw;
             }
         }
@@ -918,6 +923,8 @@ namespace WebApplications.Utilities.Service
         /// </summary>
         protected override sealed void OnContinue()
         {
+            // TODO Review failure functionality based on what happens with real service manager!
+            ServiceControllerStatus lastState = _state;
             if (IsService)
                 RequestAdditionalTime(5000);
             try
@@ -952,6 +959,7 @@ namespace WebApplications.Utilities.Service
             }
             catch (Exception e)
             {
+                _state = lastState;
                 Log.Add(e, LoggingLevel.Error, ServiceResources.Err_BaseService_OnContinue_FatalError);
                 throw;
             }
@@ -995,7 +1003,6 @@ namespace WebApplications.Utilities.Service
                     TaskCompletionSource<bool> ltt = Interlocked.Exchange(ref _lifeTimeTaskCompletionSource, null);
                     if (ltt != null)
                         ltt.TrySetResult(true);
-                    _state = ServiceControllerStatus.Stopped;
 
                     Log.Add(
                         LoggingLevel.Information,
@@ -1010,6 +1017,7 @@ namespace WebApplications.Utilities.Service
             }
             finally
             {
+                _state = ServiceControllerStatus.Stopped;
                 // ReSharper disable MethodSupportsCancellation
                 Log.Flush().Wait();
                 // ReSharper restore MethodSupportsCancellation
