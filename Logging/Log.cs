@@ -1473,6 +1473,7 @@ namespace WebApplications.Utilities.Logging
         /// </para></remarks>
         [PublicAPI]
         [NotNull]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static string ProtobufSchema
         {
             get
@@ -1501,6 +1502,19 @@ namespace WebApplications.Utilities.Logging
         public CombGuid Guid
         {
             get { return _guid; }
+        }
+
+        /// <summary>
+        /// Gets the context.
+        /// </summary>
+        /// <value>
+        /// The context.
+        /// </value>
+        [CanBeNull]
+        [PublicAPI]
+        public LogContext Context
+        {
+            get { return _context; }
         }
 
         /// <summary>
@@ -2086,6 +2100,17 @@ namespace WebApplications.Utilities.Logging
             if (Level.IsValid(ValidLevels))
                 _buffer.Add(this);
             return this;
+        }
+
+        /// <summary>
+        /// Throws a new <see cref="LoggingException"/> passing this log. 
+        /// </summary>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException"></exception>
+        [PublicAPI]
+        [ContractAnnotation("=>halt")]
+        public void Throw()
+        {
+            throw new LoggingException(this);
         }
 
         /// <summary>

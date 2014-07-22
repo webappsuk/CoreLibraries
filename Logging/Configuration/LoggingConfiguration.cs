@@ -27,6 +27,7 @@
 
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 using System.Threading;
@@ -79,6 +80,7 @@ namespace WebApplications.Utilities.Logging.Configuration
         /// <value>The default name.</value>
         [NotNull]
         [PublicAPI]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static string DefaultName
         {
             // ReSharper disable once AssignNullToNotNullAttribute

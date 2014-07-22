@@ -434,6 +434,24 @@ namespace WebApplications.Utilities.Logging.Test
             Assert.AreEqual(1, ec.Count, "The resource lambda was executed when the logging level was too low.");
         }
 
+        [TestMethod]
+        public void TestThrow()
+        {
+            Log log = new Log(() => Resources.TestString, "p0");
+
+            Log thrownLog = null;
+            try
+            {
+                log.Throw();
+            }
+            catch (LoggingException le)
+            {
+                thrownLog = le.Log;
+            }
+
+            Assert.AreSame(log, thrownLog);
+        }
+
         [TestCleanup]
         public void Cleanup()
         {

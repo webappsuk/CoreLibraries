@@ -60,6 +60,19 @@ namespace WebApplications.Utilities.Logging
 
         #region Constructors
         /// <summary>
+        /// Initializes a new instance of the <see cref="LoggingException"/> class.
+        /// </summary>
+        /// <param name="log">The log.</param>
+        public LoggingException([NotNull] Log log)
+            : base(log.Message)
+        {
+            Log = log.Add();
+
+            // Finally increment performance counter.
+            Log.PerfCounterException.Increment();
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LoggingException" /> class.
         /// </summary>
         /// <param name="format">The exception format.</param>

@@ -485,6 +485,7 @@ namespace WebApplications.Utilities.Logging
         /// <value>The entry assembly.</value>
         [NotNull]
         [PublicAPI]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static Assembly EntryAssembly
         {
             get
