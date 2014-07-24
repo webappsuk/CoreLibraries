@@ -1,13 +1,4 @@
-﻿
-
-
-
-
-
-
-
-
- 
+﻿ 
  
 #region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
@@ -44,14 +35,13 @@ using JetBrains.Annotations;
 namespace WebApplications.Utilities
 {
 
-
 	#region Stack with 2 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2}"/>.
     /// </summary>
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2> : Stack<Tuple<T1, T2>>, IEnumerable<T1, T2>
     {
         /// <summary>
@@ -59,6 +49,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2)
@@ -71,6 +62,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2)
@@ -86,6 +78,7 @@ namespace WebApplications.Utilities
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2)
@@ -98,7 +91,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 3 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3}"/>.
@@ -106,7 +98,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T1">The type of item 1.</typeparam>
     /// <typeparam name="T2">The type of item 2.</typeparam>
     /// <typeparam name="T3">The type of item 3.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3> : Stack<Tuple<T1, T2, T3>>, IEnumerable<T1, T2, T3>
     {
         /// <summary>
@@ -115,6 +107,7 @@ namespace WebApplications.Utilities
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -129,6 +122,7 @@ namespace WebApplications.Utilities
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -147,6 +141,7 @@ namespace WebApplications.Utilities
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -161,7 +156,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 4 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4}"/>.
@@ -170,7 +164,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T2">The type of item 2.</typeparam>
     /// <typeparam name="T3">The type of item 3.</typeparam>
     /// <typeparam name="T4">The type of item 4.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4> : Stack<Tuple<T1, T2, T3, T4>>, IEnumerable<T1, T2, T3, T4>
     {
         /// <summary>
@@ -180,6 +174,7 @@ namespace WebApplications.Utilities
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -196,6 +191,7 @@ namespace WebApplications.Utilities
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -217,6 +213,7 @@ namespace WebApplications.Utilities
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -233,7 +230,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 5 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5}"/>.
@@ -243,7 +239,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T3">The type of item 3.</typeparam>
     /// <typeparam name="T4">The type of item 4.</typeparam>
     /// <typeparam name="T5">The type of item 5.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5> : Stack<Tuple<T1, T2, T3, T4, T5>>, IEnumerable<T1, T2, T3, T4, T5>
     {
         /// <summary>
@@ -254,6 +250,7 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -272,6 +269,7 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -296,6 +294,7 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -314,7 +313,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 6 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6}"/>.
@@ -325,7 +323,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T4">The type of item 4.</typeparam>
     /// <typeparam name="T5">The type of item 5.</typeparam>
     /// <typeparam name="T6">The type of item 6.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6> : Stack<Tuple<T1, T2, T3, T4, T5, T6>>, IEnumerable<T1, T2, T3, T4, T5, T6>
     {
         /// <summary>
@@ -337,6 +335,7 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -357,6 +356,7 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -384,6 +384,7 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -404,7 +405,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 7 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7}"/>.
@@ -416,7 +416,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T5">The type of item 5.</typeparam>
     /// <typeparam name="T6">The type of item 6.</typeparam>
     /// <typeparam name="T7">The type of item 7.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7>
     {
         /// <summary>
@@ -429,6 +429,7 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -451,6 +452,7 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -481,6 +483,7 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -503,7 +506,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 8 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
@@ -516,7 +518,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T6">The type of item 6.</typeparam>
     /// <typeparam name="T7">The type of item 7.</typeparam>
     /// <typeparam name="T8">The type of item 8.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>
     {
         /// <summary>
@@ -530,6 +532,7 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -554,6 +557,7 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -587,6 +591,7 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -611,7 +616,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 9 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
@@ -625,7 +629,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T7">The type of item 7.</typeparam>
     /// <typeparam name="T8">The type of item 8.</typeparam>
     /// <typeparam name="T9">The type of item 9.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>
     {
         /// <summary>
@@ -640,6 +644,7 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -666,6 +671,7 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -702,6 +708,7 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -728,7 +735,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 10 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
@@ -743,7 +749,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T8">The type of item 8.</typeparam>
     /// <typeparam name="T9">The type of item 9.</typeparam>
     /// <typeparam name="T10">The type of item 10.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
     {
         /// <summary>
@@ -759,6 +765,7 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -787,6 +794,7 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -826,6 +834,7 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -854,7 +863,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 11 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
@@ -870,7 +878,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T9">The type of item 9.</typeparam>
     /// <typeparam name="T10">The type of item 10.</typeparam>
     /// <typeparam name="T11">The type of item 11.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
     {
         /// <summary>
@@ -887,6 +895,7 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -917,6 +926,7 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -959,6 +969,7 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -989,7 +1000,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 12 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
@@ -1006,7 +1016,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T10">The type of item 10.</typeparam>
     /// <typeparam name="T11">The type of item 11.</typeparam>
     /// <typeparam name="T12">The type of item 12.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
     {
         /// <summary>
@@ -1024,6 +1034,7 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1056,6 +1067,7 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1101,6 +1113,7 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1133,7 +1146,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 13 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
@@ -1151,7 +1163,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T11">The type of item 11.</typeparam>
     /// <typeparam name="T12">The type of item 12.</typeparam>
     /// <typeparam name="T13">The type of item 13.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
     {
         /// <summary>
@@ -1170,6 +1182,7 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1204,6 +1217,7 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1252,6 +1266,7 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1286,7 +1301,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 14 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
@@ -1305,7 +1319,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T12">The type of item 12.</typeparam>
     /// <typeparam name="T13">The type of item 13.</typeparam>
     /// <typeparam name="T14">The type of item 14.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
     {
         /// <summary>
@@ -1325,6 +1339,7 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1361,6 +1376,7 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1412,6 +1428,7 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1448,7 +1465,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 15 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
@@ -1468,7 +1484,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T13">The type of item 13.</typeparam>
     /// <typeparam name="T14">The type of item 14.</typeparam>
     /// <typeparam name="T15">The type of item 15.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
     {
         /// <summary>
@@ -1489,6 +1505,7 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1527,6 +1544,7 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1581,6 +1599,7 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1619,7 +1638,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 16 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
@@ -1640,7 +1658,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T14">The type of item 14.</typeparam>
     /// <typeparam name="T15">The type of item 15.</typeparam>
     /// <typeparam name="T16">The type of item 16.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
     {
         /// <summary>
@@ -1662,6 +1680,7 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1702,6 +1721,7 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1759,6 +1779,7 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1799,7 +1820,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 17 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
@@ -1821,7 +1841,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T15">The type of item 15.</typeparam>
     /// <typeparam name="T16">The type of item 16.</typeparam>
     /// <typeparam name="T17">The type of item 17.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>
     {
         /// <summary>
@@ -1844,6 +1864,7 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -1886,6 +1907,7 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -1946,6 +1968,7 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -1988,7 +2011,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 18 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
@@ -2011,7 +2033,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T16">The type of item 16.</typeparam>
     /// <typeparam name="T17">The type of item 17.</typeparam>
     /// <typeparam name="T18">The type of item 18.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>
     {
         /// <summary>
@@ -2035,6 +2057,7 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -2079,6 +2102,7 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -2142,6 +2166,7 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -2186,7 +2211,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 19 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
@@ -2210,7 +2234,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T17">The type of item 17.</typeparam>
     /// <typeparam name="T18">The type of item 18.</typeparam>
     /// <typeparam name="T19">The type of item 19.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>
     {
         /// <summary>
@@ -2235,6 +2259,7 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -2281,6 +2306,7 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -2347,6 +2373,7 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -2393,7 +2420,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 20 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
@@ -2418,7 +2444,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T18">The type of item 18.</typeparam>
     /// <typeparam name="T19">The type of item 19.</typeparam>
     /// <typeparam name="T20">The type of item 20.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>
     {
         /// <summary>
@@ -2444,6 +2470,7 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -2492,6 +2519,7 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -2561,6 +2589,7 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -2609,7 +2638,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 21 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
@@ -2635,7 +2663,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T19">The type of item 19.</typeparam>
     /// <typeparam name="T20">The type of item 20.</typeparam>
     /// <typeparam name="T21">The type of item 21.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>
     {
         /// <summary>
@@ -2662,6 +2690,7 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -2712,6 +2741,7 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -2784,6 +2814,7 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -2834,7 +2865,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 22 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
@@ -2861,7 +2891,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T20">The type of item 20.</typeparam>
     /// <typeparam name="T21">The type of item 21.</typeparam>
     /// <typeparam name="T22">The type of item 22.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>
     {
         /// <summary>
@@ -2889,6 +2919,7 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -2941,6 +2972,7 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -3016,6 +3048,7 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -3068,7 +3101,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 23 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
@@ -3096,7 +3128,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T21">The type of item 21.</typeparam>
     /// <typeparam name="T22">The type of item 22.</typeparam>
     /// <typeparam name="T23">The type of item 23.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>
     {
         /// <summary>
@@ -3125,6 +3157,7 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -3179,6 +3212,7 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -3257,6 +3291,7 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -3311,7 +3346,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 24 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
@@ -3340,7 +3374,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T22">The type of item 22.</typeparam>
     /// <typeparam name="T23">The type of item 23.</typeparam>
     /// <typeparam name="T24">The type of item 24.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>
     {
         /// <summary>
@@ -3370,6 +3404,7 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -3426,6 +3461,7 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -3507,6 +3543,7 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -3563,7 +3600,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 25 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
@@ -3593,7 +3629,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T23">The type of item 23.</typeparam>
     /// <typeparam name="T24">The type of item 24.</typeparam>
     /// <typeparam name="T25">The type of item 25.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>
     {
         /// <summary>
@@ -3624,6 +3660,7 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -3682,6 +3719,7 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -3766,6 +3804,7 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -3824,7 +3863,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 26 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
@@ -3855,7 +3893,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T24">The type of item 24.</typeparam>
     /// <typeparam name="T25">The type of item 25.</typeparam>
     /// <typeparam name="T26">The type of item 26.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>
     {
         /// <summary>
@@ -3887,6 +3925,7 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -3947,6 +3986,7 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -4034,6 +4074,7 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -4094,7 +4135,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 27 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
@@ -4126,7 +4166,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T25">The type of item 25.</typeparam>
     /// <typeparam name="T26">The type of item 26.</typeparam>
     /// <typeparam name="T27">The type of item 27.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>
     {
         /// <summary>
@@ -4159,6 +4199,7 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -4221,6 +4262,7 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -4311,6 +4353,7 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -4373,7 +4416,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 28 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
@@ -4406,7 +4448,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T26">The type of item 26.</typeparam>
     /// <typeparam name="T27">The type of item 27.</typeparam>
     /// <typeparam name="T28">The type of item 28.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>
     {
         /// <summary>
@@ -4440,6 +4482,7 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -4504,6 +4547,7 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -4597,6 +4641,7 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -4661,7 +4706,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 29 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
@@ -4695,7 +4739,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T27">The type of item 27.</typeparam>
     /// <typeparam name="T28">The type of item 28.</typeparam>
     /// <typeparam name="T29">The type of item 29.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>
     {
         /// <summary>
@@ -4730,6 +4774,7 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -4796,6 +4841,7 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -4892,6 +4938,7 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -4958,7 +5005,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 30 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
@@ -4993,7 +5039,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T28">The type of item 28.</typeparam>
     /// <typeparam name="T29">The type of item 29.</typeparam>
     /// <typeparam name="T30">The type of item 30.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>
     {
         /// <summary>
@@ -5029,6 +5075,7 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -5097,6 +5144,7 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -5196,6 +5244,7 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -5264,7 +5313,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 31 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
@@ -5300,7 +5348,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T29">The type of item 29.</typeparam>
     /// <typeparam name="T30">The type of item 30.</typeparam>
     /// <typeparam name="T31">The type of item 31.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>
     {
         /// <summary>
@@ -5337,6 +5385,7 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -5407,6 +5456,7 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -5509,6 +5559,7 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -5579,7 +5630,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 32 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
@@ -5616,7 +5666,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T30">The type of item 30.</typeparam>
     /// <typeparam name="T31">The type of item 31.</typeparam>
     /// <typeparam name="T32">The type of item 32.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>
     {
         /// <summary>
@@ -5654,6 +5704,7 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -5726,6 +5777,7 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -5831,6 +5883,7 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -5903,7 +5956,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 33 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
@@ -5941,7 +5993,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T31">The type of item 31.</typeparam>
     /// <typeparam name="T32">The type of item 32.</typeparam>
     /// <typeparam name="T33">The type of item 33.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>
     {
         /// <summary>
@@ -5980,6 +6032,7 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -6054,6 +6107,7 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -6162,6 +6216,7 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -6236,7 +6291,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 34 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
@@ -6275,7 +6329,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T32">The type of item 32.</typeparam>
     /// <typeparam name="T33">The type of item 33.</typeparam>
     /// <typeparam name="T34">The type of item 34.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>
     {
         /// <summary>
@@ -6315,6 +6369,7 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -6391,6 +6446,7 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -6502,6 +6558,7 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -6578,7 +6635,6 @@ namespace WebApplications.Utilities
     }
 	#endregion
 
-
 	#region Stack with 35 items.
     /// <summary>
     /// A stack of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
@@ -6618,7 +6674,7 @@ namespace WebApplications.Utilities
     /// <typeparam name="T33">The type of item 33.</typeparam>
     /// <typeparam name="T34">The type of item 34.</typeparam>
     /// <typeparam name="T35">The type of item 35.</typeparam>
-    [UsedImplicitly]
+    [PublicAPI]
     public class Stack<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> : Stack<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>
     {
         /// <summary>
@@ -6659,6 +6715,7 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
+        [PublicAPI]
         public void Push(
             T1 item1,
             T2 item2,
@@ -6737,6 +6794,7 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
+        [PublicAPI]
         public void Pop(
             out T1 item1,
             out T2 item2,
@@ -6851,6 +6909,7 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
+        [PublicAPI]
         public void Peek(
             out T1 item1,
             out T2 item2,
@@ -6928,6 +6987,5 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
 }
  

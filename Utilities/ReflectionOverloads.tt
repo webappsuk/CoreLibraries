@@ -64,7 +64,7 @@ for (int i = 0; i < maxParameters; i++) {
         ///   A functional equivalent of a method base.
         /// </returns>
 		[NotNull]
-		[UsedImplicitly]
+		[PublicAPI]
         public static Func<#= typeParams #>TResult> Func<#= typeParams #>TResult>(
             this MethodBase methodBase,
             bool checkParameterAssignability =
@@ -88,7 +88,7 @@ for (int i = 0; i < maxParameters; i++) {
         ///   A functional equivalent of a type constructor.
         /// </returns>
 		[NotNull]
-		[UsedImplicitly]
+		[PublicAPI]
         public static Func<#= typeParams #>TResult> ConstructorFunc<#= typeParams #>TResult>(
             this Type type,
             bool checkParameterAssignability =
@@ -111,7 +111,7 @@ for (int i = 0; i < maxParameters; i++) {
         ///   A functional equivalent of a method info.
         /// </returns>
         [NotNull]
-        [UsedImplicitly]
+        [PublicAPI]
         public static Action<#= aTypeParams #> Action<#= aTypeParams #>(
             this MethodInfo methodInfo,
             bool checkParameterAssignability =

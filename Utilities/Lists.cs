@@ -1,13 +1,4 @@
-﻿
-
-
-
-
-
-
-
-
- 
+﻿ 
  
 #region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
@@ -43,9 +34,7 @@ using JetBrains.Annotations;
 
 namespace WebApplications.Utilities
 {
-
-
-	#region List with 2 items.
+    #region List with 2 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2}"/>.
     /// </summary>
@@ -55,10 +44,27 @@ namespace WebApplications.Utilities
     public class List<T1, T2> : List<Tuple<T1, T2>>, IEnumerable<T1, T2>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2)
@@ -67,11 +73,12 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2)
@@ -83,9 +90,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 3 items.
+    #region List with 3 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3}"/>.
     /// </summary>
@@ -96,11 +101,28 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3> : List<Tuple<T1, T2, T3>>, IEnumerable<T1, T2, T3>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -110,12 +132,13 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -129,9 +152,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 4 items.
+    #region List with 4 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4}"/>.
     /// </summary>
@@ -143,12 +164,29 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4> : List<Tuple<T1, T2, T3, T4>>, IEnumerable<T1, T2, T3, T4>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -159,13 +197,14 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -181,9 +220,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 5 items.
+    #region List with 5 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5}"/>.
     /// </summary>
@@ -196,13 +233,30 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5> : List<Tuple<T1, T2, T3, T4, T5>>, IEnumerable<T1, T2, T3, T4, T5>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -214,7 +268,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -222,6 +276,7 @@ namespace WebApplications.Utilities
         /// <param name="item3">Item 3 of the tuple.</param>
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -239,9 +294,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 6 items.
+    #region List with 6 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6}"/>.
     /// </summary>
@@ -255,7 +308,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6> : List<Tuple<T1, T2, T3, T4, T5, T6>>, IEnumerable<T1, T2, T3, T4, T5, T6>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -263,6 +332,7 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -275,7 +345,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -284,6 +354,7 @@ namespace WebApplications.Utilities
         /// <param name="item4">Item 4 of the tuple.</param>
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -303,9 +374,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 7 items.
+    #region List with 7 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7}"/>.
     /// </summary>
@@ -320,7 +389,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7> : List<Tuple<T1, T2, T3, T4, T5, T6, T7>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -329,6 +414,7 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -342,7 +428,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -352,6 +438,7 @@ namespace WebApplications.Utilities
         /// <param name="item5">Item 5 of the tuple.</param>
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -373,9 +460,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 8 items.
+    #region List with 8 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
     /// </summary>
@@ -391,7 +476,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -401,6 +502,7 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -415,7 +517,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -426,6 +528,7 @@ namespace WebApplications.Utilities
         /// <param name="item6">Item 6 of the tuple.</param>
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -449,9 +552,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 9 items.
+    #region List with 9 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
     /// </summary>
@@ -468,7 +569,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -479,6 +596,7 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -494,7 +612,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -506,6 +624,7 @@ namespace WebApplications.Utilities
         /// <param name="item7">Item 7 of the tuple.</param>
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -531,9 +650,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 10 items.
+    #region List with 10 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
     /// </summary>
@@ -551,7 +668,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -563,6 +696,7 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -579,7 +713,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -592,6 +726,7 @@ namespace WebApplications.Utilities
         /// <param name="item8">Item 8 of the tuple.</param>
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -619,9 +754,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 11 items.
+    #region List with 11 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
     /// </summary>
@@ -640,7 +773,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -653,6 +802,7 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -670,7 +820,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -684,6 +834,7 @@ namespace WebApplications.Utilities
         /// <param name="item9">Item 9 of the tuple.</param>
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -713,9 +864,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 12 items.
+    #region List with 12 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
     /// </summary>
@@ -735,7 +884,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -749,6 +914,7 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -767,7 +933,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -782,6 +948,7 @@ namespace WebApplications.Utilities
         /// <param name="item10">Item 10 of the tuple.</param>
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -813,9 +980,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 13 items.
+    #region List with 13 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
     /// </summary>
@@ -836,7 +1001,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -851,6 +1032,7 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -870,7 +1052,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -886,6 +1068,7 @@ namespace WebApplications.Utilities
         /// <param name="item11">Item 11 of the tuple.</param>
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -919,9 +1102,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 14 items.
+    #region List with 14 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
     /// </summary>
@@ -943,7 +1124,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -959,6 +1156,7 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -979,7 +1177,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -996,6 +1194,7 @@ namespace WebApplications.Utilities
         /// <param name="item12">Item 12 of the tuple.</param>
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -1031,9 +1230,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 15 items.
+    #region List with 15 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
     /// </summary>
@@ -1056,7 +1253,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -1073,6 +1286,7 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -1094,7 +1308,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -1112,6 +1326,7 @@ namespace WebApplications.Utilities
         /// <param name="item13">Item 13 of the tuple.</param>
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -1149,9 +1364,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 16 items.
+    #region List with 16 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
     /// </summary>
@@ -1175,7 +1388,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -1193,6 +1422,7 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -1215,7 +1445,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -1234,6 +1464,7 @@ namespace WebApplications.Utilities
         /// <param name="item14">Item 14 of the tuple.</param>
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -1273,9 +1504,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 17 items.
+    #region List with 17 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
     /// </summary>
@@ -1300,7 +1529,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -1319,6 +1564,7 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -1342,7 +1588,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -1362,6 +1608,7 @@ namespace WebApplications.Utilities
         /// <param name="item15">Item 15 of the tuple.</param>
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -1403,9 +1650,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 18 items.
+    #region List with 18 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
     /// </summary>
@@ -1431,7 +1676,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -1451,6 +1712,7 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -1475,7 +1737,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -1496,6 +1758,7 @@ namespace WebApplications.Utilities
         /// <param name="item16">Item 16 of the tuple.</param>
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -1539,9 +1802,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 19 items.
+    #region List with 19 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
     /// </summary>
@@ -1568,7 +1829,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -1589,6 +1866,7 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -1614,7 +1892,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -1636,6 +1914,7 @@ namespace WebApplications.Utilities
         /// <param name="item17">Item 17 of the tuple.</param>
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -1681,9 +1960,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 20 items.
+    #region List with 20 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
     /// </summary>
@@ -1711,7 +1988,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -1733,6 +2026,7 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -1759,7 +2053,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -1782,6 +2076,7 @@ namespace WebApplications.Utilities
         /// <param name="item18">Item 18 of the tuple.</param>
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -1829,9 +2124,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 21 items.
+    #region List with 21 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
     /// </summary>
@@ -1860,7 +2153,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -1883,6 +2192,7 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -1910,7 +2220,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -1934,6 +2244,7 @@ namespace WebApplications.Utilities
         /// <param name="item19">Item 19 of the tuple.</param>
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -1983,9 +2294,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 22 items.
+    #region List with 22 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
     /// </summary>
@@ -2015,7 +2324,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -2039,6 +2364,7 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -2067,7 +2393,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -2092,6 +2418,7 @@ namespace WebApplications.Utilities
         /// <param name="item20">Item 20 of the tuple.</param>
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -2143,9 +2470,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 23 items.
+    #region List with 23 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
     /// </summary>
@@ -2176,7 +2501,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -2201,6 +2542,7 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -2230,7 +2572,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -2256,6 +2598,7 @@ namespace WebApplications.Utilities
         /// <param name="item21">Item 21 of the tuple.</param>
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -2309,9 +2652,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 24 items.
+    #region List with 24 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
     /// </summary>
@@ -2343,7 +2684,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -2369,6 +2726,7 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -2399,7 +2757,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -2426,6 +2784,7 @@ namespace WebApplications.Utilities
         /// <param name="item22">Item 22 of the tuple.</param>
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -2481,9 +2840,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 25 items.
+    #region List with 25 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
     /// </summary>
@@ -2516,7 +2873,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -2543,6 +2916,7 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -2574,7 +2948,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -2602,6 +2976,7 @@ namespace WebApplications.Utilities
         /// <param name="item23">Item 23 of the tuple.</param>
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -2659,9 +3034,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 26 items.
+    #region List with 26 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
     /// </summary>
@@ -2695,7 +3068,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -2723,6 +3112,7 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -2755,7 +3145,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -2784,6 +3174,7 @@ namespace WebApplications.Utilities
         /// <param name="item24">Item 24 of the tuple.</param>
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -2843,9 +3234,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 27 items.
+    #region List with 27 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
     /// </summary>
@@ -2880,7 +3269,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -2909,6 +3314,7 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -2942,7 +3348,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -2972,6 +3378,7 @@ namespace WebApplications.Utilities
         /// <param name="item25">Item 25 of the tuple.</param>
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -3033,9 +3440,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 28 items.
+    #region List with 28 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
     /// </summary>
@@ -3071,7 +3476,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -3101,6 +3522,7 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -3135,7 +3557,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -3166,6 +3588,7 @@ namespace WebApplications.Utilities
         /// <param name="item26">Item 26 of the tuple.</param>
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -3229,9 +3652,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 29 items.
+    #region List with 29 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
     /// </summary>
@@ -3268,7 +3689,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29>>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -3299,6 +3736,7 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -3334,7 +3772,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -3366,6 +3804,7 @@ namespace WebApplications.Utilities
         /// <param name="item27">Item 27 of the tuple.</param>
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -3431,9 +3870,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 30 items.
+    #region List with 30 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
     /// </summary>
@@ -3471,7 +3908,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30>>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -3503,6 +3956,7 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -3539,7 +3993,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -3572,6 +4026,7 @@ namespace WebApplications.Utilities
         /// <param name="item28">Item 28 of the tuple.</param>
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -3639,9 +4094,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 31 items.
+    #region List with 31 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
     /// </summary>
@@ -3680,7 +4133,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31>>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -3713,6 +4182,7 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -3750,7 +4220,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -3784,6 +4254,7 @@ namespace WebApplications.Utilities
         /// <param name="item29">Item 29 of the tuple.</param>
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -3853,9 +4324,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 32 items.
+    #region List with 32 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
     /// </summary>
@@ -3895,7 +4364,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32>>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -3929,6 +4414,7 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -3967,7 +4453,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -4002,6 +4488,7 @@ namespace WebApplications.Utilities
         /// <param name="item30">Item 30 of the tuple.</param>
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -4073,9 +4560,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 33 items.
+    #region List with 33 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
     /// </summary>
@@ -4116,7 +4601,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33>>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -4151,6 +4652,7 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -4190,7 +4692,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -4226,6 +4728,7 @@ namespace WebApplications.Utilities
         /// <param name="item31">Item 31 of the tuple.</param>
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -4299,9 +4802,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 34 items.
+    #region List with 34 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
     /// </summary>
@@ -4343,7 +4844,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34>>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -4379,6 +4896,7 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -4419,7 +4937,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -4456,6 +4974,7 @@ namespace WebApplications.Utilities
         /// <param name="item32">Item 32 of the tuple.</param>
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -4531,9 +5050,7 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
-
-	#region List with 35 items.
+    #region List with 35 items.
     /// <summary>
     /// A List of <see cref="Tuple{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
     /// </summary>
@@ -4576,7 +5093,23 @@ namespace WebApplications.Utilities
     public class List<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> : List<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>>, IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}" />.
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<T1, T2, T3, T4, T5, T6, T7, Tuple<T8, T9, T10, T11, T12, T13, T14, Tuple<T15, T16, T17, T18, T19, T20, T21, Tuple<T22, T23, T24, T25, T26, T27, T28, Tuple<T29, T30, T31, T32, T33, T34, T35>>>>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}" />.
         /// </summary>
         /// <param name="item1">Item 1 of the tuple.</param>
         /// <param name="item2">Item 2 of the tuple.</param>
@@ -4613,6 +5146,7 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
+        [PublicAPI]
         public void Add(
             T1 item1,
             T2 item2,
@@ -4654,7 +5188,7 @@ namespace WebApplications.Utilities
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="item1">Item 1 of the tuple.</param>
@@ -4692,6 +5226,7 @@ namespace WebApplications.Utilities
         /// <param name="item33">Item 33 of the tuple.</param>
         /// <param name="item34">Item 34 of the tuple.</param>
         /// <param name="item35">Item 35 of the tuple.</param>
+        [PublicAPI]
         public void Get(int index, 
             out T1 item1,
             out T2 item2,
@@ -4769,6 +5304,5 @@ namespace WebApplications.Utilities
         }
     }
 	#endregion
-
 }
  

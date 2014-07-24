@@ -67,7 +67,7 @@ for (int i = 0; i < maxParameters; i++) { #>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         public static Task<TResult> FromAsync<#= typeParams #>TResult>(
             [NotNull]this Func<#= typeParams #>AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull]Func<IAsyncResult, TResult> endMethod,<#= paramsWithType #>
@@ -115,7 +115,7 @@ for (int i = 0; i < maxParameters; i++) { #>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <remarks></remarks>
-        [UsedImplicitly]
+        [PublicAPI]
         public static Task<TResult> FromAsync<TArg1, TResult>([NotNull]this Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
             [NotNull]Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,

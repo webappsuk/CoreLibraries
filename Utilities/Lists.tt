@@ -9,9 +9,8 @@
 <#@ import namespace="System.Collections" #>
 <#@ import namespace="System.Collections.Generic" #> 
 <#@ import namespace="System.Text" #> 
-<#
-int maxParameters = 35;
-#>#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
+<#int maxParameters = 35;#>
+#region © Copyright Web Applications (UK) Ltd, 2014.  All rights reserved.
 // Copyright (c) 2014, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -57,7 +56,7 @@ namespace WebApplications.Utilities
             StringBuilder assignments = new StringBuilder();
             for (int i = 1; i <= maxParameters; i++)
             {
-                typeParams.Append(String.Format("{0}T{1}", i > 1 ? ", " : String.Empty, i));
+                typeParams.AppendFormat("{0}T{1}", i > 1 ? ", " : String.Empty, i);
                 if (i > 1)
                 {
                     tuple.Append(", ");
@@ -125,8 +124,7 @@ namespace WebApplications.Utilities
                 String t = tuple.ToString() + tupleEnd.ToString();
 				if (i<2) continue;
 	#>
-
-	#region List with <#= i #> items.
+    #region List with <#= i #> items.
     /// <summary>
     /// A List of <see cref="Tuple{<#= typeParams #>}"/>.
     /// </summary><#= typeComments #>
@@ -134,17 +132,35 @@ namespace WebApplications.Utilities
     public class List<<#= typeParams #>> : List<Tuple<<#= t #>>>, IEnumerable<<#= typeParams #>>
     {
         /// <summary>
-        /// Inserts an object at the beginning of the <see cref="Queue{<#= typeParams #>}" />.
+        /// Initializes a new instance of the <see cref="List{<#= typeParams #>}"/> class that is empty and has the specified initial capacity.
+        /// </summary>
+        /// <param name="capacity">The number of elements that the new list can initially store.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is less than 0. </exception>
+        public List(int capacity = 4) : base(capacity)
+        {}        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="List{<#= typeParams #>}"/> class that contains elements copied from the specified collection and has sufficient capacity to accommodate the number of elements copied.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is null.</exception>
+        public List([NotNull]IEnumerable<Tuple<<#= t #>>> collection) : base(collection)
+        {}
+
+        /// <summary>
+        /// Inserts an object at the beginning of the <see cref="List{<#= typeParams #>}" />.
         /// </summary><#= paramsComments #>
+        [PublicAPI]
         public void Add(<#= paramsWithType #>)
         {
             Add(new Tuple<<#= t #>>(<#= paramsWithoutType #>));
         }
         
         /// <summary>
-        /// Removes and returns the object at the beginning of the <see cref="Queue{<#= typeParams #>}"/>.
+        /// Removes and returns the object at the beginning of the <see cref="List{<#= typeParams #>}"/>.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param><#= paramsComments #>
+        [PublicAPI]
         public void Get(int index, <#= outParamsWithType #>)
         {
             Tuple<<#= t #>> tuple = this[index];
