@@ -438,7 +438,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             const int numberOfIterations = 10000;
 
             // Use to allow sequential testing for easier debugging or average timing
-            const bool parallel = false;
+            const bool parallel = true;
 
             Random random = new Random();
             Calendar calendar = CultureInfo.CurrentCulture.Calendar;

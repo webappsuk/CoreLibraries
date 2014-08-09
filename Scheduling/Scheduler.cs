@@ -18,12 +18,6 @@ namespace WebApplications.Utilities.Scheduling
     public class Scheduler : IScheduler
     {
         /// <summary>
-        /// False result.
-        /// </summary>
-        [NotNull]
-        internal static readonly Task<bool> FalseResult = TaskEx.FromResult(false);
-
-        /// <summary>
         /// Holds all scheduled actions.
         /// </summary>
         [NotNull]
@@ -113,7 +107,7 @@ namespace WebApplications.Utilities.Scheduling
         /// <inheritdoc/>
         public Task<bool> ExecuteAsync(IScheduledAction scheduledAction)
         {
-            return !Enabled ? FalseResult : scheduledAction.ExecuteAsync();
+            return !Enabled ? TaskResult.False : scheduledAction.ExecuteAsync();
         }
 
         /// <inheritdoc/>

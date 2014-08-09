@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("Utilities.Scheduling.Test")]
 [assembly: AssemblyDescription("Provides scheduling tools.")]
@@ -56,4 +57,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("1.0.*")]
+[assembly: AssemblyVersion("5.1.*")]
+[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]

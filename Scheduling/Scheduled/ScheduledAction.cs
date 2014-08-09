@@ -285,7 +285,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         public Task<bool> ExecuteAsync(CancellationToken cancellationToken)
         {
             if (!Enabled || !Scheduler.Enabled)
-                return Scheduling.Scheduler.FalseResult;
+                return TaskResult.False;
 
             DateTime started = DateTime.Now;
             DateTime due = NextDue;
@@ -300,7 +300,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             if (!schedule.Options.HasFlag(ScheduleOptions.AllowConcurrent) && (executing >= 1))
             {
                 Interlocked.Decrement(ref _executing);
-                return Scheduling.Scheduler.FalseResult;
+                return TaskResult.False;
             }
 
             // Wrap non-asychronous tasks.
@@ -403,7 +403,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         {
             // Quick cancellation check.
             if (cancellationToken.IsCancellationRequested)
-                return TaskEx.FromResult(new ScheduledActionResult(due, started, TimeSpan.Zero, null, true));
+                return Task.FromResult(new ScheduledActionResult(due, started, TimeSpan.Zero, null, true));
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -509,7 +509,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                     RecalculateNextDue(true);
                 else
                     // We've failed to update - should never happen.
-                    Log.Add("Failed to recalculate next due date for schedule.", LogLevel.Critical);
+                    Log.Add(LoggingLevel.Critical, () => Resource.ScheduledAction_RecalculateNextDue_Failed);
             }
 
             if (hasLock)

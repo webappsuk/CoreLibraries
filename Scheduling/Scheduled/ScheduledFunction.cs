@@ -77,7 +77,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             // Quick cancellation check.
             if (cancellationToken.IsCancellationRequested)
                 return
-                    TaskEx.FromResult(
+                    Task.FromResult(
                         (ScheduledActionResult)
                         new ScheduledFunctionResult<T>(due, started, TimeSpan.Zero, null, true, default(T)));
 

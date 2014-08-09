@@ -70,7 +70,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
                 DateTime scheduleNext = schedule.Next(last);
                 if (scheduleNext < last)
                 {
-                    Log.Add("Schedule '{0}' returned a DateTime in the past.", schedule.Name);
+                    Log.Add(() => Resource.AggregateSchedule_Next_Schedule_DateTime_Past, schedule.Name);
                     continue;
                 }
                 if (scheduleNext < next)

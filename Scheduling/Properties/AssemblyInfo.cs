@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+using WebApplications.Utilities;
 
 [assembly: AssemblyTitle("WebApplications.Utilities.Scheduling")]
 [assembly: AssemblyDescription("Provides scheduling tools.")]
@@ -36,4 +37,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("Web Applications")]
 [assembly: AssemblyCulture("")]
 [assembly: Guid("f84b9a91-528e-4f3c-88d3-d824513cb79b")]
-[assembly: AssemblyVersion("1.2.*")]
+[assembly: AssemblyVersion("5.1.*")]
+[assembly: AssemblySemanticVersion("{Major}.{Minor}.{Build}-RTM.{Revision}")]
