@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -38,56 +39,67 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Sunday = 1,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Monday = 1 << 1,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Tuesday = 1 << 2,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Wednesday = 1 << 3,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Thursday = 1 << 4,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Friday = 1 << 5,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Saturday = 1 << 6,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Never = 0,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Weekend = Saturday | Sunday,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         WeekDay = Monday | Tuesday | Wednesday | Thursday | Friday,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Every = Weekend | WeekDay
     }
 }

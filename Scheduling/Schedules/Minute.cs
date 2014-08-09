@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -38,336 +39,403 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Zeroth = (ulong)1,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         First = (ulong)1 << 1,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Second = (ulong)1 << 2,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Third = (ulong)1 << 3,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fourth = (ulong)1 << 4,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fifth = (ulong)1 << 5,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Sixth = (ulong)1 << 6,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Seventh = (ulong)1 << 7,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Eighth = (ulong)1 << 8,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Ninth = (ulong)1 << 9,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Tenth = (ulong)1 << 10,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Eleventh = (ulong)1 << 11,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Twelfth = (ulong)1 << 12,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Thirteenth = (ulong)1 << 13,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fourteenth = (ulong)1 << 14,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fifteenth = (ulong)1 << 15,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Sixteenth = (ulong)1 << 16,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Seventeenth = (ulong)1 << 17,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Eighteenth = (ulong)1 << 18,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Nineteenth = (ulong)1 << 19,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Twentieth = (ulong)1 << 20,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentyFirst = (ulong)1 << 21,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentySecond = (ulong)1 << 22,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentyThird = (ulong)1 << 23,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentyFourth = (ulong)1 << 24,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentyFifth = (ulong)1 << 25,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentySixth = (ulong)1 << 26,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentySeventh = (ulong)1 << 27,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentyEighth = (ulong)1 << 28,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentyNinth = (ulong)1 << 29,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Thirtieth = (ulong)1 << 30,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThirtyFirst = (ulong)1 << 31,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThirtySecond = (ulong)1 << 32,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThirtyThird = (ulong)1 << 33,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThirtyFourth = (ulong)1 << 34,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThirtyFifth = (ulong)1 << 35,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThirtySixth = (ulong)1 << 36,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThirtySeventh = (ulong)1 << 37,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThirtyEighth = (ulong)1 << 38,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThirtyNinth = (ulong)1 << 39,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fortieth = (ulong)1 << 40,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FortyFirst = (ulong)1 << 41,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FortySecond = (ulong)1 << 42,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FortyThird = (ulong)1 << 43,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FortyForth = (ulong)1 << 44,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FortyFifth = (ulong)1 << 45,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FortySixth = (ulong)1 << 46,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FortySeventh = (ulong)1 << 47,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FortyEighth = (ulong)1 << 48,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FortyNinth = (ulong)1 << 49,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fiftieth = (ulong)1 << 50,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FiftyFirst = (ulong)1 << 51,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FiftySecond = (ulong)1 << 52,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FiftyThird = (ulong)1 << 53,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FiftyForth = (ulong)1 << 54,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FiftyFifth = (ulong)1 << 55,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FiftySixth = (ulong)1 << 56,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FiftySeventh = (ulong)1 << 57,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FiftyEighth = (ulong)1 << 58,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FiftyNinth = (ulong)1 << 59,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Never = 0,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Sixtyth = Zeroth,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryThirtyMinutes = Zeroth | Thirtieth,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryFifteenMinutes = EveryThirtyMinutes | Fifteenth | FortyFifth,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryTenMinutes = EveryThirtyMinutes | Tenth | Twentieth | Fortieth | Fiftieth,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryFiveMinutes = EveryTenMinutes | EveryFifteenMinutes | Fifth | TwentyFifth | ThirtyFifth | FiftyFifth,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryThreeMinutes =
             EveryFifteenMinutes | Third | Sixth | Ninth | Twelfth | Eighteenth | TwentyFirst | TwentyFourth |
             TwentySeventh | ThirtyThird | ThirtySixth | ThirtyNinth | FortySecond | FortyEighth | FiftyFirst |
@@ -376,6 +444,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryTwoMinutes =
             EveryTenMinutes | Second | Fourth | Sixth | Eighth | Twelfth | Fourteenth | Sixteenth | Eighteenth |
             TwentySecond | TwentyFourth | TwentySixth | TwentyEighth | ThirtySecond | ThirtyFourth | ThirtySixth |
@@ -385,11 +454,13 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryOtherMinute = ~EveryTwoMinutes,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Every = EveryTwoMinutes | EveryOtherMinute
     }
 }

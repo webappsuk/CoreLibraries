@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -38,166 +39,199 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Zeroth = (ulong)1,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         First = (ulong)1 << 1,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Second = (ulong)1 << 2,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Third = (ulong)1 << 3,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fourth = (ulong)1 << 4,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fifth = (ulong)1 << 5,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Sixth = (ulong)1 << 6,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Seventh = (ulong)1 << 7,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Eighth = (ulong)1 << 8,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Ninth = (ulong)1 << 9,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Tenth = (ulong)1 << 10,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Eleventh = (ulong)1 << 11,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Twelfth = (ulong)1 << 12,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Thirteenth = (ulong)1 << 13,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fourteenth = (ulong)1 << 14,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Fifteenth = (ulong)1 << 15,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Sixteenth = (ulong)1 << 16,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Seventeenth = (ulong)1 << 17,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Eighteenth = (ulong)1 << 18,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Nineteenth = (ulong)1 << 19,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Twentieth = (ulong)1 << 20,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentyFirst = (ulong)1 << 21,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentySecond = (ulong)1 << 22,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentyThird = (ulong)1 << 23,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Never = 0,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwentyFourth = Zeroth,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryTwelveHours = Zeroth | Twelfth,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EverySixHours = EveryTwelveHours | Sixth | Eighteenth,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryFourHours = EveryTwelveHours | Fourth | Eighth | Sixteenth | Twentieth,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryThreeHours = EverySixHours | Third | Ninth | Fifteenth | TwentyFirst,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryTwoHours = EveryFourHours | Second | Sixth | Tenth | Fourteenth | Eighteenth | TwentySecond,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryOtherHour = ~EveryTwoHours,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Every = EveryTwoHours | EveryOtherHour
     }
 }

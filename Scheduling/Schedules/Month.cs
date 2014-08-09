@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -38,96 +39,115 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         January = 1 << 1,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         February = 1 << 2,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         March = 1 << 3,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         April = 1 << 4,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         May = 1 << 5,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         June = 1 << 6,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         July = 1 << 7,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         August = 1 << 8,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         September = 1 << 9,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         October = 1 << 10,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         November = 1 << 11,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         December = 1 << 12,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Never = 0,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         TwiceAYear = January | July,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         FourTimesAYear = TwiceAYear | May | November,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         ThreeTimesAYear = January | May | September,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryTwoMonths = FourTimesAYear | March | September,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         EveryOtherMonth = ~EveryTwoMonths,
 
         /// <summary>
         /// 
         /// </summary>
+        [PublicAPI]
         Every = EveryTwoMonths | EveryOtherMonth
     }
 }
