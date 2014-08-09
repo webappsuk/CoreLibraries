@@ -40,7 +40,7 @@ namespace WebApplications.Utilities.Scheduling
         string Name { get; }
         
         /// <summary>
-        /// Get's the next scheduled event.
+        /// Gets the next scheduled event.
         /// </summary>
         /// <param name="last">The last time the action was completed.</param>
         /// <returns>Next time in schedule.</returns>

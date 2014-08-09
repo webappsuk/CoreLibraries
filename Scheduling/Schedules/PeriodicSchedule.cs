@@ -34,56 +34,68 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// The calendar.
         /// </summary>
+        [PublicAPI]
+        [CanBeNull]
         public readonly Calendar Calendar;
 
         /// <summary>
         /// The calendar week rule.
         /// </summary>
+        [PublicAPI]
         public readonly CalendarWeekRule CalendarWeekRule;
 
         /// <summary>
         /// The day.
         /// </summary>
+        [PublicAPI]
         public readonly Day Day;
 
         /// <summary>
         /// The day of the week.
         /// </summary>
+        [PublicAPI]
         public readonly DayOfWeek FirstDayOfWeek;
 
         /// <summary>
         /// The hour.
         /// </summary>
+        [PublicAPI]
         public readonly Hour Hour;
 
         /// <summary>
         /// The minimum gap, added to all supplied date times.
         /// </summary>
+        [PublicAPI]
         public readonly TimeSpan MinimumGap;
 
         /// <summary>
         /// The minute.
         /// </summary>
+        [PublicAPI]
         public readonly Minute Minute;
 
         /// <summary>
         /// The month.
         /// </summary>
+        [PublicAPI]
         public readonly Month Month;
 
         /// <summary>
         /// The second.
         /// </summary>
+        [PublicAPI]
         public readonly Second Second;
 
         /// <summary>
         /// The week.
         /// </summary>
+        [PublicAPI]
         public readonly Week Week;
 
         /// <summary>
         /// The weekday.
         /// </summary>
+        [PublicAPI]
         public readonly WeekDay WeekDay;
 
         /// <summary>
@@ -95,7 +107,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <remarks></remarks>
         public PeriodicSchedule(TimeSpan gap,
             ScheduleOptions options = ScheduleOptions.None,
-            string name = null)
+            [CanBeNull] string name = null)
             : this(
                 hour: Hour.Every,
                 minute: Minute.Every,
@@ -132,12 +144,12 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Minute minute = Minute.Zeroth,
             Second second = Second.Zeroth,
             TimeSpan minimumGap = default(TimeSpan),
-            Calendar calendar = null,
+            [CanBeNull] Calendar calendar = null,
             CalendarWeekRule calendarWeekRule = CalendarWeekRule.FirstFourDayWeek,
             DayOfWeek firstDayOfWeek = DayOfWeek.Sunday,
             ScheduleOptions options = ScheduleOptions.None,
-            string name = null)
-            : base(CreatFunction(month, week, day, weekDay, hour, minute, second, minimumGap, calendar, calendarWeekRule, firstDayOfWeek), options, name)
+            [CanBeNull] string name = null)
+            : base(CreateFunction(month, week, day, weekDay, hour, minute, second, minimumGap, calendar, calendarWeekRule, firstDayOfWeek), options, name)
         {
             // If minimum gap is negative, set to zero.
             if (minimumGap < TimeSpan.Zero)
@@ -162,7 +174,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         }
 
         /// <summary>
-        /// Creats the function.
+        /// Creates the function.
         /// </summary>
         /// <param name="month">The month.</param>
         /// <param name="week">The week.</param>
@@ -178,7 +190,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <returns></returns>
         /// <remarks></remarks>
         [NotNull]
-        private static Func<DateTime, DateTime> CreatFunction(
+        private static Func<DateTime, DateTime> CreateFunction(
             Month month,
             Week week,
             Day day,
@@ -187,7 +199,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             Minute minute,
             Second second,
             TimeSpan minimumGap,
-            Calendar calendar,
+            [CanBeNull] Calendar calendar,
             CalendarWeekRule calendarWeekRule,
             DayOfWeek firstDayOfWeek)
         {

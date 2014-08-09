@@ -23,6 +23,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
 {
@@ -34,17 +35,13 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <summary>
         /// The Schedule DateTime
         /// </summary>
+        [PublicAPI]
         public readonly DateTime ScheduleDateTime;
 
         /// <summary>
         /// The schedules optional name.
         /// </summary>
         private readonly string _name;
-
-        /// <summary>
-        /// The Schedule options.
-        /// </summary>
-        private readonly ScheduleOptions _options;
 
         /// <inheritdoc/>
         public string Name
@@ -53,11 +50,11 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OneOffSchedule"/> class.
+        /// Initializes a new instance of the <see cref="OneOffSchedule" /> class.
         /// </summary>
         /// <param name="dateTime">The date time.</param>
         /// <param name="name">An optional name for the schedule.</param>
-        public OneOffSchedule(DateTime dateTime, string name = null)
+        public OneOffSchedule(DateTime dateTime, [CanBeNull] string name = null)
         {
             ScheduleDateTime = dateTime;
             _name = name;
@@ -72,7 +69,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <inheritdoc/>
         public ScheduleOptions Options
         {
-            get { return _options; }
+            get { return ScheduleOptions.None; }
         }
 
         /// <inheritdoc/>
