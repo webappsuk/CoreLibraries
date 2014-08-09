@@ -246,7 +246,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                                                  };
             schedulerTester.AddTest(schedule, expectedResults, delegate
                                                                    {
-                                                                       DateTime resultTime = DateTime.Now;
+                                                                       DateTime resultTime = DateTime.UtcNow;
                                                                        Thread.Sleep(1500);
                                                                        return resultTime;
                                                                    });
@@ -272,7 +272,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                                                  };
             schedulerTester.AddTest(schedule, expectedResults, delegate
                                                                    {
-                                                                       DateTime resultTime = DateTime.Now;
+                                                                       DateTime resultTime = DateTime.UtcNow;
                                                                        Scheduler.DisableAll();
                                                                        Thread.Sleep(1500);
                                                                        Scheduler.EnableAll();
@@ -298,7 +298,7 @@ namespace WebApplications.Utilities.Scheduling.Test
                                                  };
             schedulerTester1.AddTest(schedule, expectedResults, delegate
                                                                     {
-                                                                        DateTime resultTime = DateTime.Now;
+                                                                        DateTime resultTime = DateTime.UtcNow;
                                                                         if (schedulerTester2 == null)
                                                                         {
                                                                             schedulerTester2 = new SchedulerTester();
@@ -434,7 +434,7 @@ namespace WebApplications.Utilities.Scheduling.Test
 
             SchedulerTester schedulerTester = new SchedulerTester();
 
-            DateTime startAfterTime = DateTime.Now.AddSeconds(4);
+            DateTime startAfterTime = DateTime.UtcNow.AddSeconds(4);
 
             PeriodicSchedule schedule = new PeriodicSchedule(hour: Hour.Every, minute: Minute.Every, second: Second.Every);
             List<TimeSpan> expectedResults = new List<TimeSpan>

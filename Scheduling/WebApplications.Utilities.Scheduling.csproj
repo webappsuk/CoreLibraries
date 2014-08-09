@@ -88,37 +88,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ISchedulableAction.cs" />
-    <Compile Include="ISchedulableActionAsync.cs" />
-    <Compile Include="ISchedulableActionCancellableAsync.cs" />
-    <Compile Include="ISchedulableFunction.cs" />
-    <Compile Include="ISchedulableFunctionAsync.cs" />
-    <Compile Include="ISchedulableFunctionCancellableAsync.cs" />
-    <Compile Include="IScheduledAction.cs" />
-    <Compile Include="IScheduledActionResult.cs" />
-    <Compile Include="IScheduledFunction.cs" />
-    <Compile Include="IScheduledFunctionResult.cs" />
-    <Compile Include="IScheduler.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
-    <Compile Include="Schedulable\SchedulableActionInfo.cs" />
-    <Compile Include="Schedulable\SchedulableAction.cs" />
-    <Compile Include="Schedulable\SchedulableActionAsync.cs" />
-    <Compile Include="Schedulable\SchedulableActionCancellableAsync.cs" />
-    <Compile Include="Schedulable\SchedulableFunction.cs" />
-    <Compile Include="Schedulable\SchedulableFunctionAsync.cs" />
-    <Compile Include="Schedulable\SchedulableFunctionCancellableAsync.cs" />
-    <Compile Include="Scheduled\ScheduledActionResult.cs" />
-    <Compile Include="Schedulable\SchedulableActionAsyncBase.cs" />
-    <Compile Include="Schedulable\SchedulableActionBase.cs" />
-    <Compile Include="Schedulable\SchedulableActionCancellableAsyncBase.cs" />
-    <Compile Include="Schedulable\SchedulableFunctionAsyncBase.cs" />
-    <Compile Include="Schedulable\SchedulableFunctionBase.cs" />
-    <Compile Include="Schedulable\SchedulableFunctionCancellableAsyncBase.cs" />
     <Compile Include="Scheduled\ScheduledAction.cs" />
+    <Compile Include="Scheduled\ScheduledActionResult.cs" />
     <Compile Include="Scheduled\ScheduledFunction.cs" />
     <Compile Include="ScheduleOptions.cs" />
     <Compile Include="Scheduler.cs" />
@@ -142,9 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Schedulable\Schedulable Actions.cd" />
-    <None Include="Schedulable\Schedulable Functions.cd" />
-    <None Include="Schedulable\Schedulable Interfaces.cd" />
     <None Include="Scheduled\Scheduled Interfaces.cd" />
     <None Include="packages.config" />
     <None Include="Schedules\Schedules.cd" />
@@ -154,6 +127,7 @@
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

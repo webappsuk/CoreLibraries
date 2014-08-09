@@ -53,7 +53,7 @@ namespace WebApplications.Utilities.Scheduling
         /// </summary>
         /// <remarks>
         /// In the event there has been no previous scheduled execution then this will be <see cref="DateTime.MinValue"/> or
-        /// <see cref="DateTime.Now"/> respectively.
+        /// <see cref="DateTime.UtcNow"/> respectively.
         /// </remarks>
         FromDue,
 

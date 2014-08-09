@@ -67,7 +67,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <inheritdoc/>
         public DateTime Next(DateTime last)
         {
-            return ScheduleDateTime > DateTime.Now ? ScheduleDateTime : DateTime.MaxValue;
+            return ScheduleDateTime > DateTime.UtcNow ? ScheduleDateTime : DateTime.MaxValue;
         }
 
         /// <inheritdoc/>

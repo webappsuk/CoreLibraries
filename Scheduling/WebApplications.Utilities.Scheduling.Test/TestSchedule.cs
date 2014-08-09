@@ -143,13 +143,13 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void TestNextValidLeapYear1()
         {
             // Get next leap year
-            int currentYear = DateTime.Now.Year;
+            int currentYear = DateTime.UtcNow.Year;
             int nextLeapYear = currentYear + (4 - (currentYear % 4));
 
             Assert.AreEqual(
                 new DateTime(nextLeapYear, 2, 29),
-                DateTime.Now.NextValid(Month.February, day: Day.TwentyNinth),
-                DateTime.Now.ToString()
+                DateTime.UtcNow.NextValid(Month.February, day: Day.TwentyNinth),
+                DateTime.UtcNow.ToString()
                 );
         }
 
@@ -157,7 +157,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void TestNextValidLeapYear2()
         {
             // Get next leap year
-            int currentYear = DateTime.Now.Year;
+            int currentYear = DateTime.UtcNow.Year;
             int nextLeapYear = currentYear + (4 - (currentYear % 4));
             int leapYearAfterNext = nextLeapYear + 4;
 
@@ -172,14 +172,14 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.AreEqual(
                 DateTime.MaxValue,
-                DateTime.Now.NextValid(Month.February, day: Day.Thirtieth),
-                DateTime.Now.ToString()
+                DateTime.UtcNow.NextValid(Month.February, day: Day.Thirtieth),
+                DateTime.UtcNow.ToString()
                 );
 
             Assert.AreEqual(
                 DateTime.MaxValue,
-                DateTime.Now.NextValid(Month.February, day: Day.ThirtyFirst),
-                DateTime.Now.ToString()
+                DateTime.UtcNow.NextValid(Month.February, day: Day.ThirtyFirst),
+                DateTime.UtcNow.ToString()
                 );
         }
 
@@ -187,13 +187,13 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void TestNextValidFebruary2()
         {
             // Get year that next Feb 28th is in
-            int currentYear = DateTime.Now.Year;
-            int testYear = currentYear + ((DateTime.Now >= new DateTime(currentYear, 2, 28)) ? 1 : 0);
+            int currentYear = DateTime.UtcNow.Year;
+            int testYear = currentYear + ((DateTime.UtcNow >= new DateTime(currentYear, 2, 28)) ? 1 : 0);
 
             Assert.AreEqual(
                 new DateTime(testYear, 2, 28),
-                DateTime.Now.NextValid(Month.February, day: Day.TwentyEighth),
-                DateTime.Now.ToString()
+                DateTime.UtcNow.NextValid(Month.February, day: Day.TwentyEighth),
+                DateTime.UtcNow.ToString()
                 );
         }
 

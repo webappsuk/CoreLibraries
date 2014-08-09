@@ -28,13 +28,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Caching;
 using WebApplications.Utilities.Logging;
-using WebApplications.Utilities.Scheduling.Schedulable;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
 {
@@ -42,16 +42,50 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
     /// Holds a scheduled action.
     /// </summary>
     /// <remarks></remarks>
-    internal class ScheduledAction : IScheduledAction, IEquatable<IScheduledAction>
+    public abstract class ScheduledAction : IEquatable<ScheduledAction>
     {
+        #region Delegates
         /// <summary>
-        /// Holds constructor for creating a result for an action.
+        /// Delegate describing a schedulable action.
         /// </summary>
-        [NotNull]
-        private static readonly Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult>
-            _actionResultCreator =
-                (due, started, duration, exception, cancelled, result) =>
-                    new ScheduledActionResult(due, started, duration, exception, cancelled);
+        /// <returns>An awaitable task.</returns>
+        public delegate void SchedulableAction();
+
+        /// <summary>
+        /// Delegate describing a schedulable action which accepts a due date and time.
+        /// </summary>
+        /// <param name="due">The due date and time (UTC) which indicates when the action was scheduled to run.</param>
+        /// <returns>An awaitable task.</returns>
+        public delegate void SchedulableDueAction(DateTime due);
+
+        /// <summary>
+        /// Delegate describing an asynchronous schedulable action.
+        /// </summary>
+        /// <returns>An awaitable task.</returns>
+        public delegate Task SchedulableActionAsync();
+
+        /// <summary>
+        /// Delegate describing an asynchronous schedulable action which accepts a due date and time.
+        /// </summary>
+        /// <param name="due">The due date and time (UTC) which indicates when the action was scheduled to run.</param>
+        /// <returns>An awaitable task.</returns>
+        public delegate Task SchedulableDueActionAsync(DateTime due);
+
+        /// <summary>
+        /// Delegate describing an asynchronous schedulable action which supports cancellation.
+        /// </summary>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>An awaitable task.</returns>
+        public delegate Task SchedulableCancellableActionAsync(CancellationToken token);
+
+        /// <summary>
+        /// Delegate describing an asynchronous schedulable action which accepts a due date and time and supports cancellation.
+        /// </summary>
+        /// <param name="due">The due date and time (UTC) which indicates when the action was scheduled to run.</param>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>An awaitable task.</returns>
+        public delegate Task SchedulableDueCancellableActionAsync(DateTime due, CancellationToken token);
+        #endregion
 
         /// <summary>
         /// Unique identifier for the action.
@@ -59,106 +93,54 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         internal readonly CombGuid ID = CombGuid.NewCombGuid();
 
         /// <summary>
-        /// Holds information about the schedulable action.
-        /// </summary>
-        [NotNull]
-        private readonly SchedulableActionInfo _actionInfo;
-
-        /// <summary>
         /// Holds the scheduler.
         /// </summary>
         [NotNull]
-        private readonly IScheduler _scheduler;
-
-        /// <summary>
-        /// Holds the action.
-        /// </summary>
-        [NotNull]
-        private readonly ISchedulableAction _action;
+        [PublicAPI]
+        public readonly Scheduler Scheduler;
 
         /// <summary>
         /// Internal list of results.
         /// </summary>
         [CanBeNull]
-        private readonly CyclicConcurrentQueue<ScheduledActionResult> _history;
-
-        /// <summary>
-        /// Holds constructor for creating a result for an action.
-        /// </summary>
-        [NotNull]
-        private readonly Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult>
-            _resultCreator;
+        protected readonly CyclicConcurrentQueue<ScheduledActionResult> HistoryQueue;
 
         /// <summary>
         /// The maximum history.
         /// </summary>
-        private readonly int _maximumHistory;
+        [PublicAPI]
+        public readonly int MaximumHistory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScheduledAction"/> class.
+        /// Initializes a new instance of the <see cref="ScheduledAction" /> class.
         /// </summary>
         /// <param name="scheduler">The scheduler.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="action">The action.</param>
-        /// <param name="actionInfo">The action info.</param>
         /// <param name="maximumHistory">The maximum history.</param>
-        /// <remarks></remarks>
-        internal ScheduledAction(
-            [NotNull] IScheduler scheduler,
-            [NotNull] ISchedule schedule,
-            [NotNull] ISchedulableAction action,
-            [NotNull] SchedulableActionInfo actionInfo,
-            int maximumHistory = -1)
-            : this(scheduler, schedule, action, actionInfo, maximumHistory, _actionResultCreator)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ScheduledAction"/> class.
-        /// </summary>
-        /// <param name="scheduler">The scheduler.</param>
-        /// <param name="schedule">The schedule.</param>
-        /// <param name="action">The action.</param>
-        /// <param name="actionInfo">The action info.</param>
-        /// <param name="maximumHistory">The maximum history.</param>
-        /// <param name="functionReturnType">Type of the function return.</param>
-        /// <param name="resultCreator">The result creator.</param>
-        /// <remarks></remarks>
         protected ScheduledAction(
-            [NotNull] IScheduler scheduler,
+            [NotNull] Scheduler scheduler,
             [NotNull] ISchedule schedule,
-            [NotNull] ISchedulableAction action,
-            [NotNull] SchedulableActionInfo actionInfo,
-            int maximumHistory,
-            [NotNull] Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult> resultCreator)
+            int maximumHistory)
         {
-            _scheduler = scheduler;
+            Contract.Requires(scheduler != null);
+            Contract.Requires(schedule != null);
+            Scheduler = scheduler;
             _lastExecutionFinished = DateTime.MinValue;
             _schedule = schedule;
-            _action = action;
-            _actionInfo = actionInfo;
-            _resultCreator = resultCreator;
-            _maximumHistory = maximumHistory;
-            _history = _maximumHistory > 0 ? new CyclicConcurrentQueue<ScheduledActionResult>(_maximumHistory) : null;
+            MaximumHistory = maximumHistory;
+            HistoryQueue = MaximumHistory > 0 ? new CyclicConcurrentQueue<ScheduledActionResult>(MaximumHistory) : null;
             RecalculateNextDue();
         }
 
-        /// <inheritdoc/>
-        public Type FunctionReturnType
+        /// <summary>
+        /// Gets the execution history.
+        /// </summary>
+        /// <value>The history.</value>
+        [PublicAPI]
+        [NotNull]
+        public IEnumerable<ScheduledActionResult> History
         {
-            get { return _actionInfo.FunctionReturnType; }
-        }
-
-        /// <inheritdoc/>
-        public IScheduler Scheduler
-        {
-            get { return _scheduler; }
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<IScheduledActionResult> History
-        {
-            get { return _history ?? Enumerable.Empty<IScheduledActionResult>(); }
+            get { return HistoryQueue ?? Enumerable.Empty<ScheduledActionResult>(); }
         }
 
         /// <summary>
@@ -167,175 +149,69 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [NotNull]
         private ISchedule _schedule;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets or sets the schedule.
+        /// </summary>
+        /// <value>The schedule.</value>
+        [PublicAPI]
+        [NotNull]
         public ISchedule Schedule
         {
             get { return _schedule; }
             set
             {
-                if (value == null)
-                    throw new LoggingException(() => Resource.ScheduledAction_Null_Schedule);
-                if (_schedule == value)
+                Contract.Requires(value != null);
+                if (ReferenceEquals(_schedule, value))
                     return;
                 _schedule = value;
                 RecalculateNextDue();
             }
         }
 
-        /// <inheritdoc/>
-        public ISchedulableAction Action
-        {
-            get { return _action; }
-        }
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="ScheduledAction"/> is enabled.
+        /// </summary>
+        /// <value><see langword="true" /> if enabled; otherwise, <see langword="false" />.</value>
+        [PublicAPI]
+        public bool Enabled;
 
-        /// <inheritdoc/>
-        public bool Enabled { get; set; }
-
-        /// <inheritdoc/>
-        public int MaximumHistory
-        {
-            get { return _maximumHistory; }
-        }
-
-        /// <inheritdoc/>
-        public bool IsFunction
-        {
-            get { return _actionInfo.IsFunction; }
-        }
-
-        /// <inheritdoc/>
-        public bool IsAsynchronous
-        {
-            get { return _actionInfo.IsAsynchronous; }
-        }
-
-        /// <inheritdoc/>
-        public bool IsCancellable
-        {
-            get { return _actionInfo.IsCancellable; }
-        }
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            ScheduledAction o = obj as ScheduledAction;
-            return !ReferenceEquals(null, o) && o.ID.Equals(ID);
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(IScheduledAction other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            ScheduledAction o = other as ScheduledAction;
-            if (ReferenceEquals(null, o)) return false;
-            return ReferenceEquals(this, other) || o.ID.Equals(ID);
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(ScheduledAction other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            return ReferenceEquals(this, other) || other.ID.Equals(ID);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return ID.GetHashCode();
-        }
-
+        
         /// <summary>
         /// Execution counter indicates how many concurrent executions are occurring.
         /// </summary>
         private int _executing;
 
-        /// <inheritdoc/>
-        public bool Execute()
+        /// <summary>
+        /// Executes the action asynchronously, so long as it is enabled and not already running (unless the <see cref="Schedule">schedules</see>
+        /// <see cref="ISchedule.Options"/> is set to <see cref="ScheduleOptions.AllowConcurrent"/>.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>And awaitable task containing the result, or <see langword="null"/> if the action was not run.</returns>
+        [NotNull]
+        public Task<ScheduledActionResult> ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (!Enabled ||
-                !Scheduler.Enabled)
-                return false;
+            if (!Enabled)
+                return TaskResult<ScheduledActionResult>.Default;
 
-            // If the action is asynchronous and cancellable, then run it asynchronously
-            // so that cancellation support is still possible.
-            if (IsAsynchronous && IsCancellable)
-            {
-                Task<bool> task = ExecuteAsync();
-                task.Wait();
-                return task.Result;
-            }
-
-            DateTime started = DateTime.Now;
-            DateTime due = NextDue;
-
-            // Grab schedule as the property can be changed.
-            ISchedule schedule = Schedule;
-
-            // Only execute if we allow concurrency or we're not executing already.
-            int executing = Interlocked.Increment(ref _executing);
-            bool executed;
-            if (schedule.Options.HasFlag(ScheduleOptions.AllowConcurrent) ||
-                (executing <= 1))
-            {
-                // Execute and add result to history
-                if (_history != null)
-                    _history.Enqueue(DoExecute(due, started));
-                executed = true;
-
-                // Increment the execution count.
-                Interlocked.Increment(ref _executionCount);
-
-                // Mark execution finish.
-                LastExecutionFinished = DateTime.Now;
-            }
-            else
-                executed = false;
-
-            // Decrement the execution counter.
-            Interlocked.Decrement(ref _executing);
-            return executed;
-        }
-
-        /// <inheritdoc/>
-        public Task<bool> ExecuteAsync()
-        {
-            return ExecuteAsync(CancellationToken.None);
-        }
-
-        /// <inheritdoc/>
-        public Task<bool> ExecuteAsync(CancellationToken cancellationToken)
-        {
-            if (!Enabled ||
-                !Scheduler.Enabled)
-                return TaskResult.False;
-
-            DateTime started = DateTime.Now;
+            // Get the due date and started date and time
             DateTime due = NextDue;
 
             // Mark this action as executing.
             int executing = Interlocked.Increment(ref _executing);
 
             // Grab schedule as the property can be changed.
-            ISchedule schedule = Schedule;
+            ISchedule schedule = _schedule;
 
             // Only execute if we allow concurrency or we're not executing already.
             if (!schedule.Options.HasFlag(ScheduleOptions.AllowConcurrent) &&
                 (executing >= 1))
             {
                 Interlocked.Decrement(ref _executing);
-                return TaskResult.False;
+                return TaskResult<ScheduledActionResult>.Default;
             }
 
-            // Wrap non-asychronous tasks.
-            Task<ScheduledActionResult> executeTask =
-                IsAsynchronous
-                    ? DoExecuteAsync(due, started, cancellationToken)
-                    : Task<ScheduledActionResult>.Factory.StartNew(() => DoExecute(due, started));
-
-            // Add continuation task and return
-            return executeTask
+            // Add continuation task to store result on completion.
+            return DoExecuteAsync(due, cancellationToken)
                 .ContinueWith(
                     t =>
                     {
@@ -348,144 +224,36 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
                         Interlocked.Increment(ref _executionCount);
 
                         // Mark execution finish.
-                        LastExecutionFinished = DateTime.Now;
-
-                        ScheduledActionResult result;
-                        switch (t.Status)
-                        {
-                            case TaskStatus.RanToCompletion:
-                                result = t.Result;
-                                break;
-                            case TaskStatus.Canceled:
-                                result = _resultCreator(
-                                    due,
-                                    started,
-                                    DateTime.Now - started,
-                                    null,
-                                    true,
-                                    FunctionReturnType != null
-                                        ? FunctionReturnType.Default()
-                                        : null);
-                                break;
-                            case TaskStatus.Faulted:
-                                result = _resultCreator(
-                                    due,
-                                    started,
-                                    DateTime.Now - started,
-                                    t.Exception,
-                                    false,
-                                    FunctionReturnType != null
-                                        ? FunctionReturnType.Default()
-                                        : null);
-                                break;
-                            default:
-                                result = _resultCreator(
-                                    due,
-                                    started,
-                                    DateTime.Now - started,
-                                    new LoggingException(
-                                        () => Resource.ScheduledAction_ExecuteAsync_Invalid_Task_Status,
-                                        t.Status),
-                                    false,
-                                    FunctionReturnType != null
-                                        ? FunctionReturnType.Default()
-                                        : null);
-                                break;
-                        }
+                        LastExecutionFinished = DateTime.UtcNow;
 
                         // Enqueue history item.
-                        if (_history != null)
-                            _history.Enqueue(result);
-
-                        return true;
+                        if (HistoryQueue != null &&
+                            t.IsCompleted)
+                            HistoryQueue.Enqueue(t.Result);
+                        return t.Result;
                     },
                     TaskContinuationOptions.ExecuteSynchronously);
         }
 
         /// <summary>
-        /// Executes the action/function synchronously.
+        /// Performs the asynchronous execution.
         /// </summary>
-        /// <param name="due">When the action was due.</param>
-        /// <param name="started">When the execution started.</param>
-        /// <returns>The result.</returns>
-        /// <remarks></remarks>
-        protected virtual ScheduledActionResult DoExecute(DateTime due, DateTime started)
-        {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            Exception exception = null;
-            try
-            {
-                // Execute the action!
-                Action.Execute();
-            }
-            catch (Exception e)
-            {
-                exception = e;
-            }
-            stopwatch.Stop();
-
-            return new ScheduledActionResult(due, started, stopwatch.Elapsed, exception, false);
-        }
-
-        /// <summary>
-        /// Executes the action/function asynchronously.
-        /// </summary>
-        /// <param name="due">When the action was due.</param>
-        /// <param name="started">When the execution started.</param>
+        /// <param name="due">The due date and time (UTC).</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The result.</returns>
-        /// <remarks></remarks>
+        /// <returns>Task&lt;ScheduledActionResult&gt;.</returns>
         [NotNull]
-        protected virtual Task<ScheduledActionResult> DoExecuteAsync(
-            DateTime due,
-            DateTime started,
-            CancellationToken cancellationToken)
-        {
-            // Quick cancellation check.
-            if (cancellationToken.IsCancellationRequested)
-                return Task.FromResult(new ScheduledActionResult(due, started, TimeSpan.Zero, null, true));
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            ISchedulableActionCancellableAsync cancellableAction = Action as ISchedulableActionCancellableAsync;
-            Task actionTask;
-            if (cancellableAction != null)
-                actionTask = cancellableAction.ExecuteAsync(cancellationToken);
-            else
-            {
-                ISchedulableActionAsync asyncAction = Action as ISchedulableActionAsync;
-
-                // Functions should be picked up in override of this method, so this should always be true.
-                Debug.Assert(asyncAction != null);
-                actionTask = asyncAction.ExecuteAsync();
-            }
-
-            // Add task continuation.
-            return actionTask
-                .ContinueWith(
-                    t =>
-                    {
-                        Debug.Assert(t != null);
-                        stopwatch.Stop();
-                        return new ScheduledActionResult(
-                            due,
-                            started,
-                            stopwatch.Elapsed,
-                            t.Exception,
-                            cancellationToken.IsCancellationRequested);
-                    },
-                    TaskContinuationOptions.ExecuteSynchronously);
-        }
+        protected abstract Task<ScheduledActionResult> DoExecuteAsync(DateTime due, CancellationToken cancellationToken);
 
         /// <summary>
         /// The next time the action is due.
         /// </summary>
         private long _nextDueTicks;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the next due date and time (UTC).
+        /// </summary>
+        /// <value>The next due date and time.</value>
+        [PublicAPI]
         public DateTime NextDue
         {
             get { return new DateTime(_nextDueTicks, DateTimeKind.Utc); }
@@ -493,7 +261,11 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
 
         private DateTime _lastExecutionFinished;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the date and time (UTC) that the last execution finished.
+        /// </summary>
+        /// <value>The last execution finished date and time.</value>
+        [PublicAPI]
         public DateTime LastExecutionFinished
         {
             get { return _lastExecutionFinished; }
@@ -505,9 +277,13 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             }
         }
 
-        private long _executionCount = 0;
+        private long _executionCount;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets the execution count.
+        /// </summary>
+        /// <value>The execution count.</value>
+        [PublicAPI]
         public long ExecutionCount
         {
             get { return _executionCount; }
@@ -529,7 +305,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             if (withLock)
                 _calculatorLock.Enter(ref hasLock);
 
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             // Optimistic update strategy, to avoid locks.
 
             // Grab current value for nextDue.
@@ -563,6 +339,75 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
 
             if (hasLock)
                 _calculatorLock.Exit();
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns><see langword="true" /> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <see langword="false" />.</returns>
+        public override bool Equals([CanBeNull]object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            ScheduledAction a = obj as ScheduledAction;
+            return !ReferenceEquals(a, null) && Equals(a);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        public bool Equals([CanBeNull]ScheduledAction other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            return ReferenceEquals(this, other) || ID.Equals(other.ID);
+        }
+
+        /// <summary>
+        /// Indicates whether the left object is equal to the right object of the same type.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>true if the <paramref name="left" /> parameter is equal to the <paramref name="right" /> parameter; otherwise, false.</returns>
+        [PublicAPI]
+        public static bool Equals([CanBeNull] ScheduledAction left, [CanBeNull] ScheduledAction right)
+        {
+            if (ReferenceEquals(null, left)) return ReferenceEquals(null, right);
+            if (ReferenceEquals(null, right)) return false;
+            return ReferenceEquals(left, right) || left.ID.Equals(right.ID);
+        }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();
+        }
+
+        /// <summary>
+        /// Implements the ==.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==([CanBeNull]ScheduledAction left, [CanBeNull] ScheduledAction right)
+        {
+            return Equals(left, right);
+        }
+
+        /// <summary>
+        /// Implements the !=.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator !=(ScheduledAction left, ScheduledAction right)
+        {
+            return !Equals(left, right);
         }
     }
 }

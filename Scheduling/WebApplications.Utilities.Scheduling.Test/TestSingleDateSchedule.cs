@@ -41,30 +41,30 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void PastDateTime()
         {
             OneOffSchedule oneOffSchedule = new OneOffSchedule(new DateTime(2011, 1, 1));
-            Assert.AreEqual(DateTime.MaxValue, oneOffSchedule.Next(DateTime.Now));
+            Assert.AreEqual(DateTime.MaxValue, oneOffSchedule.Next(DateTime.UtcNow));
         }
 
         [TestMethod]
         public void CurrentDateTime()
         {
-            OneOffSchedule oneOffSchedule = new OneOffSchedule(DateTime.Now);
-            Assert.AreEqual(DateTime.MaxValue, oneOffSchedule.Next(DateTime.Now));
+            OneOffSchedule oneOffSchedule = new OneOffSchedule(DateTime.UtcNow);
+            Assert.AreEqual(DateTime.MaxValue, oneOffSchedule.Next(DateTime.UtcNow));
         }
 
         [TestMethod]
         public void NextSecondDateTime()
         {
             OneOffSchedule oneOffSchedule
-                = new OneOffSchedule(DateTime.Now + (new TimeSpan(0, 0, 1)));
-            Assert.AreEqual(DateTime.Now + (new TimeSpan(0, 0, 1)), oneOffSchedule.Next(DateTime.Now));
+                = new OneOffSchedule(DateTime.UtcNow + (new TimeSpan(0, 0, 1)));
+            Assert.AreEqual(DateTime.UtcNow + (new TimeSpan(0, 0, 1)), oneOffSchedule.Next(DateTime.UtcNow));
         }
 
         [TestMethod]
         public void FutureDateTime()
         {
             OneOffSchedule oneOffSchedule
-                = new OneOffSchedule(DateTime.Now + (new TimeSpan(1, 0, 0, 0)));
-            Assert.AreEqual((DateTime.Now + (new TimeSpan(1, 0, 0, 0))), oneOffSchedule.Next(DateTime.Now));
+                = new OneOffSchedule(DateTime.UtcNow + (new TimeSpan(1, 0, 0, 0)));
+            Assert.AreEqual((DateTime.UtcNow + (new TimeSpan(1, 0, 0, 0))), oneOffSchedule.Next(DateTime.UtcNow));
         }
     }
 }

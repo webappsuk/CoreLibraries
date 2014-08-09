@@ -28,136 +28,171 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using WebApplications.Utilities.Scheduling.Schedulable;
+using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
 {
+
     /// <summary>
     /// Base class for scheduled functions.
     /// </summary>
     /// <typeparam name="T">The return type.</typeparam>
     /// <remarks></remarks>
-    internal sealed class ScheduledFunction<T> : ScheduledAction, IScheduledFunction<T>
+    public sealed class ScheduledFunction<T> : ScheduledAction
     {
+        #region Delegates
         /// <summary>
-        /// Holds constructor for creating a result for this type of function.
+        /// Delegate describing a schedulable function.
         /// </summary>
-        [NotNull]
-        private static readonly Func<DateTime, DateTime, TimeSpan, Exception, bool, object, ScheduledActionResult>
-            _resultCreator =
-                (due, started, duration, exception, cancelled, result) =>
-                    new ScheduledFunctionResult<T>(due, started, duration, exception, cancelled, (T)result);
+        /// <returns>An awaitable task that contains the result.</returns>
+        public delegate T SchedulableFunction();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScheduledAction"/> class.
+        /// Delegate describing a schedulable function which accepts a due date and time.
         /// </summary>
+        /// <param name="due">The due date and time (UTC) which indicates when the function was scheduled to run.</param>
+        /// <returns>An awaitable task that contains the result.</returns>
+        public delegate T SchedulableDueFunction(DateTime due);
+        
+        /// <summary>
+        /// Delegate describing an asynchronous schedulable function.
+        /// </summary>
+        /// <returns>An awaitable task that contains the result.</returns>
+        public delegate Task<T> SchedulableFunctionAsync();
+
+        /// <summary>
+        /// Delegate describing an asynchronous schedulable function which accepts a due date and time.
+        /// </summary>
+        /// <param name="due">The due date and time (UTC) which indicates when the function was scheduled to run.</param>
+        /// <returns>An awaitable task that contains the result.</returns>
+        public delegate Task<T> SchedulableDueFunctionAsync(DateTime due);
+
+        /// <summary>
+        /// Delegate describing an asynchronous schedulable function which supports cancellation.
+        /// </summary>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>An awaitable task that contains the result.</returns>
+        public delegate Task<T> SchedulableCancellableFunctionAsync(CancellationToken token);
+
+        /// <summary>
+        /// Delegate describing an asynchronous schedulable function which accepts a due date and time and supports cancellation.
+        /// </summary>
+        /// <param name="due">The due date and time (UTC) which indicates when the function was scheduled to run.</param>
+        /// <param name="token">The cancellation token.</param>
+        /// <returns>An awaitable task that contains the result.</returns>
+        public delegate Task<T> SchedulableDueCancellableFunctionAsync(DateTime due, CancellationToken token);
+        #endregion
+
+        [NotNull]
+        private readonly SchedulableDueCancellableFunctionAsync _function;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScheduledAction" /> class.
+        /// </summary>
+        /// <param name="function">The function.</param>
         /// <param name="scheduler">The scheduler.</param>
         /// <param name="schedule">The schedule.</param>
-        /// <param name="action">The action.</param>
-        /// <param name="actionInfo">The action info.</param>
-        /// <remarks></remarks>
+        /// <param name="maximumHistory">The maximum history.</param>
         internal ScheduledFunction(
-            [NotNull] IScheduler scheduler,
+            [NotNull] SchedulableDueCancellableFunctionAsync function,
+            [NotNull] Scheduler scheduler,
             [NotNull] ISchedule schedule,
-            [NotNull] ISchedulableAction action,
-            [NotNull] SchedulableActionInfo actionInfo,
             int maximumHistory = -1)
-            : base(scheduler, schedule, action, actionInfo, maximumHistory, _resultCreator)
+            : base(scheduler, schedule, maximumHistory)
         {
-            Debug.Assert(FunctionReturnType == typeof(T));
+            Contract.Requires(function != null);
+            Contract.Requires(scheduler != null);
+            Contract.Requires(schedule != null);
+            _function = function;
         }
 
-        /// <inheritdoc/>
-        public new IEnumerable<IScheduledFunctionResult<T>> History
+        /// <summary>
+        /// Gets the execution history.
+        /// </summary>
+        /// <value>The history.</value>
+        [PublicAPI]
+        [NotNull]
+        public new IEnumerable<ScheduledFunctionResult<T>> History
         {
-            get { return base.History.Cast<IScheduledFunctionResult<T>>(); }
+            get { return HistoryQueue != null ? HistoryQueue.Cast<ScheduledFunctionResult<T>>() : Enumerable.Empty<ScheduledFunctionResult<T>>(); }
         }
 
-        /// <inheritdoc/>
-        public ISchedulableFunction<T> Function
+
+        /// <summary>
+        /// Executes the function asynchronously, so long as it is enabled and not already running (unless the <see cref="Schedule">schedules</see>
+        /// <see cref="ISchedule.Options"/> is set to <see cref="ScheduleOptions.AllowConcurrent"/>.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>And awaitable task containing the result, or <see langword="null"/> if the action was not run.</returns>
+        [NotNull]
+        [PublicAPI]
+        public new Task<ScheduledFunctionResult<T>> ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            get { return (ISchedulableFunction<T>)Action; }
+            return base.ExecuteAsync(cancellationToken)
+                .ContinueWith(
+                    // ReSharper disable once PossibleNullReferenceException
+                    t => t.Result as ScheduledFunctionResult<T>,
+                    cancellationToken,
+                    TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously,
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    TaskScheduler.Current);
         }
 
-        /// <inheritdoc/>
-        protected override ScheduledActionResult DoExecute(DateTime due, DateTime started)
-        {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            Exception exception = null;
-            T result;
-            try
-            {
-                // Execute the action!
-                result = Function.Execute();
-            }
-            catch (Exception e)
-            {
-                exception = e;
-                result = default(T);
-            }
-            stopwatch.Stop();
-
-            return new ScheduledFunctionResult<T>(due, started, stopwatch.Elapsed, exception, false, result);
-        }
-
-        /// <inheritdoc/>
-        protected override Task<ScheduledActionResult> DoExecuteAsync(
-            DateTime due,
-            DateTime started,
-            CancellationToken cancellationToken)
+        /// <summary>
+        /// Executes the action/function asynchronously.
+        /// </summary>
+        /// <param name="due">The due date and time (UTC).</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The result.</returns>
+        /// <remarks></remarks>
+        protected override async Task<ScheduledActionResult> DoExecuteAsync(DateTime due, CancellationToken cancellationToken)
         {
             // Quick cancellation check.
             if (cancellationToken.IsCancellationRequested)
+                // ReSharper disable once AssignNullToNotNullAttribute
+                return new ScheduledFunctionResult<T>(due, DateTime.UtcNow, TimeSpan.Zero, null, true, default(T));
+
+
+            // Always yield before executing the task to ensure that even synchronous tasks are scheduled to run in background.
+            await Task.Yield();
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            DateTime started = DateTime.UtcNow;
+
+            T result;
+            try
             {
-                return
-                    Task.FromResult(
-                        (ScheduledActionResult)
-                            new ScheduledFunctionResult<T>(due, started, TimeSpan.Zero, null, true, default(T)));
+                // Execute function (ensuring cancellation).
+                result = await _function(due, cancellationToken).WithCancellation(cancellationToken);
+                stopwatch.Stop();
+            }
+            catch (Exception e)
+            {
+                // We had an exception retrieving the task, so fail.
+                stopwatch.Stop();
+
+                // ReSharper disable once AssignNullToNotNullAttribute
+                return new ScheduledFunctionResult<T>(
+                    due,
+                    started,
+                    stopwatch.Elapsed,
+                    e,
+                    cancellationToken.IsCancellationRequested || e is TaskCanceledException,
+                    default(T));
             }
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            ISchedulableFunctionCancellableAsync<T> cancellableFunction =
-                Function as ISchedulableFunctionCancellableAsync<T>;
-            Task<T> functionTask;
-            if (cancellableFunction != null)
-                functionTask = cancellableFunction.ExecuteAsync(cancellationToken);
-            else
-            {
-                ISchedulableFunctionAsync<T> asyncFunction = Function as ISchedulableFunctionAsync<T>;
-
-                // Functions should be picked up in override of this method, so this should always be true.
-                Debug.Assert(asyncFunction != null);
-                functionTask = asyncFunction.ExecuteAsync();
-            }
-
-            // Add task continuation.
-            return functionTask
-                .ContinueWith(
-                    t =>
-                    {
-                        Debug.Assert(t != null);
-                        stopwatch.Stop();
-                        return
-                            (ScheduledActionResult)
-                                new ScheduledFunctionResult<T>(
-                                    due,
-                                    started,
-                                    stopwatch.Elapsed,
-                                    t.Exception,
-                                    cancellationToken.IsCancellationRequested,
-                                    t.Status == TaskStatus.RanToCompletion
-                                        ? t.Result
-                                        : default(T));
-                    },
-                    TaskContinuationOptions.ExecuteSynchronously);
+            return new ScheduledFunctionResult<T>(
+                due,
+                started,
+                stopwatch.Elapsed,
+                null,
+                cancellationToken.IsCancellationRequested,
+                result);
         }
     }
 }

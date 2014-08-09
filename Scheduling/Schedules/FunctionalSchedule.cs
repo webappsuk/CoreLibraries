@@ -90,7 +90,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <inheritdoc/>
         public override string ToString()
         {
-            return "Next Run at " + Next(DateTime.Now);
+            return "Next Run at " + Next(DateTime.UtcNow);
         }
     }
 }

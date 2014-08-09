@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
 {
@@ -33,12 +34,13 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
     /// The result of a scheduled action.
     /// </summary>
     /// <typeparam name="TResult">The type of the result.</typeparam>
-    internal class ScheduledFunctionResult<TResult> : ScheduledActionResult, IScheduledFunctionResult<TResult>
+    public class ScheduledFunctionResult<TResult> : ScheduledActionResult
     {
         /// <summary>
         /// The result.
         /// </summary>
-        private readonly TResult _result;
+        [PublicAPI]
+        public readonly TResult Result;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ScheduledFunctionResult{TResult}"/> class.
@@ -54,20 +56,12 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
             DateTime due,
             DateTime started,
             TimeSpan duration,
-            Exception exception,
+            [CanBeNull] Exception exception,
             bool cancelled,
             TResult result)
             : base(due, started, duration, exception, cancelled)
         {
-            _result = result;
-        }
-
-        /// <summary>
-        /// The result.
-        /// </summary>
-        public TResult Result
-        {
-            get { return _result; }
+            Result = result;
         }
     }
 }
