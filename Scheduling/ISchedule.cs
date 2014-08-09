@@ -42,10 +42,10 @@ namespace WebApplications.Utilities.Scheduling
         string Name { get; }
 
         /// <summary>
-        /// Gets the next scheduled event.
+        /// Gets the next date and time (UTC) scheduled event.
         /// </summary>
-        /// <param name="last">The last time the action was completed.</param>
-        /// <returns>Next time in schedule.</returns>
+        /// <param name="last">The last date and time (UTC) the action was completed.</param>
+        /// <returns>The next date and time (UTC) in the schedule.</returns>
         DateTime Next(DateTime last);
 
         /// <summary>

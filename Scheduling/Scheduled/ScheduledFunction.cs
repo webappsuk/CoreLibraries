@@ -34,6 +34,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Scheduling.Scheduled
 {
@@ -58,7 +59,7 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <param name="due">The due date and time (UTC) which indicates when the function was scheduled to run.</param>
         /// <returns>An awaitable task that contains the result.</returns>
         public delegate T SchedulableDueFunction(DateTime due);
-        
+
         /// <summary>
         /// Delegate describing an asynchronous schedulable function.
         /// </summary>
@@ -94,16 +95,18 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <summary>
         /// Initializes a new instance of the <see cref="ScheduledAction" /> class.
         /// </summary>
+        /// <param name="isFunction">if set to <see langword="true" /> then this instance is a function.</param>
         /// <param name="function">The function.</param>
         /// <param name="scheduler">The scheduler.</param>
         /// <param name="schedule">The schedule.</param>
         /// <param name="maximumHistory">The maximum history.</param>
         internal ScheduledFunction(
+            bool isFunction,
             [NotNull] SchedulableDueCancellableFunctionAsync function,
             [NotNull] Scheduler scheduler,
             [NotNull] ISchedule schedule,
             int maximumHistory = -1)
-            : base(scheduler, schedule, maximumHistory)
+            : base(scheduler, schedule, maximumHistory, isFunction ? typeof(T) : null)
         {
             Contract.Requires(function != null);
             Contract.Requires(scheduler != null);
@@ -119,7 +122,11 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [NotNull]
         public new IEnumerable<ScheduledFunctionResult<T>> History
         {
-            get { return HistoryQueue != null ? HistoryQueue.Cast<ScheduledFunctionResult<T>>() : Enumerable.Empty<ScheduledFunctionResult<T>>(); }
+            get
+            {
+                Contract.Requires(IsFunction);
+                return HistoryQueue != null ? HistoryQueue.Cast<ScheduledFunctionResult<T>>() : Enumerable.Empty<ScheduledFunctionResult<T>>();
+            }
         }
 
 
@@ -133,13 +140,14 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         [PublicAPI]
         public new Task<ScheduledFunctionResult<T>> ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            Contract.Requires(IsFunction);
             return base.ExecuteAsync(cancellationToken)
                 .ContinueWith(
-                    // ReSharper disable once PossibleNullReferenceException
+                // ReSharper disable once PossibleNullReferenceException
                     t => t.Result as ScheduledFunctionResult<T>,
                     cancellationToken,
                     TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously,
-                    // ReSharper disable once AssignNullToNotNullAttribute
+                // ReSharper disable once AssignNullToNotNullAttribute
                     TaskScheduler.Current);
         }
 
@@ -152,47 +160,51 @@ namespace WebApplications.Utilities.Scheduling.Scheduled
         /// <remarks></remarks>
         protected override async Task<ScheduledActionResult> DoExecuteAsync(DateTime due, CancellationToken cancellationToken)
         {
-            // Quick cancellation check.
-            if (cancellationToken.IsCancellationRequested)
-                // ReSharper disable once AssignNullToNotNullAttribute
-                return new ScheduledFunctionResult<T>(due, DateTime.UtcNow, TimeSpan.Zero, null, true, default(T));
-
-
-            // Always yield before executing the task to ensure that even synchronous tasks are scheduled to run in background.
-            await Task.Yield();
-
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            DateTime started = DateTime.UtcNow;
-
-            T result;
-            try
+            // Combine cancellation token with Timeout to ensure no action runs beyond the Scheduler's limit.
+            using (ITokenSource tokenSource = cancellationToken.WithTimeout(Scheduler.MaximumActionDuration))
             {
-                // Execute function (ensuring cancellation).
-                result = await _function(due, cancellationToken).WithCancellation(cancellationToken);
-                stopwatch.Stop();
-            }
-            catch (Exception e)
-            {
-                // We had an exception retrieving the task, so fail.
-                stopwatch.Stop();
+                // Quick cancellation check.
+                if (tokenSource.IsCancellationRequested)
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    return new ScheduledFunctionResult<T>(due, DateTime.UtcNow, TimeSpan.Zero, null, true, default(T));
 
-                // ReSharper disable once AssignNullToNotNullAttribute
+
+                // Always yield before executing the task to ensure that even synchronous tasks are scheduled to run in background.
+                await Task.Yield();
+
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                DateTime started = DateTime.UtcNow;
+
+                T result;
+                try
+                {
+                    // Execute function (ensuring cancellation).
+                    result = await _function(due, tokenSource.Token).WithCancellation(tokenSource.Token);
+                    stopwatch.Stop();
+                }
+                catch (Exception e)
+                {
+                    // We had an exception retrieving the task, so fail.
+                    stopwatch.Stop();
+
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    return new ScheduledFunctionResult<T>(
+                        due,
+                        started,
+                        stopwatch.Elapsed,
+                        e,
+                        tokenSource.IsCancellationRequested || e is TaskCanceledException,
+                        default(T));
+                }
+
                 return new ScheduledFunctionResult<T>(
                     due,
                     started,
                     stopwatch.Elapsed,
-                    e,
-                    cancellationToken.IsCancellationRequested || e is TaskCanceledException,
-                    default(T));
+                    null,
+                    tokenSource.IsCancellationRequested,
+                    result);
             }
-
-            return new ScheduledFunctionResult<T>(
-                due,
-                started,
-                stopwatch.Elapsed,
-                null,
-                cancellationToken.IsCancellationRequested,
-                result);
         }
     }
 }

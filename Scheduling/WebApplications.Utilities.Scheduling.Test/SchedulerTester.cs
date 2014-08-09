@@ -42,16 +42,13 @@ namespace WebApplications.Utilities.Scheduling.Test
         [NotNull]
         private readonly Dictionary<ScheduledFunction<DateTime>, IEnumerable<TimeSpan>> _tests =
             new Dictionary<ScheduledFunction<DateTime>, IEnumerable<TimeSpan>>();
-
-        [NotNull]
-        private readonly Scheduler _scheduler = new Scheduler();
-
+        
         private DateTime _fullStartTime = DateTime.UtcNow;
         private DateTime _startTime = DateTime.UtcNow;
 
         public SchedulerTester()
         {
-            _scheduler.Enabled = false;
+            Scheduler.Default.Enabled = false;
         }
 
         public static void WaitForStartOfSecond(bool requireEven = false)
@@ -66,7 +63,7 @@ namespace WebApplications.Utilities.Scheduling.Test
         {
             Assert.IsNotNull(schedule);
             Assert.IsNotNull(expectedResults);
-            return AddTest(_scheduler.Add(function ?? TestFunction, schedule, expectedResults.Count()), expectedResults);
+            return AddTest(Scheduler.Default.Add(function ?? TestFunction, schedule, expectedResults.Count()), expectedResults);
         }
 
         public ScheduledFunction<DateTime> AddTest(
@@ -92,12 +89,12 @@ namespace WebApplications.Utilities.Scheduling.Test
         public void Start()
         {
             SetStartTime();
-            _scheduler.Enabled = true;
+            Scheduler.Default.Enabled = true;
         }
 
         public void Stop()
         {
-            _scheduler.Enabled = false;
+            Scheduler.Default.Enabled = false;
         }
 
         public bool Completed()
@@ -206,7 +203,11 @@ namespace WebApplications.Utilities.Scheduling.Test
 
         [NotNull]
         public static readonly ScheduledFunction<DateTime>.SchedulableDueCancellableFunctionAsync TestFunction =
-            (d, t) => Task.FromResult(DateTime.UtcNow);
+            (d, t) =>
+            {
+                Trace.WriteLine(string.Format("Hit Test Function.  Due - {0:ss.fffffff}, Now - {1:ss.fffffff}", d, DateTime.UtcNow));
+                return Task.FromResult(d);
+            };
 
         public static void OutputResult(ScheduledFunctionResult<DateTime> result)
         {

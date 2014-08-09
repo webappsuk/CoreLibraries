@@ -60,7 +60,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         [PublicAPI]
         public OneOffSchedule(DateTime dateTime, [CanBeNull] string name = null)
         {
-            ScheduleDateTime = dateTime;
+            ScheduleDateTime = dateTime.ToUniversalTime();
             _name = name;
         }
 
