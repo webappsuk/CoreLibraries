@@ -110,6 +110,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="options">The options.</param>
         /// <param name="name">The name.</param>
         /// <remarks></remarks>
+        [PublicAPI]
         public PeriodicSchedule(
             TimeSpan gap,
             ScheduleOptions options = ScheduleOptions.None,
@@ -141,6 +142,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="options">The options.</param>
         /// <param name="name">The name.</param>
         /// <remarks></remarks>
+        [PublicAPI]
         public PeriodicSchedule(
             Month month = Month.Every,
             Week week = Week.Every,

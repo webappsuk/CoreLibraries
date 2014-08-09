@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
 
 namespace WebApplications.Utilities.Scheduling.Schedules
@@ -49,11 +50,13 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// <param name="options">The options.</param>
         /// <param name="name">The name.</param>
         /// <remarks></remarks>
+        [PublicAPI]
         public FunctionalSchedule(
             [NotNull] Func<DateTime, DateTime> function,
             ScheduleOptions options = ScheduleOptions.None,
-            string name = null)
+            [CanBeNull] string name = null)
         {
+            Contract.Requires(function != null);
             _function = function;
             _options = options;
             _name = name;

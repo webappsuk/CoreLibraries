@@ -55,6 +55,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         /// <param name="scheduleCollection">A collection of schedules.</param>
         /// <param name="name">An optional name for the schedule.</param>
+        [PublicAPI]
         public AggregateSchedule([NotNull] IEnumerable<ISchedule> scheduleCollection, [CanBeNull] string name = null)
         {
             Contract.Requires(scheduleCollection != null);
@@ -93,6 +94,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
             DateTime next = DateTime.MaxValue;
             foreach (ISchedule schedule in _scheduleCollection)
             {
+                Contract.Assert(schedule != null);
                 DateTime scheduleNext = schedule.Next(last);
                 if (scheduleNext < last)
                 {

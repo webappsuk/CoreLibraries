@@ -57,6 +57,7 @@ namespace WebApplications.Utilities.Scheduling.Schedules
         /// </summary>
         /// <param name="dateTime">The date time.</param>
         /// <param name="name">An optional name for the schedule.</param>
+        [PublicAPI]
         public OneOffSchedule(DateTime dateTime, [CanBeNull] string name = null)
         {
             ScheduleDateTime = dateTime;
